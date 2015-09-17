@@ -1,0 +1,3 @@
+[submodule "src/HardwareObjects"]
+	path = src/HardwareObjects
+	url = https://github.com/mxcube/HardwareObjects.git
