@@ -19,8 +19,7 @@ def gen():
     while keep_streaming:
         #here goes the image from udiff
         camera_hwobj.new_frame.wait()
-        im =camera_hwobj.new_frame.get()    
-        frame = open(os.path.join(os.path.dirname(__file__),'../static/build/md2.jpg'), 'rb').read()
+        frame =camera_hwobj.new_frame.get()    
         time.sleep(0.1)
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
