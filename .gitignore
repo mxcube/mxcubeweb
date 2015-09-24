@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 
+src/static/build/.module-cache/
 # C extensions
 *.so
 
