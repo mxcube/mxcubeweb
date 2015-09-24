@@ -22,7 +22,7 @@ hwr = HardwareRepository.HardwareRepository(os.path.abspath(hwr_directory))
 hwr.connect()
 
 app.resolution = hwr.getHardwareObject("/resolution-mockup")
-#app.diffractometer = hwr.getHardwareObject("/minidiff")
+app.diffractometer = hwr.getHardwareObject("/minidiff")
 #app.beamline = hwr.getHardwareObject("/beamline-setup")
 #app.queue = hwr.getHardwareObject("/queue-model")
 

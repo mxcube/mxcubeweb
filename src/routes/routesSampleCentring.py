@@ -6,11 +6,20 @@ import os
 
 ###----SSE SAMPLE VIDEO STREAMING----###
 keep_streaming = True
+#diffractometer.getObjectByRole("camera")
+camera_hwobj = mxcube.diffractometer.camera
+def new_sample_video_frame_received(img, width, height, *args):
+    camera_hwobj.new_frame.set(img)
+
+camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
+camera_hwobj.new_frame = gevent.event.AsyncResult()
 
 def gen():
     """Video streaming generator function."""
     while keep_streaming:
         #here goes the image from udiff
+        camera_hwobj.new_frame.wait()
+        im =camera_hwobj.new_frame.get()    
         frame = open(os.path.join(os.path.dirname(__file__),'../static/build/md2.jpg'), 'rb').read()
         time.sleep(0.1)
         yield (b'--frame\r\n'
