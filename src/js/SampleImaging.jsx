@@ -2,18 +2,20 @@
 
 var Sample = React.createClass({
 
-	drawSampleImage: function(im_src){
+	drawSampleImage: function(){
     //Draws the image from the diff HO. In addition, if there are points
     // already marked in the canvas re-display them, 
     var context = document.getElementById("canvas").getContext('2d');
+    context.clearRect(0, 0, 659, 493);
     var scale = this.state.zoomText;
-		var image = new Image();
-		image.src = "data:image/jpeg;base64,"+im_src;// +"\n--!>
+		// var image = new Image();
+		// image.src = "data:image/jpeg;base64,"+im_src;// +"\n--!>
     console.log("drawing canvas")
 		var points = this.state.pos;
-	  image.onload = function(){
+	  // image.onload = function(){
       console.log('drawing')
-  		context.drawImage(image,0,0,493,659);
+      console.log(points)
+  		// context.drawImage(document.getElementById("video"),0,0)
         //the next line for drawing a "|_" with the zoom text on the bottom left corner
   		context.beginPath();
       context.moveTo(10, 350);
@@ -26,6 +28,7 @@ var Sample = React.createClass({
   		context.stroke();
       //if there are already some spots on the image redraw them
   		points.map(function(point){
+          console.log('iterating over points')
   				context.beginPath();
   				context.arc(point[0], point[1], 5, 0, Math.PI * 2);
   				context.stroke();
@@ -34,7 +37,7 @@ var Sample = React.createClass({
           context.stroke();
 
 			});
-	  };
+	  // };
 	},
 
 	drawPoint: function(x,y){
@@ -52,11 +55,6 @@ var Sample = React.createClass({
 	},
 
   getInitialState: function () {
-     // this.streamSubscribe()
-      //TODO: the ajax call in streamsubscribe is asynch, so no url return in time for setting the eventsource, hardcoded here and moving on.
-      var source = new EventSource('/mxcube/api/v0.1/samplecentring/camera/subscribe');
-      source.addEventListener('update',this.eventHandlerUpdate);
-      // //this.streamSubscribe()
     	return {img: 'build/fakeimg.jpg',
   				width: 500,
 				height: 400,
@@ -99,37 +97,6 @@ var Sample = React.createClass({
         	},
    		});
     },
-
-  streamSubscribe: function(){
-    console.log("stream subcribe requested")
-    $.ajax({
-      url: "/mxcube/api/v0.1/samplecentring/camera/subscribe",
-      data: 'give me videooo',
-      type: 'GET',
-      success: function(res) {
-          //console.log(res['url']);
-          //var source = new EventSource(res['url']);
-          //console.log(source)
-          //source.addEventListener('update',this.eventHandlerUpdate);
-          //console.log('Subscribing done')
-          this.setState({url:res['url']})
-        },
-      error: function(error) {
-        console.log(error);
-        },
-    });
-  },
-    // eventHandlerInit: function(msg){
-    // 	var source = new EventSource('/sample_video_stream');
-    // 	console.log('event is coming...')
-		  // console.log(msg)    	
-    // },
-  eventHandlerUpdate: function(ev){
-      //retrieves the image string from the server and call to draw
-      console.log('eventHandling..')
-      im_src= ev.data;
-    	this.drawSampleImage(im_src)
-  },
 
   centring: function(){
 		console.log("centring");
@@ -241,11 +208,13 @@ var Sample = React.createClass({
   },
 
 	render: function () {
-    
+    var videoStyle = {position:'absolute', top:0, left:0, zIndex:-1 };
+    var canvasStyle = {position:'relative', zIndex:1};
 		console.log('rendering');
 	 	return <div>
 	 				  <div>
-	 					 <canvas id="canvas" height={493} width={659} onClick={this.onClick} />
+	 					 <canvas id="canvas" style={canvasStyle} height={493} width={659} onClick={this.onClick} />
+             <video id="video" style={videoStyle} poster="/mxcube/api/v0.1/samplecentring/camera/stream" />
  					  </div>
             <div>
 						  <button onClick={this.centring}>Centring</button>
@@ -280,15 +249,10 @@ var Sample = React.createClass({
   				  </div>
      			</div>;
     },
-    // componentWillMount: function(){
-    //   this.getInitialState();
-    // },
-    componentDidMount: function(){
+
+    componentDidUpdate: function(){
     	this.drawSampleImage();
-      // this.streamSubscribe();
-//    	this.eventHandlerInit()
-    	//var source = new EventSource('/mxcube/api/v0.1/samplecentring/camera/stream');
-    	//source.addEventListener('update',this.eventHandlerUpdate);
+      console.log('comp did update')
     },
 
 });

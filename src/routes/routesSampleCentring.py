@@ -1,40 +1,25 @@
 from flask import session, redirect, url_for, render_template, request, Response
 from .. import app as mxcube
 import time, logging, collections
-
+import gevent.event
+import os
 
 ###----SSE SAMPLE VIDEO STREAMING----###
 keep_streaming = True
 
-
-def sse_pack(d):
-    """Pack data in SSE format"""
-    buffer = ''
-    for k in ['retry', 'id', 'event', 'data']:
-        if k in d.keys():
-            buffer += '%s: %s\n' % (k, d[k])
-    return buffer + '\n'
-msg = {'retry': '1000'}
-msg['event'] = 'message'
-
-
-def stream_video():
-    """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
-    event_id = 0
-    logging.getLogger('HWR').info('[Stream] Camera video streaming started')
+def gen():
+    """Video streaming generator function."""
     while keep_streaming:
-        mxcube.diffractometer.camera.new_frame.wait()
-        im = mxcube.diffractometer.camera.new_frame.get()
-        msg.update({
-         'event': 'update',
-         'data': im,
-         'id': event_id
-        })
-        print "mezu bat", str(event_id), str(len(im))
-        yield sse_pack(msg)
-        event_id += 1
-        #gevent.sleep(0.08)
-        time.sleep(1)
+        #here goes the image from udiff
+        frame = open(os.path.join(os.path.dirname(__file__),'../static/build/md2.jpg'), 'rb').read()
+        time.sleep(0.1)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+@mxcube.route("/mxcube/api/v0.1/samplecentring/camera/stream")
+def send_jpeg_stream(): 
+    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
@@ -42,9 +27,8 @@ def subscribeToCamera():
     data = {generic_data} #or nothing?
     return_data={"url": url}
     """
-    #data = dict(request.POST.items())
     logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
-    return Response(stream_video(), mimetype="text/event-stream")
+    return "True"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/unsubscribe", methods=['GET'])
 def unsubscribeToCamera():
