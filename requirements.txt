@@ -1,0 +1,6 @@
+MXCuBE-3
+gevent==1.0.1
+flask
+flask-socketio
+louie
+
