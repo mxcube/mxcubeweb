@@ -1,5 +1,7 @@
-gevent==1.0.1
+gevent==1.0.2
 flask
-flask-socketio
+flask-socketio==0.3.8
+gevent-websocket==0.9.3
 louie
+scipy
 
