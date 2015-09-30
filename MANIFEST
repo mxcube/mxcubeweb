@@ -288,10 +288,10 @@ src/js/react-bootstrap-treeview.jsx
 src/routes/__init__.py
 src/routes/events.py
 src/routes/forms.py
-src/routes/routesBeamline.py
-src/routes/routesCollection.py
-src/routes/routesMain.py
-src/routes/routesMockups.py
-src/routes/routesSample.py
-src/routes/routesSampleCentring.py
+src/routes/Beamline.py
+src/routes/Collection.py
+src/routes/Main.py
+src/routes/Mockups.py
+src/routes/Sample.py
+src/routes/SampleCentring.py
 src/static/Main.html
