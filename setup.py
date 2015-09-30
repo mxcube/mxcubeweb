@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(name="MXCuBE", version="3",
       description = "Macromolecular Xtallography Customized Beamline Environment",
       author = "MXCuBE collaboration (ESRF, Soleil, MAX IV, HZB, EMBL, Global Phasing Ltd.)",
-      package_dir = { "mxcube3": "src" },
+      package_dir = { "mxcube3": "mxcube3" },
       packages = ["mxcube3", 
                   "mxcube3.HardwareRepository",
                   "mxcube3.HardwareRepository.HardwareObjects", 
