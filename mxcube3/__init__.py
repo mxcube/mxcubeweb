@@ -30,6 +30,6 @@ app.diffractometer = hwr.getHardwareObject("/minidiff")
 #app.queue = hwr.getHardwareObject("/queue-model")
 
 ###Importing all REST-routes
-import routes.routesMain, routes.routesBeamline, routes.routesCollection, routes.routesMockups, routes.routesSample, routes.routesSampleCentring
+import routes.Main, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
 
 
