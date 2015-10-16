@@ -2,17 +2,25 @@ from flask import session, redirect, url_for, render_template, request, Response
 from .. import app as mxcube
 import time, logging, collections
 import gevent.event
-import os
+import os, json
+import signals
 
+for signal in signals.MaxLabMicrodiff_signals:
+    #logging.getLogger("HWR").debug('Connecting signals to signal callback. Signal: "%s"' %(signal)) 
+    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
+
+mxcube.resolution.connect(mxcube.resolution, 'deviceReady', signals.signalCallback4)
 ###----SSE SAMPLE VIDEO STREAMING----###
 keep_streaming = True
 #diffractometer.getObjectByRole("camera")
-camera_hwobj = mxcube.diffractometer.camera
-def new_sample_video_frame_received(img, width, height, *args):
-    camera_hwobj.new_frame.set(img)
+# camera_hwobj = mxcube.diffractometer.camera
+# def new_sample_video_frame_received(img, width, height, *args):
+#     camera_hwobj.new_frame.set(img)
 
-camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
-camera_hwobj.new_frame = gevent.event.AsyncResult()
+# camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
+# camera_hwobj.new_frame = gevent.event.AsyncResult()
+
+    
 
 def gen():
     """Video streaming generator function."""
@@ -148,13 +156,53 @@ def put_centring_with_id(id):
     clicks.append([data['PosX'],data['PosY']])
     return "True"
 
-@mxcube.route("/mxcube/api/v0.1/samplecentring/centre", methods=['PUT'])
-def centre():
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/startauto", methods=['PUT'])
+def centreAuto():
+    """Start automatic (lucid) centring procedure
+    data = {generic_data, "Mode": mode}
+    return_data={"result": True/False}
+    """
+    mxcube.resolution.equipmentReady()
+    #mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
+    # mxcube.resolution.emit("deviceReady", 'some data')
+    try:
+        centred_pos = mxcube.diffractometer.start_automatic_centring()
+        if centred_pos is not None:
+            return "True"
+        else:
+            return "False"
+    except:
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/start3click", methods=['PUT'])
+def centre3click():
+    """Start 3 click centring procedure
+    data = {generic_data, "Mode": mode}
+    return_data={"result": True/False}
+    """
+    try:
+        centred_pos = mxcube.diffractometer.start_3Click_centring()
+        if centred_pos is not None:
+            return "True"
+        else:
+            return "False"
+    except:
+        return "False"
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/click", methods=['PUT'])
+def aClick():
     """Start centring procedure
     data = {generic_data, "Mode": mode}
     return_data={"result": True/False}
     """
-    return "True"
+    clickPosition = json.loads(request.args.get('clickPos',''))
+
+    print clickPosition
+    print clickPosition['x'], clickPosition['y']
+    try:
+        mxcube.diffractometer.image_clicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
+        return "True"
+    except:
+        return "False"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/snapshot", methods=['PUT'])
 def snapshot():

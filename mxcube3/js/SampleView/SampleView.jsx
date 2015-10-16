@@ -7,7 +7,8 @@ var SampleCentring = React.createClass({
       zoomLevels:["Zoom 1","Zoom 2","Zoom 3","Zoom 4","Zoom 5","Zoom 6","Zoom 7","Zoom 8","Zoom 9", "Zoom 10"],
       zoomText: "Zoom 1",
       light:0,
-      pos:[]
+      pos:[],
+      centring: 0 //if we are in the centring procedure, the click method has another meaning
     }
   },
   componentWillMount: function(){
@@ -71,6 +72,7 @@ var SampleCentring = React.createClass({
   },
   deletePoints: function(){
     console.log("deleting")
+    this.setState({centring: 0}) 
     this.setState({pos: []});
     },
   getPosition: function (element) {
@@ -93,21 +95,61 @@ var SampleCentring = React.createClass({
     aux.push([x,y])
     this.setState({pos: aux})
     this.drawPoint(x,y);
-    $.ajax({
-        url: '/onClick',
-        data: {'PosX': x, 'PosY': y},
-      type: 'PUT',
-        success: function(res) {
-            console.log(res);
-        },
-        error: function(error) {
-            console.log(error);
-        },
-    });
+    if (!this.state.centring){
+      $.ajax({
+          url: '/onClick',
+          data: {'PosX': x, 'PosY': y},
+        type: 'PUT',
+          success: function(res) {
+              console.log(res);
+          },
+          error: function(error) {
+              console.log(error);
+          },
+      });
+    }
+    else{  
+      $.ajax({
+          url: '/mxcube/api/v0.1/samplecentring/centring/click?clickPos={"x":'+x+',"y":'+ y+'}',
+          data: {'PosX': x, 'PosY': y},
+        type: 'PUT',
+          success: function(res) {
+              console.log(res);
+          },
+          error: function(error) {
+              console.log(error);
+          },
+      });
+  }
   },
   addCentringPoint: function(){
   },
   startCentring: function(){
+    this.setState({centring: 1}) 
+    $.ajax({
+        url: '/mxcube/api/v0.1/samplecentring/centring/startauto',
+        type: 'PUT',
+        success: function(res) {
+            console.log(res);
+        },
+        error: function(error) {
+          console.log(error);
+        },
+    });
+  },
+  start3ClickCentring: function(){
+    this.setState({centring: 1}) 
+    $.ajax({
+        url: '/mxcube/api/v0.1/samplecentring/centring/start3click',
+        type: 'PUT',
+        success: function(res) {
+            console.log(res);
+        },
+        error: function(error) {
+          console.log(error);
+        },
+    });
+
   },
   measureDistance: function(){
   },
@@ -200,6 +242,7 @@ var SampleCentring = React.createClass({
   render: function () {
     var videoStyle = {position:'absolute', top:0, left:0, zIndex:-1 };
     var canvasStyle = {position:'relative', zIndex:1};
+    var logStyle ={maxHeight:70, overflowY:"scroll"}// {'overflow-y':"scroll", 'overflow-x':"hidden", height:400px};
 //    <video id="video" style={videoStyle} poster="/mxcube/api/v0.1/samplecentring/camera/stream" />
 //    <img src="/Users/mikegu/Desktop/md2.jpg"  style={videoStyle} id='SampleImage' className="center-block img-responsive"> </img>
     return (
@@ -216,11 +259,12 @@ var SampleCentring = React.createClass({
                             <button type="button" className="btn btn-link  pull-center" onClick={this.aMethod}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
                             <button type="button" className="btn btn-link  pull-center" onClick={this.aMethod}><i className="fa fa-2x fa-fw fa-arrows-v"></i></button>                            
                             <button type="button" className="btn btn-link  pull-center" onClick={this.aMethod}><i className="fa fa-2x fa-fw fa-camera"></i></button>                            
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.aMethod}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
+                            <button type="button" className="btn btn-link  pull-center" onClick={this.startCentring}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
+                            <button type="button" className="btn btn-link  pull-center" onClick={this.start3ClickCentring}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
                             <button type="button" className="btn btn-link  pull-center" onClick={this.deletePoints}><i className="fa fa-2x fa-fw fa-times"></i></button>
                             <button type="button" className="btn btn-link  pull-center" onClick={this.zoomIn}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
                             <button type="button" className="btn btn-link  pull-center" onClick={this.zoomOut}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i></button>
+                            <button type="button" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
                             <div class="input-group">
                               <span class="input-group-addon" id="basic-addon1">Kappa   </span>
                               <input type="number"  id="Kappa" step="0.01" min='0' max='360'  class="form-control" placeholder="kappa" aria-describedby="basic-addon1" onKeyPress={this.isNumberKey} onkeyup={this.isNumberKey}> </input>
@@ -233,6 +277,7 @@ var SampleCentring = React.createClass({
                     </div>
                     <SingleSampleTree/>
                     <ExperimentConfiguration/>
+                    <div className="well well-sm pre-scrollable" style={logStyle}> <samp id="log" className=""></samp> </div>
                 </div>
             );        
   },

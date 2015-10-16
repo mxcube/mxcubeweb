@@ -4,8 +4,13 @@ from optparse import OptionParser
 import os, sys
 
 socketio = SocketIO()
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__, static_url_path='')	
 app.debug = True
+socketio.init_app(app) # this line important for socketio msg, otherwise no msg is sent...
+@socketio.on('connect', namespace='/test')
+def connect():
+    print 'someone connected'
+    socketio.emit('test', {'data': 'Welcome'}, namespace='/test')
 
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository", 
@@ -25,7 +30,7 @@ hwr = HardwareRepository.HardwareRepository(os.path.abspath(os.path.expanduser(h
 hwr.connect()
 
 app.resolution = hwr.getHardwareObject("/resolution-mockup")
-app.diffractometer = hwr.getHardwareObject("/minidiff")
+app.diffractometer = hwr.getHardwareObject("/diffractometer-mockup")
 #app.beamline = hwr.getHardwareObject("/beamline-setup")
 #app.queue = hwr.getHardwareObject("/queue-model")
 
