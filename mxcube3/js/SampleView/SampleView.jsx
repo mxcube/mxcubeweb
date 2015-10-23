@@ -1,6 +1,8 @@
 /** @jsx React.DOM */
 var SampleCentring = React.createClass({
 	getInitialState: function () {
+    var source = new EventSource('/mxcube/api/v0.1/samplecentring/camera/subscribe');
+    source.addEventListener('update',this.eventHandlerUpdate);
     return {
       sampleName: 'Sample_42',
       currentZoom: 0,
@@ -24,17 +26,17 @@ var SampleCentring = React.createClass({
 //    document.location.href = dataURL;
     window.open(dataURL);
   },
-  drawSampleImage: function(){
+  drawSampleImage: function(im_src){
     //Draws the image from the diff HO. In addition, if there are points
     // already marked in the canvas re-display them, 
     var context = document.getElementById("canvas").getContext('2d');
     context.clearRect(0, 0, 659, 493);
     var scale = this.state.zoomText;
-    // var image = new Image();
-    // image.src = "data:image/jpeg;base64,"+im_src;// +"\n--!>
+    var image = new Image();
+    image.src = "data:image/jpeg;base64,"+im_src;// +"\n--!>
     var points = this.state.pos;
-    // image.onload = function(){
-      // context.drawImage(document.getElementById("video"),0,0)
+    image.onload = function(){
+      context.drawImage(image,0,0)
         //the next line for drawing a "|_" with the zoom text on the bottom left corner
       context.beginPath();
       context.moveTo(10, 450);
@@ -54,9 +56,8 @@ var SampleCentring = React.createClass({
           context.beginPath();
           context.arc(point[0], point[1], 1, 0, Math.PI * 2);
           context.stroke();
-
       });
-    // };
+    };
   },
   drawPoint: function(x,y){
     //called by clicking in the canvas, displays a circle with a dot in the center
@@ -86,6 +87,12 @@ var SampleCentring = React.createClass({
           element = element.offsetParent;
         }
       return { x: xPosition, y: yPosition };
+  },
+  eventHandlerUpdate: function(ev){
+      //retrieves the image string from the server and call to draw
+      console.log('eventHandling..')
+      im_src= ev.data;
+      this.drawSampleImage(im_src)
   },
   onClick: function(e){
     var parentPosition = this.getPosition(e.currentTarget);
@@ -160,13 +167,13 @@ var SampleCentring = React.createClass({
   lightOnOff: function(ev){
     console.log("ligth on/off requested")
     var newLight = Number(!this.state.ligth)
+    this.setState({ligth:newLight});
     $.ajax({
-          url: '/mxcube/api/v0.1/samplecentring/light/move?newpos=newLight',
-          data: {'moveable': 'Light', 'position':newLight},//not really needed, everything in the url (motor and newpos) 
+          url: '/mxcube/api/v0.1/samplecentring/backlight/move?newpos='+newLight,
+          data: {'moveable': 'backlight', 'position':newLight},//not really needed, everything in the url (motor and newpos) 
         type: 'PUT',
           success: function(res) {
               console.log(res);
-              this.set.state({ligth:newLight})
           },
           error: function(error) {
             console.log(error);
@@ -179,7 +186,7 @@ var SampleCentring = React.createClass({
     this.setState({currentZoom: newIndex})
     this.setState({zoomText: newZoom})
     $.ajax({
-          url: '/mxcube/api/v0.1/samplecentring/zoom/move',
+          url: '/mxcube/api/v0.1/samplecentring/zoom/move?newpos='+newZoom,
           data: JSON.stringify({'moveable': 'Zoom', 'position': newZoom}, null, '\t'),
           contentType: 'application/json;charset=UTF-8',
           type: 'PUT',
@@ -191,7 +198,7 @@ var SampleCentring = React.createClass({
           },
       });
   },
-  zoomOut: function(ev){
+  zoomOut: function(ev){    
     var newIndex = Math.max(0, Math.min(this.state.currentZoom-=1, 9))
     var newZoom = this.state.zoomLevels[newIndex]
     this.setState({currentZoom: newIndex})
@@ -245,10 +252,10 @@ var SampleCentring = React.createClass({
     var logStyle ={maxHeight:70, overflowY:"scroll"}// {'overflow-y':"scroll", 'overflow-x':"hidden", height:400px};
 //    <video id="video" style={videoStyle} poster="/mxcube/api/v0.1/samplecentring/camera/stream" />
 //    <img src="/Users/mikegu/Desktop/md2.jpg"  style={videoStyle} id='SampleImage' className="center-block img-responsive"> </img>
+//<video id="video" width={659} height={493} style={videoStyle}  poster="/mxcube/api/v0.1/samplecentring/camera/stream"/>
     return (
                 <div>
-                    <canvas id="canvas" style={canvasStyle} height={493} width={659} onClick={this.onClick} />
-                    <video id="video" style={videoStyle} poster="/mxcube/api/v0.1/samplecentring/camera/stream"  />
+                    <canvas id="canvas"  height={493} width={659} onClick={this.onClick} />
                     <hr></hr>
                     <div className="panel panel-info">
                         <div className="panel-heading">

@@ -23,18 +23,18 @@ cmdline_options, args = opt_parser.parse_args()
 from .HardwareRepository import HardwareRepository 
 HardwareRepository.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
 # this is to allow Hardware Objects to do 'from HardwareRepository import ...'
-sys.path.insert(0, os.path.dirname(__file__)) 
+sys.path.insert(0, os.path.dirname(__file__))
 
 hwr_directory = cmdline_options.hwr_directory
+hwr_directory = './mxcube3/HardwareObjects.xml/'
 hwr = HardwareRepository.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
 hwr.connect()
 
 app.resolution = hwr.getHardwareObject("/resolution-mockup")
-app.diffractometer = hwr.getHardwareObject("/diffractometer-mockup")
+app.diffractometer = hwr.getHardwareObject("/md2-9113")
+#app.diffractometer = hwr.getHardwareObject("/minidiff")
 #app.beamline = hwr.getHardwareObject("/beamline-setup")
 #app.queue = hwr.getHardwareObject("/queue-model")
 
 ###Importing all REST-routes
 import routes.Main, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
-
-

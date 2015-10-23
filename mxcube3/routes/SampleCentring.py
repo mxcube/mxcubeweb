@@ -1,4 +1,4 @@
-from flask import session, redirect, url_for, render_template, request, Response
+from flask import session, redirect, url_for, render_template, request, Response, stream_with_context
 from .. import app as mxcube
 import time, logging, collections
 import gevent.event
@@ -6,36 +6,52 @@ import os, json
 import signals
 
 for signal in signals.MaxLabMicrodiff_signals:
-    #logging.getLogger("HWR").debug('Connecting signals to signal callback. Signal: "%s"' %(signal)) 
     mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
 
 mxcube.resolution.connect(mxcube.resolution, 'deviceReady', signals.signalCallback4)
 ###----SSE SAMPLE VIDEO STREAMING----###
 keep_streaming = True
-#diffractometer.getObjectByRole("camera")
-# camera_hwobj = mxcube.diffractometer.camera
-# def new_sample_video_frame_received(img, width, height, *args):
-#     camera_hwobj.new_frame.set(img)
+camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
+def new_sample_video_frame_received(img, width, height, *args):
+    #print "new frame"
+    camera_hwobj.new_frame.set(img)
 
-# camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
-# camera_hwobj.new_frame = gevent.event.AsyncResult()
+camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
+camera_hwobj.new_frame = gevent.event.AsyncResult()
 
-    
+keep_streaming = True
+def sse_pack(d):
+    """Pack data in SSE format"""
+    buffer = ''
+    for k in ['retry','id','event','data']:
+        if k in d.keys():
+            buffer += '%s: %s\n' % (k, d[k])
+    return buffer + '\n'
+msg = {
+    'retry': '1000'
+    }
+msg['event'] = 'message'
 
-def gen():
-    """Video streaming generator function."""
+def stream_video():
+    """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
+    event_id = 0
+    logging.getLogger('HWR').info('[Stream] Camera video streaming started')
     while keep_streaming:
-        #here goes the image from udiff
-        camera_hwobj.new_frame.wait()
-        frame =camera_hwobj.new_frame.get()    
-        time.sleep(0.1)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-@mxcube.route("/mxcube/api/v0.1/samplecentring/camera/stream")
-def send_jpeg_stream(): 
-    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
+        try:
+            camera_hwobj.new_frame.wait()
+            im =camera_hwobj.new_frame.get()    
+            
+            msg.update({
+             'event': 'update',
+             'data' : im,
+             'id'   : event_id
+            })
+            #print "mezu bat", str(event_id), str(len(im))
+            yield sse_pack(msg)
+            event_id += 1
+            gevent.sleep(0.08)
+        except:
+            pass
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
@@ -44,7 +60,8 @@ def subscribeToCamera():
     return_data={"url": url}
     """
     logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
-    return "True"
+    return Response(stream_video(), mimetype="text/event-stream")
+
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/unsubscribe", methods=['GET'])
 def unsubscribeToCamera():
@@ -69,19 +86,20 @@ def moveSampleCentringMotor(id):
     """
     new_pos = request.args.get('newpos','')
     motor_hwobj = mxcube.diffractometer.getObjectByRole(id.lower())
-    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor: "%s", new position: "%s"' %(motor, str(new_pos)))
+    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor: "%s", new position: "%s"' %(id, str(new_pos)))
+    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor with motor name: '+str(motor_hwobj))
 
     #the following if-s to solve inconsistent movement method
     try:
-        if motor_hwobj.motor_name == 'Zoom':
+        if motor_hwobj.motor_name.lower() == 'zoom':
             motor_hwobj.moveToPosition(new_pos)
-        elif motor_hwobj.motor_name == 'Light':
-            if new_pos: motor.wagoIn()
-            else: motor.wagoOut()
+        elif motor_hwobj.motor_name.lower() == 'backlight':
+            if new_pos: motor_hwobj.wagoIn()
+            else: motor_hwobj.wagoOut()
         else: 
-            motor_hwobj.move(new_pos)
+            motor_hwobj.move(float(new_pos))
     except Exception as ex:
-        print ex.value
+        print ex
         return "False"
     logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s", current position: "%s"' %(motor_hwobj.motor_name, str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
     return "True"
@@ -166,7 +184,7 @@ def centreAuto():
     #mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
     # mxcube.resolution.emit("deviceReady", 'some data')
     try:
-        centred_pos = mxcube.diffractometer.start_automatic_centring()
+        centred_pos = mxcube.diffractometer.startAutoCentring()
         if centred_pos is not None:
             return "True"
         else:
@@ -181,7 +199,7 @@ def centre3click():
     return_data={"result": True/False}
     """
     try:
-        centred_pos = mxcube.diffractometer.start_3Click_centring()
+        centred_pos = mxcube.diffractometer.start3ClickCentring()
         if centred_pos is not None:
             return "True"
         else:
@@ -199,7 +217,7 @@ def aClick():
     print clickPosition
     print clickPosition['x'], clickPosition['y']
     try:
-        mxcube.diffractometer.image_clicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
+        mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
         return "True"
     except:
         return "False"
