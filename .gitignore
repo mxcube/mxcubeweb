@@ -11,7 +11,7 @@ src/static/build/.module-cache/
 env/
 build/
 develop-eggs/
-dist/
+dist/*
 downloads/
 eggs/
 .eggs/
@@ -56,3 +56,7 @@ docs/_build/
 
 # PyBuilder
 target/
+
+node_modules/
+!dist/index.html
+

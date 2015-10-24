@@ -1,0 +1,22 @@
+{
+"scripts": {
+  "start": "npm run serve | npm run dev",
+  "serve": "./node_modules/.bin/http-server -p 8080",
+  "dev": "webpack-dev-server --colors --port 8090 --display-error-details --content-base dist"
+},
+"name": "mxcube3",
+"version": "0.1.0",
+"main": "main.jsx",
+"dependencies": {
+  "react": "0.14.0",
+  "isotope-layout": "*",
+  "classnames": "*"
+},
+"devDependencies": {
+  "webpack": "1.12.2",
+  "webpack-dev-server": "*",
+  "babel": "*",
+  "http-server": "*",
+  "imports-loader": "*"
+}
+}
