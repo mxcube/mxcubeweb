@@ -2,7 +2,7 @@
 "scripts": {
   "start": "npm run serve | npm run dev",
   "serve": "./node_modules/.bin/http-server -p 8080",
-  "dev": "webpack-dev-server --colors --port 8090 --display-error-details --content-base dist"
+  "dev": "./node_modules/.bin/webpack-dev-server --colors --port 8090 --display-error-details --content-base dist"
 },
 "name": "mxcube3",
 "version": "0.1.0",
