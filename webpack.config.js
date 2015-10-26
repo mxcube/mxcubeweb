@@ -6,7 +6,7 @@ var config = {
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js', 
-        publicPath: 'http://localhost:8090/'
+        publicPath: '' 
     },
     module: {
         loaders: [
