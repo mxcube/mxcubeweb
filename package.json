@@ -9,14 +9,31 @@
 "main": "main.jsx",
 "dependencies": {
   "react": "0.14.0",
-  "isotope-layout": "*",
-  "classnames": "*"
+  "react-dom": "0.14.0",
+  "isotope-layout": "2.2.2",
+  "classnames": "2.2.0",
+  "bootstrap": "3.3.5",
+  "bootstrap-webpack": "0.0.5",
+  "jquery": "2.1.4",
+  "json5":"0.4.0",
+  "x-editable": "1.5.1"
 },
 "devDependencies": {
   "webpack": "1.12.2",
-  "webpack-dev-server": "*",
-  "babel": "*",
-  "http-server": "*",
-  "imports-loader": "*"
+  "webpack-dev-server": "1.12.1",
+  "http-server": "0.8.5",
+  "babel-core": "5.8.29",
+  "babel-loader": "5.3.2",
+  "css-loader": "0.21.0",
+  "style-loader": "0.13.0",
+  "exports-loader": "0.6.2",
+  "extract-text-webpack-plugin": "0.8.2",
+  "file-loader":"0.8.4",
+  "img-loader":"1.2.0",
+  "imports-loader":"0.6.5",
+  "script-loader":"0.6.1",
+  "url-loader":"0.5.6",
+  "less":"2.5.3",
+  "less-loader":"2.2.1"
 }
 }
