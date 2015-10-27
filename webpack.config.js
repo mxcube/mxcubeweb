@@ -21,7 +21,7 @@ var config = {
             {
                 test: /\.jsx?$/,
                 exclude: /node_modules/,
-                loaders: ['babel']
+                loaders: ['react-hot', 'babel']
             },
             {
                 test: /\.(jpe?g|png|gif)$/i,
