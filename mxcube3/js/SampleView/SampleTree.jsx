@@ -37,8 +37,20 @@ var SingleSampleTree = React.createClass({
     this.setState({list: auxList})
   },
   runThisItem: function(item){
-    console.log(item)
-
+    var type = item.split('_')[0]
+    
+    if (type == 'SampleCentring'){
+        $.ajax({
+            url: '/mxcube/api/v0.1/samplecentring/centring/startauto',
+            type: 'PUT',
+            success: function(res) {
+                console.log(res);
+            },
+            error: function(error) {
+              console.log(error);
+            },
+      });    
+    }
   },
   componentWillMount: function(){
     window.app_dispatcher.on("queue:new_item", this.addQueueItem);

@@ -1,33 +1,57 @@
-from flask import session, redirect, url_for, render_template, request, Response
+from flask import session, redirect, url_for, render_template, request, Response, stream_with_context
 from .. import app as mxcube
 import time, logging, collections
 import gevent.event
-import os
+import os, json
+import signals
 
+for signal in signals.MaxLabMicrodiff_signals:
+    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
+
+#mxcube.resolution.connect(mxcube.resolution, 'deviceReady', signals.signalCallback4)
 ###----SSE SAMPLE VIDEO STREAMING----###
 keep_streaming = True
-#diffractometer.getObjectByRole("camera")
-camera_hwobj = mxcube.diffractometer.camera
+camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
 def new_sample_video_frame_received(img, width, height, *args):
+    #print "new frame"
     camera_hwobj.new_frame.set(img)
 
 camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
 camera_hwobj.new_frame = gevent.event.AsyncResult()
 
-def gen():
-    """Video streaming generator function."""
+keep_streaming = True
+def sse_pack(d):
+    """Pack data in SSE format"""
+    buffer = ''
+    for k in ['retry','id','event','data']:
+        if k in d.keys():
+            buffer += '%s: %s\n' % (k, d[k])
+    return buffer + '\n'
+msg = {
+    'retry': '1000'
+    }
+msg['event'] = 'message'
+
+def stream_video():
+    """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
+    event_id = 0
+    logging.getLogger('HWR').info('[Stream] Camera video streaming started')
     while keep_streaming:
-        #here goes the image from udiff
-        camera_hwobj.new_frame.wait()
-        frame =camera_hwobj.new_frame.get()    
-        time.sleep(0.1)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-@mxcube.route("/mxcube/api/v0.1/samplecentring/camera/stream")
-def send_jpeg_stream(): 
-    return Response(gen(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
+        try:
+            camera_hwobj.new_frame.wait()
+            im =camera_hwobj.new_frame.get()    
+            
+            msg.update({
+             'event': 'update',
+             'data' : im,
+             'id'   : event_id
+            })
+            #print "mezu bat", str(event_id), str(len(im))
+            yield sse_pack(msg)
+            event_id += 1
+            gevent.sleep(0.08)
+        except:
+            pass
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
@@ -36,7 +60,8 @@ def subscribeToCamera():
     return_data={"url": url}
     """
     logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
-    return "True"
+    return Response(stream_video(), mimetype="text/event-stream")
+
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/unsubscribe", methods=['GET'])
 def unsubscribeToCamera():
@@ -61,21 +86,26 @@ def moveSampleCentringMotor(id):
     """
     new_pos = request.args.get('newpos','')
     motor_hwobj = mxcube.diffractometer.getObjectByRole(id.lower())
-    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor: "%s", new position: "%s"' %(motor, str(new_pos)))
+    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor: "%s", new position: "%s"' %(id, str(new_pos)))
+    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor with motor name: '+str(motor_hwobj.motor_name))
 
     #the following if-s to solve inconsistent movement method
     try:
-        if motor_hwobj.motor_name == 'Zoom':
+        if motor_hwobj.motor_name.lower() == 'zoom':
             motor_hwobj.moveToPosition(new_pos)
-        elif motor_hwobj.motor_name == 'Light':
-            if new_pos: motor.wagoIn()
-            else: motor.wagoOut()
+        elif motor_hwobj.motor_name.lower() == 'backlight':
+            if int(new_pos):
+                motor_hwobj.wagoIn()
+                mxcube.diffractometer.getObjectByRole('light').move(1)
+            else: 
+                motor_hwobj.wagoOut()
+                mxcube.diffractometer.getObjectByRole('light').move(0)
         else: 
-            motor_hwobj.move(new_pos)
+            motor_hwobj.move(float(new_pos))
     except Exception as ex:
-        print ex.value
+        print ex
         return "False"
-    logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s", current position: "%s"' %(motor_hwobj.motor_name, str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
+    logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s"' %(motor_hwobj.motor_name))#, str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
     return "True"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/status", methods=['GET'])
@@ -148,13 +178,54 @@ def put_centring_with_id(id):
     clicks.append([data['PosX'],data['PosY']])
     return "True"
 
-@mxcube.route("/mxcube/api/v0.1/samplecentring/centre", methods=['PUT'])
-def centre():
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/startauto", methods=['PUT'])
+def centreAuto():
+    """Start automatic (lucid) centring procedure
+    data = {generic_data, "Mode": mode}
+    return_data={"result": True/False}
+    """
+    #mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
+    # mxcube.resolution.emit("deviceReady", 'some data')
+    try:
+        centred_pos = mxcube.diffractometer.startAutoCentring()
+        if centred_pos is not None:
+            return "True"
+        else:
+            return "False"
+    except:
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/start3click", methods=['PUT'])
+def centre3click():
+    """Start 3 click centring procedure
+    data = {generic_data, "Mode": mode}
+    return_data={"result": True/False}
+    """
+    try:
+        currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
+        logging.getLogger('HWR').info('[3Click-Centring] Finished, result: '+str(centred_pos))
+        logging.getLogger('HWR').info('[3Click-Centring] Finished, centring status: '+str(mxcube.diffractometer.getCentringStatus()))
+        if centred_pos is not None:
+            return "True"
+        else:
+            return "False"
+    except:
+        return "False"
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/click", methods=['PUT'])
+def aClick():
     """Start centring procedure
     data = {generic_data, "Mode": mode}
     return_data={"result": True/False}
     """
-    return "True"
+    clickPosition = json.loads(request.args.get('clickPos',''))
+
+    print clickPosition
+    print clickPosition['x'], clickPosition['y']
+    try:
+        mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
+        return "True"
+    except:
+        return "False"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/snapshot", methods=['PUT'])
 def snapshot():
@@ -162,4 +233,9 @@ def snapshot():
     data = {generic_data, "Path": path} # not sure if path should be available, or directly use the user/proposal path
     return_data={"result": True/False}
     """
-    return "True"
+    filenam = time.strftime("%Y-%m-%d-%H:%M:%S", time.gmtime())+sample.jpg
+    try:
+        camera_hwobj.takeSnapshot(os.path.join(os.path.dirname(__file__), 'snapshots/'))
+        return "True"
+    except:
+        return "False"

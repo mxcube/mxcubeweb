@@ -3,4 +3,23 @@
 console.log('dispatcher going to start');
 window.app_dispatcher = _.extend({}, Backbone.Events);
 console.log('dispatcher done');
-console.log(window.app_dispatcher)
+
+$(document).ready(function(){
+		console.log('socket starting')
+        var socket = io.connect('http://' + document.domain + ':' + location.port+'/test');// + namespace);
+        console.log('http://' + document.domain + ':' + location.port+'/test')// + namespace)
+        socket.on('connect', function() {
+            socket.emit('my event', {data: 'I\'m connected!'});
+        });
+
+        socket.emit('my event', {data: '#emit_data'}); 
+        socket.on('newSignal', function(msg) {
+            console.log('message received')
+            var d = new Date()
+            $('#log').append('<br>'+d.toLocaleString()+ '  #' +msg['sender']+'::'+msg['signal']+ '::Data: '+msg['data'] );
+            // if(msg['signal'] == 'deviceReady'){
+            //       alert('deviceReady')
+            // };
+            console.log(msg)
+        });
+    });
