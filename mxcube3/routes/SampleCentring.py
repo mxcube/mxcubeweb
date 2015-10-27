@@ -8,7 +8,7 @@ import signals
 for signal in signals.MaxLabMicrodiff_signals:
     mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
 
-mxcube.resolution.connect(mxcube.resolution, 'deviceReady', signals.signalCallback4)
+#mxcube.resolution.connect(mxcube.resolution, 'deviceReady', signals.signalCallback4)
 ###----SSE SAMPLE VIDEO STREAMING----###
 keep_streaming = True
 camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
@@ -87,21 +87,25 @@ def moveSampleCentringMotor(id):
     new_pos = request.args.get('newpos','')
     motor_hwobj = mxcube.diffractometer.getObjectByRole(id.lower())
     logging.getLogger('HWR').info('[SampleCentring] Movement called for motor: "%s", new position: "%s"' %(id, str(new_pos)))
-    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor with motor name: '+str(motor_hwobj))
+    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor with motor name: '+str(motor_hwobj.motor_name))
 
     #the following if-s to solve inconsistent movement method
     try:
         if motor_hwobj.motor_name.lower() == 'zoom':
             motor_hwobj.moveToPosition(new_pos)
         elif motor_hwobj.motor_name.lower() == 'backlight':
-            if new_pos: motor_hwobj.wagoIn()
-            else: motor_hwobj.wagoOut()
+            if int(new_pos):
+                motor_hwobj.wagoIn()
+                mxcube.diffractometer.getObjectByRole('light').move(1)
+            else: 
+                motor_hwobj.wagoOut()
+                mxcube.diffractometer.getObjectByRole('light').move(0)
         else: 
             motor_hwobj.move(float(new_pos))
     except Exception as ex:
         print ex
         return "False"
-    logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s", current position: "%s"' %(motor_hwobj.motor_name, str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
+    logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s"' %(motor_hwobj.motor_name))#, str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
     return "True"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/status", methods=['GET'])
@@ -180,7 +184,6 @@ def centreAuto():
     data = {generic_data, "Mode": mode}
     return_data={"result": True/False}
     """
-    mxcube.resolution.equipmentReady()
     #mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
     # mxcube.resolution.emit("deviceReady", 'some data')
     try:
@@ -199,7 +202,9 @@ def centre3click():
     return_data={"result": True/False}
     """
     try:
-        centred_pos = mxcube.diffractometer.start3ClickCentring()
+        currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
+        logging.getLogger('HWR').info('[3Click-Centring] Finished, result: '+str(centred_pos))
+        logging.getLogger('HWR').info('[3Click-Centring] Finished, centring status: '+str(mxcube.diffractometer.getCentringStatus()))
         if centred_pos is not None:
             return "True"
         else:
@@ -228,4 +233,9 @@ def snapshot():
     data = {generic_data, "Path": path} # not sure if path should be available, or directly use the user/proposal path
     return_data={"result": True/False}
     """
-    return "True"
+    filenam = time.strftime("%Y-%m-%d-%H:%M:%S", time.gmtime())+sample.jpg
+    try:
+        camera_hwobj.takeSnapshot(os.path.join(os.path.dirname(__file__), 'snapshots/'))
+        return "True"
+    except:
+        return "False"
