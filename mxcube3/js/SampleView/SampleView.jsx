@@ -275,7 +275,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
   },
   componentDidMount: function(){
   },
-  gettOnOff: function(ev){
+  lightOnOff: function(ev){
     console.log("ligth on/off requested")
     var newLight = Number(!this.state.ligth)
     this.setState({ligth:newLight});
