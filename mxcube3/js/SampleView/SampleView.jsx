@@ -1,5 +1,18 @@
 /** @jsx React.DOM */
-var SampleCentring = React.createClass({
+/* global $*/
+/* eslint-disable no-console */
+'use strict';
+
+// Global variables for this applicaiton
+var SAMPLEVIEW = {
+        SampleCentring: null,
+        EditableField: null
+    },
+
+    // Objects from external javascript libraries
+    React;
+
+SAMPLEVIEW.SampleCentring = React.createClass({
 	getInitialState: function () {
     var source = new EventSource('/mxcube/api/v0.1/samplecentring/camera/subscribe');
     source.addEventListener('update',this.eventHandlerUpdate);
@@ -17,9 +30,6 @@ var SampleCentring = React.createClass({
   },
   aMethod: function(){
       console.log('aMethod Called')  
-  },
-  takeSnapshot: function(){
-    console.log('Method not implememnted yet...')  
   },
   drawSampleImage: function(im_src){
     //Draws the image from the diff HO. In addition, if there are points
@@ -403,21 +413,34 @@ var SampleCentring = React.createClass({
                             </div>
                         </div>
                     </div>
-                    <SingleSampleTree/>
-                    <ExperimentConfiguration/>
+                    {/* The Queue */}
+                    <SAMPLETREE.SingleSampleTree/>
+                    {/* The Experiment Configuration */}
+                    <EXPERIMENTCONFIG.ExperimentConfiguration/>
                     <div className="well well-sm pre-scrollable" style={logStyle}> <samp id="log" className=""></samp> </div>
                 </div>
             );        
   },
 });
-var EditableField = React.createClass({
+SAMPLEVIEW.EditableField = React.createClass({
   
    componentDidMount: function() {
       $(this.refs.editable.getDOMNode()).editable();
    }, 
 
    render: function() {
-       return <p>{this.props.name}: <a href="#" ref="editable"  data-name={this.props.name} data-pk={this.props.id} data-url="/beam_line_update" data-type="text" data-title="Edit value">{this.props.value}</a></p>
+      return (
+          <p>{this.props.name}: 
+              <a href="#" ref="editable" 
+                  data-name={this.props.name} 
+                  data-pk={this.props.id} 
+                  data-url="/beam_line_update" 
+                  data-type="text" 
+                  data-title="Edit value">
+                  {this.props.value}
+              </a>
+          </p>
+      );
    } 
 })
 

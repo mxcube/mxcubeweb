@@ -1,5 +1,16 @@
 /** @jsx React.DOM */
-var SampleMain = React.createClass({
+/* eslint-disable no-console */
+'use strict';
+
+// Global variables for this applicaiton
+var SAMPLEMAIN = {
+        SampleCentring: null
+    },
+
+    // Objects from external javascript libraries
+    React;
+
+SAMPLEMAIN.SampleMain = React.createClass({
 	getInitialState: function () {
       return {
           sampleName: 'Sample_42'
@@ -21,7 +32,7 @@ var SampleMain = React.createClass({
                     <h3 className="panel-title">Sample Centring</h3>
                 </div>
                <div className="panel-body">
-                    <SampleCentring/>
+                    <SAMPLEVIEW.SampleCentring/>
                 </div>
             </div>
         </div>

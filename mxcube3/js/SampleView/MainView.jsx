@@ -1,5 +1,16 @@
 /** @jsx React.DOM */
-var MainView = React.createClass({
+/* eslint-disable no-console */
+'use strict';
+
+// Global variables for this applicaiton
+var MAINVIEW = {
+        MainView: null
+    },
+
+    // Objects from external javascript libraries
+    React;
+
+MAINVIEW.MainView = React.createClass({
 
 	getInitialState: function () {
       return {
@@ -44,6 +55,7 @@ var MainView = React.createClass({
         </div>
       </div>
     </div>
+    {/* Go to another page */}
     <div className="col-md-12">
             <ul className="pager">
               <li className="previous">
@@ -54,6 +66,7 @@ var MainView = React.createClass({
               </li>
             </ul>
     </div>
+    {/* The main experimental control panel */}
     <div className="col-md-10">
             <div className="col-md-12">
               <div className="panel panel-primary text-center">
@@ -61,11 +74,12 @@ var MainView = React.createClass({
                   <h8 className="panel-title text-center">Sample Experiment Control</h8>
                 </div>
                 <div className="panel-body">
-                  <SampleMain/>
+                  <SAMPLEMAIN.SampleMain/>
                 </div>
               </div>
             </div>
           </div>
+    {/* The side panel */}
     <div className="col-md-2">
             <div className="panel panel-primary">
               <div className="panel-heading">
@@ -92,7 +106,9 @@ var MainView = React.createClass({
      );        
   },
 });
-React.render(<MainView/>, document.getElementById('SampleCentringHere'));
+
+
+React.render(<MAINVIEW.MainView/>, document.getElementById('SampleCentringHere'));
 
 
 
