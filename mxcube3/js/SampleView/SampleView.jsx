@@ -13,9 +13,11 @@ var SAMPLEVIEW = {
     React;
 
 SAMPLEVIEW.SampleCentring = React.createClass({
+  //var Modal_message'Nothing to say';
+
 	getInitialState: function () {
-    var source = new EventSource('/mxcube/api/v0.1/samplecentring/camera/subscribe');
-    source.addEventListener('update',this.eventHandlerUpdate);
+    //var source = new EventSource('/mxcube/api/v0.1/samplecentring/camera/subscribe');
+    //source.addEventListener('update',this.eventHandlerUpdate);
     return {
       sampleName: 'Sample_42',
       currentZoom: 0,
@@ -23,6 +25,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
       zoomText: "Zoom 1",
       light:0,
       pos:[],
+      show: false,
       clickMethod: 0 //if we are in the centring procedure, the click method has another meaning, 0: nothing, 1: centring, 2: measurement
     }
   },
@@ -31,10 +34,10 @@ SAMPLEVIEW.SampleCentring = React.createClass({
   aMethod: function(){
       console.log('aMethod Called')  
   },
-  drawSampleImage: function(im_src){
+  drawSampleImage: function(){
     //Draws the image from the diff HO. In addition, if there are points
     // already marked in the canvas re-display them,
-    hau = this;
+    var hau = this;
     var scale = this.state.zoomText,
         points = this.state.pos,
         new_image = new Image,
@@ -49,13 +52,10 @@ SAMPLEVIEW.SampleCentring = React.createClass({
         }
         function drawPoints() {
             // Redraw all the existing points, if there are any
-            console.log('drawPoints started');
             points.map(function(point) {
-                console.log('iterating over points');
                 drawCircle(point, 5);
                 drawCircle(point, 1);
             });
-            console.log('Done drawing points');
         }
         function drawLine(x0, y0, x1, y1) {
             // Draw a line betweeen two points
@@ -67,7 +67,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
         }
         function drawDistanceLine() {
             // Draw a line between the last two points clicked
-            if(hau.state.clickMethod=2){
+            if(hau.state.clickMethod==2){
               var numPoints = points.length;
               if (numPoints > 1) {
                   drawLine(
@@ -112,13 +112,13 @@ SAMPLEVIEW.SampleCentring = React.createClass({
             drawLine(10, canvas_size[1] - 43, 10, canvas_size[1] - 13);
             drawLine(10, canvas_size[1] - 13, 40, canvas_size[1] - 13);
         }
-        function drawImage() {
-            // Clear the canvas, then display the image
-            canvas = document.getElementById('canvas');
-            context = canvas.getContext('2d');
-            context.clearRect(0, 0, canvas_size[0], canvas_size[1]);
-            context.drawImage(new_image, 0, 0);
-        }
+        // function drawImage() {
+        //     // Clear the canvas, then display the image
+        //     canvas = document.getElementById('canvas');
+        //     context = canvas.getContext('2d');
+        //     context.clearRect(0, 0, canvas_size[0], canvas_size[1]);
+        //     context.drawImage(new_image, 0, 0);
+        // }
         function drawBeam(){
             context.strokeStyle = "blue";
             context.beginPath();
@@ -126,34 +126,34 @@ SAMPLEVIEW.SampleCentring = React.createClass({
             context.stroke();
             context.strokeStyle = "red"; //red 
         }
-        new_image.onload = function() {
-            // Wait until the image is loaded to draw everything
-            // -- perhaps one should also wiat until the function called by the
-            //    onClick event has finished as well
-            // Get the image from somewhere and display it
-            drawImage();
-            // Draw a scale on top of the image
-            drawScale();
-            // Redraw any points that might have been clicked
-            drawPoints();
-            // If measuring distnaces, display a line between two points and
-            // the distnace measured
+
+        canvas = document.getElementById('canvas');
+        context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas_size[0], canvas_size[1]);
+        console.log('drawing the whole canvas')
+        console.log(this.state.pos)
+        // Wait until the image is loaded to draw everything
+        // -- perhaps one should also wiat until the function called by the
+        //    onClick event has finished as well
+        // Get the image from somewhere and display it
+        //drawImage();
+        // Draw a scale on top of the image
+        drawScale();
+        // Redraw any points that might have been clicked
+        drawPoints();
+        // If measuring distnaces, display a line between two points and
+        // the distnace measured
+        if(hau.state.clickMethod==2){
             drawDistanceLine();
             drawDistanceText();
-        };
-
-        // The source for the image - needs to be defined after 'onload'
-        // This needs to be changed in the future to present video images
-        new_image.src = "data:image/jpeg;base64,"+im_src;
-
-        console.log('drawSampleImage ended');
-
-    var context = document.getElementById("canvas").getContext('2d');
-    context.clearRect(0, 0, 659, 493);
+        }
+    //var context = document.getElementById("canvas").getContext('2d');
+    //context.clearRect(0, 0, 659, 493);
   },
   drawPoint: function(x,y){
     //called by clicking in the canvas, displays a circle with a dot in the center
     var context = document.getElementById("canvas").getContext('2d');
+    console.log('drawing point')
     //draw circle
     context.beginPath();
     context.arc(x, y, 5, 0, Math.PI * 2);
@@ -162,11 +162,13 @@ SAMPLEVIEW.SampleCentring = React.createClass({
     context.beginPath();
     context.arc(x, y, 1, 0, Math.PI * 2);
     context.stroke();
+    console.log('point drwan')
   },
   deletePoints: function(){
     console.log("deleting")
     this.setState({clickMethod: 0}) 
     this.setState({pos: []});
+    console.log(this.state.clickMethod)
     },
   getPosition: function (element) {
     //adjust point position according to the position of the canvas in the web-page
@@ -182,8 +184,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
   },
   eventHandlerUpdate: function(ev){
       //retrieves the image string from the server and call to draw
-      console.log('eventHandling..')
-      im_src= ev.data;
+      var im_src= ev.data;
       this.drawSampleImage(im_src)
   },
   onClick: function(e){
@@ -192,7 +193,8 @@ SAMPLEVIEW.SampleCentring = React.createClass({
       y = e.clientY - parentPosition.y,
       aux = this.state.pos,
       numPoints, xDiff, yDiff, distance;
-    
+    console.log('canvas clicked', this.state.clickMethod)
+    console.log(x,y)
     aux.push([x,y])
     this.setState({pos: aux})
     this.drawPoint(x,y);
@@ -274,6 +276,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
   getBeamPosition: function(){
   },
   componentDidMount: function(){
+    this.drawSampleImage()
   },
   lightOnOff: function(ev){
     console.log("ligth on/off requested")
@@ -311,7 +314,9 @@ SAMPLEVIEW.SampleCentring = React.createClass({
           },
       });
   },
-  zoomOut: function(ev){    
+  zoomOut: function(ev){
+    $('#myModal').modal('show')
+    console.log($('modal-text'))
     var newIndex = Math.max(0, Math.min(this.state.currentZoom-=1, 9))
     var newZoom = this.state.zoomLevels[newIndex]
     this.setState({currentZoom: newIndex})
@@ -340,6 +345,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
       type: 'PUT',
       success: function(res) {
           console.log(res);
+          $('#Modal_Snapshot').modal('show')
       },
       error: function(error) {
         console.log(error);
@@ -378,38 +384,42 @@ SAMPLEVIEW.SampleCentring = React.createClass({
 
   render: function () {
     this.getInitialState();
-    var videoStyle = {position:'absolute', top:0, left:0, zIndex:-1 };
-    var canvasStyle = {position:'relative', zIndex:1};
+    var videoStyle = {position:'absolute', top:60, left:90, zIndex:19 };
+    var canvasStyle = {position:'relative', zIndex:20};
     var logStyle ={maxHeight:70, overflowY:"scroll"}// {'overflow-y':"scroll", 'overflow-x':"hidden", height:400px};
 //    <video id="video" style={videoStyle} poster="/mxcube/api/v0.1/samplecentring/camera/stream" />
 //    <img src="/Users/mikegu/Desktop/md2.jpg"  style={videoStyle} id='SampleImage' className="center-block img-responsive"> </img>
-//<video id="video" width={659} height={493} style={videoStyle}  poster="/mxcube/api/v0.1/samplecentring/camera/stream"/>
+//<video id="video" width={659} height={493} style={videoStyle}  poster="/mxcube/api/v0.1/samplecentring/camera/stream"/> 
+//                        
     return (
                 <div>
-                    <canvas id="canvas"  height={493} width={659} onClick={this.onClick} />
+                    <div id='container'>
+                        <canvas id="canvas" style={canvasStyle}  height={493} width={659} onClick={this.onClick} />
+                        <img src='/mxcube/api/v0.1/samplecentring/camera/subscribe'  style={videoStyle} id='SampleImage' className="center-block img- responsive"> </img>
+                    </div>
                     <hr></hr>
                     <div className="panel panel-info">
                         <div className="panel-heading">
                             <h3 className="panel-title">Controls</h3>
                         </div>
                         <div className="panel-body">
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.takeSnapshot}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.measureDistance}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.aMethod}><i className="fa fa-2x fa-fw fa-arrows-v"></i></button>                            
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.takeSnapshot}><i className="fa fa-2x fa-fw fa-camera"></i></button>                            
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.startCentring}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.start3ClickCentring}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.deletePoints}><i className="fa fa-2x fa-fw fa-times"></i></button>
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.zoomIn}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.zoomOut}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
-                            <button type="button" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
-                            <div class="input-group">
-                              <span class="input-group-addon" id="basic-addon1">Kappa   </span>
-                              <input type="number"  id="Kappa" step="0.01" min='0' max='360'  class="form-control" placeholder="kappa" aria-describedby="basic-addon1" onKeyPress={this.isNumberKey} onkeyup={this.isNumberKey}> </input>
-                              <span class="input-group-addon" id="basic-addon2">Omega   </span>
-                              <input type="number"   id="Omega" step="0.01" min='0' max='360'  class="form-control" placeholder="omega" aria-describedby="basic-addon2" intermediateChanges='true' onKeyPress={this.isNumberKey}> </input>
-                              <span class="input-group-addon" id="basic-addon3">Phi   </span>
-                              <input type="number"  id="Phi" step="0.01" min='0' max='360'   class="form-control" placeholder="Phi" aria-describedby="basic-addon3" onKeyPress={this.isNumberKey}> </input>
+                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={this.takeSnapshot}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
+                            <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={this.measureDistance}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
+                            <button type="button" data-toggle="tooltip"  title="nothing..." className="btn btn-link  pull-center" onClick={this.aMethod}><i className="fa fa-2x fa-fw fa-arrows-v"></i></button>                            
+                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={this.takeSnapshot}><i className="fa fa-2x fa-fw fa-camera"></i></button>                            
+                            <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={this.startCentring}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={this.start3ClickCentring}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Clear points" className="btn btn-link  pull-center" onClick={this.deletePoints}><i className="fa fa-2x fa-fw fa-times"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={this.zoomIn}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={this.zoomOut}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                            <div className="input-group">
+                              <span className="input-group-addon" id="basic-addon1">Kappa   </span>
+                              <input type="number"  id="Kappa" step="0.01" min='0' max='360'  className="form-control" placeholder="kappa" aria-describedby="basic-addon1" onKeyPress={this.isNumberKey} onkeyup={this.isNumberKey}> </input>
+                              <span className="input-group-addon" id="basic-addon2">Omega   </span>
+                              <input type="number"   id="Omega" step="0.01" min='0' max='360'  className="form-control" placeholder="omega" aria-describedby="basic-addon2" intermediateChanges='true' onKeyPress={this.isNumberKey}> </input>
+                              <span className="input-group-addon" id="basic-addon3">Phi   </span>
+                              <input type="number"  id="Phi" step="0.01" min='0' max='360'   className="form-control" placeholder="Phi" aria-describedby="basic-addon3" onKeyPress={this.isNumberKey}> </input>
                             </div>
                         </div>
                     </div>
@@ -418,6 +428,25 @@ SAMPLEVIEW.SampleCentring = React.createClass({
                     {/* The Experiment Configuration */}
                     <EXPERIMENTCONFIG.ExperimentConfiguration/>
                     <div className="well well-sm pre-scrollable" style={logStyle}> <samp id="log" className=""></samp> </div>
+                      {/* Modal */}
+                            <div className="modal fade" id="Modal_Centring" role="dialog">
+                                <div className="modal-dialog modal-sm">
+                                  <div className="modal-content">
+                                      <div className="modal-body" id='modal-text'>
+                                        <p>Sample centring finished successfully.</p>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
+                             <div className="modal fade" id="Modal_Snapshot" role="dialog">
+                                <div className="modal-dialog modal-sm">
+                                  <div className="modal-content">
+                                      <div className="modal-body" id='modal-text'>
+                                        <p>Sample snapshot taken successfully.</p>
+                                      </div>
+                                  </div>
+                                </div>
+                            </div>
                 </div>
             );        
   },

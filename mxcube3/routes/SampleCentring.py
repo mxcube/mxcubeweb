@@ -12,46 +12,32 @@ for signal in signals.MaxLabMicrodiff_signals:
 ###----SSE SAMPLE VIDEO STREAMING----###
 keep_streaming = True
 camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
+
 def new_sample_video_frame_received(img, width, height, *args):
-    #print "new frame"
+    print "new frame"   
     camera_hwobj.new_frame.set(img)
 
-camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
+camera_hwobj.connect("newImageReceived", new_sample_video_frame_received)
 camera_hwobj.new_frame = gevent.event.AsyncResult()
 
 keep_streaming = True
-def sse_pack(d):
-    """Pack data in SSE format"""
-    buffer = ''
-    for k in ['retry','id','event','data']:
-        if k in d.keys():
-            buffer += '%s: %s\n' % (k, d[k])
-    return buffer + '\n'
-msg = {
-    'retry': '1000'
-    }
-msg['event'] = 'message'
 
 def stream_video():
     """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
-    event_id = 0
-    logging.getLogger('HWR').info('[Stream] Camera video streaming started')
+    logging.getLogger('HWR.Mx3').info('[Stream] Camera video streaming started')
+
+    print "logging handelers"   
+    print logging.getLogger('HWR').handlers
     while keep_streaming:
         try:
             camera_hwobj.new_frame.wait()
             im =camera_hwobj.new_frame.get()    
-            
-            msg.update({
-             'event': 'update',
-             'data' : im,
-             'id'   : event_id
-            })
-            #print "mezu bat", str(event_id), str(len(im))
-            yield sse_pack(msg)
-            event_id += 1
-            gevent.sleep(0.08)
+            logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
+            yield 'Content-type: image/jpg\n\n'+im+"\n--!>"
+            #is this wait really necessary? if not, the new_frame.wait() does not have any effect
+            time.sleep(0.1)
         except:
-            pass
+            print "Exception"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
@@ -60,7 +46,9 @@ def subscribeToCamera():
     return_data={"url": url}
     """
     logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
-    return Response(stream_video(), mimetype="text/event-stream")
+    camera_hwobj.stopper = False
+    camera_hwobj.initPoll()
+    return Response(stream_video(), mimetype='multipart/x-mixed-replace; boundary="!>"')
 
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/unsubscribe", methods=['GET'])
@@ -70,6 +58,7 @@ def unsubscribeToCamera():
     return_data={"result": True/False}
     """
     keep_streaming = False
+    camera_hwobj.stopper = True
     return "True"
 
 ###----SAMPLE CENTRING----###
@@ -203,12 +192,7 @@ def centre3click():
     """
     try:
         currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
-        logging.getLogger('HWR').info('[3Click-Centring] Finished, result: '+str(centred_pos))
-        logging.getLogger('HWR').info('[3Click-Centring] Finished, centring status: '+str(mxcube.diffractometer.getCentringStatus()))
-        if centred_pos is not None:
-            return "True"
-        else:
-            return "False"
+        return "True" #this only means the call was succesfull
     except:
         return "False"
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/click", methods=['PUT'])
