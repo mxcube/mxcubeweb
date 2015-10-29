@@ -5,6 +5,8 @@ import gevent.event
 import os, json
 import signals
 
+SAMPLE_IMAGE = None
+
 for signal in signals.MaxLabMicrodiff_signals:
     mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
 
@@ -14,31 +16,31 @@ keep_streaming = True
 camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
 
 def new_sample_video_frame_received(img, width, height, *args):
-    print "new frame"   
-    camera_hwobj.new_frame.set(img)
+    global SAMPLE_IMAGE
+    print "new frame"  
+    SAMPLE_IMAGE = img
+    camera_hwobj.new_frame.set()
+    camera_hwobj.new_frame.clear()
 
-camera_hwobj.connect("newImageReceived", new_sample_video_frame_received)
-camera_hwobj.new_frame = gevent.event.AsyncResult()
+camera_hwobj.connect("ImageReceived", new_sample_video_frame_received)
+camera_hwobj.new_frame = gevent.event.Event()
 
 keep_streaming = True
 
 def stream_video():
     """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
     logging.getLogger('HWR.Mx3').info('[Stream] Camera video streaming started')
-
+    global SAMPLE_IMAGE
     print "logging handelers"   
     print logging.getLogger('HWR').handlers
     while keep_streaming:
         try:
             camera_hwobj.new_frame.wait()
-            im =camera_hwobj.new_frame.get()    
             logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
-            yield 'Content-type: image/jpg\n\n'+im+"\n--!>"
-            #is this wait really necessary? if not, the new_frame.wait() does not have any effect
-            time.sleep(0.1)
-        except:
-            print "Exception"
+            yield 'Content-type: image/jpg\n\n'+SAMPLE_IMAGE+"\n--!>"
 
+        except:
+            pass
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
     """SampleCentring: subscribe to the streaming
