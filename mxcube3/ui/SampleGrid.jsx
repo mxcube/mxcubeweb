@@ -16,8 +16,12 @@ export default class SampleGrid extends React.Component {
     componentDidMount() {
         let container = ReactDOM.findDOMNode(this);
         if (! this.state.isotope) {
-            this.setState({ isotope: new Isotope(container, {itemSelector: '.samples-grid-item', layoutMode: 'fitRows'})});
+            this.setState({ isotope: new Isotope(container, {itemSelector: '.samples-grid-item', layoutMode: 'masonry', masonry: { isFitWidth: true }})});
         }
+    }
+
+    _rearrange() {
+        if (this.state.isotope) { this.state.isotope.arrange(); }
     }
 
     componentDidUpdate(new_props, new_state) {
@@ -32,11 +36,12 @@ export default class SampleGrid extends React.Component {
 
     render() {
         let samples_list = this.state.samples_list;
+        let rearrange = this._rearrange.bind(this);
         return <div className='samples-grid'>
             {samples_list.map(function(sample_info, i) {
             let exp_type = sample_info.experimentType || "";
            let sc_loc = sample_info.containerSampleChangerLocation+":"+sample_info.sampleLocation
-           return <SampleGridItem key={sample_info.sampleId} ref={sample_info.sampleId} sample_id={sample_info.sampleId} acronym={sample_info.proteinAcronym} name={sample_info.sampleName} dm="HA1234567" location={sc_loc} tags={exp_type}/>
+           return <SampleGridItem key={sample_info.sampleId} ref={sample_info.sampleId} sample_id={sample_info.sampleId} acronym={sample_info.proteinAcronym} name={sample_info.sampleName} dm="HA1234567" location={sc_loc} tags={exp_type} rearrange={rearrange}/>
        })}
         </div>;
     }
@@ -82,7 +87,11 @@ class SampleGridItem extends React.Component {
         tags.push(tag);
         this.setState({tags: tags}); 
     }
-    
+   
+    componentDidUpdate() {
+        this.props.rearrange();
+    }
+ 
     render() {
     	let sample_id = this.props.sample_id;
         let classes = classNames('samples-grid-item', {'samples-grid-item-selected': this.state.selected});
@@ -96,7 +105,7 @@ class SampleGridItem extends React.Component {
             <span className="dm">{this.props.dm}</span>
             <br></br>
             {this.state.tags.map(function(tag) {
-               return <span key={tag}><span className="label label-primary">{tag}</span>&nbsp;</span>
+               return <span key={tag} className="label label-primary" style={{display: 'inline-block', margin: '3px' }}>{tag}</span>
             })}
         </div>;
     }
