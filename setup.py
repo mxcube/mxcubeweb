@@ -16,5 +16,5 @@ setup(name="MXCuBE", version="3",
                   "mxcube3.HardwareObjects.SOLEIL",
                   "mxcube3.routes"],
       package_data = { "mxcube3": ['js/*', 'static/*'] },
-      scripts=["mxcube3"]
+      scripts=["mxcube3-server"]
 )
