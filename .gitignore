@@ -12,6 +12,7 @@ env/
 build/
 develop-eggs/
 dist/*
+mxcube3/static/*
 downloads/
 eggs/
 .eggs/
@@ -59,4 +60,4 @@ target/
 
 node_modules/
 !dist/index.html
-
+!mxcube3/index.html

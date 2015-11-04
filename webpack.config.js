@@ -4,7 +4,7 @@ var path = require('path');
 var config = {
     entry: 'main.jsx',
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, 'mxcube3','static'),
         filename: 'bundle.js', 
         publicPath: '' 
     },
