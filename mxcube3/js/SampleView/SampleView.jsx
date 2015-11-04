@@ -141,6 +141,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
         drawScale();
         // Redraw any points that might have been clicked
         drawPoints();
+        drawBeam();
         // If measuring distnaces, display a line between two points and
         // the distnace measured
         if(hau.state.clickMethod==2){
@@ -441,7 +442,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
                              <div className="modal fade" id="Modal_Snapshot" role="dialog">
                                 <div className="modal-dialog modal-sm">
                                   <div className="modal-content">
-                                      <div className="modal-body" id='modal-text'>
+                                      <div className="modal-body" id='modal-text2'>
                                         <p>Sample snapshot taken successfully.</p>
                                       </div>
                                   </div>
