@@ -17,7 +17,6 @@ camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
 
 def new_sample_video_frame_received(img, width, height, *args):
     global SAMPLE_IMAGE
-    print "new frame"  
     SAMPLE_IMAGE = img
     camera_hwobj.new_frame.set()
     camera_hwobj.new_frame.clear()
@@ -36,9 +35,8 @@ def stream_video():
     while keep_streaming:
         try:
             camera_hwobj.new_frame.wait()
-            logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
+            #logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
             yield 'Content-type: image/jpg\n\n'+SAMPLE_IMAGE+"\n--!>"
-
         except:
             pass
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
@@ -49,7 +47,7 @@ def subscribeToCamera():
     """
     logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
     camera_hwobj.stopper = False
-    camera_hwobj.initPoll()
+    camera_hwobj.init()
     return Response(stream_video(), mimetype='multipart/x-mixed-replace; boundary="!>"')
 
 
@@ -192,6 +190,8 @@ def centre3click():
     data = {generic_data, "Mode": mode}
     return_data={"result": True/False}
     """
+    logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')  
+    mxcube.diffractometer.emit('centringSuccessful')
     try:
         currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
         return "True" #this only means the call was succesfull
