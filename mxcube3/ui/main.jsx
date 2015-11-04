@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SampleGrid from 'SampleGrid';
+import LoginForm from 'Login';
 import { samples_list } from 'test-samples-list';
 import { Navbar, NavBrand, Input, Button, Glyphicon  } from "react-bootstrap";
 
@@ -17,6 +18,7 @@ const searchInput = (
 const navbar = (
     <Navbar inverse fluid>
         <NavBrand><a href="#">MXCuBE 3</a></NavBrand>
+        <LoginForm/>
     </Navbar>
 );
 
