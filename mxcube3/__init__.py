@@ -24,12 +24,12 @@ hwr_directory = cmdline_options.hwr_directory
 hwr = HardwareRepository.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
 hwr.connect()
 
-app.resolution = hwr.getHardwareObject("/resolution-mockup")
-app.diffractometer = hwr.getHardwareObject("/minidiff")
+#app.resolution = hwr.getHardwareObject("/resolution-mockup")
+#app.diffractometer = hwr.getHardwareObject("/minidiff")
 #app.beamline = hwr.getHardwareObject("/beamline-setup")
 #app.queue = hwr.getHardwareObject("/queue-model")
 
 ###Importing all REST-routes
-import routes.Main, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
+import routes.Main, routes.Login #, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
 
 
