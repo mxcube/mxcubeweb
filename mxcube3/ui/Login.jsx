@@ -22,9 +22,9 @@ export default class LoginForm extends React.Component {
     render() {
 	return (<Nav right eventKey={0}>
             <form className="navbar-form" action="">
-              <Input bsSize="small" ref="proposal" type="text" name="proposal" placeholder="Proposal"/>{ - }
-              <Input bsSize="small" ref="prop_number" type="text" name="prop_number" placeholder="Number"/>{ }
-              <Input bsSize="small" ref="password" type="password" name="password" placeholder="Password"/>{ }
+              <Input bsSize="small" ref="proposal" type="text" name="proposal" placeholder="Proposal"/>{' - '}
+              <Input bsSize="small" ref="prop_number" type="text" name="prop_number" placeholder="Number"/>{' '}
+              <Input bsSize="small" ref="password" type="password" name="password" placeholder="Password"/>{' '}
               <ButtonInput bsSize="small" bsStyle="info" value="Sign in" onClick={this.signIn.bind(this)}/>
             </form>
         </Nav>);

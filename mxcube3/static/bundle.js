@@ -36620,11 +36620,10 @@
 	    _createClass(LoginForm, [{
 	        key: 'signIn',
 	        value: function signIn() {
-	            var username = this.refs.username.getValue();
+	            var proposal = this.refs.proposal.getValue();
+	            var prop_number = this.refs.prop_number.getValue();
 	            var password = this.refs.password.getValue();
-	            $.ajax({ url: 'login', type: 'GET', data: { username: username, password: password }, success: function success(res) {
-	                    alert(res);
-	                } });
+	            $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, prop_number: prop_number, password: password }, success: function success(res) {} });
 	        }
 	    }, {
 	        key: 'render',
@@ -36635,10 +36634,12 @@
 	                _react2['default'].createElement(
 	                    'form',
 	                    { className: 'navbar-form', action: '' },
-	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'username', type: 'text', name: 'username', placeholder: 'Username' }),
-	                    ' ',
+	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'proposal', type: 'text', name: 'proposal', placeholder: 'Proposal' }),
+	                    ' - ',
+	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'prop_number', type: 'text', name: 'prop_number', placeholder: 'Number' }),
+	                    ' ',
 	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'password', type: 'password', name: 'password', placeholder: 'Password' }),
-	                    ' ',
+	                    ' ',
 	                    _react2['default'].createElement(_reactBootstrap.ButtonInput, { bsSize: 'small', bsStyle: 'info', value: 'Sign in', onClick: this.signIn.bind(this) })
 	                )
 	            );
