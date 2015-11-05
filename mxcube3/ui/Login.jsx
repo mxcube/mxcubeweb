@@ -13,8 +13,9 @@ export default class LoginForm extends React.Component {
     signIn() {
         let proposal = this.refs.proposal.getValue();
         let password = this.refs.password.getValue();
+        let self = this;
         $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, password: password }, success: function(res) {
-           this.setState("proposal", res); 
+           self.setState("proposal", res); 
         }});
     }
 
@@ -25,7 +26,7 @@ export default class LoginForm extends React.Component {
         } else {
             login_input_form = (<form className="navbar-form" action=""><Input bsSize="small" ref="proposal" type="text" name="proposal" placeholder="Proposal"/>{' '}
               <Input bsSize="small" ref="password" type="password" name="password" placeholder="Password"/>{' '}
-              <ButtonInput bsSize="xsmall" bsStyle="info" value="Sign in" onClick={this.signIn.bind(this)}/></form>);
+              <ButtonInput bsSize="small" bsStyle="info" value="Sign in" onClick={this.signIn.bind(this)}/></form>);
         }
 	return (<Nav right eventKey={0}>
               {login_input_form}
