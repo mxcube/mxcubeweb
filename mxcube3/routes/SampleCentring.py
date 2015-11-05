@@ -20,22 +20,22 @@ def new_sample_video_frame_received(img, width, height, *args):
     SAMPLE_IMAGE = img
     camera_hwobj.new_frame.set()
     camera_hwobj.new_frame.clear()
+    #logging.getLogger('HWR.MX3').info('[Stream] Camera video set&clear')
 
-camera_hwobj.connect("ImageReceived", new_sample_video_frame_received)
+
+camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
 camera_hwobj.new_frame = gevent.event.Event()
 
 keep_streaming = True
 
 def stream_video():
     """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
-    logging.getLogger('HWR.Mx3').info('[Stream] Camera video streaming started')
+    #logging.getLogger('HWR.Mx3').info('[Stream] Camera video streaming started')
     global SAMPLE_IMAGE
-    print "logging handelers"   
-    print logging.getLogger('HWR').handlers
     while keep_streaming:
         try:
             camera_hwobj.new_frame.wait()
-            #logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
+            logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
             yield 'Content-type: image/jpg\n\n'+SAMPLE_IMAGE+"\n--!>"
         except:
             pass
@@ -45,7 +45,7 @@ def subscribeToCamera():
     data = {generic_data} #or nothing?
     return_data={"url": url}
     """
-    logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
+    #logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
     camera_hwobj.stopper = False
     camera_hwobj.init()
     return Response(stream_video(), mimetype='multipart/x-mixed-replace; boundary="!>"')
@@ -63,6 +63,8 @@ def unsubscribeToCamera():
 
 ###----SAMPLE CENTRING----###
 clicks = collections.deque(maxlen=3)
+
+centred_pos=[]
 ####
 #To access parameters submitted in the URL (?key=value) you can use the args attribute:
 #searchword = request.args.get('key', '')
@@ -70,7 +72,7 @@ clicks = collections.deque(maxlen=3)
 def moveSampleCentringMotor(id):
     """SampleCentring: move "id" moveable to the position specified in the data:position
     Moveable can be a motor (kappa, omega, phi), a ligth, light/zoom level.
-    data = {generic_data, "moveable": id, "position": pos}
+    data in the url: /mxcube/api/v0.1/samplecentring/<id>/move?newpos=value
     return_data={"result": True/False}
     """
     new_pos = request.args.get('newpos','')
@@ -191,7 +193,6 @@ def centre3click():
     return_data={"result": True/False}
     """
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')  
-    mxcube.diffractometer.emit('centringSuccessful')
     try:
         currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
         return "True" #this only means the call was succesfull
@@ -205,10 +206,74 @@ def aClick():
     """
     clickPosition = json.loads(request.args.get('clickPos',''))
 
-    print clickPosition
-    print clickPosition['x'], clickPosition['y']
     try:
         mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
+        return "True"
+    except:
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<id>/save", methods=['PUT'])
+def savePosition(id):
+    """Save centring position
+    return_data={"result": True/False}
+    """
+    print id    
+    centredPosId = 'pos'+str(len(centred_pos)+1)
+    #if request.args.get('rename',''): renaming option comes later
+
+    try:
+        mxcube.diffractometer.saveCurrentPos()
+        motorPositions = mxcube.diffractometer.centringStatus["motors"]
+        #motorPositions = {'focus': 0.69518381761112, 'kappa': 0.0009, 'kappa_phi': 311.0, 'phi': 0.34759190880556, 'phiy': 1.04277572641668, 'phiz': 1.39036763522224, 'sampx': 1.379595440278002, 'sampy': 2.08555145283336, 'zoom': 8.53}
+        data = {'name':centredPosId, 'motorPositions': motorPositions}
+        #or
+        #motorPositions = mxcube.diffractometer.getPositions()
+        centred_pos.append(data)
+        logging.getLogger('HWR.MX3').info('[Centring] Centring Positions saved:'+str(data)) 
+        print centred_pos
+        return centredPosId
+    except:
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<id>/delete", methods=['DELETE'])
+def deletePosition(id):
+    """delete centring position with name <id>
+    return_data={"result": True/False}
+    """
+    logging.getLogger('HWR.MX3').info('[Centring] Centring Position deletd')  
+    try:
+        centred_pos[:] = [d for d in centred_pos if d.get('name') != id] #python magic...
+        print centred_pos
+        return "True"
+    except:
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<id>/rename", methods=['PUT'])
+def renamePosition(id):
+    """rename centring position
+    return_data={"result": True/False}
+    """
+    newName = str(request.args.get('newname',''))
+
+    try:
+        [d.update({'name':newName}) for d in centred_pos if d.get('name') == id]
+        logging.getLogger('HWR.MX3').info('[Centring] Centring Position renamed')  
+        print centred_pos
+
+        return "True", newName
+    except:
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<position>/move", methods=['PUT'])
+def moveToCentredPosition(id):
+    """Move to centring position
+    return_data={"result": True/False}
+    """
+    motorPositions = [d['motorPositions'] for d in centred_pos if d.get('name') == id]
+    #or moveMotors(self, roles_positions_dict)???
+    try:
+        mxcube.diffractometer.moveToCentredPosition(motorPositions)
+        logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')  
         return "True"
     except:
         return "False"
