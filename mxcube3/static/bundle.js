@@ -36624,7 +36624,7 @@
 	            var password = this.refs.password.getValue();
 	            var self = this;
 	            $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, password: password }, success: function success(res) {
-	                    self.setState("proposal", res);
+	                    self.setState({ proposal: res });
 	                } });
 	        }
 	    }, {
