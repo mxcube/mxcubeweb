@@ -11,9 +11,10 @@ export default class LoginForm extends React.Component {
     }
 
     signIn() {
-        let username = this.refs.username.getValue();
+        let proposal = this.refs.proposal.getValue();
+        let prop_number = this.refs.prop_number.getValue();
         let password = this.refs.password.getValue();
-        $.ajax({ url: 'login', type: 'GET', data: { username: username, password: password }, success: function(res) {
+        $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, prop_number: prop_number, password: password }, success: function(res) {
             
         }});
     }
@@ -21,8 +22,9 @@ export default class LoginForm extends React.Component {
     render() {
 	return (<Nav right eventKey={0}>
             <form className="navbar-form" action="">
-              <Input bsSize="small" ref="username" type="text" name="username" placeholder="Username"/>&nbsp;
-              <Input bsSize="small" ref="password" type="password" name="password" placeholder="Password"/>&nbsp;
+              <Input bsSize="small" ref="proposal" type="text" name="proposal" placeholder="Proposal"/>{ - }
+              <Input bsSize="small" ref="prop_number" type="text" name="prop_number" placeholder="Number"/>{ }
+              <Input bsSize="small" ref="password" type="password" name="password" placeholder="Password"/>{ }
               <ButtonInput bsSize="small" bsStyle="info" value="Sign in" onClick={this.signIn.bind(this)}/>
             </form>
         </Nav>);

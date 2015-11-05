@@ -4,7 +4,8 @@ from mxcube3 import app as mxcube
 
 @mxcube.route("/login")
 def login():
-    username = request.args['username']
+    proposal = request.args['proposal']
+    prop_number = request.args['prop_number']
     password = request.args['password']
-    print "USERNAME",username,"PASS",password
+    print mxcube.dbconnection.get_proposal(proposal, prop_number)
     return "ok"

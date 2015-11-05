@@ -29,6 +29,7 @@ hwr.connect()
 #app.diffractometer = hwr.getHardwareObject("/minidiff")
 #app.beamline = hwr.getHardwareObject("/beamline-setup")
 #app.queue = hwr.getHardwareObject("/queue-model")
+app.db_connection = hwr.getHardwareObject("/dbconnection")
 
 ###Importing all REST-routes
 import routes.Main, routes.Login #, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
