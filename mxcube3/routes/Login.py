@@ -1,11 +1,12 @@
 from flask import session, redirect, url_for, render_template, request, Response, jsonify
-import logging
 from mxcube3 import app as mxcube
+import logging
+import itertools
 
 @mxcube.route("/login")
 def login():
-    proposal = request.args['proposal']
-    prop_number = request.args['prop_number']
+    Proposal = request.args['proposal']
     password = request.args['password']
-    print mxcube.dbconnection.get_proposal(proposal, prop_number)
-    return "ok"
+    proposal = "".join(itertools.ifilterfalse(lambda c: c.isdigit(), Proposal)
+    prop_number = Proposal[len(proposal):]
+    return jsonfiy(mxcube.dbconnection.get_proposal(proposal, prop_number))
