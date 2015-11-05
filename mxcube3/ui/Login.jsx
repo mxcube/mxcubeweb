@@ -15,7 +15,7 @@ export default class LoginForm extends React.Component {
         let password = this.refs.password.getValue();
         let self = this;
         $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, password: password }, success: function(res) {
-           self.setState("proposal", res); 
+           self.setState({proposal: res}); 
         }});
     }
 
