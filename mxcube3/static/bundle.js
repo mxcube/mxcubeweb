@@ -36622,8 +36622,9 @@
 	        value: function signIn() {
 	            var proposal = this.refs.proposal.getValue();
 	            var password = this.refs.password.getValue();
+	            var self = this;
 	            $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, password: password }, success: function success(res) {
-	                    this.setState("proposal", res);
+	                    self.setState("proposal", res);
 	                } });
 	        }
 	    }, {
@@ -36644,7 +36645,7 @@
 	                    ' ',
 	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'password', type: 'password', name: 'password', placeholder: 'Password' }),
 	                    ' ',
-	                    _react2['default'].createElement(_reactBootstrap.ButtonInput, { bsSize: 'xsmall', bsStyle: 'info', value: 'Sign in', onClick: this.signIn.bind(this) })
+	                    _react2['default'].createElement(_reactBootstrap.ButtonInput, { bsSize: 'small', bsStyle: 'info', value: 'Sign in', onClick: this.signIn.bind(this) })
 	                );
 	            }
 	            return _react2['default'].createElement(
