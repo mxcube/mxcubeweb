@@ -36614,34 +36614,43 @@
 	        _classCallCheck(this, LoginForm);
 
 	        _get(Object.getPrototypeOf(LoginForm.prototype), 'constructor', this).call(this, props);
-	        this.state = {};
+	        this.state = { proposal: null };
 	    }
 
 	    _createClass(LoginForm, [{
 	        key: 'signIn',
 	        value: function signIn() {
 	            var proposal = this.refs.proposal.getValue();
-	            var prop_number = this.refs.prop_number.getValue();
 	            var password = this.refs.password.getValue();
-	            $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, prop_number: prop_number, password: password }, success: function success(res) {} });
+	            $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, password: password }, success: function success(res) {
+	                    this.setState("proposal", res);
+	                } });
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            return _react2['default'].createElement(
-	                _reactBootstrap.Nav,
-	                { right: true, eventKey: 0 },
-	                _react2['default'].createElement(
+	            var login_input_form = "";
+	            if (this.state.proposal) {
+	                login_input_form = _react2['default'].createElement(
+	                    'p',
+	                    { className: 'text-info' },
+	                    this.state.proposal.Proposal.title
+	                );
+	            } else {
+	                login_input_form = _react2['default'].createElement(
 	                    'form',
 	                    { className: 'navbar-form', action: '' },
 	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'proposal', type: 'text', name: 'proposal', placeholder: 'Proposal' }),
-	                    ' - ',
-	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'prop_number', type: 'text', name: 'prop_number', placeholder: 'Number' }),
 	                    ' ',
 	                    _react2['default'].createElement(_reactBootstrap.Input, { bsSize: 'small', ref: 'password', type: 'password', name: 'password', placeholder: 'Password' }),
 	                    ' ',
-	                    _react2['default'].createElement(_reactBootstrap.ButtonInput, { bsSize: 'small', bsStyle: 'info', value: 'Sign in', onClick: this.signIn.bind(this) })
-	                )
+	                    _react2['default'].createElement(_reactBootstrap.ButtonInput, { bsSize: 'xsmall', bsStyle: 'info', value: 'Sign in', onClick: this.signIn.bind(this) })
+	                );
+	            }
+	            return _react2['default'].createElement(
+	                _reactBootstrap.Nav,
+	                { right: true, eventKey: 0 },
+	                login_input_form
 	            );
 	        }
 	    }]);
