@@ -8,6 +8,14 @@ var config = {
         filename: 'bundle.js', 
         publicPath: '' 
     },
+    devServer: {
+        proxy: {
+            '/mxcube/api/*': {
+                target: 'http://aelita:8081',
+                secure: false,
+            },
+        },
+    },
     module: {
         loaders: [
             {

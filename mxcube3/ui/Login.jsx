@@ -14,7 +14,7 @@ export default class LoginForm extends React.Component {
         let proposal = this.refs.proposal.getValue();
         let password = this.refs.password.getValue();
         let self = this;
-        $.ajax({ url: 'login', type: 'GET', data: { proposal: proposal, password: password }, success: function(res) {
+        $.ajax({ url: 'mxcube/api/login', type: 'GET', data: { proposal: proposal, password: password }, success: function(res) {
            self.setState({proposal: res}); 
         }});
     }

@@ -3,7 +3,7 @@ from mxcube3 import app as mxcube
 import logging
 import itertools
 
-@mxcube.route("/login")
+@mxcube.route("/mxcube/api/login")
 def login():
     Proposal = request.args['proposal']
     password = request.args['password']
