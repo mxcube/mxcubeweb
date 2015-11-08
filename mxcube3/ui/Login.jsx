@@ -26,10 +26,10 @@ export default class LoginForm extends React.Component {
     render() {
         let login_input_form = "";
         if (this.state.proposal) {
-            login_input_form = (<form className="navbar-form">
-                                    <p className="navbar-text">{this.state.proposal.Proposal.title}</p>
-                                    <ButtonInput bsSize="small" bsStyle="info" value="Log out" onClick={this.logOut.bind(this)}/>
-                               </form>);
+            login_input_form = (<div>
+                                    <p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{this.state.proposal.Proposal.title}</p>
+                                    <button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={this.logOut.bind(this)}>Log out</button>
+                               </div>);
         } else {
             login_input_form = (<form className="navbar-form" action="">
                                     <Input bsSize="small" ref="proposal" type="text" name="proposal" placeholder="Proposal"/>{' '}
