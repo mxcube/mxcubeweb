@@ -60,4 +60,4 @@ target/
 node_modules/
 !dist/index.html
 backend_server.js
-
+*~
