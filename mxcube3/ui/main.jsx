@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SampleGrid from 'SampleGrid';
 import LoginForm from 'Login';
+import ErrorPanel from 'Logging';
 import { samples_list } from 'test-samples-list';
 import { Navbar, NavBrand, Input, Button, Glyphicon  } from "react-bootstrap";
 
@@ -27,6 +28,7 @@ const checkScContents = (
 );
 
 
+window.logger = ReactDOM.render(<ErrorPanel/>, document.getElementById("error_log_panel"));
 ReactDOM.render(navbar, document.getElementById("header"));
 let filter_input = ReactDOM.render(searchInput, document.getElementById("filter_input"));
 let check_sc_contents = ReactDOM.render(checkScContents, document.getElementById("check_sc_contents"));
