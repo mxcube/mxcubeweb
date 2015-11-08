@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import classNames from 'classnames';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import { Nav, Input, ButtonInput, NavItem } from "react-bootstrap";
+import { Nav, Input, ButtonInput } from "react-bootstrap";
 
 export default class LoginForm extends React.Component {
     constructor(props) {
