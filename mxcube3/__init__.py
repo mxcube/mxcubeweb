@@ -21,6 +21,14 @@ opt_parser.add_option("-l", "--log-file",
                       dest="log_file", 
                       help="Hardware Repository log file name", 
                       default=os.path.join(os.path.dirname(__file__), 'log/mxcube3.log'))
+opt_parser.add_option("-s", "--beamline-setup", 
+                      dest="beamline_setup", 
+                      help="Beamline setup HWR file", 
+                      default='/beamline_setup')
+opt_parser.add_option("-q", "--queue-model", 
+                      dest="queue_model", 
+                      help="Queue model HWR file", 
+                      default='/queue-model')
 cmdline_options, args = opt_parser.parse_args()
 
 ###Initialization of the HardwareObjects
@@ -30,16 +38,16 @@ HardwareRepository.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__
 sys.path.insert(0, os.path.dirname(__file__))
 
 hwr_directory = cmdline_options.hwr_directory
-hwr_directory = './mxcube3/HardwareObjects.xml/'
 hwr = HardwareRepository.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
 hwr.connect()
 log_file = cmdline_options.log_file
 setLogFile(log_file)
-#app.resolution = hwr.getHardwareObject("/resolution-mockup")
-app.diffractometer = hwr.getHardwareObject("/md2-9113")
-#app.diffractometer = hwr.getHardwareObject("/minidiff")
-#app.beamline = hwr.getHardwareObject("/beamline-setup")
-#app.queue = hwr.getHardwareObject("/queue-model")
+
+app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
+app.diffractometer = app.beamline.getObjectByRole("diffractometer")
+#app.resolution = app.beamline.getObjectByRole("resolution")
+#app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
 
 ###Importing all REST-routes
 import routes.Main, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
+
