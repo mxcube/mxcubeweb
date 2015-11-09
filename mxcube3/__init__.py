@@ -25,7 +25,7 @@ opt_parser.add_option("-l", "--log-file",
 opt_parser.add_option("-s", "--beamline-setup", 
                       dest="beamline_setup", 
                       help="Beamline setup HWR file", 
-                      default='/beamline_setup')
+                      default='/beamline-setup')
 opt_parser.add_option("-q", "--queue-model", 
                       dest="queue_model", 
                       help="Queue model HWR file", 
