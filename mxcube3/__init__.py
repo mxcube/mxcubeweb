@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from flask import Flask, session, redirect, url_for, render_template, request, Response
 from flask.ext.socketio import SocketIO
 from optparse import OptionParser
@@ -32,13 +33,13 @@ opt_parser.add_option("-q", "--queue-model",
 cmdline_options, args = opt_parser.parse_args()
 
 ###Initialization of the HardwareObjects
-from .HardwareRepository import HardwareRepository, setLogFile
-HardwareRepository.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
 # this is to allow Hardware Objects to do 'from HardwareRepository import ...'
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, os.path.dirname(__file__)) 
+from HardwareRepository import HardwareRepository as hwr, setLogFile
+hwr.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
 
 hwr_directory = cmdline_options.hwr_directory
-hwr = HardwareRepository.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
+hwr = hwr.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
 hwr.connect()
 log_file = cmdline_options.log_file
 setLogFile(log_file)
