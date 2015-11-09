@@ -1,5 +1,5 @@
 from flask import session, redirect, url_for, render_template, request, Response
-from .. import app as mxcube
+from mxcube3 import app as mxcube
 
 import logging
 
