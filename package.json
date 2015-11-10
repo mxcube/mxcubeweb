@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "start": "npm run serve | npm run dev",
-    "serve": "./node_modules/.bin/http-server -p 8080",
+    "start": "npm run dev",
     "dev": "./node_modules/.bin/webpack-dev-server --hot --inline --colors --host 0.0.0.0 --port 8090 --display-error-details --content-base mxcube3/static"
   },
   "name": "mxcube3",
