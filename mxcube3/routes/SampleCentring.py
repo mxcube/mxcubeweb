@@ -1,5 +1,5 @@
 from flask import session, redirect, url_for, render_template, request, Response, stream_with_context
-from .. import app as mxcube
+from mxcube3 import app as mxcube
 import time, logging, collections
 import gevent.event
 import os, json

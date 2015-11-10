@@ -1,6 +1,6 @@
 from flask import session, redirect, url_for, render_template, request, Response
+from mxcube3 import app as mxcube
 import logging
-from .. import app as mxcube
 
 @mxcube.route("/")
 def serve_static_file():
