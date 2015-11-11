@@ -1,44 +1,53 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import SampleGrid from 'SampleGrid';
 import LoginForm from 'Login';
-import { samples_list } from 'test-samples-list';
-import { Navbar, NavBrand, Input, Button, Glyphicon  } from "react-bootstrap";
+import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap";
 
-const innerSearchIcon = (
-    <Button><Glyphicon glyph="search"/></Button>
-);
+class MXNavbar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { active: null };
+    }
 
-const searchInput = (
-    <form className="form-horizontal">
-        <Input type="text" label="Filter" labelClassName="col-xs-1" wrapperClassName="col-xs-3" buttonAfter={innerSearchIcon}/>
-    </form>
-);
+    set_active(name) {
+        this.setState({ active: name });
+    }
 
-const navbar = (
-    <Navbar inverse fluid>
-        <NavBrand><a href="#">MXCuBE 3</a></NavBrand>
+    render() {
+      return (<Navbar inverse fluid>
+        <NavBrand>MXCuBE 3</NavBrand>
+        <Nav navbar>
+          <NavItem eventKey={1} active={(this.state.active === 'samples') ? true : false} href="#">Samples</NavItem>
+          <NavItem eventKey={2} active={(this.state.active === 'dc') ? true : false} href="#dc">Data collection</NavItem>
+        </Nav>
         <LoginForm/>
-    </Navbar>
-);
-
-const checkScContents = (
-    <Button className="btn-primary">Check sample changer contents</Button>
-);
-
-
-ReactDOM.render(navbar, document.getElementById("header"));
-let filter_input = ReactDOM.render(searchInput, document.getElementById("filter_input"));
-let check_sc_contents = ReactDOM.render(checkScContents, document.getElementById("check_sc_contents"));
-let sample_grid = ReactDOM.render(<SampleGrid/>, document.getElementById("sample_grid"));
-let go_to_dc = ReactDOM.render(<span className='pull-right'><a href='data_collection'>Go to data collection<Glyphicon glyph='menu-right'/></a></span>, document.getElementById("go_to_dc"));
-
-sample_grid.add_samples(samples_list)
-
-for (var sample_id in sample_grid.refs) {
-    var sample_item = sample_grid.refs[sample_id];
-    sample_item.setLoadable();
+      </Navbar>)
+    }
 }
 
+let navbar = ReactDOM.render(<MXNavbar/>, document.getElementById("header"));
 
+var resolveRoute = function() {
+  // If no hash or hash is '#' we lazy load the SampleGrid component
+  if (!location.hash || location.hash.length === 1) {
+    require.ensure([], function () {
+      navbar.set_active('samples');
+      $('#samples').show();
+      $('#dc').hide();
+      require("samples"); 
+    });
+
+  // Or if route is #dc we lazy load that
+  } else if (location.hash === '#dc') {
+    require.ensure([], function () {
+      navbar.set_active('dc');
+      $('#dc').show();
+      $('#samples').hide();
+    });
+  }
+};
+
+window.onhashchange = resolveRoute;
+
+resolveRoute();
 

@@ -2,10 +2,14 @@ var webpack = require("webpack");
 var path = require('path');
 
 var config = {
-    entry: 'main.jsx',
+    entry: {
+        main: 'main.jsx',
+        samples: 'samples.jsx',
+        data_collection: 'data_collection.jsx'
+    },
     output: {
         path: path.resolve(__dirname, 'mxcube3','static'),
-        filename: 'bundle.js', 
+        filename: '[name].js', 
         publicPath: '' 
     },
     module: {
