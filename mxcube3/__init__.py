@@ -46,6 +46,7 @@ setLogFile(log_file)
 
 app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
 app.diffractometer = app.beamline.getObjectByRole("diffractometer")
+app.db_connection = app.beamline.getObjectByRole("lims_client")
 #app.resolution = app.beamline.getObjectByRole("resolution")
 #app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
 

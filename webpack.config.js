@@ -1,5 +1,6 @@
 var webpack = require("webpack");
 var path = require('path');
+var backend_server = require('./backend_server.js');
 
 var config = {
     entry: {
@@ -11,6 +12,15 @@ var config = {
         path: path.resolve(__dirname, 'mxcube3','static'),
         filename: '[name].js', 
         publicPath: '' 
+    },
+    devServer: {
+        proxy: {
+            '/mxcube/api/*': {
+                target: backend_server,
+                secure: false,
+                ws: true
+            },
+        },
     },
     module: {
         loaders: [
