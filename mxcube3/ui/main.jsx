@@ -24,6 +24,7 @@ class MXNavbar extends React.Component {
         <LoginForm/>
       </Navbar>)
     }
+}
 
 window.error_notification = ReactDOM.render(<ErrorNotificationPanel/>, document.getElementById("error_notification_panel"));
 let navbar = ReactDOM.render(<MXNavbar/>, document.getElementById("header"));
