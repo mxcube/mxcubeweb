@@ -59,4 +59,5 @@ target/
 node_modules/
 backend_server.js
 *~
+npm-debug.log*
 
