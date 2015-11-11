@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import classNames from 'classnames';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import { Nav, Input, ButtonInput, NavItem } from "react-bootstrap";
+import { Nav, Input, ButtonInput } from "react-bootstrap";
 
 export default class LoginForm extends React.Component {
     constructor(props) {
@@ -11,11 +11,14 @@ export default class LoginForm extends React.Component {
     }
 
     signIn() {
+        window.error_notification.clear();
         let proposal = this.refs.proposal.getValue();
         let password = this.refs.password.getValue();
         let self = this;
         $.ajax({ url: 'mxcube/api/login', type: 'GET', data: { proposal: proposal, password: password }, success: function(res) {
            self.setState({proposal: res}); 
+        }, error: function(req, error_string, exc) {
+            window.error_notification.notify(error_string);
         }});
     }
 
@@ -26,10 +29,10 @@ export default class LoginForm extends React.Component {
     render() {
         let login_input_form = "";
         if (this.state.proposal) {
-            login_input_form = (<form className="navbar-form">
-                                    <p className="navbar-text">{this.state.proposal.Proposal.title}</p>
-                                    <ButtonInput bsSize="small" bsStyle="info" value="Log out" onClick={this.logOut.bind(this)}/>
-                               </form>);
+            login_input_form = (<div>
+                                    <p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{this.state.proposal.Proposal.title}</p>
+                                    <button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={this.logOut.bind(this)}>Log out</button>
+                               </div>);
         } else {
             login_input_form = (<form className="navbar-form" action="">
                                     <Input bsSize="small" ref="proposal" type="text" name="proposal" placeholder="Proposal"/>{' '}

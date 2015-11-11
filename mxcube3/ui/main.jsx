@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import LoginForm from 'Login';
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap";
+import ErrorNotificationPanel from 'Logging';
 
 class MXNavbar extends React.Component {
     constructor(props) {
@@ -23,8 +24,8 @@ class MXNavbar extends React.Component {
         <LoginForm/>
       </Navbar>)
     }
-}
 
+window.error_notification = ReactDOM.render(<ErrorNotificationPanel/>, document.getElementById("error_notification_panel"));
 let navbar = ReactDOM.render(<MXNavbar/>, document.getElementById("header"));
 
 var resolveRoute = function() {
