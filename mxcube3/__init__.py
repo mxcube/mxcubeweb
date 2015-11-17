@@ -4,6 +4,25 @@ from flask.ext.socketio import SocketIO
 from optparse import OptionParser
 import os, sys
 
+opt_parser = OptionParser()
+opt_parser.add_option("-r", "--repository",
+                      dest="hwr_directory",
+                      help="Hardware Repository XML files path",
+                      default=os.path.join(os.path.dirname(__file__), 'HardwareObjects.xml/'))
+opt_parser.add_option("-l", "--log-file",
+                      dest="log_file",
+                      help="Hardware Repository log file name",
+                      default=os.path.join(os.path.dirname(__file__), 'log/mxcube3.log'))
+opt_parser.add_option("-s", "--beamline-setup",
+                      dest="beamline_setup",
+                      help="Beamline setup HWR file",
+                      default='/beamline-setup')
+opt_parser.add_option("-q", "--queue-model",
+                      dest="queue_model",
+                      help="Queue model HWR file",
+                      default='/queue-model')
+cmdline_options, args = opt_parser.parse_args()
+
 socketio = SocketIO()
 app = Flask(__name__, static_url_path='')	
 app.debug = True
@@ -17,25 +36,6 @@ def connect():
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-  opt_parser = OptionParser()
-  opt_parser.add_option("-r", "--repository", 
-                        dest="hwr_directory", 
-                        help="Hardware Repository XML files path", 
-                        default=os.path.join(os.path.dirname(__file__), 'HardwareObjects.xml/'))
-  opt_parser.add_option("-l", "--log-file", 
-                        dest="log_file", 
-                        help="Hardware Repository log file name", 
-                        default=os.path.join(os.path.dirname(__file__), 'log/mxcube3.log'))
-  opt_parser.add_option("-s", "--beamline-setup", 
-                        dest="beamline_setup", 
-                        help="Beamline setup HWR file", 
-                        default='/beamline-setup')
-  opt_parser.add_option("-q", "--queue-model", 
-                        dest="queue_model", 
-                        help="Queue model HWR file", 
-                        default='/queue-model')
-  cmdline_options, args = opt_parser.parse_args()
-
   ###Initialization of the HardwareObjects
   # this is to allow Hardware Objects to do 'from HardwareRepository import ...'
   sys.path.insert(0, os.path.dirname(__file__)) 
@@ -50,9 +50,10 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
   app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
   app.diffractometer = app.beamline.getObjectByRole("diffractometer")
+  app.db_connection = app.beamline.getObjectByRole("lims_client")
   #app.resolution = app.beamline.getObjectByRole("resolution")
   #app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
 
   ###Importing all REST-routes
-  import routes.Main, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
+  import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
 
