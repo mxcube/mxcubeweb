@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Data Collection API &mdash; MXCuBE3 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MXCuBE3 0.1 documentation" href="index.html" />
+    <link rel="next" title="Beamline API" href="Beamline.html" />
+    <link rel="prev" title="Sample API" href="Sample.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-collection-api">
+<h1>Data Collection API<a class="headerlink" href="#data-collection-api" title="Permalink to this headline">¶</a></h1>
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-beamline-status">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/beamline/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-beamline-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Beamline: get beamline generic status (energy, resolution ...)
+data = {generic_data}
+return_data = { generic_data, {&#8220;moveable1&#8221;:position}, ..., {&#8220;moveableN&#8221;:position} , xxxx }</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-samples-(id)-collections-(colid)-status">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><code class="descname">/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections-(colid)-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the status of the collection with id:&#8221;id&#8221;, (running, stopped, cancelled, finished, ...)
+data={generic_data},
+return_data={&#8220;CollectionId&#8221;: id, &#8220;Status&#8221;: status}</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--mxcube-api-v0.1-samples-(id)-collections-(colid)-mode">
+<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><code class="descname">/mode</code><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(id)-collections-(colid)-mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the collection method, standard collection, helical, mesh
+data={generic_data, &#8220;Method&#8221;:method}
+return_data={&#8220;result&#8221;: True/False}
+OBSOLETE BY ADD COLLECTION</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--mxcube-api-v0.1-samples-(sampleid)-collections-(colid)-run">
+<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>sampleid</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><code class="descname">/run</code><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(sampleid)-collections-(colid)-run" title="Permalink to this definition">¶</a></dt>
+<dd><p>run the collection with id:&#8221;colid&#8221;
+data={generic_data},
+return_data={&#8220;CollectionId&#8221;: id, &#8220;Status&#8221;: status}</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-samples-(id)-collections-status">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the status of all data collections, (running, stopped, cancelled, finished, ...)
+data={generic_data},   
+return_data={ {&#8220;CollectionId&#8221;: id1, &#8220;Status&#8221;: status}, ..., {&#8220;CollectionId&#8221;: idN, &#8220;Status&#8221;: status} }</p>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-samples-(id)-collections-(colid)">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#put--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
+<dd><p>update a collection into the sample queue <a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a>asociated to a sample!
+data={generic_data, &#8220;Method&#8221;:method, &#8220;SampleId&#8221;: sampleid ,&#8221;CollectionId&#8221;: id, parameters}, 
+for example for a standard data collection:
+data={generic_data, &#8220;Method&#8221;:StandardCollection, &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
+<blockquote>
+<div><blockquote>
+<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
+osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
+exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
+n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
+energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
+resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
+transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
+<p>},</p>
+</div></blockquote>
+<p>return_data={&#8220;result&#8221;: True/False}</p>
+</dd></dl>
+
+<dl class="post">
+<dt id="post--mxcube-api-v0.1-samples-(id)-collections-(colid)">
+<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a collection into the sample queue <a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a>asociate to a sample!
+data={generic_data, &#8220;Method&#8221;:method, &#8220;SampleId&#8221;: sampleid ,&#8221;CollectionId&#8221;: id, parameters}, 
+for example for a standard data collection:
+data={generic_data, &#8220;Method&#8221;:StandardCollection, &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
+<blockquote>
+<div><blockquote>
+<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
+osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
+exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
+n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
+energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
+resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
+transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
+<p>},</p>
+</div></blockquote>
+<p>return_data={&#8220;result&#8221;: True/False}</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-samples-(id)-collections-(colid)">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the collection with id:&#8221;colid&#8221;
+data={generic_data}, 
+for example for a standard data collection:
+return_data={&#8220;Method&#8221;:StandardCollection,  &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
+<blockquote>
+<div><blockquote>
+<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
+osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
+exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
+n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
+energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
+resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
+transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
+<p>},</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="delete">
+<dt id="delete--mxcube-api-v0.1-samples-(id)-collections-(colid)">
+<code class="descname">DELETE </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
+<dd><p>delete the collection with id:&#8221;id&#8221;
+data={generic_data, &#8220;CollectionId&#8221;: id},   
+return_data={&#8220;result&#8221;: True/False}</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-beamline-(id)-status">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/beamline/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-beamline-(id)-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Beamline: get beamline status of id:&#8221;id&#8221;
+data = {generic_data, &#8220;Moveable&#8221;:id}
+return_data = {&#8220;Moveable&#8221;: id, &#8220;Status&#8221;: status}</p>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-beamline-(id)-move">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/beamline/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/move</code><a class="headerlink" href="#put--mxcube-api-v0.1-beamline-(id)-move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Beamline: move &#8220;id&#8221; moveable (energy, resolution ...) to the position specified
+data = {generic_data, &#8220;moveable&#8221;: id, &#8220;position&#8221;: pos}
+return_data={&#8220;result&#8221;: True/False}</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-samples-(id)-collections">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections</code><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the collection with id:&#8221;id&#8221;
+data={generic_data}, 
+for example for a standard data collection:
+return_data={&#8220;Method&#8221;:StandarCollection,  &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
+<blockquote>
+<div><blockquote>
+<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
+osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
+exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
+n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
+energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
+resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
+transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
+<p>},</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--(path-filename)">
+<code class="descname">GET </code><code class="descname">/</code><span class="sig-paren">(</span><em class="property">path: </em><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#get--(path-filename)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used internally to send static files from the static
+folder to the browser.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.5.</span></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Sample.html" title="previous chapter">Sample API</a></li>
+      <li>Next: <a href="Beamline.html" title="next chapter">Beamline API</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Collection.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, MXCuBE Collaboration.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.5</a>
+      
+      |
+      <a href="_sources/Collection.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

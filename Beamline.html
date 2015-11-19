@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Beamline API &mdash; MXCuBE3 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MXCuBE3 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Data Collection API" href="Collection.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="beamline-api">
+<h1>Beamline API<a class="headerlink" href="#beamline-api" title="Permalink to this headline">¶</a></h1>
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-beamline-status">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/beamline/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-beamline-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Beamline: get beamline generic status (energy, resolution ...)
+data = {generic_data}
+return_data = { generic_data, {&#8220;moveable1&#8221;:position}, ..., {&#8220;moveableN&#8221;:position} , xxxx }</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-beamline-(id)-status">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/beamline/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-beamline-(id)-status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Beamline: get beamline status of id:&#8221;id&#8221;
+data = {generic_data, &#8220;Moveable&#8221;:id}
+return_data = {&#8220;Moveable&#8221;: id, &#8220;Status&#8221;: status}</p>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-beamline-(id)-move">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/beamline/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/move</code><a class="headerlink" href="#put--mxcube-api-v0.1-beamline-(id)-move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Beamline: move &#8220;id&#8221; moveable (energy, resolution ...) to the position specified
+data = {generic_data, &#8220;moveable&#8221;: id, &#8220;position&#8221;: pos}
+return_data={&#8220;result&#8221;: True/False}</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--(path-filename)">
+<code class="descname">GET </code><code class="descname">/</code><span class="sig-paren">(</span><em class="property">path: </em><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#get--(path-filename)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function used internally to send static files from the static
+folder to the browser.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.5.</span></p>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Collection.html" title="previous chapter">Data Collection API</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Beamline.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, MXCuBE Collaboration.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.5</a>
+      
+      |
+      <a href="_sources/Beamline.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
