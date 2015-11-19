@@ -45,6 +45,7 @@ var resolveRoute = function() {
       navbar.set_active('dc');
       $('#dc').show();
       $('#samples').hide();
+      require("./SampleView/MainView"); 
     });
   }
 };
@@ -52,4 +53,3 @@ var resolveRoute = function() {
 window.onhashchange = resolveRoute;
 
 resolveRoute();
-
