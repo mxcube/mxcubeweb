@@ -1,16 +1,12 @@
-/** @jsx React.DOM */
-/* eslint-disable no-console */
 'use strict';
 
-// Global variables for this applicaiton
-var SAMPLEMAIN = {
-        SampleCentring: null
-    },
+var React = require('react');
+var ReactDOM = require('react-dom');
 
-    // Objects from external javascript libraries
-    React;
+var SampleView = require('./SampleView');
 
-SAMPLEMAIN.SampleMain = React.createClass({
+
+var SampleMain = React.createClass({
 	getInitialState: function () {
       return {
           sampleName: 'Sample_42'
@@ -32,11 +28,11 @@ SAMPLEMAIN.SampleMain = React.createClass({
                     <h3 className="panel-title">Sample Centring</h3>
                 </div>
                <div className="panel-body">
-                    <SAMPLEVIEW.SampleCentring/>
+                    <SampleView/>
                 </div>
             </div>
         </div>
             );
   },
 });
-//React.render(<SampleCentring/>, document.getElementById('SampleCentringHere'));
+module.exports = SampleMain;
