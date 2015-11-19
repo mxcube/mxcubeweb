@@ -50,9 +50,10 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
   app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
   app.diffractometer = app.beamline.getObjectByRole("diffractometer")
+  app.db_connection = app.beamline.getObjectByRole("lims_client")
   #app.resolution = app.beamline.getObjectByRole("resolution")
   #app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
 
   ###Importing all REST-routes
-  import routes.Main, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
+  import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.Sample, routes.SampleCentring
 

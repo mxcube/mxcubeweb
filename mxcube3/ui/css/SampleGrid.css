@@ -1,0 +1,42 @@
+.samples-grid-item {
+    width: 190px;
+    height: auto;
+    min-height: 90px;
+    border: 1px solid #AAA;
+    background: #FFF;
+    box-shadow: 0px 2px 3px 0px #AAA;
+    padding: 5px;
+    margin-top: 5px;
+    margin-right: 3px;
+    margin-bottom: 5px;
+    margin-left: 3px;
+    overflow: hidden;
+    border-radius: 3px;
+}
+.protein-acronym {
+    font-size: small;
+    font-weight: bold;
+}
+.dm {
+    font-size: small;
+    font-style: italic;
+}
+.sc_location {
+    float: right;
+    font-size: x-small;
+}
+.dot {
+    height: 7px;
+    width: 7px;
+    margin-top: 1px;
+    margin-right: 1px;
+    border-radius: 100%;
+    background: green;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.samples-grid-item-selected {
+    background: #CEE3F6;
+}
+

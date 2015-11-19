@@ -1,18 +1,12 @@
-/** @jsx React.DOM */
-/* global $*/
-/* eslint-disable no-console */
+var React = require('react');
+var ReactDOM = require('react-dom');
+var SampleTree = require('./SampleTree');
+var ExperimentConfiguration = require('./ExperimentConfig');
 'use strict';
 
-// Global variables for this applicaiton
-var SAMPLEVIEW = {
-        SampleCentring: null,
-        EditableField: null
-    },
 
-    // Objects from external javascript libraries
-    React;
 
-SAMPLEVIEW.SampleCentring = React.createClass({
+var SampleCentring = React.createClass({
   //var Modal_message'Nothing to say';
 
 	getInitialState: function () {
@@ -396,7 +390,7 @@ SAMPLEVIEW.SampleCentring = React.createClass({
                 <div>
                     <div id='container'>
                         <canvas id="canvas" style={canvasStyle}  height={493} width={659} onClick={this.onClick} />
-                        <img src='/mxcube/api/v0.1/samplecentring/camera/subscribe'  style={videoStyle} id='SampleImage' className="center-block img- responsive"> </img>
+                        <img src='/mxcube/api/v0.1/samplecentring/camera/subscribe'  style={videoStyle} id='SampleImage' className="center-block img- responsive"/> 
                     </div>
                     <hr></hr>
                     <div className="panel panel-info">
@@ -416,18 +410,18 @@ SAMPLEVIEW.SampleCentring = React.createClass({
                             <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
                             <div className="input-group">
                               <span className="input-group-addon" id="basic-addon1">Kappa   </span>
-                              <input type="number"  id="Kappa" step="0.01" min='0' max='360'  className="form-control" placeholder="kappa" aria-describedby="basic-addon1" onKeyPress={this.isNumberKey} onkeyup={this.isNumberKey}> </input>
+                              <input type="number"  id="Kappa" step="0.01" min='0' max='360'  className="form-control" placeholder="kappa" aria-describedby="basic-addon1" onKeyPress={this.isNumberKey} onkeyup={this.isNumberKey}/>
                               <span className="input-group-addon" id="basic-addon2">Omega   </span>
-                              <input type="number"   id="Omega" step="0.01" min='0' max='360'  className="form-control" placeholder="omega" aria-describedby="basic-addon2" intermediateChanges='true' onKeyPress={this.isNumberKey}> </input>
+                              <input type="number"   id="Omega" step="0.01" min='0' max='360'  className="form-control" placeholder="omega" aria-describedby="basic-addon2" intermediateChanges='true' onKeyPress={this.isNumberKey}/>
                               <span className="input-group-addon" id="basic-addon3">Phi   </span>
-                              <input type="number"  id="Phi" step="0.01" min='0' max='360'   className="form-control" placeholder="Phi" aria-describedby="basic-addon3" onKeyPress={this.isNumberKey}> </input>
+                              <input type="number"  id="Phi" step="0.01" min='0' max='360'   className="form-control" placeholder="Phi" aria-describedby="basic-addon3" onKeyPress={this.isNumberKey}/>
                             </div>
                         </div>
                     </div>
                     {/* The Queue */}
-                    <SAMPLETREE.SingleSampleTree/>
+                    <SampleTree/>
                     {/* The Experiment Configuration */}
-                    <EXPERIMENTCONFIG.ExperimentConfiguration/>
+                    <ExperimentConfiguration/>
                     <div className="well well-sm pre-scrollable" style={logStyle}> <samp id="log" className=""></samp> </div>
                       {/* Modal */}
                             <div className="modal fade" id="Modal_Centring" role="dialog">
@@ -452,25 +446,6 @@ SAMPLEVIEW.SampleCentring = React.createClass({
             );        
   },
 });
-SAMPLEVIEW.EditableField = React.createClass({
-  
-   componentDidMount: function() {
-      $(this.refs.editable.getDOMNode()).editable();
-   }, 
 
-   render: function() {
-      return (
-          <p>{this.props.name}: 
-              <a href="#" ref="editable" 
-                  data-name={this.props.name} 
-                  data-pk={this.props.id} 
-                  data-url="/beam_line_update" 
-                  data-type="text" 
-                  data-title="Edit value">
-                  {this.props.value}
-              </a>
-          </p>
-      );
-   } 
-})
 
+module.exports = SampleCentring;

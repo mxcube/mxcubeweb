@@ -1,6 +1,8 @@
-/** @jsx React.DOM */
-/* eslint-disable no-console */
 'use strict';
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+require("font-awesome-webpack");
 
 
 // Global variables for this applicaiton
@@ -99,3 +101,6 @@ EXPERIMENTCONFIG.ExperimentConfiguration = React.createClass({
         );
     }
 });
+
+
+module.exports = EXPERIMENTCONFIG.ExperimentConfiguration;

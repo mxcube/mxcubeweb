@@ -41,9 +41,9 @@ def stream_video():
             pass
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
-    """SampleCentring: subscribe to the streaming
-    data = {generic_data} #or nothing?
-    return_data={"url": url}
+    """SampleCentring: subscribe to the camera streaming, used in img src tag
+    Args: None
+    Return: image as html Content-type
     """
     #logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
     camera_hwobj.stopper = False
@@ -53,14 +53,17 @@ def subscribeToCamera():
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/unsubscribe", methods=['GET'])
 def unsubscribeToCamera():
-    """SampleCentring: subscribe from the streaming
-    data = {generic_data} #or nothing?
-    return_data={"result": True/False}
+    """
+    SampleCentring: unsubscribe from the camera streaming
+    Args: None
+    Return: 'True' if streaming stopped succesfully, otherwise 'False'
     """
     keep_streaming = False
-    camera_hwobj.stopper = True
-    return "True"
-
+    try:
+        camera_hwobj.stopper = True
+        return "True"
+    except:
+        return "False"
 ###----SAMPLE CENTRING----###
 clicks = collections.deque(maxlen=3)
 
@@ -70,10 +73,13 @@ centred_pos=[]
 #searchword = request.args.get('key', '')
 @mxcube.route("/mxcube/api/v0.1/samplecentring/<id>/move", methods=['PUT'])
 def moveSampleCentringMotor(id):
-    """SampleCentring: move "id" moveable to the position specified in the data:position
+    """
+    SampleCentring: move "id" moveable to the position specified in the data:position
     Moveable can be a motor (kappa, omega, phi), a ligth, light/zoom level.
-    data in the url: /mxcube/api/v0.1/samplecentring/<id>/move?newpos=value
-    return_data={"result": True/False}
+    Args: moveable and new position in the url: /mxcube/api/v0.1/samplecentring/<id>/move?newpos=value
+        id: str
+        value: float
+    Return: 'True' if command issued succesfully, otherwise 'False'
     """
     new_pos = request.args.get('newpos','')
     motor_hwobj = mxcube.diffractometer.getObjectByRole(id.lower())
@@ -101,13 +107,17 @@ def moveSampleCentringMotor(id):
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/status", methods=['GET'])
 def get_status():
-    """SampleCentring: get generic status, positions of moveables ...
-    data = {generic_data}
-    return_data = { generic_data, 
-                  Moveable1:{'Status': status, 'position': position}, 
-                  ...,  
-                  MoveableN:{'Status': status, 'position': position} 
-                  }
+    """
+    SampleCentring: get generic status, positions of moveables ...
+    Args: None
+    Return: {   Moveable1:{'Status': status, 'position': position}, 
+                ...,  
+                MoveableN:{'Status': status, 'position': position} 
+            }
+        status: str
+        position: float
+        moveables: 'Kappa', 'Omega', 'Phi', 'Zoom', 'Light'
+
     """
     motors = ['Kappa', 'Omega', 'Phi', 'Zoom', 'Light'] #more are needed
 
@@ -130,9 +140,12 @@ def get_status():
     
 @mxcube.route("/mxcube/api/v0.1/samplecentring/<id>/status", methods=['GET'])
 def get_status_of_id(id):
-    """SampleCentring: get status of element with id:"id"
-    data = {generic_data, 'Moveable1', ..., MoveableN}
-    return_data = {'Status': status, 'position': position}
+    """
+    SampleCentring: get status of element with id:"id"
+    Args: moveable 'id' in the url
+    Return: {'Status': status, 'position': position}
+        status: str
+        position: float
     """
     data = {}
     motor = mxcube.diffractometer.getObjectByRole(id.lower())
@@ -153,7 +166,8 @@ def get_status_of_id(id):
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<id>", methods=['GET'])
 def get_centring_of_id(id):
-    """SampleCentring: get centring point position of point with id:"id", id=1,2,3...
+    """
+    SampleCentring: get centring point position of point with id:"id", id=1,2,3...
     data = {generic_data, "point": id}
     return_data = {"id": {x,y}}
     """
@@ -171,9 +185,11 @@ def put_centring_with_id(id):
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/startauto", methods=['PUT'])
 def centreAuto():
-    """Start automatic (lucid) centring procedure
-    data = {generic_data, "Mode": mode}
-    return_data={"result": True/False}
+    """
+    Start automatic (lucid) centring procedure
+    Args: None
+    Return: 'True' if command issued succesfully, otherwise 'False'. Note that this does not mean\
+    if the centring is succesfull or not
     """
     #mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
     # mxcube.resolution.emit("deviceReady", 'some data')
@@ -188,9 +204,11 @@ def centreAuto():
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/start3click", methods=['PUT'])
 def centre3click():
-    """Start 3 click centring procedure
-    data = {generic_data, "Mode": mode}
-    return_data={"result": True/False}
+    """
+    Start 3 click centring procedure
+    Args: None
+    Return: 'True' if command issued succesfully, otherwise 'False'. Note that this does not mean\
+    if the centring is succesfull or not
     """
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')  
     try:
@@ -200,9 +218,11 @@ def centre3click():
         return "False"
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/click", methods=['PUT'])
 def aClick():
-    """Start centring procedure
-    data = {generic_data, "Mode": mode}
-    return_data={"result": True/False}
+    """
+    The 3-click method need the input from the user, Start centring procedure
+    Args: positions of the clicks, append to the url "?clickPos={"x":'+x+',"y":'+ y+'}"
+        x, y: int
+    Return: 'True' if command issued succesfully, otherwise 'False'.
     """
     clickPosition = json.loads(request.args.get('clickPos',''))
 
@@ -214,10 +234,11 @@ def aClick():
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<id>/save", methods=['PUT'])
 def savePosition(id):
-    """Save centring position
-    return_data={"result": True/False}
     """
-    print id    
+    Store the current centring position in the server, there is not limit on how many positions can be stored
+    Args: id, for consistency but not used
+    Return: new centring position name (pos1, pos2...) if the current centring position is retrieved and stored succesfully, otherwise 'False'. In any case: str
+    """
     centredPosId = 'pos'+str(len(centred_pos)+1)
     #if request.args.get('rename',''): renaming option comes later
 
@@ -230,28 +251,32 @@ def savePosition(id):
         #motorPositions = mxcube.diffractometer.getPositions()
         centred_pos.append(data)
         logging.getLogger('HWR.MX3').info('[Centring] Centring Positions saved:'+str(data)) 
-        print centred_pos
         return centredPosId
     except:
         return "False"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<id>/delete", methods=['DELETE'])
 def deletePosition(id):
-    """delete centring position with name <id>
-    return_data={"result": True/False}
+    """
+    Delete centring position with name <id>
+    Args: id, the name of the position to be deleted
+        id: str
+    Return: 'True' if deleted succesfully, otherwise 'False'.
     """
     logging.getLogger('HWR.MX3').info('[Centring] Centring Position deletd')  
     try:
         centred_pos[:] = [d for d in centred_pos if d.get('name') != id] #python magic...
-        print centred_pos
         return "True"
     except:
         return "False"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<id>/rename", methods=['PUT'])
 def renamePosition(id):
-    """rename centring position
-    return_data={"result": True/False}
+    """
+    Rename a stored centring position
+    Args: id, current name of the position to be renamed
+    Return: newname if renamed succesfully, otherwise 'False'.
+        newname: str
     """
     newName = str(request.args.get('newname',''))
 
@@ -260,14 +285,17 @@ def renamePosition(id):
         logging.getLogger('HWR.MX3').info('[Centring] Centring Position renamed')  
         print centred_pos
 
-        return "True", newName
+        return newName
     except:
         return "False"
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/centring/<position>/move", methods=['PUT'])
 def moveToCentredPosition(id):
-    """Move to centring position
-    return_data={"result": True/False}
+    """
+    Move all the motors involved in the centring to the given centring position
+    Args: position, the name of the centring position (pos1, pos2, customName1,...)
+        position: str
+    Return: 'True' if command issued succesfully, otherwise 'False'.
     """
     motorPositions = [d['motorPositions'] for d in centred_pos if d.get('name') == id]
     #or moveMotors(self, roles_positions_dict)???
@@ -280,9 +308,11 @@ def moveToCentredPosition(id):
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/snapshot", methods=['PUT'])
 def snapshot():
-    """Save snapshot of the sample view
+    """
+    Save snapshot of the sample view
+    Args: None
     data = {generic_data, "Path": path} # not sure if path should be available, or directly use the user/proposal path
-    return_data={"result": True/False}
+    Return: 'True' if command issued succesfully, otherwise 'False'.
     """
     filenam = time.strftime("%Y-%m-%d-%H:%M:%S", time.gmtime())+sample.jpg
     try:

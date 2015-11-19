@@ -31,3 +31,4 @@ def signalCallback4(*args, **kwargs):
 #         socketio.emit('newSignal',msg , namespace='/test')
 #     except:
 #         logging.getLogger("HWR").error('error creating the message')
+
