@@ -1,5 +1,5 @@
 var _ = require('underscore');
-require('Backbone');
+var Backbone = require('backbone');
 console.log('dispatcher going to start');
 window.app_dispatcher = _.extend({}, Backbone.Events);
 console.log('dispatcher done');
@@ -22,3 +22,5 @@ $(document).ready(function(){
         //     console.log(msg)
         // });
     });
+
+
