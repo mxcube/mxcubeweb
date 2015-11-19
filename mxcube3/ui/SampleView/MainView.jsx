@@ -1,7 +1,8 @@
-/** @jsx React.DOM */
-/* eslint-disable no-console */
 'use strict';
-
+require('./Functions');
+var React = require('react');
+var ReactDOM = require('react-dom');
+var SampleMain = require('./SampleMain');
 // Global variables for this applicaiton
 var MAINVIEW = {
         MainView: null
@@ -19,6 +20,7 @@ MAINVIEW.MainView = React.createClass({
     },
 
   componentWillMount: function(){
+
   },
   componentDidMount: function(){
       this.anotherMethod()
@@ -30,31 +32,7 @@ MAINVIEW.MainView = React.createClass({
 
       return (
   <div>
-    <div className="navbar navbar-default navbar-static-top">
-      <div className="container">
-        <div className="navbar-header">
-          <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
-            <span className="sr-only">Toggle navigation</span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-            <span className="icon-bar"></span>
-          </button>
-          <a className="navbar-brand" href="http://mxcube.github.io/mxcube/"><img height="20" alt="Brand" src="./build/css/mxcube_logo.png"> </img></a>
-        </div>
-        <div className="collapse navbar-collapse" id="navbar-ex-collapse">
-          <ul className="nav navbar-nav navbar-right">
-            <li className="active">
-              <a href="#">Home</a>
-            </li>
-            <li>
-              <a href="#">Contacts</a>
-            </li>
-          </ul>
-          <p className="navbar-left navbar-text">Signed in as Patxi</p>
-          <a className="btn btn-default navbar-btn">Log out</a>
-        </div>
-      </div>
-    </div>
+
     {/* Go to another page */}
     <div className="col-md-12">
             <ul className="pager">
@@ -74,7 +52,7 @@ MAINVIEW.MainView = React.createClass({
                   <h8 className="panel-title text-center">Sample Experiment Control</h8>
                 </div>
                 <div className="panel-body">
-                  <SAMPLEMAIN.SampleMain/>
+                  <SampleMain/>
                 </div>
               </div>
             </div>
@@ -86,7 +64,7 @@ MAINVIEW.MainView = React.createClass({
                 <h3 className="panel-title">Whatever goes here</h3>
               </div>
               <div className="panel-body">
-                <p contentEditable="true">Panel content</p>
+                <p>Panel content</p>
               </div>
             </div>
           </div>
@@ -108,7 +86,7 @@ MAINVIEW.MainView = React.createClass({
 });
 
 
-React.render(<MAINVIEW.MainView/>, document.getElementById('SampleCentringHere'));
+ReactDOM.render(<MAINVIEW.MainView/>, document.getElementById('SampleCentring'));
 
 
 

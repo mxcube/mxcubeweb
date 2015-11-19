@@ -1,6 +1,7 @@
-/** @jsx React.DOM */
-/* global $*/
-/* eslint-disable no-console */
+var React = require('react');
+var ReactDOM = require('react-dom');
+var SampleView = require('./SampleView');
+
 'use strict';
 
 
@@ -240,10 +241,12 @@ SAMPLETREE.SingleSampleTree = React.createClass({
                             <b>Sample {SAMPLETREE.queueInfo.sampleID}</b>
                         </div>
 
-                        {arr.map(function(listValue) {
+                        {arr.map(function(listValue,index) {
+                            console.log("sadsas");
+                            console.log(index);
 
                             return (
-                                <div className='text-left col-xs-12 queue-list'>
+                                <div key={index} className='text-left col-xs-12 queue-list'>
 
                                     <div className="col-xs-5 queue-list">
                                         <b>{listValue.queueID}. </b>
@@ -305,12 +308,14 @@ SAMPLETREE.SingleSampleTree = React.createClass({
     }
 });
 
+module.exports = SAMPLETREE.SingleSampleTree;
+
 
 SAMPLETREE.EditableField = React.createClass({
 
 
     componentDidMount: function() {
-        $(this.refs.editable.getDOMNode()).editable();
+        // $(this.refs.editable.getDOMNode()).editable();
     },
 
 
