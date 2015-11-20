@@ -1,4 +1,4 @@
-/** @jsx React.DOM */
+var Backbone = require("backbone");
 
 var SampleTree = React.createClass({
 
@@ -280,4 +280,5 @@ var SampleTree = React.createClass({
 	});
 
 React.render(<SampleTree/>, document.getElementById('SampleTreeGoesHere'));
+
  
