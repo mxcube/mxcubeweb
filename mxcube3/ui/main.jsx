@@ -8,6 +8,7 @@ import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap";
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import login from './reducers/login';
+import ErrorNotificationPanel from 'Logging';
 require("file?name=[name].[ext]!index.html");
 
 let store = createStore(login);
@@ -26,6 +27,7 @@ class MXNavbar extends React.Component {
       return (
         <Provider store={store}>
           <div>
+             <ErrorNotificationPanel/>
              <Navbar inverse fluid>
                   <NavBrand>MXCuBE 3</NavBrand>
                   <Nav navbar>
