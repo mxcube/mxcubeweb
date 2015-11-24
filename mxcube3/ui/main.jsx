@@ -1,9 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import LoginForm from 'Login';
+import Login from './containers/LoginContainer';
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap";
 import ErrorNotificationPanel from 'Logging';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import login from './reducers/login';
 require("file?name=[name].[ext]!index.html");
+
+let store = createStore(login);
 
 class MXNavbar extends React.Component {
     constructor(props) {
@@ -22,13 +27,13 @@ class MXNavbar extends React.Component {
           <NavItem eventKey={1} active={(this.state.active === 'samples') ? true : false} href="#">Samples</NavItem>
           <NavItem eventKey={2} active={(this.state.active === 'dc') ? true : false} href="#dc">Data collection</NavItem>
         </Nav>
-        <LoginForm/>
+        <Login/>
       </Navbar>)
     }
 }
 
 window.error_notification = ReactDOM.render(<ErrorNotificationPanel/>, document.getElementById("error_notification_panel"));
-let navbar = ReactDOM.render(<MXNavbar/>, document.getElementById("header"));
+let navbar = ReactDOM.render(<Provider store={store}><MXNavbar/></Provider>, document.getElementById("header"));
 
 var resolveRoute = function() {
   // If no hash or hash is '#' we lazy load the SampleGrid component
