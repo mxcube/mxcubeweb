@@ -1,31 +1,42 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SampleGrid from 'SampleGrid';
-import { samples_list } from 'test-samples-list';
 import { Input, Button, Glyphicon  } from "react-bootstrap";
 
-const innerSearchIcon = (
-    <Button><Glyphicon glyph="search"/></Button>
-);
 
-const searchInput = (
-    <form className="form-horizontal">
-        <Input type="text" label="Filter" labelClassName="col-xs-1" wrapperClassName="col-xs-3" buttonAfter={innerSearchIcon}/>
-    </form>
-);
 
-const checkScContents = (
-    <Button className="btn-primary">Check sample changer contents</Button>
-);
+export default class SampleGridMain extends React.Component {
 
-let filter_input = ReactDOM.render(searchInput, document.getElementById("filter_input"));
-let check_sc_contents = ReactDOM.render(checkScContents, document.getElementById("check_sc_contents"));
-let sample_grid = ReactDOM.render(<SampleGrid/>, document.getElementById("sample_grid"));
+	constructor(props) {
+		super(props);
+	}
 
-sample_grid.add_samples(samples_list)
+	render() {
 
-for (var sample_id in sample_grid.refs) {
-    var sample_item = sample_grid.refs[sample_id];
-    sample_item.setLoadable();
+		const innerSearchIcon = (
+		<Button><Glyphicon glyph="search"/></Button>
+		);
+
+	const searchInput = (
+		<form className="form-horizontal">
+		<Input type="text" label="Filter" labelClassName="col-xs-1" wrapperClassName="col-xs-3" buttonAfter={innerSearchIcon}/>
+		</form>
+		);
+
+	const checkScContents = (
+		<Button className="btn-primary">Check sample changer contents</Button>
+		);
+
+
+
+		return (
+			<div>
+			{searchInput}
+			{checkScContents}
+			<SampleGrid />
+			{this.props.children}
+			</div>
+			)
+	}
 }
 
