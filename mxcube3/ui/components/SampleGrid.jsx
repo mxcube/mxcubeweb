@@ -6,7 +6,7 @@ import { samples_list } from 'test-samples-list';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js";
 import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
-import "./css/SampleGrid.css";
+import "../css/SampleGrid.css";
 
 export default class SampleGrid extends React.Component {
     constructor(props) {

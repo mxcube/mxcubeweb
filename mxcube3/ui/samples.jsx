@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import SampleGrid from 'SampleGrid';
+import SampleGrid from './components/SampleGrid';
 import { Input, Button, Glyphicon  } from "react-bootstrap";
 
 
