@@ -29,3 +29,4 @@ for (var sample_id in sample_grid.refs) {
     sample_item.setLoadable();
 }
 
+console.log("dasas");
