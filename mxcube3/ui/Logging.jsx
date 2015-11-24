@@ -8,6 +8,7 @@ export default class ErrorNotificationPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = { error: null };
+        window.error_notification = this;
     }
 
     notify(err) {
