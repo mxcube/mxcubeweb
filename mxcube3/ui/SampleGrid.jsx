@@ -2,6 +2,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import Isotope from 'isotope-layout';
 import classNames from 'classnames';
+import { samples_list } from 'test-samples-list';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js";
 import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
@@ -10,8 +11,12 @@ import "./css/SampleGrid.css";
 export default class SampleGrid extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { isotope: null, samples_list: [] };
+        this.state = { 
+            isotope: null, 
+            list : samples_list
+        };
     }
+
 
     componentDidMount() {
         let container = ReactDOM.findDOMNode(this);
@@ -36,9 +41,10 @@ export default class SampleGrid extends React.Component {
 
     render() {
         let samples_list = this.state.samples_list;
+
         let rearrange = this._rearrange.bind(this);
         return <div className='samples-grid'>
-            {samples_list.map(function(sample_info, i) {
+            {this.state.list.map(function(sample_info, i) {
             let exp_type = sample_info.experimentType || "";
            let sc_loc = sample_info.containerSampleChangerLocation+":"+sample_info.sampleLocation
            return <SampleGridItem key={sample_info.sampleId} ref={sample_info.sampleId} sample_id={sample_info.sampleId} acronym={sample_info.proteinAcronym} name={sample_info.sampleName} dm="HA1234567" location={sc_loc} tags={exp_type} rearrange={rearrange}/>
@@ -46,9 +52,6 @@ export default class SampleGrid extends React.Component {
         </div>;
     }
     
-    add_samples(samples_list) {
-        this.setState({'samples_list': samples_list});
-    }
     
 }
 
@@ -63,7 +66,7 @@ class SampleGridItem extends React.Component {
             tags = this.props.tags.match(/[^ ]+/g);
         }
         
-        this.state = { selected: false, loadable: false, 'tags': tags };
+        this.state = { selected: false, loadable: true, 'tags': tags };
     }
     
     componentDidMount() {
