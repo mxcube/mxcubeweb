@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import LoginForm from 'Login';
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap";
 import ErrorNotificationPanel from 'Logging';
+require("file?name=[name].[ext]!index.html");
 
 class MXNavbar extends React.Component {
     constructor(props) {
