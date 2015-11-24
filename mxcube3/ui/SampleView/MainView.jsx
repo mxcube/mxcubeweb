@@ -20,6 +20,7 @@ MAINVIEW.MainView = React.createClass({
     },
 
   componentWillMount: function(){
+    console.log("Will mount MainView");
 
   },
   componentDidMount: function(){
@@ -85,8 +86,8 @@ MAINVIEW.MainView = React.createClass({
   },
 });
 
+module.exports = MAINVIEW.MainView;
 
-ReactDOM.render(<MAINVIEW.MainView/>, document.getElementById('SampleCentring'));
 
 
 
