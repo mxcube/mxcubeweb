@@ -2,16 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Login from './containers/LoginContainer';
 import { Router, Route, Link } from 'react-router'
-import SampleView from './SampleView/MainView'
+import SampleViewContainer from './containers/SampleViewContainer'
 import SampleGridMain from './samples'
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap";
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import login from './reducers/login';
+import rootReducer from './reducers/index.js'
 import ErrorNotificationPanel from 'Logging';
 require("file?name=[name].[ext]!index.html");
 
-let store = createStore(login);
+let store = createStore(rootReducer);
 
 class MXNavbar extends React.Component {
     constructor(props) {
@@ -36,7 +36,15 @@ class MXNavbar extends React.Component {
                   </Nav>
                   <Login/>
               </Navbar>
-              {this.props.children}
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-xs-2">
+                  </div>
+                  <div className="col-xs-10">
+                  {this.props.children}
+                  </div>
+                </div>
+              </div>
           </div>
        </Provider>)
     }
@@ -46,7 +54,7 @@ ReactDOM.render((
   <Router>
     <Route path="/" component={MXNavbar}>
       <Route path="samplegrid" component={SampleGridMain}/>
-      <Route path="datacollection" component={SampleView}/>
+      <Route path="datacollection" component={SampleViewContainer}/>
     </Route>
   </Router>
 ), document.getElementById("main"));
