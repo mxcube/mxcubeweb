@@ -8,41 +8,53 @@ export default class DataCollection extends Component {
 
     addCentring() {
        
+        this.props.queueActions.addSample("Add Centring");
+       
     }
 
 
     addCharacterisation() {
+
+        this.props.queueActions.addSample("Add Characterisation");
         
     }
 
 
     addStandardCollection() {
+
+        this.props.queueActions.addSample("Add Standard Collection");
        
     }
 
 
     addHelicalCollection() {
+
+        this.props.queueActions.addSample("Add Helical Collection");
     }
 
 
     addMeshCollection() {
+
+        this.props.queueActions.addSample("Add Mesh Collection");
     }
 
 
     render() {
+        console.log(this.props);
+        
         return (
             <div >
                     <div className='panel body'>
                         <a className='btn btn-primary'
-                            onClick={this.addCentring}>
+                            onClick={this.addCentring.bind(this)}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring</a>
                         <a className='btn btn-primary'
-                            onClick={this.addCharacterisation}>
+                            onClick={this.addCharacterisation.bind(this)}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Characterization</a>
                         <a className='btn btn-primary'
-                            onClick={this.addStandardCollection}>
+                            onClick={this.addStandardCollection.bind(this)}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Standard Collection</a>
                         <div className='btn-group'>

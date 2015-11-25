@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SampleImage from '../components/SampleView/SampleImage';
 import DataCollection from '../components/SampleView/DataCollection';
+import * as QueueActions from '../actions/queue'
 
 class SampleViewContainer extends Component {
   render() {
@@ -15,7 +16,7 @@ class SampleViewContainer extends Component {
             <div className="col-md-12">
               <div className="panel panel-primary text-center">
                 <div className="panel-heading">
-                  <h8 className="panel-title text-center">Sample Experiment Control</h8>
+                  <h8 className="panel-title text-center">SampleImage</h8>
                 </div>
                 <div className="panel-body">
                   <SampleImage/>
@@ -23,14 +24,14 @@ class SampleViewContainer extends Component {
               </div>
             </div>
           </div>
-    {/* The side panel */}
+    {/* The side panel containing Current Setup / Experimental Setup */}
     <div className="col-xs-4">
             <div className="panel panel-primary">
               <div className="panel-heading">
                 <h3 className="panel-title">Current Setup / Experimental Setup</h3>
               </div>
               <div className="panel-body">
-                <DataCollection />
+                <DataCollection queueActions={this.props.actions}/>
               </div>
             </div>
           </div>
@@ -44,13 +45,14 @@ class SampleViewContainer extends Component {
 
 function mapStateToProps(state) {
   return {
-    progressbarStyle : { width: "42%"  }
+    todos: "Map to state"
   }
 }
 
 function mapDispatchToProps(dispatch) {
-  return {
-    // actions: bindActionCreators(TodoActions, dispatch)
+ return {
+    //actions: (sample) => dispatch(addSample(sample))
+    actions: bindActionCreators(QueueActions, dispatch)
   }
 }
 
