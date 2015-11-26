@@ -1,9 +1,6 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var SampleTree = require('./SampleTree');
-var ExperimentConfiguration = require('./ExperimentConfig');
 'use strict';
 
+import React, { Component, PropTypes } from 'react'
 
 
 var SampleCentring = React.createClass({
@@ -418,11 +415,7 @@ var SampleCentring = React.createClass({
                             </div>
                         </div>
                     </div>
-                    {/* The Queue */}
-                    <SampleTree/>
-                    {/* The Experiment Configuration */}
-                    <ExperimentConfiguration/>
-                    <div className="well well-sm pre-scrollable" style={logStyle}> <samp id="log" className=""></samp> </div>
+
                       {/* Modal */}
                             <div className="modal fade" id="Modal_Centring" role="dialog">
                                 <div className="modal-dialog modal-sm">

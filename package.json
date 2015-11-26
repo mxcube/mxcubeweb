@@ -19,6 +19,8 @@
     "jquery": "2.1.4",
     "react": "0.14.2",
     "react-dom": "0.14.2",
+    "react-redux": "^4.0.0",
+    "redux": "^3.0.4",
     "react-router": "^1.0.0",
     "underscore": "^1.8.3",
     "x-editable": "1.5.1"
