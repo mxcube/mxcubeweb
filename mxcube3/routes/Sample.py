@@ -1,18 +1,21 @@
 from flask import session, redirect, url_for, render_template, request, Response
 from mxcube3 import app as mxcube
-
+import signals
 import logging
 
 ###----SAMPLE----###
-@mxcube.route("/mxcube/api/v0.1/samples/<id>", methods='POST')
+@mxcube.route("/mxcube/api/v0.1/samples/<id>", methods=['POST', 'PUT', 'GET'])
 def add_sample(id):
     """Add the information of the sample with id:"id"
     data = {generic_data, "SampleId":id, sample_data={'holderLength': 22.0, 'code': None, 'containerSampleChangerLocation': '1', 'proteinAcronym': 'Mnth', 'cellGamma': 0.0, 'cellAlpha': 0.0, 'sampleId': 444179, 'cellBeta': 0.0, 'crystalSpaceGroup': 'R32', 'sampleLocation': '2', 'sampleName': 'sample-E02', 'cellA': 0.0, 'diffractionPlan': {}, 'cellC': 0.0, 'cellB': 0.0, 'experimentType': 'Default'}}
     return_data={"result": True/False}
     """
-    data = dict(request.POST.items())
-    return samples.addSample(data)
-
+    if request.method == 'PUT':
+        return samples.addSample(data)
+    elif request.method == 'GET':
+        return jsonify(signals.samples_list)
+    else:
+        return "False"
 @mxcube.route("/mxcube/api/v0.1/samples/<id>", methods=['PUT'])
 def update_sample(id):
     """Update the information of the sample with id:"id"
