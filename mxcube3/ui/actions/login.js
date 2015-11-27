@@ -5,3 +5,4 @@ export function doLogin(proposal, password) {
 export function doSignOut() {
     return { type: "SIGNOUT" }
 }
+
