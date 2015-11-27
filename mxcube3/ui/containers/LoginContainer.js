@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 import LoginForm from '../components/Login'
 import { doLogin, doSignOut } from '../actions/login'
 
-function mapStateToProps(login_state) {
-    return { proposal: login_state }
+function mapStateToProps(state) {
+    return { proposal: state.login }
 }
 
 function mapDispatchToProps(dispatch) {
