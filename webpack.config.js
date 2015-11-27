@@ -5,7 +5,6 @@ var backend_server = require('./backend_server.js');
 var config = {
     entry: {
         main: ['main.jsx'],
-        samples: ['samples.jsx']
     },
     output: {
         path: path.resolve(__dirname, 'mxcube3','static'),

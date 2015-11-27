@@ -5,8 +5,10 @@ import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import { Nav, Input, ButtonInput } from "react-bootstrap";
 
 export default class LoginForm extends React.Component {
-    constructor(props) {
-        super(props);
+    propTypes: {
+	proposal: React.PropTypes.object,
+	signIn: React.PropTypes.func.isRequired,
+	logOut: React.PropTypes.func.isRequired
     }
 
     signIn() {
@@ -37,7 +39,3 @@ export default class LoginForm extends React.Component {
     }    
 }
 
-LoginForm.propTypes = {
-    proposal: React.PropTypes.object,
-    signIn: React.PropTypes.func.isRequired
-}
