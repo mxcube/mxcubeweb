@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 import 'babel-core/polyfill'
 import React from 'react';
 import ReactDOM from 'react-dom';
+=======
+import React from 'react'
+import ReactDOM from 'react-dom'
+>>>>>>> origin/redux
 import { Router, Route, Link } from 'react-router'
 import Login from './containers/LoginContainer';
 import SampleViewContainer from './containers/SampleViewContainer'
+<<<<<<< HEAD
 import SampleQueueContainer from './containers/SampleQueueContainer'
 import SampleGridMain from './samples'
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap";
@@ -61,5 +67,27 @@ ReactDOM.render((
       <Route path="sampleview" component={SampleViewContainer}/>
     </Route>
   </Router>
+=======
+import SampleGridMain from './components/SampleGridMain'
+import { createStore } from 'redux'
+import { Provider } from 'react-redux'
+import rootReducer from './reducers/main'
+import NavBar from './components/NavBar'
+require("file?name=[name].[ext]!index.html")
+import { samples_list } from './test-samples-list'
+
+let store = createStore(rootReducer);
+window.samples_list = samples_list;
+
+ReactDOM.render((
+  <Provider store={store}>
+	  <Router>
+		  <Route path="/" component={NavBar}>
+			  <Route path="samplegrid" component={SampleGridMain}/>
+			  <Route path="datacollection" component={SampleViewContainer}/>
+		  </Route>
+	  </Router>
+  </Provider>
+>>>>>>> origin/redux
 ), document.getElementById("main"));
 
