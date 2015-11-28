@@ -1,14 +1,16 @@
-export default (state={}, action) => {
+const initialState = {
+  data:{ }
+}
+export default (state=initialState, action) => {
     switch (action.type) {
         case 'LOGIN':
-// moved the login ajax to actions, since "Redux assumes that you never mutate the objects it gives to you in the reducer. Every single time, you must return the new state object"
             window.error_notification.clear(); 
-            return action.result
-//            return Object.assign(action.result)
+            return Object.assign({},state,action) 
         case 'SIGNOUT':
             window.error_notification.clear();
-            return { Proposal: null }
+            return Object.assign({},state,initialState)
         default:
+            console.log("defalut")
             return state
     }
 }
