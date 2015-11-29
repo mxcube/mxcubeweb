@@ -3,6 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import { Nav, Input, ButtonInput } from "react-bootstrap";
+import * as loglog from  "../actions/login";
 
 export default class LoginForm extends React.Component {
     propTypes: {
@@ -14,7 +15,7 @@ export default class LoginForm extends React.Component {
     signIn() {
         let proposal = this.refs.proposal.getValue();
         let password = this.refs.password.getValue();
-        this.props.signIn(proposal, password);
+        this.props.signIn(proposal, password)
     }
 
     logOut() {
@@ -23,9 +24,9 @@ export default class LoginForm extends React.Component {
 
     render() {
         let login_input_form = "";
-        if (this.props.proposal.Proposal) {
+        if ( this.props.proposal.data.Proposal) {
             login_input_form = (<div>
-                                    <p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{this.props.proposal.Proposal.title}</p>
+                                    <p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{this.props.proposal.data.Proposal.title}</p>
                                     <button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={this.logOut.bind(this)}>Log out</button>
                                </div>);
         } else {

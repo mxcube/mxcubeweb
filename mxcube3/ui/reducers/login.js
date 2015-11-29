@@ -1,25 +1,16 @@
-export default (state={}, action) => {
+const initialState = {
+  data:{ }
+}
+export default (state=initialState, action) => {
     switch (action.type) {
         case 'LOGIN':
-            let result = {};
-     
-            window.error_notification.clear();
-     
-            $.ajax({ url: 'mxcube/api/v0.1/login', type: 'GET', data: action, 
-                success: function(res) {
-                    // res is a Proposal object
-                    result = res;
-                }, 
-                error: function(req, error_string, exc) {
-                    window.error_notification.notify(error_string);
-                }
-            })
-            //return { Proposal: { title: "HELLO" } }
-            return result
+            window.error_notification.clear(); 
+            return Object.assign({},state,action) 
         case 'SIGNOUT':
             window.error_notification.clear();
-            return { Proposal: null }
+            return Object.assign({},state,initialState)
         default:
+            console.log("defalut")
             return state
     }
 }
