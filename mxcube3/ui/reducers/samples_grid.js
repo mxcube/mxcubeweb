@@ -10,8 +10,6 @@ export default (state={ samples_list: [] }, action) => {
         let samples_list = [ ...state.samples_list.slice(0, action.index),
                            sample_item, 
                            ...state.samples_list.slice(action.index+1) ]
-	console.log(sample_item)
-        console.log(samples_list[action.index].selected)
 	return Object.assign({}, state, { samples_list });
     default:
         return state
