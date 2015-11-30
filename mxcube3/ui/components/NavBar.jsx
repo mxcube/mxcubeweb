@@ -2,6 +2,8 @@ import React from 'react'
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap"
 import Login from '../containers/LoginContainer'
 import ErrorNotificationPanel from 'Logging'
+import SampleQueueContainer from '../containers/SampleQueueContainer'
+
 
 export default class MXNavbar extends React.Component {
 	constructor(props) {
@@ -28,6 +30,7 @@ export default class MXNavbar extends React.Component {
                                 <div className="container-fluid">
                                     <div className="row">
                                         <div className="col-xs-2">
+                                        	<SampleQueueContainer />
                                         </div>
                                         <div className="col-xs-10">
                                              {this.props.children}
