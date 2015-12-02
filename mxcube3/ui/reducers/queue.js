@@ -7,7 +7,7 @@ export default (state={
 }, action) => {
     switch (action.type) {
         case 'ADD_SAMPLE':
-        	console.log(state);
+
         	let index = state.index +1;
         	let sample = {};
         	sample[index] = {

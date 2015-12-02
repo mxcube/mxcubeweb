@@ -2,7 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import SampleGrid from './SampleGrid'
 import { Input, Button, Glyphicon  } from "react-bootstrap"
-import { samples_list } from '../test-samples-list'
 
 export default class SampleGridMain extends React.Component {
 	render() {
@@ -23,7 +22,7 @@ export default class SampleGridMain extends React.Component {
 		return (<div>
 				{searchInput}
 				{checkScContents}
-				<SampleGrid samples_list={samples_list}/>
+				<SampleGrid />
 				{this.props.children}
 			</div>)
 	}
