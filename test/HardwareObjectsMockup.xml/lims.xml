@@ -1,0 +1,28 @@
+<object class="ISPyBClient2Mockup">
+
+  <ws_root>
+     https://ispyb.maxlab.lu.se/ispyb-ejb3/ispybWS/
+  </ws_root>
+  <object role="session" href="/session"/>
+  <!-- Name of the beamline -->
+  <beamline_name>MX</beamline_name>
+  <proposals>
+    <proposal>
+      <code>ifx</code>
+      <ispyb>fx</ispyb>
+      <gui>fx</gui>
+    </proposal>
+  </proposals>
+
+  <inhouse>
+    <proposal>
+      <code>opid</code>
+      <number>291</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>9113</number>
+    </proposal>
+  </inhouse>
+
+</object>
