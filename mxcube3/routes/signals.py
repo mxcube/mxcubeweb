@@ -1,6 +1,7 @@
 import logging, json
 from flask.ext.socketio import emit
 from mxcube3 import socketio
+
 MaxLabMicrodiff_signals = ['minidiffReady','minidiffNotReady','phizMotorStateChanged','phiyMotorStateChanged','zoomMotorPredefinedPositionChanged','zoomMotorStateChanged','sampxMotorStateChanged','sampyMotorStateChanged','centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving','centringFailed','centringSuccessful','progressMessage','centringSnapshots'] #'phiMotorStateChanged','minidiffStateChanged', 'diffractometerMoved', removed to cleanup the log
 
 BL9113MultiCollect_signals = ['collectConnected', 'collectReady',  'collectNumberOfFrames', 'collectImageTaken','collectReady','collectStarted','collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished','collectEnded']

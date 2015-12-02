@@ -1,17 +1,27 @@
 from flask import session, redirect, url_for, render_template, request, Response
 from mxcube3 import app as mxcube
-
+import constants
 import logging
 
 ###----SAMPLE----###
-@mxcube.route("/mxcube/api/v0.1/samples/<id>", methods='POST')
+@mxcube.route("/mxcube/api/v0.1/samples/list", methods=['GET'])
+def getSampleList():
+    """Get the sample list, now only from from 
+    return_data={{"smiles": null, "holderLength": 22.0, "code": null, "containerSampleChangerLocation": "4", "proteinAcronym": "A-TIM", "cellGamma": 0.0, "cellAlpha": 0.0, "sampleId": 493129, "cellBeta": 0.0, "crystalSpaceGroup": "P21212", "sampleLocation": "4", "sampleName": "f01", "cellA": 0.0, "diffractionPlan": "", "cellC": 0.0, "cellB": 0.0, "experimentType": "MXPressO"}, ..... }
+    """
+    try:
+        return constants.samples_list
+    else:
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/samples/<id>", methods=['PUT', 'GET'])
 def add_sample(id):
     """Add the information of the sample with id:"id"
     data = {generic_data, "SampleId":id, sample_data={'holderLength': 22.0, 'code': None, 'containerSampleChangerLocation': '1', 'proteinAcronym': 'Mnth', 'cellGamma': 0.0, 'cellAlpha': 0.0, 'sampleId': 444179, 'cellBeta': 0.0, 'crystalSpaceGroup': 'R32', 'sampleLocation': '2', 'sampleName': 'sample-E02', 'cellA': 0.0, 'diffractionPlan': {}, 'cellC': 0.0, 'cellB': 0.0, 'experimentType': 'Default'}}
     return_data={"result": True/False}
     """
-    data = dict(request.POST.items())
     return samples.addSample(data)
+
 
 @mxcube.route("/mxcube/api/v0.1/samples/<id>", methods=['PUT'])
 def update_sample(id):
