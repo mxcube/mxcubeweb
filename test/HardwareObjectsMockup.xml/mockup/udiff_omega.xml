@@ -1,0 +1,7 @@
+<device class="MotorMockup">
+  <username>Omega</username>
+  <exporter_address>130.235.94.124:9001</exporter_address>
+  <motor_name>Omega</motor_name>
+  <unit>1e-3</unit>
+  <GUIstep>90</GUIstep>
+</device>
