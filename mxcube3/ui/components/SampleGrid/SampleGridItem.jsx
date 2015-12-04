@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js";
 import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
-import "./css/SampleGrid.css";
+import "./SampleGrid.css";
 
 export default class SampleGridItem extends React.Component {
         propTypes: {
