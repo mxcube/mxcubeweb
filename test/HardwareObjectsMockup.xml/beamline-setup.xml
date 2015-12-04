@@ -1,10 +1,10 @@
 <!-- Example beamline setup file -->
 <object class="BeamlineSetup" role="BeamlineSetup">
   <!-- Objects directly associatd with hardware -->
-<!--   <object href="/mockup/transmission-mockup" role="transmission"/>
- -->  <object href="/mockup/minidiff-mockup" role="diffractometer"/>
+<!--   <object href="/transmission-mockup" role="transmission"/>
+ -->  <object href="/minidiff-mockup" role="diffractometer"/>
   <object href="/lims" role="lims_client"/>
-  <!-- <object href="/mockup/sc-mockup" role="sample_changer"/>     -->
+  <object href="/sc-mockup" role="sample_changer"/>
 
 
   <!-- Software (abstract) concepts -->

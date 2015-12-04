@@ -1,15 +1,19 @@
+import fetch from 'isomorphic-fetch'
+
 export function doLogin(proposal, password) {
-  return function (dispatch)  {
-    $.ajax({ url: 'mxcube/api/v0.1/login', type: 'GET', data: {proposal:proposal, password: password},
-                success: function(data) {
-                    dispatch (afterLogin(data));
-                }, 
-                error: function(req, error_string, exc) {
-		    console.log ("ajax error")
-                }
-            })
-     return { type: "LOGGING"} 
-  }
+    return function(dispatch) {
+         fetch('mxcube/api/v0.1/login', { 
+            method: 'POST', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({ proposal, password })
+          }).then(response => response.json())
+          .then(json => {
+                dispatch(afterLogin(json));
+          })
+    }
 }
 
 export function afterLogin(data) {

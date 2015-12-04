@@ -3,10 +3,11 @@ from mxcube3 import app as mxcube
 import logging
 import itertools
 
-@mxcube.route("/mxcube/api/v0.1/login")
+@mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
-    Proposal = request.args['proposal']
-    password = request.args['password']
+    content = request.get_json()
+    Proposal = content['proposal']
+    password = content['password']
     proposal = "".join(itertools.takewhile(lambda c: not c.isdigit(), Proposal))
     prop_number = Proposal[len(proposal):]
     return jsonify(mxcube.db_connection.get_proposal(proposal, prop_number))
