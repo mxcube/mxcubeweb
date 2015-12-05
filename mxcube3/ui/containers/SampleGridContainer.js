@@ -21,11 +21,20 @@ class SampleGridContainer extends React.Component {
 			<Button className="btn-primary" onClick={this.props.getSamples}>Check sample changer contents</Button>
 		);
 
-		return (<div>
+		return (<div className="col-lg-10">
+                            <div className="row">
+                                <div className="col-xs-4">
 				{searchInput}
+                                </div>
+                               <div className="col-xs-2">
 				{checkScContents}
-				<SampleGrid samples_list={this.props.samples_list} toggleSelected={this.props.toggleSelected}/>
-				{this.props.children}
+                               </div>
+                            </div>
+                            <div className="row"> 
+                                <div className="col-lg-10">
+				    <SampleGrid samples_list={this.props.samples_list} toggleSelected={this.props.toggleSelected}/>
+                                </div>
+                            </div>
 			</div>)
 	}
 }
