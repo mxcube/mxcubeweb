@@ -13,7 +13,7 @@ export default class Main extends React.Component {
                           <div className="col-xs-2">
                            	<SampleQueueContainer />
                           </div>
-                          <div className="col-xs-10">
+                          <div className="col-lg-10">
                                {this.props.children}
                           </div>
                       </div>
