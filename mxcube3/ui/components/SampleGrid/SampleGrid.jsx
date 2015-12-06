@@ -7,22 +7,33 @@ import Isotope from 'isotope-layout'
 export default class SampleGrid extends React.Component {
     propTypes: {
 	samples_list: React.PropTypes.array.isRequired,
-        toggleSelected: React.PropTypes.func.isRequired
+        toggleSelected: React.PropTypes.func.isRequired,
+        filter_text: React.PropTypes.string 
     }
 
     componentDidMount() {
         if (! this.isotope) {
-		let container = ReactDOM.findDOMNode(this);
-		this.isotope = new Isotope(container, {itemSelector: '.samples-grid-item', layoutMode: 'masonry', masonry: { isFitWidth: true }});
+            let container = ReactDOM.findDOMNode(this);
+            this.isotope = new Isotope(container, {itemSelector: '.samples-grid-item', layoutMode: 'masonry', masonry: { isFitWidth: true }, filter: (elem) => { return this._filter(elem) }});
 	}
     }
 
+    _filter(elem) {
+        if (this.props.filter_text) {
+          return false;
+        } else {
+          return true;
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        if ((this.isotope) && (this.props.samples_list != prevProps.samples_list)) { 
+        if (this.isotope) {
+          if (this.props.samples_list != prevProps.samples_list) { 
 	    this.isotope.reloadItems();
 	    this.isotope.layout();
-	    this.isotope.arrange();
-	} 
+	  }
+	  this.isotope.arrange(); 
+        }
     }
 
     addTag(index, tag) {

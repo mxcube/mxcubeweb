@@ -3,19 +3,19 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll } from '../actions/samples_grid'
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter } from '../actions/samples_grid'
 
 class SampleGridContainer extends React.Component {
 	render() {
 		const innerSearchIcon = (
-			<Button><Glyphicon glyph="search"/></Button>
+			<Button onClick={() => { this.props.filter(this.refs.filter_input.getValue()) } }><Glyphicon glyph="search"/></Button>
 		);
 
 		return (<div>
                             <div className="row">
                                 <div className="col-xs-5">
 			            <form className="form-horizontal">
-				        <Input type="text" label="Filter" labelClassName="col-xs-1" wrapperClassName="col-xs-4" buttonAfter={innerSearchIcon}/>
+				        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-1" wrapperClassName="col-xs-4" buttonAfter={innerSearchIcon}/>
 			            </form>
                                 </div>
                                <div className="col-xs-3">
@@ -31,7 +31,7 @@ class SampleGridContainer extends React.Component {
                                </div>
                             </div>
                             <div className="row"> 
-				    <SampleGrid samples_list={this.props.samples_list} toggleSelected={this.props.toggleSelected}/>
+				    <SampleGrid samples_list={this.props.samples_list} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text}/>
                             </div>
 			</div>)
 	}
@@ -46,7 +46,8 @@ function mapDispatchToProps(dispatch) {
         getSamples: () => dispatch(doGetSamplesList()),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
         toggleSelected: (index) => dispatch(doToggleSelected(index)), 
-        selectAll: () => dispatch(doSelectAll())
+        selectAll: () => dispatch(doSelectAll()),
+        filter: (filter_text) => dispatch(doFilter(filter_text))
     }
 }
 

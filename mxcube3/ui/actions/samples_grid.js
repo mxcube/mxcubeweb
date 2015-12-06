@@ -29,3 +29,7 @@ export function doToggleSelected(index) {
 export function doSelectAll() {
     return { type: "SELECT_ALL" }
 }
+
+export function doFilter(filter_text) {
+    return { type: "FILTER",  filter_text }
+}
