@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected } from '../actions/samples_grid'
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll } from '../actions/samples_grid'
 
 class SampleGridContainer extends React.Component {
 	render() {
@@ -47,7 +47,8 @@ function mapDispatchToProps(dispatch) {
     return {
         getSamples: () => dispatch(doGetSamplesList()),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
-        toggleSelected: (index) => dispatch(doToggleSelected(index))
+        toggleSelected: (index) => dispatch(doToggleSelected(index)), 
+        selectAll: () => dispatch(doSelectAll())
     }
 }
 
