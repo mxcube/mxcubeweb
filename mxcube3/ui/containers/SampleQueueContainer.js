@@ -6,12 +6,8 @@ import * as QueueActions from '../actions/queue'
 
 class SampleQueueContainer extends Component {
 
-  addSample(){
-    this.props.actions.addSample("Add Characterisation");
-  }
     
   render() {
-
     return (
       <div className="row">
       <div className="col-xs-12">
@@ -20,12 +16,9 @@ class SampleQueueContainer extends Component {
                   <h8 className="panel-title text-center">SampleQueue</h8>
                 </div>
                 <div className="panel-body">
-                <ul>
                 {this.props.todo.map((function(result,index) {
-                      return <SampleQueue key={index} data={result} addSample={this.props.actions.addSample} />;
+                      return <SampleQueue key={index} sampledata={this.props.samples_list[result]}/>;
                   }.bind(this)))}
-                </ul>
-                <a className='btn btn-primary'onClick={this.addSample.bind(this)}>Add Sample</a>
                 </div>
               </div>
             </div>
@@ -38,7 +31,8 @@ class SampleQueueContainer extends Component {
 function mapStateToProps(state) {
   return {
 
-    todo: state.queue.todo
+    todo: state.queue.todo,
+    samples_list: state.samples_grid.samples_list
     
   }
 }
