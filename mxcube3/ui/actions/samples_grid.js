@@ -33,3 +33,4 @@ export function doSelectAll() {
 export function doFilter(filter_text) {
     return { type: "FILTER",  filter_text }
 }
+
