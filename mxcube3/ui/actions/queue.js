@@ -1,15 +1,22 @@
 import fetch from 'isomorphic-fetch'
 
-export function addSample(sample) {
+export function addSample(id) {
     return { 
     	type: "ADD_SAMPLE", 
-    	text: sample
+    	text: id
+    }
+}
+
+export function removeSample(id) {
+    return { 
+      type: "REMOVE_SAMPLE", 
+      text: id
     }
 }
 
 
 
-// export function requestlogin(proposal, password) {
+// // export function requestlogin(proposal, password) {
 
 //   // Thunk middleware knows how to handle functions.
 //   // It passes the dispatch method as an argument to the function,
@@ -31,7 +38,7 @@ export function addSample(sample) {
 //     return fetch(`http://www.reddit.com/r/reactjs.json`)
 //       .then(response => response.json())
 //       .then(json =>
-
+        
 //         // We can dispatch many times!
 //         // Here, we update the app state with the results of the API call.
 
@@ -41,4 +48,4 @@ export function addSample(sample) {
 //       // In a real world app, you also want to
 //       // catch any error in the network call.
 //   }
-// }
+// // }
