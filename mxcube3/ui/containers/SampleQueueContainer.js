@@ -16,9 +16,9 @@ class SampleQueueContainer extends Component {
                   <h8 className="panel-title text-center">SampleQueue</h8>
                 </div>
                 <div className="panel-body">
-                {this.props.todo.map((function(result,index) {
+                {this.props.todo.map((result,index) => {
                       return <SampleQueue key={index} sampledata={this.props.samples_list[result]}/>;
-                  }.bind(this)))}
+                  })}
                 </div>
               </div>
             </div>
@@ -47,3 +47,4 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(SampleQueueContainer)
+
