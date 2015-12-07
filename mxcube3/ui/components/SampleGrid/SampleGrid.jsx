@@ -33,12 +33,15 @@ export default class SampleGrid extends React.Component {
 
     render() {
         let samples_list = this.props.samples_list;
-        return <div className='samples-grid'>
-            { samples_list.map((sample, index) => {
-		      let exp_type = sample.experimentType || "";
-		      let sc_loc = sample.location;
-		      return <SampleGridItem key={index} sample_id={sample.id} acronym={sample.proteinAcronym} name={sample.sampleName} dm="HA1234567" location={sc_loc} tags={exp_type} selected={this.props.samples_list[index].selected} onClick={() => this.props.toggleSelected(index)}/>
-	     })}
-        </div>;
+        var sample_grid = [];
+        Object.keys(samples_list).forEach(function (key) {
+                let exp_type = samples_list[key].experimentType || "";
+                let sc_loc = samples_list[key].location;
+                sample_grid.push(<SampleGridItem key={key} sample_id={samples_list[key].id} acronym={samples_list[key].proteinAcronym} name={samples_list[key].sampleName} dm="HA1234567" location={sc_loc} tags={exp_type} selected={this.props.samples_list[key].selected} onClick={() => this.props.toggleSelected(key)}/>);
+        }.bind(this));
+    return <div className='samples-grid col-xs-12'>
+                {sample_grid}
+            </div>;
+
     }    
 }
