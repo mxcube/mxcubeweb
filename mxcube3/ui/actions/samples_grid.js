@@ -25,3 +25,11 @@ export function doAddTag(tag) {
 export function doToggleSelected(index) {
     return { type: "TOGGLE_SELECTED", index }
 }
+
+export function doSelectAll() {
+    return { type: "SELECT_ALL" }
+}
+
+export function doFilter(filter_text) {
+    return { type: "FILTER",  filter_text }
+}

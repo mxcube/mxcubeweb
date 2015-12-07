@@ -27,16 +27,6 @@ export default class MXNavbar extends React.Component {
 					</Nav>
 					<Login/>
 				</Navbar>
-                                <div className="container-fluid">
-                                    <div className="row">
-                                        <div className="col-xs-2">
-                                        	<SampleQueueContainer />
-                                        </div>
-                                        <div className="col-xs-10">
-                                             {this.props.children}
-                                        </div>
-                                    </div>
-                                </div>
 			</div>)
 	}
 }
