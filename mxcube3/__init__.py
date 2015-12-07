@@ -12,7 +12,7 @@ opt_parser.add_option("-r", "--repository",
 opt_parser.add_option("-l", "--log-file",
                       dest="log_file",
                       help="Hardware Repository log file name",
-                      default=os.path.join(os.path.dirname(__file__), 'log/mxcube3.log'))
+                      default='')
 opt_parser.add_option("-s", "--beamline-setup",
                       dest="beamline_setup",
                       help="Beamline setup HWR file",
@@ -46,7 +46,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   hwr = hwr.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
   hwr.connect()
   log_file = cmdline_options.log_file
-  setLogFile(log_file)
+  if log_file:
+     setLogFile(log_file)
 
   app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
   app.diffractometer = app.beamline.getObjectByRole("diffractometer")
