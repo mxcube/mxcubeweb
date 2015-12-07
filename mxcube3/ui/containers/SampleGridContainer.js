@@ -8,10 +8,15 @@ import { addSample } from '../actions/queue'
 
 class SampleGridContainer extends React.Component {
         addSamples() {
-            let selected_samples = this.props.samples_list.filter(s => { return s.selected });
-            for (let s of selected_samples) {
-                this.props.addSampleToQueue(s); 
-            }
+
+            // Loop through all samples, check which was selected and add to the queue. 
+            Object.keys(this.props.samples_list).forEach(function (key) {
+
+                if (this.props.samples_list[key].selected){
+                  this.props.addSampleToQueue(key);
+                }
+               
+            }.bind(this));
         }
 
 	render() {
@@ -56,7 +61,7 @@ function mapDispatchToProps(dispatch) {
         toggleSelected: (index) => dispatch(doToggleSelected(index)), 
         selectAll: () => dispatch(doSelectAll()),
         filter: (filter_text) => dispatch(doFilter(filter_text)),
-        addSampleToQueue: (sample) => dispatch(addSample(sample))
+        addSampleToQueue: (id) => dispatch(addSample(id))
     }
 }
 

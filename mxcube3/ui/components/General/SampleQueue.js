@@ -5,12 +5,9 @@ import React, { Component, PropTypes } from 'react'
 
 export default class SampleQueue extends Component {
 
-
-
-    render() {
-        
+    render() { 
         return (
-            <li>{this.props.data.text.info}</li>
+            <p>{this.props.sampledata.id} - {this.props.sampledata.proteinAcronym}</p>
         );
     }
 }
