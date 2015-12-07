@@ -4,8 +4,16 @@ import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar  } from "react-bootstrap"
 import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter } from '../actions/samples_grid'
+import { addSample } from '../actions/queue'
 
 class SampleGridContainer extends React.Component {
+        addSamples() {
+            let selected_samples = this.props.samples_list.filter(s => { return s.selected });
+            for (let s of selected_samples) {
+                this.props.addSampleToQueue(s); 
+            }
+        }
+
 	render() {
 		const innerSearchIcon = (
 			<Button onClick={() => { this.props.filter(this.refs.filter_input.getValue()) } }><Glyphicon glyph="search"/></Button>
@@ -23,7 +31,7 @@ class SampleGridContainer extends React.Component {
                                </div>
                                <div className="col-xs-4">
 			           <ButtonToolbar>
-			               <Button className="btn-success pull-right" onClick={this.props.addSamples}>
+			               <Button className="btn-success pull-right" onClick={() => { this.addSamples() }}>
                                            <Glyphicon glyph="plus"/> Add samples
                                        </Button>
                                        <Button className="btn pull-right" onClick={this.props.selectAll}>Select all</Button>
@@ -47,7 +55,8 @@ function mapDispatchToProps(dispatch) {
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
         toggleSelected: (index) => dispatch(doToggleSelected(index)), 
         selectAll: () => dispatch(doSelectAll()),
-        filter: (filter_text) => dispatch(doFilter(filter_text))
+        filter: (filter_text) => dispatch(doFilter(filter_text)),
+        addSampleToQueue: (sample) => dispatch(addSample(sample))
     }
 }
 
