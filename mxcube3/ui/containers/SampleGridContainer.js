@@ -13,7 +13,7 @@ class SampleGridContainer extends React.Component {
 
 		const searchInput = (
 			<form className="form-horizontal">
-				<Input type="text" label="Filter" labelClassName="col-xs-1" wrapperClassName="col-xs-3" buttonAfter={innerSearchIcon}/>
+				<Input type="text" label="Filter" labelClassName="col-xs-3" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon}/>
 			</form>
 		);
 
@@ -21,11 +21,22 @@ class SampleGridContainer extends React.Component {
 			<Button className="btn-primary" onClick={this.props.getSamples}>Check sample changer contents</Button>
 		);
 
-		return (<div>
-				{searchInput}
-				{checkScContents}
+		const addSampleToQueue = (
+			<Button className="btn-primary" onClick={this.props.getSamples}>Add to Queue</Button>
+		);
+
+		return (<div className="row">
+					<div className="col-xs-2">
+						{searchInput}
+					</div>
+					<div className="col-xs-8">
+						<div className="text-center">{checkScContents}</div>
+					</div>
 				<SampleGrid samples_list={this.props.samples_list} toggleSelected={this.props.toggleSelected}/>
-				{this.props.children}
+				<div className="col-xs-12">
+						{addSampleToQueue}
+				</div>
+
 			</div>)
 	}
 }

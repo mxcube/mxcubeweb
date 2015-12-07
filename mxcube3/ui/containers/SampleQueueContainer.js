@@ -8,17 +8,9 @@ class SampleQueueContainer extends Component {
 
   addSample(){
     this.props.actions.addSample("Add Characterisation");
-    this.props.actions.requestlogin("Called a synq funqestion");
   }
     
   render() {
-    
-    let results = []
-    for (var key in this.props.data.samples) {
-        results.push({id:key,
-        text: this.props.data.samples[key]
-        });
-    }
 
     return (
       <div className="row">
@@ -29,9 +21,9 @@ class SampleQueueContainer extends Component {
                 </div>
                 <div className="panel-body">
                 <ul>
-                {results.map(function(result) {
-                      return <SampleQueue key={result.id} data={result}/>;
-                  })}
+                {this.props.todo.map((function(result,index) {
+                      return <SampleQueue key={index} data={result} addSample={this.props.actions.addSample} />;
+                  }.bind(this)))}
                 </ul>
                 <a className='btn btn-primary'onClick={this.addSample.bind(this)}>Add Sample</a>
                 </div>
@@ -46,14 +38,13 @@ class SampleQueueContainer extends Component {
 function mapStateToProps(state) {
   return {
 
-    data: state.queue
+    todo: state.queue.todo
     
   }
 }
 
 function mapDispatchToProps(dispatch) {
  return {
-    //actions: (sample) => dispatch(addSample(sample))
     actions: bindActionCreators(QueueActions, dispatch)
   }
 }
