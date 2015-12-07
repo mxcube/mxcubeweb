@@ -9,7 +9,7 @@ export function doGetSamplesList() {
        fetch('mxcube/api/v0.1/sample_changer/samples_list')
             .then(response => response.json())
             .then(json => {
-                dispatch(doUpdateSamples(json.data));
+                dispatch(doUpdateSamples(json));
             })
     }
 }
