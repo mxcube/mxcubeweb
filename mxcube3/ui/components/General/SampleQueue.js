@@ -7,10 +7,9 @@ export default class SampleQueue extends Component {
 
 
 
-    render() {
-        
+    render() {        
         return (
-            <li>{this.props.data.text.info}</li>
+            <li>Hello wolrd</li>
         );
     }
 }
