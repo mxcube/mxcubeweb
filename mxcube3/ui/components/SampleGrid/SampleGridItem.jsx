@@ -25,7 +25,7 @@ export default class SampleGridItem extends React.Component {
         }
 
 	componentDidMount() {
-    		let editable = ReactDOM.findDOMNode(this.refs.pacronym);
+    	let editable = ReactDOM.findDOMNode(this.refs.pacronym);
 		$(editable).editable({ placement: "right", container: "body" });
 	}
 	

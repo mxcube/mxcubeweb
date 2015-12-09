@@ -1,16 +1,34 @@
-export default (state={ samples_list: [] }, action) => {
+import { addSample } from '../actions/queue'
+
+export default (state={ samples_list: {}, filter_text: "" }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
         return Object.assign({}, state, { samples_list: action.samples_list });
     case "TOGGLE_SELECTED":
-        let sample_item = state.samples_list[action.index]
-        let selected = !sample_item.selected;
-    	//if (! sample_item.loadable) { selected = false };
-        sample_item.selected = selected;
-        let samples_list = [ ...state.samples_list.slice(0, action.index),
-                           sample_item, 
-                           ...state.samples_list.slice(action.index+1) ]
-	return Object.assign({}, state, { samples_list });
+      {
+        // Creating a new SampleItem with the "selected" state toggled
+        let sample_item = {};
+        sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {selected : !state.samples_list[action.index].selected}  );
+
+        // Creating new Samplelist
+        let samples_list = Object.assign({}, state.samples_list, sample_item);
+
+    return Object.assign({}, state, {samples_list: samples_list});
+      }
+    case "SELECT_ALL":
+      { 
+        // Creating a new SampleList with the "selected" state toggled to "true"
+        let samples_list = {};
+        Object.keys(state.samples_list).forEach(function (key) {
+            samples_list[key] = Object.assign({}, state.samples_list[key], {selected : true}  );
+        });
+
+        return Object.assign({}, state,  {samples_list: samples_list}); 
+      }
+    case "FILTER":
+      {
+        return Object.assign({}, state, { filter_text: action.filter_text });
+      }
     default:
         return state
     }

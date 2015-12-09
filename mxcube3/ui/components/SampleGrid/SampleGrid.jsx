@@ -7,22 +7,33 @@ import Isotope from 'isotope-layout'
 export default class SampleGrid extends React.Component {
     propTypes: {
 	samples_list: React.PropTypes.array.isRequired,
-        toggleSelected: React.PropTypes.func.isRequired
+        toggleSelected: React.PropTypes.func.isRequired,
+        filter_text: React.PropTypes.string 
     }
 
     componentDidMount() {
         if (! this.isotope) {
-		let container = ReactDOM.findDOMNode(this);
-		this.isotope = new Isotope(container, {itemSelector: '.samples-grid-item', layoutMode: 'masonry', masonry: { isFitWidth: true }});
+            let container = ReactDOM.findDOMNode(this);
+            this.isotope = new Isotope(container, {itemSelector: '.samples-grid-item', layoutMode: 'masonry', masonry: { isFitWidth: true }, filter: (elem) => { return this._filter(elem) }});
 	}
     }
 
+    _filter(elem) {
+        if (this.props.filter_text) {
+          return false;
+        } else {
+          return true;
+        }
+    }
+
     componentDidUpdate(prevProps, prevState) {
-        if ((this.isotope) && (this.props.samples_list != prevProps.samples_list)) { 
+        if (this.isotope) {
+          if (this.props.samples_list != prevProps.samples_list) { 
 	    this.isotope.reloadItems();
 	    this.isotope.layout();
-	    this.isotope.arrange();
-	} 
+	  }
+	  this.isotope.arrange(); 
+        }
     }
 
     addTag(index, tag) {
@@ -33,12 +44,15 @@ export default class SampleGrid extends React.Component {
 
     render() {
         let samples_list = this.props.samples_list;
-        return <div className='samples-grid'>
-            { samples_list.map((sample, index) => {
-		      let exp_type = sample.experimentType || "";
-		      let sc_loc = sample.location;
-		      return <SampleGridItem key={index} sample_id={sample.id} acronym={sample.proteinAcronym} name={sample.sampleName} dm="HA1234567" location={sc_loc} tags={exp_type} selected={this.props.samples_list[index].selected} onClick={() => this.props.toggleSelected(index)}/>
-	     })}
-        </div>;
+        var sample_grid = [];
+        Object.keys(samples_list).forEach(key => { 
+                let exp_type = samples_list[key].experimentType || "";
+                let sc_loc = samples_list[key].location;
+                sample_grid.push(<SampleGridItem key={key} sample_id={samples_list[key].id} acronym={samples_list[key].proteinAcronym} name={samples_list[key].sampleName} dm="HA1234567" location={sc_loc} tags={exp_type} selected={this.props.samples_list[key].selected} onClick={() => this.props.toggleSelected(key)}/>);
+        });
+    return <div className='samples-grid col-xs-12'>
+                {sample_grid}
+            </div>;
+
     }    
 }

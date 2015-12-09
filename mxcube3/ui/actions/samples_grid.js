@@ -9,7 +9,7 @@ export function doGetSamplesList() {
        fetch('mxcube/api/v0.1/sample_changer/samples_list')
             .then(response => response.json())
             .then(json => {
-                dispatch(doUpdateSamples(json.data));
+                dispatch(doUpdateSamples(json));
             })
     }
 }
@@ -25,3 +25,12 @@ export function doAddTag(tag) {
 export function doToggleSelected(index) {
     return { type: "TOGGLE_SELECTED", index }
 }
+
+export function doSelectAll() {
+    return { type: "SELECT_ALL" }
+}
+
+export function doFilter(filter_text) {
+    return { type: "FILTER",  filter_text }
+}
+
