@@ -6,7 +6,7 @@ import os, json
 import queue_model_objects_v1 as qmo
 
 queueList={}
-
+queueOrder=[]
 ###----QUEUE ACTIONS----###
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
 def queueStart():
@@ -18,10 +18,10 @@ def queueStart():
     try:
     	mxcube.queue.start()
     	logging.getLogger('HWR').info('[QUEUE] Queue started')
-		return "True"
-	except:
-    	logging.getLogger('HWR').error('[QUEUE] Queue could not be started')
-		return "False"
+        return Response(status=200)
+    except:
+        logging.getLogger('HWR').error('[QUEUE] Queue could not be started')
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/stop", methods=['PUT'])
 def queueStop():
@@ -33,10 +33,10 @@ def queueStop():
     try:
     	mxcube.queue.stop()
     	logging.getLogger('HWR').info('[QUEUE] Queue stopped')
-		return "True"
-	except:
-    	logging.getLogger('HWR').error('[QUEUE] Queue could not be stopped')
-		return "False"
+        return Response(status = 200)
+    except:
+        logging.getLogger('HWR').error('[QUEUE] Queue could not be stopped')
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/abort", methods=['PUT'])
 def queueAbort():
@@ -46,12 +46,12 @@ def queueAbort():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to abort')
     try:
-    	mxcube.queue.abort()
-    	logging.getLogger('HWR').info('[QUEUE] Queue aborted')
-		return "True"
-	except:
-    	logging.getLogger('HWR').error('[QUEUE] Queue could not be aborted')
-		return "False"
+        mxcube.queue.abort()
+        logging.getLogger('HWR').info('[QUEUE] Queue aborted')
+        return Response(status = 200)
+    except:
+        logging.getLogger('HWR').error('[QUEUE] Queue could not be aborted')
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/pause", methods=['PUT'])
 def queuePause():
@@ -61,12 +61,12 @@ def queuePause():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
     try:
-    	mxcube.queue.pause()
-    	logging.getLogger('HWR').info('[QUEUE] Queue paused')
-		return "True"
-	except:
-    	logging.getLogger('HWR').error('[QUEUE] Queue could not be paused')
-		return "False"
+        mxcube.queue.pause()
+        logging.getLogger('HWR').info('[QUEUE] Queue paused')
+        return Response(status = 200)
+    except:
+        logging.getLogger('HWR').error('[QUEUE] Queue could not be paused')
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
 def queueClear():
@@ -79,10 +79,10 @@ def queueClear():
         mxcube.queue.clear_model(mxcube.queue.get_model_root()._name)#model name?? rootNode?
         #mxcube.queue.queue_hwobj.clear()#already done in the previous call
         logging.getLogger('HWR').info('[QUEUE] Queue cleared')
-        return "True"
+        return Response(status = 200)
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could not be cleared')
-        return "False"
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['GET'])
 def queueGet():
@@ -92,7 +92,9 @@ def queueGet():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting data')
     try:
-        return jsonify(queueList)
+        resp = jsonify(queueList)
+        resp.status_code = 200
+        return resp
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could not get')
         return Response(status=409)
@@ -104,13 +106,16 @@ def queueSave():
     Return: True/False
     """
     logging.getLogger('HWR').info('[QUEUE] Queue saving')
+    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-backup.txt')
     try:
-        f = open('./queue-backup.txt', 'w')
-
-        return mxcube.queue._queue_entry_list # here it should be saved somewhere? file?
+        f = open(filename, 'w')
+        tofile = json.dumps(queueList) 
+        f.write(tofile)
+        f.close()
+        return Response(status = 200)
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could saved')
-        return "False"
+        return Response(status = 409)
         
 @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
 def getCurrentEntry():
@@ -124,7 +129,7 @@ def getCurrentEntry():
         return mxcube.queue.get_current_entry()
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
-        return "False"
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['PUT'])
 def setCurrentEntry(entry):
@@ -138,7 +143,7 @@ def setCurrentEntry(entry):
         return mxcube.queue.set_current_entry(entry)
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
-        return "False"
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<entry>/execute", methods=['PUT'])
 def executeEntryWithId(entry):
@@ -148,32 +153,18 @@ def executeEntryWithId(entry):
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to execute entry with id: %s' %id)
     try:
-    	mxcube.queue.execute_entry(entry)
-    	logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' %id)
-		return "True"
-	except:
-    	logging.getLogger('HWR').error('[QUEUE] Queue could not be started')
-		return "False"
+        mxcube.queue.execute_entry(entry)
+        logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' %id)
+        return Response(status = 200)
+    except:
+        logging.getLogger('HWR').error('[QUEUE] Queue could not be started')
+        return Response(status = 409)
 
 ###----QUEUE ELEMENTs MANAGEMENT----###
 ## Deprecating Sample.py
 ###----SAMPLE----###
 import queue_entry as qe
 from queue_entry import QueueEntryContainer
-
-# @mxcube.route("/mxcube/api/v0.1/queue/update", methods=['POST','PUT'])
-# def updateList(list):
-#     sample_list = request.get_json() # agree with fredrik
-#     for samop in sample_list:
-#         #"1:01"
-#         asignlesample = bdfvasdf
-#         add_child
-#         nernode + asignlesample._node_id
-
-#         queeu_id_)list.push(newnode:'1:01')
-
-# @mxcube.route("/mxcube/api/v0.1/queue/<id>/update", methods=['POST','PUT'])
-# def updateCollections(list):
 
 @mxcube.route("/mxcube/api/v0.1/queue/add/<id>", methods=['POST','PUT'])
 def addSample(id):
@@ -192,6 +183,7 @@ def addSample(id):
         mxcube.queue.queue_hwobj.enqueue(sampleEntry)
         logging.getLogger('HWR').info('[QUEUE] sample added')
         queueList.update({nodeId:{'SampleId': id, 'QueueId': nodeId, 'methods':[]}})
+        queueOrder.append(nodeId)
         return jsonify({'SampleId': id, 'QueueId': nodeId} )
     except:
         logging.getLogger('HWR').error('[QUEUE] sample could not be added')
@@ -206,45 +198,85 @@ def deleteSample(id):
         entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
         mxcube.queue.queue_hwobj.dequeue(entryToRemove)
         queueList.pop(int(id))
+        queueOrder.remove(nodeId)
         return Response(status = 200)
     except:
         logging.getLogger('HWR').error('[QUEUE] Queued sample could not be deleted')
         return Response(status = 409)
+###Adding methods to a sample
+@mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/centring", methods=['PUT', 'POST'])
+def addCentring(id):
+    '''
+    Add method to the sample with id: <id>, integer
+    '''
+    #no data received yet
+    try:
+        centNode = qmo.SampleCentring()
+        centEntry = qe.SampleCentringQueueEntry()
+        centEntry.set_data_model(centNode)
 
-# @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST','PUT'])
-# def addUpdateSampleEntry(id):
-#     """Add the information of the sample with id:"id"
-#     id: integer
-#     data = {generic_data, "SampleId":id, sample_data={'holderLength': 22.0, 'code': None, 'containerSampleChangerLocation': '1', 'proteinAcronym': 'Mnth', 'cellGamma': 0.0, 'cellAlpha': 0.0, 'sampleId': 444179, 'cellBeta': 0.0, 'crystalSpaceGroup': 'R32', 'sampleLocation': '2', 'sampleName': 'sample-E02', 'cellA': 0.0, 'diffractionPlan': {}, 'cellC': 0.0, 'cellB': 0.0, 'experimentType': 'Default'}}
-#     return_data={"result": True/False}
-#     """
-#     samples_list = mxcube.sample_changer.samples_list
-#     samples_list[id]
-#     content = request.get_json() # agree with fredrik
-#     #data = dict(request.POST.items())
+        node = mxcube.queue.get_node(int(id))
+        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        newNode = mxcube.queue.add_child_at_id(int(id), centNode) #add_child does not return id!
+        entry.enqueue(centEntry)
+        queueList[int(id)]['methods'].append({'CentringId':newNode})
+        logging.getLogger('HWR').info('[QUEUE] centring added to sample')
+        resp = jsonify({'centringId':newNode})
+        resp.status_code = 200
+        return resp
+    except Exception as ex:
+        print ex
+        logging.getLogger('HWR').info('[QUEUE] centring could not be added to sample')
+        return Response(status = 409)
+@mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/characterisation", methods=['PUT', 'POST'])
+def addCharacterisation(id):
+    '''
+    Add method to the sample with id: <id>, integer
+    '''
+    #no data received yet
+    try:
+        characNode = qmo.Characterisation()
+        characEntry = qe.CharacterisationQueueEntry()
+        characEntry.set_data_model(characNode)
 
-#     logging.getLogger('HWR').info('[QUEUE] Queue going to add entry with id: %s' %id)
+        node = mxcube.queue.get_node(int(id))
+        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        newNode = mxcube.queue.add_child_at_id(int(id), characNode) #add_child does not return id!
+        entry.enqueue(characEntry)
+        queueList[int(id)]['methods'].append({'CharacId':newNode})
+        logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
+        resp = jsonify({'CharacId':newNode})
+        resp.status_code = 200
+        return resp
+    except Exception as ex:
+        print ex
+        logging.getLogger('HWR').info('[QUEUE] characterisation could not be added to sample')
+        return Response(status = 409)
 
-#     if mxcube.queue.get_node(int(id)):
-#         #already exist, so just update the element
-#         logging.getLogger('HWR').info('[QUEUE] element already exist, updating')
-#         #update model and apply to the queue entry
-#         return "True"
-#     else:
-#         sampleNode = qmo.Sample()
-#         if sampleNode.has_lims_data():
-#             sampleNode.init_from_lims_object(lims_sample)
-#         # check if it has lims data and fill, apply received data
-#         sampleEntry = qe.SampleQueueEntry()
-#         sampleEntry.set_data_model(sampleNode)
-#         try:
-#             mxcube.queue.add_child(mxcube.queue._selected_model,sampleNode)
-#             mxcube.queue.queue_hwobj.enqueue(sampleEntry)
-#             logging.getLogger('HWR').info('[QUEUE] Queue sample added')
-#             return "True"
-#         except:
-#             logging.getLogger('HWR').error('[QUEUE] Queue sample could not added')
-#             return "False"
+@mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/datacollection", methods=['PUT', 'POST'])
+def addDataCollection(id):
+    '''
+    Add method to the sample with id: <id>, integer
+    '''
+    #no data received yet
+    try:
+        colNode = qmo.Characterisation()
+        colEntry = qe.CharacterisationQueueEntry()
+        colEntry.set_data_model(colNode)
+
+        node = mxcube.queue.get_node(int(id))
+        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        newNode = mxcube.queue.add_child_at_id(int(id), colNode) #add_child does not return id!
+        entry.enqueue(colEntry)
+        queueList[int(id)]['methods'].append({'ColId':newNode})
+        logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
+        resp = jsonify({'ColId':newNode})
+        resp.status_code = 200
+        return resp
+    except Exception as ex:
+        print ex
+        logging.getLogger('HWR').info('[QUEUE] datacollection could not be added to sample')
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
@@ -253,57 +285,25 @@ def getSample(id):
     return_data={"SampleId":id, sample_data={'holderLength': 22.0, 'code': None, 'containerSampleChangerLocation': '1', 'proteinAcronym': 'Mnth', 'cellGamma': 0.0, 'cellAlpha': 0.0, 'sampleId': 444179, 'cellBeta': 0.0, 'crystalSpaceGroup': 'R32', 'sampleLocation': '2', 'sampleName': 'sample-E02', 'cellA': 0.0, 'diffractionPlan': {}, 'cellC': 0.0, 'cellB': 0.0, 'experimentType': 'Default'}}
     """
     try:
-        if qm.get_node(id):
-            return qm.get_node(id)#mmm... jsonify??
+        if not queueList[int(id)]:
+            logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
+            return Response(status = 409)
         else:
-            return "False"
+            resp = jsonify(queueList[int(i)])
+            resp.status_code = 200
+            return resp
     except:
-            logging.getLogger('HWR').error('[QUEUE] Queued sample could not be retrieved')
-            return "False"
+        logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
+        return Response(status = 409)
 
+#####################################
 ###to be programmed....
-@mxcube.route("/mxcube/api/v0.1/samples", methods=['GET'])
-def getSampleList():
-    """Get the sample list already on the queue
-    data = {generic_data}
-    return_data={"SampleId1":id, ..., "SampleIdN":id}
-    """
-    data = dict(request.POST.items())
-    return samples.getSampleList()
-
-@mxcube.route("/mxcube/api/v0.1/queue/<id>/mode", methods=['POST'])
-def set_sample_mode2(id):
-    """Set sample changer mode: sample changer, manually mounted, ... (maybe it is enoug to set for all the same mode)
-    data = {generic_data, "Mode": mode}
-    return_data={"result": True/False}
-    """
-    data = dict(request.POST.items())
-    return samples.getMode(data)
-
-@mxcube.route("/mxcube/api/v0.1/queue/<id>/centring", methods=['PUT'])
-def set_centring_mode(id):
-    """Set centring method: semi auto, fully auto,  ...
-    data = {generic_data, "Mode": mode}
-    return_data={"result": True/False}
-    """
-    data = dict(request.POST.items())
-    return samples.setCentring(data)
-
-###----SAMPLECHANGER----###
-@mxcube.route("/mxcube/api/v0.1/queue/<id>/mount", methods=['PUT'])
-def mount_sample(id):
-    """Mount sample with id:"id"
-    data = {generic_data, "SampleId": id}
-    return_data={"result": True/False}
-    """
-    data = dict(request.POST.items())
-    return samples.mountSample(data)
-
-@mxcube.route("/mxcube/api/v0.1/queue/<id>/umount", methods=['PUT'])
-def umount_sample():
-    """Umount mounted sample
-    data = {generic_data}
-    return_data={"result": True/False}
-    """
-    data = dict(request.POST.items())
-    return samples.umountSample(data)
+#####################################
+# @mxcube.route("/mxcube/api/v0.1/queue/<id>/mode", methods=['POST'])
+# def set_sample_mode2(id):
+#     """Set sample changer mode: sample changer, manually mounted, ... (maybe it is enoug to set for all the same mode)
+#     data = {generic_data, "Mode": mode}
+#     return_data={"result": True/False}
+#     """
+#     data = dict(request.POST.items())
+#     return samples.getMode(data)
