@@ -50,6 +50,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
      setLogFile(log_file)
 
   app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
+  app.session = app.beamline.getObjectByRole("session")
   app.diffractometer = app.beamline.getObjectByRole("diffractometer")
   app.db_connection = app.beamline.getObjectByRole("lims_client")
   #app.resolution = app.beamline.getObjectByRole("resolution")
