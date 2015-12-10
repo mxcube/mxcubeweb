@@ -1,4 +1,4 @@
-from flask import session, redirect, url_for, render_template, request, Response, stream_with_context
+from flask import session, redirect, url_for, render_template, request, Response, stream_with_context, jsonify
 from mxcube3 import app as mxcube
 import time, logging, collections
 import gevent.event
@@ -90,12 +90,12 @@ def queueGet():
     Args: None
     Return: a lits of queue entries
     """
-    logging.getLogger('HWR').info('[QUEUE] Queue getting')
+    logging.getLogger('HWR').info('[QUEUE] Queue getting data')
     try:
-        return mxcube.queue._queue_entry_list 
+        return jsonify(queueList)
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could not get')
-        return "False"
+        return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/save", methods=['GET'])
 def queueSave():
@@ -180,32 +180,36 @@ def addSample(id):
     '''id in the form of '1:01'
     '''
     sampleNode = qmo.Sample()
-    # if sampleNode.has_lims_data():
-    #     sampleNode.init_from_lims_object(lims_sample)
-    # thisSample = mxcube.sample_changer.samples_list[id]
-    # check if it has lims data and fill, apply received data
     sampleEntry = qe.SampleQueueEntry()
     sampleEntry.set_data_model(sampleNode)
+    for i in queueList:
+        if queueList[i]['SampleId'] == id:
+            logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
+            return Response(status = 409)
     try:
-        nodeId = mxcube.queue.add_child(mxcube.queue._selected_model,sampleNode)
+        mxcube.queue.add_child(mxcube.queue._selected_model,sampleNode)
+        nodeId = sampleNode._node_id
         mxcube.queue.queue_hwobj.enqueue(sampleEntry)
         logging.getLogger('HWR').info('[QUEUE] sample added')
         queueList.update({nodeId:{'SampleId': id, 'QueueId': nodeId, 'methods':[]}})
         return jsonify({'SampleId': id, 'QueueId': nodeId} )
     except:
         logging.getLogger('HWR').error('[QUEUE] sample could not be added')
-        return "False"
+        return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
 def deleteSample(id):
     """id in the form of node id, integer"""
-    nodeToRemove = mxcube.queue.get_node(int(id))
-    mxcube.queue.del_child(nodeToRemove.get_parent(), int(id))
-    entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
-    mxcube.queue.queue_hwobj.dequeue(entryToRemove)
-    queueList.pop(int(id))
-    root =mxcube.queue._selected_model
-    print root.get_children()
+    try:
+        nodeToRemove = mxcube.queue.get_node(int(id))
+        mxcube.queue.del_child(nodeToRemove.get_parent(), nodeToRemove)
+        entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
+        mxcube.queue.queue_hwobj.dequeue(entryToRemove)
+        queueList.pop(int(id))
+        return Response(status = 200)
+    except:
+        logging.getLogger('HWR').error('[QUEUE] Queued sample could not be deleted')
+        return Response(status = 409)
 
 # @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST','PUT'])
 # def addUpdateSampleEntry(id):
@@ -256,24 +260,6 @@ def getSample(id):
     except:
             logging.getLogger('HWR').error('[QUEUE] Queued sample could not be retrieved')
             return "False"
-
-@mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
-def deleteSample(id):
-    """Delete the sample with id:"id"
-    data = {generic_data, "SampleId":id}
-    return_data={"result": True/False}
-    """
-    try:
-        node = mxcube.queue.get_node(id)
-        mxcube.queue.del_child(qm._selected_model, node)
-        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-        mxcube.queue.queue_hwobj.dequeue(entry)
-        logging.getLogger('HWR').info('[QUEUE] Queued sample deleted')
-        return "True"
-    except:
-        logging.getLogger('HWR').error('[QUEUE] Queued sample could not be deleted')
-        return "False"
-
 
 ###to be programmed....
 @mxcube.route("/mxcube/api/v0.1/samples", methods=['GET'])
