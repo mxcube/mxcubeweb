@@ -5,6 +5,8 @@ import gevent.event
 import os, json
 import queue_model_objects_v1 as qmo
 
+queueList={}
+
 ###----QUEUE ACTIONS----###
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
 def queueStart():
@@ -159,37 +161,86 @@ def executeEntryWithId(entry):
 import queue_entry as qe
 from queue_entry import QueueEntryContainer
 
-@mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST','PUT'])
-def addUpdateSampleEntry(id):
-    """Add the information of the sample with id:"id"
-    id: integer
-    data = {generic_data, "SampleId":id, sample_data={'holderLength': 22.0, 'code': None, 'containerSampleChangerLocation': '1', 'proteinAcronym': 'Mnth', 'cellGamma': 0.0, 'cellAlpha': 0.0, 'sampleId': 444179, 'cellBeta': 0.0, 'crystalSpaceGroup': 'R32', 'sampleLocation': '2', 'sampleName': 'sample-E02', 'cellA': 0.0, 'diffractionPlan': {}, 'cellC': 0.0, 'cellB': 0.0, 'experimentType': 'Default'}}
-    return_data={"result": True/False}
-    """
-    content = request.get_json() # agree with fredrik
-    #data = dict(request.POST.items())
+# @mxcube.route("/mxcube/api/v0.1/queue/update", methods=['POST','PUT'])
+# def updateList(list):
+#     sample_list = request.get_json() # agree with fredrik
+#     for samop in sample_list:
+#         #"1:01"
+#         asignlesample = bdfvasdf
+#         add_child
+#         nernode + asignlesample._node_id
 
-    logging.getLogger('HWR').info('[QUEUE] Queue going to add entry with id: %s' %id)
+#         queeu_id_)list.push(newnode:'1:01')
 
-    if qm.get_node(id):
-        #already exist, so just update the element
-        logging.getLogger('HWR').info('[QUEUE] element already exist, updating')
-        #update model and apply to the queue entry
-    else:
-        sampleNode = qmo.Sample()
-        if sampleNode.has_lims_data():
-            sampleNode.init_from_lims_object(lims_sample)
-        # check if it has lims data and fill, apply received data
-        sampleEntry = qe.SampleQueueEntry()
-        sampleEntry.set_data_model(sampleNode)
-        try:
-            mxcube.queue.add_child(sampleNode)
-            mxcube.queue.enqueue(sampleEntry)
-            logging.getLogger('HWR').info('[QUEUE] Queue sample added')
-            return "True"
-        except:
-            logging.getLogger('HWR').error('[QUEUE] Queue sample could added')
-            return "False"
+# @mxcube.route("/mxcube/api/v0.1/queue/<id>/update", methods=['POST','PUT'])
+# def updateCollections(list):
+
+@mxcube.route("/mxcube/api/v0.1/queue/add/<id>", methods=['POST','PUT'])
+def addSample(id):
+    '''id in the form of '1:01'
+    '''
+    sampleNode = qmo.Sample()
+    # if sampleNode.has_lims_data():
+    #     sampleNode.init_from_lims_object(lims_sample)
+    # thisSample = mxcube.sample_changer.samples_list[id]
+    # check if it has lims data and fill, apply received data
+    sampleEntry = qe.SampleQueueEntry()
+    sampleEntry.set_data_model(sampleNode)
+    try:
+        nodeId = mxcube.queue.add_child(mxcube.queue._selected_model,sampleNode)
+        mxcube.queue.queue_hwobj.enqueue(sampleEntry)
+        logging.getLogger('HWR').info('[QUEUE] sample added')
+        queueList.update({nodeId:{'SampleId': id, 'QueueId': nodeId, 'methods':[]}})
+        return jsonify({'SampleId': id, 'QueueId': nodeId} )
+    except:
+        logging.getLogger('HWR').error('[QUEUE] sample could not be added')
+        return "False"
+
+@mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
+def deleteSample(id):
+    """id in the form of node id, integer"""
+    nodeToRemove = mxcube.queue.get_node(int(id))
+    mxcube.queue.del_child(nodeToRemove.get_parent(), int(id))
+    entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
+    mxcube.queue.queue_hwobj.dequeue(entryToRemove)
+    queueList.pop(int(id))
+    root =mxcube.queue._selected_model
+    print root.get_children()
+
+# @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST','PUT'])
+# def addUpdateSampleEntry(id):
+#     """Add the information of the sample with id:"id"
+#     id: integer
+#     data = {generic_data, "SampleId":id, sample_data={'holderLength': 22.0, 'code': None, 'containerSampleChangerLocation': '1', 'proteinAcronym': 'Mnth', 'cellGamma': 0.0, 'cellAlpha': 0.0, 'sampleId': 444179, 'cellBeta': 0.0, 'crystalSpaceGroup': 'R32', 'sampleLocation': '2', 'sampleName': 'sample-E02', 'cellA': 0.0, 'diffractionPlan': {}, 'cellC': 0.0, 'cellB': 0.0, 'experimentType': 'Default'}}
+#     return_data={"result": True/False}
+#     """
+#     samples_list = mxcube.sample_changer.samples_list
+#     samples_list[id]
+#     content = request.get_json() # agree with fredrik
+#     #data = dict(request.POST.items())
+
+#     logging.getLogger('HWR').info('[QUEUE] Queue going to add entry with id: %s' %id)
+
+#     if mxcube.queue.get_node(int(id)):
+#         #already exist, so just update the element
+#         logging.getLogger('HWR').info('[QUEUE] element already exist, updating')
+#         #update model and apply to the queue entry
+#         return "True"
+#     else:
+#         sampleNode = qmo.Sample()
+#         if sampleNode.has_lims_data():
+#             sampleNode.init_from_lims_object(lims_sample)
+#         # check if it has lims data and fill, apply received data
+#         sampleEntry = qe.SampleQueueEntry()
+#         sampleEntry.set_data_model(sampleNode)
+#         try:
+#             mxcube.queue.add_child(mxcube.queue._selected_model,sampleNode)
+#             mxcube.queue.queue_hwobj.enqueue(sampleEntry)
+#             logging.getLogger('HWR').info('[QUEUE] Queue sample added')
+#             return "True"
+#         except:
+#             logging.getLogger('HWR').error('[QUEUE] Queue sample could not added')
+#             return "False"
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
@@ -213,10 +264,10 @@ def deleteSample(id):
     return_data={"result": True/False}
     """
     try:
-        node = qm.get_node(id)
-        qm.del_child(qm._selected_model, node)
-        entry = qm.queue_hwobj.get_entry_with_model(node)
-        qm.queue_hwobj.dequeue(entry)
+        node = mxcube.queue.get_node(id)
+        mxcube.queue.del_child(qm._selected_model, node)
+        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        mxcube.queue.queue_hwobj.dequeue(entry)
         logging.getLogger('HWR').info('[QUEUE] Queued sample deleted')
         return "True"
     except:
@@ -235,7 +286,7 @@ def getSampleList():
     return samples.getSampleList()
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/mode", methods=['POST'])
-def set_sample_mode(id):
+def set_sample_mode2(id):
     """Set sample changer mode: sample changer, manually mounted, ... (maybe it is enoug to set for all the same mode)
     data = {generic_data, "Mode": mode}
     return_data={"result": True/False}
