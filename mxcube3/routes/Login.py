@@ -29,6 +29,8 @@ def login():
     prop_number = Proposal[len(proposal):]
     
     prop = mxcube.db_connection.get_proposal(proposal, prop_number)
+    if prop['status']['code'] == 'error':
+        return jsonify(prop)
 
     # following code is from ProposalBrick2, almost untouched;
     # this should be moved to the hardware object somehow
