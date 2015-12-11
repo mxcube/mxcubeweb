@@ -12,7 +12,7 @@ queueOrder=[]
 def queueStart():
     """Queue: start execution of the queue
     Args: None
-    Return: boolean, success?
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
     try:
@@ -27,7 +27,7 @@ def queueStart():
 def queueStop():
     """Queue: stop execution of the queue
     Args: None
-    Return: boolean, success?
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to stop')
     try:
@@ -42,7 +42,7 @@ def queueStop():
 def queueAbort():
     """Queue: abort execution of the queue
     Args: None
-    Return: boolean, success?
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to abort')
     try:
@@ -57,7 +57,7 @@ def queueAbort():
 def queuePause():
     """Queue: start execution of the queue
     Args: None
-    Return: boolean, success?
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
     try:
@@ -72,7 +72,7 @@ def queuePause():
 def queueClear():
     """Queue: clear the queue
     Args: None
-    Return: boolean, success?
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to clear')
     try:
@@ -88,7 +88,7 @@ def queueClear():
 def queueGet():
     """Queue: get the queue
     Args: None
-    Return: a lits of queue entries
+    Return: a list of queue entries (sample with the associated children methods)
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting data')
     try:
@@ -101,9 +101,9 @@ def queueGet():
 
 @mxcube.route("/mxcube/api/v0.1/queue/save", methods=['GET'])
 def queueSave():
-    """Queue: save the queue
+    """Queue: save the queue to a file, filename automatically selected under ./routes folder
     Args: None
-    Return: True/False
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
     logging.getLogger('HWR').info('[QUEUE] Queue saving')
     filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-backup.txt')
@@ -119,41 +119,42 @@ def queueSave():
         
 @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
 def getCurrentEntry():
-    """Queue: get current entry
+    """Queue: get current entry. NOT IMPLEMENTED
     Args: None
     Return:    The currently executing QueueEntry:
                 :rtype: QueueEntry
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
     try:
-        return mxcube.queue.get_current_entry()
+        return mxcube.queue.queue_hwobj.get_current_entry()
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['PUT'])
 def setCurrentEntry(entry):
-    """Queue: Sets the currently executing QueueEntry to <entry>.
+    """Queue: Sets the currently executing QueueEntry to <entry>. NOT IMPLEMENTED
     Args: None
     Return:    The currently executing QueueEntry:
                 :rtype: QueueEntry
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
     try:
-        return mxcube.queue.set_current_entry(entry)
+        return mxcube.queue.queue_hwobj.set_current_entry(entry)
     except:
         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<entry>/execute", methods=['PUT'])
 def executeEntryWithId(entry):
-    """Queue: start execution of the queue
+    """
+    Queue: start execution of the queue
     Args: None
-    Return: boolean, success?
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to execute entry with id: %s' %id)
     try:
-        mxcube.queue.execute_entry(entry)
+        mxcube.queue.queue_hwobj.execute_entry(entry)
         logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' %id)
         return Response(status = 200)
     except:
@@ -168,7 +169,11 @@ from queue_entry import QueueEntryContainer
 
 @mxcube.route("/mxcube/api/v0.1/queue/add/<id>", methods=['POST','PUT'])
 def addSample(id):
-    '''id in the form of '1:01'
+    '''
+    Add a sample to the queue with an id in the form of '1:01'
+    Args: id, current id of the sample to be added
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
+       data ={"QueueId": newId, "SampleId": sampleId}, where sampleId is the same as the caller id (eg '1:01')
     '''
     sampleNode = qmo.Sample()
     sampleEntry = qe.SampleQueueEntry()
@@ -190,15 +195,31 @@ def addSample(id):
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
-def deleteSample(id):
-    """id in the form of node id, integer"""
+def deleteSampleOrMethod(id):
+    """
+    Remove a sample or a method to the queue with an id in the form of 1,4,32
+    Args: id, current id of the sample/method to be deleted
+            id: int (parsed to int anyway)
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
     try:
         nodeToRemove = mxcube.queue.get_node(int(id))
-        mxcube.queue.del_child(nodeToRemove.get_parent(), nodeToRemove)
+        parent = nodeToRemove.get_parent()
+        mxcube.queue.del_child(parent, nodeToRemove)
         entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
-        mxcube.queue.queue_hwobj.dequeue(entryToRemove)
-        queueList.pop(int(id))
-        queueOrder.remove(nodeId)
+        if parent._node_id > 0: #we are removing a method
+            parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
+            parentEntry.dequeue(entryToRemove)
+            parent = parent._node_id
+            nodeToRemove = nodeToRemove._node_id
+            for met in queueList[parent]['methods']:
+                if met[met.keys()[0]] == nodeToRemove:
+                    queueList[parent]['methods'].remove(met)
+            #queueList.pop(int(id))
+        else: # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
+            mxcube.queue.queue_hwobj.dequeue(entryToRemove)
+            queueList.pop(int(id))
+            queueOrder.remove(int(id))
         return Response(status = 200)
     except:
         logging.getLogger('HWR').error('[QUEUE] Queued sample could not be deleted')
@@ -207,7 +228,11 @@ def deleteSample(id):
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/centring", methods=['PUT', 'POST'])
 def addCentring(id):
     '''
-    Add method to the sample with id: <id>, integer
+    Add a centring method to the sample with id: <id>, integer.
+    Args: id, current id of the sample where add the method
+            id: int (parsed to int anyway)
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
+       data ={ "CentringId": newId}
     '''
     #no data received yet
     try:
@@ -221,7 +246,7 @@ def addCentring(id):
         entry.enqueue(centEntry)
         queueList[int(id)]['methods'].append({'CentringId':newNode})
         logging.getLogger('HWR').info('[QUEUE] centring added to sample')
-        resp = jsonify({'centringId':newNode})
+        resp = jsonify({'CentringId':newNode})
         resp.status_code = 200
         return resp
     except Exception as ex:
@@ -231,8 +256,11 @@ def addCentring(id):
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/characterisation", methods=['PUT', 'POST'])
 def addCharacterisation(id):
     '''
-    Add method to the sample with id: <id>, integer
-    '''
+    Add a characterisation method to the sample with id: <id>, integer.
+    Args: id, current id of the sample where add the method
+            id: int (parsed to int anyway)
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
+       data ={ "CharacId": newId}    '''
     #no data received yet
     try:
         characNode = qmo.Characterisation()
@@ -256,8 +284,11 @@ def addCharacterisation(id):
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/datacollection", methods=['PUT', 'POST'])
 def addDataCollection(id):
     '''
-    Add method to the sample with id: <id>, integer
-    '''
+    Add a data collection method to the sample with id: <id>, integer.
+    Args: id, current id of the sample where add the method
+        id: int (parsed to int anyway)
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
+       data ={ "ColId": newId}    '''
     #no data received yet
     try:
         colNode = qmo.Characterisation()
@@ -280,9 +311,12 @@ def addDataCollection(id):
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
-    """Get the information of the sample with id:"id"
-    data = {generic_data, "SampleId":id}
-    return_data={"SampleId":id, sample_data={'holderLength': 22.0, 'code': None, 'containerSampleChangerLocation': '1', 'proteinAcronym': 'Mnth', 'cellGamma': 0.0, 'cellAlpha': 0.0, 'sampleId': 444179, 'cellBeta': 0.0, 'crystalSpaceGroup': 'R32', 'sampleLocation': '2', 'sampleName': 'sample-E02', 'cellA': 0.0, 'diffractionPlan': {}, 'cellC': 0.0, 'cellB': 0.0, 'experimentType': 'Default'}}
+    """
+    Get the information of the sample with id:"id"
+    Args: id, current id of the sample
+        id: int (parsed to int anyway)
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
+        data ={"QueueId": 22, "SampleId": "3:02", "methods": []} 
     """
     try:
         if not queueList[int(id)]:
