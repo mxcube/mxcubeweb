@@ -8,7 +8,6 @@ import { addSample } from '../actions/queue'
 
 class SampleGridContainer extends React.Component {
         addSamples() {
-
             // Loop through all samples, check which was selected and add to the queue. 
             Object.keys(this.props.samples_list).forEach(key => {
 
@@ -51,7 +50,7 @@ class SampleGridContainer extends React.Component {
 }
 
 function mapStateToProps(state) {
-    return state.samples_grid
+    return Object.assign({}, state.samples_grid, { login_data: state.login.data })
 }
 
 function mapDispatchToProps(dispatch) {
