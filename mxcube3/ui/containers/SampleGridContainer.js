@@ -71,7 +71,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         getSamples: () => dispatch(doGetSamplesList()),
-        updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
         toggleSelected: (index) => dispatch(doToggleSelected(index)), 
         selectAll: () => dispatch(doSelectAll()),
         filter: (filter_text) => dispatch(doFilter(filter_text)),
