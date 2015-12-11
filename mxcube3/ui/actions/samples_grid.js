@@ -6,9 +6,11 @@ export function doUpdateSamples(samples_list) {
 
 export function doGetSamplesList() {
    return function(dispatch) {
+       window.please_wait_dialog.show();
        fetch('mxcube/api/v0.1/sample_changer/samples_list')
             .then(response => response.json())
             .then(json => {
+                window.please_wait_dialog.hide();
                 dispatch(doUpdateSamples(json));
             })
     }
