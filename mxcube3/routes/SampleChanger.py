@@ -2,8 +2,8 @@ from flask import session, redirect, url_for, render_template, request, Response
 from mxcube3 import app as mxcube
 import logging
 import itertools
-
-@mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list")
+samples_list = []
+@mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
 def get_samples_list():
     samples_list = mxcube.sample_changer.getSampleList()
     samples = {}

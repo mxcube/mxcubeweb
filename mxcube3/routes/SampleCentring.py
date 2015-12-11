@@ -35,7 +35,7 @@ def stream_video():
     while keep_streaming:
         try:
             camera_hwobj.new_frame.wait()
-            logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
+            #logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
             yield 'Content-type: image/jpg\n\n'+SAMPLE_IMAGE+"\n--!>"
         except:
             pass
