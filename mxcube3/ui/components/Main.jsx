@@ -9,8 +9,8 @@ export default class Main extends React.Component {
     render() {
         return (<div className="container-fluid"> 
                       <PleaseWaitDialog/>
-                      <ErrorNotificationPanel/>
                       <div className="row">
+                          <ErrorNotificationPanel/>
                           <NavBar/>
                       </div>
                       <div className="row">
