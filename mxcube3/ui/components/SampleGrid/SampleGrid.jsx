@@ -26,7 +26,12 @@ export default class SampleGrid extends React.Component {
           //
           let sample_props = this.refs[i].props;
           let sample_desc = sample_props.acronym+" "+sample_props.code+" "+sample_props.location+" "+sample_props.exp_type;
-          return sample_desc.includes(this.props.filter_text);
+          let keep = sample_desc.includes(this.props.filter_text);
+          if (! keep) { 
+              // a filtered sample is automatically unselected (we don't want to be able to add it, for example)
+              if (sample_props.selected) { this.props.toggleSelected(sample_props.selectKey) }
+          }
+          return keep;
         }
         return true;
     }
@@ -64,7 +69,7 @@ export default class SampleGrid extends React.Component {
                     exp_type = sample_info.experimentType;
                 } catch(e) { }
 
-                sample_grid.push(<SampleGridItem ref={i} key={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} location={sample.location} tags={exp_type} selected={sample.selected} onClick={() => this.props.toggleSelected(key)}/>);
+                sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} location={sample.location} tags={exp_type} selected={sample.selected} onClick={() => this.props.toggleSelected(key)}/>);
                 ++i;
         });
         return (<div className='samples-grid col-xs-12'>
