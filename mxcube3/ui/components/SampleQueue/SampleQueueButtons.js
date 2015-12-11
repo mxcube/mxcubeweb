@@ -8,20 +8,36 @@ import "./app.less"
 
 export default class SampleQueueButtons extends Component {
 
+    addCentering(){
+        //Here a modal will be called for parameters
+        this.props.addMethod({name : "centring"});
+    }
+
+        
+    addCharacterisation(){
+        //Here a modal will be called for parameters
+        this.props.addMethod({name : "characterisation"});
+    }
+
+    addDatacollection(){
+        //Here a modal will be called for parameters
+        this.props.addMethod({name : "datacollection"});
+    }
+
     render() { 
         return (
              <div className='footer-buttons'>
-                 <a className='btn btn-primary queue-button' onClick={this.props.addMethod}>
+                 <a className='btn btn-primary queue-button' onClick={() => this.addCentering()}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring
                         </a>
-                        <a className='btn btn-primary queue-button'>
+                        <a className='btn btn-primary queue-button' onClick={() => this.addCharacterisation()}>
                             <i className='fa fa-fw fa-plus-square'></i>
-                                Standard
+                                Characterisation
                         </a>
-                        <a className='btn btn-primary queue-button'>
+                        <a className='btn btn-primary queue-button' onClick={() => this.addDatacollection()}>
                             <i className='fa fa-fw fa-plus-square'></i>
-                                Helical
+                                Datacollection
                         </a>
                         <a className='btn btn-success queue-run-stop'>
                             <i className='fa fa-fw fa-play'></i>
