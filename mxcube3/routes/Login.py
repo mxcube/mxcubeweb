@@ -104,7 +104,19 @@ def login():
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
 def proposal_samples(proposal_id):
-   # session_id is not used, so we can pass None as second argument to function
-   ret = mxcube.db_connection.get_samples(proposal_id, None)
-   return jsonify({ "samples_info": [convert_to_dict(x) for x in ret] })
+   # session_id is not used, so we can pass None as second argument to 'db_connection.get_samples'
+   samples_info_list = [convert_to_dict(x) for x in mxcube.db_connection.get_samples(proposal_id, None)]
+
+   for sample_info in samples_info_list:
+     try:
+         basket = int(sample_info["containerSampleChangerLocation"])
+     except ValueError:
+         continue
+     else:
+         if mxcube.sample_changer.__class__.__TYPE__ == 'Robodiff':
+             cell = int(round((basket+0.5)/3.0))
+             puck = basket-3*(cell-1)
+             sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
+
+   return jsonify({ "samples_info": samples_info_list })
 
