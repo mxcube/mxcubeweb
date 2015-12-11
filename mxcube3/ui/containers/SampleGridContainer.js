@@ -37,7 +37,7 @@ class SampleGridContainer extends React.Component {
                             <div className="row">
                                 <div className="col-xs-3">
 			            <form className="form-horizontal">
-				        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" } buttonAfter={innerSearchIcon}/>
+				        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon}/>
 			            </form>
                                 </div>
                                 <div className="col-xs-6">
