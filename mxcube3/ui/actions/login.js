@@ -12,6 +12,8 @@ export function doLogin(proposal, password) {
           }).then(response => response.json())
           .then(json => {
                 dispatch(afterLogin(json));
+          }, () => { 
+              window.error_notification.notify("Could not connect to server");
           })
     }
 }

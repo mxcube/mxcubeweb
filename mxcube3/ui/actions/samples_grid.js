@@ -12,6 +12,9 @@ export function doGetSamplesList() {
             .then(json => {
                 window.please_wait_dialog.hide();
                 dispatch(doUpdateSamples(json));
+            }, () => { 
+                window.please_wait_dialog.hide();
+                window.error_notification.notify("Could not get samples list");
             })
     }
 }
