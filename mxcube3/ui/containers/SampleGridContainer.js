@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter } from '../actions/samples_grid'
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples } from '../actions/samples_grid'
 import { addSample } from '../actions/queue'
 
 class SampleGridContainer extends React.Component {
@@ -18,6 +18,16 @@ class SampleGridContainer extends React.Component {
             });
         }
 
+        syncSamples() {
+            try {
+                var proposal_id = this.props.login_data.session.proposalId;
+            } catch(e) {
+                return
+            } 
+            
+            this.props.syncSamples(proposal_id);
+        }
+
 	render() {
 		const innerSearchIcon = (
 			<Button onClick={() => { this.props.filter(this.refs.filter_input.getValue()) } }><Glyphicon glyph="search"/></Button>
@@ -25,15 +35,20 @@ class SampleGridContainer extends React.Component {
 
 		return (<div>
                             <div className="row">
-                                <div className="col-xs-5">
+                                <div className="col-xs-3">
 			            <form className="form-horizontal">
-				        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-1" wrapperClassName="col-xs-4" buttonAfter={innerSearchIcon}/>
+				        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" } buttonAfter={innerSearchIcon}/>
 			            </form>
                                 </div>
-                               <div className="col-xs-3">
-			           <Button className="btn-primary" onClick={this.props.getSamples}>Check sample changer contents</Button>
+                                <div className="col-xs-6">
+                                   <ButtonToolbar>
+                                       <Button className="btn-primary" onClick={this.props.getSamples}>Check sample changer contents</Button>
+                                       <Button className="btn-primary" onClick={ () => { return this.syncSamples() }}>
+                                            <Glyphicon glyph="refresh"/> Sync. ISPyB
+                                       </Button>
+                                   </ButtonToolbar>
                                </div>
-                               <div className="col-xs-4">
+                               <div className="col-xs-3">
 			           <ButtonToolbar>
 			               <Button className="btn-success pull-right" onClick={() => { this.addSamples() }}>
                                            <Glyphicon glyph="plus"/> Add samples
@@ -60,7 +75,8 @@ function mapDispatchToProps(dispatch) {
         toggleSelected: (index) => dispatch(doToggleSelected(index)), 
         selectAll: () => dispatch(doSelectAll()),
         filter: (filter_text) => dispatch(doFilter(filter_text)),
-        addSampleToQueue: (id) => dispatch(addSample(id))
+        addSampleToQueue: (id) => dispatch(addSample(id)),
+        syncSamples: (proposal_id) => dispatch(doSyncSamples(proposal_id))
     }
 }
 

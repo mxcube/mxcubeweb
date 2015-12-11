@@ -36,3 +36,16 @@ export function doFilter(filter_text) {
     return { type: "FILTER",  filter_text }
 }
 
+export function doSetSamplesInfo(sample_info_list) {
+    return { type: "SET_SAMPLES_INFO", sample_info_list }
+}
+
+export function doSyncSamples(proposal_id) {
+    return function(dispatch) {
+        fetch("mxcube/api/v0.1/samples/"+proposal_id)
+            .then(response => response.json())
+            .then(json => {
+                dispatch(doSetSamplesInfo(json.samples_info));
+            })
+    }
+}

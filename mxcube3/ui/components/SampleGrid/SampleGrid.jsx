@@ -43,16 +43,28 @@ export default class SampleGrid extends React.Component {
     }
 
     render() {
-        let samples_list = this.props.samples_list;
+        var samples_list = this.props.samples_list;
         var sample_grid = [];
-        Object.keys(samples_list).forEach(key => { 
-                let exp_type = samples_list[key].experimentType || "";
-                let sc_loc = samples_list[key].location;
-                sample_grid.push(<SampleGridItem key={key} sample_id={samples_list[key].id} acronym={samples_list[key].proteinAcronym} name={samples_list[key].sampleName} dm="HA1234567" location={sc_loc} tags={exp_type} selected={this.props.samples_list[key].selected} onClick={() => this.props.toggleSelected(key)}/>);
+        var i = 0;
+        Object.keys(samples_list).forEach(key => {
+                let sample = samples_list[key]; 
+                let sample_info = sample.sample_info;
+                let acronym = "?";
+                let name = "unnamed";
+                let exp_type = ""; 
+
+                try {
+                    acronym = sample_info.proteinAcronym;
+                    name = sample_info.sampleName;
+                    exp_type = sample_info.experimentType;
+                } catch(e) { }
+
+                sample_grid.push(<SampleGridItem ref={i} key={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} location={sample.location} tags={exp_type} selected={sample.selected} onClick={() => this.props.toggleSelected(key)}/>);
+                ++i;
         });
-    return <div className='samples-grid col-xs-12'>
-                {sample_grid}
-            </div>;
+        return (<div className='samples-grid col-xs-12'>
+                    {sample_grid}
+                </div>);
 
     }    
 }
