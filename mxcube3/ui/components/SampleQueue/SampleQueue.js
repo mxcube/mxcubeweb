@@ -15,7 +15,7 @@ export default class SampleQueue extends Component {
         'is-active': node.queue_id === this.props.data.selected.queue_id
         })} onClick={this.onClickNode.bind(this, node)}>
         {node.module}
-        {!node.root ? <i className="fa fa-times" onClick={this.removeNode.bind(this, node)}></i>: ''}
+        {!node.root && node.queue_id? <i className="fa fa-times" onClick={this.removeNode.bind(this, node)}></i>: ''}
       </span>
     );
   }
