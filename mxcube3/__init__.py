@@ -4,6 +4,19 @@ from flask.ext.socketio import SocketIO
 from optparse import OptionParser
 import os, sys
 
+# some Hardware Objects rely on BlissFramework.Utils.widget_colors,
+# it's ugly but here is some code to solve the problem for the
+# time being:
+from types import ModuleType
+import collections
+bf=ModuleType("BlissFramework")
+bfu=ModuleType("BlissFramework.Utils")
+wc=collections.namedtuple("widget_colors", ["LIGHT_GREEN", "LIGHT_RED", "LIGHT_YELLOW", "LIGHT_BLUE", "SKY_BLUE", "DARK_GRAY","WHITE", "GRAY", "GREEN", "RED"])
+setattr(bfu, "widget_colors", wc(*[None]*10))
+sys.modules["BlissFramework"]=bf
+sys.modules["BlissFramework.Utils"]=bfu
+###
+
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
                       dest="hwr_directory",
