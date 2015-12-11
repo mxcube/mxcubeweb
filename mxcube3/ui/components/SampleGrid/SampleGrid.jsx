@@ -20,10 +20,15 @@ export default class SampleGrid extends React.Component {
 
     _filter(elem) {
         if (this.props.filter_text) {
-          return false;
-        } else {
-          return true;
+          // find index of elem DOM element (= index of element in samples list)
+          let i = 0;
+          while (elem = elem.previousSibling) { ++i };
+          //
+          let sample_props = this.refs[i].props;
+          let sample_desc = sample_props.acronym+" "+sample_props.code+" "+sample_props.location+" "+sample_props.exp_type;
+          return sample_desc.includes(this.props.filter_text);
         }
+        return true;
     }
 
     componentDidUpdate(prevProps, prevState) {
