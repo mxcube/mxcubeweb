@@ -21,7 +21,7 @@ def convert_to_dict(ispyb_object):
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
-    beamline_name = os.environ["SMIS_BEAMLINE_NAME"]
+    beamline_name = os.environ.get("SMIS_BEAMLINE_NAME")
     content = request.get_json()
     Proposal = content['proposal']
     password = content['password']
