@@ -20,7 +20,7 @@ def queueStart():
     	logging.getLogger('HWR').info('[QUEUE] Queue started')
         return Response(status=200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be started')
+        logging.getLogger('HWR').exception('[QUEUE] Queue could not be started')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/stop", methods=['PUT'])
@@ -35,7 +35,7 @@ def queueStop():
     	logging.getLogger('HWR').info('[QUEUE] Queue stopped')
         return Response(status = 200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be stopped')
+        logging.getLogger('HWR').exception('[QUEUE] Queue could not be stopped')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/abort", methods=['PUT'])
@@ -50,7 +50,7 @@ def queueAbort():
         logging.getLogger('HWR').info('[QUEUE] Queue aborted')
         return Response(status = 200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be aborted')
+        logging.getLogger('HWR').exception('[QUEUE] Queue could not be aborted')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/pause", methods=['PUT'])
@@ -65,7 +65,7 @@ def queuePause():
         logging.getLogger('HWR').info('[QUEUE] Queue paused')
         return Response(status = 200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be paused')
+        logging.getLogger('HWR').exception('[QUEUE] Queue could not be paused')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
@@ -81,7 +81,7 @@ def queueClear():
         logging.getLogger('HWR').info('[QUEUE] Queue cleared')
         return Response(status = 200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be cleared')
+        logging.getLogger('HWR').exception('[QUEUE] Queue could not be cleared')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['GET'])
@@ -158,7 +158,7 @@ def executeEntryWithId(entry):
         logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' %id)
         return Response(status = 200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be started')
+        logging.getLogger('HWR').exception('[QUEUE] Queue could not be started')
         return Response(status = 409)
 
 ###----QUEUE ELEMENTs MANAGEMENT----###
@@ -191,7 +191,7 @@ def addSample(id):
         queueOrder.append(nodeId)
         return jsonify({'SampleId': id, 'QueueId': nodeId} )
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] sample could not be added')
+        logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
@@ -222,7 +222,7 @@ def deleteSampleOrMethod(id):
             queueOrder.remove(int(id))
         return Response(status = 200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queued sample could not be deleted')
+        logging.getLogger('HWR').exception('[QUEUE] Queued sample could not be deleted')
         return Response(status = 409)
 
 ###Adding methods to a sample
@@ -251,8 +251,7 @@ def addCentring(id):
         resp.status_code = 200
         return resp
     except Exception as ex:
-        print ex
-        logging.getLogger('HWR').info('[QUEUE] centring could not be added to sample')
+        logging.getLogger('HWR').exception('[QUEUE] centring could not be added to sample')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/characterisation", methods=['PUT', 'POST'])
@@ -278,9 +277,8 @@ def addCharacterisation(id):
         resp = jsonify({'CharacId':newNode})
         resp.status_code = 200
         return resp
-    except Exception as ex:
-        print ex
-        logging.getLogger('HWR').info('[QUEUE] characterisation could not be added to sample')
+    except Exception:
+        logging.getLogger('HWR').exception('[QUEUE] characterisation could not be added to sample')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/datacollection", methods=['PUT', 'POST'])
@@ -306,9 +304,8 @@ def addDataCollection(id):
         resp = jsonify({'ColId':newNode})
         resp.status_code = 200
         return resp
-    except Exception as ex:
-        print ex
-        logging.getLogger('HWR').info('[QUEUE] datacollection could not be added to sample')
+    except Exception:
+        logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
@@ -329,7 +326,7 @@ def getSample(id):
             resp.status_code = 200
             return resp
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
+        logging.getLogger('HWR').exception('[QUEUE] sample info could not be retrieved')
         return Response(status = 409)
 
 #####################################
