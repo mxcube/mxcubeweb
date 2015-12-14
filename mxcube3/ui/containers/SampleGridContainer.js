@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar  } from "react-bootstrap"
 import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter } from '../actions/samples_grid'
-import { sendSample } from '../actions/queue'
+import { sendAddSample } from '../actions/queue'
 
 class SampleGridContainer extends React.Component {
         addSamples() {
@@ -61,7 +61,7 @@ function mapDispatchToProps(dispatch) {
         toggleSelected: (index) => dispatch(doToggleSelected(index)), 
         selectAll: () => dispatch(doSelectAll()),
         filter: (filter_text) => dispatch(doFilter(filter_text)),
-        addSampleToQueue: (id) => dispatch(sendSample(id))
+        addSampleToQueue: (id) => dispatch(sendAddSample(id))
     }
 }
 
