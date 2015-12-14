@@ -36,13 +36,22 @@ export function doFilter(filter_text) {
 
 
 export function doAddMethod(sample_id, method) {
-    return { type: "ADD_METHOD",  
-             index: sample_id,
-             method: method }
+    return { type: "ADD_METHOD",
+            name: method.Name,  
+            index: sample_id,
+            queue_id: method.QueueId
+              }
+}
+
+export function doRemoveMethod(sample_id, list_id) {
+    return { type: "REMOVE_METHOD",
+            index: sample_id,  
+            list_index: list_id,
+              }
 }
 
 
-export function sendSampleMethod(queue_id, sample_id, method) {
+export function sendAddSampleMethod(queue_id, sample_id, method) {
 
     return function(dispatch) {
 
@@ -57,8 +66,34 @@ export function sendSampleMethod(queue_id, sample_id, method) {
             if (response.status >= 400) {
                 throw new Error("Could not add sample method, server refused");
             }
-        })
-        .then( ()  => dispatch(doAddMethod(sample_id, method)));
+            return response.json();
+        }).then(function(json) {
+            dispatch(doAddMethod(sample_id, json));
+        });
+       
+
+    }
+}
+
+
+export function sendDeleteSampleMethod(queue_id, sample_id, list_id) {
+
+    return function(dispatch) {
+
+        fetch('mxcube/api/v0.1/queue/' + queue_id, { 
+            method: 'DELETE', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            }
+
+        }).then(function(response) {
+            if (response.status >= 400) {
+                throw new Error("Server refused to remove sample");
+            }else {
+                dispatch(doRemoveMethod(sample_id, list_id));
+            }
+        });
 
     }
 }

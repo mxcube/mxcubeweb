@@ -26,7 +26,7 @@ export function removeSample(index) {
 }
 
 
-export function sendSample(id) {
+export function sendAddSample(id) {
 	return function(dispatch) {
 
 		fetch('mxcube/api/v0.1/queue/add/' + id, { 
@@ -50,7 +50,7 @@ export function sendSample(id) {
 }
 
 
-export function deleteSample(id, list_index) {
+export function sendDeleteSample(id, list_index) {
 	return function(dispatch) {
 
 		fetch('mxcube/api/v0.1/queue/' + id, { 
