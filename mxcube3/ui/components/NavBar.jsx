@@ -1,7 +1,6 @@
 import React from 'react'
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap"
 import Login from '../containers/LoginContainer'
-import ErrorNotificationPanel from 'Logging'
 import SampleQueueContainer from '../containers/SampleQueueContainer'
 
 
@@ -18,7 +17,6 @@ export default class MXNavbar extends React.Component {
 	render() {
 		return (
 			<div>
-				<ErrorNotificationPanel/>
 				<Navbar inverse fluid>
 					<NavBrand>MXCuBE 3</NavBrand>
 					<Nav navbar>
