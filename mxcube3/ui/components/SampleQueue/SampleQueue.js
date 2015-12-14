@@ -16,16 +16,24 @@ export default class SampleQueue extends Component {
         })} onClick={this.onClickNode.bind(this, node)}>
         {node.module}
         {!node.root && node.queue_id? <i className="fa fa-times" onClick={this.removeNode.bind(this, node)}></i>: ''}
+        {node.method ? <i className="fa fa-cog"></i>: ''}
       </span>
     );
   }
 
   onClickNode(node) {
-    this.props.data.actions.selectSample(node.queue_id, node.sample_id);
+    this.props.data.queueActions.selectSample(node.queue_id, node.sample_id);
   }
 
   removeNode(node){
-    this.props.data.actions.deleteSample(node.queue_id, node.list_index);
+    // Checking if queue node is a sample or method, this is done in order to know what action to call
+    if(!node.method){
+      this.props.data.queueActions.sendDeleteSample(node.queue_id, node.list_index);
+    }else{
+      console.log(node);
+      this.props.data.sampleActions.sendDeleteSampleMethod(node.queue_id, node.sample_id ,node.list_index);
+    }
+
   }
 
   handleChange(tree) {
