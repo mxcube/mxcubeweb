@@ -35,16 +35,16 @@ export default (state={ samples_list: {}, filter_text: "", login_data: {} }, act
               let sample = state.samples_list[key];
               let sample_info;
               for (sample_info of action.sample_info_list) {
-                  if (sample_info.code === null) {
-                      // check with sample changer location
-                      let lims_location = sample_info.containerSampleChangerLocation+":"+sample_info.sampleLocation;
-                      if (sample.location == lims_location) { 
+                  if (sample_info.code) {
+                      // find sample with data matrix code
+                      if (sample.code == sample_info.code) {
                           samples_list[key] = Object.assign({}, sample, { sample_info: sample_info });
                           break;
                       }
                   } else {
-                      // find sample with data matrix code
-                      if (sample.code == sample_info.code) {
+                      // check with sample changer location
+                      let lims_location = sample_info.containerSampleChangerLocation+":"+sample_info.sampleLocation;
+                      if (sample.location == lims_location) { 
                           samples_list[key] = Object.assign({}, sample, { sample_info: sample_info });
                           break;
                       }
