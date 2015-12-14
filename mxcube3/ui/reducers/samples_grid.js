@@ -31,13 +31,35 @@ export default (state={ samples_list: {}, filter_text: "" }, action) => {
       }
     case "ADD_METHOD":
       {
+
+        //Declaring the new method to be added to the sample
+        let method = {
+          name: action.name,
+          queue_id: action.queue_id
+        }
+
         //Checking if methods exist on the sample and adding the new method
-        let methods = (state.samples_list[action.index].methods ? [...state.samples_list[action.index].methods, {name: action.method.name}] : [{name: action.method.name}]);
+        let methods = (state.samples_list[action.index].methods ? [...state.samples_list[action.index].methods, method] : [method]);
 
         // Creating a new SampleItem with the new method attached
         let sample_item = {};
         sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods : methods} );
 
+        // Creating new Samplelist
+        let samples_list = Object.assign({}, state.samples_list, sample_item);
+        
+        return Object.assign({}, state, {samples_list: samples_list});
+      }
+    case "REMOVE_METHOD":
+      {
+
+        //Finding the methods list for the sample
+        let methods = state.samples_list[action.index].methods;
+
+        // Creating a new SampleItem with the method removed
+        let sample_item = {};
+        sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods :[...methods.slice(0,action.list_index), ...methods.slice(action.list_index + 1, methods.length)]} );
+        
         // Creating new Samplelist
         let samples_list = Object.assign({}, state.samples_list, sample_item);
         
