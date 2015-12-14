@@ -115,7 +115,7 @@ def proposal_samples(proposal_id):
    for sample_info in samples_info_list:
      try:
          basket = int(sample_info["containerSampleChangerLocation"])
-     except ValueError:
+     except (TypeError, ValueError):
          continue
      else:
          if mxcube.sample_changer.__class__.__TYPE__ == 'Robodiff':
