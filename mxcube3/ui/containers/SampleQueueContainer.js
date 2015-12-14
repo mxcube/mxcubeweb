@@ -18,7 +18,7 @@ class SampleQueueContainer extends Component {
       <div className="row">
             <div className="col-xs-12">
                 <SampleQueue data={this.props}/>;
-                <SampleQueueButtons addMethod={this.props.sampleActions.sendSampleMethod.bind(this,selected.queue_id, selected.sample_id)} />
+                <SampleQueueButtons addMethod={this.props.sampleActions.sendAddSampleMethod.bind(this,selected.queue_id, selected.sample_id)} />
             </div>
       </div>
     )
@@ -28,20 +28,26 @@ class SampleQueueContainer extends Component {
 
 function mapStateToProps(state) {
 
+  // Creating the tree structure for the queue list
   let samples = [];
   state.queue.todo.map((sample,index) => {
 
     const sampleData = state.samples_grid.samples_list[sample.sample_id];
-
-    let list_methods = (sampleData.methods ? sampleData.methods.map( (method) =>{ return {module: "Centring"}; } ) : []);
 
     samples.push({
       module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
       queue_id: sample.queue_id,
       sample_id: sample.sample_id,
       list_index: index,
-      children :  (sampleData.methods ? sampleData.methods.map( (method) =>{
-        return {module: method.name};
+      children :  (sampleData.methods ? sampleData.methods.map( (method,index) =>{
+        return {
+                module: method.name,
+                method: true,
+                leaf: true,
+                list_index: index,
+                sample_id: sample.sample_id,
+                queue_id: method.queue_id
+        };
       } 
         ) : [])
     });
@@ -62,7 +68,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
  return {
-    actions: bindActionCreators(QueueActions, dispatch),
+    queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch)
   }
 }
