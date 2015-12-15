@@ -3,6 +3,7 @@ from flask import Flask, session, redirect, url_for, render_template, request, R
 from flask.ext.socketio import SocketIO
 from optparse import OptionParser
 import os, sys
+import logging_handler
 
 # some Hardware Objects rely on BlissFramework.Utils.widget_colors,
 # it's ugly but here is some code to solve the problem for the
@@ -62,6 +63,13 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   if log_file:
      setLogFile(log_file)
 
+  # installs logging handler to send messages to clients
+  root_logger = logging.getLogger()
+  custom_log_handler = logging_handler.MX3LoggingHandler()
+  custom_log_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+  root_logger.addHandler(custom_log_handler)
+  app.log_handler = custom_log_handler
+
   app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
   app.session = app.beamline.getObjectByRole("session")
   app.diffractometer = app.beamline.getObjectByRole("diffractometer")
@@ -70,5 +78,6 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   app.sample_changer = app.beamline.getObjectByRole("sample_changer")
 
   ###Importing all REST-routes
+  import routes.Logging
   import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue
 
