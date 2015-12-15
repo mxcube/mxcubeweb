@@ -39,7 +39,7 @@ export default class LoginForm extends React.Component {
             } else {
                 login_input_form = (<form className="navbar-form" action="">
                                     <Input bsSize="small" ref="proposal" type="text" name="proposal" placeholder="Proposal"/>{' '}
-                                    <Input bsSize="small" ref="password" type="password" name="password" placeholder="Password"/>{' '}
+                                    <Input bsSize="small" ref="password" type="password" name="password" placeholder="Password" onKeyPress={(target) => { if (target.charCode==13) { this.signIn() }}}/>{' '}
                                     <ButtonInput bsSize="small" bsStyle="info" value="Sign in" onClick={this.signIn.bind(this)}/>
                                 </form>);
             }
