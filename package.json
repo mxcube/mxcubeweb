@@ -25,6 +25,7 @@
     "react-router": "^1.0.0",
     "react-ui-tree": "^2.4.1",
     "redux": "^3.0.4",
+    "redux-form": "^3.1.7",
     "redux-logger": "^2.0.4",
     "redux-thunk": "^1.0.0",
     "underscore": "^1.8.3",
