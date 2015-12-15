@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SampleQueueContainer from '../containers/SampleQueueContainer'
 import NavBar from './NavBar'
-import ErrorNotificationPanel from './Logging'
+import { ErrorNotificationPanel } from './Logging'
 import PleaseWaitDialog from './PleaseWaitDialog'
 import './Main.css'
 

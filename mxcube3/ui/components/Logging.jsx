@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import { Alert } from "react-bootstrap";
 
-export default class ErrorNotificationPanel extends React.Component {
+export class ErrorNotificationPanel extends React.Component {
     constructor(props) {
         super(props);
         this.state = { error: null };
@@ -28,4 +28,33 @@ export default class ErrorNotificationPanel extends React.Component {
         }
         return (<div></div>); 
     }    
+}
+
+export class Logging extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { log_records: [] };
+        window.logging = this;
+    }
+
+    register() {
+        log_records_source = new EventSource('mxcube/api/v0.1/logging');
+        log_records_source.addEventListener('message', (e) => {
+            this.state.log_records.push(e.data);
+            this.setState({"log_records": log_records});
+        }, false);
+    }
+
+    render() {
+        var log_output = [];
+
+        for (log_record of this.state.log_records) {
+            log_output.push(<pre style={{margin: "0px", display:"inline"}}>{log_record.message}</pre>)
+        }
+        
+        return (<div style={{overflow: 'auto'}}>
+                    <h1><b>Log messages</b></h1>
+                    {log_output}
+               </div>)
+    }
 }
