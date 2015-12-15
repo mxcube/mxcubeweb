@@ -9,7 +9,6 @@ import { Provider } from 'react-redux';
 import configureStore from './store/configureStore'
 require("file?name=[name].[ext]!index.html");
 
-import { samples_list } from './test-samples-list'
 const store = configureStore({}); //samples_grid: {samples_list: samples_list}});
 
 ReactDOM.render((
