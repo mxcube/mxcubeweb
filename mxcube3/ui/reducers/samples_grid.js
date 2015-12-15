@@ -62,7 +62,8 @@ export default (state={ samples_list: {}, filter_text: "", login_data: {} }, act
         //Declaring the new method to be added to the sample
         let method = {
           name: action.name,
-          queue_id: action.queue_id
+          queue_id: action.queue_id,
+          parameters : action.parameters
         }
 
         //Checking if methods exist on the sample and adding the new method
