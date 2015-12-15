@@ -1,18 +1,19 @@
 import logging
-from gevent.event import Event
+import gevent
 
 class MX3LoggingHandler(logging.Handler):
-    def __init__(self, queue):
+    def __init__(self):
         logging.Handler.__init__(self)
 
-        self._last = dict()
-        self._new_log_record = Event()
+        self._subscriptions = list()
+
+    def subscribe(self, q):
+        self._subscriptions.append(q)
+
+    def unsubscribe(self, q):
+        self._subscriptions.remove(q)
 
     def emit(self, record):
-        self._last.update({"type":"log", "data": { "message": self.format(record), "level": record.levelname }})
-        new_log_record.set()
-        new_log_record.clear() 
+        for sub in self._subscriptions[:]:
+           gevent.spawn(sub.put, { "message": self.format(record), "level": record.levelname })
 
-    def get_last_record(self):
-        self._new_log_record.wait()
-        return self._last

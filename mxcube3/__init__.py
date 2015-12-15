@@ -3,7 +3,7 @@ from flask import Flask, session, redirect, url_for, render_template, request, R
 from flask.ext.socketio import SocketIO
 from optparse import OptionParser
 import os, sys
-import logging_handler
+import logging
 
 # some Hardware Objects rely on BlissFramework.Utils.widget_colors,
 # it's ugly but here is some code to solve the problem for the
@@ -64,6 +64,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
      setLogFile(log_file)
 
   # installs logging handler to send messages to clients
+  import logging_handler
   root_logger = logging.getLogger()
   custom_log_handler = logging_handler.MX3LoggingHandler()
   custom_log_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
