@@ -1,6 +1,7 @@
 from flask import session, redirect, url_for, render_template, request, Response, jsonify
 from mxcube3 import app as mxcube
 from gevent.queue import Queue
+import json
 
 # SSE protocol is described here: http://mzl.la/UPFyxY
 class ServerSentEvent(object):
@@ -28,9 +29,7 @@ def logging():
         mxcube.log_handler.subscribe(q)
         try:
             while True:
-                ev = ServerSentEvent(str(q.get()))
-                dd=ev.encode()
-                print dd
+                ev = ServerSentEvent(json.dumps(q.get()))
                 yield ev.encode()
         except GeneratorExit:
             mxcube.log_handler.unsubscribe(q)
