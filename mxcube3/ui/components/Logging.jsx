@@ -37,6 +37,10 @@ export class Logging extends React.Component {
         window.logging = this;
     }
 
+    componentDidMount() {
+        this.register();
+    }
+
     register() {
         log_records_source = new EventSource('mxcube/api/v0.1/logging');
         log_records_source.addEventListener('message', (e) => {
