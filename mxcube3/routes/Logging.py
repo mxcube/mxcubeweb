@@ -1,5 +1,6 @@
 from flask import session, redirect, url_for, render_template, request, Response, jsonify
 from mxcube3 import app as mxcube
+from gevent.queue import Queue
 
 # SSE protocol is described here: http://mzl.la/UPFyxY
 class ServerSentEvent(object):
@@ -15,18 +16,24 @@ class ServerSentEvent(object):
             return ""
         lines = ["%s: %s" % (v, k) 
                  for k, v in self.desc_map.iteritems() if k]
-        
+       
         return "%s\n\n" % "\n".join(lines)
 
 
-@mxcube.route("/mxcube/api/v0.1/log_stream")
+@mxcube.route("/mxcube/api/v0.1/logging_stream")
 def logging():
 
     def gen():
-        while True:
-            data = mxcube.log_handler.get_last_record()
-            ev = ServerSentEvent(str(data))
-            yield ev.encode()
+        q = Queue()
+        mxcube.log_handler.subscribe(q)
+        try:
+            while True:
+                ev = ServerSentEvent(str(q.get()))
+                dd=ev.encode()
+                print dd
+                yield ev.encode()
+        except GeneratorExit:
+            mxcube.log_handler.unsubscribe(q)
 
     return Response(gen(), mimetype="text/event-stream")
 
