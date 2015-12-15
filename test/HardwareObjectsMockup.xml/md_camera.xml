@@ -5,5 +5,5 @@
   <tangoname>i9113/microdiff/newMD</tangoname>
   <interval>100</interval>
   <remote_interval>100</remote_interval>
-  <image_path>/mxn/home/mikegu/mxcube_sample_snapshot.jpeg</image_path>
+  <image_name>mxcube_sample_snapshot.jpeg</image_name>
 </device>
