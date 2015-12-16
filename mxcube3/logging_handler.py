@@ -20,5 +20,9 @@ class MX3LoggingHandler(logging.Handler):
                stack_trace = "".join(traceback.format_exception(*record.exc_info))
            else:
                stack_trace = ""
+           try:
+               record.asctime
+           except AttributeError:
+               record.asctime = logging._defaultFormatter.formatTime(record)
            gevent.spawn(sub.put, { "message": record.getMessage(), "severity": record.levelname, "timestamp":record.asctime, "logger":record.name, "stack_trace":stack_trace })
 

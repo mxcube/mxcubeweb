@@ -66,8 +66,9 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   # installs logging handler to send messages to clients
   import logging_handler
   root_logger = logging.getLogger()
+  root_logger.setLevel(logging.DEBUG)
   custom_log_handler = logging_handler.MX3LoggingHandler()
-  custom_log_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+  custom_log_handler.setLevel(logging.INFO)
   root_logger.addHandler(custom_log_handler)
   app.log_handler = custom_log_handler
 
