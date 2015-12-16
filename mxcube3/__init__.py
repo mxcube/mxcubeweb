@@ -4,6 +4,7 @@ from flask.ext.socketio import SocketIO
 from optparse import OptionParser
 import os, sys
 import logging
+import gevent
 
 # some Hardware Objects rely on BlissFramework.Utils.widget_colors,
 # it's ugly but here is some code to solve the problem for the
@@ -72,14 +73,20 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   root_logger.addHandler(custom_log_handler)
   app.log_handler = custom_log_handler
 
-  app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
-  app.session = app.beamline.getObjectByRole("session")
-  app.diffractometer = app.beamline.getObjectByRole("diffractometer")
-  app.db_connection = app.beamline.getObjectByRole("lims_client")
-  app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
-  app.sample_changer = app.beamline.getObjectByRole("sample_changer")
-
   ###Importing all REST-routes
   import routes.Logging
   import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue
+
+  def complete_initialization(app):
+      app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
+      app.session = app.beamline.getObjectByRole("session")
+      app.diffractometer = app.beamline.getObjectByRole("diffractometer")
+      app.db_connection = app.beamline.getObjectByRole("lims_client")
+      app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
+      app.sample_changer = app.beamline.getObjectByRole("sample_changer")
+
+  # starting from here, requests can be received by server;
+  # however, objects are not all initialized, so requests can return errors
+  # TODO: synchronize web UI with server operation status
+  gevent.spawn(complete_initialization, app)
 
