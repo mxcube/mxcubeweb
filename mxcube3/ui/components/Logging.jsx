@@ -33,9 +33,9 @@ export class ErrorNotificationPanel extends React.Component {
 export class Logging extends React.Component {
     constructor(props) {
         super(props);
-        this.npages = 5;
-        this.records_per_page = 1;
-        this.state = { log_records: [], curr_page: 1, start_page: 1, last_page: this.npages, total_pages: 0 };
+        this.npages = 10;
+        this.records_per_page = 2;
+        this.state = { log_records: [], curr_page: 1, start_page: 1, last_page: 1, total_pages: 0 };
     }
 
     componentDidMount() {
@@ -51,18 +51,27 @@ export class Logging extends React.Component {
         window.log_records_source.removeEventListener('message', this._handle_log_record);
     }
 
-    previousClicked() {
-        let sp = this.state.curr_page-this.npages;
-        if (sp < 1) { sp = 1; }
-        
-        this.setState({ last_page: this.state.curr_page, start_page: sp });
-    
+    previousClicked(e) {
+        e.preventDefault();
+        var sp = this.state.start_page; 
+        var lp = this.state.last_page;
+        var p = this.state.curr_page;
+        p = Math.max(p-1, 1);
+        if (p < sp) { sp=Math.max(p-this.npages+1, 1); lp=sp+this.npages-1 } 
+        this.setState({ curr_page: p, start_page: sp, last_page: lp });
     }
 
-    nextClicked() {
-        let lp = this.state.curr_page+this.npages;
-        if (lp > this.state.total_pages) { lp = this.state.total_pages }
-        this.setState({ start_page: this.state.curr_page, last_page: lp });
+    nextClicked(e) {
+        e.preventDefault();
+        var sp = this.state.start_page; 
+        var lp = this.state.last_page;
+        var p = this.state.curr_page;
+        p = Math.min(p+1, this.state.total_pages);
+        if (p > lp) {
+          sp = p;
+          lp = Math.min(p+this.npages-1, this.state.total_pages);
+        }
+        this.setState({ curr_page: p, start_page: sp, last_page: lp });
     }
 
     pageClicked(i,e) {
@@ -79,14 +88,16 @@ export class Logging extends React.Component {
         let total_pages = Math.floor(this.state.log_records.length / this.records_per_page);
         if (this.state.log_records.length % this.records_per_page) { total_pages++ };
         this.state.total_pages = total_pages;
-                                      
-        for (i = this.state.start_page; i <= Math.min(total_pages, this.state.last_page); i++) {
+        while (((this.state.last_page-this.state.start_page)<(this.npages-1))&&(this.state.last_page < this.state.total_pages)) {
+            this.state.last_page++;
+        }                                      
+        for (i = this.state.start_page; i <= this.state.last_page; i++) {
             let active = i==this.state.curr_page ? "active" : "";
             pages.push(<li className={active} key={i}><a href="#" onClick={this.pageClicked.bind(this, i)}>{i}</a></li>);
         }
  
         i = 0;
-        for (log_record of this.state.log_records) {
+        for (log_record of this.state.log_records.slice((this.state.curr_page-1)*this.records_per_page, this.state.curr_page*this.records_per_page)) {
             log_output.push(<pre key={i} style={{margin: "0px", border: "0px"}}>{log_record.message}</pre>)
             ++i;
         }
@@ -94,17 +105,17 @@ export class Logging extends React.Component {
         return (<div className='col-xs-12'>
                     <nav>
                         <ul className="pagination">
-                            {(() => {
-                                if (total_pages > this.npages) { return <li>
-                                    <a href="#" onClick={(e)=> { e.preventDefault(); return this.previousClicked() }}><span aria-hidden="true">&laquo;</span></a>
-                                </li> } else { return "" };
-                            })()}
+                            <li>
+                                <a href="#" onClick={this.previousClicked.bind(this)}>
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
                             {pages}
-                            {(() => {
-                                if ((this.state.curr_page+this.npages) < total_pages) { return <li>
-                                    <a href="#" onClick={(e)=> { e.preventDefault(); return this.nextClicked() }}><span aria-hidden="true">&raquo;</span></a>
-                                </li> } else { return "" };
-                            })()}
+                            <li>
+		                <a href="#" onClick={this.nextClicked.bind(this)}>
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
                         </ul>
                     </nav>
                     {log_output}
