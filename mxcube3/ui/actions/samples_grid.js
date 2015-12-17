@@ -53,11 +53,12 @@ export function doSyncSamples(proposal_id) {
     }
 }
 
-export function doAddMethod(sample_id, method) {
+export function doAddMethod(sample_id, method, parameters) {
     return { type: "ADD_METHOD",
             name: method.Name,  
             index: sample_id,
-            queue_id: method.QueueId
+            queue_id: method.QueueId,
+            parameters: parameters
               }
 }
 
@@ -70,7 +71,7 @@ export function doRemoveMethod(sample_id, list_id) {
 
 
 export function sendAddSampleMethod(queue_id, sample_id, method) {
-
+    console.log("called");
     return function(dispatch) {
 
         fetch('mxcube/api/v0.1/queue/' + queue_id + '/addmethod/' + method.name, { 
@@ -78,15 +79,15 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
-            }
-
+            },
+            body: JSON.stringify({ method })
         }).then((response) => {
             if (response.status >= 400) {
                 throw new Error("Could not add sample method, server refused");
             }
             return response.json();
         }).then(function(json) {
-            dispatch(doAddMethod(sample_id, json));
+            dispatch(doAddMethod(sample_id, json, method));
         });
        
 
