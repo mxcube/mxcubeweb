@@ -2,6 +2,11 @@ from flask import session, redirect, url_for, render_template, request, Response
 from mxcube3 import app as mxcube
 from gevent.queue import Queue
 import json
+from mxcube3 import socketio
+import functools
+
+""" This is not used anymore, but let's keep it as
+a 'reference' it could be useful later
 
 # SSE protocol is described here: http://mzl.la/UPFyxY
 class ServerSentEvent(object):
@@ -35,5 +40,10 @@ def logging():
             mxcube.log_handler.unsubscribe(q)
 
     return Response(gen(), mimetype="text/event-stream")
+"""
 
-            
+@socketio.on('connect', namespace='/logging')
+def connect():
+    import pdb;pdb.set_trace()
+    mxcube.log_handler.connect(functools.partial(socketio.emit, 'log_record', namespace='/logging'))
+    
