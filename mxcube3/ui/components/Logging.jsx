@@ -38,17 +38,18 @@ export class Logging extends React.Component {
         this.state = { log_records: [], curr_page: 1, start_page: 1, last_page: 1, total_pages: 1 };
     }
 
+    handle_record(record) {
+	//this.state.log_records.push(record);
+        this.setState({"log_records": window.log_records }); //this.state.log_records});
+    }
+
     componentDidMount() {
         this.setState({"log_records": window.log_records});
-        this._handle_log_record = (e) => { 
-	    this.state.log_records.push(JSON.parse(e.data));
-            this.setState({"log_records": this.state.log_records});
-        }
-        window.log_records_source.addEventListener('message', this._handle_log_record, false);
+        window.logging_component = this;
     }
 
     componentWillUnmount() {
-        window.log_records_source.removeEventListener('message', this._handle_log_record);
+        window.logging_component = null;
     }
 
     firstPageClicked(e) {
