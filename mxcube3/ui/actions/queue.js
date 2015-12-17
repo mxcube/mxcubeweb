@@ -1,12 +1,14 @@
 import fetch from 'isomorphic-fetch'
 
 
-export function selectSample(queue_id, sample_id, method) {
+export function selectSample(parent_queue_id, queue_id, sample_id, method, list_index) {
 	return { 
 		type: "SELECT_SAMPLE", 
 		queue_id: queue_id,
 		sample_id: sample_id,
-		method: method
+		method: method,
+		list_index: list_index,
+		parent_queue_id: parent_queue_id
 	}
 }
 
@@ -19,7 +21,6 @@ export function addSample(sample_id, queue_id) {
 }
 
 export function removeSample(index) {
-	console.log("removing sample");
 	return { 
 		type: "REMOVE_SAMPLE", 
 		index: index
@@ -30,13 +31,13 @@ export function removeSample(index) {
 export function sendAddSample(id) {
 	return function(dispatch) {
 
-		fetch('mxcube/api/v0.1/queue/add/' + id, { 
+		fetch('mxcube/api/v0.1/queue', { 
 			method: 'POST', 
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			}
-
+			},
+			body: JSON.stringify({ SampleId : id})
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to add sample to queue");
