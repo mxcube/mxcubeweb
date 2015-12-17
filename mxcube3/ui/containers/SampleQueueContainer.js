@@ -5,6 +5,7 @@ import SampleQueue from '../components/SampleQueue/SampleQueue';
 import SampleQueueButtons from '../components/SampleQueue/SampleQueueButtons';
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
+import * as FormActions from '../actions/methodForm'
 
 
 class SampleQueueContainer extends Component {
@@ -17,8 +18,8 @@ class SampleQueueContainer extends Component {
 
       <div className="row">
             <div className="col-xs-12">
-                <SampleQueue data={this.props}/>;
-                <SampleQueueButtons addMethod={this.props.sampleActions.sendAddSampleMethod.bind(this,selected.queue_id, selected.sample_id)} />
+                <SampleQueue data={this.props} showForm={this.props.formActions.showForm}/>;
+                <SampleQueueButtons showForm={this.props.formActions.showForm} />
             </div>
       </div>
     )
@@ -39,6 +40,7 @@ function mapStateToProps(state) {
       queue_id: sample.queue_id,
       sample_id: sample.sample_id,
       list_index: index,
+      method: false,
       children :  (sampleData.methods ? sampleData.methods.map( (method,index) =>{
         return {
                 module: method.name,
@@ -56,20 +58,23 @@ function mapStateToProps(state) {
   let tree = {
   module: 'Sample Queue - TODO',
   children: samples,
+  method: false,
   root: true
   };
 
 
   return { 
           tree: tree,
-          selected: state.queue.selected
+          selected: state.queue.selected,
+          sample_list: state.samples_grid.samples_list
     }
 }
 
 function mapDispatchToProps(dispatch) {
  return {
     queueActions: bindActionCreators(QueueActions, dispatch),
-    sampleActions : bindActionCreators(SampleActions, dispatch)
+    sampleActions : bindActionCreators(SampleActions, dispatch),
+    formActions : bindActionCreators(FormActions, dispatch)
   }
 }
 
