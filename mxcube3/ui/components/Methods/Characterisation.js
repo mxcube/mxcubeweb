@@ -1,29 +1,95 @@
 'use strict';
 
 import React, { Component, PropTypes } from 'react'
+import {reduxForm} from 'redux-form';
 import Modal from 'react-modal';
 
 
-export default class Characterisation extends Component {
+class Characterisation extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {show: false};
+        this.state = {
+            queueID: null,
+            method: false
+        };
     }
 
+    // Check if form should be populated with data, this is the case when user is updating a method
     componentWillReceiveProps(nextProps) {
+
+        // Get node selected by user 
+        let selected = nextProps.selected;
+
+        // Check if form is updated with information from the node already
+        let update = (selected.queue_id !== this.state.queueID);
+
+        // Check if update is true and if user is changing a method
+        if (selected.method && update){
+
+            let methodData = {}
+            let sampleItem = nextProps.sampleList[selected.sample_id];
+            sampleItem.methods.map(method => {
+                if (method.queue_id === selected.queue_id){
+                    methodData = method;
+                }
+            });
+
+            let parameters = methodData.parameters;
+
+            this.props.initializeForm({
+                numImages: parameters.num_images, 
+                expTime: parameters.exp_time, 
+                resolution: parameters.resolution, 
+                oscStart: parameters.osc_start , 
+                energy: parameters.energy, 
+                oscRange: parameters.osc_range, 
+                transmission: parameters.transmission
+            });
+        // Clean form to prepare for adding a new characterisation to the sample
+        }else if (update){
+
+            this.props.initializeForm({
+                numImages: undefined, 
+                expTime: undefined, 
+                resolution: undefined, 
+                oscStart: undefined , 
+                energy: undefined, 
+                oscRange: undefined, 
+                transmission: undefined
+            });
+
+        }
         this.setState({
-            show: nextProps.show
-         });
+            queueID : selected.queue_id,
+            method: selected.method
+        });
+
     }
 
-    handleSave(){
-        this.props.addMethod({name : "characterisation"});
+
+    handleSubmit(){
+
+        const fields = this.props.fields;
+
+        this.props.addMethod({
+            name : "characterisation",
+            num_images : fields.numImages.value,
+            exp_time: fields.expTime.value,
+            resolution : fields.resolution.value,
+            osc_start : fields.oscStart.value,
+            energy : fields.energy.value,
+            osc_range : fields.oscRange.value,
+            transmission : fields.transmission.value
+            });
         this.props.closeModal();
     }
 
 
     render() { 
+
+        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission}} = this.props;
+
 
         const style = {
           overlay : {
@@ -56,7 +122,7 @@ export default class Characterisation extends Component {
         <Modal
           className="Modal__Bootstrap modal-dialog"
           closeTimeoutMS={150}
-          isOpen={this.state.show}
+          isOpen={this.props.show}
           onRequestClose={this.handleModalCloseRequest}
           style={style}>
           <div className="modal-content">
@@ -73,36 +139,56 @@ export default class Characterisation extends Component {
 
             <div className="form-group">
 
-                <label className="col-sm-2 control-label">Value</label>
-                <div className="col-sm-10">
-                    <input type="email" className="form-control" id="inputEmail3" placeholder="Set the parameter here"/>
+                <label className="col-sm-3 control-label">Number of images</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...numImages} />
+                </div>
+
+                 <label className="col-sm-3 control-label">Exposure time</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...expTime} />
+                </div>
+
+
+            </div>
+
+
+            <div className="form-group">
+
+                <label className="col-sm-3 control-label">Resolution (A)</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...resolution} />
+                </div>
+
+                <label className="col-sm-3 control-label">Oscillation start</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...oscStart} />
+                </div>
+
+
+            </div>
+
+
+            <div className="form-group">
+
+                <label className="col-sm-3 control-label">Energy (KeV)</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...energy} />
+                </div>
+
+                <label className="col-sm-3 control-label">Oscillation range</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...oscRange} />
                 </div>
 
             </div>
 
-            <div className="form-group">
-
-                <label className="col-sm-2 control-label">Value</label>
-                <div className="col-sm-10">
-                    <input type="email" className="form-control" id="inputEmail3" placeholder="Set the parameter here"/>
-                </div>
-
-            </div>
 
             <div className="form-group">
 
-                <label className="col-sm-2 control-label">Value</label>
-                <div className="col-sm-10">
-                    <input type="email" className="form-control" id="inputEmail3" placeholder="Set the parameter here"/>
-                </div>
-
-            </div>
-
-            <div className="form-group">
-
-                <label className="col-sm-2 control-label">Value</label>
-                <div className="col-sm-10">
-                    <input type="email" className="form-control" id="inputEmail3" placeholder="Set the parameter here"/>
+                <label className="col-sm-3 control-label">Transmission (%)</label>
+                <div className="col-sm-9">
+                    <input type="number" className="form-control" {...transmission} />
                 </div>
 
             </div>
@@ -111,10 +197,17 @@ export default class Characterisation extends Component {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-default" onClick={() => this.props.closeModal()}>Close</button>
-              <button type="button" className="btn btn-primary" onClick={() => this.handleSave()}>Add Characterisation</button>
+              <button type="button" className="btn btn-primary" onClick={() => this.handleSubmit()}>{this.state.method ? "Change Characterisation": "Add Characterisation"}</button>
             </div>
           </div>
         </Modal>
         );
     }
 }
+
+Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
+  form: 'characterisation',                           // a unique name for this form
+  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission'] // all the fields in your form
+})(Characterisation);
+
+export default Characterisation;
