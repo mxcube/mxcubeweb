@@ -5,9 +5,6 @@ import Tree from 'react-ui-tree'
 import cx from 'classnames'
 import "./app.less"
 
-import Characterisation from '../Methods/Characterisation'
-
-
 export default class SampleQueue extends Component {
 
 
@@ -19,7 +16,7 @@ export default class SampleQueue extends Component {
         })} onClick={this.onClickNode.bind(this, node)}>
         {node.module}
         {!node.root && node.queue_id? <i className="fa fa-times" onClick={this.removeNode.bind(this, node)}></i>: ''}
-        {node.method ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}
+        {node.method && node.module !== "Centring" ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}
       </span>
     );
   }
@@ -27,7 +24,7 @@ export default class SampleQueue extends Component {
 
   // Checking what queue node is pressed and selecting it
   onClickNode(node) {
-    this.props.data.queueActions.selectSample(node.queue_id, node.sample_id, node.method);
+    this.props.data.queueActions.selectSample(node.parent_id, node.queue_id, node.sample_id, node.method, node.list_index);
   }
 
 
@@ -43,7 +40,14 @@ export default class SampleQueue extends Component {
 
   // Handle when a user is changing the order in the tree
   handleChange(tree) {
-    console.log("Update server with new order");
+
+    let sample_list = [];
+
+    tree.children.map((sample,index) =>{
+      sample_list.push({sample_id: sample.sample_id, queue_id: sample.queue_id});
+    });
+
+    
   }
 
   render() {
