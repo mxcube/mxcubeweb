@@ -245,9 +245,9 @@ def addCentring(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), centNode) #add_child does not return id!
         entry.enqueue(centEntry)
-        queueList[int(id)]['methods'].append({'CentringId':newNode})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name': 'Centring'})
         logging.getLogger('HWR').info('[QUEUE] centring added to sample')
-        resp = jsonify({'CentringId':newNode})
+        resp = jsonify({'QueueId':newNode, 'Name': 'Centring'})
         resp.status_code = 200
         return resp
     except Exception as ex:
@@ -272,9 +272,9 @@ def addCharacterisation(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), characNode) #add_child does not return id!
         entry.enqueue(characEntry)
-        queueList[int(id)]['methods'].append({'CharacId':newNode})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'Characterisation'})
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
-        resp = jsonify({'CharacId':newNode})
+        resp = jsonify({'QueueId':newNode, 'Name': 'Characterisation'})
         resp.status_code = 200
         return resp
     except Exception:
@@ -299,9 +299,9 @@ def addDataCollection(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), colNode) #add_child does not return id!
         entry.enqueue(colEntry)
-        queueList[int(id)]['methods'].append({'ColId':newNode})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'DataCollection'})
         logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
-        resp = jsonify({'ColId':newNode})
+        resp = jsonify({'QueueId':newNode, 'Name': 'DataCollection'})
         resp.status_code = 200
         return resp
     except Exception:
