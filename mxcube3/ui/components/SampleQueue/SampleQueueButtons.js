@@ -5,43 +5,21 @@ import React, { Component, PropTypes } from 'react'
 import Modal from 'react-modal';
 import "./app.less"
 
-import Characterisation from '../Methods/Characterisation'
-
-
-
-
 export default class SampleQueueButtons extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            showCenter: false,
-            showCharac: false,
-            showDataColl: false
-        };
-    }
-
-    closeModal(){
-         this.setState({
-            showCenter: false,
-            showCharac: false,
-            showDataColl: false
-        });
-    }
-
-
     render() { 
+
         return (
              <div className='footer-buttons'>
-                 <a className='btn btn-primary queue-button' onClick={() => this.setState({showCenter: true})}>
+                 <a className='btn btn-primary queue-button'>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring
                         </a>
-                        <a className='btn btn-primary queue-button' onClick={() => this.setState({showCharac: true})}>
+                        <a className='btn btn-primary queue-button' onClick={() => this.props.showForm("characterisation")}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Characterisation
                         </a>
-                        <a className='btn btn-primary queue-button' onClick={() => this.setState({showDataColl: true}) }>
+                        <a className='btn btn-primary queue-button'>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Datacollection
                         </a>
@@ -53,8 +31,6 @@ export default class SampleQueueButtons extends Component {
                             <i className='fa fa-fw fa-stop'></i>
                                 Stop
                         </a>
-
-                    <Characterisation show={this.state.showCharac} addMethod={this.props.addMethod} closeModal={() => this.closeModal()}/>
             </div>
         );
     }
