@@ -62,6 +62,15 @@ export function doAddMethod(sample_id, method, parameters) {
               }
 }
 
+export function doChangeMethod(queue_id, sample_id, list_index, parameters) {
+    return { type: "CHANGE_METHOD",
+            index: sample_id,
+            queue_id: queue_id,
+            list_index: list_index,
+            parameters: parameters
+            }
+}
+
 export function doRemoveMethod(sample_id, list_id) {
     return { type: "REMOVE_METHOD",
             index: sample_id,  
@@ -71,16 +80,16 @@ export function doRemoveMethod(sample_id, list_id) {
 
 
 export function sendAddSampleMethod(queue_id, sample_id, method) {
-    console.log("called");
+
     return function(dispatch) {
 
-        fetch('mxcube/api/v0.1/queue/' + queue_id + '/addmethod/' + method.name, { 
+        fetch('mxcube/api/v0.1/queue/' + queue_id, { 
             method: 'POST', 
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify({ method })
+            body: JSON.stringify(method)
         }).then((response) => {
             if (response.status >= 400) {
                 throw new Error("Could not add sample method, server refused");
@@ -88,6 +97,29 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
             return response.json();
         }).then(function(json) {
             dispatch(doAddMethod(sample_id, json, method));
+        });
+       
+
+    }
+}
+
+export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_id, list_index, method) {
+        return function(dispatch) {
+
+        fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' + method_queue_id, { 
+            method: 'PUT', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(method)
+        }).then((response) => {
+            if (response.status >= 400) {
+                throw new Error("Could not add sample method, server refused");
+            }
+            return response.json();
+        }).then(function(json) {
+            dispatch(doChangeMethod(method_queue_id, sample_id, list_index, method));
         });
        
 
