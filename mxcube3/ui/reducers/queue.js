@@ -22,7 +22,8 @@ export default (state={
             return Object.assign({},state, 
                                     {selected: {
                                         queue_id: action.queue_id,
-                                        sample_id: action.sample_id
+                                        sample_id: action.sample_id,
+                                        method: action.method
                                     }
                                     });
 
