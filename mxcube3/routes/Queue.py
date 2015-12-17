@@ -166,20 +166,22 @@ def executeEntryWithId(entry):
 ###----SAMPLE----###
 import queue_entry as qe
 from queue_entry import QueueEntryContainer
-
-@mxcube.route("/mxcube/api/v0.1/queue/add/<id>", methods=['POST','PUT'])
-def addSample(id):
+@mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
+def addSample():
     '''
     Add a sample to the queue with an id in the form of '1:01'
     Args: id, current id of the sample to be added
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
        data ={"QueueId": newId, "SampleId": sampleId}, where sampleId is the same as the caller id (eg '1:01')
     '''
+    params = request.data#get_json()
+    params = json.loads(params)
+    sampleId = params['SampleId']
     sampleNode = qmo.Sample()
     sampleEntry = qe.SampleQueueEntry()
     sampleEntry.set_data_model(sampleNode)
     for i in queueList:
-        if queueList[i]['SampleId'] == id:
+        if queueList[i]['SampleId'] == sampleId:
             logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
             return Response(status = 409)
     try:
@@ -187,11 +189,43 @@ def addSample(id):
         nodeId = sampleNode._node_id
         mxcube.queue.queue_hwobj.enqueue(sampleEntry)
         logging.getLogger('HWR').info('[QUEUE] sample added')
-        queueList.update({nodeId:{'SampleId': id, 'QueueId': nodeId, 'methods':[]}})
+        queueList.update({nodeId:{'SampleId': sampleId, 'QueueId': nodeId, 'methods':[]}})
         queueOrder.append(nodeId)
-        return jsonify({'SampleId': id, 'QueueId': nodeId} )
+        return jsonify({'SampleId': sampleId, 'QueueId': nodeId} )
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
+        return Response(status = 409)
+
+@mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['PUT'])
+def updateSample(id):
+    '''
+    Update a sample info
+    Args: none
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
+       data ={"QueueId": newId, "SampleId": sampleId}, where sampleId is the same as the caller id (eg '1:01')
+    '''
+    params = request.data#get_json()
+    params = json.loads(params)
+    nodeId = id #params['QueueId']
+    try:
+        sampleNode = mxcube.queue.get_node(int(nodeId))
+        if sampleNode:
+            sampleEntry = mxcube.queue.queue_hwobj.get_entry_with_model(sampleNode)
+            #TODO: update here the model with the new 'params'
+            ### missing lines...
+            sampleEntry.set_data_model(sampleNode)
+            #TODO: update here the queueList
+            ### missing lines...
+            #queueList.update({nodeId:{'QueueId': nodeId}})
+            logging.getLogger('HWR').info('[QUEUE] sample updated')
+            resp = jsonify({'QueueId': nodeId} )
+            resp.status_code = 200
+            return resp
+        else:
+            logging.getLogger('HWR').exception('[QUEUE] sample not in the queue, can not update')
+            return Response(status = 409)
+    except Exception:
+        logging.getLogger('HWR').exception('[QUEUE] sample could not be updated')
         return Response(status = 409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
@@ -224,9 +258,31 @@ def deleteSampleOrMethod(id):
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queued sample could not be deleted')
         return Response(status = 409)
-
+@mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<methodid>", methods=['DELETE'])
+def deleteMethod(sampleid, methodid):
+    """
+    Remove a sample or a method to the queue with an id in the form of 1,4,32
+    Args: id, current id of the sample/method to be deleted
+            id: int (parsed to int anyway)
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    try:
+        nodeToRemove = mxcube.queue.get_node(int(methodid))
+        parent = mxcube.queue.get_node(int(sampleid))
+        mxcube.queue.del_child(parent, nodeToRemove)
+        entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
+        parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
+        parentEntry.dequeue(entryToRemove)
+        parent = parent._node_id
+        nodeToRemove = nodeToRemove._node_id
+        for met in queueList[parent]['methods']:
+            if met[met.keys()[0]] == nodeToRemove:
+                queueList[parent]['methods'].remove(met)
+        return Response(status = 200)
+    except Exception:
+        logging.getLogger('HWR').exception('[QUEUE] Queued sample could not be deleted')
+        return Response(status = 409)
 ###Adding methods to a sample
-@mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/centring", methods=['PUT', 'POST'])
 def addCentring(id):
     '''
     Add a centring method to the sample with id: <id>, integer.
@@ -235,7 +291,8 @@ def addCentring(id):
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
        data ={ "CentringId": newId}
     '''
-    #no data received yet
+    params = request.get_json()
+    logging.getLogger('HWR').info('[QUEUE] centring add requested with data: '+str(params))
     try:
         centNode = qmo.SampleCentring()
         centEntry = qe.SampleCentringQueueEntry()
@@ -245,16 +302,14 @@ def addCentring(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), centNode) #add_child does not return id!
         entry.enqueue(centEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name': 'Centring'})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name': 'Centring','Params':params})
         logging.getLogger('HWR').info('[QUEUE] centring added to sample')
-        resp = jsonify({'QueueId':newNode, 'Name': 'Centring'})
+        resp = jsonify({'QueueId':newNode, 'Name': 'Centring', 'Params':params})
         resp.status_code = 200
         return resp
-    except Exception as ex:
+    except Exception:
         logging.getLogger('HWR').exception('[QUEUE] centring could not be added to sample')
         return Response(status = 409)
-
-@mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/characterisation", methods=['PUT', 'POST'])
 def addCharacterisation(id):
     '''
     Add a characterisation method to the sample with id: <id>, integer.
@@ -280,8 +335,6 @@ def addCharacterisation(id):
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] characterisation could not be added to sample')
         return Response(status = 409)
-
-@mxcube.route("/mxcube/api/v0.1/queue/<id>/addmethod/datacollection", methods=['PUT', 'POST'])
 def addDataCollection(id):
     '''
     Add a data collection method to the sample with id: <id>, integer.
@@ -308,6 +361,41 @@ def addDataCollection(id):
         logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample')
         return Response(status = 409)
 
+@mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST'])
+def addMethod(id):
+    params = request.data#get_json()
+    params = json.loads(params)
+    methodType = params['Type']
+    nodeId = id #params['QueueId']
+
+    if methodType == 'Centring':
+        return addCentring(nodeId)
+    elif methodType == 'Characterisation':
+        return addCharacterisation(nodeId)
+    elif methodType == 'DataCollection':
+        return addDataCollection(nodeId)
+    else:
+        logging.getLogger('HWR').exception('[QUEUE] Method can not be added')
+        return Response(status = 409)
+
+@mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<methodid>", methods=['PUT'])
+def updateMethod(sampleid, methodid):
+    try:
+        params = request.data#get_json()
+        params = json.loads(params)
+        sampleNode = mxcube.queue.get_node(int(sampleid))
+        methodNode = mxcube.queue.get_node(int(methodid))
+        methodEntry = mxcube.queue.queue_hwobj.get_entry_with_model(methodNode)
+        #TODO: update fields here, I would say that the entry does not need to be updated, only the model node
+        #queueList[int(sampleid)]['methods'].update({'QueueId':methodid, 'Name': 'Centring', 'Params':params})
+        logging.getLogger('HWR').info('[QUEUE] method updated')
+        resp = jsonify({'QueueId':methodid})
+        resp.status_code = 200
+        return resp
+    except Exception as ex:
+        logging.getLogger('HWR').exception('[QUEUE] centring could not be added to sample')
+        return Response(status = 409)
+
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
     """
@@ -322,13 +410,40 @@ def getSample(id):
             logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
             return Response(status = 409)
         else:
-            resp = jsonify(queueList[int(i)])
+            resp = jsonify(queueList[int(id)])
             resp.status_code = 200
             return resp
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] sample info could not be retrieved')
         return Response(status = 409)
 
+@mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<methodid>", methods=['GET'])
+def getMethod(sampleid, methodid):
+    """
+    Get the information of the sample with id:"id"
+    Args: id, current id of the sample
+        id: int (parsed to int anyway)
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
+        data ={"QueueId": 22, "SampleId": "3:02", "methods": []}
+    """
+    try:
+        if not queueList[int(sampleid)]:
+            logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
+            return Response(status = 409)
+        else:
+            methods = queueList[int(sampleid)]['methods']
+            #find the required one
+            for met in methods:
+                print met
+                if met['QueueId']== int(methodid):
+                    resp = jsonify(met)
+                    resp.status_code = 200
+                    return resp
+        logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved, it does not exits for the given sample')
+        return Response(status = 409)
+    except Exception:
+        logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved')
+        return Response(status = 409)
 #####################################
 ###to be programmed....
 #####################################
