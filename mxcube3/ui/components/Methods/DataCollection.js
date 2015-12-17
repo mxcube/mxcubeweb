@@ -5,7 +5,7 @@ import {reduxForm} from 'redux-form';
 import Modal from 'react-modal';
 
 
-class Characterisation extends Component {
+class DataCollection extends Component {
 
     constructor(props) {
         super(props);
@@ -46,7 +46,7 @@ class Characterisation extends Component {
                 oscRange: parameters.osc_range, 
                 transmission: parameters.transmission
             });
-        // Clean form to prepare for adding a new characterisation to the sample
+        // Clean form to prepare for adding a new datacollection to the sample
         }else if (update){
 
             this.props.initializeForm({
@@ -72,7 +72,7 @@ class Characterisation extends Component {
 
         let fields = this.props.fields;
         let parameters = {
-            Type : "Characterisation",
+            Type : "DataCollection",
             num_images : fields.numImages.value,
             exp_time: fields.expTime.value,
             resolution : fields.resolution.value,
@@ -136,7 +136,7 @@ class Characterisation extends Component {
                 <span aria-hidden="true">&times;</span>
                 <span className="sr-only">Close</span>
               </button>
-              <h4 className="modal-title">Characterisation</h4>
+              <h4 className="modal-title">DataCollection</h4>
             </div>
             <div className="modal-body">
 
@@ -202,7 +202,7 @@ class Characterisation extends Component {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-default" onClick={() => this.props.closeModal()}>Close</button>
-              <button type="button" className="btn btn-primary" onClick={() => this.handleSubmit()}>{this.state.method ? "Change Characterisation": "Add Characterisation"}</button>
+              <button type="button" className="btn btn-primary" onClick={() => this.handleSubmit()}>{this.state.method ? "Change DataCollection": "Add DataCollection"}</button>
             </div>
           </div>
         </Modal>
@@ -210,9 +210,9 @@ class Characterisation extends Component {
     }
 }
 
-Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'characterisation',                           // a unique name for this form
+DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
+  form: 'datacollection',                           // a unique name for this form
   fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission'] // all the fields in your form
-})(Characterisation);
+})(DataCollection);
 
-export default Characterisation;
+export default DataCollection;
