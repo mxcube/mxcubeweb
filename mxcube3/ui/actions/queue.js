@@ -1,11 +1,12 @@
 import fetch from 'isomorphic-fetch'
 
 
-export function selectSample(queue_id, sample_id) {
+export function selectSample(queue_id, sample_id, method) {
 	return { 
 		type: "SELECT_SAMPLE", 
 		queue_id: queue_id,
-		sample_id: sample_id
+		sample_id: sample_id,
+		method: method
 	}
 }
 
