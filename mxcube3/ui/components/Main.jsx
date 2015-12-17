@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import SampleQueueContainer from '../containers/SampleQueueContainer'
+import MethodContainer from '../containers/MethodContainer'
 import NavBar from './NavBar'
 import ErrorNotificationPanel from './Logging'
 import PleaseWaitDialog from './PleaseWaitDialog'
@@ -22,6 +23,7 @@ export default class Main extends React.Component {
                                {this.props.children}
                           </div>
                       </div>
+                      <MethodContainer />
                   </div>)
     }    
 }

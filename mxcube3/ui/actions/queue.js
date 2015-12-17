@@ -1,11 +1,12 @@
 import fetch from 'isomorphic-fetch'
 
 
-export function selectSample(queue_id, sample_id) {
+export function selectSample(queue_id, sample_id, method) {
 	return { 
 		type: "SELECT_SAMPLE", 
 		queue_id: queue_id,
-		sample_id: sample_id
+		sample_id: sample_id,
+		method: method
 	}
 }
 
@@ -26,7 +27,7 @@ export function removeSample(index) {
 }
 
 
-export function sendSample(id) {
+export function sendAddSample(id) {
 	return function(dispatch) {
 
 		fetch('mxcube/api/v0.1/queue/add/' + id, { 
@@ -50,7 +51,7 @@ export function sendSample(id) {
 }
 
 
-export function deleteSample(id, list_index) {
+export function sendDeleteSample(id, list_index) {
 	return function(dispatch) {
 
 		fetch('mxcube/api/v0.1/queue/' + id, { 
