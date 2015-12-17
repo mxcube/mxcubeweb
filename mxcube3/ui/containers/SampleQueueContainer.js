@@ -19,7 +19,7 @@ class SampleQueueContainer extends Component {
       <div className="row">
             <div className="col-xs-12">
                 <SampleQueue data={this.props} showForm={this.props.formActions.showForm}/>;
-                <SampleQueueButtons showForm={this.props.formActions.showForm} />
+                <SampleQueueButtons showForm={this.props.formActions.showForm} addMethod={this.props.sampleActions.sendAddSampleMethod} selected={this.props.selected} />
             </div>
       </div>
     )
