@@ -42,10 +42,6 @@ app = Flask(__name__, static_url_path='')
 app.debug = True
 
 socketio.init_app(app) # this line important for socketio msg, otherwise no msg is sent...
-@socketio.on('connect', namespace='/test')
-def connect():
-    print 'someone connected'
-    socketio.emit('test', {'data': 'Welcome'}, namespace='/test')
 
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
@@ -66,8 +62,9 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   # installs logging handler to send messages to clients
   import logging_handler
   root_logger = logging.getLogger()
+  root_logger.setLevel(logging.DEBUG)
   custom_log_handler = logging_handler.MX3LoggingHandler()
-  custom_log_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+  custom_log_handler.setLevel(logging.INFO)
   root_logger.addHandler(custom_log_handler)
   app.log_handler = custom_log_handler
 
@@ -79,6 +76,5 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   app.sample_changer = app.beamline.getObjectByRole("sample_changer")
 
   ###Importing all REST-routes
-  import routes.Logging
   import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue
 
