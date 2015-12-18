@@ -42,10 +42,6 @@ app = Flask(__name__, static_url_path='')
 app.debug = True
 
 socketio.init_app(app) # this line important for socketio msg, otherwise no msg is sent...
-@socketio.on('connect', namespace='/test')
-def connect():
-    print 'someone connected'
-    socketio.emit('test', {'data': 'Welcome'}, namespace='/test')
 
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
