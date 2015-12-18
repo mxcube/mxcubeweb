@@ -7,38 +7,28 @@ import signals
 
 SAMPLE_IMAGE = None
 
-for signal in signals.MaxLabMicrodiff_signals:
-    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
+#for signal in signals.MaxLabMicrodiff_signals:
+#    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
 
-#mxcube.resolution.connect(mxcube.resolution, 'deviceReady', signals.signalCallback4)
-###----SSE SAMPLE VIDEO STREAMING----###
-keep_streaming = True
-camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
-
-def new_sample_video_frame_received(img, width, height, *args):
+def new_sample_video_frame_received(img, width, height, *args, **kwargs):
+    camera_hwobj = kwargs.get("camera_hwobj")
     global SAMPLE_IMAGE
     SAMPLE_IMAGE = img
     camera_hwobj.new_frame.set()
     camera_hwobj.new_frame.clear()
-    #logging.getLogger('HWR.MX3').info('[Stream] Camera video set&clear')
 
-
-camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
-camera_hwobj.new_frame = gevent.event.Event()
-
-keep_streaming = True
-
-def stream_video():
+def stream_video(camera_hwobj):
     """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
     #logging.getLogger('HWR.Mx3').info('[Stream] Camera video streaming started')
     global SAMPLE_IMAGE
-    while keep_streaming:
+    while True:
         try:
             camera_hwobj.new_frame.wait()
             #logging.getLogger('HWR.MX3').info('[Stream] Camera video yielding')
             yield 'Content-type: image/jpg\n\n'+SAMPLE_IMAGE+"\n--!>"
-        except:
+        except Exception:
             pass
+
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
     """SampleCentring: subscribe to the camera streaming, used in img src tag
@@ -46,9 +36,12 @@ def subscribeToCamera():
     Return: image as html Content-type
     """
     #logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
-    camera_hwobj.stopper = False
-    camera_hwobj.init()
-    return Response(stream_video(), mimetype='multipart/x-mixed-replace; boundary="!>"')
+    camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
+    camera_hwobj.new_frame = gevent.event.Event()
+    camera_hwobj.new_frame_func = functools.partial(new_sample_video_frame_received, camera_hwobj=camera_hwobj)
+    camera_hwobj.connect("imageReceived", camera_hwobj.new_frame_func)
+    camera_hwobj.streaming_greenlet = stream_video(camera_hwobj)
+    return Response(camera_hwobj.streaming_greenlet, mimetype='multipart/x-mixed-replace; boundary="!>"')
 
 
 @mxcube.route("/mxcube/api/v0.1/samplecentring/camera/unsubscribe", methods=['GET'])
@@ -58,12 +51,13 @@ def unsubscribeToCamera():
     Args: None
     Return: 'True' if streaming stopped succesfully, otherwise 'False'
     """
-    keep_streaming = False
+    camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
     try:
-        camera_hwobj.stopper = True
-        return "True"
-    except:
-        return "False"
+        camera_hwobj.streaming_greenlet.kill()
+    except Exception:
+        pass
+    return "True"
+
 ###----SAMPLE CENTRING----###
 clicks = collections.deque(maxlen=3)
 
