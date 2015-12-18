@@ -43,10 +43,6 @@ app = Flask(__name__, static_url_path='')
 app.debug = True
 
 socketio.init_app(app) # this line important for socketio msg, otherwise no msg is sent...
-@socketio.on('connect', namespace='/test')
-def connect():
-    print 'someone connected'
-    socketio.emit('test', {'data': 'Welcome'}, namespace='/test')
 
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
@@ -74,7 +70,6 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   app.log_handler = custom_log_handler
 
   ###Importing all REST-routes
-  import routes.Logging
   import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue
 
   def complete_initialization(app):

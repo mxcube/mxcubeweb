@@ -4,7 +4,6 @@ var path = require('path');
 var config = {
     entry: {
         main: ['main.jsx'],
-        samples: ['samples.jsx']
     },
     output: {
         path: path.resolve(__dirname, 'mxcube3','static'),
@@ -34,7 +33,9 @@ var config = {
                 ]
             },
             { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
-            { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" }
+            { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
+            { test: /\.less$/, loader: "style-loader!css-loader!less-loader"}
+
         ]
     },
     plugins: [
