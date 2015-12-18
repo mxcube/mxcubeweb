@@ -2,40 +2,24 @@
 require("font-awesome-webpack");
 
 import React, { Component, PropTypes } from 'react'
+import Modal from 'react-modal';
 import "./app.less"
-
-
 
 export default class SampleQueueButtons extends Component {
 
-    addCentering(){
-        //Here a modal will be called for parameters
-        this.props.addMethod({name : "centring"});
-    }
-
-        
-    addCharacterisation(){
-        //Here a modal will be called for parameters
-        this.props.addMethod({name : "characterisation"});
-    }
-
-    addDatacollection(){
-        //Here a modal will be called for parameters
-        this.props.addMethod({name : "datacollection"});
-    }
-
     render() { 
+        let selected = this.props.selected;
         return (
              <div className='footer-buttons'>
-                 <a className='btn btn-primary queue-button' onClick={() => this.addCentering()}>
+                 <a className='btn btn-primary queue-button' onClick={() => this.props.addMethod(selected.queue_id, selected.sample_id,{Type: "Centring"})}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring
                         </a>
-                        <a className='btn btn-primary queue-button' onClick={() => this.addCharacterisation()}>
+                        <a className='btn btn-primary queue-button' onClick={() => this.props.showForm("characterisation")}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Characterisation
                         </a>
-                        <a className='btn btn-primary queue-button' onClick={() => this.addDatacollection()}>
+                        <a className='btn btn-primary queue-button' onClick={() => this.props.showForm("datacollection")}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Datacollection
                         </a>

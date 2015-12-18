@@ -4,7 +4,9 @@ export default (state={
 	current:0,
     selected: {
         queue_id: null,
-        sample_id: null
+        sample_id: null,
+        method: null,
+        list_index: 0
     }
 }, action) => {
     switch (action.type) {
@@ -22,7 +24,11 @@ export default (state={
             return Object.assign({},state, 
                                     {selected: {
                                         queue_id: action.queue_id,
-                                        sample_id: action.sample_id
+                                        sample_id: action.sample_id,
+                                        method: action.method,
+                                        list_index : action.list_index,
+                                        parent_queue_id: action.parent_queue_id
+
                                     }
                                     });
 
