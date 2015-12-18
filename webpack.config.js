@@ -14,8 +14,10 @@ var config = {
     devServer: {
         proxy: {
             '/mxcube/api/*': {
+                target: backend_server
+            },
+            '/socket.io/*': {
                 target: backend_server,
-                secure: false,
                 ws: true
             },
         },
