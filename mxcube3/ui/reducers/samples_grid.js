@@ -78,6 +78,21 @@ export default (state={ samples_list: {}, filter_text: "", login_data: {} }, act
         
         return Object.assign({}, state, {samples_list: samples_list});
       }
+    case "CHANGE_METHOD":
+      {    
+          // Creating a new SampleItem with the method changed
+          let methods = state.samples_list[action.index].methods;
+
+          let method = Object.assign({}, methods[action.list_index], {parameters: action.parameters});
+
+          let sample_item = {};
+          sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods : [...methods.slice(0,action.list_index), method, ...methods.slice(action.list_index + 1, methods.length)]}  );
+
+           // Creating new Samplelist
+          let samples_list = Object.assign({}, state.samples_list, sample_item);
+
+          return Object.assign({}, state, {samples_list: samples_list});
+      }
     case "REMOVE_METHOD":
       {
 

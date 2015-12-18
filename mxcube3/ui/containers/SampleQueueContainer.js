@@ -48,7 +48,8 @@ function mapStateToProps(state) {
                 leaf: true,
                 list_index: index,
                 sample_id: sample.sample_id,
-                queue_id: method.queue_id
+                queue_id: method.queue_id,
+                parent_id: sample.queue_id
         };
       } 
         ) : [])

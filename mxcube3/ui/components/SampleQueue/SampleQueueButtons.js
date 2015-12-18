@@ -8,11 +8,10 @@ import "./app.less"
 export default class SampleQueueButtons extends Component {
 
     render() { 
-        console.log(this.props);
         let selected = this.props.selected;
         return (
              <div className='footer-buttons'>
-                 <a className='btn btn-primary queue-button' onClick={() => this.props.addMethod(selected.queue_id, selected.sample_id,{name: "centring"})}>
+                 <a className='btn btn-primary queue-button' onClick={() => this.props.addMethod(selected.queue_id, selected.sample_id,{Type: "Centring"})}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring
                         </a>
@@ -20,7 +19,7 @@ export default class SampleQueueButtons extends Component {
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Characterisation
                         </a>
-                        <a className='btn btn-primary queue-button' onClick={() => this.props.addMethod(selected.queue_id, selected.sample_id,{name: "datacollection"})}>
+                        <a className='btn btn-primary queue-button' onClick={() => this.props.showForm("datacollection")}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Datacollection
                         </a>

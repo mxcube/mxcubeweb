@@ -17,7 +17,7 @@ export default class MXNavbar extends React.Component {
 	render() {
 		return (
 			<div>
-				<Navbar inverse fluid>
+				<Navbar inverse fluid fixedTop>
 					<NavBrand>MXCuBE 3</NavBrand>
 					<Nav navbar>
 						<NavItem eventKey={1} active={(this.state.active === 'samples') ? true : false} href="#/samplegrid">Samples</NavItem>
