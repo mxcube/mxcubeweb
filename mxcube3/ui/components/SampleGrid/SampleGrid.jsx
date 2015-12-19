@@ -57,24 +57,30 @@ export default class SampleGrid extends React.Component {
         var sample_grid = [];
         var i = 0;
         Object.keys(samples_list).forEach(key => {
-                let sample = samples_list[key]; 
-                let sample_info = sample.sample_info;
-                let acronym = "?";
-                let name = "unnamed";
-                let exp_type = ""; 
+            let sample = samples_list[key];
+            let sample_info = sample.sample_info;
+            let acronym = "?";
+            let name = "unnamed";
 
-                try {
-                    acronym = sample_info.proteinAcronym;
-                    name = sample_info.sampleName;
-                    exp_type = sample_info.experimentType;
-                } catch(e) { }
+            try {
+                acronym = sample_info.proteinAcronym;
+                name = sample_info.sampleName;
+                //exp_type is diffraction plan, should be added to Queue
+                //automatically, then it would be displayed here like any
+                //data collection
+                //exp_type = sample_info.experimentType;
+            } catch(e) { }
 
-                sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} location={sample.location} tags={exp_type} selected={sample.selected} onClick={() => this.props.toggleSelected(key)}/>);
-                ++i;
-        });
-        return (<div className='samples-grid col-xs-12'>
-                    {sample_grid}
-                </div>);
+            let tags = [];
+            if (sample.methods) {
+              tags = sample.methods.map((x)=>x.name);
+            }
 
-    }    
+            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} location={sample.location} tags={tags} selected={sample.selected} onClick={() => this.props.toggleSelected(key)}/>);
+            ++i;
+      });
+      return (<div className='samples-grid col-xs-12'>
+                  {sample_grid}
+             </div>);
+    }
 }
