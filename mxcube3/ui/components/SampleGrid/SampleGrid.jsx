@@ -25,9 +25,9 @@ export default class SampleGrid extends React.Component {
           while (elem = elem.previousSibling) { ++i };
           //
           let sample_props = this.refs[i].props;
-          let sample_desc = sample_props.acronym+" "+sample_props.code+" "+sample_props.location+" "+sample_props.exp_type;
+          let sample_desc = sample_props.name+" "+sample_props.acronym+" "+sample_props.code+" "+sample_props.location;
           let keep = sample_desc.includes(this.props.filter_text);
-          if (! keep) { 
+          if (! keep) {
               // a filtered sample is automatically unselected (we don't want to be able to add it, for example)
               if (sample_props.selected) { this.props.toggleSelected(sample_props.selectKey) }
           }
