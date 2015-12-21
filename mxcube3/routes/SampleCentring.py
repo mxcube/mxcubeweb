@@ -3,7 +3,7 @@ from mxcube3 import app as mxcube
 import time, logging, collections
 import gevent.event
 import os, json
-import signals
+#import signals
 
 SAMPLE_IMAGE = None
 
@@ -11,7 +11,7 @@ SAMPLE_IMAGE = None
 #    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
-    camera_hwobj = kwargs.get("camera_hwobj")
+    camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
     global SAMPLE_IMAGE
     SAMPLE_IMAGE = img
     camera_hwobj.new_frame.set()
@@ -38,8 +38,7 @@ def subscribeToCamera():
     #logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
     camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
     camera_hwobj.new_frame = gevent.event.Event()
-    camera_hwobj.new_frame_func = functools.partial(new_sample_video_frame_received, camera_hwobj=camera_hwobj)
-    camera_hwobj.connect("imageReceived", camera_hwobj.new_frame_func)
+    camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
     camera_hwobj.streaming_greenlet = stream_video(camera_hwobj)
     return Response(camera_hwobj.streaming_greenlet, mimetype='multipart/x-mixed-replace; boundary="!>"')
 
