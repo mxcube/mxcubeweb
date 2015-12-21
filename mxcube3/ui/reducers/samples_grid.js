@@ -1,28 +1,23 @@
-export default (state={ samples_list: {}, filter_text: "", login_data: {} }, action) => {
+export default (state={ samples_list: {}, selected: {}, filter_text: "", login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
           // should have session samples
           return Object.assign({}, state, { samples_list: action.samples_list });
     case "TOGGLE_SELECTED":
       {
-          // Creating a new SampleItem with the "selected" state toggled
-          let sample_item = {};
-          sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {selected : !state.samples_list[action.index].selected}  );
-
-          // Creating new Samplelist
-          let samples_list = Object.assign({}, state.samples_list, sample_item);
-
-          return Object.assign({}, state, {samples_list: samples_list});
+          let new_selected = Object.assign({}, state.selected);
+          new_selected[action.index]=!state.selected[action.index];
+          return Object.assign({}, state, {selected: new_selected });
       }
     case "SELECT_ALL":
       { 
           // Creating a new SampleList with the "selected" state toggled to "true"
-          let samples_list = {};
+          let new_selected = {};
           Object.keys(state.samples_list).forEach(function (key) {
-              samples_list[key] = Object.assign({}, state.samples_list[key], {selected : true}  );
+              new_selected[key] = true;
           });
 
-          return Object.assign({}, state,  {samples_list: samples_list}); 
+          return Object.assign({}, state,  {selected: new_selected}); 
       }
     case "FILTER":
       {

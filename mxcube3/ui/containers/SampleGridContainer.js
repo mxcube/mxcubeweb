@@ -11,7 +11,7 @@ class SampleGridContainer extends React.Component {
             // Loop through all samples, check which was selected and add to the queue. 
             Object.keys(this.props.samples_list).forEach(key => {
 
-                if (this.props.samples_list[key].selected){
+                if (this.props.selected[key]){
                   this.props.addSampleToQueue(key);
                 }
                
@@ -58,7 +58,7 @@ class SampleGridContainer extends React.Component {
                                </div>
                             </div>
                             <div className="row"> 
-				    <SampleGrid samples_list={this.props.samples_list} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text}/>
+				    <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text}/>
                             </div>
 			</div>)
 	}
