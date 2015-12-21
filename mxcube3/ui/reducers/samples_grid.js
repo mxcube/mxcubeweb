@@ -14,7 +14,7 @@ export default (state={ samples_list: {}, selected: {}, filter_text: "", login_d
           // Creating a new SampleList with the "selected" state toggled to "true"
           let new_selected = {};
           Object.keys(state.samples_list).forEach(function (key) {
-              new_selected[key] = true;
+              new_selected[key] = action.selected;
           });
 
           return Object.assign({}, state,  {selected: new_selected}); 
