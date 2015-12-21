@@ -3,6 +3,8 @@ from flask import Flask, session, redirect, url_for, render_template, request, R
 from flask.ext.socketio import SocketIO
 from optparse import OptionParser
 import os, sys
+import logging
+import gevent
 
 # some Hardware Objects rely on BlissFramework.Utils.widget_colors,
 # it's ugly but here is some code to solve the problem for the
@@ -41,10 +43,6 @@ app = Flask(__name__, static_url_path='')
 app.debug = True
 
 socketio.init_app(app) # this line important for socketio msg, otherwise no msg is sent...
-@socketio.on('connect', namespace='/test')
-def connect():
-    print 'someone connected'
-    socketio.emit('test', {'data': 'Welcome'}, namespace='/test')
 
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
@@ -62,13 +60,28 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
   if log_file:
      setLogFile(log_file)
 
-  app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
-  app.session = app.beamline.getObjectByRole("session")
-  app.diffractometer = app.beamline.getObjectByRole("diffractometer")
-  app.db_connection = app.beamline.getObjectByRole("lims_client")
-  app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
-  app.sample_changer = app.beamline.getObjectByRole("sample_changer")
+  # installs logging handler to send messages to clients
+  import logging_handler
+  root_logger = logging.getLogger()
+  root_logger.setLevel(logging.DEBUG)
+  custom_log_handler = logging_handler.MX3LoggingHandler()
+  custom_log_handler.setLevel(logging.INFO)
+  root_logger.addHandler(custom_log_handler)
+  app.log_handler = custom_log_handler
 
   ###Importing all REST-routes
   import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue
+
+  def complete_initialization(app):
+      app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
+      app.session = app.beamline.getObjectByRole("session")
+      app.diffractometer = app.beamline.getObjectByRole("diffractometer")
+      app.db_connection = app.beamline.getObjectByRole("lims_client")
+      app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
+      app.sample_changer = app.beamline.getObjectByRole("sample_changer")
+
+  # starting from here, requests can be received by server;
+  # however, objects are not all initialized, so requests can return errors
+  # TODO: synchronize web UI with server operation status
+  gevent.spawn(complete_initialization, app)
 
