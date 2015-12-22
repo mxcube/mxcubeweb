@@ -68,6 +68,24 @@ export function doAddMethod(sample_id, method, parameters) {
               }
 }
 
+export function doToggleManualMount() {
+    return function(dispatch, getState) {
+        const { samples_grid } = getState();
+        if (samples_grid.manual_mount) {
+            dispatch(doSetManualMount(false));
+            dispatch(doGetSamplesList());
+        } else {
+            dispatch(doSetManualMount(true));
+            dispatch(doUpdateSamples([{id:"0", sample_info: { sampleName: "mounted sample"}}])); 
+        }
+    }
+}
+            
+export function doSetManualMount(manual) {
+    return { type: "SET_MANUAL_MOUNT", manual }
+}
+
+
 export function doChangeMethod(queue_id, sample_id, list_index, parameters) {
     return { type: "CHANGE_METHOD",
             index: sample_id,

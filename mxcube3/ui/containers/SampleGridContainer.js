@@ -2,8 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
-import { Input, Button, Glyphicon, ButtonToolbar  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doUnselectAll, doFilter, doSyncSamples } from '../actions/samples_grid'
+import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
 
 class SampleGridContainer extends React.Component {
@@ -42,8 +42,10 @@ class SampleGridContainer extends React.Component {
                                 </div>
                                 <div className="col-xs-5">
                                    <ButtonToolbar>
-                                       <Button className="btn-primary" onClick={this.props.getSamples}>Check sample changer contents</Button>
-                                       <Button className="btn-primary" onClick={ () => { return this.syncSamples() }}>
+                                       <SplitButton bsStyle="primary" pullRight="true" title={this.props.manual_mount ? "Manual mount" : "Check sample changer contents"} onClick={this.props.manual_mount ? undefined : this.props.getSamples} onSelect={this.props.toggleManualMount}>
+                                           <MenuItem eventKey="1">{this.props.manual_mount ? "Sample changer" : "Manual mount"}</MenuItem> 
+                                       </SplitButton>
+                                       <Button className="btn-primary" disabled={this.props.manual_mount ? true : false } onClick={ () => { this.syncSamples() }}>
                                             <Glyphicon glyph="refresh"/> Sync. ISPyB
                                        </Button>
                                    </ButtonToolbar>
@@ -78,6 +80,8 @@ function mapDispatchToProps(dispatch) {
         filter: (filter_text) => dispatch(doFilter(filter_text)),
         syncSamples: (proposal_id) => dispatch(doSyncSamples(proposal_id)),
         addSampleToQueue: (id) => dispatch(sendAddSample(id))
+        toggleManualMount: (manual) => dispatch(doToggleManualMount(manual)),
+        updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list))
     }
 }
 
