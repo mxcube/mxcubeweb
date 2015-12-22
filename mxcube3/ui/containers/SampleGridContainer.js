@@ -79,7 +79,7 @@ function mapDispatchToProps(dispatch) {
         unselectAll: () => dispatch(doUnselectAll()),
         filter: (filter_text) => dispatch(doFilter(filter_text)),
         syncSamples: (proposal_id) => dispatch(doSyncSamples(proposal_id)),
-        addSampleToQueue: (id) => dispatch(sendAddSample(id))
+        addSampleToQueue: (id) => dispatch(sendAddSample(id)),
         toggleManualMount: (manual) => dispatch(doToggleManualMount(manual)),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list))
     }
