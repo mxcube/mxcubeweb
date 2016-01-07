@@ -1,7 +1,8 @@
 import omit from 'lodash/object/omit';
 import without from 'lodash/array/without';
-import xor from 'lodash/array/xor';      
-
+import xor from 'lodash/array/xor';
+import union from 'lodash/array/union';  
+import intersection from 'lodash/array/intersection';            
 
 export default (state={
     queue:{},
@@ -41,7 +42,7 @@ export default (state={
                         );
 
         // Change the order of the samples in the queue
-         case 'CHANGE_ORDER':
+         case 'CHANGE_SAMPLE_ORDER':
             return Object.assign({}, state, { todo: action.list });
 
         // Adding the new method to the queue
@@ -63,19 +64,27 @@ export default (state={
 
                                     }
                                     });
-
+        // Toogles checkboxes for sample and method nodes
         case 'TOGGLE_CHECKBOX':
 
             let exist = state.checked.indexOf(action.queue_id) !== -1;
             // Checking if node is sample or method
             if(action.parent_queue_id === -1){
-                return Object.assign({},state, {checked: xor(state.checked, [action.queue_id])});
+                let children = state.queue[action.queue_id];
+                if(exist){
+                    return Object.assign({},state, {checked: without(xor(state.checked, [action.queue_id]), ...children) });
+                }else{
+                    return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]), children)});
+                }
             }else{
-                return Object.assign({},state, {checked: xor(state.checked, [action.queue_id])});
+                let siblings_checked = intersection(state.queue[action.parent_queue_id],state.checked);
+                if(exist && siblings_checked.length === 1){
+                    return Object.assign({},state, {checked: without(state.checked, action.parent_queue_id, action.queue_id)});
+                }else{
+                    return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]),[action.parent_queue_id])});
+                }
             }
     
-
-
         default:
             return state;
     }

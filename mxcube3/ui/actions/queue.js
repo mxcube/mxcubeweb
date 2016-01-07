@@ -83,7 +83,7 @@ export function sendDeleteSample(queue_id) {
 
 export function sendChangeOrder(list) {
 	return { 
-		type: "CHANGE_ORDER", 
+		type: "CHANGE_SAMPLE_ORDER", 
 		list: list
 	}
 }
