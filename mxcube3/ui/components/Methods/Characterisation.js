@@ -84,7 +84,9 @@ class Characterisation extends Component {
         if (this.state.method){
             this.props.changeMethod(parameters);
         }else{
-            this.props.addMethod(parameters);
+            this.props.checked.map( (queue_id) =>{
+                (this.props.lookup[queue_id] ? this.props.addMethod(queue_id, this.props.lookup[queue_id],parameters): '');
+            });
         }
         
         this.props.closeModal();
