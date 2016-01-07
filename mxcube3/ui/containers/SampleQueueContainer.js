@@ -5,21 +5,25 @@ import SampleQueue from '../components/SampleQueue/SampleQueue';
 import SampleQueueButtons from '../components/SampleQueue/SampleQueueButtons';
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
-import * as FormActions from '../actions/methodForm'
+import { showForm } from '../actions/methodForm'
 
 
 class SampleQueueContainer extends Component {
 
     
   render() {
-    const selected = this.props.selected;
+
+    const {selected, checked, lookup, tree, showForm} = this.props;
+    const {toggleCheckBox, sendChangeOrder, sendDeleteSample } = this.props.queueActions;
+
+
     return (
 
 
       <div className="row">
             <div className="col-xs-12">
-                <SampleQueue data={this.props} showForm={this.props.formActions.showForm}/>;
-                <SampleQueueButtons showForm={this.props.formActions.showForm} addMethod={this.props.sampleActions.sendAddSampleMethod} selected={this.props.selected} />
+                <SampleQueue tree={tree} selected={selected} data={this.props} showForm={showForm} changeOrder={this.props.queueActions.sendChangeOrder} toggleCheckBox={toggleCheckBox}/>;
+                <SampleQueueButtons showForm={showForm} addMethod={this.props.sampleActions.sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup}/>
             </div>
       </div>
     )
@@ -28,28 +32,28 @@ class SampleQueueContainer extends Component {
 
 
 function mapStateToProps(state) {
-
   // Creating the tree structure for the queue list
   let samples = [];
-  state.queue.todo.map((sample,index) => {
+  state.queue.todo.map((queue_id) => {
 
-    const sampleData = state.samples_grid.samples_list[sample.sample_id];
-
+    const sampleData = state.samples_grid.samples_list[state.queue.lookup[queue_id]];
     samples.push({
       module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
-      queue_id: sample.queue_id,
-      sample_id: sample.sample_id,
-      list_index: index,
+      queue_id: queue_id,
+      sample_id: sampleData.id,
       method: false,
+      leaf: true,
+      type: "Sample",
       children :  (sampleData.methods ? sampleData.methods.map( (method,index) =>{
         return {
                 module: method.name,
                 method: true,
                 leaf: true,
                 list_index: index,
-                sample_id: sample.sample_id,
+                sample_id: sampleData.id,
                 queue_id: method.queue_id,
-                parent_id: sample.queue_id
+                parent_id: queue_id,
+                type: "Method"
         };
       } 
         ) : [])
@@ -60,14 +64,19 @@ function mapStateToProps(state) {
   module: 'Sample Queue - TODO',
   children: samples,
   method: false,
-  root: true
+  root: true,
+  type: "Root"
   };
 
 
   return { 
           tree: tree,
           selected: state.queue.selected,
-          sample_list: state.samples_grid.samples_list
+          checked: state.queue.checked,
+          sample_list: state.samples_grid.samples_list,
+          checked: state.queue.checked,
+          lookup: state.queue.lookup,
+          select_all: state.queue.selectAll
     }
 }
 
@@ -75,7 +84,7 @@ function mapDispatchToProps(dispatch) {
  return {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch),
-    formActions : bindActionCreators(FormActions, dispatch)
+    showForm : bindActionCreators(showForm, dispatch)
   }
 }
 

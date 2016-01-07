@@ -53,10 +53,11 @@ export function doSyncSamples(proposal_id) {
     }
 }
 
-export function doAddMethod(sample_id, method, parameters) {
+export function doAddMethod(sample_queue_id, sample_id, method, parameters) {
     return { type: "ADD_METHOD",
             name: method.Name,  
             index: sample_id,
+            parent_id: sample_queue_id,
             queue_id: method.QueueId,
             parameters: parameters
               }
@@ -71,11 +72,13 @@ export function doChangeMethod(queue_id, sample_id, list_index, parameters) {
             }
 }
 
-export function doRemoveMethod(sample_id, list_id) {
+export function doRemoveMethod(sample_queue_id, queue_id, sample_id, list_id) {
     return { type: "REMOVE_METHOD",
-            index: sample_id,  
+            index: sample_id,
+            parent_id: sample_queue_id,
+            queue_id: queue_id,  
             list_index: list_id,
-              }
+            }
 }
 
 
@@ -96,7 +99,7 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
             }
             return response.json();
         }).then(function(json) {
-            dispatch(doAddMethod(sample_id, json, method));
+            dispatch(doAddMethod(queue_id, sample_id, json, method));
         });
        
 
@@ -127,7 +130,7 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
 }
 
 
-export function sendDeleteSampleMethod(queue_id, sample_id, list_id) {
+export function sendDeleteSampleMethod(parent_id, queue_id, sample_id, list_id) {
 
     return function(dispatch) {
 
@@ -142,7 +145,7 @@ export function sendDeleteSampleMethod(queue_id, sample_id, list_id) {
             if (response.status >= 400) {
                 throw new Error("Server refused to remove sample");
             }else {
-                dispatch(doRemoveMethod(sample_id, list_id));
+                dispatch(doRemoveMethod(parent_id, queue_id, sample_id, list_id));
             }
         });
 
