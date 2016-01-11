@@ -1,4 +1,4 @@
-export default (state={ samples_list: {}, filter_text: "", manual_mount: false, login_data: {} }, action) => {
+export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_mount: false, login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
           // should have session samples
