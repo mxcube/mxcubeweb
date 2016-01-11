@@ -18,6 +18,7 @@ export default (state={
     },
     selectAll: false,
     lookup:{},
+    searchString: ""
 }, action) => {
     switch (action.type) {
 
@@ -47,11 +48,36 @@ export default (state={
 
         // Adding the new method to the queue
         case 'ADD_METHOD':
-            return Object.assign({}, state, {queue : {...state.queue, [action.parent_id] :state.queue[action.parent_id].concat(action.queue_id)}});
+            return Object.assign({}, state, 
+                        {
+                            queue : {...state.queue, [action.parent_id] :state.queue[action.parent_id].concat(action.queue_id)},
+                            checked: state.checked.concat(action.queue_id),
+                        }
+                        );
 
          // Removing the method from the queue
         case 'REMOVE_METHOD':
-            return Object.assign({}, state, {queue : {...state.queue, [action.parent_id] : without(state.queue[action.parent_id], action.queue_id)}});
+            return Object.assign({}, state, 
+                        {
+                            queue : {...state.queue, [action.parent_id] : without(state.queue[action.parent_id], action.queue_id)},
+                            checked: without(state.checked, action.queue_id)
+                        }
+                        );
+
+        // Run Sample or Method
+        case 'RUN_SAMPLE':
+            return Object.assign({}, state, {current : action.queue_id});
+
+         // Run Sample or Method
+        case 'FINISH_SAMPLE':
+            return Object.assign({}, state, 
+                        {
+                            history: state.history.concat(action.queue_id),
+                            todo: without(state.todo, action.queue_id),
+                            checked: without(state.checked, action.queue_id),
+                            current : 0
+                        }
+                        );
 
          // Selecting node in the gui
         case 'SELECT_SAMPLE':
@@ -64,6 +90,7 @@ export default (state={
 
                                     }
                                     });
+
         // Toogles checkboxes for sample and method nodes
         case 'TOGGLE_CHECKBOX':
 
@@ -83,6 +110,12 @@ export default (state={
                 }else{
                     return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]),[action.parent_queue_id])});
                 }
+            }
+        case 'redux-form/CHANGE':
+            if(action.form === "search-sample"){
+                return Object.assign({}, state, {searchString : action.value});
+            }else{
+                return state;
             }
     
         default:

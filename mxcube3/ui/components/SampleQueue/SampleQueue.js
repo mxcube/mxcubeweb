@@ -4,6 +4,8 @@ import "bootstrap-webpack"
 import Tree from 'react-ui-tree'
 import cx from 'classnames'
 import "./app.less"
+import SampleQueueSearch from './SampleQueueSearch';
+
 
 export default class SampleQueue extends Component {
 
@@ -26,7 +28,7 @@ export default class SampleQueue extends Component {
 
   renderRoot(node){
     return (
-      <span className="node">
+      <span className="node node-root">
         <span className="node-name">{node.module}</span>
       </span>
     );
@@ -35,11 +37,15 @@ export default class SampleQueue extends Component {
 
    renderSample(node){
     return (
-      <span className={cx('node', {'is-active': node.queue_id === this.props.selected.queue_id})} onClick={this.onClickNode.bind(this, node)}>
-        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.data.checked.indexOf(node.queue_id) !== -1}/>
+      <span className="node node-sample" onClick={this.onClickNode.bind(this, node)}>
+        {!node.finished ? 
+        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.data.checked.indexOf(node.queue_id) !== -1} />
+        : ''}
         <span className="node-name">{node.module}</span>
+        {!node.finished ? <span>
         <i className="fa fa-times" onClick={this.removeNode.bind(this, node)}></i>
-        <i className="fa fa-play" onClick={this.executeNode.bind(this, node)}></i>
+        <i className="fa fa-play" onClick={() => this.props.run(node.queue_id)}></i>
+        </span>: ''}
       </span>
     );
     
@@ -47,12 +53,13 @@ export default class SampleQueue extends Component {
 
    renderMethod(node){
     return (
-      <span className={cx('node', {'is-active': node.queue_id === this.props.selected.queue_id})} onClick={this.onClickNode.bind(this, node)}>
-        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id,node.parent_id)} checked={this.props.data.checked.indexOf(node.queue_id) !== -1}/>
+      <span className="node node-method" onClick={this.onClickNode.bind(this, node)}>
+        {!node.finished ? 
+          <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id,node.parent_id)} checked={this.props.data.checked.indexOf(node.queue_id) !== -1}/>
+        : ''}
         <span className="node-name">{node.module}</span>
-        <i className="fa fa-times" onClick={this.removeNode.bind(this, node)}></i>
-        { node.module !== "Centring" ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}
-        <i className="fa fa-play" onClick={this.executeNode.bind(this, node)}></i>
+        {!node.finished ? <i className="fa fa-times" onClick={this.removeNode.bind(this, node)}></i>  : ''}
+        { node.module !== "Centring" && !node.finished ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}
       </span>
     );
     
@@ -60,7 +67,7 @@ export default class SampleQueue extends Component {
 
   // Checking what queue node is pressed and selecting it
   onClickNode(node) {
-    this.props.data.queueActions.selectSample(node.parent_id, node.queue_id, node.sample_id, node.method);
+    this.props.select(node.parent_id, node.queue_id, node.sample_id, node.method);
   }
 
   removeNode(node){
@@ -73,32 +80,37 @@ export default class SampleQueue extends Component {
 
   }
 
-  executeNode(node){
-    console.log("run node");
-  }
-
   // Handle when a user is changing the order in the tree
   handleChange(tree) {
-    // console.log("reorder");
-    // let sample_list = [];
 
-    // tree.children.map((sample,index) =>{
-    //   sample_list.push({sample_id: sample.sample_id, queue_id: sample.queue_id});
-    // });
-    // this.props.changeOrder(sample_list);
-    // console.log(sample_list);
   }
 
   render() {
     return (
         <div className="tree">
+          <SampleQueueSearch />
+          {this.props.current ? 
+            <div className="current-sample">
+              <h4>Current Sample: {this.props.current.id} 
+                <i className="fa fa-check-circle-o" onClick={() => this.props.finishSample(this.props.current.queue_id)}></i>
+              </h4>
+              <p>Name: x Holder: y Protein: z</p>
+            </div> 
+            : ''
+          }
           <Tree
             paddingLeft={20}
             tree={this.props.tree}
             onChange={this.handleChange.bind(this)}
             isNodeCollapsed={this.isNodeCollapsed}
-            renderNode={this.renderNode.bind(this)}
-          />
+            renderNode={this.renderNode.bind(this)}/>
+
+          <Tree
+            paddingLeft={20}
+            tree={this.props.history_tree}
+            onChange={this.handleChange.bind(this)}
+            isNodeCollapsed={this.isNodeCollapsed}
+            renderNode={this.renderNode.bind(this)}/>
         </div>
     );
   }

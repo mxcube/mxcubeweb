@@ -13,16 +13,15 @@ class SampleQueueContainer extends Component {
     
   render() {
 
-    const {selected, checked, lookup, tree, showForm} = this.props;
-    const {toggleCheckBox, sendChangeOrder, sendDeleteSample } = this.props.queueActions;
-
+    const {selected, checked, lookup, todo_tree, history_tree, showForm, current} = this.props;
+    const {toggleCheckBox, sendChangeOrder, sendDeleteSample, finishSample, runSample, selectSample} = this.props.queueActions;
 
     return (
 
 
       <div className="row">
-            <div className="col-xs-12">
-                <SampleQueue tree={tree} selected={selected} data={this.props} showForm={showForm} changeOrder={this.props.queueActions.sendChangeOrder} toggleCheckBox={toggleCheckBox}/>;
+            <div className="col-xs-12 queue">
+                <SampleQueue tree={todo_tree} history_tree={history_tree} current={current} select={selectSample} run={runSample} finishSample={finishSample} selected={selected} data={this.props} showForm={showForm} changeOrder={sendChangeOrder} toggleCheckBox={toggleCheckBox}/>;
                 <SampleQueueButtons showForm={showForm} addMethod={this.props.sampleActions.sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup}/>
             </div>
       </div>
@@ -32,23 +31,67 @@ class SampleQueueContainer extends Component {
 
 
 function mapStateToProps(state) {
-  // Creating the tree structure for the queue list
-  let samples = [];
+  // Creating the tree structure for the queue todo-list
+  let samples_todo = [];
   state.queue.todo.map((queue_id) => {
 
     const sampleData = state.samples_grid.samples_list[state.queue.lookup[queue_id]];
-    samples.push({
+
+    if(state.queue.searchString === "" || sampleData.id.indexOf(state.queue.searchString) > -1 ){
+      samples_todo.push({
+        module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
+        queue_id: queue_id,
+        sample_id: sampleData.id,
+        method: false,
+        leaf: false,
+        finished: false,
+        type: "Sample",
+        children :  (sampleData.methods ? sampleData.methods.map( (method,index) =>{
+          return {
+            module: method.name,
+            method: true,
+            leaf: true,
+            finished: false,
+            list_index: index,
+            sample_id: sampleData.id,
+            queue_id: method.queue_id,
+            parent_id: queue_id,
+            type: "Method"
+          };
+        } 
+        ) : [])
+      });
+
+    }
+
+  });
+
+  let todo_tree = {
+  module: 'Sample Queue - TODO',
+  children: samples_todo,
+  method: false,
+  root: true,
+  type: "Root"
+  };
+
+  let samples_history = [];
+  state.queue.history.map((queue_id) => {
+
+    const sampleData = state.samples_grid.samples_list[state.queue.lookup[queue_id]];
+    samples_history.push({
       module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
       queue_id: queue_id,
       sample_id: sampleData.id,
       method: false,
-      leaf: true,
+      leaf: false,
+      finished: true,
       type: "Sample",
       children :  (sampleData.methods ? sampleData.methods.map( (method,index) =>{
         return {
                 module: method.name,
                 method: true,
                 leaf: true,
+                finished: true,
                 list_index: index,
                 sample_id: sampleData.id,
                 queue_id: method.queue_id,
@@ -60,17 +103,24 @@ function mapStateToProps(state) {
     });
   });
 
-  let tree = {
-  module: 'Sample Queue - TODO',
-  children: samples,
+  let history_tree = {
+  module: 'Sample Queue - HISTORY',
+  children: samples_history,
   method: false,
   root: true,
   type: "Root"
   };
 
-
+  // Getting information about the current running sample
+  let current = false;
+  if (state.queue.current){
+    current = state.samples_grid.samples_list[state.queue.lookup[state.queue.current]];
+    current.queue_id = state.queue.current;
+  }
   return { 
-          tree: tree,
+          current: current,
+          todo_tree: todo_tree,
+          history_tree: history_tree,
           selected: state.queue.selected,
           checked: state.queue.checked,
           sample_list: state.samples_grid.samples_list,

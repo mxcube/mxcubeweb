@@ -88,4 +88,19 @@ export function sendChangeOrder(list) {
 	}
 }
 
+export function runSample(queue_id) {
+	return { 
+		type: "RUN_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+export function finishSample(queue_id) {
+	return { 
+		type: "FINISH_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+
 
