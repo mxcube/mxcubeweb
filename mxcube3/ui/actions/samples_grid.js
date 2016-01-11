@@ -32,7 +32,13 @@ export function doToggleSelected(index) {
 }
 
 export function doSelectAll() {
-    return { type: "SELECT_ALL" }
+    let selected = true;
+    return { type: "SELECT_ALL", selected }
+}
+
+export function doUnselectAll() {
+    let selected = false;
+    return { type: "SELECT_ALL", selected }
 }
 
 export function doFilter(filter_text) {
