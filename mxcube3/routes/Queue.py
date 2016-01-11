@@ -189,7 +189,7 @@ def addSample():
         nodeId = sampleNode._node_id
         mxcube.queue.queue_hwobj.enqueue(sampleEntry)
         logging.getLogger('HWR').info('[QUEUE] sample added')
-        queueList.update({nodeId:{'SampleId': sampleId, 'QueueId': nodeId, 'methods':[]}})
+        queueList.update({nodeId:{'SampleId': sampleId, 'QueueId': nodeId, 'checked': 'False', 'methods':[]}})
         queueOrder.append(nodeId)
         return jsonify({'SampleId': sampleId, 'QueueId': nodeId} )
     except Exception:
@@ -206,17 +206,15 @@ def updateSample(id):
     '''
     params = request.data#get_json()
     params = json.loads(params)
-    nodeId = id #params['QueueId']
+    nodeId = int(id) #params['QueueId']
     try:
-        sampleNode = mxcube.queue.get_node(int(nodeId))
+        sampleNode = mxcube.queue.get_node(nodeId)
         if sampleNode:
             sampleEntry = mxcube.queue.queue_hwobj.get_entry_with_model(sampleNode)
             #TODO: update here the model with the new 'params'
             ### missing lines...
             sampleEntry.set_data_model(sampleNode)
-            #TODO: update here the queueList
-            ### missing lines...
-            #queueList.update({nodeId:{'QueueId': nodeId}})
+            queueList[nodeId].update(params)
             logging.getLogger('HWR').info('[QUEUE] sample updated')
             resp = jsonify({'QueueId': nodeId} )
             resp.status_code = 200
@@ -302,7 +300,7 @@ def addCentring(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), centNode) #add_child does not return id!
         entry.enqueue(centEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name': 'Centring','Params':params})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name': 'Centring','Params':params, 'checked':'False'})
         logging.getLogger('HWR').info('[QUEUE] centring added to sample')
         resp = jsonify({'QueueId':newNode, 'Name': 'Centring', 'Params':params})
         resp.status_code = 200
@@ -327,7 +325,7 @@ def addCharacterisation(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), characNode) #add_child does not return id!
         entry.enqueue(characEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'Characterisation'})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'Characterisation', 'checked':'False'})
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
         resp = jsonify({'QueueId':newNode, 'Name': 'Characterisation'})
         resp.status_code = 200
@@ -352,7 +350,7 @@ def addDataCollection(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), colNode) #add_child does not return id!
         entry.enqueue(colEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'DataCollection'})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'DataCollection', 'checked':'False'})
         logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
         resp = jsonify({'QueueId':newNode, 'Name': 'DataCollection'})
         resp.status_code = 200
