@@ -27,6 +27,11 @@ export function removeSample(index) {
 	}
 }
 
+export function clearAll() {
+        return {
+               type: "CLEAR_QUEUE"
+        }
+}
 
 export function sendAddSample(id) {
 	return function(dispatch) {

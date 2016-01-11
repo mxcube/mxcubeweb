@@ -31,7 +31,8 @@ export default (state={
 
                                     }
                                     });
-
+        case 'CLEAR_QUEUE':
+             return Object.assign({}, state, {todo: []});
         default:
             return state;
     }

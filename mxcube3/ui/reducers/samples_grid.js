@@ -1,4 +1,4 @@
-export default (state={ samples_list: {}, selected: {}, filter_text: "", login_data: {} }, action) => {
+export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_mount: false, login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
           // should have session samples
@@ -50,6 +50,10 @@ export default (state={ samples_list: {}, selected: {}, filter_text: "", login_d
               }
           });
           return Object.assign({}, state, { samples_list: samples_list });
+      }
+    case "SET_MANUAL_MOUNT":
+      {
+          return Object.assign({}, state, { manual_mount: action.manual });
       }
     case "ADD_METHOD":
       {
