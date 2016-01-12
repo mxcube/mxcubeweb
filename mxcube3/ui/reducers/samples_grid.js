@@ -80,12 +80,21 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
     case "CHANGE_METHOD":
       {    
           // Creating a new SampleItem with the method changed
+          let list_index = 0;
+
           let methods = state.samples_list[action.index].methods;
 
-          let method = Object.assign({}, methods[action.list_index], {parameters: action.parameters});
+           methods.map((method,index) =>{
+            if(method.queue_id === action.queue_id){
+              list_index = index;
+            }
+           });
+
+          let method = Object.assign({}, methods[list_index], {parameters: action.parameters});
+
 
           let sample_item = {};
-          sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods : [...methods.slice(0,action.list_index), method, ...methods.slice(action.list_index + 1, methods.length)]}  );
+          sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods : [...methods.slice(0,list_index), method, ...methods.slice(list_index + 1, methods.length)]}  );
 
            // Creating new Samplelist
           let samples_list = Object.assign({}, state.samples_list, sample_item);
