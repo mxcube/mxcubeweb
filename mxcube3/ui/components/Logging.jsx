@@ -12,11 +12,13 @@ export class ErrorNotificationPanel extends React.Component {
     }
 
     notify(err) {
+        document.getElementsByTagName("nav")[0].classList.remove("navbar-fixed-top")
         this.setState({error: err});
     }
 
     clear() {
         this.setState({error: null});
+        document.getElementsByTagName("nav")[0].classList.add("navbar-fixed-top")
     }
 
     render() {

@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import { clearAll } from './queue'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -32,7 +33,13 @@ export function doToggleSelected(index) {
 }
 
 export function doSelectAll() {
-    return { type: "SELECT_ALL" }
+    let selected = true;
+    return { type: "SELECT_ALL", selected }
+}
+
+export function doUnselectAll() {
+    let selected = false;
+    return { type: "SELECT_ALL", selected }
 }
 
 export function doFilter(filter_text) {
@@ -63,7 +70,27 @@ export function doAddMethod(sample_queue_id, sample_id, method, parameters) {
               }
 }
 
-export function doChangeMethod(queue_id, sample_id, parameters) {
+export function doToggleManualMount() {
+    return function(dispatch, getState) {
+        const { samples_grid } = getState();
+        if (samples_grid.manual_mount) {
+            dispatch(doSetManualMount(false));
+            dispatch(clearAll());
+            dispatch(doGetSamplesList());
+        } else {
+            dispatch(doSetManualMount(true));
+            dispatch(clearAll());
+            dispatch(doUpdateSamples([{id:"0", sample_info: { sampleName: "mounted sample"}}])); 
+        }
+    }
+}
+            
+export function doSetManualMount(manual) {
+    return { type: "SET_MANUAL_MOUNT", manual }
+}
+
+
+export function doChangeMethod(queue_id, sample_id, list_index, parameters) {
     return { type: "CHANGE_METHOD",
             index: sample_id,
             queue_id: queue_id,

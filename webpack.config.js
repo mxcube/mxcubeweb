@@ -23,6 +23,13 @@ var config = {
         },
     },
     module: {
+        preLoaders: [
+            {
+                test: /(\.js$|\.jsx$)/,
+                exclude: /node_modules/,
+                loader: "eslint-loader"
+            }
+        ],
         loaders: [
             {
                 test: /isotope-layout/,
@@ -49,6 +56,9 @@ var config = {
             { test: /\.less$/, loader: "style-loader!css-loader!less-loader"}
 
         ]
+    },
+    eslint: {
+        configFile: '.eslintrc'
     },
     plugins: [
         new webpack.ProvidePlugin({

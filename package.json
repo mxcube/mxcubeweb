@@ -2,7 +2,8 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "./node_modules/.bin/webpack-dev-server --hot --inline --colors --host 0.0.0.0 --port 8090 --display-error-details --content-base mxcube3/ui",
-    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js"
+    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js",
+    "esformatter": "./node_modules/.bin/esformatter" 
   },
   "name": "mxcube3",
   "version": "0.1.0",
@@ -37,6 +38,11 @@
     "babel-core": "5.8.29",
     "babel-loader": "5.3.2",
     "css-loader": "0.22.0",
+    "esformatter": "^0.8.1",
+    "esformatter-jsx": "^4.0.6",
+    "eslint": "^1.10.3",
+    "eslint-loader": "^1.1.1",
+    "eslint-plugin-react": "^3.11.3",
     "exports-loader": "0.6.2",
     "extract-text-webpack-plugin": "0.9.1",
     "file-loader": "0.8.4",
@@ -53,5 +59,25 @@
     "url-loader": "0.5.6",
     "webpack": "1.12.4",
     "webpack-dev-server": "1.14.0"
+  },
+  "esformatter": {
+    "plugins": [
+        "esformatter-jsx"
+    ],
+  "jsx": {
+    "formatJSX": true, 
+    "attrsOnSameLineAsTag": false, 
+    "maxAttrsOnTag": 3,
+    "firstAttributeOnSameLine": true,  
+    "alignWithFirstAttribute": false,  
+    "spaceInJSXExpressionContainers": " ", 
+    "htmlOptions": { 
+      "brace_style": "collapse",
+      "indent_char": " ",
+      "indent_size": 4,
+      "max_preserve_newlines": 2,
+      "preserve_newlines": true
+    }
+  }
   }
 }
