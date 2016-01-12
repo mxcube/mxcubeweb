@@ -19,8 +19,8 @@ class MethodContainer extends Component {
     
     return (
       <div>
-      	   	<Characterisation show={this.props.showCharac} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id, selected.list_index)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("characterisation")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
-            <DataCollection show={this.props.dataCollec} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id, selected.list_index)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("datacollection")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
+      	   	<Characterisation show={this.props.showCharac} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("characterisation")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
+            <DataCollection show={this.props.dataCollec} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("datacollection")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
       </div>
     )
   }

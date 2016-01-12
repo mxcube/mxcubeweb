@@ -89,22 +89,22 @@ export default class SampleQueue extends Component {
     return (
         <div className="tree">
           <SampleQueueSearch />
-          {this.props.current ? 
-            <div className="current-sample">
-              <h4>Current Sample: {this.props.current.id} 
-                <i className="fa fa-check-circle-o" onClick={() => this.props.finishSample(this.props.current.queue_id)}></i>
-              </h4>
-              <p>Name: x Holder: y Protein: z</p>
-            </div> 
-            : ''
-          }
-          <Tree
+        {/* Current Sample */}
+           <i className="fa fa-check-circle-o" onClick={() => this.props.finishSample(this.props.current.queue_id)}> Press here to finish sample</i>
+           <Tree
             paddingLeft={20}
-            tree={this.props.tree}
+            tree={this.props.current_tree}
             onChange={this.handleChange.bind(this)}
             isNodeCollapsed={this.isNodeCollapsed}
             renderNode={this.renderNode.bind(this)}/>
-
+         {/* Todo list */}
+          <Tree
+            paddingLeft={20}
+            tree={this.props.todo_tree}
+            onChange={this.handleChange.bind(this)}
+            isNodeCollapsed={this.isNodeCollapsed}
+            renderNode={this.renderNode.bind(this)}/>
+         {/* History list */}
           <Tree
             paddingLeft={20}
             tree={this.props.history_tree}
