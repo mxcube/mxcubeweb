@@ -23,58 +23,70 @@ var config = {
         },
     },
     module: {
-        preLoaders: [
-            {
-                test: /(\.js$|\.jsx$)/,
-                exclude: /node_modules/,
-                loader: "eslint-loader"
-            }
-        ],
-        loaders: [
-            {
-                test: /isotope-layout/,
-                loader: 'imports?define=>false&this=>window'
-            },
-            {  
-                test: /\.css$/,
-                loader: "style-loader!css-loader"
-            },
-            {
-                test: /\.jsx?$/,
-                exclude: /node_modules/,
-                loaders: ['react-hot', 'babel']
-            },
-            {
-                test: /\.(jpe?g|png|gif)$/i,
-                loaders: [
-                    'url?limit=8192',
-                    'img'
-                ]
-            },
-            {
-                test: /isotope\-|fizzy\-ui\-utils|desandro\-|masonry|outlayer|get\-size|doc\-ready|eventie|eventemitter|classie|get\-style\-property|packery/,
-                loader: 'imports?define=>false&this=>window'
-            },
-            { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
-            { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
-            { test: /\.less$/, loader: "style-loader!css-loader!less-loader"}
+      loaders: [
+      {
+        test: /isotope-layout/,
+        loader: 'imports?define=>false&this=>window'
+    },
+    {  
+        test: /\.css$/,
+        loader: "style-loader!css-loader"
+    },
+     {
+        test: /\.less$/,
+        loader: "style!css!less"
+      },
+    {
+        test: /\.jsx?$/,
+        loader: "babel-loader",
 
-        ]
+      // Skip any files outside of your project's `src` directory
+      exclude: [
+      path.resolve(__dirname, "node_modules"),
+      ],
+
+      // Only run `.js` and `.jsx` files through Babel
+      test: /\.jsx?$/,
+
+      // Options to configure babel with
+      query: {
+        plugins: ['transform-runtime'],
+        presets: ['es2015', 'stage-0', 'react'],
+        }
     },
-    eslint: {
-        configFile: '.eslintrc'
-    },
-    plugins: [
-        new webpack.ProvidePlugin({
-            $: "jquery",
-            jQuery: "jquery",
-            "window.jQuery": "jquery"
-        })
-    ],
-    resolve: {
-        root: path.resolve(__dirname, 'mxcube3/ui'), 
-        extensions: ['', '.js', '.jsx']
-    },
+    {
+    test: /isotope\-|fizzy\-ui\-utils|desandro\-|masonry|outlayer|get\-size|doc\-ready|eventie|eventemitter|classie|get\-style\-property|packery/,
+    loader: 'imports?define=>false&this=>window'
+},
+{test: /bootstrap\/js\//, loader: 'imports?jQuery=jquery' },
+{ test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
+{ test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
+{test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,    loader: "file" },
+{test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,    loader: "url?limit=10000&mimetype=image/svg+xml" },
+{
+    test: /\.(jpe?g|png|gif)$/i,
+    loaders: [
+    'url?limit=8192',
+    'img'
+    ]
+},
+
+]
+},
+eslint: {
+    configFile: '.eslintrc'
+},
+plugins: [
+new webpack.ProvidePlugin({
+    $: "jquery",
+    jQuery: "jquery",
+    "window.jQuery": "jquery"
+})
+],
+resolve: {
+    root: path.resolve(__dirname, 'mxcube3/ui'), 
+    extensions: ['', '.js', '.jsx']
+},
 }
 
 module.exports = config;

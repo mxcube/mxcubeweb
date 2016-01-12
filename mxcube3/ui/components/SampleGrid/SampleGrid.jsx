@@ -5,13 +5,7 @@ import SampleGridItem from './SampleGridItem'
 import Isotope from 'isotope-layout'
 
 export default class SampleGrid extends React.Component {
-    propTypes: {
-	samples_list: React.PropTypes.array.isRequired,
-        selected: React.PropTypes.array.isRequired,
-        toggleSelected: React.PropTypes.func.isRequired,
-        filter_text: React.PropTypes.string 
-    }
-
+  
     componentDidMount() {
         if (! this.isotope) {
             let container = ReactDOM.findDOMNode(this);
@@ -85,3 +79,10 @@ export default class SampleGrid extends React.Component {
              </div>);
     }
 }
+
+SampleGrid.propTypes = {
+  samples_list: React.PropTypes.array.isRequired,
+        selected: React.PropTypes.array.isRequired,
+        toggleSelected: React.PropTypes.func.isRequired,
+        filter_text: React.PropTypes.string 
+    }
