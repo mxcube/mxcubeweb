@@ -90,7 +90,7 @@ export default class SampleQueue extends Component {
         <div className="tree">
           <SampleQueueSearch />
         {/* Current Sample */}
-           <i className="fa fa-check-circle-o" onClick={() => this.props.finishSample(this.props.current.queue_id)}> Press here to finish sample</i>
+           <i className="fa fa-check-circle-o" onClick={() => this.props.finishSample(this.props.current.queue_id)}> Press the icon to finish sample</i>
            <Tree
             paddingLeft={20}
             tree={this.props.current_tree}

@@ -37,8 +37,8 @@ var config = {
         loader: "style!css!less"
       },
     {
-        test: /\.jsx?$/,
-        loader: "babel-loader",
+      test: /\.jsx?$/,
+      loader: "babel-loader",
 
       // Skip any files outside of your project's `src` directory
       exclude: [
@@ -51,7 +51,7 @@ var config = {
       // Options to configure babel with
       query: {
         plugins: ['transform-runtime'],
-        presets: ['es2015', 'stage-0', 'react'],
+        presets: ['es2015', 'stage-0', 'react']
         }
     },
     {
