@@ -62,11 +62,33 @@ body {
   }
 
   .caret-right:before {
-    content: '\25B8';
+    content: "\f067";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: #000;
+    font-size: 14px;
+    padding-right: 0.1em;
+    padding-left: 0.2em;
+    position: absolute;
+    top: 6px;
+    left: 0;
   }
 
   .caret-down:before {
-    content: '\25BE';
+    content: "\f068";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: #000;
+    font-size: 14px;
+    padding-right: 0.1em;
+    padding-left: 0.2em;
+    position: absolute;
+    top: 6px;
+    left: 0;
   }
 }
 
@@ -78,8 +100,8 @@ body {
   width: 16.66666667%;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #222;
   padding-bottom: 140px;
+  border-right: 2px solid black;
 }
 
 .m-node {
@@ -88,18 +110,23 @@ body {
   }
 
   .inner {
-    color: #9d9d9d;
+    color: black;
     font-size: 12px;
     font-family: Menlo;
   }
 
   .node {
     display: inline-block;
-    width: 100%;
     padding: 4px 5px;
-
+    border: 1px solid #999;
+    border-radius: 5px;
+    display: inline-block;
+    padding: 3px 7px 0px 5px;
+    text-decoration: none;
+    margin: 3px;
+    margin-left: 7px;
     &.is-active {
-      background-color: #31363F;
+      background-color: grey;
     }
   }
 }
@@ -126,5 +153,53 @@ body {
 }
 .fa{
   margin-left: 5px;
+}
+
+.node-name{
+  margin-left: 4px;
+}
+.node-root{
+  font-size: 16px;
+}
+
+.node-method{
+    background-color: #999999;
+    color: white;
+}
+.node-method:before{
+    border-left: 1px solid #999;
+    bottom: 50px;
+    height: 100%;
+    width: 1px;
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 9px;
+}
+
+.node-method:after {
+    border-top: 1px solid #999;
+    height: 20px;
+    top: 15px;
+    width: 8px;
+    content: "";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+    color: #000;
+    font-size: 14px;
+    padding-right: 0.1em;
+    padding-left: 0.2em;
+    position: absolute;
+    left: 9px;
+}
+.current-sample{
+  margin-left: 5px;
+}
+
+.sample-search{
+  margin: 5px;
+  font-size: 14px;
 }
 
