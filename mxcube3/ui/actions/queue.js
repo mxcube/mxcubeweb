@@ -1,12 +1,22 @@
 import fetch from 'isomorphic-fetch'
 
 
-export function selectSample(queue_id, sample_id, method) {
+export function selectSample(parent_queue_id, queue_id, sample_id, method) {
 	return { 
 		type: "SELECT_SAMPLE", 
 		queue_id: queue_id,
 		sample_id: sample_id,
-		method: method
+		method: method,
+		parent_queue_id: parent_queue_id
+	}
+}
+
+export function toggleCheckBox(queue_id, parent_queue_id = -1 , root = false) {
+	return { 
+		type: "TOGGLE_CHECKBOX",
+		root: root, 
+		queue_id: queue_id,
+		parent_queue_id: parent_queue_id
 	}
 }
 
@@ -18,25 +28,29 @@ export function addSample(sample_id, queue_id) {
 	}
 }
 
-export function removeSample(index) {
-	console.log("removing sample");
+export function removeSample(queue_id) {
 	return { 
 		type: "REMOVE_SAMPLE", 
-		index: index
+		queue_id: queue_id
 	}
 }
 
+export function clearAll() {
+        return {
+               type: "CLEAR_QUEUE"
+        }
+}
 
 export function sendAddSample(id) {
 	return function(dispatch) {
 
-		fetch('mxcube/api/v0.1/queue/add/' + id, { 
+		fetch('mxcube/api/v0.1/queue', { 
 			method: 'POST', 
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			}
-
+			},
+			body: JSON.stringify({ SampleId : id})
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to add sample to queue");
@@ -51,10 +65,10 @@ export function sendAddSample(id) {
 }
 
 
-export function sendDeleteSample(id, list_index) {
+export function sendDeleteSample(queue_id) {
 	return function(dispatch) {
 
-		fetch('mxcube/api/v0.1/queue/' + id, { 
+		fetch('mxcube/api/v0.1/queue/' + queue_id, { 
 			method: 'DELETE', 
 			headers: {
 				'Accept': 'application/json',
@@ -65,9 +79,33 @@ export function sendDeleteSample(id, list_index) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to remove sample");
 			}else {
-				dispatch(removeSample(list_index));
+				dispatch(removeSample(queue_id));
 			}
 		});
 
 	}
 }
+
+export function sendChangeOrder(list) {
+	return { 
+		type: "CHANGE_SAMPLE_ORDER", 
+		list: list
+	}
+}
+
+export function runSample(queue_id) {
+	return { 
+		type: "RUN_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+export function finishSample(queue_id) {
+	return { 
+		type: "FINISH_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+
+

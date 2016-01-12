@@ -2,7 +2,8 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "./node_modules/.bin/webpack-dev-server --hot --inline --colors --host 0.0.0.0 --port 8090 --display-error-details --content-base mxcube3/ui",
-    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js"
+    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js",
+    "esformatter": "./node_modules/.bin/esformatter" 
   },
   "name": "mxcube3",
   "version": "0.1.0",
@@ -14,10 +15,11 @@
     "classnames": "^2.2.0",
     "font-awesome": "^4.4.0",
     "font-awesome-webpack": "0.0.4",
-    "history": "^1.13.1",
+    "history": "1.13.x",
     "isomorphic-fetch": "^2.2.0",
     "isotope-layout": "2.2.2",
     "jquery": "2.1.4",
+    "lodash": "^3.10.1",
     "react": "0.14.2",
     "react-dom": "0.14.2",
     "react-modal": "^0.6.1",
@@ -28,6 +30,7 @@
     "redux-form": "^3.1.7",
     "redux-logger": "^2.0.4",
     "redux-thunk": "^1.0.0",
+    "socket.io-client": "0.9.16",
     "underscore": "^1.8.3",
     "x-editable": "1.5.1"
   },
@@ -35,6 +38,11 @@
     "babel-core": "5.8.29",
     "babel-loader": "5.3.2",
     "css-loader": "0.22.0",
+    "esformatter": "^0.8.1",
+    "esformatter-jsx": "^4.0.6",
+    "eslint": "^1.10.3",
+    "eslint-loader": "^1.1.1",
+    "eslint-plugin-react": "^3.11.3",
     "exports-loader": "0.6.2",
     "extract-text-webpack-plugin": "0.9.1",
     "file-loader": "0.8.4",
@@ -50,6 +58,26 @@
     "style-loader": "0.13.0",
     "url-loader": "0.5.6",
     "webpack": "1.12.4",
-    "webpack-dev-server": "1.12.1"
+    "webpack-dev-server": "1.14.0"
+  },
+  "esformatter": {
+    "plugins": [
+        "esformatter-jsx"
+    ],
+  "jsx": {
+    "formatJSX": true, 
+    "attrsOnSameLineAsTag": false, 
+    "maxAttrsOnTag": 3,
+    "firstAttributeOnSameLine": true,  
+    "alignWithFirstAttribute": false,  
+    "spaceInJSXExpressionContainers": " ", 
+    "htmlOptions": { 
+      "brace_style": "collapse",
+      "indent_char": " ",
+      "indent_size": 4,
+      "max_preserve_newlines": 2,
+      "preserve_newlines": true
+    }
+  }
   }
 }

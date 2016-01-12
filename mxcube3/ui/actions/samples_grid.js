@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import { clearAll } from './queue'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -32,7 +33,13 @@ export function doToggleSelected(index) {
 }
 
 export function doSelectAll() {
-    return { type: "SELECT_ALL" }
+    let selected = true;
+    return { type: "SELECT_ALL", selected }
+}
+
+export function doUnselectAll() {
+    let selected = false;
+    return { type: "SELECT_ALL", selected }
 }
 
 export function doFilter(filter_text) {
@@ -53,41 +60,95 @@ export function doSyncSamples(proposal_id) {
     }
 }
 
-export function doAddMethod(sample_id, method, parameters) {
+export function doAddMethod(sample_queue_id, sample_id, method, parameters) {
     return { type: "ADD_METHOD",
             name: method.Name,  
             index: sample_id,
+            parent_id: sample_queue_id,
             queue_id: method.QueueId,
             parameters: parameters
               }
 }
 
-export function doRemoveMethod(sample_id, list_id) {
+export function doToggleManualMount() {
+    return function(dispatch, getState) {
+        const { samples_grid } = getState();
+        if (samples_grid.manual_mount) {
+            dispatch(doSetManualMount(false));
+            dispatch(clearAll());
+            dispatch(doGetSamplesList());
+        } else {
+            dispatch(doSetManualMount(true));
+            dispatch(clearAll());
+            dispatch(doUpdateSamples([{id:"0", sample_info: { sampleName: "mounted sample"}}])); 
+        }
+    }
+}
+            
+export function doSetManualMount(manual) {
+    return { type: "SET_MANUAL_MOUNT", manual }
+}
+
+
+export function doChangeMethod(queue_id, sample_id, parameters) {
+    return { type: "CHANGE_METHOD",
+            index: sample_id,
+            queue_id: queue_id,
+            parameters: parameters
+            }
+}
+
+export function doRemoveMethod(sample_queue_id, queue_id, sample_id, list_id) {
     return { type: "REMOVE_METHOD",
-            index: sample_id,  
+            index: sample_id,
+            parent_id: sample_queue_id,
+            queue_id: queue_id,  
             list_index: list_id,
-              }
+            }
 }
 
 
 export function sendAddSampleMethod(queue_id, sample_id, method) {
-    console.log("called");
+
     return function(dispatch) {
 
-        fetch('mxcube/api/v0.1/queue/' + queue_id + '/addmethod/' + method.name, { 
+        fetch('mxcube/api/v0.1/queue/' + queue_id, { 
             method: 'POST', 
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify({ method })
+            body: JSON.stringify(method)
         }).then((response) => {
             if (response.status >= 400) {
                 throw new Error("Could not add sample method, server refused");
             }
             return response.json();
         }).then(function(json) {
-            dispatch(doAddMethod(sample_id, json, method));
+            dispatch(doAddMethod(queue_id, sample_id, json, method));
+        });
+       
+
+    }
+}
+
+export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_id, method) {
+        return function(dispatch) {
+
+        fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' + method_queue_id, { 
+            method: 'PUT', 
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(method)
+        }).then((response) => {
+            if (response.status >= 400) {
+                throw new Error("Could not add sample method, server refused");
+            }
+            return response.json();
+        }).then(function(json) {
+            dispatch(doChangeMethod(method_queue_id, sample_id, method));
         });
        
 
@@ -95,7 +156,7 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
 }
 
 
-export function sendDeleteSampleMethod(queue_id, sample_id, list_id) {
+export function sendDeleteSampleMethod(parent_id, queue_id, sample_id, list_id) {
 
     return function(dispatch) {
 
@@ -110,7 +171,7 @@ export function sendDeleteSampleMethod(queue_id, sample_id, list_id) {
             if (response.status >= 400) {
                 throw new Error("Server refused to remove sample");
             }else {
-                dispatch(doRemoveMethod(sample_id, list_id));
+                dispatch(doRemoveMethod(parent_id, queue_id, sample_id, list_id));
             }
         });
 

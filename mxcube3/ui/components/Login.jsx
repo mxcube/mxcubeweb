@@ -24,14 +24,14 @@ export default class LoginForm extends React.Component {
     render() {
         let login_input_form = "";
         let data = this.props.proposal.data;
-        let ok = false;
+                let ok = false;
         try {
             ok = data.status.code == 'ok';
         } catch(e) {
             ok = false;
-        } finally {       
+        } finally {
            if (ok) {
-                let label = this.refs.proposal.getValue() + " - " + data.proposal_title;
+                let label = this.refs.proposal.getValue() + " - " + data.Proposal.title;
                 login_input_form = (<div>
                                     <p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{label}</p>
                                     <button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={this.logOut.bind(this)}>Log out</button>
@@ -45,6 +45,5 @@ export default class LoginForm extends React.Component {
             }
         }
 	return (<Nav right eventKey={0}>{login_input_form}</Nav>);
-    }    
+    }
 }
-

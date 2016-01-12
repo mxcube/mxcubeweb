@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import SampleQueueContainer from '../containers/SampleQueueContainer'
 import MethodContainer from '../containers/MethodContainer'
 import NavBar from './NavBar'
-import ErrorNotificationPanel from './Logging'
+import { ErrorNotificationPanel } from './Logging'
 import PleaseWaitDialog from './PleaseWaitDialog'
 import './Main.css'
 
@@ -19,7 +19,7 @@ export default class Main extends React.Component {
                           <div className="col-xs-2">
                            	<SampleQueueContainer />
                           </div>
-                          <div className="col-xs-10">
+                          <div className="col-xs-10 main-content">
                                {this.props.children}
                           </div>
                       </div>

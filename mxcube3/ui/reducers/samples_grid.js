@@ -1,28 +1,23 @@
-export default (state={ samples_list: {}, filter_text: "", login_data: {} }, action) => {
+export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_mount: false, login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
           // should have session samples
           return Object.assign({}, state, { samples_list: action.samples_list });
     case "TOGGLE_SELECTED":
       {
-          // Creating a new SampleItem with the "selected" state toggled
-          let sample_item = {};
-          sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {selected : !state.samples_list[action.index].selected}  );
-
-          // Creating new Samplelist
-          let samples_list = Object.assign({}, state.samples_list, sample_item);
-
-          return Object.assign({}, state, {samples_list: samples_list});
+          let new_selected = Object.assign({}, state.selected);
+          new_selected[action.index]=!state.selected[action.index];
+          return Object.assign({}, state, {selected: new_selected });
       }
     case "SELECT_ALL":
       { 
           // Creating a new SampleList with the "selected" state toggled to "true"
-          let samples_list = {};
+          let new_selected = {};
           Object.keys(state.samples_list).forEach(function (key) {
-              samples_list[key] = Object.assign({}, state.samples_list[key], {selected : true}  );
+              new_selected[key] = action.selected;
           });
 
-          return Object.assign({}, state,  {samples_list: samples_list}); 
+          return Object.assign({}, state,  {selected: new_selected}); 
       }
     case "FILTER":
       {
@@ -56,6 +51,10 @@ export default (state={ samples_list: {}, filter_text: "", login_data: {} }, act
           });
           return Object.assign({}, state, { samples_list: samples_list });
       }
+    case "SET_MANUAL_MOUNT":
+      {
+          return Object.assign({}, state, { manual_mount: action.manual });
+      }
     case "ADD_METHOD":
       {
 
@@ -77,6 +76,30 @@ export default (state={ samples_list: {}, filter_text: "", login_data: {} }, act
         let samples_list = Object.assign({}, state.samples_list, sample_item);
         
         return Object.assign({}, state, {samples_list: samples_list});
+      }
+    case "CHANGE_METHOD":
+      {    
+          // Creating a new SampleItem with the method changed
+          let list_index = 0;
+
+          let methods = state.samples_list[action.index].methods;
+
+           methods.map((method,index) =>{
+            if(method.queue_id === action.queue_id){
+              list_index = index;
+            }
+           });
+
+          let method = Object.assign({}, methods[list_index], {parameters: action.parameters});
+
+
+          let sample_item = {};
+          sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods : [...methods.slice(0,list_index), method, ...methods.slice(list_index + 1, methods.length)]}  );
+
+           // Creating new Samplelist
+          let samples_list = Object.assign({}, state.samples_list, sample_item);
+
+          return Object.assign({}, state, {samples_list: samples_list});
       }
     case "REMOVE_METHOD":
       {

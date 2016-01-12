@@ -7,12 +7,20 @@ import "./app.less"
 
 export default class SampleQueueButtons extends Component {
 
+
+     handleSubmit(){
+            this.props.checked.map( (queue_id) =>{
+                this.props.addMethod(queue_id, this.props.lookup[queue_id],{Type: "Centring"});
+            });
+
+    }
+
+
     render() { 
-        console.log(this.props);
         let selected = this.props.selected;
         return (
              <div className='footer-buttons'>
-                 <a className='btn btn-primary queue-button' onClick={() => this.props.addMethod(selected.queue_id, selected.sample_id,{name: "centring"})}>
+                 <a className='btn btn-primary queue-button' onClick={() => this.handleSubmit()}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring
                         </a>
@@ -20,7 +28,7 @@ export default class SampleQueueButtons extends Component {
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Characterisation
                         </a>
-                        <a className='btn btn-primary queue-button' onClick={() => this.props.addMethod(selected.queue_id, selected.sample_id,{name: "datacollection"})}>
+                        <a className='btn btn-primary queue-button' onClick={() => this.props.showForm("datacollection")}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Datacollection
                         </a>

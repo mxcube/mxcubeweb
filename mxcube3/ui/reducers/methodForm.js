@@ -1,6 +1,6 @@
 const initialState = {
   characterisation: false,
-  dataCollec: false
+  datacollection: false
 }
 
 export default (state=initialState, action) => {
