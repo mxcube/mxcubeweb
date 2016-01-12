@@ -347,7 +347,8 @@ def addCharacterisation(id):
         characNode = qmo.Characterisation()
         characEntry = qe.CharacterisationQueueEntry()
         characEntry.set_data_model(characNode)
-
+        for k, v in params.items():
+            setattr(characNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), characNode) #add_child does not return id!
@@ -373,8 +374,10 @@ def addDataCollection(id):
     try:
         colNode = qmo.DataCollection()
         colEntry = qe.DatacollectionQueueEntry()
+        #populating dc parameters from data sent by the client
+        for k, v in params.items():
+            setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
         colEntry.set_data_model(colNode)
-
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), colNode) #add_child does not return id!
@@ -414,6 +417,15 @@ def updateMethod(sampleid, methodid):
         methodNode = mxcube.queue.get_node(int(methodid))
         methodEntry = mxcube.queue.queue_hwobj.get_entry_with_model(methodNode)
         #TODO: update fields here, I would say that the entry does not need to be updated, only the model node
+
+        if isinstance(methodNode, qmo.DataCollection):
+            for k, v in params.items():
+                setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
+        elif isinstance(methodNode, qmo.Characterisation):
+            for k, v in params.items():
+                setattr(characNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
+        elif isinstance(methodNode, qmo.Centring):
+            pass
         ####
         for met in queueList[int(sampleid)]['methods']:
             if met[met.keys()[0]] == int(methodid):
