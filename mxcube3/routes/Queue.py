@@ -101,7 +101,7 @@ def queueGet():
         logging.getLogger('HWR').error('[QUEUE] Queue could not get')
         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/queue/save", methods=['GET'])
+@mxcube.route("/mxcube/api/v0.1/queue/save", methods=['PUT'])
 def queueSave():
     """Queue: save the queue to a file, filename automatically selected under ./routes folder
     Args: None
