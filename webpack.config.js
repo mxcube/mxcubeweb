@@ -51,6 +51,10 @@ var config = {
                     'img'
                 ]
             },
+            {
+                test: /isotope\-|fizzy\-ui\-utils|desandro\-|masonry|outlayer|get\-size|doc\-ready|eventie|eventemitter|classie|get\-style\-property|packery/,
+                loader: 'imports?define=>false&this=>window'
+            },
             { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
             { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
             { test: /\.less$/, loader: "style-loader!css-loader!less-loader"}
