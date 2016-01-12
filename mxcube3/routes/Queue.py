@@ -4,6 +4,8 @@ import time, logging, collections
 import gevent.event
 import os, json
 import queue_model_objects_v1 as qmo
+#for mocking the view of the queue, easier than adding sth like if not view:
+from mock import Mock
 
 queueList={}
 queueOrder=[]
@@ -145,17 +147,40 @@ def setCurrentEntry(entry):
         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
         return Response(status = 409)
 
-@mxcube.route("/mxcube/api/v0.1/queue/<entry>/execute", methods=['PUT'])
-def executeEntryWithId(entry):
+@mxcube.route("/mxcube/api/v0.1/queue/<nodeId>/execute", methods=['PUT'])
+def executeEntryWithId(nodeId):
     """
     Queue: start execution of the queue
     Args: None
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
-    logging.getLogger('HWR').info('[QUEUE] Queue going to execute entry with id: %s' %id)
-    try:
-        mxcube.queue.queue_hwobj.execute_entry(entry)
-        logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' %id)
+    logging.getLogger('HWR').info('[QUEUE] Queue going to execute entry with id: %s' %nodeId)
+    try:        
+        nodeId = int(nodeId)
+        node = mxcube.queue.get_node(nodeId)
+        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        if isinstance(entry, qe.SampleQueueEntry):
+            #this is a sample entry, thus, go through its checked children and execute those
+            for elem in queueList[nodeId]['methods']:
+                if elem['checked'] == 'True':
+                    logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' %elem['QueueId'])
+                    childNode = mxcube.queue.get_node(elem['QueueId'])
+                    childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
+                    childEntry._view = Mock() #associated text deps
+                    childEntry._set_background_color = Mock() #widget color deps
+                    if not childEntry.is_enabled():
+                        childEntry.set_enabled(True)
+                    mxcube.queue.queue_hwobj.execute_entry(childEntry)
+        else:
+            #not a sample so execte directly
+            logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' %nodeId)
+
+            if not entry.is_enabled():
+                entry.set_enabled(True)
+            entry._view = Mock() #associated text deps
+            entry._set_background_color = Mock() #widget color deps
+            mxcube.queue.queue_hwobj.execute_entry(entry)
+    
         return Response(status = 200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be started')
@@ -316,6 +341,8 @@ def addCharacterisation(id):
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
        data ={ "CharacId": newId}    '''
     #no data received yet
+    params = request.get_json()
+
     try:
         characNode = qmo.Characterisation()
         characEntry = qe.CharacterisationQueueEntry()
@@ -325,7 +352,7 @@ def addCharacterisation(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), characNode) #add_child does not return id!
         entry.enqueue(characEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'Characterisation', 'checked':'False'})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'Characterisation','Params':params, 'checked':'False'})
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
         resp = jsonify({'QueueId':newNode, 'Name': 'Characterisation'})
         resp.status_code = 200
@@ -341,16 +368,18 @@ def addDataCollection(id):
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
        data ={ "ColId": newId}    '''
     #no data received yet
+    params = request.get_json()
+
     try:
-        colNode = qmo.Characterisation()
-        colEntry = qe.CharacterisationQueueEntry()
+        colNode = qmo.DataCollection()
+        colEntry = qe.DatacollectionQueueEntry()
         colEntry.set_data_model(colNode)
 
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), colNode) #add_child does not return id!
         entry.enqueue(colEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'DataCollection', 'checked':'False'})
+        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'DataCollection','Params':params, 'checked':'False'})
         logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
         resp = jsonify({'QueueId':newNode, 'Name': 'DataCollection'})
         resp.status_code = 200
@@ -385,7 +414,10 @@ def updateMethod(sampleid, methodid):
         methodNode = mxcube.queue.get_node(int(methodid))
         methodEntry = mxcube.queue.queue_hwobj.get_entry_with_model(methodNode)
         #TODO: update fields here, I would say that the entry does not need to be updated, only the model node
-        #queueList[int(sampleid)]['methods'].update({'QueueId':methodid, 'Name': 'Centring', 'Params':params})
+        ####
+        for met in queueList[int(sampleid)]['methods']:
+            if met[met.keys()[0]] == int(methodid):
+                met.update(params)
         logging.getLogger('HWR').info('[QUEUE] method updated')
         resp = jsonify({'QueueId':methodid})
         resp.status_code = 200
