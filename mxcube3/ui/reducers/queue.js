@@ -34,8 +34,8 @@ export default (state={
 
         // Removing sample from queue
         case 'REMOVE_SAMPLE':
-            return Object.assign({}, state, 
-                        {  
+            return Object.assign({}, state,
+                        {
                             todo: without(state.todo, action.queue_id),
                             queue: omit(state.queue, action.queue_id),
                             lookup: omit(state.lookup, action.queue_id)

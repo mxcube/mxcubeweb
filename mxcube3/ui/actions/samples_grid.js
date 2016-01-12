@@ -90,7 +90,7 @@ export function doSetManualMount(manual) {
 }
 
 
-export function doChangeMethod(queue_id, sample_id, list_index, parameters) {
+export function doChangeMethod(queue_id, sample_id, parameters) {
     return { type: "CHANGE_METHOD",
             index: sample_id,
             queue_id: queue_id,
