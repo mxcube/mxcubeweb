@@ -63,11 +63,10 @@ export function doAddMethod(sample_queue_id, sample_id, method, parameters) {
               }
 }
 
-export function doChangeMethod(queue_id, sample_id, list_index, parameters) {
+export function doChangeMethod(queue_id, sample_id, parameters) {
     return { type: "CHANGE_METHOD",
             index: sample_id,
             queue_id: queue_id,
-            list_index: list_index,
             parameters: parameters
             }
 }
@@ -106,7 +105,7 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
     }
 }
 
-export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_id, list_index, method) {
+export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_id, method) {
         return function(dispatch) {
 
         fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' + method_queue_id, { 
@@ -122,7 +121,7 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
             }
             return response.json();
         }).then(function(json) {
-            dispatch(doChangeMethod(method_queue_id, sample_id, list_index, method));
+            dispatch(doChangeMethod(method_queue_id, sample_id, method));
         });
        
 
