@@ -6,7 +6,13 @@
     "esformatter": "./node_modules/.bin/esformatter"
   },
   "name": "mxcube3",
+  "description" : "The next version of MxCUBE",
   "version": "0.1.0",
+  "repository" :
+  { "type" : "git"
+  , "url" : "https://github.com/mxcube/mxcube3"
+  },
+  "license" : "MIT",
   "main": "main.jsx",
   "dependencies": {
     "babel-polyfill": "^6.3.14",
@@ -21,7 +27,7 @@
     "isomorphic-fetch": "^2.2.0",
     "isotope-layout": "2.2.2",
     "jquery": "2.1.4",
-    "lodash": "*",
+    "lodash": "4.0.0",
     "react": "0.14.2",
     "react-dom": "0.14.2",
     "react-modal": "^0.6.1",
@@ -36,7 +42,8 @@
     "underscore": "^1.8.3",
     "x-editable": "1.5.1",
     "css-loader": "0.17.0",
-    "style-loader": "0.12.3"
+    "style-loader": "0.12.3",
+    "grunt":"0.4.5"
   },
   "devDependencies": {
     "babel-core": "^6.4.0",

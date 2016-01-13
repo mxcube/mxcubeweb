@@ -1,8 +1,5 @@
-import omit from 'lodash/object/omit';
-import without from 'lodash/array/without';
-import xor from 'lodash/array/xor';
-import union from 'lodash/array/union';  
-import intersection from 'lodash/array/intersection';            
+import omit from 'lodash/object';
+import {without, xor, union, intersection} from 'lodash/array';
 
 export default (state={
     queue:{},
