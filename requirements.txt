@@ -5,3 +5,4 @@ gevent-socketio==0.3.6
 gevent-websocket==0.9.3
 louie
 scipy
+mock
