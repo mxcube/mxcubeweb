@@ -61,7 +61,7 @@ function mapStateToProps(state) {
 
 let current_tree = 
   {
-    module: 'Curreasdnt - Vial ', type: "Root", children : current_children
+    module: 'Current - Vial ', type: "Root", children : current_children
   }, 
   todo_tree = 
   {

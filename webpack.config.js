@@ -46,15 +46,9 @@ var config = {
       },
     {
       test: /\.jsx?$/,
-      loader: "babel-loader",
+      loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=stage-0'],
+      exclude: /node_modules/,
 
-      exclude: [
-      path.resolve(__dirname, "node_modules"),
-      ],
-
-      query: {
-        presets: ['es2015', 'stage-0', 'react']
-        }
     },
     {
     test: /isotope\-|fizzy\-ui\-utils|desandro\-|masonry|outlayer|get\-size|doc\-ready|eventie|eventemitter|classie|get\-style\-property|packery/,
