@@ -1,4 +1,4 @@
-import omit from 'lodash/object';
+import {omit} from 'lodash/object';
 import {without, xor, union, intersection} from 'lodash/array';
 
 export default (state={
