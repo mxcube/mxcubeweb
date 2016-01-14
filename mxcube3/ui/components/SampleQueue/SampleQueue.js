@@ -12,7 +12,6 @@ export default class SampleQueue extends Component {
 
   // The render method call from Tree, this checks what node is to be renderd and calls new function
   renderNode(node) {
-
     switch (node.type) {
       case 'Root':
         return this.renderRoot(node);

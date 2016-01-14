@@ -18,6 +18,7 @@ export default class SampleQueueButtons extends Component {
 
     render() { 
         let selected = this.props.selected;
+
         return (
              <div className='footer-buttons'>
                  <a className='btn btn-primary queue-button' onClick={() => this.handleSubmit()}>

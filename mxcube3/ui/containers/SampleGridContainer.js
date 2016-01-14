@@ -61,14 +61,14 @@ class SampleGridContainer extends React.Component {
                                </div>
                             </div>
                             <div className="row"> 
-				    <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text}/>
+				    <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue}/>
                             </div>
 			</div>)
 	}
 }
 
 function mapStateToProps(state) {
-    return Object.assign({}, state.samples_grid, { login_data: state.login.data })
+    return Object.assign({}, state.samples_grid, { login_data: state.login.data }, {queue : state.queue})
 }
 
 function mapDispatchToProps(dispatch) {
