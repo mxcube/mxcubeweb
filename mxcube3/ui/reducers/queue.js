@@ -1,8 +1,5 @@
-import omit from 'lodash/object/omit';
-import without from 'lodash/array/without';
-import xor from 'lodash/array/xor';
-import union from 'lodash/array/union';  
-import intersection from 'lodash/array/intersection';            
+import {omit} from 'lodash/object';
+import {without, xor, union, intersection} from 'lodash/array';
 
 export default (state={
     queue:{},
@@ -18,6 +15,7 @@ export default (state={
     },
     selectAll: false,
     lookup:{},
+    lookup_queue_id:{},
     searchString: ""
 }, action) => {
     switch (action.type) {
@@ -28,7 +26,8 @@ export default (state={
              			{
                             todo: state.todo.concat(action.queue_id),
                             queue: {...state.queue, [action.queue_id] : [] },
-                            lookup: {...state.lookup, [action.queue_id] : action.sample_id}
+                            lookup: {...state.lookup, [action.queue_id] : action.sample_id},
+                            lookup_queue_id: {...state.lookup_queue_id, [action.sample_id] : action.queue_id}
                         }           			
              			);
 
@@ -38,7 +37,8 @@ export default (state={
                         {
                             todo: without(state.todo, action.queue_id),
                             queue: omit(state.queue, action.queue_id),
-                            lookup: omit(state.lookup, action.queue_id)
+                            lookup: omit(state.lookup, action.queue_id),
+                            lookup_queue_id: omit(state.lookup_queue_id, action.sample_id)
                         }
                         );
 

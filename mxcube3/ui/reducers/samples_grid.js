@@ -1,3 +1,5 @@
+import {omit} from 'lodash/object';
+
 export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_mount: false, login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
@@ -57,64 +59,44 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
       }
     case "ADD_METHOD":
       {
-
-        //Declaring the new method to be added to the sample
-        let method = {
-          name: action.name,
-          queue_id: action.queue_id,
-          parameters : action.parameters
-        }
-
-        //Checking if methods exist on the sample and adding the new method
-        let methods = (state.samples_list[action.index].methods ? [...state.samples_list[action.index].methods, method] : [method]);
-
-        // Creating a new SampleItem with the new method attached
-        let sample_item = {};
-        sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods : methods} );
-
-        // Creating new Samplelist
-        let samples_list = Object.assign({}, state.samples_list, sample_item);
-        
-        return Object.assign({}, state, {samples_list: samples_list});
+        return Object.assign({}, state, 
+             {samples_list : {...state.samples_list,
+              [action.index] : {...state.samples_list[action.index],
+                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                  {
+                    name: action.name,
+                    queue_id: action.queue_id,
+                    parameters : action.parameters
+                }
+                }
+              }
+             }}
+          );
       }
     case "CHANGE_METHOD":
       {    
-          // Creating a new SampleItem with the method changed
-          let list_index = 0;
-
-          let methods = state.samples_list[action.index].methods;
-
-           methods.map((method,index) =>{
-            if(method.queue_id === action.queue_id){
-              list_index = index;
-            }
-           });
-
-          let method = Object.assign({}, methods[list_index], {parameters: action.parameters});
-
-
-          let sample_item = {};
-          sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods : [...methods.slice(0,list_index), method, ...methods.slice(list_index + 1, methods.length)]}  );
-
-           // Creating new Samplelist
-          let samples_list = Object.assign({}, state.samples_list, sample_item);
-
-          return Object.assign({}, state, {samples_list: samples_list});
+        return Object.assign({}, state, 
+             {samples_list : {...state.samples_list,
+              [action.index] : {...state.samples_list[action.index],
+                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                  {
+                    name: action.parameters.Type,
+                    queue_id: action.queue_id,
+                    parameters : action.parameters
+                }}
+              }
+             }}
+          );
       }
     case "REMOVE_METHOD":
       {
-
-        //Finding the methods list for the sample
-        let methods = state.samples_list[action.index].methods;
-
-        // Creating a new SampleItem with the method removed
-        let sample_item = {};
-        sample_item[action.index] = Object.assign({}, state.samples_list[action.index], {methods :[...methods.slice(0,action.list_index), ...methods.slice(action.list_index + 1, methods.length)]} );
-        
-        // Creating new Samplelist
-        let samples_list = Object.assign({}, state.samples_list, sample_item);
-        
-        return Object.assign({}, state, {samples_list: samples_list});
+        return Object.assign({}, state, 
+             {samples_list : {...state.samples_list,
+              [action.index] : {...state.samples_list[action.index],
+                methods : omit(state.samples_list[action.index].methods, [action.queue_id])
+              }
+             }}
+          );
       }
     default:
         return state

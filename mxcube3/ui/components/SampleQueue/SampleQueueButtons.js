@@ -10,7 +10,9 @@ export default class SampleQueueButtons extends Component {
 
      handleSubmit(){
             this.props.checked.map( (queue_id) =>{
-                this.props.addMethod(queue_id, this.props.lookup[queue_id],{Type: "Centring"});
+                if(this.props.lookup[queue_id]){
+                    this.props.addMethod(queue_id, this.props.lookup[queue_id],{Type: "Centring"});
+                }
             });
 
     }
@@ -18,6 +20,7 @@ export default class SampleQueueButtons extends Component {
 
     render() { 
         let selected = this.props.selected;
+
         return (
              <div className='footer-buttons'>
                  <a className='btn btn-primary queue-button' onClick={() => this.handleSubmit()}>
