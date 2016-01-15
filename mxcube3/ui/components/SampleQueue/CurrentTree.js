@@ -19,7 +19,6 @@ export default class CurrentTree extends Component {
       default:
         console.log('Type not found');
     }
-    return this.renderRoot(node);
   }
 
   renderRoot(node){
@@ -33,18 +32,23 @@ export default class CurrentTree extends Component {
 
    renderSample(node){
     return (
-      <span className="node node-root">
+      <span className="node node-sample" onClick={() => this.props.select(node.queue_id, node.sample_id)}>
+        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
+        <i className="fa fa-times" onClick={() => this.props.deleteSample(node.queue_id)}></i>
+        <i className="fa fa-play"  onClick={() => this.props.run(node.queue_id)}></i>
       </span>
-     
     );
     
   }
 
    renderMethod(node){
     return (
-      <span className="node node-root">
+      <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
+        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
+        <i className="fa fa-times" onClick={() => this.props.deleteMethod(node.parent_id, node.queue_id, node.sample_id)}></i>
+        { node.module !== "Centring" ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}
       </span>
     );
     
@@ -56,9 +60,41 @@ export default class CurrentTree extends Component {
 
   }
 
+  createTree(){
+    let sampleData = this.props.sampleInformation[this.props.lookup[this.props.currentNode]];
+    let tree = {
+      module: 'Sample Queue - Current',
+      type: "Root",
+      children:  (sampleData ? [ {
+          module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
+          queue_id: this.props.currentNode,
+          sample_id: sampleData.id,
+          type: "Sample",
+          children : this.props.queue[this.props.currentNode].map( (method_id) =>{
+            let methodData = sampleData.methods[method_id];
+            return {
+              module: methodData.name,
+              sample_id: sampleData.id,
+              queue_id: method_id,
+              parent_id: this.props.currentNode,
+              type: "Method"
+            };
+          }) 
+
+      }] : [])
+    };
+    return tree;
+  }
+
   render() {
+   let tree = this.createTree();
+
     return (
-          <p>Current Tree</p>
+          <Tree
+            paddingLeft={20}
+            tree={tree}
+            onChange={this.handleChange.bind(this)}
+            renderNode={this.renderNode.bind(this)}/>
     );
   }
 

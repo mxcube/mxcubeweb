@@ -68,8 +68,10 @@ export default class SampleGrid extends React.Component {
             } catch(e) { }
 
             let tags = [];
-            // if(queue[])
-            // tags = sample.methods.map((x)=>x.name);
+            for(let id in sample.methods){
+              tags.push(sample.methods[id].name);
+            }
+            
 
 
             sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} location={sample.location} tags={tags} selected={this.props.selected[key]} onClick={() => this.props.toggleSelected(key)}/>);

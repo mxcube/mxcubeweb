@@ -30,27 +30,34 @@ export default class TodoTree extends Component {
 
   }
 
-   renderSample(node){
-    return (
-      <span className="node node-sample" onClick={() => this.props.select(node.queue_id, node.sample_id)}>
-        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
+  renderSample(node){
+
+    // This line shouldnt need to be here but it seems that react-ui-tree has some bug
+    if(this.props.todoList.indexOf(node.queue_id) > -1){
+      return (
+        <span className="node node-sample" onClick={() => this.props.select(node.queue_id, node.sample_id)}>
+        <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteSample(node.queue_id)}></i>
         <i className="fa fa-play"  onClick={() => this.props.run(node.queue_id)}></i>
-      </span>
-    );
-    
+        </span>
+        );
+    }
   }
 
-   renderMethod(node){
-    return (
-      <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
-        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
+  renderMethod(node){
+
+    // This line shouldnt need to be here but it seems that react-ui-tree has some bug
+    if(this.props.todoList.indexOf(node.parent_id) > -1){
+      return (
+        <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
+        <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteMethod(node.parent_id, node.queue_id, node.sample_id)}></i>
         { node.module !== "Centring" ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}
-      </span>
-    );
+        </span>
+        );
+    }
     
   }
 
@@ -79,7 +86,8 @@ export default class TodoTree extends Component {
               sample_id: sampleData.id,
               queue_id: method_id,
               parent_id: queue_id,
-              type: "Method"
+              type: "Method",
+              leaf: true
             };
           }) 
 
@@ -90,13 +98,15 @@ export default class TodoTree extends Component {
   }
 
   render() {
+
    let tree = this.createTree();
-   
+
     return (
           <Tree
             paddingLeft={20}
             tree={tree}
             onChange={this.handleChange.bind(this)}
+            isNodeCollapsed={this.isNodeCollapsed}
             renderNode={this.renderNode.bind(this)}/>
     );
   }

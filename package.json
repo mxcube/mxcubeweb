@@ -33,7 +33,7 @@
     "react-modal": "^0.6.1",
     "react-redux": "4.0.6",
     "react-router": "1.0.3",
-    "react-ui-tree": "^2.4.1",
+    "react-ui-tree": "2.5.0",
     "redux": "^3.0.4",
     "redux-form": "^3.1.7",
     "redux-logger": "^2.0.4",
