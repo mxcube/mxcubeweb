@@ -10,7 +10,9 @@ export default class SampleQueueButtons extends Component {
 
      handleSubmit(){
             this.props.checked.map( (queue_id) =>{
-                this.props.addMethod(queue_id, this.props.lookup[queue_id],{Type: "Centring"});
+                if(this.props.lookup[queue_id]){
+                    this.props.addMethod(queue_id, this.props.lookup[queue_id],{Type: "Centring"});
+                }
             });
 
     }
