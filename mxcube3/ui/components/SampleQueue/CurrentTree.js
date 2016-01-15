@@ -33,7 +33,7 @@ export default class CurrentTree extends Component {
    renderSample(node){
     return (
       <span className="node node-sample" onClick={() => this.props.select(node.queue_id, node.sample_id)}>
-        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
+        <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteSample(node.queue_id)}></i>
         <i className="fa fa-play"  onClick={() => this.props.run(node.queue_id)}></i>
@@ -45,7 +45,7 @@ export default class CurrentTree extends Component {
    renderMethod(node){
     return (
       <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
-        <input type="checkbox" onClick={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
+        <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteMethod(node.parent_id, node.queue_id, node.sample_id)}></i>
         { node.module !== "Centring" ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}

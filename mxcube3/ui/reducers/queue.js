@@ -64,7 +64,16 @@ export default (state={
                         }
                         );
 
-        // Run Sample or Method
+        // Run Mount
+        case 'MOUNT_SAMPLE':
+            return Object.assign({}, state, 
+                        {
+                            current : action.queue_id,
+                            todo: without(state.todo, action.queue_id),
+                        }
+                        );
+
+        // Run Sample
         case 'RUN_SAMPLE':
             return Object.assign({}, state, 
                         {

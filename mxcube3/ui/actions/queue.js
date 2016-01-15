@@ -100,6 +100,13 @@ export function runSample(queue_id) {
 	}
 }
 
+export function mountSample(queue_id) {
+	return { 
+		type: "MOUNT_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
 export function finishSample(queue_id) {
 	return { 
 		type: "FINISH_SAMPLE", 

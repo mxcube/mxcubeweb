@@ -55,11 +55,14 @@ export default class HistoryTree extends Component {
   }
 
   createTree(){
-
+    let historyFiltered = this.props.historyList.filter((queue_id) => {
+        let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
+        return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
+    });
     let tree = {
       module: 'Sample Queue - History',
       type: "Root",
-      children:  this.props.historyList.map((queue_id) => {
+      children: historyFiltered.map((queue_id) => {
         let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
         return {
           module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
