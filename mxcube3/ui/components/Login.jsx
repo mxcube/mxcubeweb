@@ -5,16 +5,11 @@ import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import { Nav, Input, ButtonInput } from "react-bootstrap";
 
 export default class LoginForm extends React.Component {
-    propTypes: {
-	proposal: React.PropTypes.object,
-	signIn: React.PropTypes.func.isRequired,
-	logOut: React.PropTypes.func.isRequired
-    }
 
     signIn() {
         let proposal = this.refs.proposal.getValue();
         let password = this.refs.password.getValue();
-        this.props.signIn(proposal, password)
+        this.props.signIn(proposal, password);
     }
 
     logOut() {
@@ -47,3 +42,9 @@ export default class LoginForm extends React.Component {
 	return (<Nav right eventKey={0}>{login_input_form}</Nav>);
     }
 }
+
+    LoginForm.propTypes = {
+    proposal: React.PropTypes.object,
+    signIn: React.PropTypes.func.isRequired,
+    logOut: React.PropTypes.func.isRequired
+    };

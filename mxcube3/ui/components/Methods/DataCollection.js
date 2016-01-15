@@ -27,14 +27,9 @@ class DataCollection extends Component {
         // Check if update is true and if user is changing a method
         if (selected.method && update){
 
-            let methodData = {}
-            let sampleItem = nextProps.sampleList[selected.sample_id];
-            sampleItem.methods.map(method => {
-                if (method.queue_id === selected.queue_id){
-                    methodData = method;
-                }
-            });
-
+           
+            let methodData = nextProps.sampleList[selected.sample_id].methods[selected.queue_id];
+          
             let parameters = methodData.parameters;
 
             this.props.initializeForm({

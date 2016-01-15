@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch'
 
 
-export function selectSample(parent_queue_id, queue_id, sample_id, method) {
+export function selectSample(queue_id, sample_id, parent_queue_id, method) {
 	return { 
 		type: "SELECT_SAMPLE", 
 		queue_id: queue_id,
