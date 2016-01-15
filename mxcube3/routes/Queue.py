@@ -1,5 +1,6 @@
 from flask import session, redirect, url_for, render_template, request, Response, stream_with_context, jsonify
 from mxcube3 import app as mxcube
+from .Utils import *
 import time, logging, collections
 import gevent.event
 import os, json
@@ -9,6 +10,7 @@ from mock import Mock
 
 queueList={}
 queueOrder=[]
+
 ###----QUEUE ACTIONS----###
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
 def queueStart():
@@ -80,6 +82,7 @@ def queueClear():
     try:
         mxcube.queue.clear_model(mxcube.queue.get_model_root()._name)#model name?? rootNode?
         #mxcube.queue.queue_hwobj.clear()#already done in the previous call
+        queueList.clear()
         logging.getLogger('HWR').info('[QUEUE] Queue cleared')
         return Response(status = 200)
     except Exception:
@@ -107,18 +110,38 @@ def queueSave():
     Args: None
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
-    logging.getLogger('HWR').info('[QUEUE] Queue saving')
-    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-backup.txt')
+
+    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-'+mxcube.session.proposal_id+'.txt')
     try:
         f = open(filename, 'w')
         tofile = json.dumps(queueList) 
         f.write(tofile)
         f.close()
+        logging.getLogger('HWR').info('[QUEUE] Queue saved, '+filename)
         return Response(status = 200)
     except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could saved')
+        logging.getLogger('HWR').error('[QUEUE] Queue could not be saved')
         return Response(status = 409)
-        
+       
+@mxcube.route("/mxcube/api/v0.1/queue/load", methods=['GET'])
+def queueLoad():
+    """Queue: load the queue from a file, filename automatically selected under ./routes folder and based on the proposal name
+    Args: None
+    Return: queue data plus http status response, 200 ok, 409 something bad happened
+    """
+    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-'+mxcube.session.proposal_id+'.txt')
+    try:
+        f = open(filename, 'r')
+        data = json.loads(f.read())
+        f.close()
+        logging.getLogger('HWR').info('[QUEUE] Queue loaded, '+filename)
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp
+    except Exception:
+        logging.getLogger('HWR').error('[QUEUE] Queue could not be loaded')
+        return Response(status = 409)
+
 @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
 def getCurrentEntry():
     """Queue: get current entry. NOT IMPLEMENTED
@@ -373,7 +396,7 @@ def addDataCollection(id):
 
     try:
         colNode = qmo.DataCollection()
-        colEntry = qe.DatacollectionQueueEntry()
+        colEntry = qe.DataCollectionQueueEntry()
         #populating dc parameters from data sent by the client
         for k, v in params.items():
             setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
@@ -420,11 +443,11 @@ def updateMethod(sampleid, methodid):
 
         if isinstance(methodNode, qmo.DataCollection):
             for k, v in params.items():
-                setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
+                setattr(methodNode.acquisitions[0].acquisition_parameters, k, v)
         elif isinstance(methodNode, qmo.Characterisation):
             for k, v in params.items():
-                setattr(characNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
-        elif isinstance(methodNode, qmo.Centring):
+                setattr(methodNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
+        elif isinstance(methodNode, qmo.SampleCentring):
             pass
         ####
         for met in queueList[int(sampleid)]['methods']:
