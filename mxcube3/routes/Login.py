@@ -6,6 +6,7 @@ import time
 import os
 import types
 
+
 def convert_to_dict(ispyb_object):
     d = {}
     if type(ispyb_object) == types.DictType:
@@ -30,7 +31,14 @@ def login():
     password = content['password']
     logging.getLogger('HWR').info(loginID)
 
-    loginRes = mxcube.db_connection.login(loginID, password)
+    loginRes = mxcube.db_connection.get_proposal(loginID, password)
+    if loginRes['status']['code'] == 'ok':
+        mxcube.session.proposal_id = loginID
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-'+loginID+'.txt')
+        if os.path.isfile(filename):
+            loginRes['StoredSession'] = True
+        else:
+            loginRes['StoredSession'] = False
 
 #        loginRes structure
 #        {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal,
@@ -38,9 +46,8 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-
     return jsonify(loginRes)
-
+### TODO: when we have the main login page this method should redirect to '/'
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
 def proposal_samples(proposal_id):
