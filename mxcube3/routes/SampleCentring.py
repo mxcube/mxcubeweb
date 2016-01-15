@@ -214,8 +214,8 @@ def moveSampleCentringMotor(id):
                 mxcube.diffractometer.getObjectByRole('light').move(0)
         else: 
             motor_hwobj.move(float(newPos))
-   return Response(status = 200)
-     except Exception:
+        return Response(status = 200)
+    except Exception:
         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not move motor "%s" to positions "%s" ' %(id, newPos))
         return Response(status = 409)    
     logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s"' %(motor_hwobj.motor_name))#, str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
