@@ -19,10 +19,12 @@ export function doLogin(proposal, password) {
 }
 
 export function afterLogin(data) {
-    return { type: "LOGIN", data}
+    if (data.status.code=="error")
+      return {type: "LOGIN", data:{ }, status: data.status }
+    else
+      return {type: "LOGIN", data: data, status: data.status }
 }
 
 export function doSignOut() {
     return { type: "SIGNOUT" }
 }
-
