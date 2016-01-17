@@ -24,7 +24,7 @@ def convert_to_dict(ispyb_object):
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
-    beamline_name = os.environ.get("SMIS_BEAMLINE_NAME")
+#    beamline_name = os.environ.get("SMIS_BEAMLINE_NAME")
     content = request.get_json()
     loginID = content['proposal']
     password = content['password']
@@ -40,6 +40,17 @@ def login():
 #        "laboratory": prop['Laboratory']}
 
     return jsonify(loginRes)
+
+# information to display on the login page
+@mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
+def loginInfo():
+    synchrotron_name = mxcube.session.synchrotron_name
+    beamline_name = mxcube.session.beamline_name
+    loginType = mxcube.db_connection.loginType.title()
+
+    return jsonify({ "synchrotron_name": synchrotron_name,
+        "beamline_name": beamline_name,
+	"loginType": loginType })
 
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
