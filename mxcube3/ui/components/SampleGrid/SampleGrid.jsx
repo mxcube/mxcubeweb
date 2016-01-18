@@ -84,8 +84,9 @@ export default class SampleGrid extends React.Component {
 }
 
 SampleGrid.propTypes = {
-  samples_list: React.PropTypes.array.isRequired,
-        selected: React.PropTypes.array.isRequired,
-        toggleSelected: React.PropTypes.func.isRequired,
-        filter_text: React.PropTypes.string 
-    }
+    samples_list: React.PropTypes.object.isRequired,
+    selected: React.PropTypes.object.isRequired,
+    toggleSelected: React.PropTypes.func.isRequired,
+    filter_text: React.PropTypes.string 
+}
+
