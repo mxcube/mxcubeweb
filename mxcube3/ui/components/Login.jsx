@@ -19,7 +19,7 @@ export default class LoginForm extends React.Component {
     render() {
         let login_input_form = "";
         let data = this.props.proposal.data;
-                let ok = false;
+        let ok = false;
         try {
             ok = data.status.code == 'ok';
         } catch(e) {
@@ -43,8 +43,9 @@ export default class LoginForm extends React.Component {
     }
 }
 
-    LoginForm.propTypes = {
+LoginForm.propTypes = {
     proposal: React.PropTypes.object,
     signIn: React.PropTypes.func.isRequired,
-    logOut: React.PropTypes.func.isRequired
-    };
+    signOut: React.PropTypes.func.isRequired
+};
+
