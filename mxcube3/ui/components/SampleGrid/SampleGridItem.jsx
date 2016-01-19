@@ -46,5 +46,5 @@ SampleGridItem.propTypes = {
           acronym: React.PropTypes.string,
           location: React.PropTypes.string,
           dm: React.PropTypes.string,
-          sample_id: React.PropTypes.number.isRequired
+          sample_id: React.PropTypes.string.isRequired
         }
