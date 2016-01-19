@@ -3,12 +3,12 @@ from mxcube3 import app as mxcube
 import time, logging, collections
 import gevent.event
 import os, json
-#import signals
+import signals
 
 SAMPLE_IMAGE = None
 
-#for signal in signals.MaxLabMicrodiff_signals:
-#    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
+for signal in signals.MaxLabMicrodiff_signals:
+    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
@@ -299,7 +299,7 @@ def centreAuto():
     Return: '200' if command issued succesfully, otherwise '409'. Note that this does not mean\
     if the centring is succesfull or not
     """
-    #mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
+    mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
     # mxcube.resolution.emit("deviceReady", 'some data')
     try:
         centred_pos = mxcube.diffractometer.startAutoCentring()
