@@ -7,18 +7,7 @@ import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
 import "./SampleGrid.css";
 
 export default class SampleGridItem extends React.Component {
-        propTypes: {
-          onClick: React.PropTypes.func.isRequired,
-          loadable: React.PropTypes.bool.isRequired,
-          tags: React.PropTypes.array,
-          selected: React.PropTypes.bool.isRequired,
-          name: React.PropTypes.string.isRequired,
-          acronym: React.PropTypes.string,
-          location: React.PropTypes.string,
-          dm: React.PropTypes.string,
-          sample_id: React.PropTypes.number.isRequired
-        }
-
+        
 	constructor(props) {
         super(props)
         this.defaultProps = { tags: [], loadable: false, selected: false }
@@ -47,3 +36,15 @@ export default class SampleGridItem extends React.Component {
 		  </div>;
 	}
 }
+
+SampleGridItem.propTypes = {
+          onClick: React.PropTypes.func.isRequired,
+          loadable: React.PropTypes.bool.isRequired,
+          tags: React.PropTypes.array,
+          selected: React.PropTypes.bool.isRequired,
+          name: React.PropTypes.string.isRequired,
+          acronym: React.PropTypes.string,
+          location: React.PropTypes.string,
+          dm: React.PropTypes.string,
+          sample_id: React.PropTypes.string.isRequired
+        }

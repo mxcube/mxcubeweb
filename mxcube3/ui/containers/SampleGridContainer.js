@@ -42,7 +42,7 @@ class SampleGridContainer extends React.Component {
                                 </div>
                                 <div className="col-xs-5">
                                    <ButtonToolbar>
-                                       <SplitButton bsStyle="primary" pullRight="true" title={this.props.manual_mount ? "Manual mount" : "Check sample changer contents"} onClick={this.props.manual_mount ? undefined : this.props.getSamples} onSelect={this.props.toggleManualMount}>
+                                       <SplitButton bsStyle="primary" pullRight={true} title={this.props.manual_mount ? "Manual mount" : "Check sample changer contents"} onClick={this.props.manual_mount ? undefined : this.props.getSamples} onSelect={this.props.toggleManualMount} id="split-button-sample-changer-selection">
                                            <MenuItem eventKey="1">{this.props.manual_mount ? "Sample changer" : "Manual mount"}</MenuItem> 
                                        </SplitButton>
                                        <Button className="btn-primary" disabled={this.props.manual_mount ? true : false } onClick={ () => { this.syncSamples() }}>
@@ -61,14 +61,14 @@ class SampleGridContainer extends React.Component {
                                </div>
                             </div>
                             <div className="row"> 
-				    <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text}/>
+				    <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue}/>
                             </div>
 			</div>)
 	}
 }
 
 function mapStateToProps(state) {
-    return Object.assign({}, state.samples_grid, { login_data: state.login.data })
+    return Object.assign({}, state.samples_grid, { login_data: state.login.data }, {queue : state.queue})
 }
 
 function mapDispatchToProps(dispatch) {

@@ -10,7 +10,7 @@ def get_samples_list():
     samples = {}
     for s in samples_list:
         sample_dm = s.getID() or ""
-        samples.update({s.getAddress(): { "id": s.getAddress(), "location": ":".join(map(str, s.getCoords())), "code": sample_dm} })
+        samples.update({s.getAddress(): { "id": s.getAddress(), "location": ":".join(map(str, s.getCoords())), "code": sample_dm, "methods": {} } })
 
     return jsonify(samples)
 

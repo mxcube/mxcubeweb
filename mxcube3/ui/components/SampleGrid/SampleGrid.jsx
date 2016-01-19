@@ -5,13 +5,7 @@ import SampleGridItem from './SampleGridItem'
 import Isotope from 'isotope-layout'
 
 export default class SampleGrid extends React.Component {
-    propTypes: {
-	samples_list: React.PropTypes.array.isRequired,
-        selected: React.PropTypes.array.isRequired,
-        toggleSelected: React.PropTypes.func.isRequired,
-        filter_text: React.PropTypes.string 
-    }
-
+  
     componentDidMount() {
         if (! this.isotope) {
             let container = ReactDOM.findDOMNode(this);
@@ -55,6 +49,7 @@ export default class SampleGrid extends React.Component {
 
     render() {
         var samples_list = this.props.samples_list;
+        var queue = this.props.queue;
         var sample_grid = [];
         var i = 0;
         Object.keys(samples_list).forEach(key => {
@@ -73,11 +68,11 @@ export default class SampleGrid extends React.Component {
             } catch(e) { }
 
             let tags = [];
-            if (sample.methods) {
-              tags = sample.methods.map((x)=>x.name);
+            for(let id in sample.methods){
+              tags.push(sample.methods[id].name);
             }
-
-            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} location={sample.location} tags={tags} selected={this.props.selected[key]} onClick={() => this.props.toggleSelected(key)}/>);
+            
+            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} onClick={() => this.props.toggleSelected(key)}/>);
             ++i;
       });
       return (<div className='samples-grid col-xs-12'>
@@ -85,3 +80,11 @@ export default class SampleGrid extends React.Component {
              </div>);
     }
 }
+
+SampleGrid.propTypes = {
+    samples_list: React.PropTypes.object.isRequired,
+    selected: React.PropTypes.object.isRequired,
+    toggleSelected: React.PropTypes.func.isRequired,
+    filter_text: React.PropTypes.string 
+}
+
