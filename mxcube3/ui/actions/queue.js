@@ -11,10 +11,9 @@ export function selectSample(queue_id, sample_id, parent_queue_id, method) {
 	}
 }
 
-export function toggleCheckBox(queue_id, parent_queue_id = -1 , root = false) {
+export function toggleCheckBox(queue_id, parent_queue_id = -1) {
 	return { 
 		type: "TOGGLE_CHECKBOX",
-		root: root, 
 		queue_id: queue_id,
 		parent_queue_id: parent_queue_id
 	}
@@ -80,6 +79,69 @@ export function sendDeleteSample(queue_id) {
 				throw new Error("Server refused to remove sample");
 			}else {
 				dispatch(removeSample(queue_id));
+			}
+		});
+
+	}
+}
+
+export function sendMountSample(queue_id) {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/sample_changer/' + queue_id + "/mount", { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			}
+
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to mount sample");
+			}else {
+				dispatch(mountSample(queue_id));
+			}
+		});
+
+	}
+}
+
+export function sendRunSample(queue_id) {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/queue/' + queue_id + "/execute", { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			}
+
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to mount sample");
+			}else {
+				dispatch(runSample(queue_id));
+			}
+		});
+
+	}
+}
+
+export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/queue/' + queue_id + "/toggle", { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			}
+
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to toogle sample/method");
+			}else {
+				dispatch(toggleCheckBox(queue_id, parent_queue_id));
 			}
 		});
 
