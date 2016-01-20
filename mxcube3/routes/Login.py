@@ -31,7 +31,7 @@ def login():
     password = content['password']
     logging.getLogger('HWR').info(loginID)
 
-    loginRes = mxcube.db_connection.get_proposal(loginID, password)
+    loginRes = mxcube.db_connection.login(loginID, password)
     if loginRes['status']['code'] == 'ok':
         mxcube.session.proposal_id = loginID
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-'+loginID+'.txt')
