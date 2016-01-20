@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import SampleQueueContainer from '../containers/SampleQueueContainer'
 import MethodContainer from '../containers/MethodContainer'
 import MXNavbarContainer from '../containers/MXNavbarContainer'
 import { ErrorNotificationPanel } from './Logging'
@@ -8,7 +9,7 @@ import './Main.css'
 
 export default class Main extends React.Component {
     render() {
-        return ( <div align="center">
+        return (<div className="container-fluid"> 
                       <PleaseWaitDialog/>
                       <div className="row">
                           <ErrorNotificationPanel/>
@@ -23,7 +24,7 @@ export default class Main extends React.Component {
                           </div>
                       </div>
                       <MethodContainer />
-                  </div>
-                 )
-    }
+                  </div>)
+    }    
 }
+
