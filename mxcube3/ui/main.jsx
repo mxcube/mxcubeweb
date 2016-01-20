@@ -14,12 +14,18 @@ require("file?name=[name].[ext]!index.html");
 
 const store = configureStore({}); //samples_grid: {samples_list: samples_list}});
 
+function requireAuth(nextState, replace) {
+	console.log(store.getState().login.loggedIn);
+  if (!store.getState().login.loggedIn) {
+    replace(null, '/login');
+  }
+}
 
 ReactDOM.render((
   <Provider store={store}>
 	  <Router>
-		  <Route path="/" component={Main}>
-			  <Route path="samplegrid" component={SampleGridContainer}/>
+		  <Route path="/" component={Main} onEnter={requireAuth}>
+			  <Route path="samplegrid" component={SampleGridContainer} />
 			  <Route path="datacollection" component={SampleViewContainer}/>
         	  <Route path="logging" component={Logging}/>
 		  </Route>

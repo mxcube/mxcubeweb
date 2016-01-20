@@ -8,6 +8,7 @@ window.log_records_connect = function() {
     window.log_records_ws = io.connect('http://' + document.domain + ':' + location.port+"/logging");
     window.log_records_ws.on('log_record', (record) => {
         window.log_records.push(record);
+        console.log(record);
         //clearTimeout(window.log_records_keepalive);
         //window.log_records_keepalive = setTimeout(window.log_records_connect, 30*1000);
         if (window.logging_component) { window.logging_component.handle_record(record) }

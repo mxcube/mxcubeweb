@@ -8,18 +8,6 @@ export default class MXNavbar extends React.Component {
 		this.state = { active: null };
 	}
 
-	componentWillMount(){
-		if(this.props.loggedIn === false){
-      		window.location.assign("#/login");    
-    	}
-	}
-	componentWillReceiveProps(nextProps){
-		console.log(this.props);
-    	if(nextProps.loggedIn === false){
-      		window.location.assign("#/login");    
-    	}
-  	}
-
 	set_active(name) {
 		this.setState({ active: name });
 	}
