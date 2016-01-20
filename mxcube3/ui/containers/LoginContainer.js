@@ -1,19 +1,36 @@
-import { connect } from 'react-redux'
-import LoginForm from '../components/Login'
-import { doLogin, doSignOut } from '../actions/login'
+import React, { Component, PropTypes } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { doLogin, getLoginInfo } from '../actions/login';
+import Login from '../components/Login/Login'
+
+
+class LoginContainer extends Component {
+
+  render() {
+ 
+    return (
+    	<Login signIn={this.props.signIn} getLoginInfo={this.props.getLoginInfo} loginInfo={this.props.loginInfo} status={this.props.status}/>
+    )
+  }
+}
+
 
 function mapStateToProps(state) {
-    return { status: state.login.status}
+    return { 
+        status: state.login.status,
+        loginInfo: state.login.loginInfo
+        }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        signIn: (proposal, password) => dispatch(doLogin(proposal, password))
-//        signOut: () => dispatch(doSignOut())
+        getLoginInfo : bindActionCreators(getLoginInfo, dispatch),
+        signIn : bindActionCreators(doLogin, dispatch)
     }
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(LoginForm);
+)(LoginContainer);

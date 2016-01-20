@@ -39,7 +39,7 @@ export default class TodoTree extends Component {
         <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteSample(node.queue_id)}></i>
-        <i className="fa fa-play"  onClick={() => this.props.run(node.queue_id)}></i>
+        <i className="fa fa-sign-in"  onClick={() => this.props.mount(node.queue_id)}></i>
         </span>
         );
     }
@@ -68,11 +68,14 @@ export default class TodoTree extends Component {
   }
 
   createTree(){
-
+    let todoFiltered = this.props.todoList.filter((queue_id) => {
+        let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
+        return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
+    });
     let tree = {
       module: 'Sample Queue - TODO',
       type: "Root",
-      children:  this.props.todoList.map((queue_id) => {
+      children:  todoFiltered.map((queue_id) => {
         let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
         return {
           module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,

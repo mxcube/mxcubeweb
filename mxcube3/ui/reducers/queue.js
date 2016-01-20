@@ -64,7 +64,16 @@ export default (state={
                         }
                         );
 
-        // Run Sample or Method
+        // Run Mount
+        case 'MOUNT_SAMPLE':
+            return Object.assign({}, state, 
+                        {
+                            current : action.queue_id,
+                            todo: without(state.todo, action.queue_id),
+                        }
+                        );
+
+        // Run Sample
         case 'RUN_SAMPLE':
             return Object.assign({}, state, 
                         {
@@ -109,8 +118,8 @@ export default (state={
                     return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]), children)});
                 }
             }else{
-                let siblings_checked = intersection(state.queue[action.parent_queue_id],state.checked);
-                if(exist && siblings_checked.length === 1){
+                let methods_checked = intersection(state.queue[action.parent_queue_id],state.checked);
+                if(exist && methods_checked.length === 1){
                     return Object.assign({},state, {checked: without(state.checked, action.parent_queue_id, action.queue_id)});
                 }else{
                     return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]),[action.parent_queue_id])});

@@ -1,9 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap"
-import LoginForm from './Login'
-import SampleQueueContainer from '../containers/SampleQueueContainer'
-import { doSignOut } from '../actions/login'
+
 
 export default class MXNavbar extends React.Component {
 	constructor(props) {
@@ -11,6 +9,18 @@ export default class MXNavbar extends React.Component {
 		this.state = { active: null };
 		console.log(this.props)
 	}
+
+	componentWillMount(){
+		if(this.props.loggedIn === false){
+      		window.location.assign("#/login");    
+    	}
+	}
+	componentWillReceiveProps(nextProps){
+		console.log(this.props);
+    	if(nextProps.loggedIn === false){
+      		window.location.assign("#/login");    
+    	}
+  	}
 
 	set_active(name) {
 		this.setState({ active: name });
@@ -21,8 +31,9 @@ export default class MXNavbar extends React.Component {
 	}
 
 	render() {
-	        let proposal=this.props.userInfo.Proposal;
-		let propInfo = proposal.title+ " - " +proposal.code;
+		let proposal= this.props.userInfo.Proposal;
+		let propInfo = (this.props.loggedIn ? proposal.title+ " - " +proposal.code : "");
+
 		return (
 			<div>
 				<Navbar inverse fluid fixedTop>
@@ -34,8 +45,8 @@ export default class MXNavbar extends React.Component {
 					</Nav>
 					<Nav right eventKey={0}>
 						<p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{propInfo}</p>
-          	<button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={this.logOut.bind(this)}>Log out</button>
-          </Nav>
+          				<button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={() => this.props.signOut()}>Log out</button>
+         		 </Nav>
 				</Navbar>
 			</div>)
 	}

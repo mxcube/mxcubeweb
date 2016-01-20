@@ -16,8 +16,8 @@ class SampleQueueContainer extends Component {
     
   render() {
 
-    const {selected, checked, lookup, todo, history, showForm, current, sampleInformation, queue} = this.props;
-    const {toggleCheckBox, sendChangeOrder, sendDeleteSample, finishSample, runSample, selectSample} = this.props.queueActions;
+    const {selected, checked, lookup, todo, history, showForm, current, sampleInformation, queue, searchString} = this.props;
+    const {sendToggleCheckBox, sendChangeOrder, sendDeleteSample, finishSample, sendRunSample,sendMountSample, selectSample} = this.props.queueActions;
     const {sendDeleteSampleMethod, sendAddSampleMethod} = this.props.sampleActions;
 
     return (
@@ -27,9 +27,9 @@ class SampleQueueContainer extends Component {
             <div className="col-xs-12 queue">
                 <SampleQueueSearch />
                 <i className="fa fa-check-circle-o" onClick={() => finishSample(this.props.current)}> Press the icon to finish sample</i>
-                <CurrentTree showForm={showForm} currentNode={current} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={toggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={runSample}/>
-                <TodoTree showForm={showForm} todoList={todo} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={toggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={runSample}/>
-                <HistoryTree showForm={showForm} historyList={history} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={toggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={runSample}/>
+                <CurrentTree showForm={showForm} currentNode={current} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} />
+                <TodoTree showForm={showForm} todoList={todo} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} mount={sendMountSample} searchString={searchString}/>
+                <HistoryTree showForm={showForm} historyList={history} sampleInformation={sampleInformation} queue={queue} lookup={lookup} select={selectSample} searchString={searchString}/>
                 <SampleQueueButtons showForm={showForm} addMethod={sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup}/>
             </div>
       </div>
@@ -41,6 +41,7 @@ class SampleQueueContainer extends Component {
 function mapStateToProps(state) {
 
   return { 
+          searchString : state.queue.searchString,
           current : state.queue.current,
           todo: state.queue.todo,
           history: state.queue.history,
