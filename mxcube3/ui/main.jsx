@@ -25,9 +25,9 @@ ReactDOM.render((
   <Provider store={store}>
 	  <Router>
 		  <Route path="/" component={Main} onEnter={requireAuth}>
-			  <Route path="samplegrid" component={SampleGridContainer} />
-			  <Route path="datacollection" component={SampleViewContainer}/>
-        	  <Route path="logging" component={Logging}/>
+			  <Route path="samplegrid" component={SampleGridContainer} onEnter={requireAuth}/>
+			  <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth}/>
+        	  <Route path="logging" component={Logging} onEnter={requireAuth}/>
 		  </Route>
 		  <Route path="/login" component={LoginContainer} />
 	  </Router>

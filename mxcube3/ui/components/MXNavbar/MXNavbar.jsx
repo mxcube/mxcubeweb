@@ -14,7 +14,7 @@ export default class MXNavbar extends React.Component {
 
 	render() {
 		let proposal= this.props.userInfo.Proposal;
-		let propInfo = (this.props.loggedIn ? proposal.title+ " - " +proposal.code : "");
+		let propInfo = (this.props.loggedIn ? proposal.title + " - " + proposal.code : "");
 
 		return (
 			<div>
@@ -27,7 +27,7 @@ export default class MXNavbar extends React.Component {
 					</Nav>
 					<Nav right eventKey={0}>
 						<p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{propInfo}</p>
-          				<button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={() => this.props.signOut()}>Log out</button>
+          				<a className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={() => this.props.signOut()} href="#/login">Log out</a>
          		 </Nav>
 				</Navbar>
 			</div>)
