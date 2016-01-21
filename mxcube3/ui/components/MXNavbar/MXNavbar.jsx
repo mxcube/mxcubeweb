@@ -1,7 +1,5 @@
 import React from 'react'
 import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap"
-import Login from '../containers/LoginContainer'
-import SampleQueueContainer from '../containers/SampleQueueContainer'
 
 
 export default class MXNavbar extends React.Component {
@@ -15,6 +13,9 @@ export default class MXNavbar extends React.Component {
 	}
 
 	render() {
+		let proposal= this.props.userInfo.Proposal;
+		let propInfo = (this.props.loggedIn ? proposal.title + " - " + proposal.code : "");
+
 		return (
 			<div>
 				<Navbar inverse fluid fixedTop>
@@ -24,7 +25,10 @@ export default class MXNavbar extends React.Component {
 						<NavItem eventKey={2} active={(this.state.active === 'dc') ? true : false} href="#/datacollection">Data Collection</NavItem>
                         <NavItem eventKey={3} active={(this.state.active === 'logging') ? true : false} href="#/logging">System log</NavItem>
 					</Nav>
-					<Login/>
+					<Nav right eventKey={0}>
+						<p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{propInfo}</p>
+          				<a className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={() => this.props.signOut()} href="#/login">Log out</a>
+         		 </Nav>
 				</Navbar>
 			</div>)
 	}
