@@ -40,8 +40,15 @@ export default class HistoryTree extends Component {
   }
 
    renderMethod(node){
+      var methodClass = cx('node node-method',{
+      'passive': node.state===0,
+      'active': node.state===1,
+      'success': node.state===2,
+      'error': node.state===3,
+      'warning': node.state===4,
+    }); 
     return (
-      <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
+      <span className={methodClass}  onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
         <span className="node-name">{node.module}</span>
       </span>
     );
@@ -76,6 +83,7 @@ export default class HistoryTree extends Component {
               sample_id: sampleData.id,
               queue_id: method_id,
               parent_id: queue_id,
+              state: methodData.state,
               type: "Method"
             };
           }) 

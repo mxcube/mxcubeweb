@@ -46,11 +46,18 @@ export default class TodoTree extends Component {
   }
 
   renderMethod(node){
+    var methodClass = cx('node node-method',{
+      'passive': node.state===0,
+      'active': node.state===1,
+      'success': node.state===2,
+      'error': node.state===3,
+      'warning': node.state===4,
+    }); 
 
     // This line shouldnt need to be here but it seems that react-ui-tree has some bug
     if(this.props.todoList.indexOf(node.parent_id) > -1){
       return (
-        <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
+        <span className={methodClass} onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
         <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteMethod(node.parent_id, node.queue_id, node.sample_id)}></i>
@@ -90,6 +97,7 @@ export default class TodoTree extends Component {
               queue_id: method_id,
               parent_id: queue_id,
               type: "Method",
+              state: methodData.state,
               leaf: true
             };
           }) 
