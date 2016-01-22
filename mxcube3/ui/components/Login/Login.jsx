@@ -12,7 +12,6 @@ import { ErrorNotificationPanel } from '../Logging'
 class Login extends React.Component {
   constructor(props) {
       super(props)
-      this.defaultProps = { tags: [], loadable: false, selected: false }
       this.state = { show_loader: false }
   }
 
