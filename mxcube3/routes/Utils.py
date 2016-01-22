@@ -24,3 +24,48 @@ def mxlogin_required(func):
             return Response(status = 401)
         return func(*args, **kwargs)
     return decorated_view
+
+
+def my_execute_entry(self, entry): 
+    import queue_entry as qe
+    import time, random
+    from mxcube3 import app as mxcube
+    print mxcube.collect
+    self.emit('centringAllowed', (False, ))
+    self._current_queue_entries.append(entry)
+    print "executing on my waaaaay madarikatuak"
+    print entry
+    if isinstance(entry, qe.DataCollectionQueueEntry):
+        time.sleep(1)
+        mxcube.collect.emit('collectOscillationStarted')
+        time.sleep(2)
+        #logging.getLogger('HWR').info('[COLLECT] collectOscillationStarted')
+        mxcube.collect.emit('collectStarted')
+        time.sleep(2)
+        mxcube.collect.emit('collectOscillationFinished')
+        time.sleep(2) 
+        foo = ['collectOscillationFinished', 'collectOscillationFailed', 'warning']
+        mxcube.collect.emit(random.choice(foo))
+    elif isinstance(entry, qe.CharacterisationGroupQueueEntry):
+        time.sleep(1)
+        mxcube.collect.emit('collectOscillationStarted')
+        #logging.getLogger('HWR').info('[COLLECT] collectOscillationStarted')
+        time.sleep(2)
+        foo = ['collectOscillationFinished', 'collectOscillationFailed', 'warning']
+        mxcube.collect.emit(random.choice(foo))
+    elif isinstance(entry, qe.SampleCentringQueueEntry):
+        time.sleep(1)
+        mxcube.diffractometer.emit('centringStarted')
+        time.sleep(2)
+        foo = ['centringSuccessful', 'centringFailed', 'warning']
+        mxcube.diffractometer.emit(str(random.choice(foo)))
+
+    #logging.getLogger('HWR').info('Calling execute on my execute_entry method')
+    #logging.getLogger('HWR').info('Calling execute on: ' + str(entry))
+    #logging.getLogger('HWR').info('Using model: ' + str(entry.get_data_model()))
+
+    for child in entry._queue_entry_list:
+        self.my_execute_entry(child)
+
+    self._current_queue_entries.remove(entry)
+    print "executing on my waaaaay madarikatuak finished"
