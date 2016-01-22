@@ -66,7 +66,8 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
                   {
                     name: action.name,
                     queue_id: action.queue_id,
-                    parameters : action.parameters
+                    parameters : action.parameters,
+                    state: 0
                 }
                 }
               }
@@ -80,9 +81,10 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
               [action.index] : {...state.samples_list[action.index],
                 methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
                   {
+                    ...state.samples_list[action.index].methods[action.queue_id],
                     name: action.parameters.Type,
                     queue_id: action.queue_id,
-                    parameters : action.parameters
+                    parameters : action.parameters,
                 }}
               }
              }}
@@ -94,6 +96,20 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
                 methods : omit(state.samples_list[action.index].methods, [action.queue_id])
+              }
+             }}
+          );
+      }
+    case "ADD_METHOD_RESULTS":
+       {    
+        return Object.assign({}, state, 
+             {samples_list : {...state.samples_list,
+              [action.index] : {...state.samples_list[action.index],
+                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                  {
+                    ...state.samples_list[action.index].methods[action.queue_id],
+                    state: action.state
+                }}
               }
              }}
           );
