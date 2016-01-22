@@ -5,12 +5,24 @@ import time, logging, collections
 import gevent.event
 import os, json
 import queue_model_objects_v1 as qmo
+import QueueManager
 #for mocking the view of the queue, easier than adding sth like if not view:
 from mock import Mock
+import signals, Utils, types
+from mxcube3 import socketio
 
 queueList={}
+lastQueueNode = {'id':0}
 queueOrder=[]
+#it holds the last entry that was sent to execution, it is not reset but overriden
 
+def init_signals():
+    for signal in signals.queueSignals:
+        mxcube.queue.connect(mxcube.queue.queue_hwobj,signal, signals.signalCallback)
+    for signal in signals.collectSignals:
+        mxcube.collect.connect(mxcube.collect,signal, signals.signalCallback)
+    for signal in signals.collectSignals:
+        mxcube.queue.connect(mxcube.queue,signal, signals.signalCallback)
 ###----QUEUE ACTIONS----###
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
 def queueStart():
@@ -65,13 +77,28 @@ def queuePause():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
     try:
-        mxcube.queue.pause()
+        qm.set_pause(True)
+        # mxcube.queue.pause()
         logging.getLogger('HWR').info('[QUEUE] Queue paused')
         return Response(status = 200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be paused')
         return Response(status = 409)
-
+@mxcube.route("/mxcube/api/v0.1/queue/unpause", methods=['PUT'])
+def queueUnpause():
+    """Queue: start execution of the queue
+    Args: None
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    logging.getLogger('HWR').info('[QUEUE] Queue going to unpause')
+    try:
+        qm.set_pause(False)
+        # mxcube.queue.pause()
+        logging.getLogger('HWR').info('[QUEUE] Queue paused')
+        return Response(status = 200)
+    except Exception:
+        logging.getLogger('HWR').exception('[QUEUE] Queue could not be paused')
+        return Response(status = 409)
 @mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
 def queueClear():
     """Queue: clear the queue
@@ -178,10 +205,13 @@ def executeEntryWithId(nodeId):
     Args: None
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
+    global lastQueueNode
     try:        
         nodeId = int(nodeId)
         node = mxcube.queue.get_node(nodeId)
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        if qm.is_paused():
+            qm.set_pause(False)
         if isinstance(entry, qe.SampleQueueEntry):
             logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' %nodeId)
             #this is a sample entry, thus, go through its checked children and execute those
@@ -195,6 +225,8 @@ def executeEntryWithId(nodeId):
                     if not childEntry.is_enabled():
                         childEntry.set_enabled(True)
                     try:
+                        lastQueueNode.update({'id' : elem['QueueId']})
+                        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                     except Exception:
                         logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s'  %elem['QueueId'])
@@ -205,6 +237,8 @@ def executeEntryWithId(nodeId):
                 entry.set_enabled(True)
             entry._view = Mock() #associated text deps
             entry._set_background_color = Mock() #widget color deps
+            lastQueueNode.update({'id' : nodeId})
+            #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)  
         return Response(status = 200)
     except Exception:
@@ -216,6 +250,8 @@ def executeEntryWithId(nodeId):
 ###----SAMPLE----###
 import queue_entry as qe
 from queue_entry import QueueEntryContainer
+qm = QueueManager.QueueManager('Mxcube3') 
+
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def addSample():
     '''
@@ -232,6 +268,7 @@ def addSample():
     sampleNode.location = (basket_number, sample_number)
     sampleEntry = qe.SampleQueueEntry()
     sampleEntry.set_data_model(sampleNode)
+    sampleEntry.set_queue_controller(qm)
     for i in queueList:
         if queueList[i]['SampleId'] == sampleId:
             logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
@@ -387,7 +424,7 @@ def addCentring(id):
         centNode = qmo.SampleCentring()
         centEntry = qe.SampleCentringQueueEntry()
         centEntry.set_data_model(centNode)
-
+        centEntry.set_queue_controller(qm)
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), centNode) #add_child does not return id!
@@ -412,8 +449,11 @@ def addCharacterisation(id):
 
     try:
         characNode = qmo.Characterisation()
-        characEntry = qe.CharacterisationQueueEntry()
+        characEntry = qe.CharacterisationGroupQueueEntry()
+        characEntry._view = Mock()
         characEntry.set_data_model(characNode)
+        characEntry.set_queue_controller(qm)
+
         for k, v in params.items():
             setattr(characNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
         node = mxcube.queue.get_node(int(id))
@@ -441,6 +481,9 @@ def addDataCollection(id):
     try:
         colNode = qmo.DataCollection()
         colEntry = qe.DataCollectionQueueEntry()
+        colEntry._view = Mock()
+        colEntry.set_queue_controller(qm)
+
         #populating dc parameters from data sent by the client
         for k, v in params.items():
             setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
