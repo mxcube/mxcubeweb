@@ -13,6 +13,18 @@ import { showForm } from '../actions/methodForm'
 
 class SampleQueueContainer extends Component {
 
+// 0 = Started(Blue), 1 = Finished(Green), 2 = Failed(Red), 3 = Warning (Orange)
+// Mount will kick down
+
+   componentDidMount() {
+    const {doAddMethodResult} = this.props.sampleActions;
+    const { socket} = this.props;
+    socket.on('hwr_record', (record) => {
+          console.log(record);
+          doAddMethodResult(record.sample, record.queueId, record.state)
+    });
+  }
+
     
   render() {
 

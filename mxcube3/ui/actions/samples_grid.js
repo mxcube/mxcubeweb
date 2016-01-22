@@ -70,6 +70,14 @@ export function doAddMethod(sample_queue_id, sample_id, method, parameters) {
               }
 }
 
+export function doAddMethodResult(sample_id, method_queue_id, state) {
+    return { type: "ADD_METHOD_RESULTS",
+            index: sample_id,
+            queue_id: method_queue_id,
+            state: state
+            }
+}
+
 export function doToggleManualMount() {
     return function(dispatch, getState) {
         const { samples_grid } = getState();
