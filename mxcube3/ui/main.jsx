@@ -1,41 +1,34 @@
-import 'babel-polyfill'
+import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, Link } from 'react-router'
-import SampleViewContainer from './containers/SampleViewContainer'
-import SampleGridContainer from './containers/SampleGridContainer'
-import { Logging } from './components/Logging'
-import Main from './components/Main'
+import { Router, Route, Link } from 'react-router';
+import SampleViewContainer from './containers/SampleViewContainer';
+import SampleGridContainer from './containers/SampleGridContainer';
+import LoginContainer from './containers/LoginContainer';
+import { Logging } from './components/Logging';
+import Main from './components/Main';
 import { Provider } from 'react-redux';
-import configureStore from './store/configureStore'
+import configureStore from './store/configureStore';
+import './serverIO';
 require("file?name=[name].[ext]!index.html");
-import io from "socket.io-client";
 
 const store = configureStore({}); //samples_grid: {samples_list: samples_list}});
 
-window.log_records = [];
-window.log_records_connect = function() {
-    //clearTimeout(window.log_records_keepalive);
-    //window.log_records_keepalive = setTimeout(window.log_records_connect, 5*1000); 
-    window.log_records_ws = io.connect('http://' + document.domain + ':' + location.port+"/logging");
-    window.log_records_ws.on('log_record', (record) => {
-        window.log_records.push(record);
-        //clearTimeout(window.log_records_keepalive);
-        //window.log_records_keepalive = setTimeout(window.log_records_connect, 30*1000);
-        if (window.logging_component) { window.logging_component.handle_record(record) }
-    })
-};
-window.log_records_connect();
+function requireAuth(nextState, replace) {
+  if (!store.getState().login.loggedIn) {
+    replace(null, '/login');
+  }
+}
 
 ReactDOM.render((
   <Provider store={store}>
 	  <Router>
-		  <Route path="/" component={Main}>
-			  <Route path="samplegrid" component={SampleGridContainer}/>
-			  <Route path="datacollection" component={SampleViewContainer}/>
-                          <Route path="logging" component={Logging}/>
+		  <Route path="/" component={Main} onEnter={requireAuth}>
+			  <Route path="samplegrid" component={SampleGridContainer} onEnter={requireAuth}/>
+			  <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth}/>
+        	  <Route path="logging" component={Logging} onEnter={requireAuth}/>
 		  </Route>
+		  <Route path="/login" component={LoginContainer} />
 	  </Router>
   </Provider>
 ), document.getElementById("main"));
-

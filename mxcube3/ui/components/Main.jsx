@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import SampleQueueContainer from '../containers/SampleQueueContainer'
 import MethodContainer from '../containers/MethodContainer'
-import NavBar from './NavBar'
+import MXNavbarContainer from '../containers/MXNavbarContainer'
 import { ErrorNotificationPanel } from './Logging'
 import PleaseWaitDialog from './PleaseWaitDialog'
 import './Main.css'
@@ -13,7 +13,7 @@ export default class Main extends React.Component {
                       <PleaseWaitDialog/>
                       <div className="row">
                           <ErrorNotificationPanel/>
-                          <NavBar/>
+                          <MXNavbarContainer/>
                       </div>
                       <div className="row">
                           <div className="col-xs-2">
