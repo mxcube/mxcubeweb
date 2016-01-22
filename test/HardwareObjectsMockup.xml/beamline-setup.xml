@@ -5,18 +5,18 @@
  -->  <object href="/minidiff-mockup" role="diffractometer"/>
   <object href="/lims" role="lims_client"/>
   <object href="/sc-mockup" role="sample_changer"/>
-
+  <object href="/mxcollect" role="collect"/>
 
   <!-- Software (abstract) concepts -->
-<!--   <object href="/shape-history" role="shape_history"/>
+  <!-- <object href="/shape-history" role="shape_history"/> -->
   <object href="/session" role="session"/>
   <object href="/lims" role="lims_client"/>
-  <object href="/edna_config" role="data_analysis"/> -->
+  <!-- <object href="/edna_config" role="data_analysis"/> -->
   <!--<object href="/workflow-mockup" role="workflow"/> -->
  
   <!-- Procedures and routines -->
- <!--  <object href="/energyscan" role="energy"/>
-  <object href="/mxcollect" role="collect"/> -->
+  <object href="/energyscan" role="energy"/>
+  <object href="/mxcollect" role="collect"/>
 
   <!-- Is it possible to change the beam wavelentgh.
        Should perhaps be associated with the diffractometer -->
