@@ -1,47 +1,18 @@
 <?xml version="1.0"?>
 <equipment class="DiffractometerMockup">
   <username>Minidiff</username>
-  <!-- <wagolight>./udiff_light</wagolight> -->
-  <referencePosition>
-    <phi delta="0.1">-7.8125e-05</phi>
-    <phiz delta="0.01">-3.16001</phiz>
-    <zoom delta="0.01"></zoom>
-    <light delta="0.01"></light>
-    <focus delta="0.01">0.0900333</focus>
-    <phiy delta="0.01">22</phiy>
-    <sampx delta="0.01">-2.50005</sampx>
-    <sampy delta="0.01">0.199946</sampy>
-    <bstopz delta="0.01">-67</bstopz>
-  </referencePosition>
-  <resetPosition>
-    <phiz>-6.2099</phiz>
-    <focus>-2.8843</focus>
-    <phiy>28.1351</phiy>
-    <sampx>-4.357</sampx>
-    <sampy>1.890</sampy>
-  </resetPosition>
-  <motors>
-    <phi>
-      <object role="phi" hwrid="./udiff_omega"></object>  
-      <object role="phiz" hwrid="./udiff_phiz"></object>  
-    </phi>
-    <sample>
-      <object role="zoom" hwrid="./udiff_zoom"></object>
-      <!-- <object role="light" hwrid="/mockup/udiff_lightmot"></object>  -->
-      <object role="focus" hwrid="./udiff_phix"></object>
-      <object role="phiy" hwrid="./udiff_phiy"></object> 
-      <object role="sampx" hwrid="./udiff_sampx"></object>
-      <object role="sampy" hwrid="./udiff_sampy"></object>
-      <object role="kappa" hwrid="./udiff_kappa"></object>
-      <object role="kappa_phi" hwrid="./udiff_kappaphi"></object>
-<!--       <object role="backlight" hwrid="/mockup/udiff_light"></object>
- -->    </sample>
-    <others>
-      <object role="camera" hwrid="./md_camera"></object>
-      <object role="sample_changer" hwrid="./sc-mockup"></object>
-    </others>
-    <kappa>
-      <object hwrid="./udiff_omega"></object>  
-    </kappa>
-  </motors>
+  <object role="focus" hwrid="./udiff_phix"></object>
+  <object role="phiy" hwrid="./udiff_phiy"></object> 
+  <object role="sampx" hwrid="./udiff_sampx"></object>
+  <object role="sampy" hwrid="./udiff_sampy"></object>
+  <object role="kappa" hwrid="./udiff_kappa"></object>
+  <object role="kappa_phi" hwrid="./udiff_kappaphi"></object>
+  <object role="beam_info" hwrid="./beam_info"></object>
+  <others>
+    <object role="camera" hwrid="./md_camera"></object>
+    <object role="sample_changer" hwrid="./sc-mockup"></object>
+  </others>
+  <kappa>
+    <object hwrid="./udiff_omega"></object>  
+  </kappa>
 </equipment>
