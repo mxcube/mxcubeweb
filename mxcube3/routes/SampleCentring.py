@@ -7,8 +7,9 @@ import signals
 
 SAMPLE_IMAGE = None
 
-for signal in signals.MaxLabMicrodiff_signals:
-    mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback4)
+def init_signals():
+    for signal in signals.MaxLabMicrodiff_signals:
+        mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback)
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
@@ -299,7 +300,8 @@ def centreAuto():
     Return: '200' if command issued succesfully, otherwise '409'. Note that this does not mean\
     if the centring is succesfull or not
     """
-    mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
+    logging.getLogger('HWR.MX3').info('[Centring] Auto centring method requested')  
+    #mxcube.diffractometer.emit('minidiffReady','sadfasfadf')
     # mxcube.resolution.emit("deviceReady", 'some data')
     try:
         centred_pos = mxcube.diffractometer.startAutoCentring()
@@ -337,7 +339,8 @@ def aClick():
     clickPosition = params['clickPos']
     try:
         mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
-        Response(status = 200)
+        return Response(status = 200)
     except Exception:
-        Response(status = 409)
+        return Response(status = 409)
+
 
