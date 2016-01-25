@@ -71,6 +71,7 @@ export default (state={
                             current : action.queue_id,
                             todo: without(state.todo, action.queue_id),
                             history: without(state.history.concat(state.current), 0),
+                            checked: without(state.checked, state.current)
                         }
                         );
 
