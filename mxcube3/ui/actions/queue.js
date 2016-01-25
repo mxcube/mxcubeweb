@@ -40,6 +40,27 @@ export function clearAll() {
         }
 }
 
+export function sendClearQueue() {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/queue/clear', { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to clear queue");
+			}
+		})
+		.then(function() {
+			dispatch(clearAll());
+		});
+
+	}
+}
+
 export function sendAddSample(id) {
 	return function(dispatch) {
 
