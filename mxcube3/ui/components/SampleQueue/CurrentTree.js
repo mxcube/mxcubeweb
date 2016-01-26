@@ -1,6 +1,6 @@
 'use strict';
 import React, { Component, PropTypes } from 'react'
-import "bootstrap-webpack"
+import "bootstrap"
 import Tree from 'react-ui-tree'
 import cx from 'classnames'
 import "./app.less"
@@ -43,8 +43,16 @@ export default class CurrentTree extends Component {
   }
 
    renderMethod(node){
+     var methodClass = cx('node node-method',{
+      'passive': node.state===0,
+      'active': node.state===1,
+      'success': node.state===2,
+      'error': node.state===3,
+      'warning': node.state===4,
+    }); 
+
     return (
-      <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
+      <span className={methodClass} onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
         <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteMethod(node.parent_id, node.queue_id, node.sample_id)}></i>
@@ -77,6 +85,7 @@ export default class CurrentTree extends Component {
               sample_id: sampleData.id,
               queue_id: method_id,
               parent_id: this.props.currentNode,
+              state: methodData.state,
               type: "Method"
             };
           }) 

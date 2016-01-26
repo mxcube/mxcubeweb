@@ -40,6 +40,97 @@ export function clearAll() {
         }
 }
 
+export function setQueueState(state) {
+        return {
+               type: "QUEUE_STATE",
+               state: state
+        }
+}
+
+export function sendRunQueue() {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/queue/start', { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to start queue");
+			}
+		})
+		.then(function() {
+			dispatch(setQueueState("started"));
+		});
+
+	}
+}
+
+export function sendPauseQueue() {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/queue/pause', { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to pause queue");
+			}
+		})
+		.then(function() {
+			dispatch(setQueueState("paused"));
+		});
+
+	}
+}
+
+export function sendStopQueue() {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/queue/stop', { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to stop queue");
+			}
+		})
+		.then(function() {
+			dispatch(setQueueState("stopped"));
+		});
+
+	}
+}
+
+export function sendClearQueue() {
+	return function(dispatch) {
+
+		fetch('mxcube/api/v0.1/queue/clear', { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to clear queue");
+			}
+		})
+		.then(function() {
+			dispatch(clearAll());
+		});
+
+	}
+}
+
 export function sendAddSample(id) {
 	return function(dispatch) {
 

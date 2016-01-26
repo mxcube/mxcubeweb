@@ -6,6 +6,8 @@ import MXNavbarContainer from '../containers/MXNavbarContainer'
 import { ErrorNotificationPanel } from './Logging'
 import PleaseWaitDialog from './PleaseWaitDialog'
 import './Main.css'
+import io from 'socket.io-client';
+const socket = io.connect('http://' + document.domain + ':' + location.port+"/hwr");
 
 export default class Main extends React.Component {
     render() {
@@ -17,7 +19,7 @@ export default class Main extends React.Component {
                       </div>
                       <div className="row">
                           <div className="col-xs-2">
-                           	<SampleQueueContainer />
+                           	<SampleQueueContainer socket={socket}/>
                           </div>
                           <div className="col-xs-10 main-content">
                                {this.props.children}
