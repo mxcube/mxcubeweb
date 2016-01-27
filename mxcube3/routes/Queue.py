@@ -19,7 +19,8 @@ queueList={}
 lastQueueNode = {'id':0, 'sample':0}
 queueOrder=[]
 #it holds the last entry that was sent to execution, it is not reset but overriden
-
+queueState = {}
+sampleGridState = {}
 def init_signals():
     # for signal in signals.queueSignals:
     #     mxcube.queue.connect(mxcube.queue.queue_hwobj,signal, signals.signalCallback)
