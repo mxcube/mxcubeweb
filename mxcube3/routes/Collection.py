@@ -1,9 +1,9 @@
-from flask import session, redirect, url_for, render_template, request, Response
+from flask import request
 from mxcube3 import app as mxcube
 
-import logging
 
-###----COLLECTION----###
+# ##----COLLECTION----##
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/<colid>/mode", methods=['POST'])
 def set_collection_method(method):
     """Define the collection method, standard collection, helical, mesh
@@ -14,9 +14,10 @@ def set_collection_method(method):
     data = dict(request.POST.items())
     return mxcube.collection.defineCollectionMethod(data)
 
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/<colid>", methods=['PUT'])
 def update_collection(method):
-    """update a collection into the sample queue ***asociated to a sample!
+    """Update a collection into the sample queue ***asociated to a sample!
     data={generic_data, "Method":method, "SampleId": sampleid ,"CollectionId": id, parameters}, 
     for example for a standard data collection:
     data={generic_data, "Method":StandardCollection, "SampleId": sampleid, "CollectionId": colid, parameters:{
@@ -32,6 +33,7 @@ def update_collection(method):
     """
     data = dict(request.POST.items())
     return mxcube.collection.updateCollection(data)
+
 
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/<colid>", methods=['POST'])
 def add_collection(id, colid):
@@ -53,6 +55,7 @@ def add_collection(id, colid):
     print data
     return mxcube.collection.addCollection(data)
 
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/<colid>", methods=['GET'])
 def get_collection(id):
     """get the collection with id:"colid"
@@ -71,6 +74,7 @@ def get_collection(id):
     data = dict(request.POST.items())
     return mxcube.collection.getCollection(data)
 
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections", methods=['GET'])
 def get_collection_list(id):
     """get the collection with id:"id"
@@ -87,6 +91,8 @@ def get_collection_list(id):
           }, 
     """
     data = dict(request.POST.items())
+
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/<colid>", methods=['DELETE'])
 def delete_collection(id):
     """delete the collection with id:"id"
@@ -95,7 +101,8 @@ def delete_collection(id):
     """
     data = dict(request.POST.items())
     return samples.getCollection(data)
-    
+
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/status", methods=['GET'])
 def get_collection_status(id):
     """get the status of all data collections, (running, stopped, cancelled, finished, ...)
@@ -104,6 +111,7 @@ def get_collection_status(id):
     """
     data = dict(request.POST.items())
     return mxcube.collection.getCollectionStatus(data)
+
 
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/<colid>/status", methods=['GET'])
 def get_collection_id_status(id):
@@ -114,6 +122,7 @@ def get_collection_id_status(id):
     data = dict(request.POST.items())
     return mxcube.collection.getCollectionStatus(data)
 
+
 @mxcube.route("/mxcube/api/v0.1/samples/<sampleid>/collections/<colid>/run", methods=['POST'])
 def run_collection(**args):
     """run the collection with id:"colid"
@@ -123,9 +132,10 @@ def run_collection(**args):
     print "in run collection", args['sampleid'], args['colid']
     data = dict(request.POST.items())
     print data
-    #return "collection ok"
+    # return "collection ok"
     return mxcube.collection.executeCollection(data)
-    #return collection.runCollectionStatus(data)
+    # return collection.runCollectionStatus(data)
+
 
 # @mxcube.route("/mxcube/api/v0.1/samples/<id>/collections/<colid>/run", methods='POST')
 # def run_queue(id):
