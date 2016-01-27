@@ -1,7 +1,8 @@
-export function showForm(formName) {
+export function showForm(formName, point = false) {
 	return { 
 		type: "SHOW_FORM", 
 		name: formName,
+		point: point
 	}
 }
 
