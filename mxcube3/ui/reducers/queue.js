@@ -1,5 +1,5 @@
 import {omit} from 'lodash/object';
-import {without, xor, union, intersection} from 'lodash/array';
+import {without, xor, union, intersection, filter} from 'lodash/array';
 
 export default (state={
     queue:{},
@@ -64,12 +64,14 @@ export default (state={
                         }
                         );
 
-        // Run Mount
+        // Run Mount, this will add the mounted sample to history and if it is 0 it will be removed as it is the default value
         case 'MOUNT_SAMPLE':
             return Object.assign({}, state, 
                         {
                             current : action.queue_id,
                             todo: without(state.todo, action.queue_id),
+                            history: without(state.history.concat(state.current), 0),
+                            checked: without(state.checked, state.current)
                         }
                         );
 
@@ -133,7 +135,12 @@ export default (state={
             }
     
         case 'CLEAR_QUEUE':
-             return Object.assign({}, state, {todo: []});
+             return Object.assign({}, state, 
+                {
+                    current: 0,
+                    todo: [],
+                    history: []
+                });
         default:
             return state;
     }

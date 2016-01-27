@@ -1,22 +1,30 @@
 <!-- Example beamline setup file -->
 <object class="BeamlineSetup" role="BeamlineSetup">
   <!-- Objects directly associatd with hardware -->
-<!--   <object href="/transmission-mockup" role="transmission"/>
- -->  <object href="/minidiff-mockup" role="diffractometer"/>
+  <object href="/transmission-mockup" role="transmission"/>
+  <object href="/minidiff-mockup" role="diffractometer"/>
+  <object href="/udiff_omega" role="omega_axis"/>
+  <object href="/udiff_kappa" role="kappa_axis"/>
+  <object href="/udiff_kappaphi" role="kappa_phi_axis"/>
+  <object href="/sc-mockup" role="sample_changer"/>    
+  <!--object href="/plate-manipulator" role="plate_manipulator"/-->
+  <object href="/resolution-mockup" role="resolution"/>
+  <object href="/energy-mockup" role="energy"/>
+  <object href="/beam-info" role="beam_info"/>
   <object href="/lims" role="lims_client"/>
   <object href="/sc-mockup" role="sample_changer"/>
+  <object href="/session" role="session"/>
+
 
 
   <!-- Software (abstract) concepts -->
-<!--   <object href="/shape-history" role="shape_history"/>
-  <object href="/session" role="session"/>
-  <object href="/lims" role="lims_client"/>
-  <object href="/edna_config" role="data_analysis"/> -->
+  <object href="/shape-history" role="shape_history"/>
+  <!--object href="/edna_config" role="data_analysis"/> -->
   <!--<object href="/workflow-mockup" role="workflow"/> -->
  
   <!-- Procedures and routines -->
- <!--  <object href="/energyscan" role="energy"/>
-  <object href="/mxcollect" role="collect"/> -->
+  <object href="/mxcollect" role="collect"/> 
+  <object href="/detector-mockup" role="detector"/>
 
   <!-- Is it possible to change the beam wavelentgh.
        Should perhaps be associated with the diffractometer -->
@@ -25,17 +33,6 @@
   <!-- Disables or enables the number of passes input box, used
   for acquisitions.-->
   <disable_num_passes>False</disable_num_passes>
-
-  <!-- Should be moved to a detector object in the future -->
-  <detector>
-    <manufacturer>MAR</manufacturer>
-    <type>marccd</type>
-    <model>marmosaic</model>
-    <px>0.07324</px>
-    <py>0.07324</py>
-    <cansum>no</cansum>
-    <has_shutterless>False</has_shutterless>
-  </detector>
 
   <!-- Default values for an acquisition -->
   <default_acquisition_values>

@@ -25,13 +25,13 @@ def convert_to_dict(ispyb_object):
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
-    beamline_name = os.environ.get("SMIS_BEAMLINE_NAME")
+#    beamline_name = os.environ.get("SMIS_BEAMLINE_NAME")
     content = request.get_json()
     loginID = content['proposal']
     password = content['password']
     logging.getLogger('HWR').info(loginID)
 
-    loginRes = mxcube.db_connection.get_proposal(loginID, password)
+    loginRes = mxcube.db_connection.login(loginID, password)
     if loginRes['status']['code'] == 'ok':
         mxcube.session.proposal_id = loginID
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-'+loginID+'.txt')
@@ -46,7 +46,19 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-    return jsonify(loginRes)
+    return jsonify(convert_to_dict(loginRes))
+
+# information to display on the login page
+@mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
+def loginInfo():
+    synchrotron_name = mxcube.session.synchrotron_name
+    beamline_name = mxcube.session.beamline_name
+    loginType = mxcube.db_connection.loginType.title()
+
+    return jsonify({ "synchrotron_name": synchrotron_name,
+        "beamline_name": beamline_name,
+	"loginType": loginType })
+
 ### TODO: when we have the main login page this method should redirect to '/'
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")

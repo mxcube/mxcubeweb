@@ -16,9 +16,8 @@ export class ErrorNotificationPanel extends React.Component {
     }
 
     clear_noNavBar() {
-        this.setState({error: null});
+	this.setState({error: null});
     }
-
     notify(err) {
         document.getElementsByTagName("nav")[0].classList.remove("navbar-fixed-top")
         this.setState({error: err});

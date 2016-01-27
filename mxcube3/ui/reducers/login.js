@@ -20,7 +20,7 @@ export default (state=initialState, action) => {
             }
         case 'SIGNOUT':
             {
-                window.error_notification.clear();
+                window.error_notification.clear_noNavBar();
                 return Object.assign({},state,initialState)
             }
 
