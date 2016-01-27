@@ -10,15 +10,19 @@ import QueueManager
 from mock import Mock
 import signals, Utils, types
 from mxcube3 import socketio
+import queue_entry as qe
+from queue_entry import QueueEntryContainer
+qm = QueueManager.QueueManager('Mxcube3')
+#qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
 queueList={}
-lastQueueNode = {'id':0}
+lastQueueNode = {'id':0, 'sample':0}
 queueOrder=[]
 #it holds the last entry that was sent to execution, it is not reset but overriden
 
 def init_signals():
-    for signal in signals.queueSignals:
-        mxcube.queue.connect(mxcube.queue.queue_hwobj,signal, signals.signalCallback)
+    # for signal in signals.queueSignals:
+    #     mxcube.queue.connect(mxcube.queue.queue_hwobj,signal, signals.signalCallback)
     for signal in signals.collectSignals:
         mxcube.collect.connect(mxcube.collect,signal, signals.signalCallback)
     for signal in signals.collectSignals:
@@ -32,7 +36,9 @@ def queueStart():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
     try:
-    	mxcube.queue.start()
+        mxcube.queue.queue_hwobj.disable(False)
+    	mxcube.queue.queue_hwobj.execute()
+        mxcube.queue.queue_hwobj._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, mxcube.queue.queue_hwobj)
     	logging.getLogger('HWR').info('[QUEUE] Queue started')
         return Response(status=200)
     except Exception:
@@ -47,7 +53,7 @@ def queueStop():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to stop')
     try:
-    	mxcube.queue.stop()
+    	mxcube.queue.queue_hwobj.stop()
     	logging.getLogger('HWR').info('[QUEUE] Queue stopped')
         return Response(status = 200)
     except Exception:
@@ -62,7 +68,7 @@ def queueAbort():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to abort')
     try:
-        mxcube.queue.abort()
+        mxcube.queue.queue_hwobj.abort()
         logging.getLogger('HWR').info('[QUEUE] Queue aborted')
         return Response(status = 200)
     except Exception:
@@ -77,7 +83,7 @@ def queuePause():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
     try:
-        qm.set_pause(True)
+        mxcube.queue.queue_hwobj.set_pause(True)
         # mxcube.queue.pause()
         logging.getLogger('HWR').info('[QUEUE] Queue paused')
         return Response(status = 200)
@@ -92,9 +98,9 @@ def queueUnpause():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to unpause')
     try:
-        qm.set_pause(False)
+        mxcube.queue.queue_hwobj.set_pause(False)
         # mxcube.queue.pause()
-        logging.getLogger('HWR').info('[QUEUE] Queue paused')
+        logging.getLogger('HWR').info('[QUEUE] Queue unpaused')
         return Response(status = 200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be paused')
@@ -132,8 +138,8 @@ def queueGet():
         logging.getLogger('HWR').error('[QUEUE] Queue could not get')
         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/queue/save", methods=['PUT'])
-def queueSave():
+@mxcube.route("/mxcube/api/v0.1/queue/save2file", methods=['PUT'])
+def queueSave2File():
     """Queue: save the queue to a file, filename automatically selected under ./routes folder
     Args: None
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened
@@ -142,7 +148,7 @@ def queueSave():
     filename = os.path.join(os.path.dirname(os.path.abspath(__file__)),'queue-'+mxcube.session.proposal_id+'.txt')
     try:
         f = open(filename, 'w')
-        tofile = json.dumps(queueList) 
+        tofile = json.dumps(queueList)
         f.write(tofile)
         f.close()
         logging.getLogger('HWR').info('[QUEUE] Queue saved, '+filename)
@@ -150,7 +156,29 @@ def queueSave():
     except Exception:
         logging.getLogger('HWR').error('[QUEUE] Queue could not be saved')
         return Response(status = 409)
-       
+
+@mxcube.route("/mxcube/api/v0.1/queue/state", methods=['PUT', 'POST'])
+def queueSaveState():
+    """Queue: save the queue to a file, filename automatically selected under ./routes folder
+    Args: None
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    params = request.data#get_json()
+    params = json.loads(params)
+    queueState.update(params['queueState'])
+    sampleGridState.update(params['sampleGridState'])
+    return Response(status = 200)
+
+@mxcube.route("/mxcube/api/v0.1/queue/state", methods=['GET'])
+def queueLoadState():
+    """Queue: save the queue to a file, filename automatically selected under ./routes folder
+    Args: None
+    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    resp = jsonify({'queueState': queueState, 'sampleGridState': sampleGridState} )
+    resp.status_code = 200
+    return resp
+
 @mxcube.route("/mxcube/api/v0.1/queue/load", methods=['GET'])
 def queueLoad():
     """Queue: load the queue from a file, filename automatically selected under ./routes folder and based on the proposal name
@@ -210,8 +238,7 @@ def executeEntryWithId(nodeId):
         nodeId = int(nodeId)
         node = mxcube.queue.get_node(nodeId)
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-        if qm.is_paused():
-            qm.set_pause(False)
+
         if isinstance(entry, qe.SampleQueueEntry):
             logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' %nodeId)
             #this is a sample entry, thus, go through its checked children and execute those
@@ -222,10 +249,14 @@ def executeEntryWithId(nodeId):
                     childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
                     childEntry._view = Mock() #associated text deps
                     childEntry._set_background_color = Mock() #widget color deps
-                    if not childEntry.is_enabled():
-                        childEntry.set_enabled(True)
+                    # if not childEntry.is_enabled():
+                    #     childEntry.set_enabled(True)
                     try:
-                        lastQueueNode.update({'id' : elem['QueueId']})
+                        if mxcube.queue.queue_hwobj.is_paused():
+                            logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
+                            #mxcube.queue.queue_hwobj.set_pause(False)
+                            mxcube.queue.queue_hwobj.wait_for_pause_event()
+                        lastQueueNode.update({'id' : elem['QueueId'], 'sample':queueList[nodeId]['SampleId']})
                         #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                     except Exception:
@@ -233,11 +264,15 @@ def executeEntryWithId(nodeId):
         else:
             #not a sample so execte directly
             logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' %nodeId)
-            if not entry.is_enabled():
-                entry.set_enabled(True)
+            if mxcube.queue.queue_hwobj.is_paused():
+                logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
+                mxcube.queue.queue_hwobj.wait_for_pause_event()
+            # if not entry.is_enabled():
+            #     entry.set_enabled(True)
             entry._view = Mock() #associated text deps
             entry._set_background_color = Mock() #widget color deps
-            lastQueueNode.update({'id' : nodeId})
+            parent = int(node.get_parent()._node_id)
+            lastQueueNode.update({'id' : nodeId, 'sample':queueList[parent]['SampleId']})
             #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)  
         return Response(status = 200)
@@ -248,9 +283,7 @@ def executeEntryWithId(nodeId):
 ###----QUEUE ELEMENTs MANAGEMENT----###
 ## Deprecating Sample.py
 ###----SAMPLE----###
-import queue_entry as qe
-from queue_entry import QueueEntryContainer
-qm = QueueManager.QueueManager('Mxcube3') 
+
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def addSample():
@@ -264,11 +297,14 @@ def addSample():
     params = json.loads(params)
     sampleId = params['SampleId']
     sampleNode = qmo.Sample()
+    sampleNode.loc_str = sampleId
     basket_number, sample_number = sampleId.split(':')
     sampleNode.location = (basket_number, sample_number)
     sampleEntry = qe.SampleQueueEntry()
     sampleEntry.set_data_model(sampleNode)
     sampleEntry.set_queue_controller(qm)
+    sampleEntry._view = Mock()
+    sampleEntry._set_background_color = Mock()
     for i in queueList:
         if queueList[i]['SampleId'] == sampleId:
             logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
@@ -329,12 +365,25 @@ def toggleNode(id):
         if isinstance(entry, qe.SampleQueueEntry):
             queueList[nodeId]['checked'] = int(not queueList[nodeId]['checked'])
             #this is a sample entry, thus, go through its checked children and toggle those
+            if queueList[nodeId]['checked']==1:
+                entry.set_enabled(True)
+            else:
+                entry.set_enabled(False)
+
             for elem in queueList[nodeId]['methods']:
                 elem['checked'] = int(queueList[nodeId]['checked'])
+                childNode = mxcube.queue.get_node(elem['QueueId'])
+                childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
+                if elem['checked']==1:
+                    childEntry.set_enabled(True)
+                else:
+                    childEntry.set_enabled(False)
         else:
             #not a sample so find the parent and toggle directly
             logging.getLogger('HWR').info('[QUEUE] toggling entry with id: %s' %nodeId)
+            parentNode = node.get_parent()
             parent = node.get_parent()._node_id
+            parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parentNode)
             #myBrothers = [i._node_id for i in parent.get_children()].remove(nodeId) #and only my brothers
             #checkedBrothers =  queueList[parent]['methods']
             checked = 0
@@ -348,8 +397,11 @@ def toggleNode(id):
                     met['checked'] = int(not met['checked'])
                     if met['checked'] == 0 and checked == 0:
                         queueList[parent]['checked'] = 0
+                        parentEntry.set_enabled(False)
                     elif met['checked'] == 1 and checked == 0:
                         queueList[parent]['checked'] = 1
+                        parentEntry.set_enabled(True)
+
         return Response(status = 200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue element %s could not be toggled' %id)
@@ -427,6 +479,8 @@ def addCentring(id):
         centEntry.set_queue_controller(qm)
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        entry._set_background_color = Mock()
+
         newNode = mxcube.queue.add_child_at_id(int(id), centNode) #add_child does not return id!
         entry.enqueue(centEntry)
         queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name': 'Centring','Params':params, 'checked':1})
@@ -451,6 +505,7 @@ def addCharacterisation(id):
         characNode = qmo.Characterisation()
         characEntry = qe.CharacterisationGroupQueueEntry()
         characEntry._view = Mock()
+        characEntry._set_background_color = Mock()
         characEntry.set_data_model(characNode)
         characEntry.set_queue_controller(qm)
 
@@ -483,6 +538,7 @@ def addDataCollection(id):
         colEntry = qe.DataCollectionQueueEntry()
         colEntry._view = Mock()
         colEntry.set_queue_controller(qm)
+        colEntry._set_background_color = Mock()
 
         #populating dc parameters from data sent by the client
         for k, v in params.items():

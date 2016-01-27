@@ -35,14 +35,15 @@ export default class SampleQueueButtons extends Component {
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Datacollection
                         </a>
-                        <a className='btn btn-success queue-run-stop'>
-                            <i className='fa fa-fw fa-play'></i>
-                                Run
-                        </a>
-                        <a className='btn btn-danger queue-run-stop'>
-                            <i className='fa fa-fw fa-stop'></i>
-                                Stop
-                        </a>
+                        <button type="button" className="btn queue-controlls" onClick={() => this.props.pauseQueue()}>
+                            <i className="fa fa-pause"></i>
+                        </button>
+                        <button type="button" className="btn queue-controlls" onClick={() => this.props.runQueue()}>
+                            <i className="fa fa-play"></i>
+                        </button>
+                        <button type="button" className="btn queue-controlls" onClick={() => this.props.stopQueue()}>
+                            <i className="fa fa-stop"></i>
+                        </button>
             </div>
         );
     }
