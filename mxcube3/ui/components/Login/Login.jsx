@@ -34,7 +34,7 @@ class Login extends React.Component {
 
         $("#ajax_loader").toggleClass('hidden',true);
         return (
-          <div>
+          <div className="container-fluid"> 
           <ErrorNotificationPanel/>
           <div className="row row-centered">
           <div>
