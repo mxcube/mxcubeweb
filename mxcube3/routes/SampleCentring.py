@@ -1,4 +1,4 @@
-from flask import request, Response
+from flask import request, Response, jsonify
 from mxcube3 import app as mxcube
 import time
 import logging
@@ -216,7 +216,10 @@ def moveSampleCentringMotor(id):
     newPos = params['newPos']
 
     motor_hwobj = mxcube.diffractometer.getObjectByRole(id.lower())
-    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor: "%s", new position: "%s"' %(id, str(newPos)))
+    logging.getLogger('HWR').info('[SampleCentring] Movement called for motor: "%s", new position: "%s"' % (id,
+                                                                                                            str(newPos)
+                                                                                                            )
+                                  )
     logging.getLogger('HWR').info('[SampleCentring] Movement called for motor with motor name: '+str(motor_hwobj.motor_name))
 
     # the following if-s to solve inconsistent movement method
@@ -236,7 +239,8 @@ def moveSampleCentringMotor(id):
     except Exception:
         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not move motor "%s" to positions "%s" ' %(id, newPos))
         return Response(status=409)
-    logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s"' %(motor_hwobj.motor_name))  # , str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
+    logging.getLogger('HWR').info('[SampleCentring] Movement finished for motor: "%s"' %(motor_hwobj.motor_name))
+    # , str(motor_hwobj.getPosition()))) #zoom motor will fail in getPosition(), perhaps an alias there?
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/<id>", methods=['GET'])
@@ -360,7 +364,11 @@ def aClick():
     params = json.loads(params)
     clickPosition = params['clickPos']
     try:
-        mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
+        mxcube.diffractometer.imageClicked(clickPosition['x'],
+                                           clickPosition['y'],
+                                           clickPosition['x'],
+                                           clickPosition['y']
+                                           )
         return Response(status=200)
     except Exception:
         return Response(status=409)
@@ -386,4 +394,3 @@ def rejectCentring():
         return Response(status=200)
     except Exception:
         return Response(status=409)
-

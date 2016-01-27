@@ -41,9 +41,9 @@ def queueStart():
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
     try:
         mxcube.queue.queue_hwobj.disable(False)
-    	mxcube.queue.queue_hwobj.execute()
+        mxcube.queue.queue_hwobj.execute()
         mxcube.queue.queue_hwobj._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, mxcube.queue.queue_hwobj)
-    	logging.getLogger('HWR').info('[QUEUE] Queue started')
+        logging.getLogger('HWR').info('[QUEUE] Queue started')
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be started')
@@ -58,8 +58,8 @@ def queueStop():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to stop')
     try:
-    	mxcube.queue.queue_hwobj.stop()
-    	logging.getLogger('HWR').info('[QUEUE] Queue stopped')
+        mxcube.queue.queue_hwobj.stop()
+        logging.getLogger('HWR').info('[QUEUE] Queue stopped')
         return Response(status = 200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be stopped')
@@ -509,14 +509,23 @@ def addCentring(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), centNode) #add_child does not return id!
         entry.enqueue(centEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name': 'Centring','Params':params, 'checked':1})
+        queueList[int(id)]['methods'].append({'QueueId': newNode,
+                                              'Name': 'Centring',
+                                              'Params':params,
+                                              'checked': 1
+                                              }
+                                             )
         logging.getLogger('HWR').info('[QUEUE] centring added to sample')
-        resp = jsonify({'QueueId':newNode, 'Name': 'Centring', 'Params':params})
+        resp = jsonify({'QueueId': newNode,
+                        'Name': 'Centring',
+                        'Params': params
+                        }
+                       )
         resp.status_code = 200
         return resp
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] centring could not be added to sample')
-        return Response(status = 409)
+        return Response(status=409)
 
 
 def addCharacterisation(id):
@@ -544,9 +553,17 @@ def addCharacterisation(id):
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
         newNode = mxcube.queue.add_child_at_id(int(id), characNode)  # add_child does not return id!
         entry.enqueue(characEntry)
-        queueList[int(id)]['methods'].append({'QueueId':newNode, 'Name':'Characterisation','Params':params, 'checked':1})
+        queueList[int(id)]['methods'].append({'QueueId': newNode,
+                                              'Name': 'Characterisation',
+                                              'Params': params,
+                                              'checked': 1
+                                              }
+                                             )
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
-        resp = jsonify({'QueueId':newNode, 'Name': 'Characterisation'})
+        resp = jsonify({'QueueId': newNode,
+                        'Name': 'Characterisation'
+                        }
+                       )
         resp.status_code = 200
         return resp
     except Exception:
