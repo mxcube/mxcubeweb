@@ -9,7 +9,8 @@ export default class MXNavbar extends React.Component {
       super(props);
       this.state = {
         clickCentring: false,
-        pointsCollected : 0
+        pointsCollected : 0,
+        canvas: {}
       };
     }
 
@@ -34,6 +35,29 @@ export default class MXNavbar extends React.Component {
       // Bind functions to events
       canvas.on('mouse:down', (option) => this.drawCircle(option, canvas));
 
+      // Bind contextMenu to rigth click, this is not supported by fabric.js and has to be added manually
+      document.getElementById('outsideWrapper').addEventListener('contextmenu', (e) => this.contextMenu(e,canvas), false);
+
+      //Bind canvas to state, this is done to let other functions manipulate the canvas such as removing objecs
+      this.setState({canvas: canvas});
+
+    }
+
+    contextMenu(e, canvas){
+       document.getElementById("contextMenu").style.display = "none";
+       var objectFound = false;
+       var clickPoint = new fabric.Point(e.offsetX, e.offsetY);
+    
+       e.preventDefault();
+       canvas.forEachObject(function (obj) {
+        if (!objectFound && obj.containsPoint(clickPoint)) {
+          objectFound = true;
+          canvas.setActiveObject(obj);
+          document.getElementById("contextMenu").style.display = "block";
+          document.getElementById("contextMenu").style.top = e.offsetY + "px";
+          document.getElementById("contextMenu").style.left = e.offsetX + "px";
+          }
+        });
     }
 
     startClickCentring(){
@@ -41,11 +65,16 @@ export default class MXNavbar extends React.Component {
       this.setState({clickCentring: true});
     }
 
+  removeObject(){
+    this.state.canvas.getActiveObject().remove();
+    document.getElementById("contextMenu").style.display = "none";
+  }
+
 
   drawCircle(option, canvas){
+    document.getElementById("contextMenu").style.display = "none";
     let pointsCollected = this.state.pointsCollected;
     let clickCentring = this.state.clickCentring;
-    console.log(this.state);
     if(pointsCollected < 3 && clickCentring){
         canvas.clear();
         var circle = new fabric.Circle({
@@ -73,12 +102,24 @@ export default class MXNavbar extends React.Component {
 
 }
  
+
+  showModal(modalName){
+    this.props.showForm(modalName, true);
+     document.getElementById("contextMenu").style.display = "none";
+  }
+
+
   render() {
 
     return (
                 <div>
                   <div className="outsideWrapper" id="outsideWrapper">
                     <div className="insideWrapper">
+                      <ul id="contextMenu" className="dropdown-menu contextMenu" role="menu" >
+                          <li><a onClick={() => this.showModal("characterisation")}>Add Characterisation</a></li>
+                          <li><a onClick={() => this.showModal("datacollection")}>Add Datacollection</a></li>
+                          <li><a onClick={() => this.removeObject()}>Delete Point</a></li>
+                      </ul>
                       <canvas id="canvas" className="coveringCanvas" />
                     </div>
                 </div>
