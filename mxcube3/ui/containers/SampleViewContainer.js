@@ -18,7 +18,7 @@ class SampleViewContainer extends Component {
                   <h8 className="panel-title text-center">SampleImage</h8>
                 </div>
                 <div className="panel-body">
-                  <SampleImage/>
+                  <SampleImage showForm={this.props.showForm}/>
                 </div>
               </div>
             </div>
