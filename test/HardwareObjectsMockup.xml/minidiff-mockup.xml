@@ -15,4 +15,6 @@
   <kappa>
     <object hwrid="./udiff_omega"></object>  
   </kappa>
+  <zoomCentre>{"x":340,"y":250}</zoomCentre>
+  <omegaReference>{"motor_name": "phiz", "position":-0.2224, "camera_axis":"x"}</omegaReference>
 </equipment>
