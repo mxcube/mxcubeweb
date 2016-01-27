@@ -12,7 +12,7 @@ SAMPLE_IMAGE = None
 
 
 def init_signals():
-    for signal in signals.MaxLabMicrodiff_signals:
+    for signal in signals.microdiffSignals:
         mxcube.diffractometer.connect(mxcube.diffractometer,signal, signals.signalCallback)
 
 
@@ -360,11 +360,30 @@ def aClick():
     params = json.loads(params)
     clickPosition = params['clickPos']
     try:
-        mxcube.diffractometer.imageClicked(clickPosition['x'],
-                                           clickPosition['y'],
-                                           clickPosition['x'],
-                                           clickPosition['y']
-                                           )
+        mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
         return Response(status=200)
     except Exception:
         return Response(status=409)
+
+        
+@mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
+def acceptCentring():
+    """
+    """
+    try:
+        mxcube.diffractometer.accept_centring()
+        return Response(status=200)
+    except Exception:
+        return Response(status=409)
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=['PUT'])
+def rejectCentring():
+    """
+    """
+    try:
+        mxcube.diffractometer.reject_centring()
+        return Response(status=200)
+    except Exception:
+        return Response(status=409)
+

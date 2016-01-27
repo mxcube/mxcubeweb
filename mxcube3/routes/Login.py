@@ -45,7 +45,7 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-    return jsonify(loginRes)
+    return jsonify(convert_to_dict(loginRes))
 
 
 # information to display on the login page

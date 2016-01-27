@@ -13,11 +13,23 @@ import { showForm } from '../actions/methodForm'
 
 class SampleQueueContainer extends Component {
 
+// 0 = Started(Blue), 1 = Finished(Green), 2 = Failed(Red), 3 = Warning (Orange)
+// Mount will kick down
+
+   componentDidMount() {
+    const {doAddMethodResult} = this.props.sampleActions;
+    const { socket} = this.props;
+    socket.on('hwr_record', (record) => {
+          console.log(record);
+          doAddMethodResult(record.sample, record.queueId, record.state)
+    });
+  }
+
     
   render() {
 
     const {selected, checked, lookup, todo, history, showForm, current, sampleInformation, queue, searchString} = this.props;
-    const {sendToggleCheckBox, sendChangeOrder, sendDeleteSample, finishSample, sendRunSample,sendMountSample, selectSample} = this.props.queueActions;
+    const {sendToggleCheckBox, sendChangeOrder, sendDeleteSample, finishSample, sendRunSample,sendMountSample, selectSample, sendPauseQueue, sendRunQueue, sendStopQueue} = this.props.queueActions;
     const {sendDeleteSampleMethod, sendAddSampleMethod} = this.props.sampleActions;
 
     return (
@@ -30,7 +42,7 @@ class SampleQueueContainer extends Component {
                 <CurrentTree showForm={showForm} currentNode={current} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} />
                 <TodoTree showForm={showForm} todoList={todo} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} mount={sendMountSample} searchString={searchString}/>
                 <HistoryTree showForm={showForm} historyList={history} sampleInformation={sampleInformation} queue={queue} lookup={lookup} select={selectSample} searchString={searchString}/>
-                <SampleQueueButtons showForm={showForm} addMethod={sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup}/>
+                <SampleQueueButtons showForm={showForm} addMethod={sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup} pauseQueue={sendPauseQueue}  stopQueue={sendStopQueue} runQueue={sendRunQueue}/>
             </div>
       </div>
     )
