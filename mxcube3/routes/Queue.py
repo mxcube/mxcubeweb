@@ -299,6 +299,9 @@ def addSample():
     sampleId = params['SampleId']
     sampleNode = qmo.Sample()
     sampleNode.loc_str = sampleId
+    sampleNode.lims_id = None
+    sampleNode.lims_group_id = None
+    
     basket_number, sample_number = sampleId.split(':')
     sampleNode.location = (basket_number, sample_number)
     sampleEntry = qe.SampleQueueEntry()
