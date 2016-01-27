@@ -1,9 +1,8 @@
-from flask import session, redirect, url_for, render_template, request, Response
+from flask import request
 from mxcube3 import app as mxcube
 
-import logging
 
-###----SAMPLE----###
+# ##----SAMPLE----###
 @mxcube.route("/mxcube/api/v0.1/samples/<id>", methods='POST')
 def add_sample(id):
     """Add the information of the sample with id:"id"
@@ -12,6 +11,7 @@ def add_sample(id):
     """
     data = dict(request.POST.items())
     return samples.addSample(data)
+
 
 @mxcube.route("/mxcube/api/v0.1/samples/<id>", methods=['PUT'])
 def update_sample(id):
@@ -22,6 +22,7 @@ def update_sample(id):
     data = dict(request.POST.items())
     return samples.updateSample(data)
 
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>", methods=['GET'])
 def get_sample(id):
     """Get the information of the sample with id:"id"
@@ -30,6 +31,7 @@ def get_sample(id):
     """
     data = dict(request.POST.items())
     return samples.getSample(data)
+
 
 @mxcube.route("/mxcube/api/v0.1/samples/<id>", methods=['DELETE'])
 def delete_sample(id):
@@ -40,6 +42,7 @@ def delete_sample(id):
     data = dict(request.POST.items())
     return samples.deleteSample(data)
 
+
 @mxcube.route("/mxcube/api/v0.1/samples", methods=['GET'])
 def get_sample_list():
     """Get the sample list already on the queue
@@ -48,6 +51,7 @@ def get_sample_list():
     """
     data = dict(request.POST.items())
     return samples.getSampleList()
+
 
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/mode", methods=['POST'])
 def set_sample_mode(id):
@@ -58,6 +62,7 @@ def set_sample_mode(id):
     data = dict(request.POST.items())
     return samples.getMode(data)
 
+
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/centring", methods=['PUT'])
 def set_centring_mode(id):
     """Set centring method: semi auto, fully auto,  ...
@@ -67,7 +72,8 @@ def set_centring_mode(id):
     data = dict(request.POST.items())
     return samples.setCentring(data)
 
-###----SAMPLECHANGER----###
+
+# ##----SAMPLECHANGER----###
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/mount", methods=['PUT'])
 def mount_sample(id):
     """Mount sample with id:"id"
@@ -76,6 +82,7 @@ def mount_sample(id):
     """
     data = dict(request.POST.items())
     return samples.mountSample(data)
+
 
 @mxcube.route("/mxcube/api/v0.1/samples/<id>/umount", methods=['PUT'])
 def umount_sample():

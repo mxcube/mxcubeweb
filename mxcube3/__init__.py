@@ -2,7 +2,8 @@ from __future__ import absolute_import
 from flask import Flask, session, redirect, url_for, render_template, request, Response
 from flask.ext.socketio import SocketIO
 from optparse import OptionParser
-import os, sys
+import os
+import sys
 import logging
 import gevent
 # some Hardware Objects rely on BlissFramework.Utils.widget_colors,
