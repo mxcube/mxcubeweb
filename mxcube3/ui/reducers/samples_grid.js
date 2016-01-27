@@ -114,6 +114,8 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
              }}
           );
       }
+    case 'QUEUE_STATE':
+      return action.sampleGridState;
     default:
         return state
     }
