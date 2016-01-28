@@ -10,27 +10,20 @@ export default class MXNavbar extends React.Component {
       this.state = {
         clickCentring: false,
         pointsCollected : 0,
-        canvas: {}
+        canvas: {},
+        centringPoint: {},
+        points: []
       };
     }
 
     componentDidMount(){
 
       // Set size of canvas depending on image ratio and screen size
-      var w = document.getElementById('outsideWrapper').clientWidth;
-      var h = w/1.34;
-      var canvasWindow = document.getElementById('canvas');
-      canvasWindow.width = w;
-      canvasWindow.height = h;
+      this.drawCanvas();
 
       // Create fabric and set image background to sample
       var canvas = new fabric.Canvas('canvas');
-      canvas.setBackgroundImage('/mxcube/api/v0.1/sampleview/camera/subscribe', canvas.renderAll.bind(canvas), {
-        width: canvas.width,
-        height: canvas.height,
-        originX: 'left',
-        originY: 'top'
-      });
+      this.drawSampleImage(canvas);
 
       // Bind functions to events
       canvas.on('mouse:down', (option) => this.drawCircle(option, canvas));
@@ -43,14 +36,49 @@ export default class MXNavbar extends React.Component {
 
     }
 
+    drawCanvas(){
+      var w = document.getElementById('outsideWrapper').clientWidth;
+      var h = w/1.34;
+      var canvasWindow = document.getElementById('canvas');
+      canvasWindow.width = w;
+      canvasWindow.height = h;
+
+    }
+
+    drawSampleImage(canvas){
+       canvas.setBackgroundImage('/mxcube/api/v0.1/sampleview/camera/subscribe', canvas.renderAll.bind(canvas), {
+        width: canvas.width,
+        height: canvas.height,
+        originX: 'left',
+        originY: 'top'
+      });
+
+      var circle = new fabric.Circle({
+          radius: 40,
+          fill: '',
+          strokeWidth: 3, 
+          stroke: 'blue',
+          left: canvas.width/2 - 40,
+          top: canvas.height/2 - 40 ,
+          selectable: false
+
+        });
+
+      var line1 = this.makeLine([ 20, canvas.height-25, 20, canvas.height -100 ]);
+      var line2 = this.makeLine([ 25,  canvas.height-20, 100, canvas.height-20 ]);
+
+      canvas.add(line1, line2, circle);
+
+
+    }
+
     contextMenu(e, canvas){
        document.getElementById("contextMenu").style.display = "none";
        var objectFound = false;
        var clickPoint = new fabric.Point(e.offsetX, e.offsetY);
-    
        e.preventDefault();
        canvas.forEachObject(function (obj) {
-        if (!objectFound && obj.containsPoint(clickPoint)) {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
           canvas.setActiveObject(obj);
           document.getElementById("contextMenu").style.display = "block";
@@ -60,10 +88,20 @@ export default class MXNavbar extends React.Component {
         });
     }
 
-    startClickCentring(){
+  makeLine(coords) {
+    return new fabric.Line(coords, {
+      fill: 'green',
+      stroke: 'green',
+      strokeWidth: 5,
+      selectable: false
+    });
+  }
+
+
+  startClickCentring(){
       this.setState({clickCentring: true});
-      this.props.sampleActions.SendStartClickCentring();
-    }
+      this.props.sampleActions.sendStartClickCentring();
+  }
 
   removeObject(){
     this.state.canvas.getActiveObject().remove();
@@ -76,10 +114,11 @@ export default class MXNavbar extends React.Component {
     let pointsCollected = this.state.pointsCollected;
     let clickCentring = this.state.clickCentring;
     if(pointsCollected < 3 && clickCentring){
-        canvas.clear();
         var circle = new fabric.Circle({
           radius: 5, 
-          fill: 'red', 
+          strokeWidth: 2, 
+          stroke: 'red',
+          fill: '',
           left: option.e.layerX - 5,
           top: option.e.layerY - 5 ,
           selectable: true,
@@ -87,11 +126,11 @@ export default class MXNavbar extends React.Component {
           lockMovementX: true,
           lockScalingFlip: true,
           lockScalingX: true,
-          lockScalingY: true
+          lockScalingY: true,
 
         });
       canvas.add(circle);
-
+      this.props.sampleActions.sendCentringPoint(option.e.layerX, option.e.layerY);
       this.setState({pointsCollected: ++pointsCollected});
     }else{
       this.setState({
@@ -106,6 +145,10 @@ export default class MXNavbar extends React.Component {
   showModal(modalName){
     this.props.showForm(modalName, true);
      document.getElementById("contextMenu").style.display = "none";
+  }
+
+  deletePoints(){
+
   }
 
 
@@ -129,13 +172,12 @@ export default class MXNavbar extends React.Component {
                             <h3 className="panel-title">Controls</h3>
                         </div>
                         <div className="panel-body">
-                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={this.takeSnapshot}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
+                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendSavePoint()}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
                             <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={this.measureDistance}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
-                            <button type="button" data-toggle="tooltip"  title="nothing..." className="btn btn-link  pull-center" onClick={this.aMethod}><i className="fa fa-2x fa-fw fa-arrows-v"></i></button>                            
-                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={this.takeSnapshot}><i className="fa fa-2x fa-fw fa-camera"></i></button>                            
-                            <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={() => this.startCentring()}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendTakeSnapShot()}><i className="fa fa-2x fa-fw fa-camera"></i></button>                            
+                            <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartAutoCentring()}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={() => this.startClickCentring()}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Clear points" className="btn btn-link  pull-center" onClick={this.deletePoints}><i className="fa fa-2x fa-fw fa-times"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Clear points" className="btn btn-link  pull-center" onClick={() => this.deletePoints()}><i className="fa fa-2x fa-fw fa-times"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={this.zoomIn}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={this.zoomOut}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
