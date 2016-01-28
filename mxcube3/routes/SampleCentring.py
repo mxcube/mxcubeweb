@@ -73,6 +73,22 @@ def snapshot():
     except:
         return "False"
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/camera", methods=['GET'])
+def getImageData():
+    """
+    Get size of the image of the diffractometer
+    """
+    try:
+        data = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
+                'imageWidth':  mxcube.diffractometer.image_width,
+                'imageHeight':  mxcube.diffractometer.image_height,
+                }
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp
+    except Exception:
+        return Response(status = 409)
+
 ###----SAMPLE CENTRING----###
 clicks = collections.deque(maxlen=3)
 
@@ -342,7 +358,7 @@ def aClick():
         return Response(status = 200)
     except Exception:
         return Response(status = 409)
-        
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
 def acceptCentring():
     """
