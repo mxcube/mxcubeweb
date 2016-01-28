@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import SampleImage from '../components/SampleView/SampleImage';
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
+import * as SampleViewActions from '../actions/sampleview'
 import { showForm } from '../actions/methodForm'
 
 
@@ -14,11 +15,9 @@ class SampleViewContainer extends Component {
     <div className="col-xs-12">
             <div className="col-md-12">
               <div className="panel panel-primary text-center">
-                <div className="panel-heading">
-                  <h8 className="panel-title text-center">SampleImage</h8>
-                </div>
+               
                 <div className="panel-body">
-                  <SampleImage showForm={this.props.showForm}/>
+                  <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions}/>
                 </div>
               </div>
             </div>
@@ -41,6 +40,7 @@ function mapDispatchToProps(dispatch) {
  return  {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch),
+    sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
     showForm : bindActionCreators(showForm, dispatch)
   }
 }
