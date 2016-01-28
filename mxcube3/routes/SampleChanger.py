@@ -2,7 +2,7 @@ from flask import session, redirect, url_for, render_template, request, Response
 from mxcube3 import app as mxcube
 import logging
 import itertools
-from .Queue import queueList
+from .Queue import queueList, lastQueueNode
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
 def get_samples_list():
@@ -19,6 +19,7 @@ def mountSample(sample):
 	try:
 		sampleNode = mxcube.queue.get_node(int(sample))
 		sampleLocation = sampleNode.location
+		lastQueueNode.update({'id' : int(sample), 'sample':str(sampleLocation[0]+':'+sampleLocation[1])})
 		#mxcube.sample_changer.load_sample
 		#TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
 		logging.getLogger('HWR').info('[SC] %s sample mounted, location: %s' %(sample, sampleLocation))

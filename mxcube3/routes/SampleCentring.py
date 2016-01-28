@@ -1,4 +1,4 @@
-from flask import session, redirect, url_for, render_template, request, Response, stream_with_context
+from flask import session, redirect, url_for, render_template, request, Response, stream_with_context, jsonify
 from mxcube3 import app as mxcube
 import time, logging, collections
 import gevent.event
@@ -132,6 +132,13 @@ def saveCentringWithId(id):
         data = {'name':centredPosId, 'motorPositions': motorPositions}
         #or
         #motorPositions = mxcube.diffractometer.getPositions()
+        centred_pos.append(data)
+        logging.getLogger('HWR.MX3').info('[Centring] Centring Positions saved:'+str(data)) 
+        resp = jsonify(data)#{'QueueId': nodeId} )
+        resp.status_code = 200
+        return resp
+    except AttributeError:
+        data = {'name':centredPosId}
         centred_pos.append(data)
         logging.getLogger('HWR.MX3').info('[Centring] Centring Positions saved:'+str(data)) 
         resp = jsonify(data)#{'QueueId': nodeId} )
