@@ -1,0 +1,10 @@
+<device class = "AttenuatorsMockup">
+  <atte>
+     <label>Alum 0.09</label>
+     <bits>128</bits>
+  </atte>
+  <atte>
+     <label>Alum 0.09</label>
+     <bits>64</bits>
+  </atte>
+</device>
