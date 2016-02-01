@@ -82,7 +82,7 @@ def __execute_entry(self, entry):
     #if this is a sample, parentId will be '0'
     if parentId == 0: # Sample... 0 is your father...
         parentId = nodeId
-     lastQueueNode.update({'id' : nodeId, 'sample':queueList[parentId]['SampleId']})
+    lastQueueNode.update({'id' : nodeId, 'sample':queueList[parentId]['SampleId']})
     print "enabling....", entry
     #entry.set_enabled(True)
     if not entry.is_enabled() or self._is_stopped:

@@ -19,7 +19,8 @@ queueList={}
 lastQueueNode = {'id':0, 'sample':0}
 queueOrder=[]
 #it holds the last entry that was sent to execution, it is not reset but overriden
-
+queueState = {}
+sampleGridState = {}
 def init_signals():
     # for signal in signals.queueSignals:
     #     mxcube.queue.connect(mxcube.queue.queue_hwobj,signal, signals.signalCallback)
@@ -298,6 +299,9 @@ def addSample():
     sampleId = params['SampleId']
     sampleNode = qmo.Sample()
     sampleNode.loc_str = sampleId
+    sampleNode.lims_id = None
+    sampleNode.lims_group_id = None
+    
     basket_number, sample_number = sampleId.split(':')
     sampleNode.location = (basket_number, sample_number)
     sampleEntry = qe.SampleQueueEntry()

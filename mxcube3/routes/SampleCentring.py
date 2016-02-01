@@ -30,7 +30,7 @@ def stream_video(camera_hwobj):
         except Exception:
             pass
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/camera/subscribe", methods=['PUT'])
+@mxcube.route("/mxcube/api/v0.1/sampleview/camera/subscribe", methods=['GET'])
 def subscribeToCamera():
     """SampleCentring: subscribe to the camera streaming, used in img src tag
     Args: None
