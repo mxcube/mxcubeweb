@@ -12,16 +12,18 @@ class SampleViewContainer extends Component {
   render() {
     return (
       <div className="row">
-    <div className="col-xs-12">
-            <div className="col-md-12">
-              <div className="panel panel-primary text-center">
-               
-                <div className="panel-body">
+      <div className="col-xs-3">
+        <div className="information-box"><h2 className="text-center">Saved Points</h2><hr /></div>
+      </div>
+        <div className="col-xs-6">
+              <div className="text-center"> 
                   <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions}/>
-                </div>
               </div>
-            </div>
-          </div>
+        </div>
+      <div className="col-xs-3">
+        <div className="information-box"></div>
+        <div className="information-box"></div>
+      </div>
   </div>
     )
   }
