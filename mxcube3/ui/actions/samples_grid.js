@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import { sendClearQueue } from './queue'
+import { sendClearQueue, sendState } from './queue'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -133,6 +133,8 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
             return response.json();
         }).then(function(json) {
             dispatch(doAddMethod(queue_id, sample_id, json, method));
+            dispatch(sendState());
+
         });
        
 
@@ -156,6 +158,8 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
             return response.json();
         }).then(function(json) {
             dispatch(doChangeMethod(method_queue_id, sample_id, method));
+            dispatch(sendState());
+
         });
        
 
@@ -179,6 +183,8 @@ export function sendDeleteSampleMethod(parent_id, queue_id, sample_id, list_id) 
                 throw new Error("Server refused to remove sample");
             }else {
                 dispatch(doRemoveMethod(parent_id, queue_id, sample_id, list_id));
+                dispatch(sendState());
+
             }
         });
 

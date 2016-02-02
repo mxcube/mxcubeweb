@@ -40,11 +40,54 @@ export function clearAll() {
         }
 }
 
-export function setQueueState(state) {
+export function setState(queueState, sampleGridState) {
         return {
                type: "QUEUE_STATE",
-               state: state
+               queueState: queueState,
+               sampleGridState: sampleGridState
         }
+}
+
+export function getState() {
+	return function(dispatch) {
+		fetch('mxcube/api/v0.1/queue/state', { 
+			method: 'GET', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused send state");
+			}
+			return response.json();
+		})
+		.then(function(json) {
+			if(Object.keys(json.queueState).length !==0 ){
+				dispatch(setState(json.queueState, json.sampleGridState));
+			}
+		});
+
+	}
+}
+
+export function sendState() {
+	return function(dispatch, getState) {
+		let state = getState();
+		fetch('mxcube/api/v0.1/queue/state', { 
+			method: 'PUT', 
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			},
+		body: JSON.stringify({ queueState : state.queue, sampleGridState: state.samples_grid })
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to set state");
+			}
+		});
+
+	}
 }
 
 export function sendRunQueue() {
@@ -149,6 +192,8 @@ export function sendAddSample(id) {
 		})
 		.then(function(json) {
 			dispatch(addSample(json.SampleId, json.QueueId));
+			dispatch(sendState());
+
 		});
 
 	}
@@ -170,6 +215,8 @@ export function sendDeleteSample(queue_id) {
 				throw new Error("Server refused to remove sample");
 			}else {
 				dispatch(removeSample(queue_id));
+				dispatch(sendState());
+
 			}
 		});
 
@@ -191,6 +238,8 @@ export function sendMountSample(queue_id) {
 				throw new Error("Server refused to mount sample");
 			}else {
 				dispatch(mountSample(queue_id));
+				dispatch(sendState());
+
 			}
 		});
 
@@ -212,6 +261,8 @@ export function sendRunSample(queue_id) {
 				throw new Error("Server refused to mount sample");
 			}else {
 				dispatch(runSample(queue_id));
+				dispatch(sendState());
+
 			}
 		});
 
@@ -233,6 +284,8 @@ export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
 				throw new Error("Server refused to toogle sample/method");
 			}else {
 				dispatch(toggleCheckBox(queue_id, parent_queue_id));
+				dispatch(sendState());
+
 			}
 		});
 

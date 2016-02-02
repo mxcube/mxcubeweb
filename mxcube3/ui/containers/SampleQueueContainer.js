@@ -19,6 +19,12 @@ class SampleQueueContainer extends Component {
    componentDidMount() {
     const {doAddMethodResult} = this.props.sampleActions;
     const { socket} = this.props;
+    const {getState} = this.props.queueActions;
+
+    //Populate queue with previous state
+    getState();
+
+    // Start listening to socketIO to get results of method/sample execution
     socket.on('hwr_record', (record) => {
           console.log(record);
           if(record.sample !==0 && record.queueId !== 0){

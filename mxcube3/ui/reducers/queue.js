@@ -141,6 +141,8 @@ export default (state={
                     todo: [],
                     history: []
                 });
+        case 'QUEUE_STATE':
+             return action.queueState;
         default:
             return state;
     }
