@@ -1,7 +1,7 @@
 .samples-grid-item {
     width: 190px;
     height: auto;
-    min-height: 90px;
+    min-height: 100px;
     border: 1px solid #AAA;
     background: #FFF;
     box-shadow: 0px 2px 3px 0px #AAA;
