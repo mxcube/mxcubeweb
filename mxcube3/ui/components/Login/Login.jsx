@@ -10,6 +10,10 @@ import {reduxForm} from 'redux-form';
 import { ErrorNotificationPanel } from '../Logging'
 
 class Login extends React.Component {
+  constructor(props) {
+      super(props)
+      this.state = { show_loader: false }
+  }
 
   componentWillMount(){
     this.props.getLoginInfo();  
@@ -20,21 +24,19 @@ class Login extends React.Component {
       window.location.assign("#/");    
     }
   }
-
+  
   signIn(){
       let fields = this.props.fields;
       this.props.signIn(fields.username.value, fields.password.value);
-      $("#ajax_loader").toggleClass('hidden',false);
+      this.setState({ show_loader: true });
   }
 
   render() {
+      const {fields: {username, password}} = this.props;
+      let loginInfo = this.props.loginInfo;
 
-    const {fields: {username, password}} = this.props;
-    let loginInfo = this.props.loginInfo;
-
-        $("#ajax_loader").toggleClass('hidden',true);
-        return (
-          <div className="container-fluid"> 
+      return (
+          <div>
           <ErrorNotificationPanel/>
           <div className="row row-centered">
           <div>
@@ -51,7 +53,7 @@ class Login extends React.Component {
                 </form>
               </div>
              </div>
-             <div id="ajax_loader" className="hidden">
+             <div className={this.state.show_loader ? "" : "hidden"}>
                <img src="../../img/loader.gif" className="img-responsive"/>
              </div>
             </div>
