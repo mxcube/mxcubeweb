@@ -17,7 +17,7 @@
     position:absolute; top:0px; left:0px;
 }
 
-.contextMenu{
+#contextMenu{
 	position:absolute; 
 	top:0px; 
 	left:0px;
@@ -39,4 +39,13 @@
     border-radius: 3px;
     box-shadow: 0px 2px 3px 0px #AAA;
     height: 300px;
+}
+
+.camera-controll{
+    height: 42px;
+    width: 33.33333333%;
+}
+
+.divider{
+    margin-bottom: 0px;
 }
