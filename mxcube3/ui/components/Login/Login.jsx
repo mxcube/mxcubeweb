@@ -24,7 +24,7 @@ class Login extends React.Component {
       window.location.assign("#/");    
     }
   }
-
+  
   signIn(){
       let fields = this.props.fields;
       this.props.signIn(fields.username.value, fields.password.value);

@@ -3,26 +3,56 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SampleImage from '../components/SampleView/SampleImage';
 import * as QueueActions from '../actions/queue'
+import * as SampleActions from '../actions/samples_grid'
+import * as SampleViewActions from '../actions/sampleview'
+import { showForm } from '../actions/methodForm'
+
 
 class SampleViewContainer extends Component {
   render() {
     return (
       <div className="row">
+      <div className="col-xs-3">
+        <div className="information-box"><h2 className="text-center">Saved Points</h2>
+        <hr className="divider" />
+        <table id="newtable" className="table table-bordered table-striped fixedtable">
+    <tbody>
+        <tr>
+            <td colspan="3">                
+                <div>Point 1</div>                             
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 2</div>                           
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 3</div>                       
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 4</div>                       
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 5</div>                       
+            </td>
+        </tr>
+    </tbody>    
+</table>  
 
-   
-    {/* The main experimental control panel */}
-    <div className="col-xs-12">
-            <div className="col-md-12">
-              <div className="panel panel-primary text-center">
-                <div className="panel-heading">
-                  <h8 className="panel-title text-center">SampleImage</h8>
-                </div>
-                <div className="panel-body">
-                  <SampleImage/>
-                </div>
+        </div>
+        <div className="information-box"><h2 className="text-center">Saved Lines</h2><hr /></div>
+      </div>
+        <div className="col-xs-6">
+              <div className="text-center"> 
+                  <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} />
               </div>
-            </div>
-          </div>
+        </div>
   </div>
     )
   }
@@ -30,15 +60,20 @@ class SampleViewContainer extends Component {
 
 
 function mapStateToProps(state) {
-  return {
-    todos: "Map to state"
-  }
+  return { 
+          current : state.queue.current,
+          sampleInformation: state.samples_grid.samples_list,
+          sampleViewState: state.sampleView,
+          lookup: state.queue.lookup,
+    }
 }
 
 function mapDispatchToProps(dispatch) {
- return {
-    //actions: (sample) => dispatch(addSample(sample))
-    actions: bindActionCreators(QueueActions, dispatch)
+ return  {
+    queueActions: bindActionCreators(QueueActions, dispatch),
+    sampleActions : bindActionCreators(SampleActions, dispatch),
+    sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
+    showForm : bindActionCreators(showForm, dispatch)
   }
 }
 

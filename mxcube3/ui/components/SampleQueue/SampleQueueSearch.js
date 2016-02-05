@@ -6,7 +6,7 @@ class SampleQueueSearch extends Component {
     const {fields: {sampleName}} = this.props;
     return (
         <div className="sample-search">
-          <input type="text" placeholder="Search Sample" {...sampleName}/>
+          <input type="text" placeholder="Search Sample" className="searchBox" {...sampleName}/>
         </div>
     );
   }

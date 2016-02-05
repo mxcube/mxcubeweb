@@ -27,7 +27,9 @@ class SampleQueueContainer extends Component {
     // Start listening to socketIO to get results of method/sample execution
     socket.on('hwr_record', (record) => {
           console.log(record);
-          doAddMethodResult(record.sample, record.queueId, record.state)
+          if(record.sample !==0 && record.queueId !== 0){
+            doAddMethodResult(record.sample, record.queueId, record.state)
+          }
     });
   }
 
