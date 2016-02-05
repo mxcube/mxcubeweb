@@ -13,17 +13,46 @@ class SampleViewContainer extends Component {
     return (
       <div className="row">
       <div className="col-xs-3">
-        <div className="information-box"><h2 className="text-center">Saved Points</h2><hr /></div>
+        <div className="information-box"><h2 className="text-center">Saved Points</h2>
+        <hr className="divider" />
+        <table id="newtable" className="table table-bordered table-striped fixedtable">
+    <tbody>
+        <tr>
+            <td colspan="3">                
+                <div>Point 1</div>                             
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 2</div>                           
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 3</div>                       
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 4</div>                       
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">                
+                <div>Point 5</div>                       
+            </td>
+        </tr>
+    </tbody>    
+</table>  
+
+        </div>
+        <div className="information-box"><h2 className="text-center">Saved Lines</h2><hr /></div>
       </div>
         <div className="col-xs-6">
               <div className="text-center"> 
-                  <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions}/>
+                  <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} />
               </div>
         </div>
-      <div className="col-xs-3">
-        <div className="information-box"></div>
-        <div className="information-box"></div>
-      </div>
   </div>
     )
   }
@@ -34,6 +63,7 @@ function mapStateToProps(state) {
   return { 
           current : state.queue.current,
           sampleInformation: state.samples_grid.samples_list,
+          sampleViewState: state.sampleView,
           lookup: state.queue.lookup,
     }
 }
