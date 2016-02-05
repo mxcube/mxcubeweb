@@ -1,9 +1,9 @@
 'use strict';
 import './SampleView.css';
 import React, { Component, PropTypes } from 'react'
+import {makeCircle, makeLine} from './shapes'
 
-
-export default class MXNavbar extends React.Component {
+export default class SampleImage extends React.Component {
 
   constructor(props) {
     super(props);
@@ -12,7 +12,8 @@ export default class MXNavbar extends React.Component {
       pointsCollected : 0,
       canvas: {},
       centringPoint: null,
-      points: []
+      selectedPointType: "NONE",
+      group: null
     };
   }
 
@@ -34,6 +35,19 @@ export default class MXNavbar extends React.Component {
       //Bind canvas to state, this is done to let other functions manipulate the canvas such as removing objecs
       this.setState({canvas: canvas});
 
+      //Force image update && and save it in state so we can remove when compenent unomunts
+      let updater = setInterval(() => canvas.renderAll() , 100);
+      this.setState({updater: updater});
+
+      //Save and remove group in state
+      canvas.on('selection:created', (e) => this.setState({group: e.target}));
+      canvas.on('selection:cleared', (e) => this.setState({group: null}));
+
+    }
+
+    componentWillUnmount(){
+      //Remove update of canvas
+      clearInterval(this.state.updater);
     }
 
     drawCanvas(){
@@ -53,105 +67,102 @@ export default class MXNavbar extends React.Component {
       originY: 'top'
     });
 
-     var circle = new fabric.Circle({
-      radius: 40,
-      fill: '',
-      strokeWidth: 3, 
-      stroke: 'blue',
-      left: canvas.width/2 - 40,
-      top: canvas.height/2 - 40 ,
-      selectable: false
-
-    });
-
-     var line1 = this.makeLine([ 20, canvas.height-25, 20, canvas.height -100 ]);
-     var line2 = this.makeLine([ 25,  canvas.height-20, 100, canvas.height-20 ]);
-
-     var text1 = new fabric.Text('100 um', { left: 27, top: canvas.height -100, fill: 'green', stroke: 'green', fontSize: 18, selectable: false});
-     var text2 = new fabric.Text('100 um', { left: 45, top: canvas.height-40, fill: 'green', stroke: 'green', fontSize: 18, selectable: false});
-
-     canvas.add(line1, line2, text1, text2, circle);
-
-     this.setState({text1: text1,text2: text2 ,circle: circle});
 
    }
 
-   startClickCentring(){
-    this.setState({clickCentring: true});
-    this.props.sampleActions.sendStartClickCentring();
+   removeObject(){
+    this.state.canvas.getActiveObject().remove();
+    this.hideContextMenu();
   }
 
-  removeObject(){
-    this.state.canvas.getActiveObject().remove();
-    document.getElementById("contextMenu").style.display = "none";
+  drawLine(){
+    let points = this.state.group.getObjects();
+    this.state.canvas.add(makeLine(points[0], points[1]));
+    this.hideContextMenu();
   }
 
   rightClick(e, canvas){
-   document.getElementById("contextMenu").style.display = "none";
+   this.hideContextMenu();
    var objectFound = false;
    var clickPoint = new fabric.Point(e.offsetX, e.offsetY);
    e.preventDefault();
-   canvas.forEachObject(function (obj) {
+   canvas.forEachObject((obj) => {
     if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
       objectFound = true;
+
       canvas.setActiveObject(obj);
-      document.getElementById("contextMenu").style.display = "block";
-      document.getElementById("contextMenu").style.top = e.offsetY + "px";
-      document.getElementById("contextMenu").style.left = e.offsetX + "px";
+      this.setState({selectedPointType: obj.type});
+      this.showContextMenu(e.offsetX, e.offsetY);
     }
   });
+
+   if(this.state.group && this.state.group.containsPoint(clickPoint)){
+    this.showContextMenu(e.offsetX, e.offsetY);
+    this.setState({selectedPointType: 'GROUP'});
+  }
+}
+
+listOptions(type){
+  switch (type){
+    case 'SAVED':
+    {
+      return ( [ 
+        <li><a onClick={() => this.showModal("characterisation")}>Add Characterisation</a></li>,
+        <li><a onClick={() => this.showModal("datacollection")}>Add Datacollection</a></li>,
+        <hr />,
+        <li><a onClick={() => this.removeObject()}>Delete Point</a></li>
+        ]);
+    }
+    case 'TMP':
+    {
+     return ( [
+      <li><a onClick={() => this.savePoint()}>Save Point</a></li>,
+      <li><a onClick={() => this.removeObject()}>Delete Point</a></li>
+      ]);
+   }
+   case 'GROUP':
+   {
+     return ( [
+      <li><a onClick={() => this.drawLine()}>Draw Line</a></li>,
+      <hr />,
+      <li><a>Delete Selected (NA)</a></li>
+      ]);
+   }
+   case 'LINE':
+   {
+     return ( [
+      <li><a>Add Helical Scan (NA)</a></li>,
+      <hr />,
+      <li><a onClick={() => this.removeObject()}>Delete Line</a></li>
+      ]);
+   }    
  }
+}
 
 
- leftClick(option, canvas){
-  document.getElementById("contextMenu").style.display = "none";
+leftClick(option, canvas){
+
+  this.hideContextMenu();
   let pointsCollected = this.state.pointsCollected;
-  let clickCentring = this.state.clickCentring;
-  if(pointsCollected < 3 && clickCentring){
+
+  if(pointsCollected < 3 && this.props.sampleViewState.clickCentring){
     (this.state.centringPoint ? this.state.centringPoint.remove(): '');
-    let circle = this.makeCircle(option.e.layerX - 5, option.e.layerY - 5);
+    let circle = makeCircle(option.e.layerX, option.e.layerY);
     canvas.add(circle);
     this.props.sampleActions.sendCentringPoint(option.e.layerX, option.e.layerY);
-    this.setState({pointsCollected: ++pointsCollected, centringPoint: circle});
-  }else{
+    this.setState({pointsCollected: ++pointsCollected, centringPoint: circle, selectedPoint: circle.type});
+  }else if(pointsCollected === 3){
     this.setState({
-      pointsCollected: 0,
-      clickCentring: false
+      pointsCollected: 0
     });
+    this.props.sampleActions.StopClickCentring();
   }
 
 }
-makeCircle(x, y, color = "red") {
-  return new fabric.Circle({
-    radius: 5, 
-    strokeWidth: 2, 
-    stroke: color,
-    fill: '',
-    left: x,
-    top: y,
-    selectable: true,
-    lockMovementX: true,
-    lockMovementX: true,
-    lockScalingFlip: true,
-    lockScalingX: true,
-    lockScalingY: true,
-
-  });
-}
-
-makeLine(coords) {
-  return new fabric.Line(coords, {
-    fill: 'green',
-    stroke: 'green',
-    strokeWidth: 5,
-    selectable: false
-  });
-}
-
 
 showModal(modalName){
   this.props.showForm(modalName, true);
-  document.getElementById("contextMenu").style.display = "none";
+  this.hideContextMenu();
 }
 
 clearPoints(){
@@ -159,25 +170,34 @@ clearPoints(){
 }
 
 savePoint(){
-  let point = this.makeCircle(this.state.centringPoint.left, this.state.centringPoint.top, "green");
+  let point = makeCircle(this.state.centringPoint.left, this.state.centringPoint.top, "green", "SAVED");
   this.state.canvas.add(point);
-  this.state.points.push(point);
   this.state.centringPoint.remove();
-  document.getElementById("contextMenu").style.display = "none";
+  this.hideContextMenu();
   this.props.sampleActions.sendSavePoint();
 
 }
 
+showContextMenu(x,y){
+  document.getElementById("contextMenu").style.top = y + "px";
+  document.getElementById("contextMenu").style.left = x + "px";
+  document.getElementById("contextMenu").style.display = "block";
+}
+
+hideContextMenu(){
+  document.getElementById("contextMenu").style.display = "none";
+}
+
 zoomIn(){
-  this.state.text1.text = "200 um";
-  this.state.text2.text = "200 um";
-  this.state.canvas.renderAll();
+  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom + 1);
 }
 
 zoomOut(){
-  this.state.text1.text = "50 um";
-  this.state.text2.text = "50 um";
-  this.state.canvas.renderAll();
+  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
+}
+
+takeSnapShot(){
+  document.getElementById("downloadLink").href = this.state.canvas.toDataURL();
 }
 
 
@@ -187,25 +207,26 @@ zoomOut(){
                 <div>
                   <div className="outsideWrapper" id="outsideWrapper">
                     <div className="insideWrapper" id="insideWrapper">
-                      <ul id="contextMenu" className="dropdown-menu contextMenu" role="menu" >
-                          <li><a onClick={() => this.showModal("characterisation")}>Add Characterisation</a></li>
-                          <li><a onClick={() => this.showModal("datacollection")}>Add Datacollection</a></li>
-                          <hr />
-                          <li><a onClick={() => this.savePoint()}>Save Point</a></li>
-                          <li><a onClick={() => this.removeObject()}>Delete Point</a></li>
-                      </ul>
+                    <ul id="contextMenu" className="dropdown-menu" role="menu">
+                          {this.listOptions(this.state.selectedPointType)}
+                    </ul>
                       <canvas id="canvas" className="coveringCanvas" />
                     </div>
                     <div className="sample-controlls">
                             <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.savePoint()}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
                             <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={this.measureDistance}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
-                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendTakeSnapShot()}><i className="fa fa-2x fa-fw fa-camera"></i></button>                            
+                            <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.takeSnapShot()} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
                             <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartAutoCentring()}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={() => this.startClickCentring()}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartClickCentring()}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Clear points" className="btn btn-link  pull-center" onClick={() => this.clearPoints()}><i className="fa fa-2x fa-fw fa-times"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={() => this.zoomIn()}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={() => this.zoomOut()}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                    </div>
+                    <div className="sample-controlls">
+                            <input type="number" className="camera-controll" id="kappa" placeholder="Kappa" />
+                            <input type="number" className="camera-controll" id="omega" placeholder="Omega" />
+                            <input type="number" className="camera-controll" id="phi" placeholder="Phi" />
                     </div>
                 </div>
               
