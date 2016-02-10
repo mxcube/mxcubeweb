@@ -23,9 +23,7 @@ export default class CurrentTree extends Component {
 
   renderRoot(node){
     return (
-      <span className="node node-root">
-        <span className="node-name">{node.module}</span>
-      </span>
+        <p className="queue-root">{node.module}</p>
     );
 
   }

@@ -23,9 +23,7 @@ export default class TodoTree extends Component {
 
   renderRoot(node){
     return (
-      <span className="node node-root">
-        <span className="node-name">{node.module}</span>
-      </span>
+        <p className="queue-root">{node.module}</p>
     );
 
   }
@@ -36,28 +34,21 @@ export default class TodoTree extends Component {
     if(this.props.todoList.indexOf(node.queue_id) > -1){
       return (
         <span className="node node-sample" onClick={() => this.props.select(node.queue_id, node.sample_id)}>
-        <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
-        <span className="node-name">{node.module}</span>
-        <i className="fa fa-times" onClick={() => this.props.deleteSample(node.queue_id)}></i>
-        <i className="fa fa-sign-in"  onClick={() => this.props.mount(node.queue_id)}></i>
+          <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
+          <span className="node-name">{node.module}</span>
+          <i className="fa fa-times" onClick={() => this.props.deleteSample(node.queue_id)}></i>
+          <i className="fa fa-sign-in"  onClick={() => this.props.mount(node.queue_id)}></i>
         </span>
         );
     }
   }
 
   renderMethod(node){
-    var methodClass = cx('node node-method',{
-      'passive': node.state===0,
-      'active': node.state===1,
-      'success': node.state===2,
-      'error': node.state===3,
-      'warning': node.state===4,
-    }); 
 
     // This line shouldnt need to be here but it seems that react-ui-tree has some bug
     if(this.props.todoList.indexOf(node.parent_id) > -1){
       return (
-        <span className={methodClass} onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
+        <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
         <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-times" onClick={() => this.props.deleteMethod(node.parent_id, node.queue_id, node.sample_id)}></i>

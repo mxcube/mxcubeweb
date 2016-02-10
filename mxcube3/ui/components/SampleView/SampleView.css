@@ -1,6 +1,5 @@
 .outsideWrapper{ 
     width:100%; height:auto;  
-    margin-top: 10px;
     margin-right: auto;
     margin-bottom: 0px;
     margin-left: auto; 
@@ -33,7 +32,6 @@
 }
 
 .information-box{
-    margin-top: 10px;
     background-color: white;
     border: 1px solid #AAA;
     border-radius: 3px;

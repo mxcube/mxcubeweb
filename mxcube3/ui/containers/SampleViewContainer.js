@@ -18,27 +18,27 @@ class SampleViewContainer extends Component {
         <table id="newtable" className="table table-bordered table-striped fixedtable">
     <tbody>
         <tr>
-            <td colspan="3">                
+            <td colSpan="3">                
                 <div>Point 1</div>                             
             </td>
         </tr>
         <tr>
-            <td colspan="3">                
+            <td colSpan="3">                
                 <div>Point 2</div>                           
             </td>
         </tr>
         <tr>
-            <td colspan="3">                
+            <td colSpan="3">                
                 <div>Point 3</div>                       
             </td>
         </tr>
         <tr>
-            <td colspan="3">                
+            <td colSpan="3">                
                 <div>Point 4</div>                       
             </td>
         </tr>
         <tr>
-            <td colspan="3">                
+            <td colSpan="3">                
                 <div>Point 5</div>                       
             </td>
         </tr>
@@ -46,7 +46,6 @@ class SampleViewContainer extends Component {
 </table>  
 
         </div>
-        <div className="information-box"><h2 className="text-center">Saved Lines</h2><hr /></div>
       </div>
         <div className="col-xs-6">
               <div className="text-center"> 
@@ -63,7 +62,7 @@ function mapStateToProps(state) {
   return { 
           current : state.queue.current,
           sampleInformation: state.samples_grid.samples_list,
-          sampleViewState: state.sampleView,
+          sampleViewState: state.sampleview,
           lookup: state.queue.lookup,
     }
 }
