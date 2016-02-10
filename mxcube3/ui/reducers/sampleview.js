@@ -18,6 +18,10 @@ export default (state=initialState, action) => {
             {
              return {...state, clickCentring: false};
             }
+        case 'SAVE_POINT':
+            {
+             return {...state, points: [...state.points, action.point]};
+            }
         default:
             return state;
     }
