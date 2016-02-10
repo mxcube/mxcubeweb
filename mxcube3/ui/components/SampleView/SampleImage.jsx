@@ -19,6 +19,9 @@ export default class SampleImage extends React.Component {
 
   componentDidMount(){
 
+      //Get Size of image
+      this.props.sampleActions.getSampleImageSize();
+
       // Set size of canvas depending on image ratio and screen size
       this.drawCanvas();
 
