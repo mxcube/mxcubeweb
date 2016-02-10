@@ -19,6 +19,21 @@ export function StopClickCentring() {
   }
 }
 
+export function SavePoint(point) {
+  return { 
+    type: "SAVE_POINT",
+    point: point
+  }
+}
+
+export function SaveImageSize(x,y,) {
+  return { 
+    type: "SAVE_IMAGE_SIZE",
+    width: x,
+    height: y
+  }
+}
+
 
 export function sendStartClickCentring() {
   return function(dispatch) {
@@ -102,6 +117,7 @@ export function sendSavePoint() {
     return response.json();
   }).then(function(json) {
       console.log(json);
+      dispatch(SavePoint(json));
     });
 
 }
@@ -122,6 +138,27 @@ export function sendZoomPos(level) {
     }
   }).then(function() {
       dispatch(setZoom(level));
+    });
+
+}
+}
+
+export function getSampleImageSize() {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/camera', { 
+    method: 'GET', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    },
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to zoom");
+    }
+ return response.json();
+  }).then(function(json) {
+      console.log(json);
+      dispatch(SaveImageSize(json.imageWidth, json.imageHeight));
     });
 
 }
