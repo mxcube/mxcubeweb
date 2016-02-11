@@ -23,9 +23,7 @@ export default class CurrentTree extends Component {
 
   renderRoot(node){
     return (
-      <span className="node node-root">
-        <span className="node-name">{node.module}</span>
-      </span>
+        <p className="queue-root">{node.module}</p>
     );
 
   }
@@ -71,7 +69,7 @@ export default class CurrentTree extends Component {
   createTree(){
     let sampleData = this.props.sampleInformation[this.props.lookup[this.props.currentNode]];
     let tree = {
-      module: 'Sample Queue - Current',
+      module: 'Current',
       type: "Root",
       children:  (sampleData ? [ {
           module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
