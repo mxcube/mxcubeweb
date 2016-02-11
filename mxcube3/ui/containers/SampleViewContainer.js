@@ -48,9 +48,7 @@ class SampleViewContainer extends Component {
         </div>
       </div>
         <div className="col-xs-6">
-              <div className="text-center"> 
                   <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} />
-              </div>
         </div>
   </div>
     )

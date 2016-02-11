@@ -38,19 +38,10 @@ export default class SampleImage extends React.Component {
       //Bind canvas to state, this is done to let other functions manipulate the canvas such as removing objecs
       this.setState({canvas: canvas});
 
-      //Force image update && and save it in state so we can remove when compenent unomunts
-      let updater = setInterval(() => canvas.renderAll() , 100);
-      this.setState({updater: updater});
-
       //Save and remove group in state
       canvas.on('selection:created', (e) => this.setState({group: e.target}));
       canvas.on('selection:cleared', (e) => this.setState({group: null}));
 
-    }
-
-    componentWillUnmount(){
-      //Remove update of canvas
-      clearInterval(this.state.updater);
     }
 
     drawCanvas(){
@@ -63,14 +54,8 @@ export default class SampleImage extends React.Component {
     }
 
     drawSampleImage(canvas){
-     canvas.setBackgroundImage('/mxcube/api/v0.1/sampleview/camera/subscribe', canvas.renderAll.bind(canvas), {
-      width: canvas.width,
-      height: canvas.height,
-      originX: 'left',
-      originY: 'top'
-    });
-
-
+      document.getElementById("sample-img").style.height = canvas.height + "px";
+      document.getElementById("sample-img").style.width = canvas.width + "px";
    }
 
    removeObject(){
@@ -208,14 +193,16 @@ takeSnapShot(){
 
     return (
                 <div>
+                  <ul id="contextMenu" className="dropdown-menu" role="menu">
+                          {this.listOptions(this.state.selectedPointType)}
+                  </ul>
                   <div className="outsideWrapper" id="outsideWrapper">
                     <div className="insideWrapper" id="insideWrapper">
-                    <ul id="contextMenu" className="dropdown-menu" role="menu">
-                          {this.listOptions(this.state.selectedPointType)}
-                    </ul>
+                      <img id= "sample-img" className='img' src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="" />
                       <canvas id="canvas" className="coveringCanvas" />
                     </div>
                     <div className="sample-controlls">
+                      <div className="text-center"> 
                             <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.savePoint()}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
                             <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={this.measureDistance}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
                             <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.takeSnapShot()} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
@@ -225,6 +212,7 @@ takeSnapShot(){
                             <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={() => this.zoomIn()}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={() => this.zoomOut()}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                            </div>
                     </div>
                     <div className="sample-controlls">
                             <input type="number" className="camera-controll" id="kappa" placeholder="Kappa" />
