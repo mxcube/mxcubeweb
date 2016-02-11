@@ -49,6 +49,8 @@ class SampleQueueContainer extends Component {
                 <CurrentTree showForm={showForm} currentNode={current} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} />
                 <TodoTree showForm={showForm} todoList={todo} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} mount={sendMountSample} searchString={searchString}/>
                 <HistoryTree showForm={showForm} historyList={history} sampleInformation={sampleInformation} queue={queue} lookup={lookup} select={selectSample} searchString={searchString}/>
+            </div>
+            <div className="col-xs-12">
                 <SampleQueueButtons showForm={showForm} addMethod={sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup} pauseQueue={sendPauseQueue}  stopQueue={sendStopQueue} runQueue={sendRunQueue}/>
             </div>
       </div>

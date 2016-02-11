@@ -65,7 +65,7 @@ export default class HistoryTree extends Component {
         return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
     });
     let tree = {
-      module: 'Sample Queue - History',
+      module: 'History',
       type: "Root",
       children: historyFiltered.map((queue_id) => {
         let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
