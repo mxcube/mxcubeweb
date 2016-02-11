@@ -18,9 +18,9 @@ posId = 0
 def init_signals():
     for signal in signals.microdiffSignals:
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
-    camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
-    mxcube.diffractometer.image_width = camera_hwobj.getWidth()
-    mxcube.diffractometer.image_height = camera_hwobj.getHeight()
+    #camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
+    mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
+    mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
 def drawBeam(draw):
     W = mxcube.diffractometer.image_width
@@ -69,16 +69,15 @@ def drawTopLayer():
 ############
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
-    camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
     global SAMPLE_IMAGE
-    background = Image.open(camera_hwobj.image)
+    background = Image.open(img)
     #('/mxn/home/mikegu/mxcube3/test/HardwareObjectsMockup.xml/mxcube_sample_snapshot.jpeg', 'r')#.read()
     layer = drawTopLayer()
     background.paste(layer, (0, 0), layer)
     background.save("aux.jpg", "JPEG")
     SAMPLE_IMAGE = open( "aux.jpg", 'rb').read()
-    camera_hwobj.new_frame.set()
-    camera_hwobj.new_frame.clear()
+    mxcube.diffractometer.camera.new_frame.set()
+    mxcube.diffractometer.camera.new_frame.clear()
 
 def stream_video(camera_hwobj):
     """it just send a message to the client so it knows that there is a new image. A HO is supplying that image"""
@@ -99,11 +98,10 @@ def subscribeToCamera():
     Return: image as html Content-type
     """
     #logging.getLogger('HWR').info('[Stream] Camera video streaming going to start')
-    camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
-    camera_hwobj.new_frame = gevent.event.Event()
-    camera_hwobj.connect("imageReceived", new_sample_video_frame_received)
-    camera_hwobj.streaming_greenlet = stream_video(camera_hwobj)
-    return Response(camera_hwobj.streaming_greenlet, mimetype='multipart/x-mixed-replace; boundary="!>"')
+    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
+    mxcube.diffractometer.camera.connect("imageReceived", new_sample_video_frame_received)
+    mxcube.diffractometer.camera.streaming_greenlet = stream_video(mxcube.diffractometer.camera)
+    return Response(mxcube.diffractometer.camera.streaming_greenlet, mimetype='multipart/x-mixed-replace; boundary="!>"')
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
@@ -113,9 +111,8 @@ def unsubscribeToCamera():
     Args: None
     Return: 'True' if streaming stopped succesfully, otherwise 'False'
     """
-    camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
     try:
-        camera_hwobj.streaming_greenlet.kill()
+        mxcube.diffractometer.camera.streaming_greenlet.kill()
     except Exception:
         pass
     return "True"
@@ -130,7 +127,7 @@ def snapshot():
     """
     filenam = time.strftime("%Y-%m-%d-%H:%M:%S", time.gmtime())+sample.jpg
     try:
-        camera_hwobj.takeSnapshot(os.path.join(os.path.dirname(__file__), 'snapshots/'))
+        mxcube.diffractometer.camera.takeSnapshot(os.path.join(os.path.dirname(__file__), 'snapshots/'))
         return "True"
     except:
         return "False"
@@ -193,8 +190,6 @@ def saveCentringWithId(id):
     centredPosId = 'pos' + str(len(centredPos)+1)
     global posId
     posId += 1
-    print mxcube.diffractometer.centringStatus
-    print mxcube.diffractometer.centring_status
 
     # unselect the any previous point
     for pos in centredPos:
@@ -299,9 +294,38 @@ def moveZoomMotor():
     newPos = params['level']
     zoomMotor = mxcube.diffractometer.getObjectByRole('zoom') 
     try:
-        zoomMotor.moveToPosition(int(newPos))
+        logging.getLogger('HWR').info("Changing zoom level to: %s" %newPos)
+        zoomMotor.moveToPosition(zoomLevels[int(newPos)])
         return Response(status=200)
     except Exception:
+        return Response(status=409)
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/lighton", methods=['PUT'])
+def lightOn():
+    """
+    Activate the backlight of the diffractometer.
+    Args: None
+    Return: '200' if activated succesfully, otherwise '409'
+    """
+    try:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        motor_hwobj.actuatorIn(wait=False)
+        return Response(status=200)
+    except:
+        return Response(status=409)
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/lightoff", methods=['PUT'])
+def lightOff():
+    """
+    Switch off the backlight of the diffractometer.
+    Args: None
+    Return: '200' if switched off succesfully, otherwise '409'
+    """
+    try:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        motor_hwobj.actuatorOut(wait=False)
+        return Response(status=200)
+    except:
         return Response(status=409)
 
 # @mxcube.route("/mxcube/api/v0.1/sampleview/<id>", methods=['PUT'])
@@ -361,8 +385,8 @@ def get_status_of_id(id):
             pos = motor.getWagoState()  # {0:"out", 1:"in", True:"in", False:"out"}
             status = motor.getWagoState()
         else:
-            pos = motor.get_position()
-            status = motor.get_state()
+            pos = motor.getPosition()
+            status = motor.getState()
         data[motor.motor_name] = {'Status': status, 'position': pos}
         resp = jsonify(data)
         resp.status_code = 200
@@ -385,7 +409,7 @@ def get_status():
         moveables: 'Kappa', 'Omega', 'Phi', 'Zoom', 'Light'
 
     """
-    motors = ['Kappa', 'Omega', 'Phi', 'Zoom', 'Light']  # more are needed
+    motors = ['Kappa', 'Kappa_phi','Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'Light','Sampx', 'Sampy']  # more are needed
 
     data = {}
     try:
@@ -394,18 +418,18 @@ def get_status():
             if mot == 'Zoom':
                 pos = motor_hwobj.getCurrentPositionName()
                 status = "unknown"
-            elif mot == 'Light':
-                pos = motor_hwobj.getWagoState()  # {0:"out", 1:"in", True:"in", False:"out"}
-                status = motor_hwobj.getWagoState()
+            # elif mot == 'Light':
+            #     pos = motor_hwobj.getWagoState()  # {0:"out", 1:"in", True:"in", False:"out"}
+            #     status = motor_hwobj.getWagoState()
             else:
-                pos = motor_hwobj.get_position()
-                status = motor_hwobj.get_state()
+                pos = motor_hwobj.getPosition()
+                status = motor_hwobj.getState()
             data[mot] = {'Status': status, 'position': pos}
         resp = jsonify(data)
         resp.status_code = 200
         return resp
     except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] could get all motor  status')
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get all motor  status')
         return Response(status=409)
 
 #### WORKING WITH THE SAMPLE CENTRING
@@ -442,6 +466,20 @@ def centre3click():
     except:
         return Response(status=409)
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/centring/abort", methods=['PUT'])
+def abortCentring():
+    """
+    Abort centring procedure
+    Args: None
+    Return: '200' if command issued succesfully, otherwise '409'.
+    """
+    logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
+    try:
+        currentCentringProcedure = mxcube.diffractometer.cancelCentringMethod()
+        return Response(status=200)  # this only means the call was succesfull
+    except:
+        return Response(status=409)
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/click", methods=['PUT'])
 def aClick():
     """
@@ -453,6 +491,7 @@ def aClick():
     params = request.data
     params = json.loads(params)
     clickPosition = params['clickPos']
+    logging.getLogger('HWR').info("A click requested, x: %s, y: %s" %(clickPosition['x'], clickPosition['y']))
     try:
         mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
         return Response(status=200)
