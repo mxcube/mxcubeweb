@@ -71,7 +71,7 @@ export default class TodoTree extends Component {
         return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
     });
     let tree = {
-      module: 'TODO',
+      module: 'ToDo',
       type: "Root",
       children:  todoFiltered.map((queue_id) => {
         let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
