@@ -535,7 +535,7 @@ def rejectCentring():
     """
     """
     try:
-        mxcube.diffractometer.rejectRentring()
+        mxcube.diffractometer.rejectCentring()
         return Response(status=200)
     except Exception:
         return Response(status=409)
