@@ -1,7 +1,11 @@
 const initialState = {
   clickCentring: false,
   zoom: 0,
-  points: []
+  points: [],
+  width: 0,
+  height: 0,
+  ratioWidthHeigth: 1,
+  lightOn: false
 }
 
 export default (state=initialState, action) => {
@@ -21,6 +25,14 @@ export default (state=initialState, action) => {
         case 'SAVE_POINT':
             {
              return {...state, points: [...state.points, action.point]};
+            }
+        case 'SAVE_IMAGE_SIZE':
+            {
+             return {...state, width: action.width, height: action.height, ratioWidthHeigth: action.width/action.height };
+            }
+        case 'SET_LIGHT':
+            {
+             return {...state, lightOn: action.on };
             }
         default:
             return state;

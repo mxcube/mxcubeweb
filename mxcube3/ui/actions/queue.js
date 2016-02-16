@@ -55,7 +55,7 @@ export function getState() {
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused send state");
@@ -91,63 +91,63 @@ export function sendState() {
 }
 
 export function sendRunQueue() {
-	return function(dispatch) {
+	return function() {
 
 		fetch('mxcube/api/v0.1/queue/start', { 
 			method: 'PUT', 
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to start queue");
 			}
 		})
 		.then(function() {
-			dispatch(setQueueState("started"));
+			//dispatch(setQueueState("started"));
 		});
 
 	}
 }
 
 export function sendPauseQueue() {
-	return function(dispatch) {
+	return function() {
 
 		fetch('mxcube/api/v0.1/queue/pause', { 
 			method: 'PUT', 
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to pause queue");
 			}
 		})
 		.then(function() {
-			dispatch(setQueueState("paused"));
+			//dispatch(setQueueState("paused"));
 		});
 
 	}
 }
 
 export function sendStopQueue() {
-	return function(dispatch) {
+	return function() {
 
 		fetch('mxcube/api/v0.1/queue/stop', { 
 			method: 'PUT', 
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to stop queue");
 			}
 		})
 		.then(function() {
-			dispatch(setQueueState("stopped"));
+			//dispatch(setQueueState("stopped"));
 		});
 
 	}
@@ -161,7 +161,7 @@ export function sendClearQueue() {
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to clear queue");

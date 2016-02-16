@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SampleImage from '../components/SampleView/SampleImage';
@@ -9,6 +9,7 @@ import { showForm } from '../actions/methodForm'
 
 
 class SampleViewContainer extends Component {
+
   render() {
     return (
       <div className="row">
@@ -18,39 +19,16 @@ class SampleViewContainer extends Component {
         <table id="newtable" className="table table-bordered table-striped fixedtable">
     <tbody>
         <tr>
-            <td colSpan="3">                
+            <td colSpan="3">
                 <div>Point 1</div>                             
-            </td>
-        </tr>
-        <tr>
-            <td colSpan="3">                
-                <div>Point 2</div>                           
-            </td>
-        </tr>
-        <tr>
-            <td colSpan="3">                
-                <div>Point 3</div>                       
-            </td>
-        </tr>
-        <tr>
-            <td colSpan="3">                
-                <div>Point 4</div>                       
-            </td>
-        </tr>
-        <tr>
-            <td colSpan="3">                
-                <div>Point 5</div>                       
             </td>
         </tr>
     </tbody>    
 </table>  
-
         </div>
       </div>
         <div className="col-xs-6">
-              <div className="text-center"> 
                   <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} />
-              </div>
         </div>
   </div>
     )
@@ -63,7 +41,7 @@ function mapStateToProps(state) {
           current : state.queue.current,
           sampleInformation: state.samples_grid.samples_list,
           sampleViewState: state.sampleview,
-          lookup: state.queue.lookup,
+          lookup: state.queue.lookup
     }
 }
 

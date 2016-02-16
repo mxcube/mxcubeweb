@@ -21,6 +21,10 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
 
           return Object.assign({}, state,  {selected: new_selected}); 
       }
+    case "UNSELECT_ALL":
+      { 
+          return Object.assign({}, state,  {selected: {} }); 
+      }
     case "FILTER":
       {
           return Object.assign({}, state, { filter_text: action.filter_text });
@@ -84,7 +88,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
                     ...state.samples_list[action.index].methods[action.queue_id],
                     name: action.parameters.Type,
                     queue_id: action.queue_id,
-                    parameters : action.parameters,
+                    parameters : action.parameters
                 }}
               }
              }}

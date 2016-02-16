@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {reduxForm} from 'redux-form';
-import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
+import { Input, Button, Glyphicon } from "react-bootstrap"
 
 
 class SampleQueueSearch extends Component {

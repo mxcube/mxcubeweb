@@ -1,6 +1,6 @@
 'use strict';
 import './SampleView.css';
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import {makeCircle, makeLine} from './shapes'
 
 export default class SampleImage extends React.Component {
@@ -13,21 +13,15 @@ export default class SampleImage extends React.Component {
       canvas: {},
       centringPoint: null,
       selectedPointType: "NONE",
-      group: null
+      group: null,
+      lightOn: false
     };
   }
 
   componentDidMount(){
 
-      //Get Size of image
-      this.props.sampleActions.getSampleImageSize();
-
-      // Set size of canvas depending on image ratio and screen size
-      this.drawCanvas();
-
       // Create fabric and set image background to sample
       var canvas = new fabric.Canvas('canvas');
-      this.drawSampleImage(canvas);
 
       // Bind leftClick to function
       canvas.on('mouse:down', (option) => this.leftClick(option, canvas));
@@ -38,40 +32,39 @@ export default class SampleImage extends React.Component {
       //Bind canvas to state, this is done to let other functions manipulate the canvas such as removing objecs
       this.setState({canvas: canvas});
 
-      //Force image update && and save it in state so we can remove when compenent unomunts
-      let updater = setInterval(() => canvas.renderAll() , 100);
-      this.setState({updater: updater});
-
       //Save and remove group in state
       canvas.on('selection:created', (e) => this.setState({group: e.target}));
-      canvas.on('selection:cleared', (e) => this.setState({group: null}));
+      canvas.on('selection:cleared', () => this.setState({group: null}));
+
+      // Draw canvas and set img size depending on screen size
+      this.drawCanvas(canvas);
 
     }
 
-    componentWillUnmount(){
-      //Remove update of canvas
-      clearInterval(this.state.updater);
-    }
+  drawCanvas(canvas){
 
-    drawCanvas(){
+      //Getting the size of screen
       var w = document.getElementById('outsideWrapper').clientWidth;
-      var h = w/1.34;
+      var h = w/this.props.sampleViewState.ratioWidthHeigth;
+
+      //Canvas
       var canvasWindow = document.getElementById('canvas');
       canvasWindow.width = w;
       canvasWindow.height = h;
 
+      //FabricJS
+      canvas.setDimensions({width:w, height: h});
+      canvas.renderAll();
+
+      //Image from MD2
+      document.getElementById("sample-img").style.height = h + "px";
+      document.getElementById("sample-img").style.width = w + "px";
+      document.getElementById("insideWrapper").style.height = h + "px";
+
+      this.setState({heightRatio: this.props.sampleViewState.height/h, widthRatio: this.props.sampleViewState.width/w});
+
+
     }
-
-    drawSampleImage(canvas){
-     canvas.setBackgroundImage('/mxcube/api/v0.1/sampleview/camera/subscribe', canvas.renderAll.bind(canvas), {
-      width: canvas.width,
-      height: canvas.height,
-      originX: 'left',
-      originY: 'top'
-    });
-
-
-   }
 
    removeObject(){
     this.state.canvas.getActiveObject().remove();
@@ -152,7 +145,7 @@ leftClick(option, canvas){
     (this.state.centringPoint ? this.state.centringPoint.remove(): '');
     let circle = makeCircle(option.e.layerX, option.e.layerY);
     canvas.add(circle);
-    this.props.sampleActions.sendCentringPoint(option.e.layerX, option.e.layerY);
+    this.props.sampleActions.sendCentringPoint(option.e.layerX * this.state.widthRatio, option.e.layerY  * this.state.heightRatio);
     this.setState({pointsCollected: ++pointsCollected, centringPoint: circle, selectedPoint: circle.type});
   }else if(pointsCollected === 3){
     this.setState({
@@ -166,10 +159,6 @@ leftClick(option, canvas){
 showModal(modalName){
   this.props.showForm(modalName, true);
   this.hideContextMenu();
-}
-
-clearPoints(){
-
 }
 
 savePoint(){
@@ -192,15 +181,24 @@ hideContextMenu(){
 }
 
 zoomIn(){
-  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom + 1);
+  if(this.props.sampleViewState.zoom < 9){
+      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom + 1);
+  }
 }
 
 zoomOut(){
-  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
+   if(this.props.sampleViewState.zoom > 0){
+      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
+  }
 }
 
 takeSnapShot(){
   document.getElementById("downloadLink").href = this.state.canvas.toDataURL();
+}
+
+lightOnOff(){
+  (this.state.lightOn ? this.props.sampleActions.sendLightOn() : this.props.sampleActions.sendLightOff())
+  this.setState({lightOn: !this.state.lightOn});
 }
 
 
@@ -208,23 +206,26 @@ takeSnapShot(){
 
     return (
                 <div>
+                  <ul id="contextMenu" className="dropdown-menu" role="menu">
+                          {this.listOptions(this.state.selectedPointType)}
+                  </ul>
                   <div className="outsideWrapper" id="outsideWrapper">
                     <div className="insideWrapper" id="insideWrapper">
-                    <ul id="contextMenu" className="dropdown-menu" role="menu">
-                          {this.listOptions(this.state.selectedPointType)}
-                    </ul>
+                      <img id= "sample-img" className='img' src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="" />
                       <canvas id="canvas" className="coveringCanvas" />
                     </div>
                     <div className="sample-controlls">
+                      <div className="text-center"> 
                             <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.savePoint()}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
                             <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={this.measureDistance}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
                             <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.takeSnapShot()} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
                             <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartAutoCentring()}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartClickCentring()}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Clear points" className="btn btn-link  pull-center" onClick={() => this.clearPoints()}><i className="fa fa-2x fa-fw fa-times"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Abort Centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendAbortCentring()}><i className="fa fa-2x fa-fw fa-times"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={() => this.zoomIn()}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={() => this.zoomOut()}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                            <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={() => this.lightOnOff()}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                            </div>
                     </div>
                     <div className="sample-controlls">
                             <input type="number" className="camera-controll" id="kappa" placeholder="Kappa" />

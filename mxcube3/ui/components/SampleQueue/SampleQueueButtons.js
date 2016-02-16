@@ -1,11 +1,10 @@
 'use strict';
 require("font-awesome-webpack");
 
-import React, { Component, PropTypes } from 'react'
-import Modal from 'react-modal';
+import React from 'react'
 import "./app.less"
 
-export default class SampleQueueButtons extends Component {
+export default class SampleQueueButtons extends React.Component {
 
 
      handleSubmit(){
@@ -19,8 +18,6 @@ export default class SampleQueueButtons extends Component {
 
 
     render() { 
-        let selected = this.props.selected;
-
         return (
              <div className='footer-buttons'>
 

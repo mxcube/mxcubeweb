@@ -1,6 +1,4 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
-import classNames from 'classnames';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import { Alert } from "react-bootstrap";
 
@@ -16,7 +14,7 @@ export class ErrorNotificationPanel extends React.Component {
     }
 
     clear_noNavBar() {
-	this.setState({error: null});
+    this.setState({error: null});
     }
     notify(err) {
         document.getElementsByTagName("nav")[0].classList.remove("navbar-fixed-top")
@@ -31,7 +29,7 @@ export class ErrorNotificationPanel extends React.Component {
     render() {
         if (this.state.error) {
             return (<div style={{marginBottom: '-20px'}}><Alert bsStyle="danger" onDismiss={this.clear.bind(this)}>
-		        <strong>Error:&nbsp;</strong>{this.state.error}
+                <strong>Error:&nbsp;</strong>{this.state.error}
                    </Alert></div>);
             
         }
@@ -47,8 +45,8 @@ export class Logging extends React.Component {
         this.state = { log_records: [], curr_page: 1, start_page: 1, last_page: 1, total_pages: 1 };
     }
 
-    handle_record(record) {
-	//this.state.log_records.push(record);
+    handle_record() {
+    //this.state.log_records.push(record);
         this.setState({"log_records": window.log_records }); //this.state.log_records});
     }
 
@@ -98,7 +96,7 @@ export class Logging extends React.Component {
 
     pageClicked(i,e) {
         e.preventDefault();
-       	this.setState({curr_page: i });
+        this.setState({curr_page: i });
     }
 
     toggleStackTrace(i,e) {
@@ -115,7 +113,7 @@ export class Logging extends React.Component {
         var i;
         
         let total_pages = Math.floor(this.state.log_records.length / this.records_per_page);
-        if (this.state.log_records.length % this.records_per_page) { total_pages++ };
+        if (this.state.log_records.length % this.records_per_page) { total_pages++ }
         this.state.total_pages = Math.max(total_pages, 1);
 
         while (((this.state.last_page-this.state.start_page)<(this.npages-1))&&(this.state.last_page < this.state.total_pages)) {
@@ -159,12 +157,12 @@ export class Logging extends React.Component {
                             </li>
                             {pages}
                             <li>
-		                <a href="#" onClick={this.nextClicked.bind(this)}>
+                        <a href="#" onClick={this.nextClicked.bind(this)}>
                                     <span aria-hidden="true">&raquo;</span>
                                 </a>
                             </li>
                             <li>
-		                <a href="#" onClick={this.lastPageClicked.bind(this)}>
+                        <a href="#" onClick={this.lastPageClicked.bind(this)}>
                                     <span aria-hidden="true">{"last"+(this.state.last_page<this.state.total_pages ? " ("+this.state.total_pages+")" : "")}</span>
                                 </a>
                             </li>

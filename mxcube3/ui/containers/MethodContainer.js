@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Characterisation from '../components/Methods/Characterisation'
@@ -8,7 +8,7 @@ import { sendAddSampleMethod, sendChangeSampleMethod } from '../actions/samples_
 
 
 
-class MethodContainer extends Component {
+class MethodContainer extends React.Component {
 
   render() {
 
@@ -19,7 +19,7 @@ class MethodContainer extends Component {
     
     return (
       <div>
-      	   	<Characterisation current={this.props.current} point={this.props.point} show={this.props.showCharac} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("characterisation")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
+            <Characterisation current={this.props.current} point={this.props.point} show={this.props.showCharac} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("characterisation")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
             <DataCollection current={this.props.current} point={this.props.point} show={this.props.dataCollec} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("datacollection")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
       </div>
     )
@@ -37,7 +37,7 @@ function mapStateToProps(state) {
         checked: state.queue.checked,
         lookup: state.queue.lookup,
         sampleList : state.samples_grid.samples_list,
-        current : state.queue.current,
+        current : state.queue.current
     }
 }
 

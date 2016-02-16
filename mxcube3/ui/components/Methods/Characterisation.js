@@ -1,11 +1,11 @@
 'use strict';
 
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import {reduxForm} from 'redux-form';
 import Modal from 'react-modal';
 
 
-class Characterisation extends Component {
+class Characterisation extends React.Component {
 
     constructor(props) {
         super(props);

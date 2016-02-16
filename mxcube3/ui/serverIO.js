@@ -1,6 +1,5 @@
 import io from "socket.io-client";
 
-console.log("ServerIO");
 window.log_records = [];
 window.log_records_connect = function() {
     //clearTimeout(window.log_records_keepalive);
@@ -10,7 +9,7 @@ window.log_records_connect = function() {
         window.log_records.push(record);
         //clearTimeout(window.log_records_keepalive);
         //window.log_records_keepalive = setTimeout(window.log_records_connect, 30*1000);
-        if (window.logging_component) { window.logging_component.handle_record(record) }
+        if (window.logging_component) { window.logging_component.handle_record() }
     })
 };
 window.log_records_connect();
