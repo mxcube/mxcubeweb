@@ -313,12 +313,6 @@ export function mountSample(queue_id) {
 	}
 }
 
-export function finishSample(queue_id) {
-	return { 
-		type: "FINISH_SAMPLE", 
-		queue_id: queue_id
-	}
-}
 
 
 

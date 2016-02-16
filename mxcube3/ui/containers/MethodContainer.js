@@ -19,8 +19,8 @@ class MethodContainer extends Component {
     
     return (
       <div>
-      	   	<Characterisation show={this.props.showCharac} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("characterisation")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
-            <DataCollection show={this.props.dataCollec} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("datacollection")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
+      	   	<Characterisation current={this.props.current} point={this.props.point} show={this.props.showCharac} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("characterisation")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
+            <DataCollection current={this.props.current} point={this.props.point} show={this.props.dataCollec} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("datacollection")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
       </div>
     )
   }
@@ -32,10 +32,12 @@ function mapStateToProps(state) {
   return { 
         showCharac : state.methodForm.characterisation,
         dataCollec : state.methodForm.datacollection,
+        point:  state.methodForm.point,
         selected : state.queue.selected,
         checked: state.queue.checked,
         lookup: state.queue.lookup,
-        sampleList : state.samples_grid.samples_list
+        sampleList : state.samples_grid.samples_list,
+        current : state.queue.current,
     }
 }
 

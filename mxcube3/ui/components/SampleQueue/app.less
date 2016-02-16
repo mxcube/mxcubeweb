@@ -52,44 +52,37 @@ body {
   .inner {
     position: relative;
     cursor: pointer;
-    padding-left: 10px;
   }
 
   .collapse {
     position: absolute;
-    left: 0;
+    right: 20px;
+    top: 0px;
     cursor: pointer;
     display: block;
+    content: "Hello world";
   }
 
   .caret-right:before {
-    content: "\f067";
+    content: "\f107";
     font-family: FontAwesome;
     font-style: normal;
     font-weight: normal;
     text-decoration: inherit;
     color: #000;
-    font-size: 14px;
-    padding-right: 0.1em;
-    padding-left: 0.2em;
+    font-size: 18px;
     position: absolute;
-    top: 6px;
-    left: 0;
   }
 
   .caret-down:before {
-    content: "\f068";
+    content: "\f106";
     font-family: FontAwesome;
     font-style: normal;
     font-weight: normal;
     text-decoration: inherit;
     color: #000;
-    font-size: 14px;
-    padding-right: 0.1em;
-    padding-left: 0.2em;
+    font-size: 18px;
     position: absolute;
-    top: 6px;
-    left: 0;
   }
 }
 
@@ -107,13 +100,12 @@ body {
   .node {
     display: inline-block;
     padding: 4px 5px;
-    border: 1px solid #999;
-    border-radius: 5px;
     display: inline-block;
     padding: 3px 7px 0px 5px;
     text-decoration: none;
     margin: 3px;
     margin-left: 7px;
+    background-color: white;
     &.is-active {
       background-color: grey;
     }
@@ -125,6 +117,15 @@ body {
     left: 0;
     bottom: 0;
     width: 16.66666667%;
+    margin: auto;
+}
+
+.queue-box{
+    margin: 10px;
+    background-color: white;
+    border: 1px solid #AAA;
+    border-radius: 3px;
+    box-shadow: 0px 2px 3px 0px #AAA;
 }
 
 .queue-button{
@@ -133,8 +134,10 @@ body {
 }
 
 .queue-controlls{
-  width: 33%;
+  background-color: white;
   border-radius: 0px;
+  width: 33.33333%;
+
 }
 
 .tree .collapse {
@@ -149,79 +152,80 @@ body {
 }
 .node-root{
   font-size: 16px;
+  width: 90%;
+}
+
+.node-sample{
+    font-size: 14px;
 }
 
 .node-method{
-    color: white;
-}
-.node-method:before{
-    border-left: 1px solid #999;
-    bottom: 50px;
-    height: 100%;
-    width: 1px;
-    content: "";
-    position: absolute;
-    top: -4px;
-    left: 9px;
+    width: 80%;
+    font-size: 12px;
 }
 
-.node-method:after {
-    border-top: 1px solid #999;
-    height: 20px;
-    top: 15px;
-    width: 8px;
-    content: "";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-    color: #000;
-    font-size: 14px;
-    padding-right: 0.1em;
-    padding-left: 0.2em;
-    position: absolute;
-    left: 9px;
-}
 .current-sample{
   margin-left: 5px;
 }
 
-.sample-search{
-  margin: 5px;
-  font-size: 14px;
-}
-
 .queue{
   position: fixed;
-  top: 50px;
+  top: 60px;
   left: 0;
   bottom: 0;
   width: 16.66666667%;
   overflow-x: hidden;
-  overflow-y: auto;
-  padding-bottom: 140px;
-  border-right: 2px solid black;
+  overflow-y:scroll;
+  margin-bottom: 180px;
 }
 
 .passive{
-  background-color: #ADABAB;
+  /* background-color: #ADABAB !important; */
 }
 
 .active{
-  background-color: #337ab7;
+  background-color: #337ab7 !important;
 }
 
 .success{
-  background-color: #5cb85c;
+  background-color: #5cb85c !important;
 }
 
 .error{
-  background-color: #d9534f;
+  background-color: #d9534f !important;
 }
 
 .warning{
-  background-color: #f0ad4e;
+  background-color: #f0ad4e !important;
 }
 
+.searchBox{
+  width: 100%;
+}
 
+.m-tree{
+    margin-top: 10px;
+    background-color: white;
+    border: 1px solid #AAA;
+    border-radius: 3px;
+    box-shadow: 0px 2px 3px 0px #AAA;
+    padding-bottom: 10px;
+}
 
+.queue-root{
+  border-bottom-color: rgb(238, 238, 238);
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom: 1px solid #eeeeee;
+  font-size: 16px;
+  margin: 10px;
+  text-align:center
+}
+
+.children{
+  padding-left: 0px !important;
+}
+
+.m-node .children .node-method{
+  margin-left: 30px !important;
+}

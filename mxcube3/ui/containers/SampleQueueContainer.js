@@ -27,7 +27,9 @@ class SampleQueueContainer extends Component {
     // Start listening to socketIO to get results of method/sample execution
     socket.on('hwr_record', (record) => {
           console.log(record);
-          doAddMethodResult(record.sample, record.queueId, record.state)
+          if(record.sample !==0 && record.queueId !== 0){
+            doAddMethodResult(record.sample, record.queueId, record.state)
+          }
     });
   }
 
@@ -35,7 +37,7 @@ class SampleQueueContainer extends Component {
   render() {
 
     const {selected, checked, lookup, todo, history, showForm, current, sampleInformation, queue, searchString} = this.props;
-    const {sendToggleCheckBox, sendChangeOrder, sendDeleteSample, finishSample, sendRunSample,sendMountSample, selectSample, sendPauseQueue, sendRunQueue, sendStopQueue} = this.props.queueActions;
+    const {sendToggleCheckBox, sendChangeOrder, sendDeleteSample, sendRunSample,sendMountSample, selectSample, sendPauseQueue, sendRunQueue, sendStopQueue} = this.props.queueActions;
     const {sendDeleteSampleMethod, sendAddSampleMethod} = this.props.sampleActions;
 
     return (
@@ -44,10 +46,11 @@ class SampleQueueContainer extends Component {
       <div className="row">
             <div className="col-xs-12 queue">
                 <SampleQueueSearch />
-                <i className="fa fa-check-circle-o" onClick={() => finishSample(this.props.current)}> Press the icon to finish sample</i>
                 <CurrentTree showForm={showForm} currentNode={current} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} />
                 <TodoTree showForm={showForm} todoList={todo} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} mount={sendMountSample} searchString={searchString}/>
                 <HistoryTree showForm={showForm} historyList={history} sampleInformation={sampleInformation} queue={queue} lookup={lookup} select={selectSample} searchString={searchString}/>
+            </div>
+            <div className="col-xs-12">
                 <SampleQueueButtons showForm={showForm} addMethod={sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup} pauseQueue={sendPauseQueue}  stopQueue={sendStopQueue} runQueue={sendRunQueue}/>
             </div>
       </div>

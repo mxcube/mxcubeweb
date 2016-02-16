@@ -84,17 +84,6 @@ export default (state={
                         }
                         );
 
-         // Run Sample or Method
-        case 'FINISH_SAMPLE':
-            return Object.assign({}, state, 
-                        {
-                            history: state.history.concat(action.queue_id),
-                            todo: without(state.todo, action.queue_id),
-                            checked: without(state.checked, action.queue_id),
-                            current : 0
-                        }
-                        );
-
          // Selecting node in the gui
         case 'SELECT_SAMPLE':
             return Object.assign({},state, 

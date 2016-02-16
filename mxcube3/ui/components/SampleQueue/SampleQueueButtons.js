@@ -23,7 +23,9 @@ export default class SampleQueueButtons extends Component {
 
         return (
              <div className='footer-buttons'>
-                 <a className='btn btn-primary queue-button' onClick={() => this.handleSubmit()}>
+
+                    <div className='queue-box'>
+                        <a className='btn btn-primary queue-button' onClick={() => this.handleSubmit()}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring
                         </a>
@@ -35,6 +37,8 @@ export default class SampleQueueButtons extends Component {
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Datacollection
                         </a>
+                    </div>
+                    <div className='queue-box'>
                         <button type="button" className="btn queue-controlls" onClick={() => this.props.pauseQueue()}>
                             <i className="fa fa-pause"></i>
                         </button>
@@ -44,6 +48,7 @@ export default class SampleQueueButtons extends Component {
                         <button type="button" className="btn queue-controlls" onClick={() => this.props.stopQueue()}>
                             <i className="fa fa-stop"></i>
                         </button>
+                    </div>
             </div>
         );
     }
