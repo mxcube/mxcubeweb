@@ -62,7 +62,8 @@ def drawTopLayer():
         pos = 'react motherfucker'
     drawZoomLegend(draw, pos)
     for p in centredPos:
-        drawPoint(draw, (p['x'], p['y']), p['selected'])
+        x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
+        drawPoint(draw, (x, y), p['selected'])
     drawBeam(draw)
     return img
 
@@ -282,6 +283,23 @@ def moveToCentredPosition(id):
         logging.getLogger('HWR.MX3').info('[Centring] could not move to Centring Position')
         return Response(status=409)
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/centring", methods=['GET'])
+def getCentringPositions():
+    """
+    return all the (x, y) of the currently saved centring positions
+    """
+    aux = {}
+    try:
+        for p in centredPos:
+           x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
+           aux.update({p['posId']:{'x': x, 'y': y}})
+        resp = jsonify(aux)
+        resp.status_code = 200
+        return resp
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring positions could not be retrieved')
+        return Response(status=409)
+
 #### WORKING WITH MOVEABLES
 zoomLevels = ["Zoom 1","Zoom 2","Zoom 3","Zoom 4","Zoom 5","Zoom 6","Zoom 7","Zoom 8","Zoom 9", "Zoom 10"]
 
@@ -379,11 +397,13 @@ def get_status_of_id(id):
     motor = mxcube.diffractometer.getObjectByRole(id.lower())
     try:
         if motor.motor_name == 'Zoom':
-            pos = motor.getCurrentPositionName()
+            pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
             status = "unknown"
-        elif motor.motor_name == 'Light':
-            pos = motor.getWagoState()  # {0:"out", 1:"in", True:"in", False:"out"}
-            status = motor.getWagoState()
+        elif mot == 'BackLight':
+                states = {"in": 1, "out": 0}
+                pos = states[motor_hwobj.light.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
+                # 'in', 'out'
+                status = pos 
         else:
             pos = motor.getPosition()
             status = motor.getState()
@@ -409,18 +429,20 @@ def get_status():
         moveables: 'Kappa', 'Omega', 'Phi', 'Zoom', 'Light'
 
     """
-    motors = ['Kappa', 'Kappa_phi','Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'Light','Sampx', 'Sampy']  # more are needed
+    motors = ['Kappa', 'Kappa_phi','Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'Light','BackLight','Sampx', 'Sampy']  # more are needed
 
     data = {}
     try:
         for mot in motors:
             motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
             if mot == 'Zoom':
-                pos = motor_hwobj.getCurrentPositionName()
+                pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
                 status = "unknown"
-            # elif mot == 'Light':
-            #     pos = motor_hwobj.getWagoState()  # {0:"out", 1:"in", True:"in", False:"out"}
-            #     status = motor_hwobj.getWagoState()
+            elif mot == 'BackLight':
+                states = {"in": 1, "out": 0}
+                pos = states[motor_hwobj.light.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
+                # 'in', 'out'
+                status = pos 
             else:
                 pos = motor_hwobj.getPosition()
                 status = motor_hwobj.getState()
