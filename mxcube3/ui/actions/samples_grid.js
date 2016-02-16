@@ -39,7 +39,7 @@ export function doSelectAll() {
 
 export function doUnselectAll() {
     let selected = false;
-    return { type: "SELECT_ALL", selected }
+    return { type: "UNSELECT_ALL", selected }
 }
 
 export function doFilter(filter_text) {
@@ -110,7 +110,7 @@ export function doRemoveMethod(sample_queue_id, queue_id, sample_id, list_id) {
             index: sample_id,
             parent_id: sample_queue_id,
             queue_id: queue_id,  
-            list_index: list_id,
+            list_index: list_id
             }
 }
 
@@ -156,7 +156,7 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
                 throw new Error("Could not add sample method, server refused");
             }
             return response.json();
-        }).then(function(json) {
+        }).then(function() {
             dispatch(doChangeMethod(method_queue_id, sample_id, method));
             dispatch(sendState());
 

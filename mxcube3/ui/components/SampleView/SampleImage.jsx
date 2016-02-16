@@ -1,6 +1,6 @@
 'use strict';
 import './SampleView.css';
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import {makeCircle, makeLine} from './shapes'
 
 export default class SampleImage extends React.Component {
@@ -13,21 +13,15 @@ export default class SampleImage extends React.Component {
       canvas: {},
       centringPoint: null,
       selectedPointType: "NONE",
-      group: null
+      group: null,
+      lightOn: false
     };
   }
 
   componentDidMount(){
 
-      //Get Size of image
-      this.props.sampleActions.getSampleImageSize();
-
-      // Set size of canvas depending on image ratio and screen size
-      this.drawCanvas();
-
       // Create fabric and set image background to sample
       var canvas = new fabric.Canvas('canvas');
-      this.drawSampleImage(canvas);
 
       // Bind leftClick to function
       canvas.on('mouse:down', (option) => this.leftClick(option, canvas));
@@ -40,23 +34,37 @@ export default class SampleImage extends React.Component {
 
       //Save and remove group in state
       canvas.on('selection:created', (e) => this.setState({group: e.target}));
-      canvas.on('selection:cleared', (e) => this.setState({group: null}));
+      canvas.on('selection:cleared', () => this.setState({group: null}));
+
+      // Draw canvas and set img size depending on screen size
+      this.drawCanvas(canvas);
 
     }
 
-    drawCanvas(){
+  drawCanvas(canvas){
+
+      //Getting the size of screen
       var w = document.getElementById('outsideWrapper').clientWidth;
-      var h = w/1.34;
+      var h = w/this.props.sampleViewState.ratioWidthHeigth;
+
+      //Canvas
       var canvasWindow = document.getElementById('canvas');
       canvasWindow.width = w;
       canvasWindow.height = h;
 
-    }
+      //FabricJS
+      canvas.setDimensions({width:w, height: h});
+      canvas.renderAll();
 
-    drawSampleImage(canvas){
-      document.getElementById("sample-img").style.height = canvas.height + "px";
-      document.getElementById("sample-img").style.width = canvas.width + "px";
-   }
+      //Image from MD2
+      document.getElementById("sample-img").style.height = h + "px";
+      document.getElementById("sample-img").style.width = w + "px";
+      document.getElementById("insideWrapper").style.height = h + "px";
+
+      this.setState({heightRatio: this.props.sampleViewState.height/h, widthRatio: this.props.sampleViewState.width/w});
+
+
+    }
 
    removeObject(){
     this.state.canvas.getActiveObject().remove();
@@ -137,7 +145,7 @@ leftClick(option, canvas){
     (this.state.centringPoint ? this.state.centringPoint.remove(): '');
     let circle = makeCircle(option.e.layerX, option.e.layerY);
     canvas.add(circle);
-    this.props.sampleActions.sendCentringPoint(option.e.layerX, option.e.layerY);
+    this.props.sampleActions.sendCentringPoint(option.e.layerX * this.state.widthRatio, option.e.layerY  * this.state.heightRatio);
     this.setState({pointsCollected: ++pointsCollected, centringPoint: circle, selectedPoint: circle.type});
   }else if(pointsCollected === 3){
     this.setState({
@@ -151,10 +159,6 @@ leftClick(option, canvas){
 showModal(modalName){
   this.props.showForm(modalName, true);
   this.hideContextMenu();
-}
-
-clearPoints(){
-
 }
 
 savePoint(){
@@ -177,15 +181,24 @@ hideContextMenu(){
 }
 
 zoomIn(){
-  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom + 1);
+  if(this.props.sampleViewState.zoom < 9){
+      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom + 1);
+  }
 }
 
 zoomOut(){
-  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
+   if(this.props.sampleViewState.zoom > 0){
+      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
+  }
 }
 
 takeSnapShot(){
   document.getElementById("downloadLink").href = this.state.canvas.toDataURL();
+}
+
+lightOnOff(){
+  (this.state.lightOn ? this.props.sampleActions.sendLightOn() : this.props.sampleActions.sendLightOff())
+  this.setState({lightOn: !this.state.lightOn});
 }
 
 
@@ -208,10 +221,10 @@ takeSnapShot(){
                             <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.takeSnapShot()} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
                             <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartAutoCentring()}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartClickCentring()}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Clear points" className="btn btn-link  pull-center" onClick={() => this.clearPoints()}><i className="fa fa-2x fa-fw fa-times"></i></button>
+                            <button type="button" data-toggle="tooltip"  title="Abort Centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendAbortCentring()}><i className="fa fa-2x fa-fw fa-times"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={() => this.zoomIn()}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={() => this.zoomOut()}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.lightOnOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                            <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={() => this.lightOnOff()}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
                             </div>
                     </div>
                     <div className="sample-controlls">

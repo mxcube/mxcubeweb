@@ -1,11 +1,10 @@
 'use strict';
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import "bootstrap-webpack"
 import Tree from 'react-ui-tree'
-import cx from 'classnames'
 import "./app.less"
 
-export default class TodoTree extends Component {
+export default class TodoTree extends React.Component {
 
   // The render method call from Tree, this checks what node is to be renderd and calls new function
   renderNode(node) {
@@ -17,7 +16,7 @@ export default class TodoTree extends Component {
       case 'Method':
         return this.renderMethod(node);
       default:
-        console.log('Type not found');
+        throw new Error("Type not found, tree"); 
     }
   }
 
@@ -44,9 +43,8 @@ export default class TodoTree extends Component {
   }
 
   renderMethod(node){
-
     // This line shouldnt need to be here but it seems that react-ui-tree has some bug
-    if(this.props.todoList.indexOf(node.parent_id) > -1){
+    if(this.props.todoList.indexOf(node.parent_id) > -1 && this.props.queue[node.parent_id].indexOf(node.queue_id) > -1 ){
       return (
         <span className="node node-method" onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
         <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
@@ -59,17 +57,13 @@ export default class TodoTree extends Component {
     
   }
 
-  // Checking what queue node is pressed and selecting it
-  // Handle when a user is changing the order in the tree
-  handleChange(tree) {
-
-  }
 
   createTree(){
     let todoFiltered = this.props.todoList.filter((queue_id) => {
         let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
         return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
     });
+
     let tree = {
       module: 'ToDo',
       type: "Root",
@@ -99,15 +93,13 @@ export default class TodoTree extends Component {
     return tree;
   }
 
-  render() {
 
-   let tree = this.createTree();
+  render() {
 
     return (
           <Tree
             paddingLeft={20}
-            tree={tree}
-            onChange={this.handleChange.bind(this)}
+            tree={this.createTree()}
             isNodeCollapsed={this.isNodeCollapsed}
             renderNode={this.renderNode.bind(this)}/>
     );

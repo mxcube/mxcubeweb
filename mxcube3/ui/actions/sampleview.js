@@ -1,5 +1,13 @@
 import fetch from 'isomorphic-fetch'
 
+export function setLight(on) {
+  return { 
+    type: "SET_LIGHT",
+    on: on
+  }
+}
+
+
 export function setZoom(level) {
   return { 
     type: "SET_ZOOM",
@@ -9,13 +17,13 @@ export function setZoom(level) {
 
 export function StartClickCentring() {
   return { 
-    type: "START_CLICK_CENTRING",
+    type: "START_CLICK_CENTRING"
   }
 }
 
 export function StopClickCentring() {
   return { 
-    type: "STOP_CLICK_CENTRING",
+    type: "STOP_CLICK_CENTRING"
   }
 }
 
@@ -42,7 +50,7 @@ export function sendStartClickCentring() {
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
-    },
+    }
   }).then(function(response) {
     if (response.status >= 400) {
       throw new Error("Server refused to start 3click");
@@ -54,7 +62,7 @@ export function sendStartClickCentring() {
 }
 
 export function sendCentringPoint(x, y) {
-  return function(dispatch) {
+  return function() {
    fetch('/mxcube/api/v0.1/sampleview/centring/click', { 
     method: 'PUT', 
     headers: {
@@ -71,32 +79,16 @@ export function sendCentringPoint(x, y) {
 }
 
 export function sendStartAutoCentring() {
-  return function(dispatch) {
+  return function() {
    fetch('/mxcube/api/v0.1/sampleview/centring/startauto', { 
     method: 'PUT', 
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
-    },
+    }
   }).then(function(response) {
     if (response.status >= 400) {
       throw new Error("Server refused to start autocentring");
-    }
-  });
-}
-}
-
-export function sendTakeSnapShot() {
-  return function(dispatch) {
-   fetch('/mxcube/api/v0.1/sampleview/snapshot', { 
-    method: 'PUT', 
-    headers: {
-      'Accept': 'application/json',
-      'Content-type': 'application/json'
-    },
-  }).then(function(response) {
-    if (response.status >= 400) {
-      throw new Error("Server refused to take snapshot");
     }
   });
 }
@@ -109,14 +101,13 @@ export function sendSavePoint() {
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
-    },
+    }
   }).then(function(response) {
     if (response.status >= 400) {
       throw new Error("Server refused to save point");
     }
     return response.json();
   }).then(function(json) {
-      console.log(json);
       dispatch(SavePoint(json));
     });
 
@@ -143,6 +134,60 @@ export function sendZoomPos(level) {
 }
 }
 
+export function sendLightOn() {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/lighton', { 
+    method: 'PUT', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to turn light on");
+    }
+  }).then(function() {
+      dispatch(setLight(true));
+    });
+}
+}
+
+export function sendLightOff() {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/lightoff', { 
+    method: 'PUT', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to turn light off");
+    }
+  }).then(function() {
+      dispatch(setLight(false));
+    });
+
+}
+}
+
+export function sendAbortCentring() {
+  return function() {
+   fetch('/mxcube/api/v0.1/sampleview/centring/abort', { 
+    method: 'PUT', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to turn light off");
+    }
+  });
+
+}
+}
+
 export function getSampleImageSize() {
   return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/camera', { 
@@ -150,14 +195,13 @@ export function getSampleImageSize() {
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
-    },
+    }
   }).then(function(response) {
     if (response.status >= 400) {
-      throw new Error("Server refused to zoom");
+      throw new Error("Server refused to return image size");
     }
  return response.json();
   }).then(function(json) {
-      console.log(json);
       dispatch(SaveImageSize(json.imageWidth, json.imageHeight));
     });
 

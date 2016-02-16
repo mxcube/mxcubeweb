@@ -1,12 +1,12 @@
 import {omit} from 'lodash/object';
-import {without, xor, union, intersection, filter} from 'lodash/array';
+import {without, xor, union, intersection} from 'lodash/array';
 
 export default (state={
     queue:{},
-	todo:[],
-	history:[],
+    todo:[],
+    history:[],
     checked: [],
-	current:0,
+    current:0,
     selected: {
         queue_id: null,
         sample_id: null,
@@ -23,13 +23,13 @@ export default (state={
         // Adding sample to queue
         case 'ADD_SAMPLE':
             return Object.assign({},state, 
-             			{
+                        {
                             todo: state.todo.concat(action.queue_id),
                             queue: {...state.queue, [action.queue_id] : [] },
                             lookup: {...state.lookup, [action.queue_id] : action.sample_id},
                             lookup_queue_id: {...state.lookup_queue_id, [action.sample_id] : action.queue_id}
-                        }           			
-             			);
+                        }                       
+                        );
 
         // Removing sample from queue
         case 'REMOVE_SAMPLE':
@@ -51,7 +51,7 @@ export default (state={
             return Object.assign({}, state, 
                         {
                             queue : {...state.queue, [action.parent_id] :state.queue[action.parent_id].concat(action.queue_id)},
-                            checked: state.checked.concat(action.queue_id),
+                            checked: state.checked.concat(action.queue_id)
                         }
                         );
 
@@ -80,7 +80,7 @@ export default (state={
             return Object.assign({}, state, 
                         {
                             current : action.queue_id,
-                            todo: without(state.todo, action.queue_id),
+                            todo: without(state.todo, action.queue_id)
                         }
                         );
 
@@ -116,13 +116,15 @@ export default (state={
                     return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]),[action.parent_queue_id])});
                 }
             }
+
+            break;
         case 'redux-form/CHANGE':
             if(action.form === "search-sample"){
                 return Object.assign({}, state, {searchString : action.value});
             }else{
                 return state;
             }
-    
+            break;
         case 'CLEAR_QUEUE':
              return Object.assign({}, state, 
                 {

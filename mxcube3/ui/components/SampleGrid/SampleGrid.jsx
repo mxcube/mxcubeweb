@@ -10,14 +10,14 @@ export default class SampleGrid extends React.Component {
         if (! this.isotope) {
             let container = ReactDOM.findDOMNode(this);
             this.isotope = new Isotope(container, {itemSelector: '.samples-grid-item', layoutMode: 'masonry', masonry: { isFitWidth: true }, filter: (elem) => { return this._filter(elem) }});
-	}
+  }
     }
 
     _filter(elem) {
         if (this.props.filter_text) {
           // find index of elem DOM element (= index of element in samples list)
           let i = 0;
-          while (elem = elem.previousSibling) { ++i };
+          while (elem == elem.previousSibling) { ++i }
           //
           let sample_props = this.refs[i].props;
           let sample_desc = sample_props.name+" "+sample_props.acronym+" "+sample_props.code+" "+sample_props.location;
@@ -31,25 +31,18 @@ export default class SampleGrid extends React.Component {
         return true;
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (this.isotope) {
           if (this.props.samples_list != prevProps.samples_list) { 
-	    this.isotope.reloadItems();
-	    this.isotope.layout();
-	  }
-	  this.isotope.arrange(); 
+      this.isotope.reloadItems();
+      this.isotope.layout();
+    }
+    this.isotope.arrange(); 
         }
-    }
-
-    addTag(index, tag) {
-    }
-
-    setLoadable(index, loadable) {
     }
 
     render() {
         var samples_list = this.props.samples_list;
-        var queue = this.props.queue;
         var sample_grid = [];
         var i = 0;
         Object.keys(samples_list).forEach(key => {
@@ -65,7 +58,10 @@ export default class SampleGrid extends React.Component {
                 //automatically, then it would be displayed here like any
                 //data collection
                 //exp_type = sample_info.experimentType;
-            } catch(e) { }
+            } catch(e) { 
+               acronym = "Undefined";
+               name = "No name";
+            }
 
             let tags = [];
             for(let id in sample.methods){

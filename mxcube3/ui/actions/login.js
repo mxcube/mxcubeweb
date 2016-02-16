@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import { getSampleImageSize } from './sampleview'
 
 export function doLogin(proposal, password) {
     return function(dispatch) {
@@ -11,9 +12,11 @@ export function doLogin(proposal, password) {
             body: JSON.stringify({ proposal, password })
           }).then(response => response.json())
           .then(json => {
+                // Here one should check if login is successfull and if so get initial state of MxCube
+                dispatch(getSampleImageSize());
                 dispatch(afterLogin(json));
-          }, () => { 
-            console.log("Server connection problem (login)");
+          }, () => {
+            throw new Error("Server connection problem (login)"); 
           })
     }
 }
@@ -28,10 +31,9 @@ export function getLoginInfo() {
     }
   }).then(response => response.json())
           .then(json => {
-              console.log(json);
               dispatch(setLoginInfo(json));
-          }, () => { 
-            console.log("Server connection problem (getLoginInfo)");
+          }, () => {
+            throw new Error("Server connection problem (getLoginInfo)"); 
           })
     }
 }

@@ -9,7 +9,7 @@ export function showForm(formName, point = false) {
 export function hideForm(formName) {
 	return { 
 		type: "HIDE_FORM", 
-		name: formName,
+		name: formName
 	}
 }
 

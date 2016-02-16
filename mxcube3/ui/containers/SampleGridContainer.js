@@ -1,9 +1,8 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount } from '../actions/samples_grid'
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount, doUnselectAll } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
 
 class SampleGridContainer extends React.Component {
@@ -28,17 +27,17 @@ class SampleGridContainer extends React.Component {
             this.props.syncSamples(proposal_id);
         }
 
-	render() {
-		const innerSearchIcon = (
-			<Button onClick={() => { this.props.filter(this.refs.filter_input.getValue()) } }><Glyphicon glyph="search"/></Button>
-		);
+  render() {
+    const innerSearchIcon = (
+      <Button onClick={() => { this.props.filter(this.refs.filter_input.getValue()) } }><Glyphicon glyph="search"/></Button>
+    );
 
-		return (<div>
+    return (<div>
                             <div className="row">
                                 <div className="col-xs-3">
-			            <form className="form-horizontal">
-				        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon}  onKeyPress={(target) => { if (target.charCode==13) { this.props.filter(this.refs.filter_input.getValue()) }}}/>
-			            </form>
+                  <form className="form-horizontal">
+                <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon}  onKeyPress={(target) => { if (target.charCode==13) { this.props.filter(this.refs.filter_input.getValue()) }}}/>
+                  </form>
                                 </div>
                                 <div className="col-xs-5">
                                    <ButtonToolbar>
@@ -51,20 +50,20 @@ class SampleGridContainer extends React.Component {
                                    </ButtonToolbar>
                                </div>
                                <div className="col-xs-4">
-			           <ButtonToolbar>
-			               <Button className="btn-success pull-right" onClick={() => { this.addSamples() }}>
+                 <ButtonToolbar>
+                     <Button className="btn-success pull-right" onClick={() => { this.addSamples() }}>
                                            <Glyphicon glyph="plus"/> Add samples
                                        </Button>
                                        <Button className="btn pull-right" onClick={this.props.unselectAll}>Unselect all</Button>
                                        <Button className="btn pull-right" onClick={this.props.selectAll}>Select all</Button>
-			           </ButtonToolbar>
+                 </ButtonToolbar>
                                </div>
                             </div>
                             <div className="row"> 
-				    <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue}/>
+            <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue}/>
                             </div>
-			</div>)
-	}
+      </div>)
+  }
 }
 
 function mapStateToProps(state) {
