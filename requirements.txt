@@ -1,6 +1,7 @@
 gevent==1.0.2
 flask==0.10.1
 flask-socketio==0.3.8
+Flask-Session
 gevent-socketio==0.3.6
 gevent-websocket==0.9.3
 louie
