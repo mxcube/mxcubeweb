@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import session, request, jsonify
 from mxcube3 import app as mxcube
 import logging
 import os
@@ -31,13 +31,15 @@ def login():
 
     loginRes = mxcube.db_connection.login(loginID, password)
     if loginRes['status']['code'] == 'ok':
-        mxcube.session.proposal_id = loginID
-        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'queue-'+loginID+'.txt')
-        if os.path.isfile(filename):
-            loginRes['StoredSession'] = True
-        else:
-            loginRes['StoredSession'] = False
-
+        mxcube.session.proposal_id = loginID #do we still need this?
+        if session.get("proposal_id") != loginID:
+            session["proposal_id"] = loginID
+            session["queueList"] = {}
+            session["queueOrder"] = []
+            session["queueState"] = {}
+            session["sampleGridState"] = {}
+            session["lastQueueNode"] = {'id': 0, 'sample': 0}
+        
 #        loginRes structure
 #        {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal,
 #        'session': todays_session,
