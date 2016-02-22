@@ -151,18 +151,7 @@ def queueSave2File():
     Args: None
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened
     """
-
-    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'queue-'+mxcube.session.proposal_id+'.txt')
-    try:
-        f = open(filename, 'w')
-        tofile = json.dumps(queueList)
-        f.write(tofile)
-        f.close()
-        logging.getLogger('HWR').info('[QUEUE] Queue saved, '+filename)
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be saved')
-        return Response(status=409)
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue/state", methods=['PUT', 'POST'])
 def queueSaveState():
@@ -199,19 +188,10 @@ def queueLoad():
     Args: None
     Return: queue data plus http status response, 200 ok, 409 something bad happened
     """
-    filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'queue-'+mxcube.session.proposal_id+'.txt')
-    try:
-        f = open(filename, 'r')
-        data = json.loads(f.read())
-        f.close()
-        logging.getLogger('HWR').info('[QUEUE] Queue loaded, '+filename)
-        resp = jsonify(data)
-        resp.status_code = 200
-        return resp
-    except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not be loaded')
-        return Response(status=409)
-
+    resp = jsonify(session.get("queueList"))
+    resp.status_code = 200
+    return resp
+   
 @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
 def getCurrentEntry():
     """Queue: get current entry. NOT IMPLEMENTED
