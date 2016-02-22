@@ -176,7 +176,6 @@ export function sendClearQueue() {
 
 export function sendAddSample(id) {
 	return function(dispatch) {
-
 		fetch('mxcube/api/v0.1/queue', { 
 			method: 'POST', 
 			headers: {

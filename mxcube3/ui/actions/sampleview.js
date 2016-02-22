@@ -42,6 +42,12 @@ export function SaveImageSize(x,y,) {
   }
 }
 
+export function updatePointsPosition(points) {
+  return { 
+    type: "UPDATE_POINTS_POSITION",
+    points: points
+  }
+}
 
 export function sendStartClickCentring() {
   return function(dispatch) {
@@ -109,6 +115,27 @@ export function sendSavePoint() {
     return response.json();
   }).then(function(json) {
       dispatch(SavePoint(json));
+    });
+
+}
+}
+
+export function sendDeletePoint(id) {
+  return function() {
+   fetch('/mxcube/api/v0.1/sampleview/centring/pos' + id, { 
+    method: 'DELETE', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to delete point");
+    }
+    return response.json();
+  }).then(function(json) {
+      console.log("deleted point");
+      console.log(json);
     });
 
 }
@@ -203,6 +230,27 @@ export function getSampleImageSize() {
  return response.json();
   }).then(function(json) {
       dispatch(SaveImageSize(json.imageWidth, json.imageHeight));
+    });
+
+}
+}
+
+
+export function getPointsPosition() {
+  return function(dispatch) {
+   fetch('mxcube/api/v0.1/sampleview/centring', { 
+    method: 'GET', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to return points position");
+    }
+ return response.json();
+  }).then(function(json) {
+      dispatch(updatePointsPosition(json));
     });
 
 }
