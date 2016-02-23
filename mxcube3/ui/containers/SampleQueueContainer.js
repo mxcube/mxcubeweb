@@ -18,7 +18,7 @@ class SampleQueueContainer extends React.Component {
 
    componentDidMount() {
     const {doAddMethodResult} = this.props.sampleActions;
-    const { socket} = this.props;
+    const {socket} = this.props;
     const {getState} = this.props.queueActions;
 
     //Populate queue with previous state

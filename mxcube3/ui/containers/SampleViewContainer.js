@@ -10,6 +10,16 @@ import { showForm } from '../actions/methodForm'
 
 class SampleViewContainer extends Component {
 
+  renderPoint(value){
+    return(
+       <tr>
+     <td colSpan="3">
+          <div>Point {value.posId}</div>                             
+     </td>
+     </tr>
+     );
+  }
+
   render() {
     return (
       <div className="row">
@@ -18,11 +28,7 @@ class SampleViewContainer extends Component {
         <hr className="divider" />
         <table id="newtable" className="table table-bordered table-striped fixedtable">
     <tbody>
-        <tr>
-            <td colSpan="3">
-                <div>Point 1</div>                             
-            </td>
-        </tr>
+
     </tbody>    
 </table>  
         </div>

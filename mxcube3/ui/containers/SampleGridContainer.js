@@ -15,6 +15,7 @@ class SampleGridContainer extends React.Component {
                 }
                
             });
+            this.props.unselectAll();
         }
 
         syncSamples() {
