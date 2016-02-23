@@ -14,6 +14,7 @@ export function doLogin(proposal, password) {
           }).then(response => response.json())
           .then(loginRes => {
               // Here one should check if login is successfull and if so get initial state of MxCube
+              dispatch(getPointsPosition());
               dispatch(getSampleImageSize());
               dispatch(afterLogin(loginRes));
           }, () => { throw new Error("Server connection problem (login)"); });
