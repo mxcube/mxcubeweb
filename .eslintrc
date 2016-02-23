@@ -11,6 +11,7 @@
   "rules": {
     "no-undef": 1,
     "no-console": 1,
+    "no-debugger": 1,
     "react/forbid-prop-types": 1,
     "react/jsx-boolean-value": 1,
     "react/jsx-closing-bracket-location": 1,
