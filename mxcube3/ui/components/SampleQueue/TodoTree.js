@@ -95,7 +95,6 @@ export default class TodoTree extends React.Component {
 
 
   render() {
-
     return (
           <Tree
             paddingLeft={20}

@@ -50,11 +50,9 @@
 
 .canvas-container{
     position:relative;
-    z-index:20;
 }
 
 .img{
     position:absolute;
-    z-index:1;
     text-align: left;
 }
