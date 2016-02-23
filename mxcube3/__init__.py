@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 from flask import Flask
 from flask.ext.socketio import SocketIO
+from flask.ext.session import Session
 from optparse import OptionParser
 import os
 import sys
@@ -42,6 +43,10 @@ cmdline_options, args = opt_parser.parse_args()
 
 socketio = SocketIO()
 app = Flask(__name__, static_url_path='')
+app.config['SESSION_TYPE'] = "redis"
+app.config['SECRET_KEY'] = "nosecretfornow"
+sess = Session()
+sess.init_app(app)
 app.debug = True
 # this line important for socketio msg, otherwise no msg is sent...
 socketio.init_app(app)

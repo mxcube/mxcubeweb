@@ -1,7 +1,6 @@
-from flask import request, Response, jsonify
+from flask import session, request, Response, jsonify
 from mxcube3 import app as mxcube
 import logging
-from .Queue import queueList, lastQueueNode
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
 def get_samples_list():
@@ -23,10 +22,13 @@ def get_samples_list():
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/<sample>/mount", methods=['PUT'])
 def mountSample(sample):
+    lastQueueNode = session.get("lastQueueNode")
+
     try:
         sampleNode = mxcube.queue.get_node(int(sample))
         sampleLocation = sampleNode.location
         lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[0] + ':' + sampleLocation[1])})
+        session["lastQueueNode"] = lastQueueNode
         #mxcube.sample_changer.load_sample
         #TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
         logging.getLogger('HWR').info('[SC] %s sample mounted, location: %s' % (sample, sampleLocation))

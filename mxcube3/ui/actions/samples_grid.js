@@ -8,7 +8,7 @@ export function doUpdateSamples(samples_list) {
 export function doGetSamplesList() {
    return function(dispatch) {
        window.please_wait_dialog.show();
-       fetch('mxcube/api/v0.1/sample_changer/samples_list')
+       fetch('mxcube/api/v0.1/sample_changer/samples_list', {credentials: 'include'})
             .then(response => response.json())
             .then(json => {
                 window.please_wait_dialog.hide();
@@ -52,7 +52,7 @@ export function doSetSamplesInfo(sample_info_list) {
 
 export function doSyncSamples(proposal_id) {
     return function(dispatch) {
-        fetch("mxcube/api/v0.1/samples/"+proposal_id)
+        fetch("mxcube/api/v0.1/samples/"+proposal_id, {credentials: 'include'})
             .then(response => response.json())
             .then(json => {
                 dispatch(doSetSamplesInfo(json.samples_info));
@@ -121,6 +121,7 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
 
         fetch('mxcube/api/v0.1/queue/' + queue_id, { 
             method: 'POST', 
+            credentials: 'include',
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
@@ -146,6 +147,7 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
 
         fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' + method_queue_id, { 
             method: 'PUT', 
+            credentials: 'include',
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
@@ -173,6 +175,7 @@ export function sendDeleteSampleMethod(parent_id, queue_id, sample_id, list_id) 
 
         fetch('mxcube/api/v0.1/queue/' + queue_id, { 
             method: 'DELETE', 
+            credentials: 'include',
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'

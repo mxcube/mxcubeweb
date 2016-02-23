@@ -52,6 +52,7 @@ export function getState() {
 	return function(dispatch) {
 		fetch('mxcube/api/v0.1/queue/state', { 
 			method: 'GET', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -76,6 +77,7 @@ export function sendState() {
 		let state = getState();
 		fetch('mxcube/api/v0.1/queue/state', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -95,6 +97,7 @@ export function sendRunQueue() {
 
 		fetch('mxcube/api/v0.1/queue/start', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -116,6 +119,7 @@ export function sendPauseQueue() {
 
 		fetch('mxcube/api/v0.1/queue/pause', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -137,6 +141,7 @@ export function sendStopQueue() {
 
 		fetch('mxcube/api/v0.1/queue/stop', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -158,6 +163,7 @@ export function sendClearQueue() {
 
 		fetch('mxcube/api/v0.1/queue/clear', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -178,6 +184,7 @@ export function sendAddSample(id) {
 	return function(dispatch) {
 		fetch('mxcube/api/v0.1/queue', { 
 			method: 'POST', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -204,6 +211,7 @@ export function sendDeleteSample(queue_id) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id, { 
 			method: 'DELETE', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -227,6 +235,7 @@ export function sendMountSample(queue_id) {
 
 		fetch('mxcube/api/v0.1/sample_changer/' + queue_id + "/mount", { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -250,6 +259,7 @@ export function sendRunSample(queue_id) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id + "/execute", { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -273,6 +283,7 @@ export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id + "/toggle", { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'

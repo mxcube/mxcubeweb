@@ -1,7 +1,8 @@
 import logging, json, inspect
 #from flask.ext.socketio import emit
+from flask import session
 from mxcube3 import socketio
-from .Queue import queueList, lastQueueNode
+#from .Queue import queueList, lastQueueNode
 import time
 MaxLabMicrodiff_signals = ['minidiffReady','minidiffNotReady','phizMotorStateChanged','phiyMotorStateChanged','zoomMotorPredefinedPositionChanged','zoomMotorStateChanged','sampxMotorStateChanged','sampyMotorStateChanged','centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving','centringFailed','centringSuccessful','progressMessage','centringSnapshots'] #'phiMotorStateChanged','minidiffStateChanged', 'diffractometerMoved', removed to cleanup the log
 
@@ -42,6 +43,9 @@ def signalCallback(*args, **kwargs):
     for sig in warnSignals:
         if sig in signal:
             result = 4
+        
+    # NOT SURE ABOUT THIS ONE
+    lastQueueNode = session.get("lastQueueNode")
 
     if len(args) >0:
         if args[0] in queueSignals:
