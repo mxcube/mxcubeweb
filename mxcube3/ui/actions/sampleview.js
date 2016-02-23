@@ -107,9 +107,9 @@ export function sendStartAutoCentring() {
 }
 }
 
-export function sendSavePoint() {
+export function sendSavePoint(id) {
   return function(dispatch) {
-   fetch('/mxcube/api/v0.1/sampleview/centring/0', { 
+   fetch('/mxcube/api/v0.1/sampleview/centring/' + id, { 
     method: 'POST', 
     headers: {
       'Accept': 'application/json',

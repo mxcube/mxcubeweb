@@ -8,6 +8,7 @@ import HistoryTree from '../components/SampleQueue/HistoryTree';
 import SampleQueueButtons from '../components/SampleQueue/SampleQueueButtons';
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
+import * as SampleViewActions from '../actions/sampleview'
 import { showForm } from '../actions/methodForm'
 
 
@@ -26,10 +27,14 @@ class SampleQueueContainer extends React.Component {
 
     // Start listening to socketIO to get results of method/sample execution
     socket.on('hwr_record', (record) => {
+      console.log(record);
           if(record.sample !==0 && record.queueId !== 0){
             doAddMethodResult(record.sample, record.queueId, record.state)
+          }else if(record.signal === "minidiffStateChanged"){
+            this.props.sampleViewActions.updatePointsPosition(record.data);
           }
     });
+  
   }
 
     
@@ -77,6 +82,7 @@ function mapDispatchToProps(dispatch) {
  return {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch),
+    sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
     showForm : bindActionCreators(showForm, dispatch)
   }
 }

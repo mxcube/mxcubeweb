@@ -40,10 +40,12 @@ componentDidMount(){
       // Draw canvas and set img size depending on screen size
       this.drawCanvas(canvas);
 
+      this.renderPoints(this.props.sampleViewState.points, canvas);
+
   }
 
 componentWillReceiveProps(nextProps){
-    this.renderPoints(nextProps.sampleViewState.points);
+    this.renderPoints(nextProps.sampleViewState.points, this.state.canvas);
 }
 
   drawCanvas(canvas){
@@ -116,8 +118,9 @@ drawLine(){
 
 
 savePoint(){
+    this.setState({showContextMenu: false});
     this.props.sampleActions.StopClickCentring();
-    this.props.sampleActions.sendSavePoint();
+    this.props.sampleActions.sendSavePoint(this.state.canvas.getActiveObject().id);
 }
 
 zoomIn(){
@@ -141,15 +144,24 @@ lightOnOff(){
   this.setState({lightOn: !this.state.lightOn});
 }
 
-renderPoints(points){
-    
-    this.state.canvas.clear();
-    let heightRatio = this.state.canvas.height/this.props.sampleViewState.height;
-    let widthRatio = this.state.canvas.width/this.props.sampleViewState.width;
+renderPoints(points, canvas){    
+
+    canvas.clear();
+    let heightRatio = canvas.height/this.props.sampleViewState.height;
+    let widthRatio = canvas.width/this.props.sampleViewState.width;
 
     for(let id in points){
-        this.state.canvas.add(makeCircle(points[id].x * widthRatio, points[id].y * heightRatio, id,  "", "SAVED"));
-    }
+      switch (points[id].type){
+        case "SAVED":
+          canvas.add(makeCircle(points[id].x * widthRatio, points[id].y * heightRatio, id,  "green", "SAVED"));
+          break;
+        case "TMP":
+          canvas.add(makeCircle(points[id].x * widthRatio, points[id].y * heightRatio, id,  "grey", "TMP"));
+          break;
+        default:
+          throw new Error("Server gave point with unknown type"); 
+      }
+    } 
 }
 
 

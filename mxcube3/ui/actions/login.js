@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import { getSampleImageSize } from './sampleview'
+import { getSampleImageSize, getPointsPosition } from './sampleview'
 
 export function doLogin(proposal, password) {
     return function(dispatch) {
@@ -13,6 +13,7 @@ export function doLogin(proposal, password) {
           }).then(response => response.json())
           .then(json => {
                 // Here one should check if login is successfull and if so get initial state of MxCube
+                dispatch(getPointsPosition());
                 dispatch(getSampleImageSize());
                 dispatch(afterLogin(json));
           }, () => {
