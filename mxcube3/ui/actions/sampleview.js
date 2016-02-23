@@ -47,6 +47,7 @@ export function sendStartClickCentring() {
   return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/centring/start3click', { 
     method: 'PUT', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -65,6 +66,7 @@ export function sendCentringPoint(x, y) {
   return function() {
    fetch('/mxcube/api/v0.1/sampleview/centring/click', { 
     method: 'PUT', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -82,6 +84,7 @@ export function sendStartAutoCentring() {
   return function() {
    fetch('/mxcube/api/v0.1/sampleview/centring/startauto', { 
     method: 'PUT', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -98,6 +101,7 @@ export function sendSavePoint() {
   return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/centring/0', { 
     method: 'POST', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -118,6 +122,7 @@ export function sendZoomPos(level) {
   return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/zoom', { 
     method: 'PUT', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -138,6 +143,7 @@ export function sendLightOn() {
   return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/lighton', { 
     method: 'PUT', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -156,6 +162,7 @@ export function sendLightOff() {
   return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/lightoff', { 
     method: 'PUT', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -175,6 +182,7 @@ export function sendAbortCentring() {
   return function() {
    fetch('/mxcube/api/v0.1/sampleview/centring/abort', { 
     method: 'PUT', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
@@ -192,6 +200,7 @@ export function getSampleImageSize() {
   return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/camera', { 
     method: 'GET', 
+    credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
