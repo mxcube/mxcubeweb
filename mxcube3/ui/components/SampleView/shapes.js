@@ -1,8 +1,8 @@
-export function makeCircle(x, y, color = "red", type = "TMP") {
+export function makeCircle(x, y, id, color = "red", type = "TMP") {
   return new fabric.Circle({
-    radius: 5, 
+    radius: 10, 
     strokeWidth: 2, 
-    stroke: color,
+    stroke: '',
     fill: '',
     left: x,
     top: y,
@@ -13,8 +13,8 @@ export function makeCircle(x, y, color = "red", type = "TMP") {
     lockScalingY: true,
     type: type,
     originX: 'center',
-    originY: 'center'
-
+    originY: 'center',
+    id: id
   });
 }
 

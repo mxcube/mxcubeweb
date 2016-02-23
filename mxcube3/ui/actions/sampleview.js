@@ -34,6 +34,13 @@ export function SavePoint(point) {
   }
 }
 
+export function DeletePoint(id) {
+  return { 
+    type: "DELETE_POINT",
+    id: id
+  }
+}
+
 export function SaveImageSize(x,y,) {
   return { 
     type: "SAVE_IMAGE_SIZE",
@@ -121,8 +128,8 @@ export function sendSavePoint() {
 }
 
 export function sendDeletePoint(id) {
-  return function() {
-   fetch('/mxcube/api/v0.1/sampleview/centring/pos' + id, { 
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/centring/' + id, { 
     method: 'DELETE', 
     headers: {
       'Accept': 'application/json',
@@ -133,9 +140,8 @@ export function sendDeletePoint(id) {
       throw new Error("Server refused to delete point");
     }
     return response.json();
-  }).then(function(json) {
-      console.log("deleted point");
-      console.log(json);
+  }).then(function() {
+      dispatch(DeletePoint(id));
     });
 
 }

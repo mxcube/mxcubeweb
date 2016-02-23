@@ -2,29 +2,30 @@
 import './SampleView.css';
 import React from 'react'
 import {makeCircle, makeLine} from './shapes'
+import ContextMenu from './ContextMenu'
 
 export default class SampleImage extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      clickCentring: false,
-      pointsCollected : 0,
       canvas: {},
-      centringPoint: null,
-      selectedPointType: "NONE",
+      selectedPoint: "NONE",
       group: null,
-      lightOn: false
-    };
-  }
+      lightOn: false,
+      showContextMenu: false,
+      ContextMenuX: 0,
+      ContextMenuY: 0
+  };
+}
 
-  componentDidMount(){
+componentDidMount(){
 
       // Create fabric and set image background to sample
       var canvas = new fabric.Canvas('canvas');
 
       // Bind leftClick to function
-      canvas.on('mouse:down', (option) => this.leftClick(option, canvas));
+      canvas.on('mouse:down', (option) => this.leftClick(option));
 
       // Bind rigth click to functions, this is not supported by fabric.js and has to be added manually with javascript
       document.getElementById('insideWrapper').addEventListener('contextmenu', (e) => this.rightClick(e,canvas), false);
@@ -39,7 +40,11 @@ export default class SampleImage extends React.Component {
       // Draw canvas and set img size depending on screen size
       this.drawCanvas(canvas);
 
-    }
+  }
+
+componentWillReceiveProps(nextProps){
+    this.renderPoints(nextProps.sampleViewState.points);
+}
 
   drawCanvas(canvas){
 
@@ -64,120 +69,55 @@ export default class SampleImage extends React.Component {
       this.setState({heightRatio: this.props.sampleViewState.height/h, widthRatio: this.props.sampleViewState.width/w});
 
 
-    }
-
-   removeObject(){
-    this.state.canvas.getActiveObject().remove();
-    this.hideContextMenu();
   }
 
-  drawLine(){
-    let points = this.state.group.getObjects();
-    this.state.canvas.add(makeLine(points[0], points[1]));
-    this.hideContextMenu();
-  }
+rightClick(e, canvas){
+     this.setState({showContextMenu: false});
+     var objectFound = false;
+     var clickPoint = new fabric.Point(e.offsetX, e.offsetY);
+     e.preventDefault();
+     canvas.forEachObject((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
+          canvas.setActiveObject(obj);
+          this.setState({showContextMenu: true, selectedPoint: obj.type,ContextMenuX : e.offsetX,ContextMenuY : e.offsetY });
 
-  rightClick(e, canvas){
-   this.hideContextMenu();
-   var objectFound = false;
-   var clickPoint = new fabric.Point(e.offsetX, e.offsetY);
-   e.preventDefault();
-   canvas.forEachObject((obj) => {
-    if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
-      objectFound = true;
-
-      canvas.setActiveObject(obj);
-      this.setState({selectedPointType: obj.type});
-      this.showContextMenu(e.offsetX, e.offsetY);
-    }
+      }
   });
 
-   if(this.state.group && this.state.group.containsPoint(clickPoint)){
-    this.showContextMenu(e.offsetX, e.offsetY);
-    this.setState({selectedPointType: 'GROUP'});
-  }
-}
-
-listOptions(type){
-  switch (type){
-    case 'SAVED':
-    {
-      return ( [ 
-        <li><a onClick={() => this.showModal("characterisation")}>Add Characterisation</a></li>,
-        <li><a onClick={() => this.showModal("datacollection")}>Add Datacollection</a></li>,
-        <hr />,
-        <li><a onClick={() => this.removeObject()}>Delete Point</a></li>
-        ]);
+     if(this.state.group && this.state.group.containsPoint(clickPoint)){
+        this.setState({showContextMenu: true, selectedPoint: 'GROUP',ContextMenuX : e.offsetX,ContextMenuY : e.offsetY });
     }
-    case 'TMP':
-    {
-     return ( [
-      <li><a onClick={() => this.savePoint()}>Save Point</a></li>,
-      <li><a onClick={() => this.removeObject()}>Delete Point</a></li>
-      ]);
-   }
-   case 'GROUP':
-   {
-     return ( [
-      <li><a onClick={() => this.drawLine()}>Draw Line</a></li>,
-      <hr />,
-      <li><a>Delete Selected (NA)</a></li>
-      ]);
-   }
-   case 'LINE':
-   {
-     return ( [
-      <li><a>Add Helical Scan (NA)</a></li>,
-      <hr />,
-      <li><a onClick={() => this.removeObject()}>Delete Line</a></li>
-      ]);
-   }    
- }
+}
+
+leftClick(option){
+
+    this.setState({showContextMenu: false});
+
+    if(this.props.sampleViewState.clickCentring){
+        this.props.sampleActions.sendCentringPoint(option.e.layerX * this.state.widthRatio, option.e.layerY  * this.state.heightRatio);
+    }
 }
 
 
-leftClick(option, canvas){
 
-  this.hideContextMenu();
-  let pointsCollected = this.state.pointsCollected;
 
-  if(pointsCollected < 3 && this.props.sampleViewState.clickCentring){
-    (this.state.centringPoint ? this.state.centringPoint.remove(): '');
-    let circle = makeCircle(option.e.layerX, option.e.layerY);
-    canvas.add(circle);
-    this.props.sampleActions.sendCentringPoint(option.e.layerX * this.state.widthRatio, option.e.layerY  * this.state.heightRatio);
-    this.setState({pointsCollected: ++pointsCollected, centringPoint: circle, selectedPoint: circle.type});
-  }else if(pointsCollected === 3){
-    this.setState({
-      pointsCollected: 0
-    });
-    this.props.sampleActions.StopClickCentring();
-  }
-
+removeObject(){
+    this.props.sampleActions.sendDeletePoint(this.state.canvas.getActiveObject().id);
+    this.state.canvas.getActiveObject().remove();
+    this.setState({showContextMenu: false});
 }
 
-showModal(modalName){
-  this.props.showForm(modalName, true);
-  this.hideContextMenu();
+drawLine(){
+    let points = this.state.group.getObjects();
+    this.state.canvas.add(makeLine(points[0], points[1]));
+    this.setState({showContextMenu: false});
 }
+
 
 savePoint(){
-  let point = makeCircle(this.state.centringPoint.left, this.state.centringPoint.top, "green", "SAVED");
-  this.state.canvas.add(point);
-  this.state.centringPoint.remove();
-  this.hideContextMenu();
-  this.props.sampleActions.sendSavePoint();
-
-}
-
-showContextMenu(x,y){
-  document.getElementById("contextMenu").style.top = y + "px";
-  document.getElementById("contextMenu").style.left = x + "px";
-  document.getElementById("contextMenu").style.display = "block";
-}
-
-hideContextMenu(){
-  document.getElementById("contextMenu").style.display = "none";
+    this.props.sampleActions.StopClickCentring();
+    this.props.sampleActions.sendSavePoint();
 }
 
 zoomIn(){
@@ -187,9 +127,9 @@ zoomIn(){
 }
 
 zoomOut(){
-   if(this.props.sampleViewState.zoom > 0){
-      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
-  }
+ if(this.props.sampleViewState.zoom > 0){
+  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
+}
 }
 
 takeSnapShot(){
@@ -201,14 +141,23 @@ lightOnOff(){
   this.setState({lightOn: !this.state.lightOn});
 }
 
+renderPoints(points){
+    
+    this.state.canvas.clear();
+    let heightRatio = this.state.canvas.height/this.props.sampleViewState.height;
+    let widthRatio = this.state.canvas.width/this.props.sampleViewState.width;
+
+    for(let id in points){
+        this.state.canvas.add(makeCircle(points[id].x * widthRatio, points[id].y * heightRatio, id,  "", "SAVED"));
+    }
+}
+
 
   render() {
 
     return (
                 <div>
-                  <ul id="contextMenu" className="dropdown-menu" role="menu">
-                          {this.listOptions(this.state.selectedPointType)}
-                  </ul>
+                  <ContextMenu show={this.state.showContextMenu} type={this.state.selectedPoint} x={this.state.ContextMenuX} y={this.state.ContextMenuY} showForm={this.props.showForm} deleteShape={() => this.removeObject()} saveShape={() => this.savePoint()}/>
                   <div className="outsideWrapper" id="outsideWrapper">
                     <div className="insideWrapper" id="insideWrapper">
                       <img id= "sample-img" className='img' src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="" />
@@ -217,7 +166,7 @@ lightOnOff(){
                     <div className="sample-controlls">
                       <div className="text-center"> 
                             <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.savePoint()}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
-                            <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={this.measureDistance}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
+                            <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={() =>  this.props.sampleActions.getPointsPosition()}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
                             <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.takeSnapShot()} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
                             <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartAutoCentring()}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
                             <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartClickCentring()}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>

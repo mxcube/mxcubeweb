@@ -1,3 +1,4 @@
+import {omit} from 'lodash/object';
 const initialState = {
   clickCentring: false,
   zoom: 0,
@@ -25,6 +26,10 @@ export default (state=initialState, action) => {
         case 'SAVE_POINT':
             {
              return {...state, points: {...state.points, [action.point.posId] : action.point }};
+            }
+        case 'DELETE_POINT':
+            {
+             return {...state, points: omit(state.points, action.id)};
             }
         case 'SAVE_IMAGE_SIZE':
             {
