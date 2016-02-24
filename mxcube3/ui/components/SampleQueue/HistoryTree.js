@@ -65,7 +65,7 @@ export default class HistoryTree extends React.Component {
       children: historyFiltered.map((queue_id) => {
         let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
         return {
-          module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
+          module: 'Vial ' + sampleData.id,
           queue_id: queue_id,
           sample_id: sampleData.id,
           type: "Sample",

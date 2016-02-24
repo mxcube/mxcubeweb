@@ -31,7 +31,6 @@ export default class CurrentTree extends React.Component {
    renderSample(node){
     return (
       <span className="node node-sample" onClick={() => this.props.select(node.queue_id, node.sample_id)}>
-        <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
         <span className="node-name">{node.module}</span>
         <i className="fa fa-play"  onClick={() => this.props.run(node.queue_id)}></i>
       </span>
@@ -66,7 +65,7 @@ export default class CurrentTree extends React.Component {
       module: 'Current',
       type: "Root",
       children:  (sampleData ? [ {
-          module: 'Vial ' + sampleData.id + " " + sampleData.proteinAcronym,
+          module: 'Vial ' + sampleData.id,
           queue_id: this.props.currentNode,
           sample_id: sampleData.id,
           type: "Sample",
