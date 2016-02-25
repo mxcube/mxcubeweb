@@ -188,11 +188,6 @@ renderPoints(points, canvas){
                             <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={() => this.lightOnOff()}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
                             </div>
                     </div>
-                    <div className="sample-controlls">
-                            <input type="number" className="camera-controll" id="kappa" placeholder="Kappa" />
-                            <input type="number" className="camera-controll" id="omega" placeholder="Omega" />
-                            <input type="number" className="camera-controll" id="phi" placeholder="Phi" />
-                    </div>
                 </div>
               
 

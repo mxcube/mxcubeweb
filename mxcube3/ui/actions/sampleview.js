@@ -49,6 +49,21 @@ export function SaveImageSize(x,y,) {
   }
 }
 
+export function saveMotorPositions(data) {
+  return { 
+    type: "SAVE_MOTOR_POSITIONS",
+    data:data
+  }
+}
+
+export function saveMotorPosition(name, value) {
+  return { 
+    type: "SAVE_MOTOR_POSITIONS",
+    name:name,
+    value: value
+  }
+}
+
 export function updatePointsPosition(points) {
   return { 
     type: "UPDATE_POINTS_POSITION",
@@ -86,6 +101,7 @@ export function sendCentringPoint(x, y) {
     },
     body: JSON.stringify({clickPos:{ x : x, y: y }})
   }).then(function(response) {
+    console.log()
     if (response.status >= 400) {
       throw new Error("Server refused to add point");
     }
@@ -211,6 +227,25 @@ export function sendLightOff() {
 }
 }
 
+export function sendMotorPosition(motorName, value) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/' + value, { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to move motors");
+    }else{
+      dispatch(saveMotorPosition(motorName, value));
+    }
+  });
+}
+}
+
 export function sendAbortCentring() {
   return function() {
    fetch('/mxcube/api/v0.1/sampleview/centring/abort', { 
@@ -245,6 +280,28 @@ export function getSampleImageSize() {
  return response.json();
   }).then(function(json) {
       dispatch(SaveImageSize(json.imageWidth, json.imageHeight));
+    });
+
+}
+}
+
+
+export function getMotorPositions() {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview', { 
+    method: 'GET', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to get motorposition");
+    }
+ return response.json();
+  }).then(function(json) {
+      dispatch(saveMotorPositions(json));
     });
 
 }

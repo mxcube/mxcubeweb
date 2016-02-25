@@ -36,7 +36,8 @@
     border: 1px solid #AAA;
     border-radius: 3px;
     box-shadow: 0px 2px 3px 0px #AAA;
-    height: 300px;
+    min-height: 300px;
+    overflow: hidden;
 }
 
 .camera-controll{
@@ -55,4 +56,15 @@
 .img{
     position:absolute;
     text-align: left;
+}
+
+.motor-group{
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 0px;
+}
+
+.motor-button{
+    margin: 15px !important;
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SampleImage from '../components/SampleView/SampleImage';
+import MotorControl from '../components/SampleView/MotorControl';
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
@@ -10,15 +11,6 @@ import { showForm } from '../actions/methodForm'
 
 class SampleViewContainer extends Component {
 
-  renderPoint(value){
-    return(
-       <tr>
-     <td colSpan="3">
-          <div>Point {value.posId}</div>                             
-     </td>
-     </tr>
-     );
-  }
 
   render() {
     return (
@@ -26,17 +18,17 @@ class SampleViewContainer extends Component {
       <div className="col-xs-3">
         <div className="information-box"><h2 className="text-center">Saved Points</h2>
         <hr className="divider" />
-        <table id="newtable" className="table table-bordered table-striped fixedtable">
-    <tbody>
 
-    </tbody>    
-</table>  
         </div>
       </div>
         <div className="col-xs-6">
                   <SampleImage showForm={this.props.showForm} sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} />
         </div>
-  </div>
+
+        <div className="col-xs-3">
+            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors}/>
+        </div>
+      </div>
     )
   }
 }

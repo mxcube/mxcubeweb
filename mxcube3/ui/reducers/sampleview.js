@@ -1,12 +1,14 @@
 import {omit} from 'lodash/object';
 const initialState = {
   clickCentring: false,
+  clickCentringPoints: [],
   zoom: 0,
   points: {},
   width: 0,
   height: 0,
   ratioWidthHeigth: 1,
-  lightOn: false
+  lightOn: false,
+  motors: {}
 }
 
 export default (state=initialState, action) => {
@@ -34,6 +36,14 @@ export default (state=initialState, action) => {
         case 'SAVE_IMAGE_SIZE':
             {
              return {...state, width: action.width, height: action.height, ratioWidthHeigth: action.width/action.height };
+            }
+        case 'SAVE_MOTOR_POSITIONS':
+            {
+             return {...state, motors: action.data };
+            }
+        case 'SAVE_MOTOR_POSITION':
+            {
+             return {...state, motors: {...state.motors, [action.name] : {position: action.value}} };
             }
         case 'SET_LIGHT':
             {
