@@ -10,7 +10,7 @@ import json
 import queue_model_objects_v1 as qmo
 import QueueManager
 #for mocking the view of the queue, easier than adding sth like if not view:
-from mock import Mock
+from HardwareRepository.BaseHardwareObjects import Null as Mock #mock import Mock
 import signals
 import Utils
 import types
