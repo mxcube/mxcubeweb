@@ -13,6 +13,8 @@ SAMPLE_IMAGE = None
 def init_signals():
     for signal in signals.microdiffSignals:
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
+    mxcube.diffractometer.centred_pos = []
+    signals.centredPos = mxcube.diffractometer.centred_pos
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
@@ -95,7 +97,6 @@ def getImageData():
 ###----SAMPLE CENTRING----###
 clicks = collections.deque(maxlen=3)
 
-centred_pos = []
 ####
 #To access parameters submitted in the URL (?key=value) you can use the args attribute:
 #searchword = request.args.get('key', '')
@@ -109,7 +110,7 @@ def getCentringWithId(id):
     return_data = {"id": {x,y}, error code 200/409}
     """
     try:
-        for cpos in centred_pos:
+        for cpos in mxcube.diffractometer.centred_pos:
             if cpos[cpos.keys()[1]] == id:
                 resp = jsonify(cpos)  # {'QueueId': nodeId} )
                 resp.status_code = 200
@@ -138,14 +139,14 @@ def saveCentringWithId(id):
                 }
         #or
         #motorPositions = mxcube.diffractometer.getPositions()
-        centred_pos.append(data)
+        mxcube.diffractometer.centred_pos.append(data)
         logging.getLogger('HWR.MX3').info('[Centring] Centring Positions saved:' + str(data))
         resp = jsonify(data)
         resp.status_code = 200
         return resp
     except AttributeError:
         data = {'name': centredPosId}
-        centred_pos.append(data)
+        mxcube.diffractometer.centred_pos.append(data)
         logging.getLogger('HWR.MX3').info('[Centring] Centring Positions saved:' + str(data))
         resp = jsonify(data)  # {'QueueId': nodeId} )
         resp.status_code = 200
@@ -163,7 +164,7 @@ def updateCentringWithId(id):
     params = request.data
     params = json.loads(params)
     try:
-        for cpos in centred_pos:
+        for cpos in mxcube.diffractometer.centred_pos:
             if cpos[cpos.keys()[1]] == id:
                 cpos.update(params)
                 resp = jsonify(cpos)
@@ -182,9 +183,9 @@ def deleteCentringWithId(id):
     return_data= removed entry plus error code 200/409
     """
     try:
-        for cpos in centred_pos:
+        for cpos in mxcube.diffractometer.centred_pos:
             if cpos.get('name') == id:
-                centred_pos.remove(cpos)
+                mxcube.diffractometer.centred_pos.remove(cpos)
                 resp = jsonify(cpos)
                 resp.status_code = 200
                 return resp
@@ -202,7 +203,7 @@ def moveToCentredPosition(id):
         position: str
     Return: '200' if command issued succesfully, otherwise '409'.
     """
-    motorPositions = [d['motorPositions'] for d in centred_pos if d.get('name') == id]
+    motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.centred_pos if d.get('name') == id]
     #or moveMotors(self, roles_positions_dict)???
     try:
         mxcube.diffractometer.moveToCentredPosition(motorPositions)
