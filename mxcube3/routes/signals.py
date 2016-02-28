@@ -1,11 +1,9 @@
 import logging, json, inspect
-#from flask.ext.socketio import emit
 from mxcube3 import socketio
-from .Queue import queueList, lastQueueNode
+from mxcube3 import app as mxcube
 import time
-MaxLabMicrodiff_signals = ['minidiffReady','minidiffNotReady','phizMotorStateChanged','phiyMotorStateChanged','zoomMotorPredefinedPositionChanged','zoomMotorStateChanged','sampxMotorStateChanged','sampyMotorStateChanged','centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving','centringFailed','centringSuccessful','progressMessage','centringSnapshots'] #'phiMotorStateChanged','minidiffStateChanged', 'diffractometerMoved', removed to cleanup the log
 
-BL9113MultiCollect_signals = ['collectConnected', 'collectReady',  'collectNumberOfFrames', 'collectImageTaken','collectReady','collectStarted','collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished','collectEnded']
+centredPos = []
 
 @socketio.on('connect', namespace='/hwr')
 def connect():
@@ -15,7 +13,7 @@ def connect():
 
 collectSignals = ['collectStarted', 'collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished','collectEnded', 'testSignal', 'collectReady', 'warning']
 queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] #'centringAllowed',
-microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving','centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning']
+microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving','centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning', 'positionChanged', 'phiMotorStateChanged','phiyMotorStateChanged','phizMotorStateChanged', 'sampxMotorStateChanged', 'sampyMotorStateChanged', 'minidiffStateChanged'] #'diffractometerMoved', 
 
 okSignals = ['Successful', 'Finished', 'finished','Ended', 'Accepted'] 
 failedSignals = ['Failed','Invalid']
@@ -42,14 +40,30 @@ def signalCallback(*args, **kwargs):
     for sig in warnSignals:
         if sig in signal:
             result = 4
-
+        
+    # NOT SURE ABOUT THIS ONE
+    #lastQueueNode = session.get("lastQueueNode")
+    lastQueueNode = mxcube.queue.lastQueueNode
     if len(args) >0:
         if args[0] in queueSignals:
             msg = {'data':'no data', 'signal': args[0],'sender':sender, 'queueId':lastQueueNode['id'], 'sample' :lastQueueNode['sample'] ,'state':result}
         else:
-            msg = {'data':json.dumps(args), 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
+            if signal == 'minidiffStateChanged':
+                aux = {}
+                for p in centredPos:
+                    aux.update({p['posId']:p})
+                msg = {'data': aux, 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
+            else:
+                msg = {'data':json.dumps(args), 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
     else:
-        msg = {'data':'no data', 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
+        if signal == 'minidiffStateChanged':
+            aux = {}
+            for p in centredPos:
+                aux.update({p['posId']:p})
+            msg = {'data': aux, 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
+        else:
+            msg = {'data':'no data', 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
+            msg = {'data':json.dumps(args), 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
     
     logging.getLogger("HWR").debug('Signal callback. origin: "%s",signal: "%s", queueId: "%s", result: "%d"' %(sender,signal, lastQueueNode['id'], result))
     try:
