@@ -10,13 +10,14 @@ import json
 import queue_model_objects_v1 as qmo
 import QueueManager
 #for mocking the view of the queue, easier than adding sth like if not view:
-from mock import Mock
+from HardwareRepository.BaseHardwareObjects import Null as Mock #mock import Mock
 import signals
 import Utils
 import types
 from mxcube3 import socketio
 import queue_entry as qe
 from queue_entry import QueueEntryContainer
+import jsonpickle
 qm = QueueManager.QueueManager('Mxcube3')
 #qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
@@ -685,6 +686,15 @@ def getMethod(sampleid, methodid):
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved')
         return Response(status=409)
+
+@mxcube.route("/mxcube/api/v0.1/queue/json", methods=["GET"])
+def serialize():
+    try:
+        return Response(response=jsonpickle.encode(mxcube.queue), status=200, mimetype="application/json")
+    except Exception:
+        logging.getLogger("HWR").exception("[QUEUE] cannot serialize")
+        return Response(status=409)
+
 
 #####################################
 ###to be programmed....
