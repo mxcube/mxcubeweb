@@ -2,6 +2,7 @@
 <equipment class="DiffractometerMockup">
   <username>Minidiff</username>
   <object role="focus" hwrid="./udiff_phix"></object>
+  <object role="zoom" hwrid="./udiff_zoom"></object>
   <object role="phiy" hwrid="./udiff_phiy"></object> 
   <object role="sampx" hwrid="./udiff_sampx"></object>
   <object role="sampy" hwrid="./udiff_sampy"></object>
@@ -9,7 +10,7 @@
   <object role="kappa_phi" hwrid="./udiff_kappaphi"></object>
   <object role="beam_info" hwrid="./beam_info"></object>
   <others>
-    <object role="camera" hwrid="./md_camera"></object>
+    <object role="camera" hwrid="./md2camera"></object>
     <object role="sample_changer" hwrid="./sc-mockup"></object>
   </others>
   <kappa>

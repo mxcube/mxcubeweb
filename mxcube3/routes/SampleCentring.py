@@ -83,6 +83,12 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     for p in mxcube.diffractometer.savedCentredPos:
         x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
         p.update({'x':x, 'y': y})
+    #background = Image.open(img)
+    #('/mxn/home/mikegu/mxcube3/test/HardwareObjectsMockup.xml/mxcube_sample_snapshot.jpeg', 'r')#.read()
+    #layer = drawTopLayer()
+    #background.paste(layer, (0, 0), layer)
+    #background.save("aux.jpg", "JPEG")
+    #SAMPLE_IMAGE = open( "aux.jpg", 'rb').read()
     mxcube.diffractometer.camera.new_frame.set()
     mxcube.diffractometer.camera.new_frame.clear()
 
@@ -193,6 +199,7 @@ def saveCentringWithId(posid):
     # params = request.data
     # params = json.loads(params)
     # x, y = params['x'], params['y']
+<<<<<<< HEAD
     # centredPosId = 'pos' + str(len(centredPos)+1)
     # global posId
     # posId += 1
@@ -261,7 +268,6 @@ def moveToCentredPosition(id):
     Return: '200' if command issued succesfully, otherwise '409'.
     """
     motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('name') == id]
-    #or moveMotors(self, roles_positions_dict)???
     try:
         mxcube.diffractometer.moveToCentredPosition(motorPositions)
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
@@ -463,6 +469,7 @@ def aClick():
         x, y: int
     Return: '200' if command issued succesfully, otherwise '409'.
     """
+<<<<<<< HEAD
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)

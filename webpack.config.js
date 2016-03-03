@@ -23,14 +23,13 @@ var config = {
         },
     },
     module: {
-      // Removed as it does not work with es7 and needs to be changed to babel-eslint
-        // preLoaders: [
-        //     {
-        //         test: /(\.js$|\.jsx$)/,
-        //         exclude: /node_modules/,
-        //         loader: "eslint-loader"
-        //     }
-        // ],
+     preLoaders: [
+      {
+        test: /\.jsx?$/,
+        loaders: ['eslint'],
+        exclude: /node_modules/
+      }
+    ],
       loaders: [
       {
         test: /isotope-layout/,
@@ -47,7 +46,7 @@ var config = {
     {
       test: /\.jsx?$/,
       loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=stage-0'],
-      exclude: /node_modules/,
+      exclude: /node_modules/
 
     },
     {

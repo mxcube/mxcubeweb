@@ -1,10 +1,6 @@
 'use strict';
-import ReactDOM from 'react-dom';
-import React, { Component, PropTypes } from 'react'
-import { Redirect, Router, Route } from 'react-router';
-import classNames from 'classnames';
-import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import { Input, ButtonInput, Form, Well } from "react-bootstrap";
+import React from 'react'
+import { Input, ButtonInput } from "react-bootstrap";
 import './Login.css';
 import {reduxForm} from 'redux-form';
 import { ErrorNotificationPanel } from '../Logging'
@@ -24,7 +20,7 @@ class Login extends React.Component {
       window.location.assign("#/");    
     }
   }
-
+  
   signIn(){
       let fields = this.props.fields;
       this.props.signIn(fields.username.value, fields.password.value);

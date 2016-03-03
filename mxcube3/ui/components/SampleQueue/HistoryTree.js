@@ -1,11 +1,11 @@
 'use strict';
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import "bootstrap-webpack"
 import Tree from 'react-ui-tree'
 import cx from 'classnames'
 import "./app.less"
 
-export default class HistoryTree extends Component {
+export default class HistoryTree extends React.Component {
 
   // The render method call from Tree, this checks what node is to be renderd and calls new function
   renderNode(node) {
@@ -17,15 +17,13 @@ export default class HistoryTree extends Component {
       case 'Method':
         return this.renderMethod(node);
       default:
-        console.log('Type not found');
+        throw new Error("Type not found, tree"); 
     }
   }
 
   renderRoot(node){
     return (
-      <span className="node node-root">
-        <span className="node-name">{node.module}</span>
-      </span>
+        <p className="queue-root">{node.module}</p>
     );
 
   }
@@ -45,7 +43,7 @@ export default class HistoryTree extends Component {
       'active': node.state===1,
       'success': node.state===2,
       'error': node.state===3,
-      'warning': node.state===4,
+      'warning': node.state===4
     }); 
     return (
       <span className={methodClass}  onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
@@ -55,11 +53,6 @@ export default class HistoryTree extends Component {
     
   }
 
-  // Checking what queue node is pressed and selecting it
-  // Handle when a user is changing the order in the tree
-  handleChange(tree) {
-
-  }
 
   createTree(){
     let historyFiltered = this.props.historyList.filter((queue_id) => {
@@ -67,7 +60,7 @@ export default class HistoryTree extends Component {
         return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
     });
     let tree = {
-      module: 'Sample Queue - History',
+      module: 'History',
       type: "Root",
       children: historyFiltered.map((queue_id) => {
         let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
@@ -101,7 +94,6 @@ export default class HistoryTree extends Component {
           <Tree
             paddingLeft={20}
             tree={tree}
-            onChange={this.handleChange.bind(this)}
             renderNode={this.renderNode.bind(this)}/>
     );
   }

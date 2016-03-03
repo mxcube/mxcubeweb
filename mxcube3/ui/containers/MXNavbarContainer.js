@@ -1,18 +1,15 @@
-import React, { Component, PropTypes } from 'react';
-import { bindActionCreators } from 'redux';
+import React from 'react';
 import { connect } from 'react-redux';
-import { doLogin, getLoginInfo } from '../actions/login';
 import MXNavbar from '../components/MXNavbar/MXNavbar'
 import { doSignOut } from '../actions/login'
-import { sendState, getState } from '../actions/queue'
 
 
 
-class MXNavbarContainer extends Component {
+class MXNavbarContainer extends React.Component {
 
   render() {
     return (
-    	<MXNavbar userInfo={this.props.userInfo} signOut={this.props.signOut} loggedIn={this.props.loggedIn} />
+        <MXNavbar userInfo={this.props.userInfo} signOut={this.props.signOut} loggedIn={this.props.loggedIn} />
     )
   }
 }
@@ -29,7 +26,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        signOut: () => dispatch(doSignOut()),
+        signOut: () => dispatch(doSignOut())
     }
 }
 

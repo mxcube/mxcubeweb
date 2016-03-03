@@ -1,13 +1,20 @@
 import React, {Component} from 'react';
 import {reduxForm} from 'redux-form';
+import { Input, Button, Glyphicon } from "react-bootstrap"
+
 
 class SampleQueueSearch extends Component {
   render() {
     const {fields: {sampleName}} = this.props;
+
+    const innerSearchIcon = (
+      <Button><Glyphicon glyph="search"/></Button>
+    );
+
     return (
-        <div className="sample-search">
-          <input type="text" placeholder="Search Sample" {...sampleName}/>
-        </div>
+         <form>
+                <Input type="text" placeholder="Search Sample" buttonAfter={innerSearchIcon} {...sampleName} />
+         </form>
     );
   }
 }

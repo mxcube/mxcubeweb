@@ -1,11 +1,10 @@
 'use strict';
 require("font-awesome-webpack");
 
-import React, { Component, PropTypes } from 'react'
-import Modal from 'react-modal';
+import React from 'react'
 import "./app.less"
 
-export default class SampleQueueButtons extends Component {
+export default class SampleQueueButtons extends React.Component {
 
 
      handleSubmit(){
@@ -19,11 +18,11 @@ export default class SampleQueueButtons extends Component {
 
 
     render() { 
-        let selected = this.props.selected;
-
         return (
              <div className='footer-buttons'>
-                 <a className='btn btn-primary queue-button' onClick={() => this.handleSubmit()}>
+
+                    <div className='queue-box'>
+                        <a className='btn btn-primary queue-button' onClick={() => this.handleSubmit()}>
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Centring
                         </a>
@@ -35,6 +34,8 @@ export default class SampleQueueButtons extends Component {
                             <i className='fa fa-fw fa-plus-square'></i>
                                 Datacollection
                         </a>
+                    </div>
+                    <div className='queue-box'>
                         <button type="button" className="btn queue-controlls" onClick={() => this.props.pauseQueue()}>
                             <i className="fa fa-pause"></i>
                         </button>
@@ -44,6 +45,7 @@ export default class SampleQueueButtons extends Component {
                         <button type="button" className="btn queue-controlls" onClick={() => this.props.stopQueue()}>
                             <i className="fa fa-stop"></i>
                         </button>
+                    </div>
             </div>
         );
     }

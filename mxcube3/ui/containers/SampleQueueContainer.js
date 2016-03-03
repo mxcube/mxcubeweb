@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SampleQueueSearch from '../components/SampleQueue/SampleQueueSearch';
@@ -11,7 +11,7 @@ import * as SampleActions from '../actions/samples_grid'
 import { showForm } from '../actions/methodForm'
 
 
-class SampleQueueContainer extends Component {
+class SampleQueueContainer extends React.Component {
 
 // 0 = Started(Blue), 1 = Finished(Green), 2 = Failed(Red), 3 = Warning (Orange)
 // Mount will kick down
@@ -26,16 +26,17 @@ class SampleQueueContainer extends Component {
 
     // Start listening to socketIO to get results of method/sample execution
     socket.on('hwr_record', (record) => {
-          console.log(record);
-          doAddMethodResult(record.sample, record.queueId, record.state)
+          if(record.sample !==0 && record.queueId !== 0){
+            doAddMethodResult(record.sample, record.queueId, record.state)
+          }
     });
   }
 
     
   render() {
 
-    const {selected, checked, lookup, todo, history, showForm, current, sampleInformation, queue, searchString} = this.props;
-    const {sendToggleCheckBox, sendChangeOrder, sendDeleteSample, finishSample, sendRunSample,sendMountSample, selectSample, sendPauseQueue, sendRunQueue, sendStopQueue} = this.props.queueActions;
+    const { checked, lookup, todo, history, showForm, current, sampleInformation, queue, searchString} = this.props;
+    const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, selectSample, sendPauseQueue, sendRunQueue, sendStopQueue} = this.props.queueActions;
     const {sendDeleteSampleMethod, sendAddSampleMethod} = this.props.sampleActions;
 
     return (
@@ -44,11 +45,12 @@ class SampleQueueContainer extends Component {
       <div className="row">
             <div className="col-xs-12 queue">
                 <SampleQueueSearch />
-                <i className="fa fa-check-circle-o" onClick={() => finishSample(this.props.current)}> Press the icon to finish sample</i>
                 <CurrentTree showForm={showForm} currentNode={current} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} />
                 <TodoTree showForm={showForm} todoList={todo} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} select={selectSample} deleteSample={sendDeleteSample} deleteMethod={sendDeleteSampleMethod} mount={sendMountSample} searchString={searchString}/>
                 <HistoryTree showForm={showForm} historyList={history} sampleInformation={sampleInformation} queue={queue} lookup={lookup} select={selectSample} searchString={searchString}/>
-                <SampleQueueButtons showForm={showForm} addMethod={sendAddSampleMethod} selected={selected} checked={checked} lookup={lookup} pauseQueue={sendPauseQueue}  stopQueue={sendStopQueue} runQueue={sendRunQueue}/>
+            </div>
+            <div className="col-xs-12">
+                <SampleQueueButtons showForm={showForm} addMethod={sendAddSampleMethod} checked={checked} lookup={lookup} pauseQueue={sendPauseQueue}  stopQueue={sendStopQueue} runQueue={sendRunQueue}/>
             </div>
       </div>
     )
@@ -64,7 +66,6 @@ function mapStateToProps(state) {
           todo: state.queue.todo,
           history: state.queue.history,
           queue: state.queue.queue,
-          selected: state.queue.selected,
           sampleInformation: state.samples_grid.samples_list,
           checked: state.queue.checked,
           lookup: state.queue.lookup,

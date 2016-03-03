@@ -5,3 +5,7 @@
 .main-content{
 	padding-top: 60px;
 }
+
+body{
+	background-color: rgba(0,0,0,0.035);
+}

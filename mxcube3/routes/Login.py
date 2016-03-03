@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import session, request, jsonify
 from mxcube3 import app as mxcube
 import logging
 import os
@@ -31,13 +31,9 @@ def login():
 
     loginRes = mxcube.db_connection.login(loginID, password)
     if loginRes['status']['code'] == 'ok':
-        mxcube.session.proposal_id = loginID
-        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'queue-'+loginID+'.txt')
-        if os.path.isfile(filename):
-            loginRes['StoredSession'] = True
-        else:
-            loginRes['StoredSession'] = False
-
+        session['proposal_id'] = loginID
+        session['loginInfo'] = { 'loginID': loginID, 'password': password, 'loginRes': loginRes }
+        mxcube.session.proposal_id = loginID #do we still need this?
 #        loginRes structure
 #        {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal,
 #        'session': todays_session,
@@ -46,6 +42,11 @@ def login():
 #        "laboratory": prop['Laboratory']}
     return jsonify(convert_to_dict(loginRes))
 
+@mxcube.route("/mxcube/api/v0.1/signout")
+def signout():
+    session['loginInfo'] = None
+    return ""
+
 # information to display on the login page
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
 def loginInfo():
@@ -53,10 +54,22 @@ def loginInfo():
     beamline_name = mxcube.session.beamline_name
     loginType = mxcube.db_connection.loginType.title()
 
+    loginInfo = session.get("loginInfo")
+    if loginInfo is None:
+        session["queueList"] = {}
+        session["queueOrder"] = []
+        session["queueState"] = {}
+        session["sampleGridState"] = {}
+        session["lastQueueNode"] = {'id': 0, 'sample': 0}
+    else:
+        loginInfo["loginRes"] = mxcube.db_connection.login(loginInfo["loginID"], loginInfo["password"])
+        session['loginInfo'] = loginInfo
+ 
     return jsonify(
                     {"synchrotron_name": synchrotron_name,
                     "beamline_name": beamline_name,
-                    "loginType": loginType
+                    "loginType": loginType,
+                    "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {})
                     }
                    )
 

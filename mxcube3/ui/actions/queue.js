@@ -52,10 +52,11 @@ export function getState() {
 	return function(dispatch) {
 		fetch('mxcube/api/v0.1/queue/state', { 
 			method: 'GET', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused send state");
@@ -76,6 +77,7 @@ export function sendState() {
 		let state = getState();
 		fetch('mxcube/api/v0.1/queue/state', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -91,63 +93,66 @@ export function sendState() {
 }
 
 export function sendRunQueue() {
-	return function(dispatch) {
+	return function() {
 
 		fetch('mxcube/api/v0.1/queue/start', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to start queue");
 			}
 		})
 		.then(function() {
-			dispatch(setQueueState("started"));
+			//dispatch(setQueueState("started"));
 		});
 
 	}
 }
 
 export function sendPauseQueue() {
-	return function(dispatch) {
+	return function() {
 
 		fetch('mxcube/api/v0.1/queue/pause', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to pause queue");
 			}
 		})
 		.then(function() {
-			dispatch(setQueueState("paused"));
+			//dispatch(setQueueState("paused"));
 		});
 
 	}
 }
 
 export function sendStopQueue() {
-	return function(dispatch) {
+	return function() {
 
 		fetch('mxcube/api/v0.1/queue/stop', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to stop queue");
 			}
 		})
 		.then(function() {
-			dispatch(setQueueState("stopped"));
+			//dispatch(setQueueState("stopped"));
 		});
 
 	}
@@ -158,10 +163,11 @@ export function sendClearQueue() {
 
 		fetch('mxcube/api/v0.1/queue/clear', { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
-			},
+			}
 		}).then(function(response) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to clear queue");
@@ -179,6 +185,7 @@ export function sendAddSample(id) {
 
 		fetch('mxcube/api/v0.1/queue', { 
 			method: 'POST', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -205,6 +212,7 @@ export function sendDeleteSample(queue_id) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id, { 
 			method: 'DELETE', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -228,6 +236,7 @@ export function sendMountSample(queue_id) {
 
 		fetch('mxcube/api/v0.1/sample_changer/' + queue_id + "/mount", { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -251,6 +260,7 @@ export function sendRunSample(queue_id) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id + "/execute", { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -274,6 +284,7 @@ export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id + "/toggle", { 
 			method: 'PUT', 
+                        credentials: 'include',
 			headers: {
 				'Accept': 'application/json',
 				'Content-type': 'application/json'
@@ -313,12 +324,6 @@ export function mountSample(queue_id) {
 	}
 }
 
-export function finishSample(queue_id) {
-	return { 
-		type: "FINISH_SAMPLE", 
-		queue_id: queue_id
-	}
-}
 
 
 

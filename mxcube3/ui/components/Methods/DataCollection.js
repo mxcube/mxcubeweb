@@ -1,11 +1,11 @@
 'use strict';
 
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import {reduxForm} from 'redux-form';
 import Modal from 'react-modal';
 
 
-class DataCollection extends Component {
+class DataCollection extends React.Component {
 
     constructor(props) {
         super(props);
@@ -78,6 +78,8 @@ class DataCollection extends Component {
             };
         if (this.state.method){
             this.props.changeMethod(parameters);
+        }else if(this.props.point){
+            (this.props.lookup[this.props.current] ? this.props.addMethod(this.props.current, this.props.lookup[this.props.current],parameters): '');
         }else{
             this.props.checked.map( (queue_id) =>{
                  (this.props.lookup[queue_id] ? this.props.addMethod(queue_id, this.props.lookup[queue_id],parameters) : '');
@@ -109,7 +111,7 @@ class DataCollection extends Component {
             right                      : '40px',
             bottom                     : '40px',
             border                     : 'none',
-            background                 : '#fff',
+            background                 : 'none',
             overflow                   : 'auto',
             WebkitOverflowScrolling    : 'touch',
             borderRadius               : '4px',
