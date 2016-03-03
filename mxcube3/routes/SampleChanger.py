@@ -27,7 +27,7 @@ def mountSample(sample):
     try:
         sampleNode = mxcube.queue.get_node(int(sample))
         sampleLocation = sampleNode.location
-        lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[0] + ':' + sampleLocation[1])})
+        mxcube.queue.lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[0] + ':' + sampleLocation[1])})
         session["lastQueueNode"] = lastQueueNode
         #mxcube.sample_changer.load_sample
         #TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
