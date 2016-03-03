@@ -1,5 +1,4 @@
 import logging, json, inspect
-<<<<<<< HEAD
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from flask import session

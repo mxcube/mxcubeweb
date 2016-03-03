@@ -199,7 +199,6 @@ def saveCentringWithId(posid):
     # params = request.data
     # params = json.loads(params)
     # x, y = params['x'], params['y']
-<<<<<<< HEAD
     # centredPosId = 'pos' + str(len(centredPos)+1)
     # global posId
     # posId += 1
@@ -386,8 +385,8 @@ def get_status():
         moveables: 'Kappa', 'Omega', 'Phi', 'Zoom', 'Light'
 
     """
-    motors = ['Kappa', 'Kappa_phi','Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'Light','BackLight','Sampx', 'Sampy']  # more are needed
-
+    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'Light','BackLight','Sampx', 'Sampy']  # more are needed
+    #'Kappa', 'Kappa_phi',
     data = {}
     try:
         for mot in motors:
@@ -397,7 +396,7 @@ def get_status():
                 status = "unknown"
             elif mot == 'BackLight':
                 states = {"in": 1, "out": 0}
-                pos = states[motor_hwobj.light.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
+                pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
                 # 'in', 'out'
                 status = pos 
             else:
@@ -469,7 +468,6 @@ def aClick():
         x, y: int
     Return: '200' if command issued succesfully, otherwise '409'.
     """
-<<<<<<< HEAD
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)

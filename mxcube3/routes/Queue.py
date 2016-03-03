@@ -24,8 +24,8 @@ qm = QueueManager.QueueManager('Mxcube3')
 def init_signals():
     # for signal in signals.queueSignals:
     #     mxcube.queue.connect(mxcube.queue.queue_hwobj, signal, signals.signalCallback)
-    for signal in signals.collectSignals:
-        mxcube.collect.connect(mxcube.collect, signal, signals.signalCallback)
+    #for signal in signals.collectSignals:
+    #    mxcube.collect.connect(mxcube.collect, signal, signals.signalCallback)
     for signal in signals.collectSignals:
         mxcube.queue.connect(mxcube.queue, signal, signals.signalCallback)
     mxcube.queue.lastQueueNode = {'id':0, 'sample':0}
