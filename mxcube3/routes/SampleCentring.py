@@ -196,14 +196,8 @@ def saveCentringWithId(posid):
     Args: id, for consistency but not used
     Return: new centring position name (pos1, pos2...) plus motors' positions if the current centring position is retrieved and stored succesfully, otherwise '409' error code. In any case: str
     """
-    # params = request.data
-    # params = json.loads(params)
-    # x, y = params['x'], params['y']
-    # centredPosId = 'pos' + str(len(centredPos)+1)
-    # global posId
-    # posId += 1
     try:
-    # unselect the any previous point
+        # unselect the any previous point
         for pos in mxcube.diffractometer.savedCentredPos:
             pos.update({'selected': False})
         #search for the temp point
@@ -482,34 +476,40 @@ def aClick():
         params = request.data
         params = json.loads(params)
         clickPosition = params['clickPos']
+        clicks.append(clickPosition)
         logging.getLogger('HWR').info("A click requested, x: %s, y: %s" %(clickPosition['x'], clickPosition['y']))
         try:
             mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
-            ## we store the cpos as temporary, only when asked for save it we swtich the type
-            clicks.append(clickPosition)
+            ## we store the cpos as temporary, only when asked for save it we switch the type
             if len(clicks) == 3: # this is the last point
-                centredPosId = 'pos' + str(len(centredPos)+1)
-                global posId
-                posId += 1
-                mxcube.diffractometer.saveCurrentPos()
-                motorPositions = mxcube.diffractometer.centringStatus["motors"]
-                #motorPositions = mxcube.diffractometer.self.getPositions()
-                x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
-                data = {'name': centredPosId,
-                    'posId': posId,
-                    'motorPositions': motorPositions,
-                    'selected': True,
-                    'type': 'TMP',
-                    'x': x,
-                    'y': y
-                    }
-                mxcube.diffractometer.savedCentredPos.append(data)
+                gevent.spawn_later(3, waitForCentringFinishes) # a better way would be playing with signals             
                 clicks.clear()
             return Response(status=200)
         except Exception:
             return Response(status=409)
     else:
         return Response(status=409)
+
+def waitForCentringFinishes(): 
+    if mxcube.diffractometer.centringStatus["valid"]:
+        centredPosId = 'pos' + str(len(centredPos)+1)
+        global posId
+        posId += 1
+        mxcube.diffractometer.saveCurrentPos()
+        motorPositions = mxcube.diffractometer.centringStatus["motors"]
+        #motorPositions = mxcube.diffractometer.self.getPositions()
+        x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
+        data = {'name': centredPosId,
+            'posId': posId,
+            'motorPositions': motorPositions,
+            'selected': True,
+            'type': 'TMP',
+            'x': x,
+            'y': y 
+            }
+        centredPos.append(data)
+        mxcube.diffractometer.emit('minidiffStateChanged', (True,)) 
+
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
 def acceptCentring():
