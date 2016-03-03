@@ -339,6 +339,16 @@ def lightOff():
     except:
         return Response(status=409)
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/<motid>/<newpos>", methods=['PUT'])
+def moveMotor(motid, newpos):
+    motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
+    try:
+        motor_hwobj.move(float(newpos))
+        return Response(status=200)
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not move motor "%s" to position "%s"' %(motid, newpos))
+        return Response(status=409)
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/<id>", methods=['GET'])
 def get_status_of_id(id):
     """
@@ -357,7 +367,7 @@ def get_status_of_id(id):
             status = "unknown"
         elif mot == 'BackLight':
                 states = {"in": 1, "out": 0}
-                pos = states[motor_hwobj.light.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
+                pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
                 # 'in', 'out'
                 status = pos 
         else:
