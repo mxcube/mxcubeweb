@@ -242,7 +242,7 @@ def deleteCentringWithId(posid):
     try:
         for cpos in mxcube.diffractometer.savedCentredPos:
             if cpos.get('posId') == int(posid):
-                centredPos.remove(cpos)
+                mxcube.diffractometer.savedCentredPos.remove(cpos)
                 resp = jsonify(cpos)
                 resp.status_code = 200
                 return resp
@@ -492,7 +492,7 @@ def aClick():
 
 def waitForCentringFinishes(): 
     if mxcube.diffractometer.centringStatus["valid"]:
-        centredPosId = 'pos' + str(len(centredPos)+1)
+        centredPosId = 'pos' + str(len(mxcube.diffractometer.savedCentredPos)+1)
         global posId
         posId += 1
         mxcube.diffractometer.saveCurrentPos()
@@ -507,7 +507,7 @@ def waitForCentringFinishes():
             'x': x,
             'y': y 
             }
-        centredPos.append(data)
+        mxcube.diffractometer.savedCentredPos.append(data)
         mxcube.diffractometer.emit('minidiffStateChanged', (True,)) 
 
 
