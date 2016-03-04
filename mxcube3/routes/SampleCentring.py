@@ -11,7 +11,6 @@ import json
 import signals
 
 SAMPLE_IMAGE = None
-
 posId = 0
 
 # ##all drawing to be moved into ~shapehistory...
@@ -20,6 +19,8 @@ def init_signals():
         print mxcube.diffractometer
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
     #camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
+    mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
+    mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
     mxcube.diffractometer.savedCentredPos = []
     signals.centredPos = mxcube.diffractometer.savedCentredPos
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
@@ -163,8 +164,6 @@ def getImageData():
         return Response(status=409)
 
 ###----SAMPLE CENTRING----###
-clicks = collections.deque(maxlen=3)
-
 ####
 #To access parameters submitted in the URL (?key=value) you can use the args attribute:
 #searchword = request.args.get('key', '')
@@ -196,14 +195,8 @@ def saveCentringWithId(posid):
     Args: id, for consistency but not used
     Return: new centring position name (pos1, pos2...) plus motors' positions if the current centring position is retrieved and stored succesfully, otherwise '409' error code. In any case: str
     """
-    # params = request.data
-    # params = json.loads(params)
-    # x, y = params['x'], params['y']
-    # centredPosId = 'pos' + str(len(centredPos)+1)
-    # global posId
-    # posId += 1
     try:
-    # unselect the any previous point
+        # unselect the any previous point
         for pos in mxcube.diffractometer.savedCentredPos:
             pos.update({'selected': False})
         #search for the temp point
@@ -248,7 +241,7 @@ def deleteCentringWithId(posid):
     try:
         for cpos in mxcube.diffractometer.savedCentredPos:
             if cpos.get('posId') == int(posid):
-                centredPos.remove(cpos)
+                mxcube.diffractometer.savedCentredPos.remove(cpos)
                 resp = jsonify(cpos)
                 resp.status_code = 200
                 return resp
@@ -448,7 +441,6 @@ def centre3click():
     if the centring is succesfull or not
     """
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
-    clicks.clear()
     try:
         currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
         return Response(status=200)  # this only means the call was succesfull
@@ -463,7 +455,6 @@ def abortCentring():
     Return: '200' if command issued succesfully, otherwise '409'.
     """
     logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
-    clicks.clear()
     try:
         currentCentringProcedure = mxcube.diffractometer.cancelCentringMethod()
         return Response(status=200)  # this only means the call was succesfull
@@ -485,31 +476,33 @@ def aClick():
         logging.getLogger('HWR').info("A click requested, x: %s, y: %s" %(clickPosition['x'], clickPosition['y']))
         try:
             mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
-            ## we store the cpos as temporary, only when asked for save it we swtich the type
-            clicks.append(clickPosition)
-            if len(clicks) == 3: # this is the last point
-                centredPosId = 'pos' + str(len(centredPos)+1)
-                global posId
-                posId += 1
-                mxcube.diffractometer.saveCurrentPos()
-                motorPositions = mxcube.diffractometer.centringStatus["motors"]
-                #motorPositions = mxcube.diffractometer.self.getPositions()
-                x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
-                data = {'name': centredPosId,
-                    'posId': posId,
-                    'motorPositions': motorPositions,
-                    'selected': True,
-                    'type': 'TMP',
-                    'x': x,
-                    'y': y
-                    }
-                mxcube.diffractometer.savedCentredPos.append(data)
-                clicks.clear()
+            ## we store the cpos as temporary, only when asked for save it we switch the type
             return Response(status=200)
         except Exception:
             return Response(status=409)
     else:
         return Response(status=409)
+
+def waitForCentringFinishes(*args, **kwargs):
+    if mxcube.diffractometer.centringStatus["valid"]:
+        centredPosId = 'pos' + str(len(mxcube.diffractometer.savedCentredPos)+1)
+        global posId
+        posId += 1
+        mxcube.diffractometer.saveCurrentPos()
+        motorPositions = mxcube.diffractometer.centringStatus["motors"]
+        #motorPositions = mxcube.diffractometer.self.getPositions()
+        x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
+        data = {'name': centredPosId,
+            'posId': posId,
+            'motorPositions': motorPositions,
+            'selected': True,
+            'type': 'TMP',
+            'x': x,
+            'y': y 
+            }
+        mxcube.diffractometer.savedCentredPos.append(data)
+        mxcube.diffractometer.emit('minidiffStateChanged', (True,))
+
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
 def acceptCentring():
