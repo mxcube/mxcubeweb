@@ -11,7 +11,6 @@ import json
 import signals
 
 SAMPLE_IMAGE = None
-
 posId = 0
 
 # ##all drawing to be moved into ~shapehistory...
@@ -20,6 +19,8 @@ def init_signals():
         print mxcube.diffractometer
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
     #camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
+    mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
+    mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
     mxcube.diffractometer.savedCentredPos = []
     signals.centredPos = mxcube.diffractometer.savedCentredPos
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
@@ -163,8 +164,6 @@ def getImageData():
         return Response(status=409)
 
 ###----SAMPLE CENTRING----###
-clicks = collections.deque(maxlen=3)
-
 ####
 #To access parameters submitted in the URL (?key=value) you can use the args attribute:
 #searchword = request.args.get('key', '')
@@ -442,7 +441,6 @@ def centre3click():
     if the centring is succesfull or not
     """
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
-    clicks.clear()
     try:
         currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
         return Response(status=200)  # this only means the call was succesfull
@@ -457,7 +455,6 @@ def abortCentring():
     Return: '200' if command issued succesfully, otherwise '409'.
     """
     logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
-    clicks.clear()
     try:
         currentCentringProcedure = mxcube.diffractometer.cancelCentringMethod()
         return Response(status=200)  # this only means the call was succesfull
@@ -476,21 +473,17 @@ def aClick():
         params = request.data
         params = json.loads(params)
         clickPosition = params['clickPos']
-        clicks.append(clickPosition)
         logging.getLogger('HWR').info("A click requested, x: %s, y: %s" %(clickPosition['x'], clickPosition['y']))
         try:
             mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
             ## we store the cpos as temporary, only when asked for save it we switch the type
-            if len(clicks) == 3: # this is the last point
-                gevent.spawn_later(3, waitForCentringFinishes) # a better way would be playing with signals             
-                clicks.clear()
             return Response(status=200)
         except Exception:
             return Response(status=409)
     else:
         return Response(status=409)
 
-def waitForCentringFinishes(): 
+def waitForCentringFinishes(*args, **kwargs):
     if mxcube.diffractometer.centringStatus["valid"]:
         centredPosId = 'pos' + str(len(mxcube.diffractometer.savedCentredPos)+1)
         global posId
@@ -508,7 +501,7 @@ def waitForCentringFinishes():
             'y': y 
             }
         mxcube.diffractometer.savedCentredPos.append(data)
-        mxcube.diffractometer.emit('minidiffStateChanged', (True,)) 
+        mxcube.diffractometer.emit('minidiffStateChanged', (True,))
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
