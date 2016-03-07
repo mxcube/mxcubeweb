@@ -7,93 +7,42 @@ import Modal from 'react-modal';
 
 class Characterisation extends React.Component {
 
-    constructor(props) {
+
+  constructor(props) {
         super(props);
-        this.state = {
-            queueID: null,
-            method: false
-        };
-    }
-
-    // Check if form should be populated with data, this is the case when user is updating a method
-    componentWillReceiveProps(nextProps) {
-
-        // Get node selected by user 
-        let selected = nextProps.selected;
-
-        // Check if form is updated with information from the node already
-        let update = (selected.queue_id !== this.state.queueID);
-
-        // Check if update is true and if user is changing a method
-        if (selected.method && update){
-
-           
-            let methodData = nextProps.sampleList[selected.sample_id].methods[selected.queue_id];
-          
-            let parameters = methodData.parameters;
-
-            this.props.initializeForm({
-                numImages: parameters.num_images, 
-                expTime: parameters.exp_time, 
-                resolution: parameters.resolution, 
-                oscStart: parameters.osc_start , 
-                energy: parameters.energy, 
-                oscRange: parameters.osc_range, 
-                transmission: parameters.transmission
-            });
-        // Clean form to prepare for adding a new characterisation to the sample
-        }else if (update){
-
-            this.props.initializeForm({
-                numImages: undefined, 
-                expTime: undefined, 
-                resolution: undefined, 
-                oscStart: undefined , 
-                energy: undefined, 
-                oscRange: undefined, 
-                transmission: undefined
-            });
-
-        }
-        this.setState({
-            queueID : selected.queue_id,
-            method: selected.method
-        });
-
-    }
-
+        this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
     handleSubmit(){
 
         let fields = this.props.fields;
         let parameters = {
             Type : "Characterisation",
-            num_images : fields.numImages.value,
-            exp_time: fields.expTime.value,
+            numImages : fields.numImages.value,
+            expTime: fields.expTime.value,
             resolution : fields.resolution.value,
-            osc_start : fields.oscStart.value,
+            oscStart : fields.oscStart.value,
             energy : fields.energy.value,
-            osc_range : fields.oscRange.value,
-            transmission : fields.transmission.value
+            oscRange : fields.oscRange.value,
+            transmission : fields.transmission.value,
+            point : this.props.pointId
             };
-        if (this.state.method){
-            this.props.changeMethod(parameters);
-        }else if(this.props.point){
-            (this.props.lookup[this.props.current] ? this.props.addMethod(this.props.current, this.props.lookup[this.props.current],parameters): '');
-        }else{
-            this.props.checked.map( (queue_id) =>{
-                (this.props.lookup[queue_id] ? this.props.addMethod(queue_id, this.props.lookup[queue_id],parameters): '');
+
+        if(this.props.methodData === -1){
+            this.props.sampleIds.map( (queue_id) =>{
+                this.props.addMethod(queue_id, this.props.lookup[queue_id],parameters);
             });
-        }
-        
+        }else{
+            this.props.changeMethod(this.props.sampleIds, this.props.methodData.queue_id, this.props.lookup[this.props.sampleIds], parameters);
+        }   
+
         this.props.closeModal();
     }
 
 
-    render() { 
+    render() {
 
         const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission}} = this.props;
-
 
         const style = {
           overlay : {
@@ -124,14 +73,15 @@ class Characterisation extends React.Component {
 
         return (
         <Modal
-          className="Modal__Bootstrap modal-dialog"
-          closeTimeoutMS={150}
-          isOpen={this.props.show}
-          onRequestClose={this.handleModalCloseRequest}
-          style={style}>
+            className="Modal__Bootstrap modal-dialog"
+            closeTimeoutMS={150}
+            isOpen={this.props.show}
+            onRequestClose={this.handleModalCloseRequest}
+            style={style}
+        >
           <div className="modal-content">
             <div className="modal-header">
-              <button type="button" className="close" onClick={() => this.props.closeModal()}>
+              <button type="button" className="close" onClick={this.props.closeModal}>
                 <span aria-hidden="true">&times;</span>
                 <span className="sr-only">Close</span>
               </button>
@@ -200,8 +150,8 @@ class Characterisation extends React.Component {
         </form>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-default" onClick={() => this.props.closeModal()}>Close</button>
-              <button type="button" className="btn btn-primary" onClick={() => this.handleSubmit()}>{this.state.method ? "Change Characterisation": "Add Characterisation"}</button>
+              <button type="button" className="btn btn-default" onClick={this.props.closeModal}>Close</button>
+              <button type="button" className="btn btn-primary" onClick={this.handleSubmit}>{this.props.methodData !== -1 ? "Change Characterisation": "Add Characterisation"}</button>
             </div>
           </div>
         </Modal>
@@ -212,6 +162,9 @@ class Characterisation extends React.Component {
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
   fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission'] // all the fields in your form
-})(Characterisation);
+},
+state => ({ // mapStateToProps
+  initialValues: {...state.methodForm.methodData.parameters} // will pull state into form's initialValues
+}))(Characterisation);
 
 export default Characterisation;

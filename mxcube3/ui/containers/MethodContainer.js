@@ -2,7 +2,6 @@ import React from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Characterisation from '../components/Methods/Characterisation'
-import DataCollection from '../components/Methods/DataCollection'
 import { hideForm } from '../actions/methodForm'
 import { sendAddSampleMethod, sendChangeSampleMethod } from '../actions/samples_grid'
 
@@ -12,15 +11,22 @@ class MethodContainer extends React.Component {
 
   render() {
 
-    const selected = this.props.selected;
-    const checked = this.props.checked;
     const lookup = this.props.lookup;
 
     
     return (
       <div>
-            <Characterisation current={this.props.current} point={this.props.point} show={this.props.showCharac} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("characterisation")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
-            <DataCollection current={this.props.current} point={this.props.point} show={this.props.dataCollec} changeMethod={this.props.changeMethod.bind(this, selected.parent_queue_id, selected.queue_id, selected.sample_id)} addMethod={this.props.addMethod} closeModal={() => this.props.hideForm("datacollection")} selected={selected} checked={checked} lookup={lookup} sampleList={this.props.sampleList} />
+            <Characterisation 
+                show={this.props.showCharac} 
+                sampleIds={this.props.sample_ids}
+                pointId={this.props.point_id}
+                methodData={this.props.methodData}
+                changeMethod={this.props.changeMethod} 
+                addMethod={this.props.addMethod} 
+                closeModal={this.props.hideForm} 
+                lookup={lookup} 
+                sampleList={this.props.sampleList} 
+            />
       </div>
     )
   }
@@ -32,12 +38,11 @@ function mapStateToProps(state) {
   return { 
         showCharac : state.methodForm.characterisation,
         dataCollec : state.methodForm.datacollection,
-        point:  state.methodForm.point,
-        selected : state.queue.selected,
-        checked: state.queue.checked,
+        sample_ids : state.methodForm.sample_ids,
+        point_id :  state.methodForm.point_id,
+        methodData : state.methodForm.methodData,
         lookup: state.queue.lookup,
-        sampleList : state.samples_grid.samples_list,
-        current : state.queue.current
+        sampleList : state.samples_grid.samples_list
     }
 }
 
