@@ -7,20 +7,6 @@ import os
 import sys
 import logging
 import gevent
-# some Hardware Objects rely on BlissFramework.Utils.widget_colors,
-# it's ugly but here is some code to solve the problem for the
-# time being:
-from types import ModuleType
-import collections
-bf = ModuleType("BlissFramework")
-bfu = ModuleType("BlissFramework.Utils")
-wc = collections.namedtuple("widget_colors", ["LIGHT_GREEN", "LIGHT_RED",\
-      "LIGHT_YELLOW", "LIGHT_BLUE", "SKY_BLUE", "DARK_GRAY", "WHITE", \
-      "GRAY", "GREEN", "RED"])
-setattr(bfu, "widget_colors", wc(*[None]*10))
-sys.modules["BlissFramework"] = bf
-sys.modules["BlissFramework.Utils"] = bfu
-###
 
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
@@ -77,7 +63,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     root_logger.addHandler(custom_log_handler)
     app.log_handler = custom_log_handler
 
-  ###Importing all REST-routes
+    ###Importing all REST-routes
     import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue
 
     def complete_initialization(app):
