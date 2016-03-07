@@ -422,7 +422,7 @@ def get_status():
     try:
         for mot in motors:
             motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
-            if motor_hwobj not None:
+            if motor_hwobj is not None:
                 if mot == 'Zoom':
                     pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
                     status = "unknown"
