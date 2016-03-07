@@ -304,29 +304,57 @@ def moveZoomMotor():
     except Exception:
         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/lighton", methods=['PUT'])
-def lightOn():
+@mxcube.route("/mxcube/api/v0.1/sampleview/backlighton", methods=['PUT'])
+def backLightOn():
     """
     Activate the backlight of the diffractometer.
     Args: None
     Return: '200' if activated succesfully, otherwise '409'
     """
     try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('wagobacklight')
         motor_hwobj.actuatorIn(wait=False)
         return Response(status=200)
     except:
         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/lightoff", methods=['PUT'])
-def lightOff():
+@mxcube.route("/mxcube/api/v0.1/sampleview/backlightoff", methods=['PUT'])
+def backLightOff():
     """
     Switch off the backlight of the diffractometer.
     Args: None
     Return: '200' if switched off succesfully, otherwise '409'
     """
     try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('wagobacklight')
+        motor_hwobj.actuatorOut(wait=False)
+        return Response(status=200)
+    except:
+        return Response(status=409)
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/frontlighton", methods=['PUT'])
+def frontLightOn():
+    """
+    Activate the backlight of the diffractometer.
+    Args: None
+    Return: '200' if activated succesfully, otherwise '409'
+    """
+    try:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('wagofrontlight')
+        motor_hwobj.actuatorIn(wait=False)
+        return Response(status=200)
+    except:
+        return Response(status=409)
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/frontlightoff", methods=['PUT'])
+def frontLightOff():
+    """
+    Switch off the backlight of the diffractometer.
+    Args: None
+    Return: '200' if switched off succesfully, otherwise '409'
+    """
+    try:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('wagofrontlight')
         motor_hwobj.actuatorOut(wait=False)
         return Response(status=200)
     except:
@@ -358,7 +386,7 @@ def get_status_of_id(id):
         if motor.motor_name == 'Zoom':
             pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
             status = "unknown"
-        elif mot == 'BackLight':
+        elif mot == 'BackLight' or mot == 'WagoFrontLight':
                 states = {"in": 1, "out": 0}
                 pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
                 # 'in', 'out'
@@ -388,24 +416,28 @@ def get_status():
         moveables: 'Kappa', 'Omega', 'Phi', 'Zoom', 'Light'
 
     """
-    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'Light','BackLight','Sampx', 'Sampy']  # more are needed
+    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'WagoBackLight','BackLight','WagoFrontLight', 'FrontLight','Sampx', 'Sampy'] 
     #'Kappa', 'Kappa_phi',
     data = {}
     try:
         for mot in motors:
             motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
-            if mot == 'Zoom':
-                pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
-                status = "unknown"
-            elif mot == 'BackLight':
-                states = {"in": 1, "out": 0}
-                pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
-                # 'in', 'out'
-                status = pos 
-            else:
-                pos = motor_hwobj.getPosition()
-                status = motor_hwobj.getState()
-            data[mot] = {'Status': status, 'position': pos}
+            if motor_hwobj not None:
+                if mot == 'Zoom':
+                    pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
+                    status = "unknown"
+                elif mot == 'WagoBackLight' or mot == 'WagoFrontLight':
+                    states = {"in": 1, "out": 0}
+                    pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
+                    # 'in', 'out'
+                    status = pos 
+                else:
+                    try:
+                        pos = motor_hwobj.getPosition()
+                        status = motor_hwobj.getState()
+                    except Exception:
+                        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
+                data[mot] = {'Status': status, 'position': pos}
         resp = jsonify(data)
         resp.status_code = 200
         return resp
