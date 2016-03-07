@@ -105,18 +105,16 @@ export function doChangeMethod(queue_id, sample_id, parameters) {
             }
 }
 
-export function doRemoveMethod(sample_queue_id, queue_id, sample_id, list_id) {
+export function doRemoveMethod(sample_queue_id, queue_id, sample_id) {
     return { type: "REMOVE_METHOD",
             index: sample_id,
             parent_id: sample_queue_id,
-            queue_id: queue_id,  
-            list_index: list_id
+            queue_id: queue_id  
             }
 }
 
 
 export function sendAddSampleMethod(queue_id, sample_id, method) {
-
     return function(dispatch) {
 
         fetch('mxcube/api/v0.1/queue/' + queue_id, { 
@@ -155,7 +153,7 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
             body: JSON.stringify(method)
         }).then((response) => {
             if (response.status >= 400) {
-                throw new Error("Could not add sample method, server refused");
+                throw new Error("Could not change sample method, server refused");
             }
             return response.json();
         }).then(function() {
@@ -169,7 +167,7 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
 }
 
 
-export function sendDeleteSampleMethod(parent_id, queue_id, sample_id, list_id) {
+export function sendDeleteSampleMethod(parent_id, queue_id, sample_id) {
 
     return function(dispatch) {
 
@@ -185,7 +183,7 @@ export function sendDeleteSampleMethod(parent_id, queue_id, sample_id, list_id) 
             if (response.status >= 400) {
                 throw new Error("Server refused to remove sample");
             }else {
-                dispatch(doRemoveMethod(parent_id, queue_id, sample_id, list_id));
+                dispatch(doRemoveMethod(parent_id, queue_id, sample_id));
                 dispatch(sendState());
 
             }

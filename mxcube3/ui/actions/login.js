@@ -44,6 +44,7 @@ export function getLoginInfo() {
                   dispatch(afterLogin(loginInfo.loginRes));
                   dispatch(getPointsPosition());
                   dispatch(getSampleImageSize());
+                  dispatch(getMotorPositions());
               } 
           }, () => {
             throw new Error("Server connection problem (getLoginInfo)"); 
