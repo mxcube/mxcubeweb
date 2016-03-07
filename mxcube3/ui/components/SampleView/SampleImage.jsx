@@ -2,7 +2,6 @@
 import './SampleView.css';
 import React from 'react'
 import {makeCircle, makeLine} from './shapes'
-import ContextMenu from './ContextMenu'
 
 export default class SampleImage extends React.Component {
 
@@ -10,12 +9,7 @@ export default class SampleImage extends React.Component {
     super(props);
     this.state = {
       canvas: {},
-      selectedPoint: "NONE",
-      group: null,
-      lightOn: false,
-      showContextMenu: false,
-      ContextMenuX: 0,
-      ContextMenuY: 0
+      group: null
   };
 }
 
@@ -39,20 +33,21 @@ componentDidMount(){
 
       // Draw canvas and set img size depending on screen size
       this.drawCanvas(canvas);
-
-      this.renderPoints(this.props.sampleViewState.points, canvas);
+      this.renderPoints(this.props.shapeList, canvas);
 
   }
 
 componentWillReceiveProps(nextProps){
-    this.renderPoints(nextProps.sampleViewState.points, this.state.canvas);
+    this.renderPoints(nextProps.shapeList, this.state.canvas);
 }
 
   drawCanvas(canvas){
 
+    const ratioWidthHeigth = this.props.imageWidth/this.props.imageHeight;
+
       //Getting the size of screen
       var w = document.getElementById('outsideWrapper').clientWidth;
-      var h = w/this.props.sampleViewState.ratioWidthHeigth;
+      var h = w/ratioWidthHeigth;
 
       //Canvas
       var canvasWindow = document.getElementById('canvas');
@@ -60,7 +55,7 @@ componentWillReceiveProps(nextProps){
       canvasWindow.height = h;
 
       //FabricJS
-      canvas.setDimensions({width:w, height: h});
+      canvas.setDimensions({width: w, height: h});
       canvas.renderAll();
 
       //Image from MD2
@@ -68,13 +63,13 @@ componentWillReceiveProps(nextProps){
       document.getElementById("sample-img").style.width = w + "px";
       document.getElementById("insideWrapper").style.height = h + "px";
 
-      this.setState({heightRatio: this.props.sampleViewState.height/h, widthRatio: this.props.sampleViewState.width/w});
+      this.setState({heightRatio: this.props.imageHeight/h, widthRatio: this.props.imageWidth/w});
 
 
   }
 
 rightClick(e, canvas){
-     this.setState({showContextMenu: false});
+     this.props.sampleActions.showContextMenu(false);
      var objectFound = false;
      var clickPoint = new fabric.Point(e.offsetX, e.offsetY);
      e.preventDefault();
@@ -82,73 +77,37 @@ rightClick(e, canvas){
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
           canvas.setActiveObject(obj);
-          this.setState({showContextMenu: true, selectedPoint: obj.type,ContextMenuX : e.offsetX,ContextMenuY : e.offsetY });
+          this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
 
       }
   });
 
      if(this.state.group && this.state.group.containsPoint(clickPoint)){
-        this.setState({showContextMenu: true, selectedPoint: 'GROUP',ContextMenuX : e.offsetX,ContextMenuY : e.offsetY });
+        this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
     }
 }
 
 leftClick(option){
 
-    this.setState({showContextMenu: false});
-
-    if(this.props.sampleViewState.clickCentring){
+    if(this.props.contextMenuShow){
+        this.props.sampleActions.showContextMenu(false);
+    }
+    
+    if(this.props.clickCentring){
         this.props.sampleActions.sendCentringPoint(option.e.layerX * this.state.widthRatio, option.e.layerY  * this.state.heightRatio);
     }
 }
 
-
-
-
-removeObject(){
-    this.props.sampleActions.sendDeletePoint(this.state.canvas.getActiveObject().id);
-    this.state.canvas.getActiveObject().remove();
-    this.setState({showContextMenu: false});
-}
-
 drawLine(){
+    this.props.sampleActions.showContextMenu(false);
     let points = this.state.group.getObjects();
     this.state.canvas.add(makeLine(points[0], points[1]));
-    this.setState({showContextMenu: false});
-}
-
-
-savePoint(){
-    this.setState({showContextMenu: false});
-    this.props.sampleActions.StopClickCentring();
-    this.props.sampleActions.sendSavePoint(this.state.canvas.getActiveObject().id);
-}
-
-zoomIn(){
-  if(this.props.sampleViewState.zoom < 9){
-      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom + 1);
-  }
-}
-
-zoomOut(){
- if(this.props.sampleViewState.zoom > 0){
-  this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
-}
-}
-
-takeSnapShot(){
-  document.getElementById("downloadLink").href = this.state.canvas.toDataURL();
-}
-
-lightOnOff(){
-  (this.state.lightOn ? this.props.sampleActions.sendLightOn() : this.props.sampleActions.sendLightOff())
-  this.setState({lightOn: !this.state.lightOn});
 }
 
 renderPoints(points, canvas){    
-
     canvas.clear();
-    let heightRatio = canvas.height/this.props.sampleViewState.height;
-    let widthRatio = canvas.width/this.props.sampleViewState.width;
+    let heightRatio = canvas.height/this.props.imageHeight;
+    let widthRatio = canvas.width/this.props.imageWidth;
 
     for(let id in points){
       switch (points[id].type){
@@ -166,33 +125,14 @@ renderPoints(points, canvas){
 
 
   render() {
-
     return (
-                <div>
-                  <ContextMenu show={this.state.showContextMenu} type={this.state.selectedPoint} x={this.state.ContextMenuX} y={this.state.ContextMenuY} showForm={this.props.showForm} deleteShape={() => this.removeObject()} saveShape={() => this.savePoint()}/>
-                  <div className="outsideWrapper" id="outsideWrapper">
-                    <div className="insideWrapper" id="insideWrapper">
-                      <img id= "sample-img" className='img' src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="" />
-                      <canvas id="canvas" className="coveringCanvas" />
-                    </div>
-                    <div className="sample-controlls">
-                      <div className="text-center"> 
-                            <button type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.savePoint()}><i className="fa fa-2x fa-fw fa-save"></i></button>                            
-                            <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center" onClick={() =>  this.props.sampleActions.getPointsPosition()}><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
-                            <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.takeSnapShot()} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
-                            <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartAutoCentring()}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendStartClickCentring()}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Abort Centring" className="btn btn-link  pull-center" onClick={() => this.props.sampleActions.sendAbortCentring()}><i className="fa fa-2x fa-fw fa-times"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={() => this.zoomIn()}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={() => this.zoomOut()}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
-                            <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={() => this.lightOnOff()}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
-                            </div>
-                    </div>
-                </div>
-              
-
-              </div>
-            );        
+        <div className="outsideWrapper" id="outsideWrapper">
+            <div className="insideWrapper" id="insideWrapper">
+                <img id= "sample-img" className='img' src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="" />
+                <canvas id="canvas" className="coveringCanvas" />
+            </div>
+        </div>
+        );        
   }
 }
 

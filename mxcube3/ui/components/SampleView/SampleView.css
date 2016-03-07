@@ -38,6 +38,7 @@
     box-shadow: 0px 2px 3px 0px #AAA;
     min-height: 300px;
     overflow: hidden;
+    margin-bottom: 20px;
 }
 
 .camera-controll{

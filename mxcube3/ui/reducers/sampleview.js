@@ -6,9 +6,9 @@ const initialState = {
   points: {},
   width: 0,
   height: 0,
-  ratioWidthHeigth: 1,
   lightOn: false,
-  motors: {}
+  motors: {},
+  contextMenu: {show:false, shape: {type: "NONE"}, x: 0, y:0}
 }
 
 export default (state=initialState, action) => {
@@ -35,7 +35,7 @@ export default (state=initialState, action) => {
             }
         case 'SAVE_IMAGE_SIZE':
             {
-             return {...state, width: action.width, height: action.height, ratioWidthHeigth: action.width/action.height };
+             return {...state, width: action.width, height: action.height };
             }
         case 'SAVE_MOTOR_POSITIONS':
             {
@@ -52,6 +52,10 @@ export default (state=initialState, action) => {
         case 'UPDATE_POINTS_POSITION':
             {
              return {...state, points: action.points };
+            }
+        case 'SHOW_CONTEXT_MENU':
+            {
+             return {...state, contextMenu: {show: action.show, shape: action.shape, x: action.x, y: action.y} };
             }
         default:
             return state;

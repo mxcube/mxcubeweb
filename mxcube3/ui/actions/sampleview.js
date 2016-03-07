@@ -7,6 +7,15 @@ export function setLight(on) {
   }
 }
 
+export function showContextMenu(show, shape={type: "NONE"} , x=0, y=0) {
+  return { 
+    type: "SHOW_CONTEXT_MENU",
+    show: show,
+    shape: shape,
+    x: x,
+    y: y
+  }
+}
 
 export function setZoom(level) {
   return { 
@@ -101,7 +110,6 @@ export function sendCentringPoint(x, y) {
     },
     body: JSON.stringify({clickPos:{ x : x, y: y }})
   }).then(function(response) {
-    console.log()
     if (response.status >= 400) {
       throw new Error("Server refused to add point");
     }
@@ -302,6 +310,7 @@ export function getMotorPositions() {
  return response.json();
   }).then(function(json) {
       dispatch(saveMotorPositions(json));
+      dispatch(setZoom(json.Zoom.position));
     });
 
 }

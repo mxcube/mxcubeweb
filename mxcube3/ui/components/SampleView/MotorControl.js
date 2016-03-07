@@ -5,11 +5,15 @@ import {reduxForm} from 'redux-form';
 
 class MotorControl extends React.Component {
 
+
+  constructor(props) {
+        super(props);
+        this.handleSubmit = () => this.handleSubmit();
+  }
+
     componentWillMount(){
       const motors = this.props.motors;
        this.props.initializeForm({
-                Kappa: motors.Kappa.position, 
-                Kappa_phi: motors.Kappa_phi.position, 
                 Phi: motors.Phi.position, 
                 PhiY: motors.PhiY.position, 
                 PhiZ: motors.PhiZ.position, 
@@ -98,7 +102,7 @@ class MotorControl extends React.Component {
             </div>
         </form>
 
-          <button type="button" className="btn btn-primary pull-right motor-button" onClick={() => this.handleSubmit()}>Change Motors</button>
+          <button type="button" className="btn btn-primary pull-right motor-button" onClick={this.handleSubmit}>Change Motors</button>
         </div>
 
         );
