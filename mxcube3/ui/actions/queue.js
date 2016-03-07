@@ -40,6 +40,14 @@ export function clearAll() {
         }
 }
 
+
+export function collapseList(listName) {
+        return {
+               type: "COLLAPSE_LIST",
+               list_name: listName
+        }
+}
+
 export function setState(queueState, sampleGridState) {
         return {
                type: "QUEUE_STATE",
@@ -302,10 +310,12 @@ export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
 	}
 }
 
-export function sendChangeOrder(list) {
+export function changeOrder(listName, oldIndex, newIndex) {
 	return { 
-		type: "CHANGE_SAMPLE_ORDER", 
-		list: list
+		type: "CHANGE_QUEUE_ORDER", 
+		listName: listName,
+		oldIndex: oldIndex,
+		newIndex: newIndex
 	}
 }
 

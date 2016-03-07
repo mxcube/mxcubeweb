@@ -1,100 +1,69 @@
 'use strict';
 import React from 'react'
 import "bootstrap"
-import Tree from 'react-ui-tree'
-import cx from 'classnames'
 import "./app.less"
+import cx from 'classnames'
+import MethodItem from './MethodItem'
+
+
 
 export default class CurrentTree extends React.Component {
 
-  // The render method call from Tree, this checks what node is to be renderd and calls new function
-  renderNode(node) {
-    switch (node.type) {
-      case 'Root':
-        return this.renderRoot(node);
-      case 'Sample':
-        return this.renderSample(node);
-      case 'Method':
-        return this.renderMethod(node);
-      default:
-        throw new Error("Type not found, tree"); 
+ constructor(props) {
+        super(props);
+        this.moveCard = this.moveCard.bind(this);
+        this.deleteMethod = this.deleteMethod.bind(this);
+        this.collapse = this.props.collapse.bind(this,"current");
     }
-  }
 
-  renderRoot(node){
-    return (
-        <p className="queue-root">{node.module}</p>
-    );
-
-  }
-
-   renderSample(node){
-    return (
-      <span className="node node-sample" onClick={() => this.props.select(node.queue_id, node.sample_id)}>
-        <span className="node-name">{node.module}</span>
-        <i className="fa fa-play"  onClick={() => this.props.run(node.queue_id)}></i>
-      </span>
-    );
-    
-  }
-
-   renderMethod(node){
-     var methodClass = cx('node node-method',{
-      'passive': node.state===0,
-      'active': node.state===1,
-      'success': node.state===2,
-      'error': node.state===3,
-      'warning': node.state===4
-    }); 
-    if(this.props.currentNode === node.parent_id && this.props.queue[node.parent_id].indexOf(node.queue_id) > -1 ){
-      return (
-        <span className={methodClass} onClick={() => this.props.select(node.queue_id, node.sample_id, node.parent_id, true)}>
-          <input type="checkbox" onChange={() => this.props.toggleCheckBox(node.queue_id, node.parent_id)} checked={this.props.checked.indexOf(node.queue_id) !== -1} />
-          <span className="node-name">{node.module}</span>
-          <i className="fa fa-times" onClick={() => this.props.deleteMethod(node.parent_id, node.queue_id, node.sample_id)}></i>
-        { node.module !== "Centring" ? <i className="fa fa-cog" onClick={() => this.props.showForm(node.module.toLowerCase())}></i>: ''}
-        </span>
-      );
+    moveCard(dragIndex, hoverIndex) {
+        this.props.changeOrder("todo", dragIndex, hoverIndex);
     }
-  }
 
+    deleteMethod(methodId){
+        this.props.deleteMethod(this.props.mounted, methodId , this.props.lookup[this.props.mounted] )
+    }
 
-  createTree(){
-    let sampleData = this.props.sampleInformation[this.props.lookup[this.props.currentNode]];
-    let tree = {
-      module: 'Current',
-      type: "Root",
-      children:  (sampleData ? [ {
-          module: 'Vial ' + sampleData.id,
-          queue_id: this.props.currentNode,
-          sample_id: sampleData.id,
-          type: "Sample",
-          children : this.props.queue[this.props.currentNode].map( (method_id) =>{
-            let methodData = sampleData.methods[method_id];
-            return {
-              module: methodData.name,
-              sample_id: sampleData.id,
-              queue_id: method_id,
-              parent_id: this.props.currentNode,
-              state: methodData.state,
-              type: "Method"
-            };
-          }) 
+    render() {
+        let node = this.props.mounted;
+        let sampleData, sampleMethods = [];
 
-      }] : [])
-    };
-    return tree;
-  }
+        if(node){
+          sampleData = this.props.sampleInformation[this.props.lookup[node]];
+          sampleMethods = this.props.queue[node];
+        }
 
-  render() {
-   let tree = this.createTree();
-
-    return (
-          <Tree
-            paddingLeft={20}
-            tree={tree}
-            renderNode={this.renderNode.bind(this)}/>
-    );
-  }
-
+        var bodyClass = cx('list-body',{
+            'hidden': (this.props.show || !node)
+        }); 
+        return (
+            <div className="m-tree">
+                <div className="list-head">
+                    <span className="queue-root" onClick={this.collapse}>{(node ? 'Vial ' + sampleData.id : "No Sample Mounted")}</span>
+                     <div className={node ? "pull-right" : "hidden"}>
+                        <i className="fa fa-play"></i>
+                        <i className="fa fa-pause"></i>
+                        <i className="fa fa-stop"></i>
+                    </div>
+                    <hr className="queue-divider" />
+                </div>
+                <div className={bodyClass}>
+                   {sampleMethods.map((id, i) => {
+                    let methodData = sampleData.methods[id];
+                    return (
+                        <MethodItem key={id}
+                            index={i}
+                            id={id}
+                            data={methodData}
+                            moveCard={this.moveCard}
+                            deleteMethod={this.deleteMethod}
+                            showForm={this.props.showForm} 
+                            sampleId={this.props.mounted}
+                        />
+                    );
+                })}
+                </div>
+            </div>
+        );
+    }
 }

@@ -1,19 +1,19 @@
 import {omit} from 'lodash/object';
 import {without, xor, union, intersection} from 'lodash/array';
+import update from 'react/lib/update';
 
 export default (state={
     queue:{},
-    todo:[],
-    history:[],
+    todo:{nodes: [], collapsed: false},
+    history:{nodes: [], collapsed: false},
     checked: [],
-    current:0,
+    current:{node: null, collapsed: false},
     selected: {
         queue_id: null,
         sample_id: null,
         method: null,
         list_index: 0
     },
-    selectAll: false,
     lookup:{},
     lookup_queue_id:{},
     searchString: ""
@@ -24,7 +24,7 @@ export default (state={
         case 'ADD_SAMPLE':
             return Object.assign({},state, 
                         {
-                            todo: state.todo.concat(action.queue_id),
+                            todo: {...state.todo, nodes: state.todo.nodes.concat(action.queue_id)},
                             queue: {...state.queue, [action.queue_id] : [] },
                             lookup: {...state.lookup, [action.queue_id] : action.sample_id},
                             lookup_queue_id: {...state.lookup_queue_id, [action.sample_id] : action.queue_id}
@@ -35,16 +35,12 @@ export default (state={
         case 'REMOVE_SAMPLE':
             return Object.assign({}, state,
                         {
-                            todo: without(state.todo, action.queue_id),
+                            todo: {...state.todo, nodes: without(state.todo.nodes, action.queue_id)},
                             queue: omit(state.queue, action.queue_id),
                             lookup: omit(state.lookup, action.queue_id),
                             lookup_queue_id: omit(state.lookup_queue_id, action.sample_id)
                         }
                         );
-
-        // Change the order of the samples in the queue
-         case 'CHANGE_SAMPLE_ORDER':
-            return Object.assign({}, state, { todo: action.list });
 
         // Adding the new method to the queue
         case 'ADD_METHOD':
@@ -68,10 +64,10 @@ export default (state={
         case 'MOUNT_SAMPLE':
             return Object.assign({}, state, 
                         {
-                            current : action.queue_id,
-                            todo: without(state.todo, action.queue_id),
-                            history: without(state.history.concat(state.current), 0),
-                            checked: without(state.checked, state.current)
+                            current: {...state.current, node: action.queue_id},
+                            todo:  {...state.todo, nodes: without(state.todo.nodes, action.queue_id)},
+                            history:  {...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : [])},
+                            checked: without(state.checked, action.queue_id)
                         }
                         );
 
@@ -80,9 +76,17 @@ export default (state={
             return Object.assign({}, state, 
                         {
                             current : action.queue_id,
-                            todo: without(state.todo, action.queue_id)
+                            todo:  {...state.todo, nodes: without(state.todo.nodes, action.queue_id)}
                         }
                         );
+
+        // Collapse list
+        case 'COLLAPSE_LIST':
+            return {
+                ...state,
+                [action.list_name] : {...state[action.list_name], collapsed : !state[action.list_name].collapsed }
+            }
+
 
          // Selecting node in the gui
         case 'SELECT_SAMPLE':
@@ -95,6 +99,19 @@ export default (state={
 
                                     }
                                     });
+        // Change order in queue on drag and drop
+        case 'CHANGE_QUEUE_ORDER':
+   
+            return {
+                ...state,
+                [action.listName] : {...state[action.listName], 
+                    nodes : update(state[action.listName].nodes, {
+                        $splice: [
+                            [action.oldIndex, 1],
+                            [action.newIndex, 0, state[action.listName].nodes[action.oldIndex]]
+                    ]})}
+                };
+
 
         // Toogles checkboxes for sample and method nodes
         case 'TOGGLE_CHECKBOX':
@@ -129,7 +146,7 @@ export default (state={
              return Object.assign({}, state, 
                 {
                     current: 0,
-                    todo: [],
+                    todo: {nodes: [], collapsed: false},
                     history: []
                 });
         case 'QUEUE_STATE':
