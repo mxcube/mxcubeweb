@@ -255,7 +255,7 @@ def executeEntryWithId(nodeId):
                             logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
                             #mxcube.queue.queue_hwobj.set_pause(False)
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
-                        lastQueueNode.update({'id': elem['QueueId'], 'sample': mxcube.queue.queueList[nodeId]['SampleId']})
+                        mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': mxcube.queue.queueList[nodeId]['SampleId']})
                         mxcube.queue.lastQueueNode = lastQueueNode
                         session["lastQueueNode"] = lastQueueNode
                         #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
@@ -273,7 +273,7 @@ def executeEntryWithId(nodeId):
             entry._view = Mock()  # associated text deps
             entry._set_background_color = Mock()  # widget color deps
             parent = int(node.get_parent()._node_id)
-            lastQueueNode.update({'id': nodeId, 'sample': mxcube.queue.queueList[parent]['SampleId']})
+            mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': mxcube.queue.queueList[parent]['SampleId']})
             mxcube.queue.lastQueueNode = lastQueueNode
             session["lastQueueNode"] = lastQueueNode
             #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
@@ -534,14 +534,30 @@ def addCharacterisation(id):
         characEntry._set_background_color = Mock()
         characEntry.set_data_model(characNode)
         characEntry.set_queue_controller(qm)
+        ## char has two taskgroup levels so that the diff plan keeps under the same grandparent
+        taskNode1 = qmo.TaskGroup()
+        taskNode2 = qmo.TaskGroup()
+        task1Entry = qe.TaskGroupQueueEntry()
+        task2Entry = qe.TaskGroupQueueEntry()
+        task1Entry.set_data_model(taskNode1)
+        task2Entry.set_data_model(taskNode2)
 
         for k, v in params.items():
             setattr(characNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
-        node = mxcube.queue.get_node(int(id))
-        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-        newNode = mxcube.queue.add_child_at_id(int(id), characNode)  # add_child does not return id!
-        entry.enqueue(characEntry)
+        node = mxcube.queue.get_node(int(id))  # this is a sampleNode
+        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node) # this is the corresponding sampleEntry
+
+        task1Id= mxcube.queue.add_child_at_id(int(id), taskNode1)
+        entry.enqueue(task1Entry)
+
+        task2Id= mxcube.queue.add_child_at_id(task1Id, taskNode2)
+        task1Entry.enqueue(task2Entry)
+
+        newNode = mxcube.queue.add_child_at_id(task2Id, characNode)  # add_child does not return id!
+        task2Entry.enqueue(characEntry)
+
         mxcube.queue.queueList[int(id)]['methods'].append({'QueueId': newNode, 'Name': 'Characterisation', 'Params': params, 'checked': 1})
+        
         session["queueList"] = mxcube.queue.queueList
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
         resp = jsonify({'QueueId': newNode, 'Name': 'Characterisation'})
@@ -568,14 +584,23 @@ def addDataCollection(id):
         colEntry.set_queue_controller(qm)
         colEntry._set_background_color = Mock()
 
+        taskNode1 = qmo.TaskGroup()
+        task1Entry = qe.TaskGroupQueueEntry()
+        task1Entry.set_data_model(taskNode1)
+
         #populating dc parameters from data sent by the client
         for k, v in params.items():
             setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
         colEntry.set_data_model(colNode)
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+        
+        task1Id= mxcube.queue.add_child_at_id(int(id), taskNode1)
+        entry.enqueue(task1Entry)
+
         newNode = mxcube.queue.add_child_at_id(int(id), colNode)  # add_child does not return id!
-        entry.enqueue(colEntry)
+        entry.enqueue(task1Entry)
+
         mxcube.queue.queueList[int(id)]['methods'].append({'QueueId': newNode, 'Name': 'DataCollection', 'Params': params, 'checked': 1})  # 'isCollected':node.is_collected()})
         session["queueList"] = mxcube.queue.queueList
         logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
