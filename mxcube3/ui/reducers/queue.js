@@ -99,7 +99,7 @@ export default (state={
 
                                     }
                                     });
-        // Change order in queue on drag and drop
+        // Change order of samples in queue on drag and drop
         case 'CHANGE_QUEUE_ORDER':
    
             return {
@@ -109,6 +109,19 @@ export default (state={
                         $splice: [
                             [action.oldIndex, 1],
                             [action.newIndex, 0, state[action.listName].nodes[action.oldIndex]]
+                    ]})}
+                };
+
+        // Change order of samples in queue on drag and drop
+        case 'CHANGE_METHOD_ORDER':
+   
+            return {
+                ...state,
+                queue : {...state.queue, 
+                    [action.sampleId] : update(state.queue[action.sampleId], {
+                        $splice: [
+                            [action.oldIndex, 1],
+                            [action.newIndex, 0, state.queue[action.sampleId][action.oldIndex]]
                     ]})}
                 };
 

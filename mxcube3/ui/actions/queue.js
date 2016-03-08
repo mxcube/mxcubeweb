@@ -319,6 +319,15 @@ export function changeOrder(listName, oldIndex, newIndex) {
 	}
 }
 
+export function changeMethodOrder(sampleId, oldIndex, newIndex) {
+	return { 
+		type: "CHANGE_METHOD_ORDER", 
+		sampleId: sampleId,
+		oldIndex: oldIndex,
+		newIndex: newIndex
+	}
+}
+
 export function runSample(queue_id) {
 	return { 
 		type: "RUN_SAMPLE", 
