@@ -67,7 +67,7 @@ export function saveMotorPositions(data) {
 
 export function saveMotorPosition(name, value) {
   return { 
-    type: "SAVE_MOTOR_POSITIONS",
+    type: "SAVE_MOTOR_POSITION",
     name:name,
     value: value
   }

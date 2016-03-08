@@ -46,7 +46,6 @@ showContextMenu(x,y){
 }
 
 savePoint(){
-    console.log(this.props)
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.StopClickCentring();
     this.props.sampleActions.sendSavePoint(this.props.shape.id);
