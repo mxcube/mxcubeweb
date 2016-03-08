@@ -25,7 +25,7 @@ export default class TodoTree extends React.Component {
             <div className="m-tree">
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>Queue to do</span>
-                    <div className="pull-right">
+                    <div className={this.props.list.length ? "pull-right" : "hidden"}>
                         <i className="fa fa-play"></i>
                         <i className="fa fa-pause"></i>
                         <i className="fa fa-stop"></i>

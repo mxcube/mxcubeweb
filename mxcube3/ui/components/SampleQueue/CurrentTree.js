@@ -17,7 +17,7 @@ export default class CurrentTree extends React.Component {
     }
 
     moveCard(dragIndex, hoverIndex) {
-        this.props.changeOrder("todo", dragIndex, hoverIndex);
+        this.props.changeOrder(this.props.mounted, dragIndex, hoverIndex);
     }
 
     deleteMethod(methodId){
@@ -40,7 +40,7 @@ export default class CurrentTree extends React.Component {
             <div className="m-tree">
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>{(node ? 'Vial ' + sampleData.id : "No Sample Mounted")}</span>
-                     <div className={node ? "pull-right" : "hidden"}>
+                     <div className={node && sampleMethods.length ? "pull-right" : "hidden"}>
                         <i className="fa fa-play"></i>
                         <i className="fa fa-pause"></i>
                         <i className="fa fa-stop"></i>
