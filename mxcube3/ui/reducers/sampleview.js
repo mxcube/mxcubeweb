@@ -39,7 +39,7 @@ export default (state=initialState, action) => {
             }
         case 'SAVE_MOTOR_POSITIONS':
             {
-             return {...state, motors: action.data };
+             return {...state, motors: action.data, lightOn: action.data.BackLight.Status };
             }
         case 'SAVE_MOTOR_POSITION':
             {

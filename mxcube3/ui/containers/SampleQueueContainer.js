@@ -49,7 +49,7 @@ export default class SampleQueueContainer extends React.Component {
 // Mount will kick down
 
    componentDidMount() {
-    const {doAddMethodResult} = this.props.sampleActions;
+    //const {doAddMethodResult} = this.props.sampleActions;
     const {socket} = this.props;
     const {getState} = this.props.queueActions;
 
@@ -58,9 +58,10 @@ export default class SampleQueueContainer extends React.Component {
 
     // Start listening to socketIO to get results of method/sample execution
     socket.on('hwr_record', (record) => {
-          if(record.sample !==0 && record.queueId !== 0){
-            doAddMethodResult(record.sample, record.queueId, record.state)
-          }else if(record.signal === "minidiffStateChanged"){
+          // if(record.sample !==0 && record.queueId !== 0){
+          //   doAddMethodResult(record.sample, record.queueId, record.state)
+          // }
+          if(record.signal === "minidiffStateChanged"){
             this.props.sampleViewActions.updatePointsPosition(record.data);
           }
     });
@@ -78,7 +79,7 @@ export default class SampleQueueContainer extends React.Component {
   render() {
 
     const {checked, lookup, todo, history, current, sampleInformation, queue} = this.props;
-    const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, changeOrder, collapseList} = this.props.queueActions;
+    const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, changeOrder, changeMethodOrder, collapseList} = this.props.queueActions;
     const {sendDeleteSampleMethod} = this.props.sampleActions;
     const {showForm} = this.props.methodFormActions;
 
@@ -90,7 +91,7 @@ export default class SampleQueueContainer extends React.Component {
                 <SampleQueueSearch />
             </div>
             <div className="queue-body">
-                <CurrentTree show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} showForm={showForm} />
+                <CurrentTree changeOrder={changeMethodOrder} show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} showForm={showForm} />
                 <TodoTree  show={todo.collapsed} collapse={collapseList} list={this.filterList(todo.nodes)} sampleInformation={sampleInformation} lookup={lookup} deleteSample={sendDeleteSample} mountSample={sendMountSample} changeOrder={changeOrder} />
                 <HistoryTree show={history.collapsed} collapse={collapseList} list={this.filterList(history.nodes)} sampleInformation={sampleInformation} queue={queue} lookup={lookup}/>
             </div>

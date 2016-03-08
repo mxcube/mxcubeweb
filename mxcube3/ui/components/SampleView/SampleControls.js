@@ -4,26 +4,28 @@ import React from 'react'
 
 export default class SampleControls extends React.Component {
 
-zoomIn(){
-  if(this.props.sampleViewState.zoom < 9){
-      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom + 1);
-  }
-}
+    constructor(props) {
+        super(props);
+        this.takeSnapShot = this.takeSnapShot.bind(this);
+        this.setZoom = this.setZoom.bind(this);
+        this.setLigthStrength = this.setLigthStrength.bind(this);
+    }
 
-zoomOut(){
-   if(this.props.sampleViewState.zoom > 0){
-      this.props.sampleActions.sendZoomPos(this.props.sampleViewState.zoom - 1);
-  }
-}
 
-takeSnapShot(){
-  document.getElementById("downloadLink").href = this.state.canvas.toDataURL();
-}
 
-lightOnOff(){
-  (this.state.lightOn ? this.props.sampleActions.sendLightOn() : this.props.sampleActions.sendLightOff())
-  this.setState({lightOn: !this.state.lightOn});
-}
+    setZoom(option){
+        this.props.sampleActions.sendZoomPos(option.target.value);
+    }
+
+    takeSnapShot(){
+        document.getElementById("downloadLink").href = this.state.canvas.toDataURL();
+    }
+
+
+    setLigthStrength(option){
+        this.props.sampleActions.sendMotorPosition("Light", option.target.value);
+    }
+
 
 
 
@@ -32,13 +34,17 @@ render() {
         <div className="sample-controlls">
             <div className="text-center"> 
                 <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center"><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
-                <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={() => this.takeSnapShot()} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
+                <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={this.takeSnapShot} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
                 <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendStartAutoCentring}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
                 <button type="button" data-toggle="tooltip"  title="Start 3-click centring" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendStartClickCentring}><i className="fa fa-2x fa-fw fa-circle-o-notch"></i></button>
                 <button type="button" data-toggle="tooltip"  title="Abort Centring" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendAbortCentring}><i className="fa fa-2x fa-fw fa-times"></i></button>
-                <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center" onClick={() => this.zoomIn()}><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
-                <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center" onClick={() => this.zoomOut()}><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
-                <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={() => this.lightOnOff()}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center"><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
+                <input className="bar" type="range" id="zoom-control" min="0" max="9" step="1" defaultValue={this.props.sampleViewState.zoom} onChange={this.setZoom}/>
+                <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center"><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
+                <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendLightOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                <input className="bar" type="range" id="light-control" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.Light.position} onChange={this.setLigthStrength} />
+                <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendLightOn}><i className="fa fa-2x fa-fw fa fa-lightbulb-o light-on"></i> </button>
+
             </div>
         </div>
 
