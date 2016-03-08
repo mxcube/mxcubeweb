@@ -11,14 +11,6 @@ export function selectSample(queue_id, sample_id, parent_queue_id, method) {
 	}
 }
 
-export function toggleCheckBox(queue_id, parent_queue_id = -1) {
-	return { 
-		type: "TOGGLE_CHECKBOX",
-		queue_id: queue_id,
-		parent_queue_id: parent_queue_id
-	}
-}
-
 export function addSample(sample_id, queue_id) {
 	return { 
 		type: "ADD_SAMPLE", 
@@ -55,6 +47,40 @@ export function setState(queueState, sampleGridState) {
                sampleGridState: sampleGridState
         }
 }
+
+export function changeOrder(listName, oldIndex, newIndex) {
+	return { 
+		type: "CHANGE_QUEUE_ORDER", 
+		listName: listName,
+		oldIndex: oldIndex,
+		newIndex: newIndex
+	}
+}
+
+export function changeMethodOrder(sampleId, oldIndex, newIndex) {
+	return { 
+		type: "CHANGE_METHOD_ORDER", 
+		sampleId: sampleId,
+		oldIndex: oldIndex,
+		newIndex: newIndex
+	}
+}
+
+export function runSample(queue_id) {
+	return { 
+		type: "RUN_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+export function mountSample(queue_id) {
+	return { 
+		type: "MOUNT_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+
 
 export function getState() {
 	return function(dispatch) {
@@ -286,61 +312,6 @@ export function sendRunSample(queue_id) {
 	}
 }
 
-export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
-	return function(dispatch) {
-
-		fetch('mxcube/api/v0.1/queue/' + queue_id + "/toggle", { 
-			method: 'PUT', 
-                        credentials: 'include',
-			headers: {
-				'Accept': 'application/json',
-				'Content-type': 'application/json'
-			}
-
-		}).then(function(response) {
-			if (response.status >= 400) {
-				throw new Error("Server refused to toogle sample/method");
-			}else {
-				dispatch(toggleCheckBox(queue_id, parent_queue_id));
-				dispatch(sendState());
-
-			}
-		});
-
-	}
-}
-
-export function changeOrder(listName, oldIndex, newIndex) {
-	return { 
-		type: "CHANGE_QUEUE_ORDER", 
-		listName: listName,
-		oldIndex: oldIndex,
-		newIndex: newIndex
-	}
-}
-
-export function changeMethodOrder(sampleId, oldIndex, newIndex) {
-	return { 
-		type: "CHANGE_METHOD_ORDER", 
-		sampleId: sampleId,
-		oldIndex: oldIndex,
-		newIndex: newIndex
-	}
-}
-
-export function runSample(queue_id) {
-	return { 
-		type: "RUN_SAMPLE", 
-		queue_id: queue_id
-	}
-}
-
-export function mountSample(queue_id) {
-	return { 
-		type: "MOUNT_SAMPLE", 
-		queue_id: queue_id
-	}
-}
 
 
 

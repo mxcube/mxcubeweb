@@ -1,19 +1,13 @@
 import {omit} from 'lodash/object';
-import {without, xor, union, intersection} from 'lodash/array';
+import {without} from 'lodash/array';
 import update from 'react/lib/update';
 
 export default (state={
     queue:{},
+    current:{node: null, collapsed: false},
     todo:{nodes: [], collapsed: false},
     history:{nodes: [], collapsed: false},
     checked: [],
-    current:{node: null, collapsed: false},
-    selected: {
-        queue_id: null,
-        sample_id: null,
-        method: null,
-        list_index: 0
-    },
     lookup:{},
     lookup_queue_id:{},
     searchString: ""
@@ -87,18 +81,6 @@ export default (state={
                 [action.list_name] : {...state[action.list_name], collapsed : !state[action.list_name].collapsed }
             }
 
-
-         // Selecting node in the gui
-        case 'SELECT_SAMPLE':
-            return Object.assign({},state, 
-                                    {selected: {
-                                        queue_id: action.queue_id,
-                                        sample_id: action.sample_id,
-                                        method: action.method,
-                                        parent_queue_id: action.parent_queue_id
-
-                                    }
-                                    });
         // Change order of samples in queue on drag and drop
         case 'CHANGE_QUEUE_ORDER':
    
@@ -125,29 +107,6 @@ export default (state={
                     ]})}
                 };
 
-
-        // Toogles checkboxes for sample and method nodes
-        case 'TOGGLE_CHECKBOX':
-
-            let exist = state.checked.indexOf(action.queue_id) !== -1;
-            // Checking if node is sample or method
-            if(action.parent_queue_id === -1){
-                let children = state.queue[action.queue_id];
-                if(exist){
-                    return Object.assign({},state, {checked: without(xor(state.checked, [action.queue_id]), ...children) });
-                }else{
-                    return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]), children)});
-                }
-            }else{
-                let methods_checked = intersection(state.queue[action.parent_queue_id],state.checked);
-                if(exist && methods_checked.length === 1){
-                    return Object.assign({},state, {checked: without(state.checked, action.parent_queue_id, action.queue_id)});
-                }else{
-                    return Object.assign({},state, {checked: union(xor(state.checked, [action.queue_id]),[action.parent_queue_id])});
-                }
-            }
-
-            break;
         case 'redux-form/CHANGE':
             if(action.form === "search-sample"){
                 return Object.assign({}, state, {searchString : action.value});
