@@ -1,5 +1,5 @@
 import {omit} from 'lodash/object';
-import {without} from 'lodash/array';
+import {without, xor} from 'lodash/array';
 import update from 'react/lib/update';
 
 export default (state={
@@ -60,8 +60,7 @@ export default (state={
                         {
                             current: {...state.current, node: action.queue_id},
                             todo:  {...state.todo, nodes: without(state.todo.nodes, action.queue_id)},
-                            history:  {...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : [])},
-                            checked: without(state.checked, action.queue_id)
+                            history:  {...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : [])}
                         }
                         );
 
@@ -71,6 +70,13 @@ export default (state={
                         {
                             current : action.queue_id,
                             todo:  {...state.todo, nodes: without(state.todo.nodes, action.queue_id)}
+                        }
+                        );
+
+        case 'TOGGLE_CHECKED':
+            return Object.assign({}, state, 
+                        {
+                            checked:  xor(state.checked, [action.queue_id])
                         }
                         );
 

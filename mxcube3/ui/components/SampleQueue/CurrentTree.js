@@ -59,6 +59,8 @@ export default class CurrentTree extends React.Component {
                             deleteMethod={this.deleteMethod}
                             showForm={this.props.showForm} 
                             sampleId={this.props.mounted}
+                            checked={this.props.checked}
+                            toggleChecked={this.props.toggleCheckBox}
                         />
                     );
                 })}

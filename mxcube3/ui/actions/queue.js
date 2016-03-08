@@ -69,6 +69,12 @@ export function mountSample(queue_id) {
 	}
 }
 
+export function toggleChecked(queue_id) {
+	return { 
+		type: "TOGGLE_CHECKED", 
+		queue_id: queue_id
+	}
+}
 
 
 export function getState() {
@@ -302,6 +308,27 @@ export function sendRunSample(queue_id) {
 }
 
 
+export function sendToggleCheckBox(queue_id) {
+	return function(dispatch) {
 
+		fetch('mxcube/api/v0.1/queue/' + queue_id + "/toggle", { 
+			method: 'PUT', 
+                        credentials: 'include',
+			headers: {
+				'Accept': 'application/json',
+				'Content-type': 'application/json'
+			}
+
+		}).then(function(response) {
+			if (response.status >= 400) {
+				throw new Error("Server refused to toogle checked method");
+			}else {
+				dispatch(toggleChecked(queue_id));
+
+			}
+		});
+
+	}
+}
 
 

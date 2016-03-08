@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import { DragSource, DropTarget } from 'react-dnd';
+import cx from 'classnames'
 
 const cardSource = {
   beginDrag(props) {
@@ -87,14 +88,23 @@ export default class MethodItem extends Component {
         super(props);
         this.showForm = () => this.props.showForm(this.props.data.name.toLowerCase(), this.props.sampleId, this.props.data, this.props.data.parameters.point );
         this.deleteMethod = () => this.props.deleteMethod(this.props.id);
+        this.onClick= this.onClick.bind(this);
+  }
+
+  onClick(){
+    this.props.toggleChecked(this.props.id);
   }
 
   render() {
     const { data, isDragging, connectDragSource, connectDropTarget } = this.props;
     const opacity = isDragging ? 0 : 1;
+    let methodCSS = cx('node node-sample',{
+        'passive': this.props.checked.indexOf(this.props.id) === -1
+    }); 
+
     return connectDragSource(connectDropTarget(
-      <div className="node node-sample" style={{ opacity }}>
-        <span className="node-name">{'P' + data.parameters.point + ' ' + data.name}</span>
+      <div className={methodCSS} style={{ opacity }}>
+        <span className="node-name" onClick={this.onClick}>{'P' + data.parameters.point + ' ' + data.name}</span>
          <div className="pull-right">
              <i className="fa fa-cog" onClick={this.showForm}></i>
              <i className="fa fa-times" onClick={this.deleteMethod}></i>
