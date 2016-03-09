@@ -35,6 +35,12 @@ export default class SampleImage extends React.Component {
         this.renderPoints(this.props.shapeList, canvas);
         this.drawImageOverlay(canvas);
 
+        window.addEventListener('resize', () => {
+                this.drawCanvas(canvas);
+                this.renderPoints(this.props.shapeList, canvas);
+                this.drawImageOverlay(canvas);
+        });
+
     }
 
     componentWillReceiveProps(nextProps){
