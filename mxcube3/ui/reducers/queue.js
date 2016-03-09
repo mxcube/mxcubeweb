@@ -4,7 +4,7 @@ import update from 'react/lib/update';
 
 export default (state={
     queue:{},
-    current:{node: null, collapsed: false},
+    current:{node: null, collapsed: false, running: false},
     todo:{nodes: [], collapsed: false},
     history:{nodes: [], collapsed: false},
     checked: [],
@@ -58,7 +58,7 @@ export default (state={
         case 'MOUNT_SAMPLE':
             return Object.assign({}, state, 
                         {
-                            current: {...state.current, node: action.queue_id},
+                            current: {...state.current, node: action.queue_id, running: false},
                             todo:  {...state.todo, nodes: without(state.todo.nodes, action.queue_id)},
                             history:  {...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : [])}
                         }
@@ -68,8 +68,7 @@ export default (state={
         case 'RUN_SAMPLE':
             return Object.assign({}, state, 
                         {
-                            current : action.queue_id,
-                            todo:  {...state.todo, nodes: without(state.todo.nodes, action.queue_id)}
+                            current : {...state.current, running: true}
                         }
                         );
 

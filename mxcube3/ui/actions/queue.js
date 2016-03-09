@@ -101,26 +101,6 @@ export function getState() {
 	}
 }
 
-export function sendState() {
-	return function(dispatch, getState) {
-		let state = getState();
-		fetch('mxcube/api/v0.1/queue/state', { 
-			method: 'PUT', 
-                        credentials: 'include',
-			headers: {
-				'Accept': 'application/json',
-				'Content-type': 'application/json'
-			},
-		body: JSON.stringify({ queueState : state.queue, sampleGridState: state.samples_grid })
-		}).then(function(response) {
-			if (response.status >= 400) {
-				throw new Error("Server refused to set state");
-			}
-		});
-
-	}
-}
-
 export function sendRunQueue() {
 	return function() {
 
@@ -227,8 +207,6 @@ export function sendAddSample(id) {
 		})
 		.then(function(json) {
 			dispatch(addSample(json.SampleId, json.QueueId));
-			dispatch(sendState());
-
 		});
 
 	}
@@ -251,8 +229,6 @@ export function sendDeleteSample(queue_id) {
 				throw new Error("Server refused to remove sample");
 			}else {
 				dispatch(removeSample(queue_id));
-				dispatch(sendState());
-
 			}
 		});
 
@@ -275,8 +251,6 @@ export function sendMountSample(queue_id) {
 				throw new Error("Server refused to mount sample");
 			}else {
 				dispatch(mountSample(queue_id));
-				dispatch(sendState());
-
 			}
 		});
 
@@ -296,11 +270,9 @@ export function sendRunSample(queue_id) {
 
 		}).then(function(response) {
 			if (response.status >= 400) {
-				throw new Error("Server refused to mount sample");
+				throw new Error("Server refused to run sample");
 			}else {
 				dispatch(runSample(queue_id));
-				dispatch(sendState());
-
 			}
 		});
 

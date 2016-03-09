@@ -14,6 +14,7 @@ export default class CurrentTree extends React.Component {
         this.moveCard = this.moveCard.bind(this);
         this.deleteMethod = this.deleteMethod.bind(this);
         this.collapse = this.props.collapse.bind(this,"current");
+        this.runSample = this.runSample.bind(this);
     }
 
     moveCard(dragIndex, hoverIndex) {
@@ -22,6 +23,10 @@ export default class CurrentTree extends React.Component {
 
     deleteMethod(methodId){
         this.props.deleteMethod(this.props.mounted, methodId , this.props.lookup[this.props.mounted] )
+    }
+
+    runSample(){
+        this.props.run(this.props.mounted);
     }
 
     render() {
@@ -41,7 +46,7 @@ export default class CurrentTree extends React.Component {
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>{(node ? 'Vial ' + sampleData.id : "No Sample Mounted")}</span>
                      <div className={node && sampleMethods.length ? "pull-right" : "hidden"}>
-                        <i className="fa fa-play"></i>
+                        <i className="fa fa-play" onClick={this.runSample}></i>
                         <i className="fa fa-pause"></i>
                         <i className="fa fa-stop"></i>
                     </div>
