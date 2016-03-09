@@ -1,5 +1,20 @@
 import fetch from 'isomorphic-fetch'
 
+
+export function setImageRatio(ratio) {
+  return { 
+    type: "SET_IMAGE_RATIO",
+    ratio: ratio
+  }
+}
+
+export function setCanvas(canvas) {
+  return { 
+    type: "SET_CANVAS",
+    canvas: canvas
+  }
+}
+
 export function setLight(on) {
   return { 
     type: "SET_LIGHT",
@@ -50,11 +65,12 @@ export function DeletePoint(id) {
   }
 }
 
-export function SaveImageSize(x,y,) {
+export function SaveImageSize(x,y, pixelsPerMm) {
   return { 
     type: "SAVE_IMAGE_SIZE",
     width: x,
-    height: y
+    height: y,
+    pixelsPerMm: pixelsPerMm
   }
 }
 
@@ -190,6 +206,7 @@ export function sendZoomPos(level) {
       throw new Error("Server refused to zoom");
     }
   }).then(function() {
+      dispatch(getSampleImageSize());
       dispatch(setZoom(level));
     });
 
@@ -287,7 +304,7 @@ export function getSampleImageSize() {
     }
  return response.json();
   }).then(function(json) {
-      dispatch(SaveImageSize(json.imageWidth, json.imageHeight));
+      dispatch(SaveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
     });
 
 }

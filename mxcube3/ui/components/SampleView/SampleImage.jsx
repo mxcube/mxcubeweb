@@ -5,14 +5,6 @@ import {makeCircle, makeLine, makeBeam, makeText} from './shapes'
 
 export default class SampleImage extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      canvas: {},
-      group: null
-  };
-}
-
     componentDidMount(){
         // Create fabric and set image background to sample
         var canvas = new fabric.Canvas('canvas');
@@ -24,28 +16,20 @@ export default class SampleImage extends React.Component {
         document.getElementById('insideWrapper').addEventListener('contextmenu', (e) => this.rightClick(e,canvas), false);
 
         //Bind canvas to state, this is done to let other functions manipulate the canvas such as removing objecs
-        this.setState({canvas: canvas});
-
-        //Save and remove group in state
-        // canvas.on('selection:created', (e) => this.setState({group: e.target}));
-        // canvas.on('selection:cleared', () => this.setState({group: null}));
+        this.props.sampleActions.setCanvas(canvas);
 
         // Draw canvas and set img size depending on screen size
-        this.drawCanvas(canvas);
-        this.renderPoints(this.props.shapeList, canvas);
-        this.drawImageOverlay(canvas);
+        let imageRatio = this.drawCanvas(canvas);
+        this.renderPoints(this.props.shapeList, canvas, imageRatio);
+        this.drawImageOverlay(canvas, imageRatio);
 
-        window.addEventListener('resize', () => {
-                this.drawCanvas(canvas);
-                this.renderPoints(this.props.shapeList, canvas);
-                this.drawImageOverlay(canvas);
-        });
+        window.addEventListener('resize', () => this.drawCanvas(canvas));
 
     }
 
     componentWillReceiveProps(nextProps){
-        this.renderPoints(nextProps.shapeList, this.state.canvas);
-        this.drawImageOverlay(this.state.canvas);
+        this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio);
+        this.drawImageOverlay(nextProps.canvas, nextProps.imageRatio);
     }
 
     drawCanvas(canvas){
@@ -70,13 +54,18 @@ export default class SampleImage extends React.Component {
         document.getElementById("sample-img").style.width = w + "px";
         document.getElementById("insideWrapper").style.height = h + "px";
 
-        this.setState({heightRatio: this.props.imageHeight/h, widthRatio: this.props.imageWidth/w});
+        let imageRatio = this.props.imageHeight/h;
+        this.props.sampleActions.setImageRatio(imageRatio);
+
+        return imageRatio;
     }
 
-    drawImageOverlay(canvas){
-        canvas.add(makeBeam(canvas.width/2,canvas.height/2, 40));
-        canvas.add(makeLine(10,canvas.height-10,150,canvas.height-10));
-        canvas.add(makeLine(10,canvas.height-10,10,canvas.height-150));
+    drawImageOverlay(canvas, imageRatio){
+        let l = 0.05 * this.props.pixelsPerMm / imageRatio;
+        //console.log(imageRatio);
+        canvas.add(makeBeam(canvas.width/2,canvas.height/2, l/2));
+        canvas.add(makeLine(10,canvas.height-10,l + 10,canvas.height-10));
+        canvas.add(makeLine(10,canvas.height-10,10,canvas.height-10-l));
         canvas.add(makeText(20,canvas.height-30,16));
     }
 
@@ -93,9 +82,6 @@ export default class SampleImage extends React.Component {
               this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
             }
         });
-        if(this.state.group && this.state.group.containsPoint(clickPoint)){
-            this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
-        }
     }
 
     leftClick(option){
@@ -104,28 +90,21 @@ export default class SampleImage extends React.Component {
         }
         
         if(this.props.clickCentring){
-            this.props.sampleActions.sendCentringPoint(option.e.layerX * this.state.widthRatio, option.e.layerY  * this.state.heightRatio);
+            this.props.sampleActions.sendCentringPoint(option.e.layerX * this.props.imageRatio, option.e.layerY  * this.props.imageRatio);
         }
     }
 
-    drawLine(){
-        this.props.sampleActions.showContextMenu(false);
-        let points = this.state.group.getObjects();
-        this.state.canvas.add(makeLine(points[0], points[1]));
-    }
 
-    renderPoints(points, canvas){    
+
+    renderPoints(points, canvas, imageRatio){ 
         canvas.clear();
-        let heightRatio = canvas.height/this.props.imageHeight;
-        let widthRatio = canvas.width/this.props.imageWidth;
-
         for(let id in points){
           switch (points[id].type){
             case "SAVED":
-              canvas.add(makeCircle(points[id].x * widthRatio, points[id].y * heightRatio, id,  "green", "SAVED"));
+              canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "green", "SAVED"));
               break;
             case "TMP":
-              canvas.add(makeCircle(points[id].x * widthRatio, points[id].y * heightRatio, id,  "grey", "TMP"));
+              canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "grey", "TMP"));
               break;
             default:
               throw new Error("Server gave point with unknown type"); 

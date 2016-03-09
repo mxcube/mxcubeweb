@@ -29,7 +29,7 @@ export function makeLine(x1, y1, x2, y2) {
 }
 
 export function makeText(x, y, fontSize) {
-  return new fabric.Text("100 µm", {
+  return new fabric.Text("50 µm", {
     fontSize: fontSize,
     fill: 'green',
     stroke: 'green',
