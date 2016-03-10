@@ -8,3 +8,5 @@ louie
 redis
 scipy
 mock
+jsonpickle
+pillow
