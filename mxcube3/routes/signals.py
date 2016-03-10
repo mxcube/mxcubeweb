@@ -1,7 +1,6 @@
 import logging, json, inspect
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
-from flask import session
 import time
 
 centredPos = []
@@ -45,7 +44,6 @@ def signalCallback(*args, **kwargs):
     # NOT SURE ABOUT THIS ONE
 
     lastQueueNode = mxcube.queue.lastQueueNode
-    #lastQueueNode = session.get("lastQueueNode")
 
     if len(args) >0:
         if args[0] in queueSignals:

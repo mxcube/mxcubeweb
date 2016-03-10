@@ -57,10 +57,6 @@ def loginInfo():
     loginInfo = session.get("loginInfo")
     if loginInfo is None:
         session["queueList"] = {}
-        session["queueOrder"] = []
-        session["queueState"] = {}
-        session["sampleGridState"] = {}
-        session["lastQueueNode"] = {'id': 0, 'sample': 0}
     else:
         loginInfo["loginRes"] = mxcube.db_connection.login(loginInfo["loginID"], loginInfo["password"])
         session['loginInfo'] = loginInfo
