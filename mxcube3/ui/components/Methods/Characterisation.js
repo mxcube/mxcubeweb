@@ -26,7 +26,8 @@ class Characterisation extends React.Component {
             energy : fields.energy.value,
             oscRange : fields.oscRange.value,
             transmission : fields.transmission.value,
-            point : this.props.pointId
+            point : this.props.pointId,
+            centringMethod: fields.centringMethod.value
             };
 
         if(this.props.methodData === -1){
@@ -42,7 +43,7 @@ class Characterisation extends React.Component {
 
     render() {
 
-        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission}} = this.props;
+        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission, centringMethod}} = this.props;
 
         const style = {
           overlay : {
@@ -150,6 +151,14 @@ class Characterisation extends React.Component {
         </form>
             </div>
             <div className="modal-footer">
+          <div className={this.props.pointId !== -1 ? "pull-left" : "hidden"}>
+            <label className="centring-method">
+              <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'}/> Lucid Only  
+            </label>
+            <label className="centring-method">
+              <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'}/> X-ray Centring 
+            </label>
+          </div>
               <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
               <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.methodData !== -1 ? "Change": "Add to Queue"}</button>
             </div>
@@ -161,7 +170,7 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission'] // all the fields in your form
+  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'centringMethod'] // all the fields in your form
 },
 state => ({ // mapStateToProps
   initialValues: {...state.methodForm.methodData.parameters} // will pull state into form's initialValues
