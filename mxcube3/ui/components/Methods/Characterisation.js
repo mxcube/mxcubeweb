@@ -10,10 +10,11 @@ class Characterisation extends React.Component {
 
   constructor(props) {
         super(props);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.runNow = this.handleSubmit.bind(this, true);
+        this.addToQueue = this.handleSubmit.bind(this, false);
   }
 
-    handleSubmit(){
+    handleSubmit(runNow){
 
         let fields = this.props.fields;
         let parameters = {
@@ -30,12 +31,11 @@ class Characterisation extends React.Component {
 
         if(this.props.methodData === -1){
             this.props.sampleIds.map( (queue_id) =>{
-                this.props.addMethod(queue_id, this.props.lookup[queue_id],parameters);
+                this.props.addMethod(queue_id, this.props.lookup[queue_id],parameters, runNow);
             });
         }else{
-            this.props.changeMethod(this.props.sampleIds, this.props.methodData.queue_id, this.props.lookup[this.props.sampleIds], parameters);
-        }   
-
+            this.props.changeMethod(this.props.sampleIds, this.props.methodData.queue_id, this.props.lookup[this.props.sampleIds], parameters, runNow);
+        }
         this.props.closeModal();
     }
 
@@ -150,8 +150,8 @@ class Characterisation extends React.Component {
         </form>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-default" onClick={this.props.closeModal}>Close</button>
-              <button type="button" className="btn btn-primary" onClick={this.handleSubmit}>{this.props.methodData !== -1 ? "Change Characterisation": "Add Characterisation"}</button>
+              <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
+              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.methodData !== -1 ? "Change": "Add to Queue"}</button>
             </div>
           </div>
         </Modal>

@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import { sendClearQueue } from './queue'
+import { sendClearQueue, sendRunSample } from './queue'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -114,7 +114,7 @@ export function doRemoveMethod(sample_queue_id, queue_id, sample_id) {
 }
 
 
-export function sendAddSampleMethod(queue_id, sample_id, method) {
+export function sendAddSampleMethod(queue_id, sample_id, method, runNow) {
     return function(dispatch) {
 
         fetch('mxcube/api/v0.1/queue/' + queue_id, { 
@@ -131,6 +131,9 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
             }
             return response.json();
         }).then(function(json) {
+            if(runNow){
+                dispatch(sendRunSample(json.QueueId));
+            }
             dispatch(doAddMethod(queue_id, sample_id, json, method));
         });
        
@@ -138,7 +141,7 @@ export function sendAddSampleMethod(queue_id, sample_id, method) {
     }
 }
 
-export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_id, method) {
+export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_id, method, runNow) {
         return function(dispatch) {
 
         fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' + method_queue_id, { 
@@ -155,6 +158,9 @@ export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_
             }
             return response.json();
         }).then(function() {
+            if(runNow){
+                dispatch(sendRunSample(method_queue_id));
+            }
             dispatch(doChangeMethod(method_queue_id, sample_id, method));
         });
        
