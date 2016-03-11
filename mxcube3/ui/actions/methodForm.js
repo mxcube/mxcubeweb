@@ -8,9 +8,9 @@ export function showForm(formName, sample_queue_id, methodData={}, point_queue_i
 	}
 }
 
-export function hideForm() {
+export function hideTaskParametersForm() {
 	return { 
-		type: "HIDE_FORM"
+		type: "HIDE_FORM" 
 	}
 }
 
