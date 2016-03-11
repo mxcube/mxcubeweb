@@ -9,19 +9,19 @@ const socket = io.connect('http://' + document.domain + ':' + location.port+"/hw
 
 export default class Main extends React.Component {
     render() {
-        return (<div className="container-fluid"> 
+        return (<div> 
                       <PleaseWaitDialog/>
-                      <div className="row">
-                          <ErrorNotificationPanel/>
-                          <MXNavbarContainer/>
-                      </div>
-                      <div className="row">
+                      <ErrorNotificationPanel/>
+                      <MXNavbarContainer/>
+                      <div className="container-fluid">
+                        <div className="row">
                           <div className="col-xs-2">
                             <SampleQueueContainer socket={socket}/>
                           </div>
                           <div className="col-xs-10">
                                {this.props.children}
                           </div>
+                        </div>
                       </div>
                   </div>)
     }    
