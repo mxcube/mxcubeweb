@@ -1,6 +1,6 @@
 import {omit} from 'lodash/object';
 
-export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_mount: false, login_data: {} }, action) => {
+export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked_task: Object(), manual_mount: false, login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
           // should have session samples
@@ -10,6 +10,10 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
           let new_selected = Object.assign({}, state.selected);
           new_selected[action.index]=!state.selected[action.index];
           return Object.assign({}, state, {selected: new_selected });
+      }
+    case "CLICKED_TASK":
+      {
+          return Object.assign({}, state, {clicked_task: action.task});
       }
     case "SELECT_ALL":
       { 
