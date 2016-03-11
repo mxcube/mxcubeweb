@@ -1,4 +1,4 @@
-from flask import session, redirect, url_for, render_template, request, Response
+from flask import session, redirect, url_for, render_template, request, Response, jsonify
 from mxcube3 import app as mxcube
 
 import logging
@@ -41,3 +41,26 @@ def get_bl_id_status(id):
     motor_hwobj = mxcube.beamline.getObjectByRole(id.lower())    
     data[id] = {'Status': motor_hwobj.get_state(), 'position': motor_hwobj.getPosition()}
     return data
+
+@mxcube.route("/mxcube/api/v0.1/beamline/beamInfo", methods=['GET'])
+def getBeamInfo():
+    """Beam information: position,size,shape
+    return_data={"position":,"shape":,"size_x":,"size_y":}     
+    """
+    try:
+        beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+        if beamInfo is None:
+             logging.getLogger('HWR').error("beamInfo is not defined")
+             return Response(status=409)
+        beamInfoDict = beamInfo.get_beam_info()
+        print beamInfoDict
+        data = {'position': beamInfo.get_beam_position(), \
+                'shape': beamInfoDict["shape"], \
+                'size_x': beamInfoDict["size_x"], \
+                'size_y': beamInfoDict["size_y"], \
+               }       
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp
+    except Exception:
+        return Response(status=409)
