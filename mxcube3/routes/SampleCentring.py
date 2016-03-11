@@ -300,7 +300,7 @@ def moveZoomMotor():
     try:
         logging.getLogger('HWR').info("Changing zoom level to: %s" %newPos)
         zoomMotor.moveToPosition(zoomLevels[int(newPos)])
-	scales = mxcube.diffractometer.getCalibrationData(0)
+        scales = mxcube.diffractometer.getCalibrationData(0)
         resp = jsonify({'pixelsPerMm': [scales[0],scales[1]]})
         resp.status_code = 200
         return resp
