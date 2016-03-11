@@ -72,15 +72,17 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
               [action.index] : {...state.samples_list[action.index],
                 methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
                   {
-                    name: action.name,
+                    type: action.method_type,
+                    label: action.method_type.split(/(?=[A-Z])/).join(" "),
+                    sample_id: action.index,
                     queue_id: action.queue_id,
+                    parent_id: action.parent_id,
                     parameters : action.parameters,
                     state: 0
-                }
+                  }
                 }
               }
-             }}
-          );
+             }});
       }
     case "CHANGE_METHOD":
       {    
@@ -90,7 +92,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
                 methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
                   {
                     ...state.samples_list[action.index].methods[action.queue_id],
-                    name: action.parameters.Type,
+                    type: action.parameters.Type,
                     queue_id: action.queue_id,
                     parameters : action.parameters
                 }}
