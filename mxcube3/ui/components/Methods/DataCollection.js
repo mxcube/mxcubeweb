@@ -74,7 +74,9 @@ class DataCollection extends React.Component {
             osc_start : fields.oscStart.value,
             energy : fields.energy.value,
             osc_range : fields.oscRange.value,
-            transmission : fields.transmission.value
+            transmission : fields.transmission.value,
+            xRay : fields.xRay.value,
+            lucid : fields.lucid.value
             };
         if (this.state.method){
             this.props.changeMethod(parameters);
@@ -92,7 +94,7 @@ class DataCollection extends React.Component {
 
     render() { 
 
-        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission}} = this.props;
+        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission, xRay, lucid}} = this.props;
 
 
         const style = {
@@ -200,6 +202,18 @@ class DataCollection extends React.Component {
         </form>
             </div>
             <div className="modal-footer">
+                <form className="pull-left form-group">
+                    <div className="col-sm-1">
+                        <input name="group" type="checkbox" {...xRay}/>
+                    </div>
+                    <label className="col-sm-5 control-label">X-ray Centring</label>
+          
+                    <div className="col-sm-1">
+                        <input name="group" type="checkbox" {...lucid}/>
+                    </div>
+                    <label className="col-sm-4 control-label">Only Lucid</label>
+                </form>
+
               <button type="button" className="btn btn-default" onClick={() => this.props.closeModal()}>Close</button>
               <button type="button" className="btn btn-primary" onClick={() => this.handleSubmit()}>{this.state.method ? "Change DataCollection": "Add DataCollection"}</button>
             </div>
@@ -211,7 +225,7 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'datacollection',                           // a unique name for this form
-  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission'] // all the fields in your form
+  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'xRay', 'lucid'] // all the fields in your form
 })(DataCollection);
 
 export default DataCollection;

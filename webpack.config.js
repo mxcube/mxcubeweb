@@ -45,7 +45,7 @@ var config = {
       },
     {
       test: /\.jsx?$/,
-      loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=stage-0'],
+      loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=stage-0,plugins[]=transform-decorators-legacy'],
       exclude: /node_modules/
 
     },

@@ -1,5 +1,20 @@
 import fetch from 'isomorphic-fetch'
 
+
+export function setImageRatio(ratio) {
+  return { 
+    type: "SET_IMAGE_RATIO",
+    ratio: ratio
+  }
+}
+
+export function setCanvas(canvas) {
+  return { 
+    type: "SET_CANVAS",
+    canvas: canvas
+  }
+}
+
 export function setLight(on) {
   return { 
     type: "SET_LIGHT",
@@ -7,6 +22,15 @@ export function setLight(on) {
   }
 }
 
+export function showContextMenu(show, shape={type: "NONE"} , x=0, y=0) {
+  return { 
+    type: "SHOW_CONTEXT_MENU",
+    show: show,
+    shape: shape,
+    x: x,
+    y: y
+  }
+}
 
 export function setZoom(level) {
   return { 
@@ -34,14 +58,43 @@ export function SavePoint(point) {
   }
 }
 
-export function SaveImageSize(x,y,) {
+export function DeletePoint(id) {
   return { 
-    type: "SAVE_IMAGE_SIZE",
-    width: x,
-    height: y
+    type: "DELETE_POINT",
+    id: id
   }
 }
 
+export function SaveImageSize(x,y, pixelsPerMm) {
+  return { 
+    type: "SAVE_IMAGE_SIZE",
+    width: x,
+    height: y,
+    pixelsPerMm: pixelsPerMm
+  }
+}
+
+export function saveMotorPositions(data) {
+  return { 
+    type: "SAVE_MOTOR_POSITIONS",
+    data:data
+  }
+}
+
+export function saveMotorPosition(name, value) {
+  return { 
+    type: "SAVE_MOTOR_POSITION",
+    name:name,
+    value: value
+  }
+}
+
+export function updatePointsPosition(points) {
+  return { 
+    type: "UPDATE_POINTS_POSITION",
+    points: points
+  }
+}
 
 export function sendStartClickCentring() {
   return function(dispatch) {
@@ -97,9 +150,9 @@ export function sendStartAutoCentring() {
 }
 }
 
-export function sendSavePoint() {
+export function sendSavePoint(id) {
   return function(dispatch) {
-   fetch('/mxcube/api/v0.1/sampleview/centring/0', { 
+   fetch('/mxcube/api/v0.1/sampleview/centring/' + id, { 
     method: 'POST', 
     credentials: 'include',
     headers: {
@@ -113,6 +166,26 @@ export function sendSavePoint() {
     return response.json();
   }).then(function(json) {
       dispatch(SavePoint(json));
+    });
+
+}
+}
+
+export function sendDeletePoint(id) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/centring/' + id, { 
+    method: 'DELETE', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to delete point");
+    }
+    return response.json();
+  }).then(function() {
+      dispatch(DeletePoint(id));
     });
 
 }
@@ -133,6 +206,7 @@ export function sendZoomPos(level) {
       throw new Error("Server refused to zoom");
     }
   }).then(function() {
+      dispatch(getSampleImageSize());
       dispatch(setZoom(level));
     });
 
@@ -178,6 +252,25 @@ export function sendLightOff() {
 }
 }
 
+export function sendMotorPosition(motorName, value) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/' + value, { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to move motors");
+    }else{
+      dispatch(saveMotorPosition(motorName, value));
+    }
+  });
+}
+}
+
 export function sendAbortCentring() {
   return function() {
    fetch('/mxcube/api/v0.1/sampleview/centring/abort', { 
@@ -211,7 +304,51 @@ export function getSampleImageSize() {
     }
  return response.json();
   }).then(function(json) {
-      dispatch(SaveImageSize(json.imageWidth, json.imageHeight));
+      dispatch(SaveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
+    });
+
+}
+}
+
+
+export function getMotorPositions() {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview', { 
+    method: 'GET', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to get motorposition");
+    }
+ return response.json();
+  }).then(function(json) {
+      dispatch(saveMotorPositions(json));
+      dispatch(setZoom(json.Zoom.position));
+    });
+
+}
+}
+
+
+export function getPointsPosition() {
+  return function(dispatch) {
+   fetch('mxcube/api/v0.1/sampleview/centring', { 
+    method: 'GET', 
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to return points position");
+    }
+ return response.json();
+  }).then(function(json) {
+      dispatch(updatePointsPosition(json));
     });
 
 }

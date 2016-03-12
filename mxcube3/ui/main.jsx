@@ -10,6 +10,7 @@ import Main from './components/Main';
 import { Provider } from 'react-redux';
 import configureStore from './store/configureStore';
 import './serverIO';
+import "font-awesome-webpack";
 require("file?name=[name].[ext]!index.html");
 
 const store = configureStore({}); //samples_grid: {samples_list: samples_list}});

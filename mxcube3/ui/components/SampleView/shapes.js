@@ -1,6 +1,6 @@
-export function makeCircle(x, y, color = "red", type = "TMP") {
+export function makeCircle(x, y, id = "no id", color = "red", type = "TMP") {
   return new fabric.Circle({
-    radius: 5, 
+    radius: 10, 
     strokeWidth: 2, 
     stroke: color,
     fill: '',
@@ -8,25 +8,46 @@ export function makeCircle(x, y, color = "red", type = "TMP") {
     top: y,
     selectable: true,
     lockMovementX: true,
+    lockMovementY: true,
     lockScalingFlip: true,
     lockScalingX: true,
     lockScalingY: true,
     type: type,
     originX: 'center',
-    originY: 'center'
-
+    originY: 'center',
+    id: id
   });
 }
 
-export function makeLine(point1, point2) {
-  return new fabric.Line([point1.originalLeft, point1.originalTop, point2.originalLeft, point2.originalTop], {
+export function makeLine(x1, y1, x2, y2) {
+  return new fabric.Line([x1, y1, x2, y2], {
     fill: 'green',
     stroke: 'green',
-    strokeWidth: 2,
-    lockMovementX: true,
-    lockScalingFlip: true,
-    lockScalingX: true,
-    lockScalingY: true,
-    type: 'LINE'
+    strokeWidth: 4,
+    selectable: false
+  });
+}
+
+export function makeText(x, y, fontSize) {
+  return new fabric.Text("50 µm", {
+    fontSize: fontSize,
+    fill: 'green',
+    stroke: 'green',
+    left: x,
+    top: y
+  });
+}
+
+export function makeBeam(x, y, radius) {
+  return new fabric.Circle({
+    radius: radius, 
+    strokeWidth: 2, 
+    stroke: "blue",
+    fill: '',
+    left: x,
+    top: y,
+    selectable: false,
+    originX: 'center',
+    originY: 'center'
   });
 }

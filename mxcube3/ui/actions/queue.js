@@ -1,24 +1,5 @@
 import fetch from 'isomorphic-fetch'
 
-
-export function selectSample(queue_id, sample_id, parent_queue_id, method) {
-	return { 
-		type: "SELECT_SAMPLE", 
-		queue_id: queue_id,
-		sample_id: sample_id,
-		method: method,
-		parent_queue_id: parent_queue_id
-	}
-}
-
-export function toggleCheckBox(queue_id, parent_queue_id = -1) {
-	return { 
-		type: "TOGGLE_CHECKBOX",
-		queue_id: queue_id,
-		parent_queue_id: parent_queue_id
-	}
-}
-
 export function addSample(sample_id, queue_id) {
 	return { 
 		type: "ADD_SAMPLE", 
@@ -40,6 +21,14 @@ export function clearAll() {
         }
 }
 
+
+export function collapseList(listName) {
+        return {
+               type: "COLLAPSE_LIST",
+               list_name: listName
+        }
+}
+
 export function setState(queueState, sampleGridState) {
         return {
                type: "QUEUE_STATE",
@@ -47,6 +36,46 @@ export function setState(queueState, sampleGridState) {
                sampleGridState: sampleGridState
         }
 }
+
+export function changeOrder(listName, oldIndex, newIndex) {
+	return { 
+		type: "CHANGE_QUEUE_ORDER", 
+		listName: listName,
+		oldIndex: oldIndex,
+		newIndex: newIndex
+	}
+}
+
+export function changeMethodOrder(sampleId, oldIndex, newIndex) {
+	return { 
+		type: "CHANGE_METHOD_ORDER", 
+		sampleId: sampleId,
+		oldIndex: oldIndex,
+		newIndex: newIndex
+	}
+}
+
+export function runSample(queue_id) {
+	return { 
+		type: "RUN_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+export function mountSample(queue_id) {
+	return { 
+		type: "MOUNT_SAMPLE", 
+		queue_id: queue_id
+	}
+}
+
+export function toggleChecked(queue_id) {
+	return { 
+		type: "TOGGLE_CHECKED", 
+		queue_id: queue_id
+	}
+}
+
 
 export function getState() {
 	return function(dispatch) {
@@ -66,26 +95,6 @@ export function getState() {
 		.then(function(json) {
 			if(Object.keys(json.queueState).length !==0 ){
 				dispatch(setState(json.queueState, json.sampleGridState));
-			}
-		});
-
-	}
-}
-
-export function sendState() {
-	return function(dispatch, getState) {
-		let state = getState();
-		fetch('mxcube/api/v0.1/queue/state', { 
-			method: 'PUT', 
-                        credentials: 'include',
-			headers: {
-				'Accept': 'application/json',
-				'Content-type': 'application/json'
-			},
-		body: JSON.stringify({ queueState : state.queue, sampleGridState: state.samples_grid })
-		}).then(function(response) {
-			if (response.status >= 400) {
-				throw new Error("Server refused to set state");
 			}
 		});
 
@@ -182,7 +191,6 @@ export function sendClearQueue() {
 
 export function sendAddSample(id) {
 	return function(dispatch) {
-
 		fetch('mxcube/api/v0.1/queue', { 
 			method: 'POST', 
                         credentials: 'include',
@@ -199,8 +207,6 @@ export function sendAddSample(id) {
 		})
 		.then(function(json) {
 			dispatch(addSample(json.SampleId, json.QueueId));
-			dispatch(sendState());
-
 		});
 
 	}
@@ -223,8 +229,6 @@ export function sendDeleteSample(queue_id) {
 				throw new Error("Server refused to remove sample");
 			}else {
 				dispatch(removeSample(queue_id));
-				dispatch(sendState());
-
 			}
 		});
 
@@ -247,8 +251,6 @@ export function sendMountSample(queue_id) {
 				throw new Error("Server refused to mount sample");
 			}else {
 				dispatch(mountSample(queue_id));
-				dispatch(sendState());
-
 			}
 		});
 
@@ -268,18 +270,17 @@ export function sendRunSample(queue_id) {
 
 		}).then(function(response) {
 			if (response.status >= 400) {
-				throw new Error("Server refused to mount sample");
+				throw new Error("Server refused to run sample");
 			}else {
 				dispatch(runSample(queue_id));
-				dispatch(sendState());
-
 			}
 		});
 
 	}
 }
 
-export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
+
+export function sendToggleCheckBox(queue_id) {
 	return function(dispatch) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id + "/toggle", { 
@@ -292,38 +293,14 @@ export function sendToggleCheckBox(queue_id, parent_queue_id = -1) {
 
 		}).then(function(response) {
 			if (response.status >= 400) {
-				throw new Error("Server refused to toogle sample/method");
+				throw new Error("Server refused to toogle checked method");
 			}else {
-				dispatch(toggleCheckBox(queue_id, parent_queue_id));
-				dispatch(sendState());
+				dispatch(toggleChecked(queue_id));
 
 			}
 		});
 
 	}
 }
-
-export function sendChangeOrder(list) {
-	return { 
-		type: "CHANGE_SAMPLE_ORDER", 
-		list: list
-	}
-}
-
-export function runSample(queue_id) {
-	return { 
-		type: "RUN_SAMPLE", 
-		queue_id: queue_id
-	}
-}
-
-export function mountSample(queue_id) {
-	return { 
-		type: "MOUNT_SAMPLE", 
-		queue_id: queue_id
-	}
-}
-
-
 
 
