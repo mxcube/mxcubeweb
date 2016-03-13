@@ -67,7 +67,7 @@ export default class SampleGrid extends React.Component {
             for(let id in sample.methods){
                 tags.push(sample.methods[id]); //.name);
             }
-            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} showTaskParametersForm={this.props.showTaskParametersForm} onClick={() => this.props.toggleSelected(key)}/>);
+            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} deleteTask={this.props.deleteTask} showTaskParametersForm={this.props.showTaskParametersForm} onClick={() => this.props.toggleSelected(key)}/>);
             ++i;
       });
       return (<div className='samples-grid'>

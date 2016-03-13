@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount, doUnselectAll, showTaskParametersForm } from '../actions/samples_grid'
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount, doUnselectAll, showTaskParametersForm, sendDeleteSampleTask } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
 import TaskContainer from '../containers/TaskContainer'
 
@@ -70,7 +70,7 @@ class SampleGridContainer extends React.Component {
             </div>
             <div className="row" style={{paddingTop: 103, paddingLeft: 20}}>
               <div className="col-xs-12">
-                  <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue} showTaskParametersForm={this.props.showTaskParametersForm}/>
+                  <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue} showTaskParametersForm={this.props.showTaskParametersForm} deleteTask={this.props.deleteTask}/>
               </div>
             </div>
           </div>)
@@ -92,7 +92,8 @@ function mapDispatchToProps(dispatch) {
         addSampleToQueue: (id) => dispatch(sendAddSample(id)),
         toggleManualMount: (manual) => dispatch(doToggleManualMount(manual)),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
-        showTaskParametersForm: (task_name, task) => dispatch(showTaskParametersForm(task_name, task))
+        showTaskParametersForm: (task_name, task) => dispatch(showTaskParametersForm(task_name, task)),
+        deleteTask: (parent_id, queue_id, sample_id) => dispatch(sendDeleteSampleTask(parent_id, queue_id, sample_id))
     }
 }
 
