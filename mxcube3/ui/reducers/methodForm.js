@@ -1,7 +1,7 @@
 const initialState = {
   sample_ids: [],
   methodData: {},
-  point_id: -1
+  point_id: -1,
   showForm: ''
 }
 
