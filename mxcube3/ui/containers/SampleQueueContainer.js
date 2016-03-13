@@ -52,27 +52,28 @@ export default class SampleQueueContainer extends React.Component {
     const {socket} = this.props;
     const {getState} = this.props.queueActions;
 
-    //Populate queue with previous state
-    getState();
+     //Populate queue with previous state
+     getState();
 
     // Start listening to socketIO to get results of task/sample execution
     socket.on('hwr_record', (record) => {
           // if(record.sample !==0 && record.queueId !== 0){
-          //   doAddMethodResult(record.sample, record.queueId, record.state)
+          //   doAddTaskResult(record.sample, record.queueId, record.state)
           // }
           if(record.signal === "minidiffStateChanged"){
             this.props.sampleViewActions.updatePointsPosition(record.data);
           }
-    });
+     });
   
-  }
-    filterList(list){
-        let listFiltered = list.filter((queue_id) => {
+   }
+
+   filterList(list){
+     let listFiltered = list.filter((queue_id) => {
             let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
             return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
         });
         return(listFiltered);
-    }
+   }
 
     
   render() {
