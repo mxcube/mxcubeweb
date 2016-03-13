@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import Characterisation from '../components/Tasks/Characterisation'
 import DataCollection from '../components/Tasks/DataCollection'
 import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask, showTaskParametersForm } from '../actions/samples_grid'
-import { hideTaskParametersForm } from '../actions/methodForm'
+import { hideTaskParametersForm } from '../actions/taskForm'
 import SampleTaskButtons from '../components/Tasks/TaskButtons' 
 
 
@@ -30,7 +30,7 @@ class TaskContainer extends React.Component {
 
 function mapStateToProps(state) {
   return { 
-        showForm: state.methodForm.showForm,
+        showForm: state.taskForm.showForm,
         selected: state.samples_grid.selected,
         lookup_queue_id: state.queue.lookup_queue_id,
         samples_list : state.samples_grid.samples_list,

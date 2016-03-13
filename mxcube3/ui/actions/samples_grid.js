@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { sendClearQueue, sendRunSample, sendAddSample } from './queue'
-import { showForm } from './methodForm'
+import { showForm } from './taskForm'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -65,20 +65,20 @@ export function doSyncSamples(proposal_id) {
     }
 }
 
-export function doAddTask(sample_queue_id, sample_id, method, parameters) {
+export function doAddTask(sample_queue_id, sample_id, task, parameters) {
     return { type: "ADD_METHOD",
-            method_type: method.Type,  
+            task_type: task.Type,  
             index: sample_id,
             parent_id: sample_queue_id,
-            queue_id: method.QueueId,
+            queue_id: task.QueueId,
             parameters: parameters
            }
 }
 
-export function doAddTaskResult(sample_id, method_queue_id, state) {
+export function doAddTaskResult(sample_id, task_queue_id, state) {
     return { type: "ADD_METHOD_RESULTS",
             index: sample_id,
-            queue_id: method_queue_id,
+            queue_id: task_queue_id,
             state: state
             }
 }
@@ -110,7 +110,7 @@ export function doChangeTask(queue_id, sample_id, parameters) {
     }
 }
 
-export function doRemoveMethod(sample_queue_id, queue_id, sample_id) {
+export function doRemoveTask(sample_queue_id, queue_id, sample_id) {
     return { type: "REMOVE_METHOD",
             index: sample_id,
             parent_id: sample_queue_id,
@@ -138,7 +138,7 @@ export function sendAddSampleTask(queue_id, sample_id, parameters, runNow) {
             body: JSON.stringify(parameters)
         }).then((response) => {
             if (response.status >= 400) {
-                throw new Error("Could not add sample method, server refused");
+                throw new Error("Could not add sample task, server refused");
             }
             return response.json();
         }).then(function(json) {
@@ -159,7 +159,7 @@ export function sendAddSampleAndTask(sample_id, parameters) {
     }
 }
 
-export function sendChangeSampleTask(sample_queue_id, method_queue_id, sample_id, parameters, runNow) {
+export function sendChangeSampleTask(sample_queue_id, task_queue_id, sample_id, parameters, runNow) {
         return function(dispatch) {
 
         fetch('mxcube/api/v0.1/queue/' + queue_id + '/' + parent_id, { 
@@ -172,14 +172,14 @@ export function sendChangeSampleTask(sample_queue_id, method_queue_id, sample_id
             body: JSON.stringify(parameters)
         }).then((response) => {
             if (response.status >= 400) {
-                throw new Error("Could not change sample method, server refused");
+                throw new Error("Could not change sample task, server refused");
             }
             return response.json();
         }).then(function() {
             if(runNow){
-                dispatch(sendRunSample(method_queue_id));
+                dispatch(sendRunSample(task_queue_id));
             }
-            dispatch(doChangeTask(method_queue_id, sample_id, parameters));
+            dispatch(doChangeTask(task_queue_id, sample_id, parameters));
         });
     }
 }

@@ -1,9 +1,9 @@
-export function showForm(formName, sample_queue_id, methodData={}, point_queue_id=-1) {
+export function showForm(formName, sample_queue_id, taskData={}, point_queue_id=-1) {
 	return { 
 		type: "SHOW_FORM", 
 		name: formName,
 		sample_ids: sample_queue_id,
-		methodData: methodData,
+		taskData: taskData,
 		point_id: point_queue_id
 	}
 }

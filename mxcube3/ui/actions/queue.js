@@ -46,7 +46,7 @@ export function changeOrder(listName, oldIndex, newIndex) {
 	}
 }
 
-export function changeMethodOrder(sampleId, oldIndex, newIndex) {
+export function changeTaskOrder(sampleId, oldIndex, newIndex) {
 	return { 
 		type: "CHANGE_METHOD_ORDER", 
 		sampleId: sampleId,
@@ -292,7 +292,7 @@ export function sendToggleCheckBox(queue_id) {
 
 		}).then(function(response) {
 			if (response.status >= 400) {
-				throw new Error("Server refused to toogle checked method");
+				throw new Error("Server refused to toogle checked task");
 			}else {
 				dispatch(toggleChecked(queue_id));
 

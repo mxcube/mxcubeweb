@@ -70,10 +70,10 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                tasks : {...state.samples_list[action.index].tasks, [action.queue_id] : 
                   {
-                    type: action.method_type,
-                    label: action.method_type.split(/(?=[A-Z])/).join(" "),
+                    type: action.task_type,
+                    label: action.task_type.split(/(?=[A-Z])/).join(" "),
                     sample_id: action.index,
                     queue_id: action.queue_id,
                     parent_id: action.parent_id,
@@ -89,9 +89,9 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                tasks : {...state.samples_list[action.index].tasks, [action.queue_id] : 
                   {
-                    ...state.samples_list[action.index].methods[action.queue_id],
+                    ...state.samples_list[action.index].tasks[action.queue_id],
                     type: action.parameters.Type,
                     queue_id: action.queue_id,
                     parameters : action.parameters
@@ -105,7 +105,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : omit(state.samples_list[action.index].methods, [action.queue_id])
+                tasks : omit(state.samples_list[action.index].tasks, [action.queue_id])
               }
              }}
           );
@@ -115,9 +115,9 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                tasks : {...state.samples_list[action.index].tasks, [action.queue_id] : 
                   {
-                    ...state.samples_list[action.index].methods[action.queue_id],
+                    ...state.samples_list[action.index].tasks[action.queue_id],
                     state: action.state
                 }}
               }

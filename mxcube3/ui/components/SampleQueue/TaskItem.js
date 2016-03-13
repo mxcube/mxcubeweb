@@ -67,14 +67,14 @@ const cardTarget = {
   }
 };
 
-@DropTarget('method', cardTarget, connect => ({
+@DropTarget('task', cardTarget, connect => ({
   connectDropTarget: connect.dropTarget()
 }))
-@DragSource('method', cardSource, (connect, monitor) => ({
+@DragSource('task', cardSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging()
 }))
-export default class MethodItem extends Component {
+export default class TaskItem extends Component {
   static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
@@ -87,7 +87,7 @@ export default class MethodItem extends Component {
   constructor(props) {
         super(props);
         this.showForm = () => this.props.showForm(this.props.data.name.toLowerCase(), this.props.sampleId, this.props.data, this.props.data.parameters.point );
-        this.deleteMethod = () => this.props.deleteMethod(this.props.id);
+        this.deleteTask = () => this.props.deleteTask(this.props.id);
         this.onClick= this.onClick.bind(this);
   }
 
@@ -98,16 +98,16 @@ export default class MethodItem extends Component {
   render() {
     const { data, isDragging, connectDragSource, connectDropTarget } = this.props;
     const opacity = isDragging ? 0 : 1;
-    let methodCSS = cx('node node-sample',{
+    let taskCSS = cx('node node-sample',{
         'passive': this.props.checked.indexOf(this.props.id) === -1
     }); 
 
     return connectDragSource(connectDropTarget(
-      <div className={methodCSS} style={{ opacity }}>
+      <div className={taskCSS} style={{ opacity }}>
         <span className="node-name" onClick={this.onClick}>{'P' + data.parameters.point + ' ' + data.name}</span>
          <div className="pull-right">
              <i className="fa fa-cog" onClick={this.showForm}></i>
-             <i className="fa fa-times" onClick={this.deleteMethod}></i>
+             <i className="fa fa-times" onClick={this.deleteTask}></i>
            </div>
       </div>
     ));
