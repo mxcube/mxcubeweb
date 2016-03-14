@@ -522,7 +522,7 @@ def addCentring(id):
 
         session["queueList"] = jsonpickle.encode(mxcube.queue)
 
-        resp = jsonify({'QueueId': newNode, 'Name': 'Centring', 'Params': params})
+        resp = jsonify({'QueueId': newNode, 'Type': 'Centring', 'Params': params})
         resp.status_code = 200
         return resp
     except Exception:
@@ -572,7 +572,7 @@ def addCharacterisation(id):
 
         session["queueList"] = jsonpickle.encode(mxcube.queue)
 
-        resp = jsonify({'QueueId': newNode, 'Name': 'Characterisation'})
+        resp = jsonify({'QueueId': newNode, 'Type': 'Characterisation'})
         resp.status_code = 200
         return resp
     except Exception:
@@ -617,7 +617,7 @@ def addDataCollection(id):
         session["queueList"] = jsonpickle.encode(mxcube.queue)
 
         logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
-        resp = jsonify({'QueueId': newNode, 'Name': 'DataCollection'})
+        resp = jsonify({'QueueId': newNode, 'Type': 'DataCollection'})
         resp.status_code = 200
         return resp
     except Exception:
@@ -768,7 +768,7 @@ def jsonParser(fromSession = False):
                     if grandChild['py/object'].split('.')[1] == 'TaskGroup': #keep going down one more time for the Char
                         for grandGrandChild in grandChild['_children']:
                             if grandGrandChild['py/object'].split('.')[1] == 'Characterisation':
-                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Name': 'Characterisation','Params': grandGrandChild['characterisation_parameters'],'checked': 0, 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
+                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Type': 'Characterisation','Params': grandGrandChild['characterisation_parameters'],'checked': 0, 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
                     elif grandChild['py/object'].split('.')[1] == 'DataCollection':
-                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Name': 'DataCollection','Params': {},'checked': 0, 'executed': grandChild['_executed']})
+                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Type': 'DataCollection','Params': {},'checked': 0, 'executed': grandChild['_executed']})
     return aux

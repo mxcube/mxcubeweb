@@ -75,11 +75,9 @@ def drawTopLayer():
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     global SAMPLE_IMAGE
-    background = Image.open(img)
     #('/mxn/home/mikegu/mxcube3/test/HardwareObjectsMockup.xml/mxcube_sample_snapshot.jpeg', 'r')#.read()
     #layer = drawTopLayer() removed since the client will draw
     #background.paste(layer, (0, 0), layer)
-    background.save("aux.jpg", "JPEG")
     #SAMPLE_IMAGE = open( "aux.jpg", 'rb').read()
     for p in mxcube.diffractometer.savedCentredPos:
         x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
@@ -89,7 +87,7 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     #layer = drawTopLayer()
     #background.paste(layer, (0, 0), layer)
     #background.save("aux.jpg", "JPEG")
-    SAMPLE_IMAGE = open( "aux.jpg", 'rb').read()
+    SAMPLE_IMAGE = img #open( "aux.jpg", 'rb').read()
     mxcube.diffractometer.camera.new_frame.set()
     mxcube.diffractometer.camera.new_frame.clear()
 

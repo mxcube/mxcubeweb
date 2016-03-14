@@ -1,6 +1,6 @@
 import React from 'react';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import { Alert } from "react-bootstrap";
+import { Modal, Alert } from "react-bootstrap";
 
 export class ErrorNotificationPanel extends React.Component {
     constructor(props) {
@@ -27,13 +27,10 @@ export class ErrorNotificationPanel extends React.Component {
     }
 
     render() {
-        if (this.state.error) {
-            return (<div style={{marginBottom: '-20px'}}><Alert bsStyle="danger" onDismiss={this.clear.bind(this)}>
+        return (<Modal show={this.state.error} onHide={this.clear.bind(this)}>
+            <div style={{marginBottom: '-20px'}}><Alert bsStyle="danger" onDismiss={this.clear.bind(this)}>
                 <strong>Error:&nbsp;</strong>{this.state.error}
-                   </Alert></div>);
-            
-        }
-        return (<div></div>); 
+            </Alert></div></Modal>);
     }    
 }
 

@@ -1,6 +1,6 @@
 import {omit} from 'lodash/object';
 
-export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_mount: false, login_data: {} }, action) => {
+export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked_task: Object(), manual_mount: false, login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
           // should have session samples
@@ -10,6 +10,10 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
           let new_selected = Object.assign({}, state.selected);
           new_selected[action.index]=!state.selected[action.index];
           return Object.assign({}, state, {selected: new_selected });
+      }
+    case "CLICKED_TASK":
+      {
+          return Object.assign({}, state, {clicked_task: action.task});
       }
     case "SELECT_ALL":
       { 
@@ -66,27 +70,29 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                tasks : {...state.samples_list[action.index].tasks, [action.queue_id] : 
                   {
-                    name: action.name,
+                    type: action.task_type,
+                    label: action.task_type.split(/(?=[A-Z])/).join(" "),
+                    sample_id: action.index,
                     queue_id: action.queue_id,
+                    parent_id: action.parent_id,
                     parameters : action.parameters,
                     state: 0
-                }
+                  }
                 }
               }
-             }}
-          );
+             }});
       }
     case "CHANGE_METHOD":
       {    
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                tasks : {...state.samples_list[action.index].tasks, [action.queue_id] : 
                   {
-                    ...state.samples_list[action.index].methods[action.queue_id],
-                    name: action.parameters.Type,
+                    ...state.samples_list[action.index].tasks[action.queue_id],
+                    type: action.parameters.Type,
                     queue_id: action.queue_id,
                     parameters : action.parameters
                 }}
@@ -99,7 +105,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : omit(state.samples_list[action.index].methods, [action.queue_id])
+                tasks : omit(state.samples_list[action.index].tasks, [action.queue_id])
               }
              }}
           );
@@ -109,9 +115,9 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, manual_
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
-                methods : {...state.samples_list[action.index].methods, [action.queue_id] : 
+                tasks : {...state.samples_list[action.index].tasks, [action.queue_id] : 
                   {
-                    ...state.samples_list[action.index].methods[action.queue_id],
+                    ...state.samples_list[action.index].tasks[action.queue_id],
                     state: action.state
                 }}
               }

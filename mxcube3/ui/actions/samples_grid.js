@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch'
-import { sendClearQueue, sendRunSample } from './queue'
+import { sendClearQueue, sendRunSample, sendAddSample } from './queue'
+import { showForm } from './taskForm'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -32,6 +33,10 @@ export function doToggleSelected(index) {
     return { type: "TOGGLE_SELECTED", index }
 }
 
+export function setClickedTask(task) {
+    return { type: "CLICKED_TASK", task }
+}
+
 export function doSelectAll() {
     let selected = true;
     return { type: "SELECT_ALL", selected }
@@ -60,20 +65,20 @@ export function doSyncSamples(proposal_id) {
     }
 }
 
-export function doAddMethod(sample_queue_id, sample_id, method, parameters) {
+export function doAddTask(sample_queue_id, sample_id, task, parameters) {
     return { type: "ADD_METHOD",
-            name: method.Name,  
+            task_type: task.Type,  
             index: sample_id,
             parent_id: sample_queue_id,
-            queue_id: method.QueueId,
+            queue_id: task.QueueId,
             parameters: parameters
-              }
+           }
 }
 
-export function doAddMethodResult(sample_id, method_queue_id, state) {
+export function doAddTaskResult(sample_id, task_queue_id, state) {
     return { type: "ADD_METHOD_RESULTS",
             index: sample_id,
-            queue_id: method_queue_id,
+            queue_id: task_queue_id,
             state: state
             }
 }
@@ -97,15 +102,15 @@ export function doSetManualMount(manual) {
 }
 
 
-export function doChangeMethod(queue_id, sample_id, parameters) {
+export function doChangeTask(queue_id, sample_id, parameters) {
     return { type: "CHANGE_METHOD",
             index: sample_id,
             queue_id: queue_id,
             parameters: parameters
-            }
+    }
 }
 
-export function doRemoveMethod(sample_queue_id, queue_id, sample_id) {
+export function doRemoveTask(sample_queue_id, queue_id, sample_id) {
     return { type: "REMOVE_METHOD",
             index: sample_id,
             parent_id: sample_queue_id,
@@ -114,9 +119,15 @@ export function doRemoveMethod(sample_queue_id, queue_id, sample_id) {
 }
 
 
-export function sendAddSampleMethod(queue_id, sample_id, method, runNow) {
+export function showTaskParametersForm(task_name, clicked_task) {
     return function(dispatch) {
+        dispatch(setClickedTask(clicked_task || Object()));
+        dispatch(showForm(task_name));
+    }
+}
 
+export function sendAddSampleTask(queue_id, sample_id, parameters, runNow) {
+    return function(dispatch) {
         fetch('mxcube/api/v0.1/queue/' + queue_id, { 
             method: 'POST', 
             credentials: 'include',
@@ -124,55 +135,58 @@ export function sendAddSampleMethod(queue_id, sample_id, method, runNow) {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify(method)
+            body: JSON.stringify(parameters)
         }).then((response) => {
             if (response.status >= 400) {
-                throw new Error("Could not add sample method, server refused");
+                throw new Error("Could not add sample task, server refused");
             }
             return response.json();
         }).then(function(json) {
             if(runNow){
                 dispatch(sendRunSample(json.QueueId));
             }
-            dispatch(doAddMethod(queue_id, sample_id, json, method));
+            dispatch(doAddTask(queue_id, sample_id, json, parameters));
         });
-       
-
     }
 }
 
-export function sendChangeSampleMethod(sample_queue_id, method_queue_id, sample_id, method, runNow) {
+export function sendAddSampleAndTask(sample_id, parameters) {
+    return function(dispatch) {
+        dispatch(sendAddSample(sample_id)).then(
+            queue_id => {
+                dispatch(sendAddSampleTask(queue_id, sample_id, parameters));
+            })
+    }
+}
+
+export function sendChangeSampleTask(sample_queue_id, task_queue_id, sample_id, parameters, runNow) {
         return function(dispatch) {
 
-        fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' + method_queue_id, { 
+        fetch('mxcube/api/v0.1/queue/' + queue_id + '/' + parent_id, { 
             method: 'PUT', 
             credentials: 'include',
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             },
-            body: JSON.stringify(method)
+            body: JSON.stringify(parameters)
         }).then((response) => {
             if (response.status >= 400) {
-                throw new Error("Could not change sample method, server refused");
+                throw new Error("Could not change sample task, server refused");
             }
             return response.json();
         }).then(function() {
             if(runNow){
-                dispatch(sendRunSample(method_queue_id));
+                dispatch(sendRunSample(task_queue_id));
             }
-            dispatch(doChangeMethod(method_queue_id, sample_id, method));
+            dispatch(doChangeTask(task_queue_id, sample_id, parameters));
         });
-       
-
     }
 }
 
 
-export function sendDeleteSampleMethod(parent_id, queue_id, sample_id) {
-
+export function sendDeleteSampleTask(parent_id, queue_id, sample_id) {
     return function(dispatch) {
-
         fetch('mxcube/api/v0.1/queue/' + queue_id, { 
             method: 'DELETE', 
             credentials: 'include',
@@ -185,9 +199,8 @@ export function sendDeleteSampleMethod(parent_id, queue_id, sample_id) {
             if (response.status >= 400) {
                 throw new Error("Server refused to remove sample");
             }else {
-                dispatch(doRemoveMethod(parent_id, queue_id, sample_id));
+                dispatch(doRemoveTask(parent_id, queue_id, sample_id));
             }
         });
-
     }
 }
