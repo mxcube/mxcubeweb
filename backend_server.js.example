@@ -1,1 +1,1 @@
-module.exports = "http://aelita:8081"
+module.exports = "http://localhost:8081"
