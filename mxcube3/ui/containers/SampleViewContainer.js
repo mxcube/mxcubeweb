@@ -9,7 +9,7 @@ import SampleControls from '../components/SampleView/SampleControls'
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
-import { showForm } from '../actions/methodForm'
+import { showForm } from '../actions/taskForm'
 
 class SampleViewContainer extends Component {
 

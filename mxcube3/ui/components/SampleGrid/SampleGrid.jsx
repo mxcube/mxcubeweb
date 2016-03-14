@@ -34,10 +34,10 @@ export default class SampleGrid extends React.Component {
     componentDidUpdate(prevProps) {
         if (this.isotope) {
           if (this.props.samples_list != prevProps.samples_list) { 
-      this.isotope.reloadItems();
-      this.isotope.layout();
-    }
-    this.isotope.arrange(); 
+            this.isotope.reloadItems();
+            this.isotope.layout();
+          }
+          this.isotope.arrange(); 
         }
     }
 
@@ -59,19 +59,18 @@ export default class SampleGrid extends React.Component {
                 //data collection
                 //exp_type = sample_info.experimentType;
             } catch(e) { 
-               acronym = "Undefined";
-               name = "No name";
+                acronym = "Undefined";
+                name = "No name";
             }
 
             let tags = [];
-            for(let id in sample.methods){
-              tags.push(sample.methods[id].name);
+            for(let id in sample.tasks){
+                tags.push(sample.tasks[id]); //.name);
             }
-            
-            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} onClick={() => this.props.toggleSelected(key)}/>);
+            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} deleteTask={this.props.deleteTask} showTaskParametersForm={this.props.showTaskParametersForm} onClick={() => this.props.toggleSelected(key)}/>);
             ++i;
       });
-      return (<div className='samples-grid col-xs-12'>
+      return (<div className='samples-grid'>
                   {sample_grid}
              </div>);
     }

@@ -17,7 +17,6 @@ export default class MXNavbar extends React.Component {
         let propInfo = (this.props.loggedIn ? proposal.title + " - " + proposal.code : "");
 
         return (
-            <div>
                 <Navbar inverse fluid fixedTop>
                     <NavBrand>MXCuBE 3</NavBrand>
                     <Nav navbar>
@@ -29,7 +28,6 @@ export default class MXNavbar extends React.Component {
                         <p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{propInfo}</p>
                         <a className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={() => this.props.signOut()} href="#/login">Log out</a>
                  </Nav>
-                </Navbar>
-            </div>)
+                </Navbar>)
     }
 }

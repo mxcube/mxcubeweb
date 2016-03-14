@@ -1,20 +1,18 @@
 const initialState = {
-  characterisation: false,
-  datacollection: false,
   sample_ids: [],
-  methodData: {},
-  point_id: -1
+  taskData: {},
+  point_id: -1,
+  showForm: ''
 }
 
 export default (state=initialState, action) => {
     switch (action.type) {
         case 'SHOW_FORM':
             {
-                return Object.assign({},state, {[action.name] : true, sample_ids: action.sample_ids, methodData: action.methodData, point_id: action.point_id}); 
+                return Object.assign({}, state, {showForm : action.name, sample_ids: action.sample_ids, taskData: action.taskData, point_id: action.point_id }); 
             }
         case 'HIDE_FORM':
             {     
-
                 return initialState;
             }
         default:

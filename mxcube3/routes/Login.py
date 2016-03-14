@@ -45,6 +45,7 @@ def login():
 @mxcube.route("/mxcube/api/v0.1/signout")
 def signout():
     session['loginInfo'] = None
+    session['queueList'] = None
     return ""
 
 # information to display on the login page

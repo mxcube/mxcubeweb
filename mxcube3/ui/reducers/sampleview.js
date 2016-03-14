@@ -7,7 +7,7 @@ const initialState = {
   width: 0,
   height: 0,
   lightOn: false,
-  motors: {},
+  motors: { Light: {}, Phi: {}, PhiY: {}, PhiZ: {}, Sampx: {}, Sampy: {}, Zoom: {} },
   pixelsPerMm: 0,
   imageRatio: 0,
   canvas: null,
