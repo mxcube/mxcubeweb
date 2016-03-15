@@ -9,7 +9,7 @@ import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
 import * as TaskFormActions from '../actions/taskForm'
-import { showForm } from '../actions/taskForm'
+import { showTaskParametersForm } from '../actions/taskForm'
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
@@ -36,7 +36,7 @@ function mapDispatchToProps(dispatch) {
     sampleActions : bindActionCreators(SampleActions, dispatch),
     sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
     taskFormActions : bindActionCreators(TaskFormActions, dispatch),
-    showForm : bindActionCreators(showForm, dispatch)
+    showForm : bindActionCreators(showTaskParametersForm, dispatch)
   }
 }
 
@@ -50,10 +50,10 @@ export default class SampleQueueContainer extends React.Component {
 
    componentDidMount() {
     const {socket} = this.props;
-    const {getState} = this.props.queueActions;
+    //const {getState} = this.props.queueActions;
 
      //Populate queue with previous state
-     getState();
+     //getState();
 
     // Start listening to socketIO to get results of task/sample execution
     socket.on('hwr_record', (record) => {

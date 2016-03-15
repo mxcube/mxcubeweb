@@ -9,7 +9,7 @@ import SampleControls from '../components/SampleView/SampleControls'
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
-import { showForm } from '../actions/taskForm'
+import { showTaskParametersForm } from '../actions/taskForm'
 
 class SampleViewContainer extends Component {
 
@@ -53,7 +53,7 @@ function mapStateToProps(state) {
           sampleInformation: state.samples_grid.samples_list,
           sampleViewState: state.sampleview,
           lookup: state.queue.lookup,
-          defaultParameters: state.methodForm.defaultParameters
+          defaultParameters: state.taskForm.defaultParameters
     }
 }
 
@@ -62,7 +62,7 @@ function mapDispatchToProps(dispatch) {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch),
     sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
-    showForm : bindActionCreators(showForm, dispatch)
+    showForm : bindActionCreators(showTaskParametersForm, dispatch)
   }
 }
 

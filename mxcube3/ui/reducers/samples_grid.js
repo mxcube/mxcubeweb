@@ -85,7 +85,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
              }});
       }
     case "CHANGE_METHOD":
-      {    
+      {
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
