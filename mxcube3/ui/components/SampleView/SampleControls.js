@@ -23,7 +23,7 @@ export default class SampleControls extends React.Component {
 
 
     setLigthStrength(option){
-        this.props.sampleActions.sendMotorPosition("Light", option.target.value);
+        this.props.sampleActions.sendMotorPosition("BackLight", option.target.value);
     }
 
 
@@ -41,9 +41,9 @@ render() {
                 <button type="button" data-toggle="tooltip"  title="Zoom out" className="btn btn-link  pull-center"><i className="fa fa-2x fa-fw fa fa-search-minus"></i></button>
                 <input className="bar" type="range" id="zoom-control" min="0" max="9" step="1" defaultValue={this.props.sampleViewState.zoom} onChange={this.setZoom}/>
                 <button type="button" data-toggle="tooltip"  title="Zoom in" className="btn btn-link  pull-center"><i className="fa fa-2x fa-fw fa fa-search-plus"></i></button>
-                <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendLightOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
-                <input className="bar" type="range" id="light-control" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.Light.position} onChange={this.setLigthStrength} />
-                <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendLightOn}><i className="fa fa-2x fa-fw fa fa-lightbulb-o light-on"></i> </button>
+                <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendBackLightOff}><i className="fa fa-2x fa-fw fa fa-lightbulb-o"></i> </button>
+                <input className="bar" type="range" id="light-control" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.BackLight.position} onChange={this.setLigthStrength} />
+                <button type="button" data-toggle="tooltip"  title="Light On/Off" className="btn btn-link  pull-center" onClick={this.props.sampleActions.sendBackLightOn}><i className="fa fa-2x fa-fw fa fa-lightbulb-o light-on"></i> </button>
 
             </div>
         </div>

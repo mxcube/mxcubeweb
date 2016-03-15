@@ -213,9 +213,9 @@ export function sendZoomPos(level) {
 }
 }
 
-export function sendLightOn() {
+export function sendBackLightOn() {
   return function(dispatch) {
-   fetch('/mxcube/api/v0.1/sampleview/lighton', { 
+   fetch('/mxcube/api/v0.1/sampleview/backlighton', { 
     method: 'PUT', 
     credentials: 'include',
     headers: {
@@ -232,9 +232,9 @@ export function sendLightOn() {
 }
 }
 
-export function sendLightOff() {
+export function sendBackLightOff() {
   return function(dispatch) {
-   fetch('/mxcube/api/v0.1/sampleview/lightoff', { 
+   fetch('/mxcube/api/v0.1/sampleview/backlightoff', { 
     method: 'PUT', 
     credentials: 'include',
     headers: {
