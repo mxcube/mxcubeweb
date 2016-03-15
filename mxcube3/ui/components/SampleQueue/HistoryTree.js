@@ -16,15 +16,15 @@ export default class HistoryTree extends React.Component {
         <div className="node node-sample" key={key}>
             <span className="node-name">Vial {node.id}</span>
              {this.props.queue[queueId].map((id, i) => {
-                    return this.renderMethod(node.methods[id], i);
+                    return this.renderTask(node.tasks[id], i);
             })}
         </div>
     );
     
   }
 
-   renderMethod(node, key){
-      var methodClass = cx('node node-method',{
+   renderTask(node, key){
+      var taskClass = cx('node node-task',{
       'passive': node.state===0,
       'active': node.state===1,
       'success': node.state===2,
@@ -32,7 +32,7 @@ export default class HistoryTree extends React.Component {
       'warning': node.state===4
     }); 
     return (
-      <div className={methodClass} key={key}>
+      <div className={taskClass} key={key}>
         <span className="node-name">{'P' + node.parameters.point + ' ' + node.name}</span>
       </div>
     );

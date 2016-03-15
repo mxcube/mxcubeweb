@@ -8,9 +8,9 @@
   <object role="sampy" hwrid="./udiff_sampy"></object>
   <object role="kappa" hwrid="./udiff_kappa"></object>
   <object role="kappa_phi" hwrid="./udiff_kappaphi"></object>
-  <object role="beam_info" hwrid="./beam_info"></object>
+  <object role="beam_info" hwrid="./beam-info"></object>
   <others>
-    <object role="camera" hwrid="./md2camera"></object>
+    <object role="camera" hwrid="./md_camera"></object>
     <object role="sample_changer" hwrid="./sc-mockup"></object>
   </others>
   <kappa>

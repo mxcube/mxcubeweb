@@ -36,7 +36,7 @@ export default (state={
                         }
                         );
 
-        // Adding the new method to the queue
+        // Adding the new task to the queue
         case 'ADD_METHOD':
             return Object.assign({}, state, 
                         {
@@ -45,7 +45,7 @@ export default (state={
                         }
                         );
 
-         // Removing the method from the queue
+         // Removing the task from the queue
         case 'REMOVE_METHOD':
             return Object.assign({}, state, 
                         {

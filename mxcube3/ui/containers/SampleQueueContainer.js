@@ -8,8 +8,8 @@ import HistoryTree from '../components/SampleQueue/HistoryTree'
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
-import * as MethodFormActions from '../actions/methodForm'
-import { showForm } from '../actions/methodForm'
+import * as TaskFormActions from '../actions/taskForm'
+import { showForm } from '../actions/taskForm'
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
@@ -35,7 +35,7 @@ function mapDispatchToProps(dispatch) {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch),
     sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
-    methodFormActions : bindActionCreators(MethodFormActions, dispatch),
+    taskFormActions : bindActionCreators(TaskFormActions, dispatch),
     showForm : bindActionCreators(showForm, dispatch)
   }
 }
@@ -49,39 +49,39 @@ export default class SampleQueueContainer extends React.Component {
 // Mount will kick down
 
    componentDidMount() {
-    //const {doAddMethodResult} = this.props.sampleActions;
     const {socket} = this.props;
     const {getState} = this.props.queueActions;
 
-    //Populate queue with previous state
-    getState();
+     //Populate queue with previous state
+     getState();
 
-    // Start listening to socketIO to get results of method/sample execution
+    // Start listening to socketIO to get results of task/sample execution
     socket.on('hwr_record', (record) => {
           // if(record.sample !==0 && record.queueId !== 0){
-          //   doAddMethodResult(record.sample, record.queueId, record.state)
+          //   doAddTaskResult(record.sample, record.queueId, record.state)
           // }
           if(record.signal === "minidiffStateChanged"){
             this.props.sampleViewActions.updatePointsPosition(record.data);
           }
-    });
+     });
   
-  }
-    filterList(list){
-        let listFiltered = list.filter((queue_id) => {
+   }
+
+   filterList(list){
+     let listFiltered = list.filter((queue_id) => {
             let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
             return (this.props.searchString === "" || sampleData.id.indexOf(this.props.searchString) > -1 );
         });
         return(listFiltered);
-    }
+   }
 
     
   render() {
 
     const {checked, lookup, todo, history, current, sampleInformation, queue} = this.props;
-    const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, changeOrder, changeMethodOrder, collapseList} = this.props.queueActions;
-    const {sendDeleteSampleMethod} = this.props.sampleActions;
-    const {showForm} = this.props.methodFormActions;
+    const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, changeOrder, changeTaskOrder, collapseList} = this.props.queueActions;
+    const {sendDeleteSampleTask} = this.props.sampleActions;
+    const {showForm} = this.props.taskFormActions;
 
     return (
 
@@ -91,7 +91,7 @@ export default class SampleQueueContainer extends React.Component {
                 <SampleQueueSearch />
             </div>
             <div className="queue-body">
-                <CurrentTree changeOrder={changeMethodOrder} show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteMethod={sendDeleteSampleMethod} run={sendRunSample} showForm={showForm} />
+                <CurrentTree changeOrder={changeTaskOrder} show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteTask={sendDeleteSampleTask} run={sendRunSample} showForm={showForm} />
                 <TodoTree  show={todo.collapsed} collapse={collapseList} list={this.filterList(todo.nodes)} sampleInformation={sampleInformation} lookup={lookup} deleteSample={sendDeleteSample} mountSample={sendMountSample} changeOrder={changeOrder} />
                 <HistoryTree show={history.collapsed} collapse={collapseList} list={this.filterList(history.nodes)} sampleInformation={sampleInformation} queue={queue} lookup={lookup}/>
             </div>

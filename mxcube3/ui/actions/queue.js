@@ -46,7 +46,7 @@ export function changeOrder(listName, oldIndex, newIndex) {
 	}
 }
 
-export function changeMethodOrder(sampleId, oldIndex, newIndex) {
+export function changeTaskOrder(sampleId, oldIndex, newIndex) {
 	return { 
 		type: "CHANGE_METHOD_ORDER", 
 		sampleId: sampleId,
@@ -191,7 +191,7 @@ export function sendClearQueue() {
 
 export function sendAddSample(id) {
 	return function(dispatch) {
-		fetch('mxcube/api/v0.1/queue', { 
+		return fetch('mxcube/api/v0.1/queue', { 
 			method: 'POST', 
                         credentials: 'include',
 			headers: {
@@ -204,11 +204,10 @@ export function sendAddSample(id) {
 				throw new Error("Server refused to add sample to queue");
 			}
 			return response.json();
+		}).then(function(json) {
+                        dispatch(addSample(json.SampleId, json.QueueId));
+                        return json.QueueId //dispatch(sendState());
 		})
-		.then(function(json) {
-			dispatch(addSample(json.SampleId, json.QueueId));
-		});
-
 	}
 }
 
@@ -293,7 +292,7 @@ export function sendToggleCheckBox(queue_id) {
 
 		}).then(function(response) {
 			if (response.status >= 400) {
-				throw new Error("Server refused to toogle checked method");
+				throw new Error("Server refused to toogle checked task");
 			}else {
 				dispatch(toggleChecked(queue_id));
 
