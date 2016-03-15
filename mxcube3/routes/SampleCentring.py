@@ -16,7 +16,6 @@ posId = 0
 # ##all drawing to be moved into ~shapehistory...
 def init_signals():
     for signal in signals.microdiffSignals:
-        print mxcube.diffractometer
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
     #camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
