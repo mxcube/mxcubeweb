@@ -21,7 +21,7 @@ class SampleViewContainer extends Component {
 
     return (
       <div className="row">
-        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={this.props.current.node}/>
+        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={this.props.current.node} defaultParameters={this.props.defaultParameters}/>
         <div className="col-xs-8">
             <SampleImage 
                 sampleActions={this.props.sampleViewActions} 
@@ -52,7 +52,8 @@ function mapStateToProps(state) {
           current : state.queue.current,
           sampleInformation: state.samples_grid.samples_list,
           sampleViewState: state.sampleview,
-          lookup: state.queue.lookup
+          lookup: state.queue.lookup,
+          defaultParameters: state.methodForm.defaultParameters
     }
 }
 

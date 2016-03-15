@@ -3,6 +3,7 @@ const initialState = {
   datacollection: false,
   sample_ids: [],
   methodData: {},
+  defaultParameters:{parameters:{numImages: 2, transmission: 30, expTime: 10,oscStart: 0.0, oscRange: 0.5, resolution: 2.5, energy: 12.5 , kappa: 0, phi: 0, stratComp: 1, radiationDamage: true }},
   point_id: -1
 }
 

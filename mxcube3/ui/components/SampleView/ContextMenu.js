@@ -34,7 +34,7 @@ componentWillReceiveProps(nextProps) {
 }
 
 showModal(modalName){
-    this.props.showForm(modalName, [this.props.sampleId], -1, this.props.shape.id);
+    this.props.showForm(modalName, [this.props.sampleId], this.props.defaultParameters, this.props.shape.id);
     this.hideContextMenu();
     this.props.sampleActions.showContextMenu(false);
 }

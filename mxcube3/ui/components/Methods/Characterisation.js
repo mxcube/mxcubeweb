@@ -27,15 +27,26 @@ class Characterisation extends React.Component {
             oscRange : fields.oscRange.value,
             transmission : fields.transmission.value,
             point : this.props.pointId,
-            centringMethod: fields.centringMethod.value
+            detectorMode: fields.detectorMode.value,
+            kappa: fields.kappa.value,
+            phi: fields.phi.value,
+            radiationDamage: fields.radiationDamage.value,
+            optSAD: fields.optSAD.value,
+            spaceGroup: fields.spaceGroup.value,
+            crystMin: fields.crystMin.value,
+            crystMax: fields.crystMax.value,
+            omegaMin: fields.omegaMin.value,
+            omegaMax: fields.omegaMax.value,
+            stratComp: fields.stratComp.value
+
             };
 
-        if(this.props.methodData === -1){
+        if(this.props.methodData.queue_id){
+            this.props.changeMethod(this.props.sampleIds, this.props.methodData.queue_id, this.props.lookup[this.props.sampleIds], parameters, runNow);
+        }else{
             this.props.sampleIds.map( (queue_id) =>{
                 this.props.addMethod(queue_id, this.props.lookup[queue_id],parameters, runNow);
             });
-        }else{
-            this.props.changeMethod(this.props.sampleIds, this.props.methodData.queue_id, this.props.lookup[this.props.sampleIds], parameters, runNow);
         }
         this.props.closeModal();
     }
@@ -43,7 +54,7 @@ class Characterisation extends React.Component {
 
     render() {
 
-        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission, centringMethod}} = this.props;
+        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission, centringMethod, detectorMode, kappa, phi, radiationDamage, optSAD, spaceGroup, crystMin, crystMax, omegaMin, omegaMax, stratComp }} = this.props;
 
         const style = {
           overlay : {
@@ -90,65 +101,156 @@ class Characterisation extends React.Component {
             </div>
             <div className="modal-body">
 
-        <form className="form-horizontal">
+                <h5>Acquisition</h5>
+                <hr />
+                <form className="form-horizontal">
 
-            <div className="form-group">
+                    <div className="form-group">
 
-                <label className="col-sm-3 control-label">Number of images</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...numImages} />
-                </div>
+                        <label className="col-sm-3 control-label">Number of images:</label>
+                        <div className="col-sm-3">
+                             <select className="form-control" {...numImages}>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
 
-                 <label className="col-sm-3 control-label">Exposure time</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...expTime} />
-                </div>
+                        <label className="col-sm-3 control-label">Transmission (%)</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...transmission} />
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Exposure time(ms):</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...expTime} />
+                        </div>
+
+                        <label className="col-sm-3 control-label">Detector mode:</label>
+                        <div className="col-sm-3">
+                             <select className="form-control"  {...detectorMode}>
+                                <option value="1"></option>
+                                <option value="1">X</option>
+                                <option value="1">Y</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Oscillation range</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...oscRange} />
+                        </div>
+
+                        <label className="col-sm-3 control-label">Resolution (A)</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...resolution} />
+                        </div>
 
 
-            </div>
+                    </div>
 
 
-            <div className="form-group">
+                    <div className="form-group">
 
-                <label className="col-sm-3 control-label">Resolution (A)</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...resolution} />
-                </div>
+                        <label className="col-sm-3 control-label">Oscillation start</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...oscStart} />
+                        </div>
 
-                <label className="col-sm-3 control-label">Oscillation start</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...oscStart} />
-                </div>
+                        <label className="col-sm-3 control-label">Energy (KeV)</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...energy} />
+                        </div>
 
+                    </div>
 
-            </div>
+                    <div className="form-group">
 
+                        <label className="col-sm-3 control-label">Kappa:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...kappa} />
+                        </div>
 
-            <div className="form-group">
+                        <label className="col-sm-3 control-label">Phi:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...phi} />
+                        </div>
 
-                <label className="col-sm-3 control-label">Energy (KeV)</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...energy} />
-                </div>
+                    </div>
 
-                <label className="col-sm-3 control-label">Oscillation range</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...oscRange} />
-                </div>
+                    <h5>Characterisation</h5>
+                    <hr />
 
-            </div>
+                    <div className="form-group">
 
+                        <label className="col-sm-6 control-label">Strategy complexity:</label>
+                        <div className="col-sm-6">
+                             <select className="form-control"  {...stratComp}>
+                                <option value="1">Single subwedge</option>
+                                <option value="2">Multiple subwedge</option>
+                            </select>
+                        </div>
 
-            <div className="form-group">
+                    </div>
 
-                <label className="col-sm-3 control-label">Transmission (%)</label>
-                <div className="col-sm-9">
-                    <input type="number" className="form-control" {...transmission} />
-                </div>
+                    <div className="form-group">
 
-            </div>
+                        <label className="col-sm-6 control-label">
+                            <input type="checkbox" {...radiationDamage} />
+                             Account for radiation damage
+                        </label>
+                        <label className="col-sm-6 control-label">
+                            <input type="checkbox" {...optSAD} />
+                             Optimised SAD
+                        </label>
 
-        </form>
+                    </div>
+
+                    <h5>Crystal</h5>
+                    <hr />
+
+                    <div className="form-group">
+
+                        <label className="col-sm-6 control-label">Space group:</label>
+                        <div className="col-sm-6">
+                             <select className="form-control"  {...spaceGroup}>
+                                <option value="1"></option>
+                                <option value="1">X</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <h6>Vertical crystal dimension(mm)</h6>
+                    <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Min:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...crystMin} />
+                        </div>
+
+                        <label className="col-sm-3 control-label">Max:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...crystMax} />
+                        </div>
+
+                        <label className="col-sm-3 control-label">  &omega; at min:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...omegaMin} />
+                        </div>
+
+                        <label className="col-sm-3 control-label">  &omega; at max:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...omegaMax} />
+                        </div>
+
+                    </div>
+
+                </form>
             </div>
             <div className="modal-footer">
           <div className={this.props.pointId !== -1 ? "pull-left" : "hidden"}>
@@ -160,7 +262,7 @@ class Characterisation extends React.Component {
             </label>
           </div>
               <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
-              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.methodData !== -1 ? "Change": "Add to Queue"}</button>
+              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.methodData.queue_id ? "Change": "Add to Queue"}</button>
             </div>
           </div>
         </Modal>
@@ -170,7 +272,7 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'centringMethod'] // all the fields in your form
+  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'centringMethod', 'detectorMode', 'kappa', 'phi', 'radiationDamage' , 'optSAD', 'spaceGroup', 'crystMin', 'crystMax', 'omegaMin', 'omegaMax', 'stratComp' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
   initialValues: {...state.methodForm.methodData.parameters} // will pull state into form's initialValues

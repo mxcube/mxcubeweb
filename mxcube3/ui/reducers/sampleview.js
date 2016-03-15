@@ -7,7 +7,7 @@ const initialState = {
   width: 0,
   height: 0,
   lightOn: false,
-  motors: {},
+  motors: { Light: {}, Phi: {}, PhiY: {}, PhiZ: {}, Sampx: {}, Sampy: {}, Zoom: {} },
   pixelsPerMm: 0,
   imageRatio: 0,
   canvas: null,
@@ -42,7 +42,7 @@ export default (state=initialState, action) => {
             }
         case 'SAVE_MOTOR_POSITIONS':
             {
-             return {...state, motors: action.data, lightOn: action.data.BackLight.Status };
+             return {...state, motors: {...state.motors, ...action.data}, lightOn: action.data.BackLight.Status };
             }
         case 'SAVE_MOTOR_POSITION':
             {
