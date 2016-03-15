@@ -3,6 +3,7 @@
   <username>Minidiff</username>
   <object role="focus" hwrid="./udiff_phix"></object>
   <object role="zoom" hwrid="./udiff_zoom"></object>
+  <object role="phi" hwrid="./udiff_omega"></object>
   <object role="phiy" hwrid="./udiff_phiy"></object> 
   <object role="sampx" hwrid="./udiff_sampx"></object>
   <object role="sampy" hwrid="./udiff_sampy"></object>
