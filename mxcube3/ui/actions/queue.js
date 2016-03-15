@@ -8,10 +8,11 @@ export function addSample(sample_id, queue_id) {
 	}
 }
 
-export function removeSample(queue_id) {
+export function removeSample(queue_id, sample_id) {
 	return { 
 		type: "REMOVE_SAMPLE", 
-		queue_id: queue_id
+		queue_id: queue_id,
+		index: sample_id
 	}
 }
 
@@ -212,7 +213,7 @@ export function sendAddSample(id) {
 }
 
 
-export function sendDeleteSample(queue_id) {
+export function sendDeleteSample(queue_id, sample_id) {
 	return function(dispatch) {
 
 		fetch('mxcube/api/v0.1/queue/' + queue_id, { 
@@ -227,7 +228,7 @@ export function sendDeleteSample(queue_id) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to remove sample");
 			}else {
-				dispatch(removeSample(queue_id));
+				dispatch(removeSample(queue_id, sample_id));
 			}
 		});
 

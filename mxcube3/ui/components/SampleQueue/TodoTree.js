@@ -42,7 +42,8 @@ export default class TodoTree extends React.Component {
                             text={'Vial ' + sampleData.id}
                             moveCard={this.moveCard}
                             deleteSample={this.props.deleteSample}
-                            mountSample={this.props.mountSample} 
+                            mountSample={this.props.mountSample}
+                            sampleId={sampleData.id} 
                         />
                     );
                 })}

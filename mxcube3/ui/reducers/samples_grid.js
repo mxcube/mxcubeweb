@@ -110,6 +110,16 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
              }}
           );
       }
+    case "REMOVE_SAMPLE":
+      {
+        return Object.assign({}, state, 
+             {samples_list : {...state.samples_list,
+              [action.index] : {...state.samples_list[action.index],
+                tasks : {}
+              }
+             }}
+          );
+      }
     case "ADD_METHOD_RESULTS":
        {    
         return Object.assign({}, state, 
