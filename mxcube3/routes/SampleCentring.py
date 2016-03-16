@@ -16,7 +16,6 @@ posId = 0
 # ##all drawing to be moved into ~shapehistory...
 def init_signals():
     for signal in signals.microdiffSignals:
-        print mxcube.diffractometer
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
     #camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
@@ -26,68 +25,14 @@ def init_signals():
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
-def drawBeam(draw):
-    W = mxcube.diffractometer.image_width
-    H = mxcube.diffractometer.image_height
-    c = (W/2, H/2)
-    r = 40  # real beam size...
-    draw.ellipse([c[0] - r, c[1] - r, c[0] + r, c[1] + r], outline = "blue")
-
-def drawPoint(draw, p, selected):  #where p = (x, y)
-    if selected:
-        color = "yellow"
-    else:
-        color = "green"   
-    r = 10
-    d = 12
-    draw.ellipse([p[0] - r, p[1] - r, p[0] + r, p[1] + r], outline = color)
-    draw.line((p[0] - d/2, p[1] - d/2, p[0] + d/2, p[1] + d/2), color, width = 2)
-    draw.line((p[0] - d/2, p[1] + d/2 , p[0] + d/2, p[1] - d/2), color, width = 2)
-
-def drawZoomLegend(draw, zoom):
-    W = mxcube.diffractometer.image_width
-    H = mxcube.diffractometer.image_height
-    draw.line((10, H-50, 10, H-10), "green", width=3)
-    #fnt = ImageFont.truetype('/usr/share/fonts/dejavu/DejaVuSans.ttf', 20)
-    draw.text((15, H-45), str(zoom), "green")
-    draw.line((10, H-10, 50, H-10), "green", width=3)
-    draw.text((20, H-25), str(zoom), "green")
-
-def drawTopLayer():
-    W = mxcube.diffractometer.image_width
-    H = mxcube.diffractometer.image_height
-    img = Image.new("RGBA", (W, H), color=255)#(255, 255, 255, 0))
-    draw = ImageDraw.Draw(img)
-    try:
-        zoomMotor = mxcube.diffractometer.getObjectByRole("zoom")
-        pos = zoomMotor.getCurrentPositionName()
-        if len(pos) == 0: pos = 'python rocks'
-    except Exception:
-        pos = 'react motherfucker'
-    drawZoomLegend(draw, pos)
-    for p in mxcube.diffractometer.savedCentredPos:
-        x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
-        drawPoint(draw, (x, y), p['selected'])
-    drawBeam(draw)
-    return img
-
 ############
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     global SAMPLE_IMAGE
-    #('/mxn/home/mikegu/mxcube3/test/HardwareObjectsMockup.xml/mxcube_sample_snapshot.jpeg', 'r')#.read()
-    #layer = drawTopLayer() removed since the client will draw
-    #background.paste(layer, (0, 0), layer)
-    #SAMPLE_IMAGE = open( "aux.jpg", 'rb').read()
     for p in mxcube.diffractometer.savedCentredPos:
         x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
         p.update({'x':x, 'y': y})
-    #background = Image.open(img)
-    #('/mxn/home/mikegu/mxcube3/test/HardwareObjectsMockup.xml/mxcube_sample_snapshot.jpeg', 'r')#.read()
-    #layer = drawTopLayer()
-    #background.paste(layer, (0, 0), layer)
-    #background.save("aux.jpg", "JPEG")
-    SAMPLE_IMAGE = img #open( "aux.jpg", 'rb').read()
+    SAMPLE_IMAGE = img
     mxcube.diffractometer.camera.new_frame.set()
     mxcube.diffractometer.camera.new_frame.clear()
 

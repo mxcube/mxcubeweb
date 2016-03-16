@@ -29,7 +29,6 @@ def init_signals():
     for signal in signals.collectSignals:
         mxcube.queue.connect(mxcube.queue, signal, signals.signalCallback)
     mxcube.queue.lastQueueNode = {'id':0, 'sample':0}
-    mxcube.queue.queueList = {}
 
 # ##----QUEUE ACTIONS----##
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
@@ -328,9 +327,7 @@ def addSample():
     sampleEntry._view = Mock()
     sampleEntry._set_background_color = Mock()
 
-    queueList = jsonParser() #mxcube.queue.queueList#session.get("queueList")
-    #queueOrder = session.get("queueOrder")
-    #if queueList is None: queueList={}
+    queueList = jsonParser()
     for i in queueList:
         if queueList[i]['SampleId'] == sampleId:
             logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
@@ -412,14 +409,11 @@ def toggleNode(id):
             parentNode = node.get_parent()
             parent = node.get_parent()._node_id
             parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parentNode)
-            #myBrothers = [i._node_id for i in parent.get_children()].remove(nodeId) #and only my brothers
-            #checkedBrothers =  queueList[parent]['methods']
             checked = 0
             for i in queueList[parent]['methods']:
                 if i['QueueId'] != nodeId and i['checked'] == 1:
                     checked = 1
                     break
-            #queueList[parent]['methods'] = int(not queueList[nodeId]['checked'])
             for met in queueList[parent]['methods']:
                 if int(met.get('QueueId')) == nodeId:
                     met['checked'] = int(not met['checked'])
@@ -453,16 +447,11 @@ def deleteSampleOrMethod(id):
             parentEntry.dequeue(entryToRemove)
             parent = parent._node_id
             nodeToRemove = nodeToRemove._node_id
-            # for met in mxcube.queue.queueList[parent]['methods']:
-            #     if met[met.keys()[0]] == nodeToRemove:
-            #         mxcube.queue.queueList[parent]['methods'].remove(met)
-            #queueList.pop(int(id))
         else:  # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
             mxcube.queue.queue_hwobj.dequeue(entryToRemove)
-            mxcube.queue.queueList.pop(int(id))
         
-        session["queueList"] = jsonpickle.encode(mxcube.queue)#mxcube.queue.queueList
-        
+        session["queueList"] = jsonpickle.encode(mxcube.queue)
+
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queued sample could not be deleted')
@@ -485,9 +474,6 @@ def deleteMethod(sampleid, methodid):
         parentEntry.dequeue(entryToRemove)
         parent = parent._node_id
         nodeToRemove = nodeToRemove._node_id
-        # for met in mxcube.queue.queueList[parent]['methods']:
-        #     if met[met.keys()[0]] == nodeToRemove:
-        #         mxcube.queue.queueList[parent]['methods'].remove(met)
         session["queueList"] = jsonpickle.encode(mxcube.queue)
 
         return Response(status=200)
