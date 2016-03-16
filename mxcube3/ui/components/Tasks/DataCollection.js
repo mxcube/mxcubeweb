@@ -261,7 +261,7 @@ class DataCollection extends React.Component {
                 </form>
             </div>
             <div className="modal-footer">
-          <div className={this.props.pointId !== -1 ? "pull-left" : "hidden"}>
+          <div className={this.props.pointId === -1 ? "pull-left" : "hidden"}>
             <label className="centring-method">
               <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'}/> Lucid Only  
             </label>
