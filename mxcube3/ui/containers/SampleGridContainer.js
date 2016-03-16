@@ -5,8 +5,8 @@ import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
 import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
-import TaskContainer from '../containers/TaskContainer'
 import { showTaskParametersForm } from '../actions/taskForm'
+import SampleTaskButtons from '../components/SampleGrid/TaskButtons' 
 
 
 class SampleGridContainer extends React.Component {
@@ -67,7 +67,7 @@ class SampleGridContainer extends React.Component {
               </div>
                 <div className="row">
                   <div className="col-xs-12">
-                      <TaskContainer/>
+                      <SampleTaskButtons defaultParameters={this.props.defaultParameters} showForm={this.props.showTaskParametersForm} selected={this.props.selected} />
                   </div>
                </div>
             </div>
@@ -81,7 +81,12 @@ class SampleGridContainer extends React.Component {
 }
 
 function mapStateToProps(state) {
-    return Object.assign({}, state.samples_grid, { login_data: state.login.data }, {queue : state.queue})
+    return  { 
+          login_data: state.login.data , 
+          queue : state.queue,
+          selected : state.samples_grid.selected,
+          samples_list: state.samples_grid.samples_list
+        }
 }
 
 function mapDispatchToProps(dispatch) {
