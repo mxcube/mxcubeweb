@@ -85,7 +85,9 @@ function mapStateToProps(state) {
           login_data: state.login.data , 
           queue : state.queue,
           selected : state.samples_grid.selected,
-          samples_list: state.samples_grid.samples_list
+          samples_list: state.samples_grid.samples_list,
+          defaultParameters: state.taskForm.defaultParameters
+
         }
 }
 

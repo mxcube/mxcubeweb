@@ -26,7 +26,6 @@ class DataCollection extends React.Component {
             energy : fields.energy.value,
             oscRange : fields.oscRange.value,
             transmission : fields.transmission.value,
-            point : this.props.pointId,
             detectorMode: fields.detectorMode.value,
             kappa: fields.kappa.value,
             phi: fields.phi.value,
@@ -37,7 +36,8 @@ class DataCollection extends React.Component {
             crystMax: fields.crystMax.value,
             omegaMin: fields.omegaMin.value,
             omegaMax: fields.omegaMax.value,
-            stratComp: fields.stratComp.value
+            stratComp: fields.stratComp.value,
+            point : this.props.pointId
 
             };
         if (this.props.sampleIds.constructor == Array){
@@ -283,7 +283,7 @@ DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'centringMethod', 'detectorMode', 'kappa', 'phi', 'radiationDamage' , 'optSAD', 'spaceGroup', 'crystMin', 'crystMax', 'omegaMin', 'omegaMax', 'stratComp' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: {...state.taskForm.taskData} // will pull state into form's initialValues
+  initialValues: {...state.taskForm.taskData.parameters} // will pull state into form's initialValues
 }))(DataCollection);
 
 export default DataCollection;

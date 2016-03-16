@@ -14,8 +14,8 @@ class TaskContainer extends React.Component {
 
     return (
       <div className="col-xs-12">
-            <Characterisation lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'Characterisation'}/>
-            <DataCollection lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'DataCollection'}/>
+            <Characterisation pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'Characterisation'}/>
+            <DataCollection pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'DataCollection'}/>
       </div>);
   }
 }
@@ -26,7 +26,8 @@ function mapStateToProps(state) {
         showForm : state.taskForm.showForm,
         lookup_queue_id: state.queue.lookup_queue_id,
         taskData : state.taskForm.taskData,
-        sampleIds :  state.taskForm.sampleIds,
+        sampleIds : state.taskForm.sampleIds,
+        pointId : state.taskForm.pointId,
         defaultParameters : state.taskForm.defaultParameters
   }
 }

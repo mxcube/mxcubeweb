@@ -50,24 +50,15 @@ class Characterisation extends React.Component {
                 if (queueId) {
                     this.props.addTask(queueId, sampleId, parameters);
                 } else {
-                // the sample is not in queue yet
-                this.props.addSampleAndTask(sampleId, parameters);
+                    // the sample is not in queue yet
+                    this.props.addSampleAndTask(sampleId, parameters);
                 }  
             });
           
         }else{
             this.props.changeTask(this.props.taskData.queue_id, this.props.sampleIds, parameters, runNow);
-
-            // if(this.props.taskData.queue_id){
-            //     this.props.changeTask(this.props.sampleIds, this.props.taskData.queue_id, this.props.lookup[this.props.sampleIds], parameters, runNow);
-            // }
-            // else{
-            //     this.props.sampleIds.map( (queue_id) =>{
-            //         this.props.addTask(queue_id, this.props.lookup[queue_id],parameters, runNow);
-            //     });
-            // }
-
         }
+
         this.props.hide();
     }
 
@@ -295,7 +286,7 @@ Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'centringMethod', 'detectorMode', 'kappa', 'phi', 'radiationDamage' , 'optSAD', 'spaceGroup', 'crystMin', 'crystMax', 'omegaMin', 'omegaMax', 'stratComp' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: {...state.taskForm.taskData} // will pull state into form's initialValues
+  initialValues: {...state.taskForm.taskData.parameters} // will pull state into form's initialValues
 }))(Characterisation);
 
 export default Characterisation;

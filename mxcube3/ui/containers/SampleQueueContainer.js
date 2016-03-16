@@ -81,17 +81,16 @@ export default class SampleQueueContainer extends React.Component {
     const {checked, lookup, todo, history, current, sampleInformation, queue} = this.props;
     const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, changeOrder, changeTaskOrder, collapseList} = this.props.queueActions;
     const {sendDeleteSampleTask} = this.props.sampleActions;
-    const {showForm} = this.props.taskFormActions;
+    const {showTaskParametersForm} = this.props.taskFormActions;
 
     return (
-
 
       <div>
             <div className="queue-head">
                 <SampleQueueSearch />
             </div>
             <div className="queue-body">
-                <CurrentTree changeOrder={changeTaskOrder} show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteTask={sendDeleteSampleTask} run={sendRunSample} showForm={showForm} />
+                <CurrentTree changeOrder={changeTaskOrder} show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteTask={sendDeleteSampleTask} run={sendRunSample} showForm={showTaskParametersForm} />
                 <TodoTree  show={todo.collapsed} collapse={collapseList} list={this.filterList(todo.nodes)} sampleInformation={sampleInformation} lookup={lookup} deleteSample={sendDeleteSample} mountSample={sendMountSample} changeOrder={changeOrder} />
                 <HistoryTree show={history.collapsed} collapse={collapseList} list={this.filterList(history.nodes)} sampleInformation={sampleInformation} queue={queue} lookup={lookup}/>
             </div>

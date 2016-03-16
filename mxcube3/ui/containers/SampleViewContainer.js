@@ -16,12 +16,12 @@ class SampleViewContainer extends Component {
   render() {
 
     const {show, shape, x, y} = this.props.sampleViewState.contextMenu;
-     const {width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas } = this.props.sampleViewState
-
+    const {width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas } = this.props.sampleViewState
+    const sampleId = this.props.lookup[this.props.current.node];
 
     return (
       <div className="row">
-        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={this.props.current.node} defaultParameters={this.props.defaultParameters}/>
+        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters}/>
         <div className="col-xs-8">
             <SampleImage 
                 sampleActions={this.props.sampleViewActions} 

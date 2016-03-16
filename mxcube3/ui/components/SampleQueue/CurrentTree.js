@@ -63,7 +63,7 @@ export default class CurrentTree extends React.Component {
                             moveCard={this.moveCard}
                             deleteTask={this.deleteTask}
                             showForm={this.props.showForm} 
-                            sampleId={this.props.mounted}
+                            sampleId={sampleData.id}
                             checked={this.props.checked}
                             toggleChecked={this.props.toggleCheckBox}
                         />
