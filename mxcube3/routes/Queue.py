@@ -28,7 +28,7 @@ def init_signals():
     #    mxcube.collect.connect(mxcube.collect, signal, signals.signalCallback)
     for signal in signals.collectSignals:
         mxcube.queue.connect(mxcube.queue, signal, signals.signalCallback)
-    mxcube.queue.lastQueueNode = {'id':0, 'sample':0}
+    mxcube.queue.lastQueueNode = {'id':0, 'sample':'0:0'}
 
 # ##----QUEUE ACTIONS----##
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
