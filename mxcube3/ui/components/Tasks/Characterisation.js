@@ -56,7 +56,8 @@ class Characterisation extends React.Component {
             });
           
         }else{
-            this.props.changeTask(this.props.taskData.queue_id, this.props.sampleIds, parameters, runNow);
+            let sample_queue_id = this.props.lookup[ this.props.sampleIds];
+            this.props.changeTask(this.props.taskData.queue_id, sample_queue_id,this.props.sampleIds, parameters, runNow);
         }
 
         this.props.hide();

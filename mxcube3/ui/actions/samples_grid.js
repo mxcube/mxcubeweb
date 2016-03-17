@@ -146,10 +146,10 @@ export function sendAddSampleAndTask(sample_id, parameters) {
     }
 }
 
-export function sendChangeSampleTask(task_queue_id, sample_id, parameters, runNow) {
+export function sendChangeSampleTask(task_queue_id, sample_queue_id, sample_id, parameters, runNow) {
         return function(dispatch) {
 
-        fetch('mxcube/api/v0.1/queue/' + task_queue_id , { 
+        fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' +  task_queue_id , { 
             method: 'PUT', 
             credentials: 'include',
             headers: {
