@@ -32,10 +32,11 @@ export function showContextMenu(show, shape={type: "NONE"} , x=0, y=0) {
   }
 }
 
-export function setZoom(level) {
+export function setZoom(level, pixelsPerMm) {
   return { 
     type: "SET_ZOOM",
-    level: level
+    level: level,
+    pixelsPerMm: pixelsPerMm
   }
 }
 
@@ -205,9 +206,9 @@ export function sendZoomPos(level) {
     if (response.status >= 400) {
       throw new Error("Server refused to zoom");
     }
-  }).then(function() {
-      dispatch(getSampleImageSize());
-      dispatch(setZoom(level));
+    return response.json();
+  }).then(function(json) {
+      dispatch(setZoom(level, json.pixelsPerMm[0]));
     });
 
 }
@@ -327,7 +328,6 @@ export function getMotorPositions() {
  return response.json();
   }).then(function(json) {
       dispatch(saveMotorPositions(json));
-      dispatch(setZoom(json.Zoom.position));
     });
 
 }

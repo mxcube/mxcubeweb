@@ -18,7 +18,7 @@ export default (state=initialState, action) => {
     switch (action.type) {
         case 'SET_ZOOM':
             {
-             return {...state, zoom: action.level};
+             return {...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm};
             }
         case 'START_CLICK_CENTRING':
             {
@@ -42,7 +42,7 @@ export default (state=initialState, action) => {
             }
         case 'SAVE_MOTOR_POSITIONS':
             {
-             return {...state, motors: action.data, lightOn: action.data.BackLight.Status };
+             return {...state, motors: action.data, lightOn: action.data.BackLight.Status, zoom: action.data.Zoom.position };
             }
         case 'SAVE_MOTOR_POSITION':
             {
@@ -68,6 +68,7 @@ export default (state=initialState, action) => {
             {
              return {...state, canvas: action.canvas };
             }
+
         default:
             return state;
     }
