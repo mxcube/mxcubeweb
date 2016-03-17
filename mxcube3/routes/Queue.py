@@ -542,8 +542,7 @@ def addCharacterisation(id):
         task1Entry.set_data_model(taskNode1)
         task2Entry.set_data_model(taskNode2)
 
-        for k, v in params.items():
-            setattr(characNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
+        characNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
         node = mxcube.queue.get_node(int(id))  # this is a sampleNode
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node) # this is the corresponding sampleEntry
 
@@ -588,9 +587,7 @@ def addDataCollection(id):
         task1Entry = qe.TaskGroupQueueEntry()
         task1Entry.set_data_model(taskNode1)
 
-        #populating dc parameters from data sent by the client
-        for k, v in params.items():
-            setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
+        colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
         colEntry.set_data_model(colNode)
 
         node = mxcube.queue.get_node(int(id))
@@ -640,11 +637,9 @@ def updateMethod(sampleid, methodid):
         #TODO: update fields here, I would say that the entry does not need to be updated, only the model node
 
         if isinstance(methodNode, qmo.DataCollection):
-            for k, v in params.items():
-                setattr(methodNode.acquisitions[0].acquisition_parameters, k, v)
+            methodNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
         elif isinstance(methodNode, qmo.Characterisation):
-            for k, v in params.items():
-                setattr(methodNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
+            methodNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
         elif isinstance(methodNode, qmo.SampleCentring):
             pass
         ####
@@ -758,7 +753,8 @@ def jsonParser(fromSession = False):
                     if grandChild['py/object'].split('.')[1] == 'TaskGroup': #keep going down one more time for the Char
                         for grandGrandChild in grandChild['_children']:
                             if grandGrandChild['py/object'].split('.')[1] == 'Characterisation':
-                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Type': 'Characterisation','Params': {},'checked': 0, 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
+                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Type': 'Characterisation','Params': grandGrandChild['characterisation_parameters'], 'AcquisitionParams': grandGrandChild['reference_image_collection']['acquisitions'][0]['acquisition_parameters'],'checked': 0, 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
                     elif grandChild['py/object'].split('.')[1] == 'DataCollection':
-                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Type': 'DataCollection','Params': {},'checked': 0, 'executed': grandChild['_executed']})
+                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Type': 'DataCollection','Params': {},'checked': 0, 'executed': grandChild['_executed'], 'Params': grandChild['acquisitions'][0]['acquisition_parameters']})
+                    ## acq limited for now to only one element of the array, so a DataCollection entry only has a single Acquisition , done like this to simplify devel... just belean!
     return aux
