@@ -34,6 +34,7 @@ class Login extends React.Component {
       return (
           <div>
           <ErrorNotificationPanel/>
+          <div className="container">
           <div className="row row-centered">
           <div>
            <img src="../../img/mxcube_logo20.png" className="img-logo"/>
@@ -52,6 +53,7 @@ class Login extends React.Component {
              <div className={this.state.show_loader ? "" : "hidden"}>
                <img src="../../img/loader.gif" className="img-responsive"/>
              </div>
+            </div>
             </div>
             </div>
           </div>
