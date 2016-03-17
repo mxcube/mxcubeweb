@@ -11,9 +11,8 @@ import json
 import signals
 
 SAMPLE_IMAGE = None
-posId = 0
+posId = 1
 
-# ##all drawing to be moved into ~shapehistory...
 def init_signals():
     for signal in signals.microdiffSignals:
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
@@ -464,9 +463,9 @@ def aClick():
 
 def waitForCentringFinishes(*args, **kwargs):
     if mxcube.diffractometer.centringStatus["valid"]:
-        centredPosId = 'pos' + str(len(mxcube.diffractometer.savedCentredPos)+1)
+        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
         global posId
-        posId += 1
+
         mxcube.diffractometer.saveCurrentPos()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
         #motorPositions = mxcube.diffractometer.self.getPositions()
@@ -479,6 +478,7 @@ def waitForCentringFinishes(*args, **kwargs):
             'x': x,
             'y': y 
             }
+        posId += 1
         mxcube.diffractometer.savedCentredPos.append(data)
         mxcube.diffractometer.emit('minidiffStateChanged', (True,))
 
