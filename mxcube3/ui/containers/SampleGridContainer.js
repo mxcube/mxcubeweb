@@ -71,11 +71,9 @@ class SampleGridContainer extends React.Component {
                   </div>
                </div>
             </div>
-            <div className="row" style={{paddingTop: 103, paddingLeft: 20}}>
-              <div className="col-xs-12">
+              <div className="col-xs-12" style={{paddingTop: 103}}>
                   <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue} showTaskParametersForm={this.props.showTaskParametersForm} deleteTask={this.props.deleteTask}/>
               </div>
-            </div>
           </div>)
         }
 }
