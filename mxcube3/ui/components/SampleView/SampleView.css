@@ -80,13 +80,12 @@
 
 #zoom-control{
     width: auto;
-    background: #1d2e38;
     display: none;
-    -webkit-transform:rotate(90deg);       
-    -moz-transform:rotate(90deg);
-    -o-transform:rotate(90deg);
-    -ms-transform:rotate(90deg);
-    transform:rotate(90deg);
+    -webkit-transform:rotate(-90deg);       
+    -moz-transform:rotate(-90deg);
+    -o-transform:rotate(-90deg);
+    -ms-transform:rotate(-90deg);
+    transform:rotate(-90deg);
 }
 
 .light-on{
@@ -99,6 +98,7 @@
     top: -40px;
     left: 0px;
     background-color: white;
+    padding:5px;
 }
 
 #zoom-button{
