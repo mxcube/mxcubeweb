@@ -1,10 +1,12 @@
 gevent==1.0.2
 flask==0.10.1
-flask-socketio==0.3.8
+flask-socketio==2.2
 Flask-Session
-gevent-socketio==0.3.6
 gevent-websocket==0.9.3
+python-socketio==1.1
 louie
 redis
 scipy
 mock
+jsonpickle
+pillow
