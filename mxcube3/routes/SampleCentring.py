@@ -120,7 +120,7 @@ def getCentringWithId(id):
     """
     try:
         for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos[cpos.keys()[1]] == id:
+            if cpos['posId'] == int(id):
                 resp = jsonify(cpos)
                 resp.status_code = 200
                 return resp
@@ -163,7 +163,7 @@ def updateCentringWithId(id):
     params = json.loads(params)
     try:
         for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos[cpos.keys()[1]] == id:
+            if cpos['posId'] == id:
                 cpos.update(params)
                 resp = jsonify(cpos)
                 resp.status_code = 200
@@ -201,7 +201,7 @@ def moveToCentredPosition(id):
         position: str
     Return: '200' if command issued succesfully, otherwise '409'.
     """
-    motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('name') == id]
+    motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('posId') == int(id)]
     try:
         mxcube.diffractometer.moveToCentredPosition(motorPositions)
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
@@ -468,7 +468,6 @@ def waitForCentringFinishes(*args, **kwargs):
 
         mxcube.diffractometer.saveCurrentPos()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
-        #motorPositions = mxcube.diffractometer.self.getPositions()
         x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
         data = {'name': centredPosId,
             'posId': posId,
