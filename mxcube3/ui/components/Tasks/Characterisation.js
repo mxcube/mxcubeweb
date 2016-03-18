@@ -19,25 +19,25 @@ class Characterisation extends React.Component {
         let fields = this.props.fields;
         let parameters = {
             Type : "Characterisation",
-            numImages : fields.numImages.value,
-            expTime: fields.expTime.value,
+            num_images : fields.num_images.value,
+            exp_time: fields.exp_time.value,
             resolution : fields.resolution.value,
-            oscStart : fields.oscStart.value,
+            osc_start : fields.osc_start.value,
             energy : fields.energy.value,
-            oscRange : fields.oscRange.value,
+            osc_range : fields.osc_range.value,
             transmission : fields.transmission.value,
             point : this.props.pointId,
-            detectorMode: fields.detectorMode.value,
+            detector_mode: fields.detector_mode.value,
             kappa: fields.kappa.value,
-            phi: fields.phi.value,
-            radiationDamage: fields.radiationDamage.value,
-            optSAD: fields.optSAD.value,
-            spaceGroup: fields.spaceGroup.value,
-            crystMin: fields.crystMin.value,
-            crystMax: fields.crystMax.value,
-            omegaMin: fields.omegaMin.value,
-            omegaMax: fields.omegaMax.value,
-            stratComp: fields.stratComp.value
+            kappa_phi: fields.kappa_phi.value,
+            account_rad_damage: fields.account_rad_damage.value,
+            opt_sad: fields.opt_sad.value,
+            space_group: fields.space_group.value,
+            min_crystal_vdim: fields.min_crystal_vdim.value,
+            max_crystal_vdim: fields.max_crystal_vdim.value,
+            min_crystal_vphi: fields.min_crystal_vphi.value,
+            max_crystal_vphi: fields.max_crystal_vphi.value,
+            strategy_complexity: fields.strategy_complexity.value
 
             };
 
@@ -66,7 +66,7 @@ class Characterisation extends React.Component {
 
     render() {
 
-        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission, centringMethod, detectorMode, kappa, phi, radiationDamage, optSAD, spaceGroup, crystMin, crystMax, omegaMin, omegaMax, stratComp }} = this.props;
+        const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity }} = this.props;
 
         const style = {
           overlay : {
@@ -121,7 +121,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Number of images:</label>
                         <div className="col-sm-3">
-                             <select className="form-control" {...numImages}>
+                             <select className="form-control" {...num_images}>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="4">4</option>
@@ -138,12 +138,12 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Exposure time(ms):</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...expTime} />
+                            <input type="number" className="form-control" {...exp_time} />
                         </div>
 
                         <label className="col-sm-3 control-label">Detector mode:</label>
                         <div className="col-sm-3">
-                             <select className="form-control"  {...detectorMode}>
+                             <select className="form-control"  {...detector_mode}>
                                 <option value="1"></option>
                                 <option value="1">X</option>
                                 <option value="1">Y</option>
@@ -153,12 +153,12 @@ class Characterisation extends React.Component {
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Oscillation range</label>
+                        <label className="col-sm-3 control-label">Oscillation range:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...oscRange} />
+                            <input type="number" className="form-control" {...osc_range} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Resolution (A)</label>
+                        <label className="col-sm-3 control-label">Resolution (A):</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...resolution} />
                         </div>
@@ -169,12 +169,12 @@ class Characterisation extends React.Component {
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Oscillation start</label>
+                        <label className="col-sm-3 control-label">Oscillation start:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...oscStart} />
+                            <input type="number" className="form-control" {...osc_start} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Energy (KeV)</label>
+                        <label className="col-sm-3 control-label">Energy (KeV):</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...energy} />
                         </div>
@@ -190,7 +190,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Phi:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...phi} />
+                            <input type="number" className="form-control" {...kappa_phi} />
                         </div>
 
                     </div>
@@ -202,7 +202,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-6 control-label">Strategy complexity:</label>
                         <div className="col-sm-6">
-                             <select className="form-control"  {...stratComp}>
+                             <select className="form-control"  {...strategy_complexity}>
                                 <option value="1">Single subwedge</option>
                                 <option value="2">Multiple subwedge</option>
                             </select>
@@ -213,11 +213,11 @@ class Characterisation extends React.Component {
                     <div className="form-group">
 
                         <label className="col-sm-6 control-label">
-                            <input type="checkbox" {...radiationDamage} />
+                            <input type="checkbox" {...account_rad_damage} />
                              Account for radiation damage
                         </label>
                         <label className="col-sm-6 control-label">
-                            <input type="checkbox" {...optSAD} />
+                            <input type="checkbox" {...opt_sad} />
                              Optimised SAD
                         </label>
 
@@ -230,7 +230,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-6 control-label">Space group:</label>
                         <div className="col-sm-6">
-                             <select className="form-control"  {...spaceGroup}>
+                             <select className="form-control"  {...space_group}>
                                 <option value="1"></option>
                                 <option value="1">X</option>
                             </select>
@@ -242,22 +242,22 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Min:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...crystMin} />
+                            <input type="number" className="form-control" {...min_crystal_vdim} />
                         </div>
 
                         <label className="col-sm-3 control-label">Max:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...crystMax} />
+                            <input type="number" className="form-control" {...max_crystal_vdim} />
                         </div>
 
                         <label className="col-sm-3 control-label">  &omega; at min:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...omegaMin} />
+                            <input type="number" className="form-control" {...min_crystal_vphi} />
                         </div>
 
                         <label className="col-sm-3 control-label">  &omega; at max:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...omegaMax} />
+                            <input type="number" className="form-control" {...max_crystal_vphi} />
                         </div>
 
                     </div>
@@ -284,7 +284,7 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'centringMethod', 'detectorMode', 'kappa', 'phi', 'radiationDamage' , 'optSAD', 'spaceGroup', 'crystMin', 'crystMax', 'omegaMin', 'omegaMax', 'stratComp' ] // all the fields in your form
+  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
   initialValues: {...state.taskForm.taskData.parameters} // will pull state into form's initialValues
