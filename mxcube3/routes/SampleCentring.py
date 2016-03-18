@@ -11,6 +11,7 @@ import json
 import signals
 
 SAMPLE_IMAGE = None
+CLICK_COUNT = 0
 posId = 0
 
 # ##all drawing to be moved into ~shapehistory...
@@ -403,6 +404,7 @@ def centreAuto():
     """
     logging.getLogger('HWR.MX3').info('[Centring] Auto centring method requested')
     try:
+        mxcube.diffractometer.startAutoCentring()
         centredPos = mxcube.diffractometer.startAutoCentring()
         if centredPos is not None:
             return Response(status=200)
@@ -419,10 +421,15 @@ def centre3click():
     Return: '200' if command issued succesfully, otherwise '409'. Note that this does not mean\
     if the centring is succesfull or not
     """
+    global CLICK_COUNT
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
     try:
-        currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
-        return Response(status=200)  # this only means the call was succesfull
+        mxcube.diffractometer.start3ClickCentring()
+        CLICK_COUNT = 0
+        data = {'clickLeft': 3 - CLICK_COUNT}
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp  # this only means the call was succesfull
     except:
         return Response(status=409)
 
@@ -448,6 +455,7 @@ def aClick():
         x, y: int
     Return: '200' if command issued succesfully, otherwise '409'.
     """
+    global CLICK_COUNT
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)
@@ -456,7 +464,11 @@ def aClick():
         try:
             mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
             ## we store the cpos as temporary, only when asked for save it we switch the type
-            return Response(status=200)
+            CLICK_COUNT += 1
+            data = {'clickLeft': 3 - CLICK_COUNT}
+            resp = jsonify(data)
+            resp.status_code = 200
+            return resp
         except Exception:
             return Response(status=409)
     else:
