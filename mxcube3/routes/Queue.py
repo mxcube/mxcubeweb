@@ -526,7 +526,6 @@ def addCharacterisation(id):
        data ={ "CharacId": newId}    '''
     #no data received yet
     params = request.get_json()
-
     try:
         characNode = qmo.Characterisation()
         characEntry = qe.CharacterisationGroupQueueEntry()
@@ -543,6 +542,15 @@ def addCharacterisation(id):
         task2Entry.set_data_model(taskNode2)
 
         characNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        #characNode.characterisation_parameters.set_from_dict(params)
+        for k, v in params.items():
+            if hasattr(characNode.characterisation_parameters, k):
+                setattr(characNode.characterisation_parameters, k, v)
+        if params['point'] > 0: # a point id has been added
+            for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that cpos
+                if cpos['posId'] == int(params['point']):
+                    characNode.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+           
         node = mxcube.queue.get_node(int(id))  # this is a sampleNode
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node) # this is the corresponding sampleEntry
 
@@ -588,6 +596,11 @@ def addDataCollection(id):
         task1Entry.set_data_model(taskNode1)
 
         colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        if params['point'] > 0: # a point id has been added
+            for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
+                if cpos['posId'] == int(params['point']):
+                    colNode.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+        
         colEntry.set_data_model(colNode)
 
         node = mxcube.queue.get_node(int(id))
@@ -640,6 +653,9 @@ def updateMethod(sampleid, methodid):
             methodNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
         elif isinstance(methodNode, qmo.Characterisation):
             methodNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
+            for k, v in params.items():
+                if hasattr(methodNode.characterisation_parameters, k):
+                    setattr(methodNode.characterisation_parameters, k, v)
         elif isinstance(methodNode, qmo.SampleCentring):
             pass
         ####
