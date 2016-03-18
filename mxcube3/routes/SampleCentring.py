@@ -405,11 +405,7 @@ def centreAuto():
     logging.getLogger('HWR.MX3').info('[Centring] Auto centring method requested')
     try:
         mxcube.diffractometer.startAutoCentring()
-        centredPos = mxcube.diffractometer.startAutoCentring()
-        if centredPos is not None:
-            return Response(status=200)
-        else:
-            return Response(status=409)
+        return Response(status=200)  # this only means the call was succesfull
     except Exception:
         return Response(status=409)
 
