@@ -471,8 +471,8 @@ def aClick():
 
 def waitForCentringFinishes(*args, **kwargs):
     if mxcube.diffractometer.centringStatus["valid"]:
-        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
         global posId
+        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
 
         mxcube.diffractometer.saveCurrentPos()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
