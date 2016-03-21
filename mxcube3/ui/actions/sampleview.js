@@ -15,9 +15,10 @@ export function setCanvas(canvas) {
   }
 }
 
-export function setLight(on) {
+export function setLight(name, on) {
   return { 
     type: "SET_LIGHT",
+    name: name,
     on: on
   }
 }
@@ -130,7 +131,9 @@ export function sendCentringPoint(x, y) {
     if (response.status >= 400) {
       throw new Error("Server refused to add point");
     }
-  });
+  }).then(function(json) {
+      console.log(json);
+    });
 }
 }
 
@@ -228,7 +231,7 @@ export function sendLightOn(name) {
       throw new Error("Server refused to turn light on");
     }
   }).then(function() {
-      dispatch(setLight(true));
+      dispatch(setLight(name, true));
     });
 }
 }
@@ -247,7 +250,7 @@ export function sendLightOff(name) {
       throw new Error("Server refused to turn light off");
     }
   }).then(function() {
-      dispatch(setLight(false));
+      dispatch(setLight(name, false));
     });
 
 }

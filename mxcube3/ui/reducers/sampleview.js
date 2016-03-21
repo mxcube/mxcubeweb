@@ -6,7 +6,7 @@ const initialState = {
   points: {},
   width: 0,
   height: 0,
-  lightOn: false,
+  lightOn: {back: false, front: false},
   motors: {},
   pixelsPerMm: 0,
   imageRatio: 0,
@@ -42,7 +42,7 @@ export default (state=initialState, action) => {
             }
         case 'SAVE_MOTOR_POSITIONS':
             {
-             return {...state, motors: action.data, lightOn: action.data.BackLight.Status, zoom: action.data.Zoom.position };
+             return {...state, motors: action.data, lightOn: {back: action.data.BackLightSwitch.Status, front: action.data.FrontLightSwitch.Status}, zoom: action.data.Zoom.position };
             }
         case 'SAVE_MOTOR_POSITION':
             {
@@ -50,7 +50,7 @@ export default (state=initialState, action) => {
             }
         case 'SET_LIGHT':
             {
-             return {...state, lightOn: action.on };
+             return {...state, lightOn: {...state.lightOn, [action.name]: action.on} };
             }
         case 'UPDATE_POINTS_POSITION':
             {
