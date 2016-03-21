@@ -28,7 +28,7 @@ def init_signals():
     #    mxcube.collect.connect(mxcube.collect, signal, signals.signalCallback)
     for signal in signals.collectSignals:
         mxcube.queue.connect(mxcube.queue, signal, signals.signalCallback)
-    mxcube.queue.lastQueueNode = {'id':0, 'sample':0}
+    mxcube.queue.lastQueueNode = {'id':0, 'sample':'0:0'}
 
 # ##----QUEUE ACTIONS----##
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
@@ -119,10 +119,12 @@ def queueClear():
     logging.getLogger('HWR').info('[QUEUE] Queue going to clear')
 
     try:
-        mxcube.queue.clear_model(mxcube.queue.get_model_root()._name)
-        #mxcube.queue.queue_hwobj.clear()# already done in the previous call
+        # not sure how to handle this, clearing all of them...
+        mxcube.queue.clear_model('sc_one')
+        mxcube.queue._selected_model._children = []
+        mxcube.queue.queue_hwobj.clear()
         session["queueList"] = {} # OR jsonpickle.encode(mxcube.queue)
-        logging.getLogger('HWR').info('[QUEUE] Queue cleared')
+        logging.getLogger('HWR').info('[QUEUE] Queue cleared  '+ str(mxcube.queue.get_model_root()._name))
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be cleared')
@@ -336,7 +338,7 @@ def addSample():
         mxcube.queue.add_child(mxcube.queue._selected_model, sampleNode)
         nodeId = sampleNode._node_id
         mxcube.queue.queue_hwobj.enqueue(sampleEntry)
-        logging.getLogger('HWR').info('[QUEUE] sample added')
+        logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' %(sampleId, nodeId))
         #queueList.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
         session["queueList"] = jsonpickle.encode(mxcube.queue)
         return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
@@ -524,7 +526,6 @@ def addCharacterisation(id):
        data ={ "CharacId": newId}    '''
     #no data received yet
     params = request.get_json()
-
     try:
         characNode = qmo.Characterisation()
         characEntry = qe.CharacterisationGroupQueueEntry()
@@ -540,8 +541,16 @@ def addCharacterisation(id):
         task1Entry.set_data_model(taskNode1)
         task2Entry.set_data_model(taskNode2)
 
+        characNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        #characNode.characterisation_parameters.set_from_dict(params)
         for k, v in params.items():
-            setattr(characNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
+            if hasattr(characNode.characterisation_parameters, k):
+                setattr(characNode.characterisation_parameters, k, v)
+        if params['point'] > 0: # a point id has been added
+            for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that cpos
+                if cpos['posId'] == int(params['point']):
+                    characNode.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+           
         node = mxcube.queue.get_node(int(id))  # this is a sampleNode
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node) # this is the corresponding sampleEntry
 
@@ -586,9 +595,12 @@ def addDataCollection(id):
         task1Entry = qe.TaskGroupQueueEntry()
         task1Entry.set_data_model(taskNode1)
 
-        #populating dc parameters from data sent by the client
-        for k, v in params.items():
-            setattr(colNode.acquisitions[0].acquisition_parameters, k, v)
+        colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        if params['point'] > 0: # a point id has been added
+            for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
+                if cpos['posId'] == int(params['point']):
+                    colNode.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+        
         colEntry.set_data_model(colNode)
 
         node = mxcube.queue.get_node(int(id))
@@ -638,11 +650,12 @@ def updateMethod(sampleid, methodid):
         #TODO: update fields here, I would say that the entry does not need to be updated, only the model node
 
         if isinstance(methodNode, qmo.DataCollection):
-            for k, v in params.items():
-                setattr(methodNode.acquisitions[0].acquisition_parameters, k, v)
+            methodNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
         elif isinstance(methodNode, qmo.Characterisation):
+            methodNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
             for k, v in params.items():
-                setattr(methodNode.reference_image_collection.acquisitions[0].acquisition_parameters, k, v)
+                if hasattr(methodNode.characterisation_parameters, k):
+                    setattr(methodNode.characterisation_parameters, k, v)
         elif isinstance(methodNode, qmo.SampleCentring):
             pass
         ####
@@ -732,19 +745,21 @@ def jsonParser(fromSession = False):
     else:
         queueEntryList = session['queueList']['py/state']['_HardwareObjectNode__objects'][0][0]['py/state']['_queue_entry_list']
     try:
-        parent = queueEntryList[0]['py/state']['_data_model']['_parent']
+        parent = queueEntryList[0]['py/state']['_data_model']['_parent'] ## is it always the first entry?
     except Exception:
         return {} #empty queue
     i = 1
     for entry in queueEntryList[1:]:
-        entry['py/state']['_data_model'] = parent['_children'][i]
+        if entry['py/state']['_data_model'].has_key('_node_id'):
+            pass
+        else:
+            entry['py/state']['_data_model'] = parent['_children'][i]
         i+=1
-    ## now we can iterate, I'll skip the params for clarity in the resulting object
+    ## now we can iterate since the queueEntryList has all the data models
 
     aux = {}
     for sampEntry in queueEntryList:
         dataModel = sampEntry['py/state']['_data_model']
-
         aux[dataModel['_node_id']] = {"QueueId": dataModel['_node_id'],"SampleId": dataModel['loc_str'],"checked": 0,"methods":[]}
 
         children = dataModel['_children']
@@ -754,7 +769,8 @@ def jsonParser(fromSession = False):
                     if grandChild['py/object'].split('.')[1] == 'TaskGroup': #keep going down one more time for the Char
                         for grandGrandChild in grandChild['_children']:
                             if grandGrandChild['py/object'].split('.')[1] == 'Characterisation':
-                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Type': 'Characterisation','Params': grandGrandChild['characterisation_parameters'],'checked': 0, 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
+                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Type': 'Characterisation','Params': grandGrandChild['characterisation_parameters'], 'AcquisitionParams': grandGrandChild['reference_image_collection']['acquisitions'][0]['acquisition_parameters'],'checked': 0, 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
                     elif grandChild['py/object'].split('.')[1] == 'DataCollection':
-                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Type': 'DataCollection','Params': {},'checked': 0, 'executed': grandChild['_executed']})
+                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Type': 'DataCollection','Params': {},'checked': 0, 'executed': grandChild['_executed'], 'Params': grandChild['acquisitions'][0]['acquisition_parameters']})
+                    ## acq limited for now to only one element of the array, so a DataCollection entry only has a single Acquisition , done like this to simplify devel... just belean!
     return aux
