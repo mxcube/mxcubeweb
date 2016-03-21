@@ -158,15 +158,11 @@ class DataCollection extends React.Component {
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...exp_time} />
                         </div>
-
-                        <label className="col-sm-3 control-label">Detector mode:</label>
+                        <label className="col-sm-3 control-label">Transmission (%)</label>
                         <div className="col-sm-3">
-                             <select className="form-control"  {...detector_mode}>
-                                <option value="1"></option>
-                                <option value="1">X</option>
-                                <option value="1">Y</option>
-                            </select>
+                            <input type="number" className="form-control" {...transmission} />
                         </div>
+
                     </div>
 
                     <div className="form-group">
@@ -182,9 +178,8 @@ class DataCollection extends React.Component {
                         </label>
                         <div className="col-sm-3">
                              <select className="form-control" >
-                                <option value="1"></option>
-                                <option value="1">X</option>
-                                <option value="1">Y</option>
+                                <option value="ip">ip:-</option>
+                                <option value="pk">pk:-</option>
                             </select>
                         </div>
 
@@ -200,9 +195,30 @@ class DataCollection extends React.Component {
                             <input type="number" className="form-control" {...resolution} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Transmission (%)</label>
+                        <label className="col-sm-3 control-label">Detector mode:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...transmission} />
+                             <select className="form-control"  {...detector_mode}>
+                                <option value="0">0</option>
+                                <option value="C18">C18</option>
+                                <option value="C2">C2</option>
+                            </select>
+                        </div>
+
+
+                    </div>
+
+
+                    <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Beam size:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" />
+                        </div>
+
+
+                        <label className="col-sm-3 control-label">Subwedge size:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" />
                         </div>
 
                     </div>
@@ -219,17 +235,32 @@ class DataCollection extends React.Component {
                             Inverse beam
                         </label>
 
-                        <label className="col-sm-3 control-label">Subwedge size:</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" />
-                        </div>
-
                     </div>
 
 
 
                     <h5>Data location</h5>
                     <hr />
+
+
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Data path:</label>
+                        <div className="col-sm-9">
+                            <input type="text" className="form-control" />
+                        </div>
+
+
+                    </div>  
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">File name:</label>
+                        <div className="col-sm-9">
+                            <input type="text" className="form-control" value={"asdas"} />
+                        </div>
+
+
+                    </div>  
 
                      <div className="form-group">
 
@@ -283,17 +314,17 @@ class DataCollection extends React.Component {
                             <input type="number" className="form-control" />
                         </div>
 
-                        <label className="col-sm-2 control-label">Max:</label>
+                        <label className="col-sm-2 control-label"> &alpha;:</label>
                         <div className="col-sm-2">
                             <input type="number" className="form-control" />
                         </div>                                                
 
-                        <label className="col-sm-2 control-label">  &omega; at min:</label>
+                        <label className="col-sm-2 control-label">  &beta;:</label>
                         <div className="col-sm-2">
                             <input type="number" className="form-control" />
                         </div>
 
-                        <label className="col-sm-2 control-label">  &omega; at max:</label>
+                        <label className="col-sm-2 control-label">  &gamma;:</label>
                         <div className="col-sm-2">
                             <input type="number" className="form-control" />
                         </div>
