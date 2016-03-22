@@ -26,7 +26,3 @@ input[type="radio"], input[type="checkbox"] {
 .ReactModal__Overlay{
   z-index: 2;
 }
-
-.main-page{
-    margin-top: 10px;
-}
