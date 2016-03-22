@@ -2,7 +2,7 @@
 
 import React from 'react'
 import {reduxForm} from 'redux-form';
-import Modal from 'react-modal';
+import { Modal } from 'react-bootstrap';
 
 
 class Characterisation extends React.Component {
@@ -49,50 +49,12 @@ class Characterisation extends React.Component {
 
         const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity }} = this.props;
 
-        const style = {
-          overlay : {
-            position          : 'fixed',
-            top               : 0,
-            left              : 0,
-            right             : 0,
-            bottom            : 0,
-            backgroundColor   : 'rgba(255, 255, 255, 0.75)'
-        },
-        content : {
-            position                   : 'absolute',
-            top                        : '40px',
-            left                       : '40px',
-            right                      : '40px',
-            bottom                     : '40px',
-            border                     : 'none',
-            background                 : 'none',
-            overflow                   : 'auto',
-            WebkitOverflowScrolling    : 'touch',
-            borderRadius               : '4px',
-            outline                    : 'none',
-            padding                    : '20px'
-
-        }
-        };
-
-
         return (
-        <Modal
-            className="Modal__Bootstrap modal-dialog"
-            closeTimeoutMS={150}
-            isOpen={this.props.show}
-            onRequestClose={this.handleModalCloseRequest}
-            style={style}
-        >
-          <div className="modal-content">
-            <div className="modal-header">
-              <button type="button" className="close" onClick={this.props.hide}>
-                <span aria-hidden="true">&times;</span>
-                <span className="sr-only">Close</span>
-              </button>
-              <h4 className="modal-title">Characterisation</h4>
-            </div>
-            <div className="modal-body">
+        <Modal show={this.props.show} onHide={this.props.hide}>
+            <Modal.Header closeButton>
+                <Modal.Title>Characterisation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
 
                 <h5>Acquisition</h5>
                 <hr />
@@ -244,8 +206,8 @@ class Characterisation extends React.Component {
                     </div>
 
                 </form>
-            </div>
-            <div className="modal-footer">
+            </Modal.Body>
+            <Modal.Footer>
           <div className={this.props.pointId === -1 ? "pull-left" : "hidden"}>
             <label className="centring-method">
               <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'}/> Lucid Only  
@@ -256,8 +218,7 @@ class Characterisation extends React.Component {
           </div>
               <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
               <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? "Change": "Add to Queue"}</button>
-            </div>
-          </div>
+          </Modal.Footer>
         </Modal>
         );
     }

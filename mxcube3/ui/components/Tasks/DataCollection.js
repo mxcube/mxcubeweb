@@ -2,7 +2,7 @@
 
 import React from 'react'
 import {reduxForm} from 'redux-form';
-import Modal from 'react-modal';
+import { Modal } from 'react-bootstrap';
 
 
 class DataCollection extends React.Component {
@@ -49,51 +49,13 @@ class DataCollection extends React.Component {
 
         const {fields: {num_images, first_image, exp_time, resolution, osc_start , energy, osc_range, transmission, shutterless, inverse_beam,centringMethod, detector_mode, kappa, kappa_phi, space_group}} = this.props;
 
-        const style = {
-          overlay : {
-            position          : 'fixed',
-            top               : 0,
-            left              : 0,
-            right             : 0,
-            bottom            : 0,
-            backgroundColor   : 'rgba(255, 255, 255, 0.75)'
-        },
-        content : {
-            position                   : 'absolute',
-            top                        : '40px',
-            left                       : '40px',
-            right                      : '40px',
-            bottom                     : '40px',
-            border                     : 'none',
-            background                 : 'none',
-            overflow                   : 'auto',
-            WebkitOverflowScrolling    : 'touch',
-            borderRadius               : '4px',
-            outline                    : 'none',
-            padding                    : '20px'
-
-        }
-        };
-
 
         return (
-        <Modal
-            className="Modal__Bootstrap modal-dialog"
-            closeTimeoutMS={150}
-            isOpen={this.props.show}
-            onRequestClose={this.handleModalCloseRequest}
-            style={style}
-        >
-          <div className="modal-content">
-            <div className="modal-header">
-              <button type="button" className="close" onClick={this.props.hide}>
-                <span aria-hidden="true">&times;</span>
-                <span className="sr-only">Close</span>
-              </button>
-              <h4 className="modal-title">Standard Collection</h4>
-            </div>
-            <div className="modal-body">
-
+        <Modal show={this.props.show} onHide={this.props.hide}>
+            <Modal.Header closeButton>
+                <Modal.Title>Standard Collection</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
                 <h5>Acquisition</h5>
                 <hr />
                 <form className="form-horizontal">
@@ -241,7 +203,7 @@ class DataCollection extends React.Component {
 
                         <label className="col-sm-3 control-label">File name:</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control" value={"asdas"} />
+                            <input type="text" className="form-control"/>
                         </div>
 
 
@@ -316,8 +278,8 @@ class DataCollection extends React.Component {
 
                     </div>
                 </form>
-            </div>
-            <div className="modal-footer">
+            </Modal.Body>
+            <Modal.Footer>
           <div className={this.props.pointId === -1 ? "pull-left" : "hidden"}>
             <label className="centring-method">
               <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'}/> Lucid Only  
@@ -328,8 +290,7 @@ class DataCollection extends React.Component {
           </div>
               <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
               <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? "Change": "Add to Queue"}</button>
-            </div>
-          </div>
+            </Modal.Footer>
         </Modal>
         );
     }
