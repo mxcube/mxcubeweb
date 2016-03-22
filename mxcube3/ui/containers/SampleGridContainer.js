@@ -10,6 +10,12 @@ import SampleTaskButtons from '../components/SampleGrid/TaskButtons'
 
 
 class SampleGridContainer extends React.Component {
+
+        constructor(props) {
+            super(props)
+            this.syncSamples = this.syncSamples.bind(this);
+            this.addSamples = this.addSamples.bind(this);
+        }
         addSamples() {
             // Loop through all samples, check which was selected and add to the queue. 
             Object.keys(this.props.samples_list).forEach(key => {
@@ -34,7 +40,7 @@ class SampleGridContainer extends React.Component {
 
         render() {
           const innerSearchIcon = (
-            <Button onClick={() => { this.props.filter(this.refs.filter_input.getValue()) } }><Glyphicon glyph="search"/></Button>
+            <Button onClick={() => {this.props.filter(this.refs.filter_input.getValue())}}><Glyphicon glyph="search"/></Button>
           );
       
           return (<div className="row">
@@ -47,17 +53,17 @@ class SampleGridContainer extends React.Component {
                 </div>
                 <div className="col-xs-4">
                   <ButtonToolbar>
-                    <SplitButton bsStyle="primary" pullRight={true} title={this.props.manual_mount ? "Manual mount" : "Check sample changer contents"} onClick={this.props.manual_mount ? undefined : this.props.getSamples} onSelect={this.props.toggleManualMount} id="split-button-sample-changer-selection">
+                    <SplitButton bsStyle="primary" pullRight title={this.props.manual_mount ? "Manual mount" : "Check sample changer contents"} onClick={this.props.manual_mount ? undefined : this.props.getSamples} onSelect={this.props.toggleManualMount} id="split-button-sample-changer-selection">
                       <MenuItem eventKey="1">{this.props.manual_mount ? "Sample changer" : "Manual mount"}</MenuItem>
                     </SplitButton>
-                    <Button className="btn-primary" disabled={this.props.manual_mount ? true : false } onClick={ ()=> { this.syncSamples() }}>
+                    <Button className="btn-primary" disabled={this.props.manual_mount ? true : false} onClick={this.syncSamples}>
                       <Glyphicon glyph="refresh" /> Sync. ISPyB
                     </Button>
                   </ButtonToolbar>
                 </div>
                 <div className="col-xs-3">
                   <ButtonToolbar>
-                    <Button className="btn-success pull-right" onClick={()=> { this.addSamples() }}>
+                    <Button className="btn-success pull-right" onClick={this.addSamples}>
                       <Glyphicon glyph="plus" /> Add samples
                     </Button>
                     <Button className="btn pull-right" onClick={this.props.unselectAll}>Unselect all</Button>
