@@ -1,7 +1,7 @@
 import {omit} from 'lodash/object';
 const initialState = {
   clickCentring: false,
-  clickCentringPoints: [],
+  clickCentringPoints: 0,
   zoom: 0,
   points: {},
   width: 0,
@@ -22,12 +22,16 @@ export default (state=initialState, action) => {
             }
         case 'START_CLICK_CENTRING':
             {
-             return {...state, clickCentring: true};
+             return {...state, clickCentring: true, clickCentringPoints: 0};
             }
         case 'STOP_CLICK_CENTRING':
             {
              return {...state, clickCentring: false};
             }
+        case 'ADD_CENTRING_POINT':
+            {
+             return (state.clickCentringPoints === 2 ? {...state, clickCentring: false, clickCentringPoints:0} : {...state, clickCentringPoints: (state.clickCentringPoints + 1)})
+            }        
         case 'SAVE_POINT':
             {
              return {...state, points: {...state.points, [action.point.posId] : action.point }};

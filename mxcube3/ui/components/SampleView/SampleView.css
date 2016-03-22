@@ -90,11 +90,9 @@
     background-color: white;
 }
 
-.light-on{
+.button-active{
     color:orange;
 }
-
-
 
 .light-button{
      position: relative;

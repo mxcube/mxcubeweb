@@ -53,6 +53,12 @@ export function StopClickCentring() {
   }
 }
 
+export function addCentringPoint() {
+  return { 
+    type: "ADD_CENTRING_POINT"
+  }
+}
+
 export function SavePoint(point) {
   return { 
     type: "SAVE_POINT",
@@ -118,7 +124,7 @@ export function sendStartClickCentring() {
 }
 
 export function sendCentringPoint(x, y) {
-  return function() {
+  return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/centring/click', { 
     method: 'PUT', 
     credentials: 'include',
@@ -131,8 +137,8 @@ export function sendCentringPoint(x, y) {
     if (response.status >= 400) {
       throw new Error("Server refused to add point");
     }
-  }).then(function(json) {
-      console.log(json);
+  }).then(function() {
+      dispatch(addCentringPoint())
     });
 }
 }
