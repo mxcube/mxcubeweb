@@ -16,27 +16,12 @@ class DataCollection extends React.Component {
 
     handleSubmit(runNow){
 
-        let fields = this.props.fields;
+
         let parameters = {
+            ...this.props.values,
             Type : "DataCollection",
-            num_images : fields.num_images.value,
-            first_image: fields.first_image.value,
-            exp_time: fields.exp_time.value,
-            resolution : fields.resolution.value,
-            osc_start : fields.osc_start.value,
-            energy : fields.energy.value,
-            osc_range : fields.osc_range.value,
-            transmission : fields.transmission.value,
-            shutterless : fields.shutterless.value,
-            inverse_beam: fields.inverse_beam.value,
-            point : this.props.pointId,
-            detector_mode: fields.detector_mode.value,
-            kappa: fields.kappa.value,
-            kappa_phi: fields.kappa_phi.value,
-            space_group: fields.space_group.value
-
-            };
-
+            point : this.props.pointId
+        };
         if (this.props.sampleIds.constructor == Array){
 
             this.props.sampleIds.map((sampleId) =>{

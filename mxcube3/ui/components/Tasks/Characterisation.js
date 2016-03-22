@@ -16,30 +16,11 @@ class Characterisation extends React.Component {
 
     handleSubmit(runNow){
 
-        let fields = this.props.fields;
         let parameters = {
+            ...this.props.values,
             Type : "Characterisation",
-            num_images : fields.num_images.value,
-            exp_time: fields.exp_time.value,
-            resolution : fields.resolution.value,
-            osc_start : fields.osc_start.value,
-            energy : fields.energy.value,
-            osc_range : fields.osc_range.value,
-            transmission : fields.transmission.value,
-            point : this.props.pointId,
-            detector_mode: fields.detector_mode.value,
-            kappa: fields.kappa.value,
-            kappa_phi: fields.kappa_phi.value,
-            account_rad_damage: fields.account_rad_damage.value,
-            opt_sad: fields.opt_sad.value,
-            space_group: fields.space_group.value,
-            min_crystal_vdim: fields.min_crystal_vdim.value,
-            max_crystal_vdim: fields.max_crystal_vdim.value,
-            min_crystal_vphi: fields.min_crystal_vphi.value,
-            max_crystal_vphi: fields.max_crystal_vphi.value,
-            strategy_complexity: fields.strategy_complexity.value
-
-            };
+            point : this.props.pointId
+        };
 
         if (this.props.sampleIds.constructor == Array){
 

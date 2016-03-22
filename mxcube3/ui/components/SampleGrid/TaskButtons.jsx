@@ -4,8 +4,8 @@ import { Button, Glyphicon, ButtonToolbar } from "react-bootstrap"
 export default class SampleTaskButtons extends React.Component {
      constructor(props) {
          super(props);
-         this.showCharac = this.handleSubmit.bind(this, "Characterisation");
-         this.showDataCollec = this.handleSubmit.bind(this, "DataCollection");
+         this.showCharacterisationForm = this.handleSubmit.bind(this, "Characterisation");
+         this.showDataCollectionForm = this.handleSubmit.bind(this, "DataCollection");
      }
 
 
@@ -24,10 +24,10 @@ export default class SampleTaskButtons extends React.Component {
 
     render() {
         return (<ButtonToolbar>
-                    <Button className="btn-primary" onClick={this.showCharac}>
+                    <Button className="btn-primary" onClick={this.showCharacterisationForm}>
                          <Glyphicon glyph="plus" /> Characterisation
                     </Button>
-                    <Button className="btn-primary" onClick={this.showDataCollec}>
+                    <Button className="btn-primary" onClick={this.showDataCollectionForm}>
                          <Glyphicon glyph="plus" /> Data collection
                     </Button>
                </ButtonToolbar>)
