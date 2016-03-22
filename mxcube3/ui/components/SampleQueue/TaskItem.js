@@ -86,7 +86,7 @@ export default class TaskItem extends Component {
 
   constructor(props) {
         super(props);
-        this.showForm = () => this.props.showForm(this.props.data.name.toLowerCase(), this.props.sampleId, this.props.data, this.props.data.parameters.point );
+        this.showForm = () => this.props.showForm(this.props.data.type, this.props.sampleId, this.props.data, this.props.data.parameters.point );
         this.deleteTask = () => this.props.deleteTask(this.props.id);
         this.onClick= this.onClick.bind(this);
   }
@@ -100,11 +100,10 @@ export default class TaskItem extends Component {
     const opacity = isDragging ? 0 : 1;
     let taskCSS = cx('node node-sample',{
         'passive': this.props.checked.indexOf(this.props.id) === -1
-    }); 
-
+    });
     return connectDragSource(connectDropTarget(
       <div className={taskCSS} style={{ opacity }}>
-        <span className="node-name" onClick={this.onClick}>{'P' + data.parameters.point + ' ' + data.name}</span>
+        <span className="node-name" onClick={this.onClick}>{data.parameters.point !== -1 ? 'P' + data.parameters.point + ' ' : ' '} {data.label}</span>
          <div className="pull-right">
              <i className="fa fa-cog" onClick={this.showForm}></i>
              <i className="fa fa-times" onClick={this.deleteTask}></i>

@@ -85,7 +85,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
              }});
       }
     case "CHANGE_METHOD":
-      {    
+      {
         return Object.assign({}, state, 
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
@@ -106,6 +106,16 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
              {samples_list : {...state.samples_list,
               [action.index] : {...state.samples_list[action.index],
                 tasks : omit(state.samples_list[action.index].tasks, [action.queue_id])
+              }
+             }}
+          );
+      }
+    case "REMOVE_SAMPLE":
+      {
+        return Object.assign({}, state, 
+             {samples_list : {...state.samples_list,
+              [action.index] : {...state.samples_list[action.index],
+                tasks : {}
               }
              }}
           );

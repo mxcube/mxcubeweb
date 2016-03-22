@@ -4,23 +4,25 @@ import { Button, Glyphicon, ButtonToolbar } from "react-bootstrap"
 export default class SampleTaskButtons extends React.Component {
      constructor(props) {
          super(props);
-
-         this.showCharacterisationForm = this.props.showForm.bind(this, "Characterisation");
-         this.showDataCollectionForm = this.props.showForm.bind(this, "DataCollection");
+         this.showCharacterisationForm = this.handleSubmit.bind(this, "Characterisation");
+         this.showDataCollectionForm = this.handleSubmit.bind(this, "DataCollection");
      }
 
 
-     handleSubmit(){
-     /*
-            this.props.checked.map( (queue_id) =>{
-                if(this.props.lookup[queue_id]){
-                    this.props.addTask(queue_id, this.props.lookup[queue_id],{Type: "Centring"});
-                }
-            });
-    */
+     handleSubmit(formName){
+
+        let sampleIds = [];
+
+        for(let sampleId in this.props.selected){
+
+            if(this.props.selected[sampleId]){
+                sampleIds.push(sampleId);
+            }
+        }      
+        this.props.showForm(formName, sampleIds, this.props.defaultParameters);
     }
 
-    render() { 
+    render() {
         return (<ButtonToolbar>
                     <Button className="btn-primary" onClick={this.showCharacterisationForm}>
                          <Glyphicon glyph="plus" /> Characterisation

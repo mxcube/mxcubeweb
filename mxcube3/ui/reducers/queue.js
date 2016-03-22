@@ -32,7 +32,7 @@ export default (state={
                             todo: {...state.todo, nodes: without(state.todo.nodes, action.queue_id)},
                             queue: omit(state.queue, action.queue_id),
                             lookup: omit(state.lookup, action.queue_id),
-                            lookup_queue_id: omit(state.lookup_queue_id, action.sample_id)
+                            lookup_queue_id: omit(state.lookup_queue_id, action.index)
                         }
                         );
 

@@ -8,8 +8,8 @@ export default class ContextMenu extends React.Component {
     super(props);
     this.state = {options: {
       SAVED : [
-      {text: "Add Characterisation", action: () => this.showModal("characterisation"), key: 1},
-      {text: "Add Datacollection", action: () => this.showModal("datacollection"), key: 2},
+      {text: "Add Characterisation", action: () => this.showModal("Characterisation"), key: 1},
+      {text: "Add Datacollection", action: () => this.showModal("DataCollection"), key: 2},
       {text: "Delete Point", action: () => this.removeObject(), key: 3}
       ],
       TMP : [
@@ -34,7 +34,7 @@ componentWillReceiveProps(nextProps) {
 }
 
 showModal(modalName){
-    this.props.showForm(modalName, [this.props.sampleId], -1, this.props.shape.id);
+    this.props.showForm(modalName, [this.props.sampleId], this.props.defaultParameters, this.props.shape.id);
     this.hideContextMenu();
     this.props.sampleActions.showContextMenu(false);
 }

@@ -1,10 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount, doUnselectAll, showTaskParametersForm, sendDeleteSampleTask } from '../actions/samples_grid'
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
-import TaskContainer from '../containers/TaskContainer'
+import { showTaskParametersForm } from '../actions/taskForm'
+import SampleTaskButtons from '../components/SampleGrid/TaskButtons' 
+
 
 class SampleGridContainer extends React.Component {
         addSamples() {
@@ -64,21 +67,26 @@ class SampleGridContainer extends React.Component {
               </div>
                 <div className="row">
                   <div className="col-xs-12">
-                      <TaskContainer/>
+                      <SampleTaskButtons defaultParameters={this.props.defaultParameters} showForm={this.props.showTaskParametersForm} selected={this.props.selected} />
                   </div>
                </div>
             </div>
-            <div className="row" style={{paddingTop: 103, paddingLeft: 20}}>
-              <div className="col-xs-12">
+              <div className="col-xs-12" style={{paddingTop: 103}}>
                   <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue} showTaskParametersForm={this.props.showTaskParametersForm} deleteTask={this.props.deleteTask}/>
               </div>
-            </div>
           </div>)
         }
 }
 
 function mapStateToProps(state) {
-    return Object.assign({}, state.samples_grid, { login_data: state.login.data }, {queue : state.queue})
+    return  { 
+          login_data: state.login.data , 
+          queue : state.queue,
+          selected : state.samples_grid.selected,
+          samples_list: state.samples_grid.samples_list,
+          defaultParameters: state.taskForm.defaultParameters
+
+        }
 }
 
 function mapDispatchToProps(dispatch) {
@@ -92,7 +100,7 @@ function mapDispatchToProps(dispatch) {
         addSampleToQueue: (id) => dispatch(sendAddSample(id)),
         toggleManualMount: (manual) => dispatch(doToggleManualMount(manual)),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
-        showTaskParametersForm: (task_name, task) => dispatch(showTaskParametersForm(task_name, task)),
+        showTaskParametersForm: bindActionCreators(showTaskParametersForm, dispatch),
         deleteTask: (parent_id, queue_id, sample_id) => dispatch(sendDeleteSampleTask(parent_id, queue_id, sample_id))
     }
 }

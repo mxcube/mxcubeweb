@@ -33,7 +33,7 @@ export default class HistoryTree extends React.Component {
     }); 
     return (
       <div className={taskClass} key={key}>
-        <span className="node-name">{'P' + node.parameters.point + ' ' + node.name}</span>
+        <span className="node-name">{node.parameters.point !== -1 ? 'P' + node.parameters.point + ' ' : ' '} {node.label}</span>
       </div>
     );
     

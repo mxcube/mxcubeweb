@@ -9,19 +9,19 @@ import SampleControls from '../components/SampleView/SampleControls'
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
-import { showForm } from '../actions/taskForm'
+import { showTaskParametersForm } from '../actions/taskForm'
 
 class SampleViewContainer extends Component {
 
   render() {
 
     const {show, shape, x, y} = this.props.sampleViewState.contextMenu;
-     const {width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas } = this.props.sampleViewState
-
+    const {width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas } = this.props.sampleViewState
+    const sampleId = this.props.lookup[this.props.current.node];
 
     return (
       <div className="row">
-        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={this.props.current.node}/>
+        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters}/>
         <div className="col-xs-8">
             <SampleImage 
                 sampleActions={this.props.sampleViewActions} 
@@ -52,7 +52,8 @@ function mapStateToProps(state) {
           current : state.queue.current,
           sampleInformation: state.samples_grid.samples_list,
           sampleViewState: state.sampleview,
-          lookup: state.queue.lookup
+          lookup: state.queue.lookup,
+          defaultParameters: state.taskForm.defaultParameters
     }
 }
 
@@ -61,7 +62,7 @@ function mapDispatchToProps(dispatch) {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch),
     sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
-    showForm : bindActionCreators(showForm, dispatch)
+    showForm : bindActionCreators(showTaskParametersForm, dispatch)
   }
 }
 

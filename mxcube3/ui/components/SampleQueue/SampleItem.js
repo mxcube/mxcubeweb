@@ -87,7 +87,7 @@ export default class SampleItem extends Component {
   constructor(props) {
         super(props);
         this.mountSample = () => this.props.mountSample(this.props.id);
-        this.deleteSample = () => this.props.deleteSample(this.props.id);
+        this.deleteSample = () => this.props.deleteSample(this.props.id, this.props.sampleId);
   }
 
   render() {

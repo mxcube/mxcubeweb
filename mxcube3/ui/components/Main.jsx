@@ -1,6 +1,7 @@
 import React from 'react';
 import SampleQueueContainer from '../containers/SampleQueueContainer'
 import MXNavbarContainer from '../containers/MXNavbarContainer'
+import TaskContainer from '../containers/TaskContainer'
 import { ErrorNotificationPanel } from './Logging'
 import PleaseWaitDialog from './PleaseWaitDialog'
 import './Main.css'
@@ -10,6 +11,7 @@ const socket = io.connect('http://' + document.domain + ':' + location.port+"/hw
 export default class Main extends React.Component {
     render() {
         return (<div> 
+                      <TaskContainer/>
                       <PleaseWaitDialog/>
                       <ErrorNotificationPanel/>
                       <MXNavbarContainer/>
@@ -26,4 +28,3 @@ export default class Main extends React.Component {
                   </div>)
     }    
 }
-

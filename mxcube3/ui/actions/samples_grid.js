@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch'
 import { sendClearQueue, sendRunSample, sendAddSample } from './queue'
-import { showForm } from './taskForm'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -31,10 +30,6 @@ export function doAddTag(tag) {
 
 export function doToggleSelected(index) {
     return { type: "TOGGLE_SELECTED", index }
-}
-
-export function setClickedTask(task) {
-    return { type: "CLICKED_TASK", task }
 }
 
 export function doSelectAll() {
@@ -118,14 +113,6 @@ export function doRemoveTask(sample_queue_id, queue_id, sample_id) {
             }
 }
 
-
-export function showTaskParametersForm(task_name, clicked_task) {
-    return function(dispatch) {
-        dispatch(setClickedTask(clicked_task || Object()));
-        dispatch(showForm(task_name));
-    }
-}
-
 export function sendAddSampleTask(queue_id, sample_id, parameters, runNow) {
     return function(dispatch) {
         fetch('mxcube/api/v0.1/queue/' + queue_id, { 
@@ -159,10 +146,10 @@ export function sendAddSampleAndTask(sample_id, parameters) {
     }
 }
 
-export function sendChangeSampleTask(sample_queue_id, task_queue_id, sample_id, parameters, runNow) {
+export function sendChangeSampleTask(task_queue_id, sample_queue_id, sample_id, parameters, runNow) {
         return function(dispatch) {
 
-        fetch('mxcube/api/v0.1/queue/' + queue_id + '/' + parent_id, { 
+        fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' +  task_queue_id , { 
             method: 'PUT', 
             credentials: 'include',
             headers: {

@@ -5,4 +5,24 @@
 
 body{
 	background-color: rgba(0,0,0,0.035);
+	font-size: 12px;
+}
+
+label {
+    font-weight: normal;
+}
+
+
+.control-label{
+    text-align: initial !important;
+}
+
+input[type="radio"], input[type="checkbox"] {
+    margin: 4px 4px 0;
+    margin-top: 1px \9;
+    line-height: normal;
+}
+
+.ReactModal__Overlay{
+  z-index: 2;
 }
