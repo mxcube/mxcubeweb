@@ -13,6 +13,16 @@ export default class SampleGrid extends React.Component {
   }
     }
 
+    componentDidUpdate(prevProps) {
+        if (this.isotope) {
+          if (this.props.samples_list != prevProps.samples_list) { 
+            this.isotope.reloadItems();
+            this.isotope.layout();
+          }
+          this.isotope.arrange(); 
+        }
+    }
+
     _filter(elem) {
         if (this.props.filter_text) {
           // find index of elem DOM element (= index of element in samples list)
@@ -29,17 +39,7 @@ export default class SampleGrid extends React.Component {
           return keep;
         }
         return true;
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.isotope) {
-          if (this.props.samples_list != prevProps.samples_list) { 
-            this.isotope.reloadItems();
-            this.isotope.layout();
-          }
-          this.isotope.arrange(); 
-        }
-    }
+    }    
 
     render() {
         var samples_list = this.props.samples_list;
@@ -67,7 +67,7 @@ export default class SampleGrid extends React.Component {
             for(let id in sample.tasks){
                 tags.push(sample.tasks[id]); //.name);
             }
-            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} deleteTask={this.props.deleteTask} showTaskParametersForm={this.props.showTaskParametersForm} onClick={() => this.props.toggleSelected(key)}/>);
+            sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} deleteTask={this.props.deleteTask} showTaskParametersForm={this.props.showTaskParametersForm} onClick={this.props.toggleSelected}/>);
             ++i;
       });
       return (<div className='samples-grid'>
@@ -77,9 +77,7 @@ export default class SampleGrid extends React.Component {
 }
 
 SampleGrid.propTypes = {
-    samples_list: React.PropTypes.object.isRequired,
-    selected: React.PropTypes.object.isRequired,
-    toggleSelected: React.PropTypes.func.isRequired,
-    filter_text: React.PropTypes.string 
+    filter_text: React.PropTypes.string, 
+    toggleSelected: React.PropTypes.func.isRequired
 }
 

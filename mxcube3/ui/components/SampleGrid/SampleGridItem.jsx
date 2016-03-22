@@ -11,6 +11,7 @@ export default class SampleGridItem extends React.Component {
     constructor(props) {
         super(props)
         this.defaultProps = { tags: [], loadable: false, selected: false }
+        this.onClick = props.onClick.bind(this, props.selectKey);
   }
 
     componentDidMount() {
@@ -21,7 +22,7 @@ export default class SampleGridItem extends React.Component {
     render() {
         let classes = classNames('samples-grid-item', {'samples-grid-item-selected': this.props.selected});
         let sc_location_classes = classNames("sc_location", "label", "label-default", {"label-success": this.props.loadable});
-        return (<div className={classes} onClick={this.props.onClick}>
+        return (<div className={classes} onClick={this.onClick}>
                  <span className={sc_location_classes}>{this.props.location}</span>
                  <br></br>
                  <a href="#" ref='pacronym' className="protein-acronym" data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym">
