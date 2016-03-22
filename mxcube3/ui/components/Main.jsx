@@ -8,13 +8,16 @@ import './Main.css'
 import io from 'socket.io-client';
 const socket = io.connect('http://' + document.domain + ':' + location.port+"/hwr");
 
+
+
+
 export default class Main extends React.Component {
     render() {
         return (<div> 
                       <TaskContainer/>
                       <PleaseWaitDialog/>
                       <ErrorNotificationPanel/>
-                      <MXNavbarContainer/>
+                      <MXNavbarContainer location={this.props.location}/>
                       <div className="container-fluid">
                         <div className="row">
                           <div className="col-xs-2">

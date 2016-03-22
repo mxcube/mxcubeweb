@@ -9,7 +9,7 @@ class MXNavbarContainer extends React.Component {
 
   render() {
     return (
-        <MXNavbar userInfo={this.props.userInfo} signOut={this.props.signOut} loggedIn={this.props.loggedIn} />
+        <MXNavbar userInfo={this.props.userInfo} signOut={this.props.signOut} loggedIn={this.props.loggedIn} location={this.props.location}/>
     )
   }
 }
