@@ -9,6 +9,8 @@ class Login extends React.Component {
   constructor(props) {
       super(props)
       this.state = { show_loader: false }
+      this.signIn = this.signIn.bind(this);
+      this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
   componentWillMount(){
@@ -25,6 +27,12 @@ class Login extends React.Component {
       let fields = this.props.fields;
       this.props.signIn(fields.username.value, fields.password.value);
       this.setState({ show_loader: true });
+  }
+  handleKeyPress(target) {
+    if(target.charCode==13){
+      this.signIn();  
+    }
+
   }
 
   render() {
@@ -45,8 +53,8 @@ class Login extends React.Component {
              <div>
                 <form className="form from-actions" bsStyle="inline" >
                   <Input  label="LoginID" ref="proposal" type="text" name="proposal" placeholder={loginInfo.loginType} {...username} required autofocus/>{' '}
-                  <Input  label="Password"  ref="password" type="password" name="password" placeholder="Password" {...password} required onKeyPress={(target) => { if (target.charCode==13) { this.signIn() }}}/>{' '}
-                  <ButtonInput id="submit" bsStyle="primary"  value="Sign in"  onClick={() => this.signIn()}/>
+                  <Input  label="Password"  ref="password" type="password" name="password" placeholder="Password" {...password} required onKeyPress={this.handleKeyPress} />{' '}
+                  <ButtonInput id="submit" bsStyle="primary"  value="Sign in"  onClick={this.signIn}/>
                 </form>
               </div>
              </div>
