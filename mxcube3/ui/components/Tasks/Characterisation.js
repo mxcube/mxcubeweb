@@ -138,6 +138,43 @@ class Characterisation extends React.Component {
 
                     </div>
 
+                    <h5>Data location</h5>
+                    <hr />
+
+
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Data path:</label>
+                        <div className="col-sm-9">
+                            <input type="text" className="form-control" />
+                        </div>
+
+
+                    </div>  
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">File name:</label>
+                        <div className="col-sm-9">
+                            <input type="text" className="form-control"/>
+                        </div>
+
+
+                    </div>  
+
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Prefix:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" />
+                        </div>
+
+                        <label className="col-sm-3 control-label">Run number:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" />
+                        </div>
+
+                    </div>                        
+
                     <h5>Characterisation</h5>
                     <hr />
 
