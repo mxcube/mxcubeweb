@@ -21,7 +21,7 @@ export default class SampleGridItem extends React.Component {
     render() {
         let classes = classNames('samples-grid-item', {'samples-grid-item-selected': this.props.selected});
         let sc_location_classes = classNames("sc_location", "label", "label-default", {"label-success": this.props.loadable});
-        return <div className={classes} onClick={this.props.onClick}>
+        return (<div className={classes} onClick={this.props.onClick}>
                  <span className={sc_location_classes}>{this.props.location}</span>
                  <br></br>
                  <a href="#" ref='pacronym' className="protein-acronym" data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym">
@@ -44,24 +44,23 @@ export default class SampleGridItem extends React.Component {
                               e.stopPropagation();
                               return this.props.deleteTask(tag.parent_id, tag.queue_id, tag.sample_id);   
                           }
-                          return <span key={i} className="btn-primary label" style={style} onClick={showForm}>
+                          return (<span key={i} className="btn-primary label" style={style} onClick={showForm}>
                               {tag.label+" "}
                               <i className="fa fa-times" onClick={deleteTask}/>
-                          </span>
+                          </span>);
                       }
                  })}
-               </div>;
+               </div>);
     }
 }
 
 SampleGridItem.propTypes = {
-          onClick: React.PropTypes.func.isRequired,
-          loadable: React.PropTypes.bool.isRequired,
-          tags: React.PropTypes.array,
-          selected: React.PropTypes.bool.isRequired,
-          name: React.PropTypes.string.isRequired,
           acronym: React.PropTypes.string,
+          dm: React.PropTypes.string,
+          loadable: React.PropTypes.bool.isRequired,
           location: React.PropTypes.string,
-          dm: React.PropTypes.string
+          name: React.PropTypes.string.isRequired,
+          onClick: React.PropTypes.func.isRequired,
+          selected: React.PropTypes.bool.isRequired
 }
 
