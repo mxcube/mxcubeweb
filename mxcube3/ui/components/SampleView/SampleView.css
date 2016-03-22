@@ -70,39 +70,69 @@
     margin: 15px !important;
 }
 
-#light-control{
+#zoom-control{
     display: inline;
     width: auto;
     position: relative;
     top: 3px;
 }
 
-#zoom-control{
+.light-control{
     width: auto;
-    display: none;
     -webkit-transform:rotate(-90deg);       
     -moz-transform:rotate(-90deg);
     -o-transform:rotate(-90deg);
     -ms-transform:rotate(-90deg);
     transform:rotate(-90deg);
+    position: absolute;
+    top: -35px;
+    left: 3px;
+    background-color: white;
 }
 
 .light-on{
     color:orange;
 }
 
-#zoom-button:hover  #zoom-control {
+
+
+.light-button{
+     position: relative;
+}
+
+#back-light{
+    display: none;
+}
+
+#back-light:hover{
     display: block;
-    position: absolute;
-    top: -40px;
-    left: 0px;
-    background-color: white;
-    padding:5px;
+}
+
+#back-light-icon:hover + #back-light {
+    display: block;
+}
+
+#front-light{
+    display: none;
+}
+
+#front-light:hover{
+    display: block;
+}
+
+#front-light-icon:hover + #front-light {
+    display: block;
 }
 
 #zoom-button{
     position: relative;
 }
 
+.btn:focus{
+    outline: none !important;
+}
 
+.btn:active{
+    color: grey !important;
+}
 
