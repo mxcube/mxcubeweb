@@ -20,7 +20,7 @@ export default class Main extends React.Component {
                           <div className="col-xs-2">
                             <SampleQueueContainer socket={socket}/>
                           </div>
-                          <div className="col-xs-10">
+                          <div className="col-xs-10 main-page">
                                {this.props.children}
                           </div>
                         </div>
