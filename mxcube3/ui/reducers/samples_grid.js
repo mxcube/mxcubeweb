@@ -5,6 +5,9 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
     case "UPDATE_SAMPLES":
           // should have session samples
           return Object.assign({}, state, { samples_list: action.samples_list });
+    case "ADD_SAMPLE_TO_GRID":
+          // should have session samples
+          return {...state, samples_list: {...state.samples_list , [action.id] : action.data }};
     case "TOGGLE_SELECTED":
       {
           let new_selected = Object.assign({}, state.selected);

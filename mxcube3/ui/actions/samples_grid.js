@@ -20,6 +20,14 @@ export function doGetSamplesList() {
     }
 }
 
+export function doAddSample(id, parameters) {
+    return { 
+        type: "ADD_SAMPLE_TO_GRID", 
+        id :id,
+        data: parameters 
+    }
+}
+
 export function doSetLoadable(loadable) {
     return { type: "SET_LOADABLE", loadable }
 }

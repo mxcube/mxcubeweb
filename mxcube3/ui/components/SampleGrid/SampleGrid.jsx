@@ -47,22 +47,8 @@ export default class SampleGrid extends React.Component {
         var i = 0;
         Object.keys(samples_list).forEach(key => {
             let sample = samples_list[key];
-            let sample_info = sample.sample_info;
-            let acronym = "?";
-            let name = "unnamed";
-
-            try {
-                acronym = sample_info.proteinAcronym;
-                name = sample_info.sampleName;
-                //exp_type is diffraction plan, should be added to Queue
-                //automatically, then it would be displayed here like any
-                //data collection
-                //exp_type = sample_info.experimentType;
-            } catch(e) { 
-                acronym = "Undefined";
-                name = "No name";
-            }
-
+            let acronym = sample.proteinAcronym;
+            let name = sample.sampleName;
             let tags = [];
             for(let id in sample.tasks){
                 tags.push(sample.tasks[id]); //.name);

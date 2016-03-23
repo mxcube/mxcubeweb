@@ -1,4 +1,4 @@
-export function showTaskParametersForm(formName, sample_queue_id, taskData={}, point_queue_id=-1) {
+export function showTaskParametersForm(formName, sample_queue_id=-1, taskData={}, point_queue_id=-1) {
 	return { 
 		type: "SHOW_FORM", 
 		name: formName,

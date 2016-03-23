@@ -45,6 +45,7 @@ export default class CurrentTree extends React.Component {
             <div className="m-tree">
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>{(node ? 'Vial ' + sampleData.id : "No Sample Mounted")}</span>
+                    <i className="fa fa-plus" onClick={() => this.props.showForm("AddSample")}></i>
                      <div className={node && sampleTasks.length ? "pull-right" : "hidden"}>
                         <i className="fa fa-play" onClick={this.runSample}></i>
                         <i className="fa fa-pause"></i>

@@ -3,6 +3,7 @@ import {without, xor} from 'lodash/array';
 import update from 'react/lib/update';
 
 export default (state={
+    automatic: true,
     queue:{},
     current:{node: null, collapsed: false, running: false},
     todo:{nodes: [], collapsed: false},
@@ -13,7 +14,11 @@ export default (state={
     searchString: ""
 }, action) => {
     switch (action.type) {
-
+        case 'SET_AUTOMATIC':
+            return {
+                ...state, 
+                automatic : action.automatic
+            };
         // Adding sample to queue
         case 'ADD_SAMPLE':
             return Object.assign({},state, 
@@ -124,7 +129,7 @@ export default (state={
                 {
                     current: 0,
                     todo: {nodes: [], collapsed: false},
-                    history: []
+                    history: {nodes: [], collapsed: false}
                 });
         case 'QUEUE_STATE':
              return action.queueState;

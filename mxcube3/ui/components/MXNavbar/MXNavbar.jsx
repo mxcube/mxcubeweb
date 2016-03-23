@@ -4,6 +4,15 @@ import { Navbar, NavBrand, Nav, NavItem } from "react-bootstrap"
 
 export default class MXNavbar extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.setMode = this.setMode.bind(this);
+    }
+
+    setMode(){ 
+        this.props.setAutomatic(!this.props.automatic);
+    }
+
     render() {
         let proposal= this.props.userInfo.Proposal;
         let propInfo = (this.props.loggedIn ? proposal.title + " - " + proposal.code : "");
@@ -17,7 +26,8 @@ export default class MXNavbar extends React.Component {
                     </Nav>
                     <Nav right eventKey={0}>
                         <p className="navbar-text" style={{float: 'none', display: 'inline-block'}}>{propInfo}</p>
-                        <a className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={this.props.signOut} href="#/login">Log out</a>
+                        <button className="btn btn-sm btn-info" style={{marginRight: '15px'}} onClick={this.setMode}>{this.props.automatic ? "Automatic" : "Manual"}</button>
+                        <a className="btn btn-sm btn-danger" style={{marginRight: '15px'}} onClick={this.props.signOut} href="#/login">Log out</a>
                  </Nav>
                 </Navbar>)
     }

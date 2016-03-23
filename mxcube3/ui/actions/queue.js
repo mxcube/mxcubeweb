@@ -1,4 +1,13 @@
 import fetch from 'isomorphic-fetch'
+import { doUpdateSamples } from './samples_grid'
+
+
+export function setAutomatic(automatic) {
+	return { 
+		type: "SET_AUTOMATIC", 
+		automatic: automatic
+	}
+}
 
 export function addSample(sample_id, queue_id) {
 	return { 
@@ -77,6 +86,14 @@ export function toggleChecked(queue_id) {
 	}
 }
 
+
+export function sendAutomaticMode(automatic) {
+	return function(dispatch) {
+		dispatch(sendClearQueue());
+		dispatch(setAutomatic(automatic));
+		dispatch(doUpdateSamples({}));
+	}
+}
 
 export function getState() {
 	return function(dispatch) {
