@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import MXNavbar from '../components/MXNavbar/MXNavbar'
 import { doSignOut } from '../actions/login'
-import { sendAutomaticMode } from '../actions/queue'
+import { sendClearQueue } from '../actions/queue'
 
 
 
@@ -11,7 +11,7 @@ class MXNavbarContainer extends React.Component {
 
   render() {
     return (
-        <MXNavbar userInfo={this.props.userInfo} signOut={this.props.signOut} loggedIn={this.props.loggedIn} location={this.props.location} setAutomatic={this.props.setAutomatic} automatic={this.props.mode}/>
+        <MXNavbar userInfo={this.props.userInfo} signOut={this.props.signOut} loggedIn={this.props.loggedIn} location={this.props.location} setAutomatic={this.props.setAutomatic} reset={this.props.reset}/>
     )
   }
 }
@@ -28,7 +28,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         signOut: () => dispatch(doSignOut()),
-        setAutomatic : bindActionCreators(sendAutomaticMode, dispatch)
+        reset : bindActionCreators(sendClearQueue, dispatch)
     }
 }
 

@@ -39,20 +39,19 @@ class SampleGridContainer extends React.Component {
         }
 
         render() {
-          const automatic = this.props.automatic
           const innerSearchIcon = (
             <Button onClick={() => {this.props.filter(this.refs.filter_input.getValue())}}><Glyphicon glyph="search"/></Button>
           );
       
           return (<div className="row">
-            <div className={"navbar-default col-xs-12" + (automatic ? "" : " hidden")}style={{position: 'fixed', zIndex:1, padding: 10}} >
+            <div className="navbar-default col-xs-12" style={{position: 'fixed', zIndex:1, padding: 10}} >
               <div className="row">
                 <div className="col-xs-3">
                     <form className="form-horizontal">
                         <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon} onKeyPress={(target)=> { if (target.charCode==13) { this.props.filter(this.refs.filter_input.getValue()) }}}/>
                     </form>
                 </div>
-                <div className={"col-xs-4"} >
+                <div className={"col-xs-3"} >
                   <ButtonToolbar>
                     <SplitButton bsStyle="primary" pullRight title={this.props.manual_mount ? "Manual mount" : "Check sample changer contents"} onClick={this.props.manual_mount ? undefined : this.props.getSamples} onSelect={this.props.toggleManualMount} id="split-button-sample-changer-selection">
                       <MenuItem eventKey="1">{this.props.manual_mount ? "Sample changer" : "Manual mount"}</MenuItem>
@@ -62,11 +61,11 @@ class SampleGridContainer extends React.Component {
                     </Button>
                   </ButtonToolbar>
                 </div>
-                <div className="col-xs-3">
+                <div className="col-xs-4">
                   <ButtonToolbar>
-                    <Button className="btn-success pull-right" onClick={this.addSamples}>
-                      <Glyphicon glyph="plus" /> Add samples
-                    </Button>
+                    <SplitButton className="pull-right" bsStyle="success" title="Add To Queue" onClick={this.addSamples}  >
+                      <MenuItem eventKey="1" onClick={() => this.props.showTaskParametersForm("AddSample")}>Add Sample Manually</MenuItem>
+                    </SplitButton>
                     <Button className="btn pull-right" onClick={this.props.unselectAll}>Unselect all</Button>
                     <Button className="btn pull-right" onClick={this.props.selectAll}>Select all</Button>
                   </ButtonToolbar>
@@ -78,7 +77,7 @@ class SampleGridContainer extends React.Component {
                   </div>
                </div>
             </div>
-              <div className="col-xs-12" style={automatic ? {paddingTop: 103} : {paddingTop: 5}}>
+              <div className="col-xs-12" style={{paddingTop: 103}}>
                   <SampleGrid samples_list={this.props.samples_list} selected={this.props.selected} toggleSelected={this.props.toggleSelected} filter_text={this.props.filter_text} queue={this.props.queue} showTaskParametersForm={this.props.showTaskParametersForm} deleteTask={this.props.deleteTask}/>
               </div>
           </div>)
@@ -91,9 +90,7 @@ function mapStateToProps(state) {
           queue : state.queue,
           selected : state.samples_grid.selected,
           samples_list: state.samples_grid.samples_list,
-          defaultParameters: state.taskForm.defaultParameters,
-          automatic : state.queue.automatic
-
+          defaultParameters: state.taskForm.defaultParameters
         }
 }
 
