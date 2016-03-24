@@ -44,7 +44,7 @@ class SampleGridContainer extends React.Component {
           );
       
           return (<div className="row">
-            <div className="navbar-default col-xs-12" style={{position: 'fixed', zIndex:1, padding: 10}} >
+            <div className="navbar-default col-xs-12" style={{position: 'fixed', zIndex:1, paddingTop: 10}} >
               <div className="row">
                 <div className="col-xs-3">
                     <form className="form-horizontal">
