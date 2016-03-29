@@ -11,9 +11,9 @@ import json
 import signals
 
 SAMPLE_IMAGE = None
-posId = 0
+CLICK_COUNT = 0
+posId = 1
 
-# ##all drawing to be moved into ~shapehistory...
 def init_signals():
     for signal in signals.microdiffSignals:
         mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
@@ -121,7 +121,7 @@ def getCentringWithId(id):
     """
     try:
         for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos[cpos.keys()[1]] == id:
+            if cpos['posId'] == int(id):
                 resp = jsonify(cpos)
                 resp.status_code = 200
                 return resp
@@ -164,7 +164,7 @@ def updateCentringWithId(id):
     params = json.loads(params)
     try:
         for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos[cpos.keys()[1]] == id:
+            if cpos['posId'] == id:
                 cpos.update(params)
                 resp = jsonify(cpos)
                 resp.status_code = 200
@@ -202,7 +202,7 @@ def moveToCentredPosition(id):
         position: str
     Return: '200' if command issued succesfully, otherwise '409'.
     """
-    motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('name') == id]
+    motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('posId') == int(id)]
     try:
         mxcube.diffractometer.moveToCentredPosition(motorPositions)
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
@@ -403,11 +403,8 @@ def centreAuto():
     """
     logging.getLogger('HWR.MX3').info('[Centring] Auto centring method requested')
     try:
-        centredPos = mxcube.diffractometer.startAutoCentring()
-        if centredPos is not None:
-            return Response(status=200)
-        else:
-            return Response(status=409)
+        mxcube.diffractometer.startAutoCentring()
+        return Response(status=200)  # this only means the call was succesfull
     except Exception:
         return Response(status=409)
 
@@ -419,10 +416,15 @@ def centre3click():
     Return: '200' if command issued succesfully, otherwise '409'. Note that this does not mean\
     if the centring is succesfull or not
     """
+    global CLICK_COUNT
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
     try:
-        currentCentringProcedure = mxcube.diffractometer.start3ClickCentring()
-        return Response(status=200)  # this only means the call was succesfull
+        mxcube.diffractometer.start3ClickCentring()
+        CLICK_COUNT = 0
+        data = {'clickLeft': 3 - CLICK_COUNT}
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp  # this only means the call was succesfull
     except:
         return Response(status=409)
 
@@ -448,6 +450,7 @@ def aClick():
         x, y: int
     Return: '200' if command issued succesfully, otherwise '409'.
     """
+    global CLICK_COUNT
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)
@@ -456,7 +459,11 @@ def aClick():
         try:
             mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
             ## we store the cpos as temporary, only when asked for save it we switch the type
-            return Response(status=200)
+            CLICK_COUNT += 1
+            data = {'clickLeft': 3 - CLICK_COUNT}
+            resp = jsonify(data)
+            resp.status_code = 200
+            return resp
         except Exception:
             return Response(status=409)
     else:
@@ -464,12 +471,11 @@ def aClick():
 
 def waitForCentringFinishes(*args, **kwargs):
     if mxcube.diffractometer.centringStatus["valid"]:
-        centredPosId = 'pos' + str(len(mxcube.diffractometer.savedCentredPos)+1)
         global posId
-        posId += 1
+        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
+
         mxcube.diffractometer.saveCurrentPos()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
-        #motorPositions = mxcube.diffractometer.self.getPositions()
         x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
         data = {'name': centredPosId,
             'posId': posId,
@@ -479,6 +485,7 @@ def waitForCentringFinishes(*args, **kwargs):
             'x': x,
             'y': y 
             }
+        posId += 1
         mxcube.diffractometer.savedCentredPos.append(data)
         mxcube.diffractometer.emit('minidiffStateChanged', (True,))
 
