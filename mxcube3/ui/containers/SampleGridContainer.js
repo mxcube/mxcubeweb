@@ -15,6 +15,7 @@ class SampleGridContainer extends React.Component {
             super(props)
             this.syncSamples = this.syncSamples.bind(this);
             this.addSamples = this.addSamples.bind(this);
+            this.showAddSample = props.showTaskParametersForm.bind(this, "AddSample");
         }
         addSamples() {
             // Loop through all samples, check which was selected and add to the queue. 
@@ -44,7 +45,7 @@ class SampleGridContainer extends React.Component {
           );
       
           return (<div className="row">
-            <div className="navbar-default col-xs-12" style={{position: 'fixed', zIndex:1, paddingTop: 10}} >
+            <div className="navbar-default col-xs-12" style={{position: 'fixed', zIndex:1, paddingTop: 11, marginTop: -12}} >
               <div className="row">
                 <div className="col-xs-3">
                     <form className="form-horizontal">
@@ -53,19 +54,19 @@ class SampleGridContainer extends React.Component {
                 </div>
                 <div className={"col-xs-3"} >
                   <ButtonToolbar>
-                    <SplitButton bsStyle="primary" pullRight title={this.props.manual_mount ? "Manual mount" : "Check sample changer contents"} onClick={this.props.manual_mount ? undefined : this.props.getSamples} onSelect={this.props.toggleManualMount} id="split-button-sample-changer-selection">
-                      <MenuItem eventKey="1">{this.props.manual_mount ? "Sample changer" : "Manual mount"}</MenuItem>
+                    <SplitButton bsStyle="primary" pullRight title={this.props.manualMount ? "Manual Mount" : "Check sample changer contents"} onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples} onSelect={this.props.toggleManualMount} id="split-button-sample-changer-selection">
+                      <MenuItem eventKey="1">{this.props.manualMount ? "Sample changer" : "Manual mount"}</MenuItem>
                     </SplitButton>
-                    <Button className="btn-primary" disabled={this.props.manual_mount ? true : false} onClick={this.syncSamples}>
+                    <Button className="btn-primary" disabled={this.props.manualMount ? true : false} onClick={this.syncSamples}>
                       <Glyphicon glyph="refresh" /> Sync. ISPyB
                     </Button>
                   </ButtonToolbar>
                 </div>
                 <div className="col-xs-4">
                   <ButtonToolbar>
-                    <SplitButton className="pull-right" bsStyle="success" title="Add To Queue" onClick={this.addSamples}  >
-                      <MenuItem eventKey="1" onClick={() => this.props.showTaskParametersForm("AddSample")}>Add Sample Manually</MenuItem>
-                    </SplitButton>
+                    <Button className="btn-success pull-right" onClick={this.addSamples}>
+                      <Glyphicon glyph="plus" /> Add To Queue
+                    </Button>
                     <Button className="btn pull-right" onClick={this.props.unselectAll}>Unselect all</Button>
                     <Button className="btn pull-right" onClick={this.props.selectAll}>Select all</Button>
                   </ButtonToolbar>
@@ -90,7 +91,8 @@ function mapStateToProps(state) {
           queue : state.queue,
           selected : state.samples_grid.selected,
           samples_list: state.samples_grid.samples_list,
-          defaultParameters: state.taskForm.defaultParameters
+          defaultParameters: state.taskForm.defaultParameters,
+          manualMount : state.samples_grid.manual_mount
         }
 }
 
