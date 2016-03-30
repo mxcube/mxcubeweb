@@ -282,7 +282,7 @@ export function sendUnmountSample(queue_id) {
 			if (response.status >= 400) {
 				throw new Error("Server refused to unmount sample");
 			}else {
-				if(getState().samples_grid.manual_mount){
+				if(getState().samples_grid.manualMount.set){
 					dispatch(showTaskParametersForm("AddSample")); 
 				}
 				dispatch(unmountSample(queue_id));

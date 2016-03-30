@@ -100,18 +100,27 @@ export function doAddTaskResult(sample_id, task_queue_id, state) {
             }
 }
 
-export function doToggleManualMount() {
-    return function(dispatch, getState) {
-        const { samples_grid } = getState();
-        dispatch(sendClearQueue());
-        
-        if (samples_grid.manual_mount) {
-            dispatch(doSetManualMount(false));
-            dispatch(doGetSamplesList());
-        } else {
-            dispatch(doSetManualMount(true));
-            dispatch(showTaskParametersForm("AddSample")); 
-        }
+export function sendManualMount(manual) {
+    return function(dispatch) {
+        fetch('mxcube/api/v0.1/diffractometer/use_sc', { 
+            method: 'PUT', 
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({"use_sc": !manual})
+        }).then((response) => {
+            if (response.status >= 400) {
+                throw new Error("Could not add toogle manual mode");
+            }else{
+                dispatch(sendClearQueue());
+                dispatch(doSetManualMount(manual));
+                if (manual) {
+                    dispatch(showTaskParametersForm("AddSample")); 
+                } 
+            }
+        });
     }
 }
             

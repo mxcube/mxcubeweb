@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, doToggleManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid'
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, sendManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
 import { showTaskParametersForm } from '../actions/taskForm'
 import SampleTaskButtons from '../components/SampleGrid/TaskButtons' 
@@ -16,6 +16,7 @@ class SampleGridContainer extends React.Component {
             this.syncSamples = this.syncSamples.bind(this);
             this.addSamples = this.addSamples.bind(this);
             this.showAddSample = props.showTaskParametersForm.bind(this, "AddSample");
+            this.manualMount = this.manualMount.bind(this);
         }
         addSamples() {
             // Loop through all samples, check which was selected and add to the queue. 
@@ -39,6 +40,10 @@ class SampleGridContainer extends React.Component {
             this.props.syncSamples(proposal_id);
         }
 
+        manualMount(){
+          this.props.sendManualMount(!this.props.manualMount);
+        }
+
         render() {
           const innerSearchIcon = (
             <Button onClick={() => {this.props.filter(this.refs.filter_input.getValue())}}><Glyphicon glyph="search"/></Button>
@@ -54,21 +59,21 @@ class SampleGridContainer extends React.Component {
                 </div>
                 <div className={"col-xs-3"} >
                   <ButtonToolbar>
-                    <SplitButton bsStyle="primary" pullRight title={this.props.manualMount ? "Manual Mount" : "Check sample changer contents"} onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples} onSelect={this.props.toggleManualMount} id="split-button-sample-changer-selection">
+                    <SplitButton bsStyle="primary" pullRight title={this.props.manualMount ? "Manual Mount" : "Check sample changer contents"} onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples} onSelect={this.manualMount} id="split-button-sample-changer-selection">
                       <MenuItem eventKey="1">{this.props.manualMount ? "Sample changer" : "Manual mount"}</MenuItem>
                     </SplitButton>
-                    <Button className="btn-primary" disabled={this.props.manualMount ? true : false} onClick={this.syncSamples}>
+                    <Button className="btn-primary" disabled={this.props.manualMount} onClick={this.syncSamples}>
                       <Glyphicon glyph="refresh" /> Sync. ISPyB
                     </Button>
                   </ButtonToolbar>
                 </div>
                 <div className="col-xs-4">
                   <ButtonToolbar>
-                    <Button className="btn-success pull-right" onClick={this.addSamples}>
+                    <Button className="btn-success pull-right" onClick={this.addSamples} disabled={this.props.manualMount}>
                       <Glyphicon glyph="plus" /> Add To Queue
                     </Button>
-                    <Button className="btn pull-right" onClick={this.props.unselectAll}>Unselect all</Button>
-                    <Button className="btn pull-right" onClick={this.props.selectAll}>Select all</Button>
+                    <Button className="btn pull-right" onClick={this.props.unselectAll} disabled={this.props.manualMount}>Unselect all</Button>
+                    <Button className="btn pull-right" onClick={this.props.selectAll} disabled={this.props.manualMount}>Select all</Button>
                   </ButtonToolbar>
                 </div>
               </div>
@@ -92,7 +97,7 @@ function mapStateToProps(state) {
           selected : state.samples_grid.selected,
           samples_list: state.samples_grid.samples_list,
           defaultParameters: state.taskForm.defaultParameters,
-          manualMount : state.samples_grid.manual_mount
+          manualMount : state.samples_grid.manualMount.set
         }
 }
 
@@ -105,7 +110,7 @@ function mapDispatchToProps(dispatch) {
         filter: (filter_text) => dispatch(doFilter(filter_text)),
         syncSamples: (proposal_id) => dispatch(doSyncSamples(proposal_id)),
         addSampleToQueue: (id) => dispatch(sendAddSample(id)),
-        toggleManualMount: (manual) => dispatch(doToggleManualMount(manual)),
+        sendManualMount: (manual) => dispatch(sendManualMount(manual)),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
         showTaskParametersForm: bindActionCreators(showTaskParametersForm, dispatch),
         deleteTask: (parent_id, queue_id, sample_id) => dispatch(sendDeleteSampleTask(parent_id, queue_id, sample_id))

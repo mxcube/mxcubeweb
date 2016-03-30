@@ -27,7 +27,7 @@ function mapStateToProps(state) {
           checked: state.queue.checked,
           lookup: state.queue.lookup,
           select_all: state.queue.selectAll,
-          mounted : state.samples_grid.manual_mount
+          mounted : state.samples_grid.manualMount.set
     }
 }
 
