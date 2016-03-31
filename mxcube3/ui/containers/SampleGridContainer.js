@@ -102,7 +102,8 @@ function mapStateToProps(state) {
           selected : state.samples_grid.selected,
           samples_list: state.samples_grid.samples_list,
           defaultParameters: state.taskForm.defaultParameters,
-          manualMount : state.samples_grid.manualMount.set
+          manualMount : state.samples_grid.manualMount.set,
+          filter_text : state.samples_grid.filter_text
         }
 }
 
