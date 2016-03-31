@@ -70,6 +70,53 @@ def loginInfo():
                     }
                    )
 
+@mxcube.route("/mxcube/api/v0.1/initialstatus", methods=["GET"])
+def get_initial_state():
+    """
+    Get status, positions of moveables, sample image data ...
+    Args: None
+    Return: {   Moveable1:{'Status': status, 'position': position},
+               ...,
+                MoveableN:{'Status': status, 'position': position}
+            } plus status code 200
+        status: str
+        position: float
+        moveables: 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
+
+    """
+    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'] 
+    #'Kappa', 'Kappa_phi',
+    data = {}
+    try:
+        for mot in motors:
+            motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
+            if motor_hwobj is not None:
+                if mot == 'Zoom':
+                    pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
+                    status = "unknown"
+                elif mot == 'BackLightSwitch' or mot == 'FrontLightSwitch':
+                    states = {"in": 1, "out": 0}
+                    pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
+                    # 'in', 'out'
+                    status = pos 
+                else:
+                    try:
+                        pos = motor_hwobj.getPosition()
+                        status = motor_hwobj.getState()
+                    except Exception:
+                        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
+                data[mot] = {'Status': status, 'position': pos}
+        data['Camera'] = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
+            'imageWidth':  mxcube.diffractometer.image_width,
+            'imageHeight':  mxcube.diffractometer.image_height,
+            }
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get all motor  status')
+        return Response(status=409)
+
 ### TODO: when we have the main login page this method should redirect to '/'
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
