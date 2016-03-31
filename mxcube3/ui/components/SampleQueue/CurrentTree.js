@@ -11,7 +11,6 @@ export default class CurrentTree extends React.Component {
 
  constructor(props) {
         super(props);
-        console.log(props);
         this.moveCard = this.moveCard.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
         this.collapse = props.collapse.bind(this,"current");
