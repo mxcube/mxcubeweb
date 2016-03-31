@@ -73,15 +73,11 @@ render() {
 
                 <button type="button" data-toggle="tooltip"  title="Backlight On/Off" className="btn btn-link pull-center light-button">
                     <i id="back-light-icon" className={"fa fa-2x fa-fw fa fa-lightbulb-o" + (this.props.sampleViewState.lightOn.back ? " button-active" : "")} onClick={this.toogleBackLight}></i>
-                    <div id="back-light">
-                        <input className="bar light-control" type="range" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.BackLight.position} onChange={this.setLigthStrengthBack} />
-                    </div>
+                    <input type="number" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.BackLight.position} onChange={this.setLigthStrengthBack} />
                 </button>
                 <button type="button" data-toggle="tooltip"  title="Frontlight On/Off" className="btn btn-link pull-center light-button">
                     <i id="front-light-icon" className={"fa fa-2x fa-fw fa fa-lightbulb-o" + (this.props.sampleViewState.lightOn.front ? " button-active" : "")} onClick={this.toogleFrontLight}></i>
-                    <div id="front-light">
-                        <input className="bar light-control" type="range" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.FrontLight.position} onChange={this.setLigthStrengthFront} />
-                    </div>                   
+                    <input type="number" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.FrontLight.position} onChange={this.setLigthStrengthFront} />                 
                 </button>                                
 
             </div>
