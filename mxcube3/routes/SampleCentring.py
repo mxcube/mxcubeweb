@@ -21,7 +21,6 @@ def init_signals():
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
     mxcube.diffractometer.savedCentredPos = []
-    signals.centredPos = mxcube.diffractometer.savedCentredPos
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
@@ -144,7 +143,7 @@ def saveCentringWithId(posid):
             pos.update({'selected': False})
         #search for the temp point
         for pos in mxcube.diffractometer.savedCentredPos:
-            if pos['posId'] == int(posid) and pos['type'] == 'TMP':
+            if pos['type'] == 'TMP':
                 pos.update({'type': 'SAVED', 'selected': True})
                 resp = jsonify(pos)
                 resp.status_code = 200
@@ -471,12 +470,28 @@ def aClick():
 
 def waitForCentringFinishes(*args, **kwargs):
     if mxcube.diffractometer.centringStatus["valid"]:
-        global posId
-        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
-
         mxcube.diffractometer.saveCurrentPos()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
         x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
+        # only store one temp point so override if any
+        for pos in mxcube.diffractometer.savedCentredPos:
+            if pos['type'] == 'TMP':
+                index = mxcube.diffractometer.savedCentredPos.index(pos)
+                data = {'name': pos['name'],
+                    'posId': pos['posId'],
+                    'motorPositions': motorPositions,
+                    'selected': True,
+                    'type': 'TMP',
+                    'x': x,
+                    'y': y 
+                    }
+                mxcube.diffractometer.savedCentredPos[index]= data
+                mxcube.diffractometer.emit('minidiffStateChanged', (True,))
+                return
+
+        #if no temp point found, let's create the first one
+        global posId
+        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
         data = {'name': centredPosId,
             'posId': posId,
             'motorPositions': motorPositions,
@@ -488,7 +503,6 @@ def waitForCentringFinishes(*args, **kwargs):
         posId += 1
         mxcube.diffractometer.savedCentredPos.append(data)
         mxcube.diffractometer.emit('minidiffStateChanged', (True,))
-
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
 def acceptCentring():
