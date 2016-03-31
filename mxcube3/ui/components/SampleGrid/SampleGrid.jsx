@@ -30,8 +30,8 @@ export default class SampleGrid extends React.Component {
 
     filter(key){
       let sampleData = this.props.samples_list[key];
-      let sampleFilter = sampleData.name+" "+sampleData.acronym+" "+sampleData.code+" "+sampleData.location;
-      return sampleFilter.includes(this.props.filter_text);
+      let sampleFilter = (sampleData.sampleName+" "+sampleData.proteinAcronym+" "+sampleData.code+" "+sampleData.location).toLowerCase();
+      return sampleFilter.includes(this.props.filter_text.toLowerCase());
     }    
 
     render() {
