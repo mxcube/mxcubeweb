@@ -17,6 +17,7 @@ class SampleGridContainer extends React.Component {
             this.addSamples = this.addSamples.bind(this);
             this.showAddSample = props.showTaskParametersForm.bind(this, "AddSample");
             this.manualMount = this.manualMount.bind(this);
+            this.filterSampleGrid = this.filterSampleGrid.bind(this);
         }
         addSamples() {
             // Loop through all samples, check which was selected and add to the queue. 
@@ -44,9 +45,13 @@ class SampleGridContainer extends React.Component {
           this.props.sendManualMount(!this.props.manualMount);
         }
 
+        filterSampleGrid(option){
+             this.props.filter(option.target.value)
+        }
+
         render() {
           const innerSearchIcon = (
-            <Button onClick={() => {this.props.filter(this.refs.filter_input.getValue())}}><Glyphicon glyph="search"/></Button>
+            <Button><Glyphicon glyph="search"/></Button>
           );
       
           return (<div className="row">
@@ -54,7 +59,7 @@ class SampleGridContainer extends React.Component {
               <div className="row">
                 <div className="col-xs-3">
                     <form className="form-horizontal">
-                        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon} onKeyPress={(target)=> { if (target.charCode==13) { this.props.filter(this.refs.filter_input.getValue()) }}}/>
+                        <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon} onChange={this.filterSampleGrid}/>
                     </form>
                 </div>
                 <div className={"col-xs-3"} >
