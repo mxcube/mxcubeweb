@@ -166,7 +166,7 @@ def queueSaveState():
 
     sampleGridState = session.get("sampleGridState")
     #queueState = jsonpickle.encode(mxcube.queue) #.update(params['queueState'])
-    
+
     session["queueList"] = jsonpickle.encode(mxcube.queue)
     sampleGridState.update(params['sampleGridState'])
     session["sampleGridState"] = sampleGridState
@@ -216,7 +216,7 @@ def queueLoadState():
 #     resp = jsonify(jsonParser(True))
 #     resp.status_code = 200
 #     return resp
-   
+
 @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
 def getCurrentEntry():
     """Queue: get current entry. NOT IMPLEMENTED
@@ -312,16 +312,25 @@ def addSample():
     Add a sample to the queue with an id in the form of '1:01'
     Args: id, current id of the sample to be added
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
-       data ={"QueueId": newId, "SampleId": sampleId}, where sampleId is the same as the caller id (eg '1:01')
+       data ={"QueueId": newId,
+              "SampleId": sampleId, # sampleId is the same as the caller id (eg '1:01')
+              }
     '''
     params = request.data
     params = json.loads(params)
     sampleId = params['SampleId']
+
     sampleNode = qmo.Sample()
     sampleNode.loc_str = sampleId
     sampleNode.lims_id = None
     sampleNode.lims_group_id = None
-    basket_number, sample_number = sampleId.split(':')
+    basket_number=None
+
+    if mxcube.diffractometer.use_sc:    # use sample changer
+        basket_number, sample_number = sampleId.split(':')
+    else:
+        sample_number = sampleId
+
     sampleNode.location = (basket_number, sample_number)
     sampleEntry = qe.SampleQueueEntry()
     sampleEntry.set_data_model(sampleNode)
@@ -451,7 +460,7 @@ def deleteSampleOrMethod(id):
             nodeToRemove = nodeToRemove._node_id
         else:  # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
             mxcube.queue.queue_hwobj.dequeue(entryToRemove)
-        
+
         session["queueList"] = jsonpickle.encode(mxcube.queue)
 
         return Response(status=200)
@@ -550,7 +559,7 @@ def addCharacterisation(id):
             for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that cpos
                 if cpos['posId'] == int(params['point']):
                     characNode.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
-           
+
         node = mxcube.queue.get_node(int(id))  # this is a sampleNode
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node) # this is the corresponding sampleEntry
 
@@ -600,12 +609,12 @@ def addDataCollection(id):
             for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
                 if cpos['posId'] == int(params['point']):
                     colNode.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
-        
+
         colEntry.set_data_model(colNode)
 
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-        
+
         task1Id = mxcube.queue.add_child_at_id(int(id), taskNode1)
         entry.enqueue(task1Entry)
 
@@ -659,7 +668,7 @@ def updateMethod(sampleid, methodid):
         elif isinstance(methodNode, qmo.SampleCentring):
             pass
         ####
-        
+
         session["queueList"] = jsonpickle.encode(mxcube.queue)
 
         logging.getLogger('HWR').info('[QUEUE] method updated')
@@ -729,12 +738,12 @@ def serialize():
         return Response(status=409)
 
 def jsonParser(fromSession = False):
-    """ 
+    """
       {
       "1": {
-        "QueueId": 1, 
-        "SampleId": "1:01", 
-        "checked": 0, 
+        "QueueId": 1,
+        "SampleId": "1:01",
+        "checked": 0,
         "methods": []
           }
        }

@@ -243,7 +243,7 @@ def moveZoomMotor():
     try:
         logging.getLogger('HWR').info("Changing zoom level to: %s" %newPos)
         zoomMotor.moveToPosition(zoomLevels[int(newPos)])
-        scales = mxcube.diffractometer.getCalibrationData(0)
+        scales = mxcube.diffractometer.get_pixels_per_mm()
         resp = jsonify({'pixelsPerMm': [scales[0],scales[1]]})
         resp.status_code = 200
         return resp
@@ -474,7 +474,7 @@ def waitForCentringFinishes(*args, **kwargs):
         global posId
         centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
 
-        mxcube.diffractometer.saveCurrentPos()
+        mxcube.diffractometer.accept_centring()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
         x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
         data = {'name': centredPosId,
