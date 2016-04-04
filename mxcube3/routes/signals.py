@@ -3,8 +3,6 @@ from mxcube3 import socketio
 from mxcube3 import app as mxcube
 import time
 
-centredPos = []
-
 @socketio.on('connect', namespace='/hwr')
 def connect():
     # this is needed to create the namespace, and the actual connection
@@ -51,7 +49,7 @@ def signalCallback(*args, **kwargs):
         else:
             if signal == 'minidiffStateChanged':
                 aux = {}
-                for p in centredPos:
+                for p in mxcube.diffractometer.savedCentredPos:
                     aux.update({p['posId']:p})
                 msg = {'data': aux, 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
             else:
@@ -59,7 +57,7 @@ def signalCallback(*args, **kwargs):
     else:
         if signal == 'minidiffStateChanged':
             aux = {}
-            for p in centredPos:
+            for p in mxcube.diffractometer.savedCentredPos:
                 aux.update({p['posId']:p})
             msg = {'data': aux, 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
         else:
