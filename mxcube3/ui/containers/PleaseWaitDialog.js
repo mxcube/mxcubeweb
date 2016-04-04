@@ -21,7 +21,7 @@ export default class PleaseWaitDialog extends React.Component {
 
 function mapStateToProps(state) {
         return { 
-            loading :state.general.loading
+            loading : state.general.loading
         }
 }
 

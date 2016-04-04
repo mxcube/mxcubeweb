@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import { sendClearQueue, sendRunSample, sendAddSample, sendMountSample } from './queue'
 import { showTaskParametersForm } from './taskForm'
-import { setLoading } from './general'
+import { setLoading, showErrorPanel } from './general'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -113,7 +113,7 @@ export function sendManualMount(manual) {
             body: JSON.stringify({"use_sc": !manual})
         }).then((response) => {
             if (response.status >= 400) {
-                throw new Error("Could not add toogle manual mode");
+                dispatch(showErrorPanel(true, "Could not toogle manual mode"))
             }else{
                 dispatch(sendClearQueue());
                 dispatch(doSetManualMount(manual));

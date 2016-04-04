@@ -3,7 +3,7 @@ import SampleQueueContainer from '../containers/SampleQueueContainer'
 import MXNavbarContainer from '../containers/MXNavbarContainer'
 import TaskContainer from '../containers/TaskContainer'
 import PleaseWaitDialog from '../containers/PleaseWaitDialog'
-import { ErrorNotificationPanel } from './Logging'
+import ErrorNotificationPanel from '../containers/ErrorNotificationPanel'
 import './Main.css'
 import io from 'socket.io-client';
 const socket = io.connect('http://' + document.domain + ':' + location.port+"/hwr");

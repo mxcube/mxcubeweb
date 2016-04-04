@@ -1,38 +1,5 @@
 import React from 'react';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import { Modal, Alert } from "react-bootstrap";
-
-export class ErrorNotificationPanel extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { error: null };
-        window.error_notification = this;
-    }
-
-    notify_noNavBar(err) {
-        this.setState({error: err});
-    }
-
-    clear_noNavBar() {
-        this.setState({error: null});
-    }
-    notify(err) {
-        document.getElementsByTagName("nav")[0].classList.remove("navbar-fixed-top")
-        this.setState({error: err});
-    }
-
-    clear() {
-        this.setState({error: null});
-        document.getElementsByTagName("nav")[0].classList.add("navbar-fixed-top")
-    }
-
-    render() {
-        return (<Modal show={this.state.error} onHide={this.clear.bind(this)}>
-            <div style={{marginBottom: '-20px'}}><Alert bsStyle="danger" onDismiss={this.clear.bind(this)}>
-                <strong>Error:&nbsp;</strong>{this.state.error}
-            </Alert></div></Modal>);
-    }    
-}
 
 export class Logging extends React.Component {
     constructor(props) {

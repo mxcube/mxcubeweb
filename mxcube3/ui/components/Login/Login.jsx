@@ -3,7 +3,6 @@ import React from 'react'
 import { Input, ButtonInput } from "react-bootstrap";
 import './Login.css';
 import {reduxForm} from 'redux-form';
-import { ErrorNotificationPanel } from '../Logging'
 
 class Login extends React.Component {
   constructor(props) {
@@ -41,7 +40,6 @@ class Login extends React.Component {
 
       return (
           <div>
-          <ErrorNotificationPanel/>
           <div className="container">
           <div className="row row-centered">
           <div>

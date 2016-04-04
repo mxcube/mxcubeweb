@@ -10,6 +10,12 @@ export function setLoading(loading) {
     }
 }
 
+export function showErrorPanel(show, message="") {
+    return { 
+      type: "SHOW_ERROR_PANEL", show , message
+    }
+}
+
 export function getInitialStatus() {
   return function(dispatch) {
     fetch('mxcube/api/v0.1/initialstatus', { 
