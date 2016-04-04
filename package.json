@@ -41,7 +41,7 @@
     "redux-form": "^3.1.7",
     "redux-logger": "^2.0.4",
     "redux-thunk": "^1.0.0",
-    "socket.io-client": "0.9.16",
+    "socket.io-client": "1.4.5",
     "style-loader": "0.12.3",
     "underscore": "^1.8.3",
     "x-editable": "1.5.1"
