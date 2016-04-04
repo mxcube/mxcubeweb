@@ -46,19 +46,11 @@ def use_sc():
     params = json.loads(params)
     use_sc = params['use_sc']
     try:
-        if use_sc:
-            # to make sure that the TransferMode in MD is set to SAMPLE_CHANGER
-            transfer_mode = mxcube.diffractometer.get_transfer_mode()
-            print transfer_mode
-            if transfer_mode != "SAMPLE_CHANGER":
-                logging.getLogger('HWR').error("Set the diffractometer TransferMode to SAMPLE_CHANGER first!!")
-                resp.status_code = 409
-                return resp
-            else:
-                mxcube.diffractometer.set_use_sc (True)
+        if mxcube.diffractometer.set_use_sc(use_sc):
+            logging.getLogger('HWR').info("Set use_sample_changer mode to %s" % use_sc)
+            return Response(status=200)
         else:
-            mxcube.diffractometer.set_use_sc (False)
-        return Response(status=200)
+            return Response(status=409)
     except Exception:
         logging.getLogger('HWR').exception('Could not set use_sample_changer mode')
         return Response(status=409)
