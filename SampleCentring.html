@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="MXCuBE3 0.1 documentation" href="index.html" />
-    <link rel="next" title="Sample API" href="Sample.html" />
+    <link rel="next" title="Queue API" href="Queue.html" />
     <link rel="prev" title="Welcome to MXCuBE3’s documentation!" href="index.html" />
    
   
@@ -40,479 +40,448 @@
             
   <div class="section" id="sample-centring-api">
 <h1>Sample Centring API<a class="headerlink" href="#sample-centring-api" title="Permalink to this headline">¶</a></h1>
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-centring-start3click">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/start3click</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-centring-start3click" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Start 3 click centring procedure</dt>
-<dd><dl class="first last docutils">
-<dt>Args:</dt>
-<dd>None</dd>
-<dt>Return:</dt>
-<dd><p class="first">&#8216;True&#8217; if command issued succesfully, otherwise &#8216;False&#8217;</p>
-<div class="last admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This does not mean if the centring is succesfull or not</p>
-</div>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-centring-startauto">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/startauto</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-centring-startauto" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Start automatic (lucid) centring procedure</dt>
-<dd><dl class="first last docutils">
-<dt>Args: </dt>
-<dd>None</dd>
-<dt>Return:</dt>
-<dd><p class="first">&#8216;True&#8217; if command issued succesfully, otherwise &#8216;False&#8217;</p>
-<div class="last admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This does not mean if the centring is succesfull or not</p>
-</div>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-centring-click">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/click</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-centring-click" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>The 3-click method need the input from the user for the centring procedure</dt>
-<dd><dl class="first last docutils">
-<dt>Args: </dt>
-<dd><p class="first">positions of the clicks, append to the url &#8221;?clickPos={&#8220;x&#8221;:&#8217;+x+&#8217;,&#8221;y&#8221;:&#8217;+ y+&#8217;}&#8221;</p>
-<p class="last">x, y: int</p>
-</dd>
-<dt>Return:</dt>
-<dd>&#8216;True&#8217; if command issued succesfully, otherwise &#8216;False&#8217;.</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="get">
-<dt id="get--mxcube-api-v0.1-samplecentring-camera-unsubscribe">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samplecentring/camera/unsubscribe</code><a class="headerlink" href="#get--mxcube-api-v0.1-samplecentring-camera-unsubscribe" title="Permalink to this definition">¶</a></dt>
+<dt id="get--mxcube-api-v0.1-sampleview-camera-subscribe">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/sampleview/camera/subscribe</code><a class="headerlink" href="#get--mxcube-api-v0.1-sampleview-camera-subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Subscribe to the camera streaming</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">response:</th><td class="field-body">image as html Content-type</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-camera-unsubscribe">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/camera/unsubscribe</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-camera-unsubscribe" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>SampleCentring: unsubscribe from the camera streaming</dt>
-<dd><dl class="first last docutils">
-<dt>Args: </dt>
-<dd>None</dd>
-<dt>Return:</dt>
-<dd>&#8216;True&#8217; if streaming stopped succesfully, otherwise &#8216;False&#8217;.</dd>
-</dl>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samplecentring-camera-subscribe">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samplecentring/camera/subscribe</code><a class="headerlink" href="#get--mxcube-api-v0.1-samplecentring-camera-subscribe" title="Permalink to this definition">¶</a></dt>
-<dd><p>SampleCentring: subscribe to the camera streaming, used in img src tag</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>None</dd>
-<dt>Return:</dt>
-<dd>image as html Content-type...</dd>
 </dl>
 </dd></dl>
 
 <dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-snapshot">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/snapshot</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-snapshot" title="Permalink to this definition">¶</a></dt>
+<dt id="put--mxcube-api-v0.1-sampleview-camera-save">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/camera/save</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-camera-save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save snapshot of the sample view
+data = {generic_data, &#8220;Path&#8221;: path} # not sure if path should be available, or directly use the user/proposal path
+Return: &#8216;True&#8217; if command issued succesfully, otherwise &#8216;False&#8217;.</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-sampleview-camera">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/sampleview/camera</code><a class="headerlink" href="#get--mxcube-api-v0.1-sampleview-camera" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>Save snapshot of the sample view</dt>
-<dd><dl class="first last docutils">
-<dt>Args:</dt>
-<dd>None
-data = {generic_data, &#8220;Path&#8221;: path} # not sure if path should be available, or directly use the user/proposal path</dd>
-<dt>Return:</dt>
-<dd>&#8216;True&#8217; if command issued succesfully, otherwise &#8216;False&#8217;.</dd>
-</dl>
-</dd>
+<dt>Get size of the image of the diffractometer</dt>
+<dd>:response Content-type:application/json, example: {  &#8220;imageHeight&#8221;: 576, &#8220;imageWidth&#8221;: 768, &#8220;pixelsPerMm&#8221;: [1661.1295681063123, 1661.1295681063123]}
+:statuscode: 200: no error
+:statuscode: 409: error</dd>
 </dl>
 </dd></dl>
 
 <dl class="get">
-<dt id="get--mxcube-api-v0.1-samplecentring-status">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samplecentring/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-samplecentring-status" title="Permalink to this definition">¶</a></dt>
+<dt id="get--mxcube-api-v0.1-sampleview-centring-(id)">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--mxcube-api-v0.1-sampleview-centring-(id)" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>SampleCentring: get generic status, positions of moveables ...</dt>
-<dd><dl class="first last docutils">
-<dt>Args:</dt>
-<dd>None</dd>
-<dt>Return:</dt>
-<dd><dl class="first docutils">
-<dt>{   Moveable1:{&#8216;Status&#8217;: status, &#8216;position&#8217;: position},</dt>
-<dd>...,  
-MoveableN:{&#8216;Status&#8217;: status, &#8216;position&#8217;: position}</dd>
-</dl>
-<p>}</p>
-<p>status: str, position: float</p>
-<p class="last">moveables: &#8216;Kappa&#8217;, &#8216;Omega&#8217;, &#8216;Phi&#8217;, &#8216;Zoom&#8217;, &#8216;Light&#8217;</p>
+<dt>Get centring point data of the given centred position</dt>
+<dd><table class="first docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">parameter id:</th><td class="field-body">identifier of the stored centred position, integer</td>
+</tr>
+</tbody>
+</table>
+<p class="last">:response Content-type:application/json, example: {&#8220;motorPositions&#8221;: {&#8220;beam_x&#8221;: 0.0, &#8220;beam_y&#8221;: 0.0, &#8220;focus&#8221;: -0.642, &#8220;kappa&#8221;: null, &#8220;kappa_phi&#8221;: null, &#8220;phi&#8221;: 5.314e-05, &#8220;phiy&#8221;: -0.145, &#8220;phiz&#8221;: 0.0768, &#8220;sampx&#8221;: -0.0918, &#8220;sampy&#8221;: -0.0465, &#8220;zoom&#8221;: 23487.5 }, &#8220;name&#8221;: &#8220;pos1&#8221;, &#8220;posId&#8221;: 1, &#8220;selected&#8221;: true, &#8220;type&#8221;: &#8220;SAVED&#8221;, &#8220;x&#8221;: 200.641, &#8220;y&#8221;: 288.197}
+:statuscode: 200: no error
+:statuscode: 409: error</p>
 </dd>
 </dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-beamline-status">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/beamline/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-beamline-status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Beamline: get beamline generic status (energy, resolution ...)
-data = {generic_data}
-return_data = { generic_data, {&#8220;moveable1&#8221;:position}, ..., {&#8220;moveableN&#8221;:position} , xxxx }</p>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samples">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples</code><a class="headerlink" href="#get--mxcube-api-v0.1-samples" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the sample list already on the queue
-data = {generic_data}
-return_data={&#8220;SampleId1&#8221;:id, ..., &#8220;SampleIdN&#8221;:id}</p>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samples-(id)-collections-(colid)-status">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><code class="descname">/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections-(colid)-status" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the status of the collection with id:&#8221;id&#8221;, (running, stopped, cancelled, finished, ...)
-data={generic_data},
-return_data={&#8220;CollectionId&#8221;: id, &#8220;Status&#8221;: status}</p>
 </dd></dl>
 
 <dl class="post">
-<dt id="post--mxcube-api-v0.1-samples-(id)-collections-(colid)-mode">
-<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><code class="descname">/mode</code><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(id)-collections-(colid)-mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define the collection method, standard collection, helical, mesh
-data={generic_data, &#8220;Method&#8221;:method}
-return_data={&#8220;result&#8221;: True/False}
-OBSOLETE BY ADD COLLECTION</p>
+<dt id="post--mxcube-api-v0.1-sampleview-centring-(posid)">
+<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/</code><span class="sig-paren">(</span><em>posid</em><span class="sig-paren">)</span><a class="headerlink" href="#post--mxcube-api-v0.1-sampleview-centring-(posid)" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Store the current temporary centring position in the server, a valid centring has to be done before this call, otherwise there will not be any temporary centred position.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">parameter posid:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">any integer, only here for consistency</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">application/json, example: {&#8220;motorPositions&#8221;: {&#8220;beam_x&#8221;: 0.0, &#8220;beam_y&#8221;: 0.0, &#8220;focus&#8221;: -0.642, &#8220;kappa&#8221;: null, &#8220;kappa_phi&#8221;: null, &#8220;phi&#8221;: 5.314e-05, &#8220;phiy&#8221;: -0.145, &#8220;phiz&#8221;: 0.0768, &#8220;sampx&#8221;: -0.0918, &#8220;sampy&#8221;: -0.0465, &#8220;zoom&#8221;: 23487.5 }, &#8220;name&#8221;: &#8220;pos1&#8221;, &#8220;posId&#8221;: 1, &#8220;selected&#8221;: true, &#8220;type&#8221;: &#8220;SAVED&#8221;, &#8220;x&#8221;: 200.641, &#8220;y&#8221;: 288.197}</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="post">
-<dt id="post--mxcube-api-v0.1-samples-(sampleid)-collections-(colid)-run">
-<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>sampleid</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><code class="descname">/run</code><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(sampleid)-collections-(colid)-run" title="Permalink to this definition">¶</a></dt>
-<dd><p>run the collection with id:&#8221;colid&#8221;
-data={generic_data},
-return_data={&#8220;CollectionId&#8221;: id, &#8220;Status&#8221;: status}</p>
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-centring-(id)">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-(id)" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Update the given centred position.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">parameter id:</th><td class="field-body">centred position identifier, integer</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">request Content-type:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">application/json, an object containing the modified parameter(s)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">application/json, example: {&#8220;motorPositions&#8221;: {&#8220;beam_x&#8221;: 0.0, &#8220;beam_y&#8221;: 0.0, &#8220;focus&#8221;: -0.642, &#8220;kappa&#8221;: null, &#8220;kappa_phi&#8221;: null, &#8220;phi&#8221;: 5.314e-05, &#8220;phiy&#8221;: -0.145, &#8220;phiz&#8221;: 0.0768, &#8220;sampx&#8221;: -0.0918, &#8220;sampy&#8221;: -0.0465, &#8220;zoom&#8221;: 23487.5 }, &#8220;name&#8221;: &#8220;pos1&#8221;, &#8220;posId&#8221;: 1, &#8220;selected&#8221;: true, &#8220;type&#8221;: &#8220;SAVED&#8221;, &#8220;x&#8221;: 200.641, &#8220;y&#8221;: 288.197}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="delete">
-<dt id="delete--mxcube-api-v0.1-samplecentring-centring-(id)-delete">
-<code class="descname">DELETE </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/delete</code><a class="headerlink" href="#delete--mxcube-api-v0.1-samplecentring-centring-(id)-delete" title="Permalink to this definition">¶</a></dt>
+<dt id="delete--mxcube-api-v0.1-sampleview-centring-(posid)">
+<code class="descname">DELETE </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/</code><span class="sig-paren">(</span><em>posid</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--mxcube-api-v0.1-sampleview-centring-(posid)" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>Delete centring position with name &lt;id&gt;</dt>
-<dd><dl class="first last docutils">
-<dt>Args: id, the name of the position to be deleted</dt>
-<dd>id: str</dd>
-<dt>Return:</dt>
-<dd>&#8216;True&#8217; if deleted succesfully, otherwise &#8216;False&#8217;.</dd>
-</dl>
+<dt>Delete the given centred position.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">parameter id:</th><td class="field-body">centred position identifier, integer</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">application/json, deleted centred position, example: {&#8220;motorPositions&#8221;: {&#8220;beam_x&#8221;: 0.0, &#8220;beam_y&#8221;: 0.0, &#8220;focus&#8221;: -0.642, &#8220;kappa&#8221;: null, &#8220;kappa_phi&#8221;: null, &#8220;phi&#8221;: 5.314e-05, &#8220;phiy&#8221;: -0.145, &#8220;phiz&#8221;: 0.0768, &#8220;sampx&#8221;: -0.0918, &#8220;sampy&#8221;: -0.0465, &#8220;zoom&#8221;: 23487.5 }, &#8220;name&#8221;: &#8220;pos1&#8221;, &#8220;posId&#8221;: 1, &#8220;selected&#8221;: true, &#8220;type&#8221;: &#8220;SAVED&#8221;, &#8220;x&#8221;: 200.641, &#8220;y&#8221;: 288.197}</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-centring-(id)-rename">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/rename</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-centring-(id)-rename" title="Permalink to this definition">¶</a></dt>
+<dt id="put--mxcube-api-v0.1-sampleview-centring-(id)-moveto">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/moveto</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-(id)-moveto" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>Rename a stored centring position</dt>
-<dd><dl class="first last docutils">
-<dt>Args:</dt>
-<dd>id, current name of the position to be renamed</dd>
-<dt>Return:</dt>
-<dd><p class="first">newname if renamed succesfully, otherwise &#8216;False&#8217;.</p>
-<p class="last">newname: str</p>
-</dd>
-</dl>
+<dt>Move to the given centred position.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">parameter id:</th><td class="field-body">centred position identifier, integer</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-centring-(id)-save">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/save</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-centring-(id)-save" title="Permalink to this definition">¶</a></dt>
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-sampleview-centring">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/sampleview/centring</code><a class="headerlink" href="#get--mxcube-api-v0.1-sampleview-centring" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>Store the current centring position in the server, there is not limit on how many positions can be stored</dt>
-<dd><dl class="first last docutils">
-<dt>Args: </dt>
-<dd>id, for consistency but not used</dd>
-<dt>Return:</dt>
-<dd><p class="first">New centring position name (pos1, pos2...) if the current centring position is retrieved and stored succesfully, otherwise &#8216;False&#8217;.</p>
-<p class="last">In any case: str</p>
-</dd>
-</dl>
+<dt>Retrieve all the stored centred positions.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">application/json, all the stored centred positions, example:</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-centring-(position)-move">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/</code><span class="sig-paren">(</span><em>position</em><span class="sig-paren">)</span><code class="descname">/move</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-centring-(position)-move" title="Permalink to this definition">¶</a></dt>
+<dt id="put--mxcube-api-v0.1-sampleview-zoom">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/zoom</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-zoom" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>Move all the motors involved in the centring to the given centring position</dt>
-<dd><p class="first">Args: position, the name of the centring position (pos1, pos2, customName1,...)</p>
-<p>position: str
-Return:</p>
-<blockquote class="last">
-<div>&#8216;True&#8217; if command issued succesfully, otherwise &#8216;False&#8217;.</div></blockquote>
+<dt>Move the zoom motor.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">request Content-type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">application/json, new position {&#8216;level&#8217;: 4}. Note: level specified as integer (not &#8216;Zoom 4&#8217;)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">application/json, new scale value, example: {&#8220;pixelsPerMm&#8221;: [ 1661.1, 1661.1]}</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samples-(id)-collections-status">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections-status" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the status of all data collections, (running, stopped, cancelled, finished, ...)
-data={generic_data},   
-return_data={ {&#8220;CollectionId&#8221;: id1, &#8220;Status&#8221;: status}, ..., {&#8220;CollectionId&#8221;: idN, &#8220;Status&#8221;: status} }</p>
-</dd></dl>
-
 <dl class="put">
-<dt id="put--mxcube-api-v0.1-samples-(id)-collections-(colid)">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#put--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
-<dd><p>update a collection into the sample queue <a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a>asociated to a sample!
-data={generic_data, &#8220;Method&#8221;:method, &#8220;SampleId&#8221;: sampleid ,&#8221;CollectionId&#8221;: id, parameters}, 
-for example for a standard data collection:
-data={generic_data, &#8220;Method&#8221;:StandardCollection, &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
-<blockquote>
-<div><blockquote>
-<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
-osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
-exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
-n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
-energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
-resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
-transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
-<p>},</p>
-</div></blockquote>
-<p>return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="post">
-<dt id="post--mxcube-api-v0.1-samples-(id)-collections-(colid)">
-<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a collection into the sample queue <a href="#id5"><span class="problematic" id="id6">**</span></a><a href="#id7"><span class="problematic" id="id8">*</span></a>asociate to a sample!
-data={generic_data, &#8220;Method&#8221;:method, &#8220;SampleId&#8221;: sampleid ,&#8221;CollectionId&#8221;: id, parameters}, 
-for example for a standard data collection:
-data={generic_data, &#8220;Method&#8221;:StandardCollection, &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
-<blockquote>
-<div><blockquote>
-<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
-osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
-exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
-n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
-energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
-resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
-transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
-<p>},</p>
-</div></blockquote>
-<p>return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samples-(id)-collections-(colid)">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the collection with id:&#8221;colid&#8221;
-data={generic_data}, 
-for example for a standard data collection:
-return_data={&#8220;Method&#8221;:StandardCollection,  &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
-<blockquote>
-<div><blockquote>
-<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
-osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
-exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
-n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
-energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
-resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
-transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
-<p>},</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="delete">
-<dt id="delete--mxcube-api-v0.1-samples-(id)-collections-(colid)">
-<code class="descname">DELETE </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections/</code><span class="sig-paren">(</span><em>colid</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--mxcube-api-v0.1-samples-(id)-collections-(colid)" title="Permalink to this definition">¶</a></dt>
-<dd><p>delete the collection with id:&#8221;id&#8221;
-data={generic_data, &#8220;CollectionId&#8221;: id},   
-return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samplecentring-centring-(id)">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--mxcube-api-v0.1-samplecentring-centring-(id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>SampleCentring: get centring point position of point with id:&#8221;id&#8221;, id=1,2,3...
-data = {generic_data, &#8220;point&#8221;: id}
-return_data = {&#8220;id&#8221;: {x,y}}</p>
-</dd></dl>
-
-<dl class="post">
-<dt id="post--mxcube-api-v0.1-samplecentring-centring-(id)">
-<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samplecentring/centring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#post--mxcube-api-v0.1-samplecentring-centring-(id)" title="Permalink to this definition">¶</a></dt>
+<dt id="put--mxcube-api-v0.1-sampleview-backlighton">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/backlighton</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-backlighton" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>SampleCentring: set centring point position of point with id:&#8221;id&#8221;, id=1,2,3...</dt>
-<dd><dl class="first last docutils">
-<dt>data:</dt>
-<dd>{generic_data, &#8220;point&#8221;: id, &#8220;position&#8221;: {x,y}}</dd>
-<dt>Return:</dt>
-<dd>{&#8220;result&#8221;: True/False}</dd>
-</dl>
+<dt>Activate the backlight of the diffractometer.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samplecentring-(id)-status">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samplecentring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-samplecentring-(id)-status" title="Permalink to this definition">¶</a></dt>
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-backlightoff">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/backlightoff</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-backlightoff" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>SampleCentring: get status of element with id:&#8221;id&#8221;</dt>
-<dd><dl class="first last docutils">
-<dt>Args:</dt>
-<dd><p class="first">moveable &#8216;id&#8217; in the url</p>
-<p class="last">id: str</p>
-</dd>
-<dt>Return: </dt>
-<dd><p class="first">{&#8216;Status&#8217;: status, &#8216;position&#8217;: position}</p>
-<p class="last">status: str, position: float</p>
+<dt>Switch off the backlight of the diffractometer.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-frontlighton">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/frontlighton</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-frontlighton" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Activate the frontlight of the diffractometer.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="put">
-<dt id="put--mxcube-api-v0.1-samplecentring-(id)-move">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samplecentring/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/move</code><a class="headerlink" href="#put--mxcube-api-v0.1-samplecentring-(id)-move" title="Permalink to this definition">¶</a></dt>
-<dd><p>SampleCentring: move &#8220;id&#8221; moveable to the position specified in the <a class="reference external" href="data:position">data:position</a>
-Moveable can be a motor (kappa, omega, phi), a ligth, light/zoom level.</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">moveable and new position in the url: /mxcube/api/v0.1/samplecentring/&lt;id&gt;/move?newpos=value</p>
-<p class="last">id: str, value: float</p>
+<dt id="put--mxcube-api-v0.1-sampleview-frontlightoff">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/frontlightoff</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-frontlightoff" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Switch off the frontlight of the diffractometer.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
 </dd>
-<dt>Return: </dt>
-<dd>&#8216;True&#8217; if command issued succesfully, otherwise &#8216;False&#8217;</dd>
 </dl>
-</div></blockquote>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-(motid)-(newpos)">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/</code><span class="sig-paren">(</span><em>motid</em><span class="sig-paren">)</span><code class="descname">/</code><span class="sig-paren">(</span><em>newpos</em><span class="sig-paren">)</span><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-(motid)-(newpos)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the given motor.
+:parameter motid: motor name, &#8216;Phi&#8217;, &#8216;Focus&#8217;, &#8216;PhiZ&#8217;, &#8216;PhiY&#8217;, &#8216;Zoom&#8217;, &#8216;BackLightSwitch&#8217;,&#8217;BackLight&#8217;,&#8217;FrontLightSwitch&#8217;, &#8216;FrontLight&#8217;,&#8217;Sampx&#8217;, &#8216;Sampy&#8217;
+:parameter newpos: new position, double
+:statuscode: 200: no error
+:statuscode: 409: error</p>
 </dd></dl>
 
 <dl class="get">
-<dt id="get--mxcube-api-v0.1-beamline-(id)-status">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/beamline/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/status</code><a class="headerlink" href="#get--mxcube-api-v0.1-beamline-(id)-status" title="Permalink to this definition">¶</a></dt>
-<dd><p>Beamline: get beamline status of id:&#8221;id&#8221;
-data = {generic_data, &#8220;Moveable&#8221;:id}
-return_data = {&#8220;Moveable&#8221;: id, &#8220;Status&#8221;: status}</p>
-</dd></dl>
-
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-beamline-(id)-move">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/beamline/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/move</code><a class="headerlink" href="#put--mxcube-api-v0.1-beamline-(id)-move" title="Permalink to this definition">¶</a></dt>
-<dd><p>Beamline: move &#8220;id&#8221; moveable (energy, resolution ...) to the position specified
-data = {generic_data, &#8220;moveable&#8221;: id, &#8220;position&#8221;: pos}
-return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="get">
-<dt id="get--mxcube-api-v0.1-samples-(id)-collections">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/collections</code><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)-collections" title="Permalink to this definition">¶</a></dt>
-<dd><p>get the collection with id:&#8221;id&#8221;
-data={generic_data}, 
-for example for a standard data collection:
-return_data={&#8220;Method&#8221;:StandarCollection,  &#8220;SampleId&#8221;: sampleid, &#8220;CollectionId&#8221;: colid, parameters:{</p>
-<blockquote>
-<div><blockquote>
-<div>osc_range: { label: &#8220;Oscillation range&#8221;, default_value: 1.0, value: 0 },
-osc_start: { label: &#8220;Oscillation start&#8221;, default_value: 0, value: 0 },
-exp_time: { label: &#8220;Exposure time&#8221;, default_value: 10.0, value: 0 },
-n_images: { label: &#8220;Number of images&#8221;, default_value: 1, value: 0 },
-energy: {label: &#8220;Energy&#8221;, default_value: 12.3984, value: 0 },
-resolution: {label: &#8220;Resolution&#8221;, default_value: 2.498, value: 0 },
-transmission: {label: &#8220;Transmission&#8221;, default_value: 100.0, value: 0} },</div></blockquote>
-<p>},</p>
-</div></blockquote>
-</dd></dl>
-
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samples-(id)-centring">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/centring</code><a class="headerlink" href="#put--mxcube-api-v0.1-samples-(id)-centring" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set centring method: semi auto, fully auto,  ...
-data = {generic_data, &#8220;Mode&#8221;: mode}
-return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samples-(id)-umount">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/umount</code><a class="headerlink" href="#put--mxcube-api-v0.1-samples-(id)-umount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Umount mounted sample
-data = {generic_data}
-return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samples-(id)-mount">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/mount</code><a class="headerlink" href="#put--mxcube-api-v0.1-samples-(id)-mount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mount sample with id:&#8221;id&#8221;
-data = {generic_data, &#8220;SampleId&#8221;: id}
-return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="post">
-<dt id="post--mxcube-api-v0.1-samples-(id)-mode">
-<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><code class="descname">/mode</code><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(id)-mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set sample changer mode: sample changer, manually mounted, ... (maybe it is enoug to set for all the same mode)
-data = {generic_data, &#8220;Mode&#8221;: mode}
-return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="post">
-<dt id="post--mxcube-api-v0.1-samples-(id)">
-<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#post--mxcube-api-v0.1-samples-(id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add the information of the sample with id:&#8221;id&#8221;
-data = {generic_data, &#8220;SampleId&#8221;:id, sample_data={&#8216;holderLength&#8217;: 22.0, &#8216;code&#8217;: None, &#8216;containerSampleChangerLocation&#8217;: &#8216;1&#8217;, &#8216;proteinAcronym&#8217;: &#8216;Mnth&#8217;, &#8216;cellGamma&#8217;: 0.0, &#8216;cellAlpha&#8217;: 0.0, &#8216;sampleId&#8217;: 444179, &#8216;cellBeta&#8217;: 0.0, &#8216;crystalSpaceGroup&#8217;: &#8216;R32&#8217;, &#8216;sampleLocation&#8217;: &#8216;2&#8217;, &#8216;sampleName&#8217;: &#8216;sample-E02&#8217;, &#8216;cellA&#8217;: 0.0, &#8216;diffractionPlan&#8217;: {}, &#8216;cellC&#8217;: 0.0, &#8216;cellB&#8217;: 0.0, &#8216;experimentType&#8217;: &#8216;Default&#8217;}}
-return_data={&#8220;result&#8221;: True/False}</p>
-</dd></dl>
-
-<dl class="put">
-<dt id="put--mxcube-api-v0.1-samples-(id)">
-<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#put--mxcube-api-v0.1-samples-(id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the information of the sample with id:&#8221;id&#8221;
-data = {generic_data, &#8220;SampleId&#8221;:id, sample_data={&#8216;holderLength&#8217;: 22.0, &#8216;code&#8217;: None, &#8216;containerSampleChangerLocation&#8217;: &#8216;1&#8217;, &#8216;proteinAcronym&#8217;: &#8216;Mnth&#8217;, &#8216;cellGamma&#8217;: 0.0, &#8216;cellAlpha&#8217;: 0.0, &#8216;sampleId&#8217;: 444179, &#8216;cellBeta&#8217;: 0.0, &#8216;crystalSpaceGroup&#8217;: &#8216;R32&#8217;, &#8216;sampleLocation&#8217;: &#8216;2&#8217;, &#8216;sampleName&#8217;: &#8216;sample-E02&#8217;, &#8216;cellA&#8217;: 0.0, &#8216;diffractionPlan&#8217;: {}, &#8216;cellC&#8217;: 0.0, &#8216;cellB&#8217;: 0.0, &#8216;experimentType&#8217;: &#8216;Default&#8217;}}
-return_data={&#8220;result&#8221;: True/False}</p>
+<dt id="get--mxcube-api-v0.1-sampleview-(id)">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/sampleview/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--mxcube-api-v0.1-sampleview-(id)" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Get position and status of the given element</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">parameter id:</th><td class="field-body">moveable to get its status, &#8216;Phi&#8217;, &#8216;Focus&#8217;, &#8216;PhiZ&#8217;, &#8216;PhiY&#8217;, &#8216;Zoom&#8217;, &#8216;BackLightSwitch&#8217;,&#8217;BackLight&#8217;,&#8217;FrontLightSwitch&#8217;, &#8216;FrontLight&#8217;,&#8217;Sampx&#8217;, &#8216;Sampy&#8217;</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">application/json, {motorname: {&#8216;Status&#8217;: status, &#8216;position&#8217;: position} }</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="get">
-<dt id="get--mxcube-api-v0.1-samples-(id)">
-<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#get--mxcube-api-v0.1-samples-(id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the information of the sample with id:&#8221;id&#8221;
-data = {generic_data, &#8220;SampleId&#8221;:id}
-return_data={&#8220;SampleId&#8221;:id, sample_data={&#8216;holderLength&#8217;: 22.0, &#8216;code&#8217;: None, &#8216;containerSampleChangerLocation&#8217;: &#8216;1&#8217;, &#8216;proteinAcronym&#8217;: &#8216;Mnth&#8217;, &#8216;cellGamma&#8217;: 0.0, &#8216;cellAlpha&#8217;: 0.0, &#8216;sampleId&#8217;: 444179, &#8216;cellBeta&#8217;: 0.0, &#8216;crystalSpaceGroup&#8217;: &#8216;R32&#8217;, &#8216;sampleLocation&#8217;: &#8216;2&#8217;, &#8216;sampleName&#8217;: &#8216;sample-E02&#8217;, &#8216;cellA&#8217;: 0.0, &#8216;diffractionPlan&#8217;: {}, &#8216;cellC&#8217;: 0.0, &#8216;cellB&#8217;: 0.0, &#8216;experimentType&#8217;: &#8216;Default&#8217;}}</p>
+<dt id="get--mxcube-api-v0.1-sampleview">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/sampleview</code><a class="headerlink" href="#get--mxcube-api-v0.1-sampleview" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Get position and status of all the elements: &#8216;Phi&#8217;, &#8216;Focus&#8217;, &#8216;PhiZ&#8217;, &#8216;PhiY&#8217;, &#8216;Zoom&#8217;, &#8216;BackLightSwitch&#8217;,&#8217;BackLight&#8217;,&#8217;FrontLightSwitch&#8217;, &#8216;FrontLight&#8217;,&#8217;Sampx&#8217;, &#8216;Sampy&#8217;</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">application/json, position and status of all moveables {motorname: {&#8216;Status&#8217;: status, &#8216;position&#8217;: position} ...  }</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="delete">
-<dt id="delete--mxcube-api-v0.1-samples-(id)">
-<code class="descname">DELETE </code><code class="descname">/mxcube/api/v0.1/samples/</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="headerlink" href="#delete--mxcube-api-v0.1-samples-(id)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete the sample with id:&#8221;id&#8221;
-data = {generic_data, &#8220;SampleId&#8221;:id}
-return_data={&#8220;result&#8221;: True/False}</p>
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-centring-startauto">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/startauto</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-startauto" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Start automatic (lucid) centring procedure.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="get">
-<dt id="get--(path-filename)">
-<code class="descname">GET </code><code class="descname">/</code><span class="sig-paren">(</span><em class="property">path: </em><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#get--(path-filename)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function used internally to send static files from the static
-folder to the browser.</p>
-<div class="versionadded">
-<p><span class="versionmodified">New in version 0.5.</span></p>
-</div>
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-centring-start3click">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/start3click</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-start3click" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Start 3 click centring procedure.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-centring-abort">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/abort</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-abort" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Abort centring procedure.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-centring-click">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/click</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-click" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>The 3-click method needs the input from the user, a running 3click centring procedure must be set before</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">request Content-type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">application/json, integer positions of the clicks, {clickPos={&#8220;x&#8221;: 123,&#8221;y&#8221;: 456}}</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">response Content-type:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">application/json, integer, number of clicks left {&#8216;clickLeft&#8217;: 3 | 2 | 1}</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">409: error</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-centring-accept">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/accept</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-accept" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="put">
+<dt id="put--mxcube-api-v0.1-sampleview-centring-reject">
+<code class="descname">PUT </code><code class="descname">/mxcube/api/v0.1/sampleview/centring/reject</code><a class="headerlink" href="#put--mxcube-api-v0.1-sampleview-centring-reject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 
@@ -526,7 +495,7 @@ folder to the browser.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">Welcome to MXCuBE3&#8217;s documentation!</a></li>
-      <li>Next: <a href="Sample.html" title="next chapter">Sample API</a></li>
+      <li>Next: <a href="Queue.html" title="next chapter">Queue API</a></li>
   </ul></li>
 </ul>
 </div>

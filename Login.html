@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Login API &mdash; MXCuBE3 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="MXCuBE3 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Queue API" href="Queue.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="login-api">
+<h1>Login API<a class="headerlink" href="#login-api" title="Permalink to this headline">¶</a></h1>
+<dl class="post">
+<dt id="post--mxcube-api-v0.1-login">
+<code class="descname">POST </code><code class="descname">/mxcube/api/v0.1/login</code><a class="headerlink" href="#post--mxcube-api-v0.1-login" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Login into mxcube application.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">form proposal:</th><td class="field-body">proposal as it appears in duo</td>
+</tr>
+<tr class="field-even field"><th class="field-name">form password:</th><td class="field-body">corresponding password</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">response Content-Type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">application/json, an object containing following info: {&#8216;status&#8217;:{ &#8220;code&#8221;: &#8220;ok&#8221;, &#8220;msg&#8221;: msg }, &#8216;Proposal&#8217;: proposal, &#8216;session&#8217;: todays_session, &#8220;local_contact&#8221;: local_contact, &#8220;person&#8221;: someone, &#8220;laboratory&#8221;: a_laboratory&#8217;]}</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body">200: no error</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body">409: could not log in</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-signout">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/signout</code><a class="headerlink" href="#get--mxcube-api-v0.1-signout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Signout from Mxcube3 and clean the session</p>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-login_info">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/login_info</code><a class="headerlink" href="#get--mxcube-api-v0.1-login_info" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Retrieve sessoin/login info</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">response Content-Type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">application/json, {&#8220;synchrotron_name&#8221;: synchrotron_name, &#8220;beamline_name&#8221;: beamline_name,
+&#8220;loginType&#8221;: loginType, &#8220;loginRes&#8221;: {&#8216;status&#8217;:{ &#8220;code&#8221;: &#8220;ok&#8221;, &#8220;msg&#8221;: msg }, &#8216;Proposal&#8217;: proposal, &#8216;session&#8217;: todays_session, &#8220;local_contact&#8221;: local_contact, &#8220;person&#8221;: someone, &#8220;laboratory&#8221;: a_laboratory&#8217;]} }</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="get">
+<dt id="get--mxcube-api-v0.1-initialstatus">
+<code class="descname">GET </code><code class="descname">/mxcube/api/v0.1/initialstatus</code><a class="headerlink" href="#get--mxcube-api-v0.1-initialstatus" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Get status, positions of moveables, sample image data ... Where moveables: &#8216;Phi&#8217;, &#8216;Focus&#8217;, &#8216;PhiZ&#8217;, &#8216;PhiY&#8217;, &#8216;Zoom&#8217;, &#8216;BackLightSwitch&#8217;,&#8217;BackLight&#8217;,&#8217;FrontLightSwitch&#8217;, &#8216;FrontLight&#8217;,&#8217;Sampx&#8217;, &#8216;Sampy&#8217;.</dt>
+<dd><table class="first last docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">response Content-Type:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body"><dl class="first docutils">
+<dt>application/json,  {   Moveable1:{&#8216;Status&#8217;: status, &#8216;position&#8217;: position},</dt>
+<dd><p class="first last">..., MoveableN:{&#8216;Status&#8217;: status, &#8216;position&#8217;: position}</p>
+</dd>
+</dl>
+<p>}</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">statuscode:</th><td class="field-body"><p class="first">200: no error</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">statuscode:</th><td class="field-body"><p class="first last">409: error occurred</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Queue.html" title="previous chapter">Queue API</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Login.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, MXCuBE Collaboration.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.5</a>
+      
+      |
+      <a href="_sources/Login.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
