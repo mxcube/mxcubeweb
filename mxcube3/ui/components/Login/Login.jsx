@@ -3,6 +3,8 @@ import React from 'react'
 import { Input, ButtonInput } from "react-bootstrap";
 import './Login.css';
 import {reduxForm} from 'redux-form';
+import { Alert } from "react-bootstrap";
+
 
 class Login extends React.Component {
   constructor(props) {
@@ -47,6 +49,8 @@ class Login extends React.Component {
           </div>
           <h3 >Welcome to {loginInfo.beamline_name} at {loginInfo.synchrotron_name}</h3>
           <div className="col-md-5 col-centered">
+
+          {(this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : "")}
           <div className="well well-left h5">
              <div>
                 <form className="form from-actions" bsStyle="inline" >
@@ -55,6 +59,9 @@ class Login extends React.Component {
                   <ButtonInput id="submit" bsStyle="primary"  value="Sign in"  onClick={this.signIn}/>
                 </form>
               </div>
+             </div>
+            <div className={this.props.loading ? "" : "hidden"}>
+               <img src="../../img/loader.gif" className="img-responsive"/>
              </div>
             </div>
             </div>
