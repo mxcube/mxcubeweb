@@ -100,6 +100,7 @@ def get_initial_state():
     motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'] 
     #'Kappa', 'Kappa_phi',
     data = {}
+    data['Motors'] = {}
     try:
         for mot in motors:
             motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
@@ -118,7 +119,7 @@ def get_initial_state():
                         status = motor_hwobj.getState()
                     except Exception:
                         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
-                data[mot] = {'Status': status, 'position': pos}
+                data['Motors'].update({mot: {'Status': status, 'position': pos}})
         data['Camera'] = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
             'imageWidth':  mxcube.diffractometer.image_width,
             'imageHeight':  mxcube.diffractometer.image_height,
