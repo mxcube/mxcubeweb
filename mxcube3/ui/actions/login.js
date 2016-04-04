@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import { getSampleImageSize, getPointsPosition, getMotorPositions } from './sampleview'
+import { getInitialStatus } from './general'
 
 export function doLogin(proposal, password) {
     return function(dispatch) {
@@ -14,10 +14,8 @@ export function doLogin(proposal, password) {
           }).then(response => response.json())
           .then(loginRes => {
               // Here one should check if login is successfull and if so get initial state of MxCube
-              dispatch(getPointsPosition());
-              dispatch(getMotorPositions());
-              dispatch(getSampleImageSize());
               dispatch(afterLogin(loginRes));
+              dispatch(getInitialStatus());
           }, () => { throw new Error("Server connection problem (login)"); });
     }
 }
@@ -42,9 +40,7 @@ export function getLoginInfo() {
               dispatch(setLoginInfo(loginInfo));
               if (loginInfo.loginRes.Proposal) {
                   dispatch(afterLogin(loginInfo.loginRes));
-                  dispatch(getPointsPosition());
-                  dispatch(getSampleImageSize());
-                  dispatch(getMotorPositions());
+                  dispatch(getInitialStatus());
               } 
           }, () => {
             throw new Error("Server connection problem (getLoginInfo)"); 

@@ -30,7 +30,6 @@ class SampleViewContainer extends Component {
                 pixelsPerMm={pixelsPerMm} 
                 shapeList={points} 
                 clickCentring={clickCentring} 
-                mounted={this.props.current.node}
                 contextMenuShow={show}
                 imageRatio={imageRatio}
                 canvas={canvas} 

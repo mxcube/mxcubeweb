@@ -18,59 +18,71 @@ export default (state=initialState, action) => {
     switch (action.type) {
         case 'SET_ZOOM':
             {
-             return {...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm};
+                return {...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm};
             }
         case 'START_CLICK_CENTRING':
             {
-             return {...state, clickCentring: true, clickCentringPoints: 0};
+                return {...state, clickCentring: true, clickCentringPoints: 0};
             }
         case 'STOP_CLICK_CENTRING':
             {
-             return {...state, clickCentring: false};
+                return {...state, clickCentring: false};
             }
         case 'ADD_CENTRING_POINT':
             {
-             return (state.clickCentringPoints === 2 ? {...state, clickCentring: false, clickCentringPoints:0} : {...state, clickCentringPoints: (state.clickCentringPoints + 1)})
+                return (state.clickCentringPoints === 2 ? {...state, clickCentring: false, clickCentringPoints:0} : {...state, clickCentringPoints: (state.clickCentringPoints + 1)})
             }        
         case 'SAVE_POINT':
             {
-             return {...state, points: {...state.points, [action.point.posId] : action.point }};
+                return {...state, points: {...state.points, [action.point.posId] : action.point }};
             }
         case 'DELETE_POINT':
             {
-             return {...state, points: omit(state.points, action.id)};
+                return {...state, points: omit(state.points, action.id)};
             }
         case 'SAVE_IMAGE_SIZE':
             {
-             return {...state, width: action.width, height: action.height, pixelsPerMm: action.pixelsPerMm };
+                return {...state, width: action.width, height: action.height, pixelsPerMm: action.pixelsPerMm };
             }
         case 'SAVE_MOTOR_POSITIONS':
             {
-             return {...state, motors: action.data, lightOn: {back: action.data.BackLightSwitch.Status, front: action.data.FrontLightSwitch.Status}, zoom: action.data.Zoom.position };
+                return {...state, motors: action.data, lightOn: {back: action.data.BackLightSwitch.Status, front: action.data.FrontLightSwitch.Status}, zoom: action.data.Zoom.position };
             }
         case 'SAVE_MOTOR_POSITION':
             {
-             return {...state, motors: {...state.motors, [action.name] : {position: action.value}} };
+                return {...state, motors: {...state.motors, [action.name] : {position: action.value}} };
             }
         case 'SET_LIGHT':
             {
-             return {...state, lightOn: {...state.lightOn, [action.name]: action.on} };
+                return {...state, lightOn: {...state.lightOn, [action.name]: action.on} };
             }
         case 'UPDATE_POINTS_POSITION':
             {
-             return {...state, points: action.points };
+                return {...state, points: action.points };
             }
         case 'SHOW_CONTEXT_MENU':
             {
-             return {...state, contextMenu: {show: action.show, shape: action.shape, x: action.x, y: action.y} };
+                return {...state, contextMenu: {show: action.show, shape: action.shape, x: action.x, y: action.y} };
             }
         case 'SET_IMAGE_RATIO':
             {
-             return {...state, imageRatio: action.ratio };
+                return {...state, imageRatio: action.ratio };
             }
         case 'SET_CANVAS':
             {
-             return {...state, canvas: action.canvas };
+                return {...state, canvas: action.canvas };
+            }
+        case 'SET_INITIAL_STATUS':
+            {
+                return {...state, 
+                    motors: action.data.Motors, 
+                    lightOn: {back: action.data.Motors.BackLightSwitch.Status, front: action.data.Motors.FrontLightSwitch.Status}, 
+                    zoom: action.data.Motors.Zoom.position,
+                    width: action.data.Camera.imageWidth, 
+                    height: action.data.Camera.imageHeight, 
+                    pixelsPerMm: action.data.Camera.pixelsPerMm[0]
+
+                };
             }
 
         default:
