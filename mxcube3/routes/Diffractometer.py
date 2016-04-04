@@ -55,9 +55,9 @@ def use_sc():
                 resp.status_code = 409
                 return resp
             else:
-                mxcube.diffractometer.use_sc = True
+                mxcube.diffractometer.set_use_sc (True)
         else:
-            mxcube.diffractometer.use_sc = False
+            mxcube.diffractometer.set_use_sc (False)
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('Could not set use_sample_changer mode')
