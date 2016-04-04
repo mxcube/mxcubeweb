@@ -4,6 +4,12 @@ export function setInitialStatus(data) {
     return { type: "SET_INITIAL_STATUS", data }
 }
 
+export function setLoading(loading) {
+    return { 
+      type: "SET_LOADING", loading
+    }
+}
+
 export function getInitialStatus() {
   return function(dispatch) {
     fetch('mxcube/api/v0.1/initialstatus', { 

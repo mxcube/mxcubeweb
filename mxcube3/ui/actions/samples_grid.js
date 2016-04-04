@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import { sendClearQueue, sendRunSample, sendAddSample, sendMountSample } from './queue'
 import { showTaskParametersForm } from './taskForm'
+import { setLoading } from './general'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -8,14 +9,14 @@ export function doUpdateSamples(samples_list) {
 
 export function doGetSamplesList() {
    return function(dispatch) {
-       window.please_wait_dialog.show();
+       dispatch(setLoading(true));
        fetch('mxcube/api/v0.1/sample_changer/samples_list', {credentials: 'include'})
             .then(response => response.json())
             .then(json => {
-                window.please_wait_dialog.hide();
+                dispatch(setLoading(false));
                 dispatch(doUpdateSamples(json));
             }, () => { 
-                window.please_wait_dialog.hide();
+                dispatch(setLoading(false));
                 window.error_notification.notify("Could not get samples list");
             })
     }

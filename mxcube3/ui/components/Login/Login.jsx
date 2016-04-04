@@ -8,7 +8,6 @@ import { ErrorNotificationPanel } from '../Logging'
 class Login extends React.Component {
   constructor(props) {
       super(props)
-      this.state = { show_loader: false }
       this.signIn = this.signIn.bind(this);
       this.handleKeyPress = this.handleKeyPress.bind(this);
   }
@@ -19,14 +18,15 @@ class Login extends React.Component {
 
   componentWillReceiveProps(nextProps){
     if(nextProps.status.code === "ok"){
-      window.location.assign("#/");    
+      window.location.assign("#/"); 
+      this.props.setLoading(false);
     }
   }
   
   signIn(){
+      this.props.setLoading(true);
       let fields = this.props.fields;
       this.props.signIn(fields.username.value, fields.password.value);
-      this.setState({ show_loader: true });
   }
   handleKeyPress(target) {
     if(target.charCode==13){
@@ -57,9 +57,6 @@ class Login extends React.Component {
                   <ButtonInput id="submit" bsStyle="primary"  value="Sign in"  onClick={this.signIn}/>
                 </form>
               </div>
-             </div>
-             <div className={this.state.show_loader ? "" : "hidden"}>
-               <img src="../../img/loader.gif" className="img-responsive"/>
              </div>
             </div>
             </div>
