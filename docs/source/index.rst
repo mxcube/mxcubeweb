@@ -12,7 +12,6 @@ Contents:
    		:maxdepth: 2
 
 		SampleCentring
-		Sample
-		Collection
-		Beamline
+		Queue
+                Login
 

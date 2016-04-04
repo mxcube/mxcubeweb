@@ -19,7 +19,7 @@ import queue_entry as qe
 from queue_entry import QueueEntryContainer
 import jsonpickle
 qm = QueueManager.QueueManager('Mxcube3')
-#qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
+qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
 def init_signals():
     # for signal in signals.queueSignals:
@@ -33,9 +33,10 @@ def init_signals():
 # ##----QUEUE ACTIONS----##
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
 def queueStart():
-    """Queue: start execution of the queue
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    Start execution of the queue.
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be started
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
     try:
@@ -50,9 +51,10 @@ def queueStart():
 
 @mxcube.route("/mxcube/api/v0.1/queue/stop", methods=['PUT'])
 def queueStop():
-    """Queue: stop execution of the queue
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    Stop execution of the queue.
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be stopped
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to stop')
     try:
@@ -65,9 +67,10 @@ def queueStop():
 
 @mxcube.route("/mxcube/api/v0.1/queue/abort", methods=['PUT'])
 def queueAbort():
-    """Queue: abort execution of the queue
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    Abort execution of the queue.
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be aborted
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to abort')
     try:
@@ -80,14 +83,14 @@ def queueAbort():
 
 @mxcube.route("/mxcube/api/v0.1/queue/pause", methods=['PUT'])
 def queuePause():
-    """Queue: start execution of the queue
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    Pause the execution of the queue
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be paused
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
     try:
         mxcube.queue.queue_hwobj.set_pause(True)
-        # mxcube.queue.pause()
         logging.getLogger('HWR').info('[QUEUE] Queue paused')
         return Response(status=200)
     except Exception:
@@ -96,14 +99,14 @@ def queuePause():
 
 @mxcube.route("/mxcube/api/v0.1/queue/unpause", methods=['PUT'])
 def queueUnpause():
-    """Queue: start execution of the queue
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    Unpause execution of the queue
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be unpause
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to unpause')
     try:
         mxcube.queue.queue_hwobj.set_pause(False)
-        # mxcube.queue.pause()
         logging.getLogger('HWR').info('[QUEUE] Queue unpaused')
         return Response(status=200)
     except Exception:
@@ -112,9 +115,10 @@ def queueUnpause():
 
 @mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
 def queueClear():
-    """Queue: clear the queue
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    Clear the queue.
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be started
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to clear')
 
@@ -133,9 +137,25 @@ def queueClear():
 #@mxlogin_required
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['GET'])
 def queueGet():
-    """Queue: get the queue
-    Args: None
-    Return: a list of queue entries (sample with the associated children methods)
+    """
+    Get the queue.
+        :response Content-Type: application/json, an object containing queue entries (sample with the associated children   tasks plus their parameters)
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be retrieved
+        :example response: (without any task)  {
+                                 "1":{
+                                    "QueueId": 1, 
+                                    "SampleId": "1:04", 
+                                    "checked": 0, 
+                                    "methods": []
+                                  }, 
+                                  "2":{
+                                    "QueueId": 2, 
+                                    "SampleId": "1:02", 
+                                    "checked": 0, 
+                                    "methods": []
+                                  }
+                            }
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting data')
     try:
@@ -146,19 +166,21 @@ def queueGet():
         logging.getLogger('HWR').error('[QUEUE] Queue could not get')
         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/queue/save2file", methods=['PUT'])
-def queueSave2File():
-    """Queue: save the queue to a file, filename automatically selected under ./routes folder
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
-    """
-    return Response(status=409)
+# @mxcube.route("/mxcube/api/v0.1/queue/save2file", methods=['PUT'])
+# def queueSave2File():
+#     """Queue: save the queue to a file, filename automatically selected under ./routes folder
+#     Args: None
+#     Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+#     """
+#     return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/state", methods=['PUT', 'POST'])
 def queueSaveState():
-    """Queue: save the queue to a file, filename automatically selected under ./routes folder
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    """
+    Save the queue to the session.
+        :request Content-Type: application/json, sampleGrid state sent by the client.
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be saved
     """
 
     params = request.data
@@ -167,7 +189,11 @@ def queueSaveState():
     sampleGridState = session.get("sampleGridState")
     #queueState = jsonpickle.encode(mxcube.queue) #.update(params['queueState'])
 
-    session["queueList"] = jsonpickle.encode(mxcube.queue)
+    try:
+        session["queueList"] = jsonpickle.encode(mxcube.queue)
+    except Exception:
+        return Response(status=409)
+
     sampleGridState.update(params['sampleGridState'])
     session["sampleGridState"] = sampleGridState
 
@@ -175,9 +201,10 @@ def queueSaveState():
 
 @mxcube.route("/mxcube/api/v0.1/queue/state", methods=['GET'])
 def queueLoadState():
-    """Queue: load and apply the queue from the session and return the simplified saved queue and sample_list
-    Args: None
-    Return: http status response, 200 ok, 409 something bad happened. And {'queueState': {...}, 'sampleList': {...} }
+    """
+    Load and apply the queue from the session and return the simplified saved queue and sample_list. NOTE: the client does not do anything with it yet.
+        :statuscode: 200: no error
+        :statuscode: 409: queue could not be loaded
     """
     try:
         samples_list = mxcube.sample_changer.getSampleList()
@@ -216,41 +243,38 @@ def queueLoadState():
 #     resp = jsonify(jsonParser(True))
 #     resp.status_code = 200
 #     return resp
+   
+# @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
+# def getCurrentEntry():
+#     """Queue: get current entry. NOT IMPLEMENTED
+#     Return:    The currently executing QueueEntry:
+#     """
+#     logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
+#     try:
+#         return mxcube.queue.queue_hwobj.get_current_entry()
+#     except Exception:
+#         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
+#         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
-def getCurrentEntry():
-    """Queue: get current entry. NOT IMPLEMENTED
-    Args: None
-    Return:    The currently executing QueueEntry:
-                :rtype: QueueEntry
-    """
-    logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
-    try:
-        return mxcube.queue.queue_hwobj.get_current_entry()
-    except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
-        return Response(status=409)
-
-@mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['PUT'])
-def setCurrentEntry(entry):
-    """Queue: Sets the currently executing QueueEntry to <entry>. NOT IMPLEMENTED
-    Args: None
-    Return:    The currently executing QueueEntry:
-                :rtype: QueueEntry
-    """
-    logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
-    try:
-        return mxcube.queue.queue_hwobj.set_current_entry(entry)
-    except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
-        return Response(status=409)
+# @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['PUT'])
+# def setCurrentEntry(entry):
+#     """Queue: Sets the currently executing QueueEntry to <entry>. NOT IMPLEMENTED
+#     Return:    The currently executing QueueEntry:
+#     """
+#     logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
+#     try:
+#         return mxcube.queue.queue_hwobj.set_current_entry(entry)
+#     except Exception:
+#         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
+#         return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/queue/<nodeId>/execute", methods=['PUT'])
 def executeEntryWithId(nodeId):
     """
-    Queue: start execution of the queue
-    Args: None
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    Execute the given queue entry
+        :parameter nodeId: entry identifier, integer. It can be a sample or a task within a sample
+        :statuscode: 200: no error, the given entry was sent to execution (any further error might still happen)
+        :statuscode: 409: queue entry could not be executed
     """
     lastQueueNode = mxcube.queue.lastQueueNode
     queueList = jsonParser() #session.get("queueList")
@@ -309,12 +333,15 @@ def executeEntryWithId(nodeId):
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def addSample():
     '''
-    Add a sample to the queue with an id in the form of '1:01'
-    Args: id, current id of the sample to be added
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
-       data ={"QueueId": newId,
-              "SampleId": sampleId, # sampleId is the same as the caller id (eg '1:01')
-              }
+    Add a sample to the queue.
+        :request Content-Type: application/json, {"SampleId": sampleId}, where sampleId is sample location (eg '1:01')
+        :response Content-Type: application/json, {"QueueId": node_id, "SampleId": sampleId}, where sampleId is the same as the caller id (eg '1:01') and node_id an integer which is used for refering to this element from now onwards.
+        :statuscode: 200: no error
+        :statuscode: 409: sample could not be added, possibly because it already exist in the queue
+        :example request:   * POST http://host:port/mxcube/api/v0.1/queue 
+                            * Content-Type: application/json  
+                            * {"SampleId": "1:07"}
+  
     '''
     params = request.data
     params = json.loads(params)
@@ -355,17 +382,18 @@ def addSample():
         logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['PUT'])
-def updateSample(id):
+@mxcube.route("/mxcube/api/v0.1/queue/<sampleId>", methods=['PUT'])
+def updateSample(sampleId):
     '''
     Update a sample info
-    Args: none
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
-       data ={"QueueId": newId, "SampleId": sampleId}, where sampleId is the same as the caller id (eg '1:01')
+        :parameter nodeId: entry identifier, integer. It can be a sample or a task within a sample
+        :request Content-Type: application/json, object containing the parameter(s) to be updated, any parameter not sent will not be modified.
+        :statuscode: 200: no error
+        :statuscode: 409: sample info could not be updated, possibly because the given sample does not exist in the queue
     '''
     params = request.data
     params = json.loads(params)
-    nodeId = int(id)  # params['QueueId']
+    nodeId = int(sampleId)
     try:
         sampleNode = mxcube.queue.get_node(nodeId)
         if sampleNode:
@@ -388,9 +416,10 @@ def updateSample(id):
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/toggle", methods=['PUT'])
 def toggleNode(id):
     '''
-    toggle a sample or a method checked status
-    Args: none
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened.
+    Toggle a sample or a method checked status
+        :parameter id: node identifier, integer
+        :statuscode: 200: no error
+        :statuscode: 409: node could not be toggled
     '''
     nodeId = int(id)  # params['QueueId']
     node = mxcube.queue.get_node(nodeId)
@@ -441,10 +470,10 @@ def toggleNode(id):
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
 def deleteSampleOrMethod(id):
     """
-    Remove a sample or a method to the queue with an id in the form of 1,4,32
-    Args: id, current id of the sample/method to be deleted
-            id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    Remove a sample or a method from the queue, if a sample is removes all of its children task will also be removed.
+        :parameter id: node identifier
+        :statuscode: 200: no error
+        :statuscode: 409: node could not be deleted
     """
     queueList = jsonParser() #session.get("queueList")
 
@@ -471,10 +500,11 @@ def deleteSampleOrMethod(id):
 @mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<methodid>", methods=['DELETE'])
 def deleteMethod(sampleid, methodid):
     """
-    Remove a sample or a method to the queue with an id in the form of 1,4,32
-    Args: id, current id of the sample/method to be deleted
-            id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened
+    Remove a method from a sample in the queue.
+        :parameter sampleid: node identifier for the sample, integer
+        :parameter methodid: node identifier for the task to be deleted, integer
+        :statuscode: 200: no error
+        :statuscode: 409: node could not be deleted
     """
     try:
         nodeToRemove = mxcube.queue.get_node(int(methodid))
@@ -495,7 +525,7 @@ def deleteMethod(sampleid, methodid):
 ###Adding methods to a sample
 def addCentring(id):
     '''
-    Add a centring method to the sample with id: <id>, integer.
+    Add a centring task to the sample with id: <id>, integer.
     Args: id, current id of the sample where add the method
             id: int (parsed to int anyway)
     Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
@@ -633,6 +663,14 @@ def addDataCollection(id):
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST'])
 def addMethod(id):
+    """
+    Add a task to the given sample, the task type to add is specified in the request body.
+        :parameter id: sample identifier, integer, 
+        :request Content-Type: application/json, object containing the parameter(s) of the task, it must also contain {'Type':{Centring | Characterisation | DataCollection}}
+        :response Content-Type: application/json, object containing the task type plus it newly created node_id for it. Example: {'QueueId': 42, 'Type': 'DataCollection'}
+        :statuscode: 200: no error
+        :statuscode: 409: task could not be added to the sample
+    """
     params = request.data
     params = json.loads(params)
     methodType = params['Type']
@@ -650,6 +688,14 @@ def addMethod(id):
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<methodid>", methods=['PUT'])
 def updateMethod(sampleid, methodid):
+    """
+    Update the specifed task.
+        :parameter sampleid: sample identifier, integer
+        :parameter methodid: task identifier, integer
+        :request Content-Type: application/json, object containing the parameter(s) of the task to be updated
+        :statuscode: 200: no error
+        :statuscode: 409: task could not be added to the sample
+    """
     try:
         params = request.data
         params = json.loads(params)
@@ -682,11 +728,11 @@ def updateMethod(sampleid, methodid):
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
     """
-    Get the information of the sample with id:"id"
-    Args: id, current id of the sample
-        id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
-        data ={"QueueId": 22, "SampleId": "3:02", "methods": []}
+    Get the information of the given sample 
+        :parameter id: sample identifier, integer
+        :response Content-Type: application/json, object containing the parameter(s) of the sample. Example without parameters {"QueueId": 22, "SampleId": "3:02", "methods": []}
+        :statuscode: 200: no error
+        :statuscode: 409: sample could not be retrieved
     """
     try:
         queueList = jsonParser()
@@ -704,11 +750,12 @@ def getSample(id):
 @mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<int:methodid>", methods=['GET'])
 def getMethod(sampleid, methodid):
     """
-    Get the information of the sample with id:"id"
-    Args: id, current id of the sample
-        id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok, 409 something bad happened. Plus:
-        data ={"QueueId": 22, "SampleId": "3:02", "methods": []}
+    Get the information of the given task, beloging to the given sample
+        :parameter sampleid: sample identifier, integer
+        :parameter methodid: task identifier, integer
+        :response Content-Type: application/json, object containing the parameter(s) of the task. Example without parameters {"QueueId": 52,  "Type": 'Centring'...}
+        :statuscode: 200: no error
+        :statuscode: 409: task could not be added to the sample
     """
     try:
         queueList = jsonParser()
