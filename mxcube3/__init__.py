@@ -64,7 +64,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     app.log_handler = custom_log_handler
 
     ###Importing all REST-routes
-    import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue
+    import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue, routes.Diffractometer
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
