@@ -27,7 +27,11 @@ def mountSample(sample):
     try:
         sampleNode = mxcube.queue.get_node(int(sample))
         sampleLocation = sampleNode.location
-        mxcube.queue.lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[0] + ':' + sampleLocation[1])})
+        if mxcube.diffractometer.use_sc:
+             mxcube.queue.lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[0] + ':' + sampleLocation[1])})
+        else:  # manual, not using sample_changer
+             mxcube.diffractometer.set_phase("Centring")
+             mxcube.queue.lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[1])})
         session["lastQueueNode"] = lastQueueNode
         #mxcube.sample_changer.load_sample
         #TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
@@ -43,6 +47,14 @@ def unmountSample(sample):
     try:
         sampleNode = mxcube.queue.get_node(int(sample))
         sampleLocation = sampleNode.location
+
+        use_sc = mxcube.diffractometer.use_sc
+        if use_sc is False: # manual, not using sample_changer
+            mxcube.diffractometer.set_phase("Transfer")
+            return Response(status=200)
+
+        # move to history
+
         #mxcube.sample_changer.load_sample
         #TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
         logging.getLogger('HWR').info('[SC] %s sample mounted, location: %s' % (sample, sampleLocation))
