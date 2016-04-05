@@ -103,7 +103,7 @@ export function doAddTaskResult(sample_id, task_queue_id, state) {
 
 export function sendManualMount(manual) {
     return function(dispatch) {
-        fetch('mxcube/api/v0.1/diffractometer/use_sc', { 
+        fetch('mxcube/api/v0.1/diffractometer/usesc', { 
             method: 'PUT', 
             credentials: 'include',
             headers: {

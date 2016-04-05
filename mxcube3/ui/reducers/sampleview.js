@@ -72,6 +72,14 @@ export default (state=initialState, action) => {
             {
                 return {...state, canvas: action.canvas };
             }
+         case 'MOUNT_SAMPLE':
+            {
+                return {...state, points: {} };
+            }
+         case 'UNMOUNT_SAMPLE':
+            {
+                return {...state, points: {} };
+            }
         case 'SET_INITIAL_STATUS':
             {
                 return {...state, 
