@@ -1,9 +1,8 @@
-from flask import session, redirect, url_for, render_template, request, Response, jsonify
+from flask import request, Response, jsonify
 from mxcube3 import app as mxcube
 
 import logging
 
-###----BEAMLINE----###
 @mxcube.route("/mxcube/api/v0.1/beamline/<id>/move", methods=['PUT'])
 def moveBlMotor(id):
     """Beamline: move "id" moveable (energy, resolution ...) to the position specified
@@ -14,6 +13,7 @@ def moveBlMotor(id):
     motor = mxcube.beamline.getObjectByRole(id.lower())
     motor.move
     return mxcube.beamline.move(data)
+
 
 @mxcube.route("/mxcube/api/v0.1/beamline/status", methods=['GET'])
 def get_bl_status(id):
@@ -64,3 +64,33 @@ def getBeamInfo():
         return resp
     except Exception:
         return Response(status=409)
+
+@mxcube.route("/mxcube/api/v0.1/beamline/info", methods=['GET'])
+def bl_info():  
+    data = {"energy": {"name": "energy",
+                       "value": 10,
+                       "limits": (0, 1000, 0.1)},
+            "transmission": {"name": "transmission",
+                             "value": 100,
+                             "limits": (0, 1000, 0.1)},
+            "resolution": {"name": "resolution",
+                           "value": 2,
+                           "limits": (0, 1000, 0.1)}}
+
+    return jsonify(data)
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline/<name>/set", methods=['GET'])
+def set_beamline_attribute(name):
+    value = request.args.get("value",'')
+    print("/mxcube/api/v0.1/beamline/%s/set?value=%s" % (name, value))
+    data = {"name": name, "value":value}
+    return jsonify(data)
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
+def get_beamline_attribute(name):
+    value = 2
+    print("/mxcube/api/v0.1/beamline/%s/" % (name))
+    data = {"name": name, "value":value}
+    return jsonify(data)
