@@ -14,14 +14,13 @@ var $ = require('jquery');
  *
  * Valid react properties (html attributes) are:
  *
- *   dataType:       The data type of the value (the input will addapt accordingly)
- *   getURL:         URL for data request
+ *   dataType:       The data type of the value (the input will addapt
+ *                   accordingly)
  *   inputSize:      Input field size, with any html unit; px, em, rem ...
  *   propertyKey:    Key used when retreiving or sending data to server
  *   propertyName:   Name displayed in label
  *   propertyUnit:   Unit of property
- *   propertyValue:  Initial value
- *   setURL:         URL used when sending data to server
+ *   propertyValue:  Value
  *
  * @class
  *
@@ -29,59 +28,80 @@ var $ = require('jquery');
 export default class PropertyInput extends React.Component{
     constructor(props) {
         super(props);
-        this.state = {value: props.propertyValue};
+        this.disable_display = false;
     }
 
+
     componentDidMount() {
-        var props = this.props;
         var editable = ReactDOM.findDOMNode(this.refs.label);
 
         $(editable).editable({
-            title: props.propertyName,
-            mode: props.mode,
-            pk: props.propertyKey,
-//            url: props.setURL,
-            tpl: "<input type=" + props.dataType + " style='width:" + props.inputSize + "'>",
+            title: this.props.propertyName,
+            mode: this.props.mode,
+            value: this.props.propertyValue,
+            pk: this.props.ref,
+            tpl: "<input type=" + this.props.dataType + " style='width:" +
+                 this.props.inputSize + "'>",
             display: (value) => {
-                this.setState({value: value + " " + props.propertyUnit});
+                this.setDisplayValue(value);
             }
         });
     }
+
+
+    componentWillReceiveProps(nextProps){
+        var editable = ReactDOM.findDOMNode(this.refs.label);
+
+        // The setValue method calls the display callback of the editable
+        // so disable the callback so that we dont set the value twice.
+        $(editable).editable("option", "display", false)
+        $(editable).editable("setValue", nextProps.propertyValue);
+        $(editable).editable("option","display",
+                             (value) => {this.setDisplayValue(value)})
+    }
+
+
+    setDisplayValue(value){
+        if ( this.props.valueChangedCb != undefined ) {
+            // Only update if value actually changed
+            if (value != this.props.propertyValue) {
+                this.props.valueChangedCb(this.props.propertyKey, value);
+            }
+        }
+    }
+
 
     /**
      * Uses dangerouslySetInnerHTML to be able to display "special" characters
      * for units.
      */
-    render (){
+    render(){
+        var valueStr = this.props.propertyValue + " " + this.props.propertyUnit;
+
         return(
-            <div className="property-input">
-              <span className="col-sm-6 control-label">{this.props.propertyName}:</span>
-              <a className="" href="#" ref="label" data-type={this.props.dataType} data-clear="false" data-inputclass="beamline-setup-input">
-                <span dangerouslySetInnerHTML={{__html:this.state.value}}/>
-              </a>
+            <div className={this.props.className + " property-input-container"}>
+              <span className={"property-input-label " + this.props.ref}>
+                {this.props.propertyName}:
+              </span>
+              <span className={"property-input-value " + this.props.ref}>
+                <a className={"property-input-value-inner " + this.props.ref}
+                   href="#" ref="label"
+                   data-type={this.props.dataType} data-clear="false"
+                   data-inputclass="beamline-setup-input"
+                   dangerouslySetInnerHTML={{__html:valueStr}}/>
+              </span>
             </div>
         );
     }
 }
 
-PropertyInput.propTypes = {
-    dataType: React.PropTypes.string,
-    getURL: React.PropTypes.string,
-    inputSize: React.PropTypes.string,
-    propertyKey: React.PropTypes.string,
-    propertyName: React.PropTypes.string,
-    propertyUnit: React.PropTypes.string,
-    propertyValue: React.PropTypes.string,
-    setURL: React.PropTypes.string
-}
-
 PropertyInput.defaultProps = {
+    className: "",
     dataType: "number",
-    getURL: "",
     inputSize: "100px",
-    propertyKey: "",
     propertyName: "",
     propertyUnit: "",
     propertyValue: 0,
-    setURL: ""
+    propertyKey: undefined,
+    valueChangedCb: undefined
 }
