@@ -1,64 +1,125 @@
 'use strict';
 
 import React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import PropertyInput from "./PropertyInput";
+import PropertyInput from "../components/SampleView/PropertyInput";
 import "./beamline_setup_container.css";
+import {getBeamlineProperties, setBeamlineProperty} from '../actions/beamline_setup';
 
-export default class BeamlineSetupComponent extends React.Component{
-    componentDidMount() {
+class BeamlineSetupContainer extends React.Component{
+    constructor(props) {
+       super(props);
+       this.valueChange = this.valueChange.bind(this);
     }
+
+
+    componentDidMount() {
+        this.props.getBeamlineProperties();
+    }
+
+
+    valueChange(name, value){
+        console.log("valueChange: " + name + " " + value);
+        this.props.setBeamlineProperty(name, value);
+    }
+
 
     render(){
         return(
-            <div className="container-fluid">
             <div className="row">
               <div className="beamline-setup-container">
-                <legend>Beamline setup</legend>
-                <div className="beamline-setup-inner">
-                  <form className="form-horizontal">
-
-                    <div className="row">
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Energy" propertyUnit="keV" propertyValue="0" propertyKey="energy" inputSize="100px" dataType="number" setURL="/set-var" getURL="/get-var"/>
-                      </div>
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Resolution" propertyUnit="&Aring"  propertyValue="0" propertyKey="key1" inputSize="100px" dataType="number"/>
-                      </div>
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Transmission" propertyUnit="%" propertyKey="key2" inputSize="100px" dataType="number"/>
-                      </div>
-                    </div>
-
-                    <div className="row top10">
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Resolution" propertyUnit="&Aring" propertyKey="resolution" inputSize="100px" dataType="number"/>
-                      </div>
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Energy" propertyUnit="KeV" propertyKey="key3" inputSize="100px" dataType="number"/>
-                      </div>
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Transmission" propertyUnit="%" propertyKey="key4" inputSize="100px" dataType="number"/>
-                      </div>
-                    </div>
-
-                    <div className="row top10">
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Transmission" propertyUnit="%" propertyKey="Transmission" inputSize="100px" dataType="number"/>
-                      </div>
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Resolution" propertyUnit="&Aring" propertyKey="key5" inputSize="100px" dataType="number"/>
-                      </div>
-                      <div className="form-group" className="col-sm-3">
-                        <PropertyInput propertyName="Energy" propertyUnit="KeV" propertyKey="key6" inputSize="100px" dataType="number"/>
-                      </div>
-                    </div>
-
-                </form>
+                <legend className="beamline-setup-header">
+                  Beamline setup
+                </legend>
+                <div className="beamline-setup-content">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <PropertyInput ref="energy" propertyName="Energy"
+                                         propertyKey="energy" propertyUnit="keV"
+                                         propertyValue={this.props.data.energy.value}
+                                         valueChangedCb={this.valueChange}
+                                         inputSize="100px" dataType="number" />
+                        </td>
+                        <td>
+                          <PropertyInput propertyName="Resolution" 
+                                         propertyUnit="&Aring" propertyValue="0"
+                                         ref="key1" inputSize="100px"
+                                         dataType="number"/>
+                        </td>
+                        <td>
+                          <PropertyInput propertyName="Transmission"
+                                         propertyUnit="%" ref="key2"
+                                         inputSize="100px" dataType="number"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <PropertyInput ref="resolution" propertyName="Resolution"
+                                         propertyKey="resolution" propertyUnit="&Aring"
+                                         propertyValue={this.props.data.resolution.value}
+                                         valueChangedCb={this.valueChange}
+                                         inputSize="100px" dataType="number"/>
+                        </td>
+                        <td>
+                          <PropertyInput propertyName="Energy" propertyUnit="KeV"
+                                         ref="key3" inputSize="100px"
+                                         dataType="number"/>
+                          </td>
+                          <td>
+                            <PropertyInput propertyName="Transmission"
+                                           propertyUnit="%" ref="key4"
+                                           inputSize="100px" dataType="number"/>
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <PropertyInput ref="transmission" propertyName="Transmission"
+                                         propertyKey="transmission" propertyUnit="%"
+                                         propertyValue={this.props.data.transmission.value}
+                                         valueChangedCb={this.valueChange}
+                                         inputSize="100px" dataType="number"/>
+                        </td>
+                        <td>
+                          <PropertyInput propertyName="Resolution"
+                                         propertyUnit="&Aring" ref="key5"
+                                         inputSize="100px" dataType="number"/>
+                        </td>
+                        <td>
+                          <PropertyInput propertyName="Energy" propertyUnit="KeV"
+                                         ref="key6" inputSize="100px"
+                                         dataType="number"/>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            </div>
             </div>
         )
     }
 }
+
+
+function mapStateToProps(state) {
+    return {
+        data: state.beamlineSetup
+    }
+}
+
+
+function mapDispatchToProps(dispatch) {
+    return {
+        getBeamlineProperties: bindActionCreators(getBeamlineProperties, dispatch),
+        setBeamlineProperty: bindActionCreators(setBeamlineProperty, dispatch)
+    }
+}
+
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(BeamlineSetupContainer);
