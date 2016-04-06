@@ -1,0 +1,7 @@
+<device class="MicrodiffInOutMockup">
+  <username>Microdiff frontlight</username>
+  <motor_name>FrontLightIsOn</motor_name>
+  <exporter_address>192.168.96.43:9001</exporter_address>
+  <cmd_name>FrontLightIsOn</cmd_name>
+  <offset>0</offset>
+ </device>
