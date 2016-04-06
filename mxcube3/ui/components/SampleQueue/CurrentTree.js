@@ -13,8 +13,10 @@ export default class CurrentTree extends React.Component {
         super(props);
         this.moveCard = this.moveCard.bind(this);
         this.deleteTask = this.deleteTask.bind(this);
-        this.collapse = this.props.collapse.bind(this,"current");
+        this.collapse = props.collapse.bind(this,"current");
         this.runSample = this.runSample.bind(this);
+        this.unmount = this.unMountSample.bind(this);
+
     }
 
     moveCard(dragIndex, hoverIndex) {
@@ -27,6 +29,10 @@ export default class CurrentTree extends React.Component {
 
     runSample(){
         this.props.run(this.props.mounted);
+    }
+
+    unMountSample(){
+        this.props.unmount(this.props.mounted);
     }
 
     render() {
@@ -45,7 +51,8 @@ export default class CurrentTree extends React.Component {
             <div className="m-tree">
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>{(node ? 'Vial ' + sampleData.id : "No Sample Mounted")}</span>
-                     <div className={node && sampleTasks.length ? "pull-right" : "hidden"}>
+                     <div className={node ? "pull-right" : "hidden"}>
+                        <i className="fa fa-sign-out" onClick={this.unmount}></i>
                         <i className="fa fa-play" onClick={this.runSample}></i>
                         <i className="fa fa-pause"></i>
                         <i className="fa fa-stop"></i>

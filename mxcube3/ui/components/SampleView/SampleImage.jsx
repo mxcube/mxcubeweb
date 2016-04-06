@@ -62,7 +62,6 @@ export default class SampleImage extends React.Component {
 
     drawImageOverlay(canvas, imageRatio){
         let l = 0.05 * this.props.pixelsPerMm / imageRatio;
-        //console.log(imageRatio);
         canvas.add(makeBeam(canvas.width/2,canvas.height/2, l/2));
         canvas.add(makeLine(10,canvas.height-10,l + 10,canvas.height-10));
         canvas.add(makeLine(10,canvas.height-10,10,canvas.height-10-l));

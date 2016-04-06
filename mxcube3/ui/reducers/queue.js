@@ -13,7 +13,6 @@ export default (state={
     searchString: ""
 }, action) => {
     switch (action.type) {
-
         // Adding sample to queue
         case 'ADD_SAMPLE':
             return Object.assign({},state, 
@@ -60,10 +59,17 @@ export default (state={
                         {
                             current: {...state.current, node: action.queue_id, running: false},
                             todo:  {...state.todo, nodes: without(state.todo.nodes, action.queue_id)},
-                            history:  {...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : [])}
+                            history:  {...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)}
                         }
                         );
-
+        //  UNMount, this will remove the sample from current and add it to history
+        case 'UNMOUNT_SAMPLE':
+            return Object.assign({}, state, 
+                        {
+                            current:{node: null, collapsed: false, running: false},
+                            history:  {...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)}
+                        }
+                        );
         // Run Sample
         case 'RUN_SAMPLE':
             return Object.assign({}, state, 
@@ -122,9 +128,9 @@ export default (state={
         case 'CLEAR_QUEUE':
              return Object.assign({}, state, 
                 {
-                    current: 0,
+                    current:{node: null, collapsed: false, running: false},
                     todo: {nodes: [], collapsed: false},
-                    history: []
+                    history: {nodes: [], collapsed: false}
                 });
         case 'QUEUE_STATE':
              return action.queueState;

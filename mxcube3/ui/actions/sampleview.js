@@ -15,9 +15,10 @@ export function setCanvas(canvas) {
   }
 }
 
-export function setLight(on) {
+export function setLight(name, on) {
   return { 
     type: "SET_LIGHT",
+    name: name,
     on: on
   }
 }
@@ -32,10 +33,11 @@ export function showContextMenu(show, shape={type: "NONE"} , x=0, y=0) {
   }
 }
 
-export function setZoom(level) {
+export function setZoom(level, pixelsPerMm) {
   return { 
     type: "SET_ZOOM",
-    level: level
+    level: level,
+    pixelsPerMm: pixelsPerMm
   }
 }
 
@@ -48,6 +50,12 @@ export function StartClickCentring() {
 export function StopClickCentring() {
   return { 
     type: "STOP_CLICK_CENTRING"
+  }
+}
+
+export function addCentringPoint() {
+  return { 
+    type: "ADD_CENTRING_POINT"
   }
 }
 
@@ -116,7 +124,7 @@ export function sendStartClickCentring() {
 }
 
 export function sendCentringPoint(x, y) {
-  return function() {
+  return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/centring/click', { 
     method: 'PUT', 
     credentials: 'include',
@@ -129,7 +137,9 @@ export function sendCentringPoint(x, y) {
     if (response.status >= 400) {
       throw new Error("Server refused to add point");
     }
-  });
+  }).then(function() {
+      dispatch(addCentringPoint())
+    });
 }
 }
 
@@ -205,9 +215,9 @@ export function sendZoomPos(level) {
     if (response.status >= 400) {
       throw new Error("Server refused to zoom");
     }
-  }).then(function() {
-      dispatch(getSampleImageSize());
-      dispatch(setZoom(level));
+    return response.json();
+  }).then(function(json) {
+      dispatch(setZoom(level, json.pixelsPerMm[0]));
     });
 
 }
@@ -227,7 +237,7 @@ export function sendLightOn(name) {
       throw new Error("Server refused to turn light on");
     }
   }).then(function() {
-      dispatch(setLight(true));
+      dispatch(setLight(name, true));
     });
 }
 }
@@ -246,7 +256,7 @@ export function sendLightOff(name) {
       throw new Error("Server refused to turn light off");
     }
   }).then(function() {
-      dispatch(setLight(false));
+      dispatch(setLight(name, false));
     });
 
 }
@@ -327,7 +337,6 @@ export function getMotorPositions() {
  return response.json();
   }).then(function(json) {
       dispatch(saveMotorPositions(json));
-      dispatch(setZoom(json.Zoom.position));
     });
 
 }

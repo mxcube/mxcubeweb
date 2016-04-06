@@ -69,7 +69,7 @@ listOptions(type){
 render() {
     return (
         <ul id="contextMenu" className="dropdown-menu" role="menu">
-            {this.props.sampleId ? this.state.options[this.props.shape.type].map(this.listOptions) : <li><a>No Sample Mounted</a></li>}
+            {this.props.sampleId !== undefined ? this.state.options[this.props.shape.type].map(this.listOptions) : <li><a>No Sample Mounted</a></li>}
         </ul>
         );        
 }

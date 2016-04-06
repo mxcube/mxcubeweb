@@ -30,12 +30,11 @@ class SampleViewContainer extends Component {
                 pixelsPerMm={pixelsPerMm} 
                 shapeList={points} 
                 clickCentring={clickCentring} 
-                mounted={this.props.current.node}
                 contextMenuShow={show}
                 imageRatio={imageRatio}
                 canvas={canvas} 
             />
-            <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} />
+            <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>
         <div className="col-xs-4">
             <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors}/>

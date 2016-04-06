@@ -3,7 +3,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Characterisation from '../components/Tasks/Characterisation'
 import DataCollection from '../components/Tasks/DataCollection'
-import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask } from '../actions/samples_grid'
+import AddSample from '../components/Tasks/AddSample'
+import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask, doAddSample } from '../actions/samples_grid'
 import { hideTaskParametersForm, showTaskParametersForm } from '../actions/taskForm'
 
 
@@ -16,6 +17,7 @@ class TaskContainer extends React.Component {
       <div className="col-xs-12">
             <Characterisation pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'Characterisation'}/>
             <DataCollection pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'DataCollection'}/>
+            <AddSample hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'AddSample'} add={this.props.doAddSample} id={this.props.manualMountID}/>
       </div>);
   }
 }
@@ -28,7 +30,8 @@ function mapStateToProps(state) {
         taskData : state.taskForm.taskData,
         sampleIds : state.taskForm.sampleIds,
         pointId : state.taskForm.pointId,
-        defaultParameters : state.taskForm.defaultParameters
+        defaultParameters : state.taskForm.defaultParameters,
+        manualMountID : state.samples_grid.manualMount.id
   }
 }
 
@@ -38,7 +41,8 @@ function mapDispatchToProps(dispatch) {
       hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
       addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
       addTask: bindActionCreators(sendAddSampleTask, dispatch),
-      changeTask: bindActionCreators(sendChangeSampleTask, dispatch)
+      changeTask: bindActionCreators(sendChangeSampleTask, dispatch),
+      doAddSample: bindActionCreators(doAddSample, dispatch)
   }
 }
 

@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch'
-import { sendClearQueue, sendRunSample, sendAddSample } from './queue'
+import { sendClearQueue, sendRunSample, sendAddSample, sendMountSample } from './queue'
+import { showTaskParametersForm } from './taskForm'
+import { setLoading, showErrorPanel } from './general'
 
 export function doUpdateSamples(samples_list) {
     return { type: "UPDATE_SAMPLES", samples_list }
@@ -7,18 +9,39 @@ export function doUpdateSamples(samples_list) {
 
 export function doGetSamplesList() {
    return function(dispatch) {
-       window.please_wait_dialog.show();
+       dispatch(setLoading(true));
        fetch('mxcube/api/v0.1/sample_changer/samples_list', {credentials: 'include'})
             .then(response => response.json())
             .then(json => {
-                window.please_wait_dialog.hide();
+                dispatch(setLoading(false));
                 dispatch(doUpdateSamples(json));
             }, () => { 
-                window.please_wait_dialog.hide();
-                window.error_notification.notify("Could not get samples list");
+                dispatch(setLoading(false));
+                dispatch(showErrorPanel(true, "Could not get samples list"))
             })
     }
 }
+
+export function doAddSample(id, parameters) {
+    return function(dispatch) {
+        dispatch(sendAddSample(id)).then(
+            queue_id => {
+                dispatch(sendMountSample(queue_id));
+            }
+        );
+       dispatch(doAddSampleGrid(id, parameters));
+    }
+}
+
+export function doAddSampleGrid(id, parameters) {
+    return { 
+        type: "ADD_SAMPLE_TO_GRID", 
+        id :id,
+        data: parameters 
+    }
+}
+
+
 
 export function doSetLoadable(loadable) {
     return { type: "SET_LOADABLE", loadable }
@@ -78,17 +101,27 @@ export function doAddTaskResult(sample_id, task_queue_id, state) {
             }
 }
 
-export function doToggleManualMount() {
-    return function(dispatch, getState) {
-        const { samples_grid } = getState();
-        if (samples_grid.manual_mount) {
-            dispatch(doSetManualMount(false));
-            dispatch(doGetSamplesList());
-        } else {
-            dispatch(doSetManualMount(true));
-            dispatch(sendClearQueue());
-            dispatch(doUpdateSamples([{id:"0", sample_info: { sampleName: "mounted sample"}}])); 
-        }
+export function sendManualMount(manual) {
+    return function(dispatch) {
+        fetch('mxcube/api/v0.1/diffractometer/usesc', { 
+            method: 'PUT', 
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({"use_sc": !manual})
+        }).then((response) => {
+            if (response.status >= 400) {
+                dispatch(showErrorPanel(true, "Could not toogle manual mode"))
+            }else{
+                dispatch(sendClearQueue());
+                dispatch(doSetManualMount(manual));
+                if (manual) {
+                    dispatch(showTaskParametersForm("AddSample")); 
+                } 
+            }
+        });
     }
 }
             
