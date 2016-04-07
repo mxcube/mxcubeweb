@@ -10,7 +10,8 @@ export default class ContextMenu extends React.Component {
       SAVED : [
       {text: "Add Characterisation", action: () => this.showModal("Characterisation"), key: 1},
       {text: "Add Datacollection", action: () => this.showModal("DataCollection"), key: 2},
-      {text: "Delete Point", action: () => this.removeObject(), key: 3}
+      {text: "Go To Point", action: () => this.goToPoint(), key: 3},
+      {text: "Delete Point", action: () => this.removeObject(), key: 4}
       ],
       TMP : [
       {text: "Save Point", action: () => this.savePoint(), key: 1},
@@ -49,6 +50,10 @@ savePoint(){
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.StopClickCentring();
     this.props.sampleActions.sendSavePoint(this.props.shape.id);
+}
+
+goToPoint(){
+    this.props.sampleActions.sendGoToPoint(this.props.shape.id);
 }
 
 removeObject(){

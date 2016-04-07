@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import { showErrorPanel } from './general'
 
 
 export function setImageRatio(ratio) {
@@ -282,7 +283,7 @@ export function sendMotorPosition(motorName, value) {
 }
 
 export function sendAbortCentring() {
-  return function() {
+  return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/centring/abort', { 
     method: 'PUT', 
     credentials: 'include',
@@ -292,10 +293,29 @@ export function sendAbortCentring() {
     }
   }).then(function(response) {
     if (response.status >= 400) {
-      throw new Error("Server refused to turn light off");
+      dispatch(showErrorPanel(true, "Server refused to abort centring"))
+    }else{
+      dispatch(StopClickCentring());
     }
   });
 
+}
+}
+
+export function sendGoToPoint(id) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/centring/' + id + '/moveto', { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, "Server refused to move to point"))
+    }
+  });
 }
 }
 

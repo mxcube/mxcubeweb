@@ -23,7 +23,6 @@ export default class LoggerContainer extends React.Component {
     }
 
     lastPage(){
-        console.log(this.props.records.length % 20);
         this.props.setLogPage(Math.floor(this.props.records.length / 20));
     }
 
