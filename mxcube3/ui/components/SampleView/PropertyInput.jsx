@@ -47,10 +47,10 @@ export default class PropertyInput extends React.Component{
             value: this.props.propertyValue,
             pk: this.props.ref,
             tpl: "<input type=" + this.props.dataType + " style='width:" +
-                 this.props.inputSize + "'>",
-            display: (value) => {
+                 this.props.inputSize + "'>"
+//            display: (value) => {
                 //this.setValue(value);
-            }
+//            }
         });
     }
 
