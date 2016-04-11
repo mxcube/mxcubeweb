@@ -34,8 +34,8 @@ export function setBeamlinePropertyRequest(name, value, promise){
               dispatch(setPropertyValueDispatch(data));
               promise.resolve();
           }, () => {
-              throw new Error("Server connection problem");
               promise.reject("Server connection problem");
+              throw new Error("Server connection problem");
           });
     };
 }
