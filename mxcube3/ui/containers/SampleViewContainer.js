@@ -3,7 +3,6 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import SampleImage from '../components/SampleView/SampleImage'
 import MotorControl from '../components/SampleView/MotorControl'
-import ShapeList from '../components/SampleView/ShapeList'
 import ContextMenu from '../components/SampleView/ContextMenu'
 import SampleControls from '../components/SampleView/SampleControls'
 import * as QueueActions from '../actions/queue'
@@ -23,6 +22,7 @@ class SampleViewContainer extends Component {
       <div className="row">
         <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters}/>
         <div className="col-xs-8">
+            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors}/>
             <SampleImage 
                 sampleActions={this.props.sampleViewActions} 
                 imageHeight={height} 
@@ -37,8 +37,6 @@ class SampleViewContainer extends Component {
             <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>
         <div className="col-xs-4">
-            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors}/>
-            <ShapeList sampleViewState={this.props.sampleViewState} />
         </div>
       </div>
     )

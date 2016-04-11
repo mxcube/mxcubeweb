@@ -1,7 +1,32 @@
+
 'use strict';
 
-import React from 'react'
+import React from 'react';
+import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
+import { Overlay } from 'react-bootstrap';
+import ReactDOM from 'react-dom';
 import {reduxForm} from 'redux-form';
+
+const ToolTip = props => {
+  let {
+    style,
+    title,
+    children
+  } = props;
+
+  return (
+    <div className="overlay-box" style={{ ...style}}>
+      <div className="overlay-arrow"/>
+        <div className="overlay-head">
+            {title}
+        </div>
+        <div className="overlay-body">
+            {children}
+        </div>
+    </div>
+  );
+};
+
 
 class MotorControl extends React.Component {
 
@@ -11,16 +36,8 @@ class MotorControl extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-    componentWillMount(){
-      const motors = this.props.motors;
-       this.props.initializeForm({
-                Phi: motors.Phi.position, 
-                PhiY: motors.PhiY.position, 
-                PhiZ: motors.PhiZ.position, 
-                Sampx: motors.Sampx.position, 
-                Sampy: motors.Sampy.position,
-                Zoom: motors.Zoom.position
-        });
+    componentDidMount() {
+        this.phiTarget = ReactDOM.findDOMNode.bind(this, this.refs.target);
     }
 
     handleSubmit(){
@@ -33,76 +50,62 @@ class MotorControl extends React.Component {
     }
 
     render() { 
-
-        const {fields: {Kappa, Kappa_phi, Phi, PhiY, PhiZ, Sampx, Sampy, Zoom}} = this.props;
-
+        const {fields: {Kappa, Kappa_phi, Phi, PhiY, PhiZ}} = this.props;
         return (
        
-        <div className="information-box"><h2 className="text-center">Motors</h2>
-        <hr className="divider" />
+        <div className="sample-controlls sample-controlls-top">
 
-        <form className="form-horizontal">
+                <div className="row">
 
-            <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">Kappa</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Kappa} />
+                <div className="col-sm-2">
+                    <label className="motor-name">Kappa: </label>
+                    <span className="motor-value">{String(Kappa.value).substring(0,4)}</span>
                 </div>
 
-                 <label className="col-sm-2 control-label">Kappa_Phi</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Kappa_phi} />
+                <div className="col-sm-2">
+                    <label className="motor-name">Kappa_phi: </label>
+                    <span className="motor-value">{String(Kappa_phi.value).substring(0,4)}</span>
                 </div>
 
-
-            </div>
-            <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">Phi</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Phi} />
+                <div className="col-sm-2">
+                    <label className="motor-name">Phi: </label>
+                    <span className="motor-value" ref='target'>{String(Phi.value).substring(0,4)}</span>
                 </div>
 
-                 <label className="col-sm-2 control-label">PhiY</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...PhiY} />
+                <div className="col-sm-2">
+                    <label className="motor-name">PhiY: </label>
+                    <span className="motor-value">{String(PhiY.value).substring(0,4)}</span>
                 </div>
 
-
-            </div>
-
-            <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">PhiZ</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...PhiZ} />
+                <div className="col-sm-2">
+                    <label className="motor-name">PhiZ: </label>
+                    <span className="motor-value">{String(PhiZ.value).substring(0,4)}</span>
                 </div>
 
-                 <label className="col-sm-2 control-label">SampX</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Sampx} />
+                <Overlay
+                    show
+                    placement={"bottom"}
+                    container={this}
+                    target={this.phiTarget}
+                >
+                    <ToolTip title={"Phi"}>
+                    <div className="form-inline">
+                      <div className="form-group">
+                        <input className="form-control input-sm" type="number" step="15" {...Phi}/>
+                        <button className="btn btn-primary btn-sm editable-submit" onClick={this.handleSubmit}>Go!</button>
+                        <select className="form-control input-sm">
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                            <option value="45">45</option>
+                            <option value="90">90</option>
+                            <option value="180">180</option>
+                        </select>
+                      </div>
+                    </div>
+                    </ToolTip>
+                </Overlay>
+
                 </div>
-
-
-            </div>
-
-             <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">SampY</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Sampy} />
-                </div>
-
-                <label className="col-sm-2 control-label">Zoom</label>
-                 <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Zoom} />
-                </div>
-
-            </div>
-        </form>
-
-          <button type="button" className="btn btn-primary pull-right motor-button" onClick={this.handleSubmit}>Change Motors</button>
         </div>
 
         );
@@ -111,8 +114,15 @@ class MotorControl extends React.Component {
 
 MotorControl = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'MotorControl',                           // a unique name for this form
-  fields: ['Kappa', 'Kappa_phi', 'Phi', 'PhiY', 'PhiZ', 'Sampx', 'Sampy', 'Zoom'] // all the fields in your form
-})(MotorControl);
+  fields: ['Kappa', 'Kappa_phi', 'Phi', 'PhiY', 'PhiZ'] // all the fields in your form
+},
+state => ({ // mapStateToProps
+  initialValues: {
+      Phi : state.sampleview.motors.Phi.position, 
+      PhiY : state.sampleview.motors.PhiY.position,
+      PhiZ : state.sampleview.motors.PhiZ.position
+  } // will pull state into form's initialValues
+}))(MotorControl);
 
 export default MotorControl;
 

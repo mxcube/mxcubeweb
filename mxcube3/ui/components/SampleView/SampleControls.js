@@ -45,7 +45,7 @@ export default class SampleControls extends React.Component {
 
 render() {
     return (
-        <div className="sample-controlls">
+        <div className="sample-controlls sample-controlls-bottom">
             <div className="text-center"> 
                 <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center"><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
                 <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={this.takeSnapShot} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
