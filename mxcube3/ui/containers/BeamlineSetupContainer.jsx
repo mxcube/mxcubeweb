@@ -1,12 +1,16 @@
 'use strict';
 
 import React from 'react';
+import ReactDOM from 'react-dom';
+import io from "socket.io-client";
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import PropertyInput from "../components/SampleView/PropertyInput";
 import "./beamline_setup_container.css";
-import {getBeamlineProperties, setBeamlineProperty} from '../actions/beamline_setup';
+import {getBeamlinePropertiesRequest, setBeamlinePropertyRequest} from '../actions/beamline_setup';
+import {setPropertyValueDispatch} from '../actions/beamline_setup';
+
 
 class BeamlineSetupContainer extends React.Component{
     constructor(props) {
@@ -16,13 +20,19 @@ class BeamlineSetupContainer extends React.Component{
 
 
     componentDidMount() {
-        this.props.getBeamlineProperties();
+        this.props.getBeamlinePropertiesRequest();
+        var ws = io.connect('http://' + document.domain + ':' + location.port + "/beamline/energy");
+        ws.on('value_change', (value) => {
+            //this.props.setPropertyValue({"name": "energy", "value":value});
+            //this.props.getBeamlinePropertiesRequest();
+            this.refs.energy.setDisplayValue(value);
+            console.log("ws: " + value);
+        });
     }
 
 
-    valueChange(name, value){
-        console.log("valueChange: " + name + " " + value);
-        this.props.setBeamlineProperty(name, value);
+    valueChange(name, value, promise){
+        this.props.setBeamlinePropertyRequest(name, value, promise);
     }
 
 
@@ -113,8 +123,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getBeamlineProperties: bindActionCreators(getBeamlineProperties, dispatch),
-        setBeamlineProperty: bindActionCreators(setBeamlineProperty, dispatch)
+        getBeamlinePropertiesRequest: bindActionCreators(getBeamlinePropertiesRequest, dispatch),
+        setPropertyValue: bindActionCreators(setPropertyValueDispatch, dispatch),
+        setBeamlinePropertyRequest: bindActionCreators(setBeamlinePropertyRequest, dispatch)
     }
 }
 
