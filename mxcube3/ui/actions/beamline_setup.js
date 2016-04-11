@@ -1,8 +1,8 @@
 import fetch from 'isomorphic-fetch';
 
-export function getBeamlineProperties() {
+export function getBeamlinePropertiesRequest() {
     return function(dispatch) {
-        fetch('mxcube/api/v0.1/beamline/info', {
+        fetch('mxcube/api/v0.1/beamline', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -11,7 +11,7 @@ export function getBeamlineProperties() {
             credentials: 'include'
         }).then(response => response.json())
           .then(data => {
-              dispatch(getBeamlinePropertiesDispatch(data));
+              dispatch(setPropertiesDispatch(data));
           }, () => {
               throw new Error("Server connection problem (login)");
           });
@@ -19,21 +19,23 @@ export function getBeamlineProperties() {
 }
 
 
-export function setBeamlineProperty(name, value){
+export function setBeamlinePropertyRequest(name, value, promise){
     return function(dispatch) {
-        console.log('mxcube/api/v0.1/beamline/' + name + '/set?value=' + value);
-        fetch('mxcube/api/v0.1/beamline/' + name + '/set?value=' + value, {
-            method: 'GET',
+        fetch('mxcube/api/v0.1/beamline/' + name, {
+            method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json'
             },
-            credentials: 'include'
+            credentials: 'include',
+            body: JSON.stringify({name, value})
         }).then(response => response.json())
           .then(data => {
               dispatch(setPropertyValueDispatch(data));
+              promise.resolve();
           }, () => {
-              throw new Error("Server connection problem (login)");
+              throw new Error("Server connection problem");
+              promise.reject("Server connection problem");
           });
     };
 }
@@ -47,9 +49,9 @@ export function setPropertyValueDispatch(data) {
 }
 
 
-export function getBeamlinePropertiesDispatch(data) {
+export function setPropertiesDispatch(data) {
     return {
-        type: "GET_BEAMLINE_PROPERTIES",
+        type: "SET_BEAMLINE_PROPERTIES",
         data: data
     };
 }

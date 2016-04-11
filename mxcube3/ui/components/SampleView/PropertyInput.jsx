@@ -38,34 +38,44 @@ export default class PropertyInput extends React.Component{
         $(editable).editable({
             title: this.props.propertyName,
             mode: this.props.mode,
+            onblur: 'ignore',
+            url: (params) => {
+                var d = new $.Deferred();
+                this.setValue(params.value, d);
+                return d.promise();
+            },
             value: this.props.propertyValue,
             pk: this.props.ref,
             tpl: "<input type=" + this.props.dataType + " style='width:" +
                  this.props.inputSize + "'>",
             display: (value) => {
-                this.setDisplayValue(value);
+                //this.setValue(value);
             }
         });
     }
 
 
     componentWillReceiveProps(nextProps){
-        var editable = ReactDOM.findDOMNode(this.refs.label);
-
-        // The setValue method calls the display callback of the editable
-        // so disable the callback so that we dont set the value twice.
-        $(editable).editable("option", "display", false)
-        $(editable).editable("setValue", nextProps.propertyValue);
-        $(editable).editable("option","display",
-                             (value) => {this.setDisplayValue(value)})
+        this.setDisplayValue(nextProps.propertyValue);
     }
 
 
     setDisplayValue(value){
+        // The setValue method calls the display callback of the editable
+        // so disable the callback so that we dont set the value twice.
+        var editable = ReactDOM.findDOMNode(this.refs.label);
+        $(editable).editable("option", "display", false);
+        $(editable).editable("setValue", value);
+        $(editable).editable("option","display",
+                             (value) => {this.setValue(value)})
+    }
+
+
+    setValue(value, promise){
         if ( this.props.valueChangedCb != undefined ) {
             // Only update if value actually changed
             if (value != this.props.propertyValue) {
-                this.props.valueChangedCb(this.props.propertyKey, value);
+                this.props.valueChangedCb(this.props.propertyKey, value, promise);
             }
         }
     }
