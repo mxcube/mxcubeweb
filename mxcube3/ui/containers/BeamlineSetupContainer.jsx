@@ -1,7 +1,6 @@
 'use strict';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import io from "socket.io-client";
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

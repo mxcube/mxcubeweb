@@ -19,7 +19,7 @@ export function getBeamlinePropertiesRequest() {
 }
 
 
-export function setBeamlinePropertyRequest(name, value, promise){
+export function setBeamlinePropertyRequest(name, value){
     return function(dispatch) {
         fetch('mxcube/api/v0.1/beamline/' + name, {
             method: 'PUT',
@@ -32,9 +32,9 @@ export function setBeamlinePropertyRequest(name, value, promise){
         }).then(response => response.json())
           .then(data => {
               dispatch(setPropertyValueDispatch(data));
-              promise.resolve();
+//              promise.resolve();
           }, () => {
-              promise.reject("Server connection problem");
+//              promise.reject("Server connection problem");
               throw new Error("Server connection problem");
           });
     };

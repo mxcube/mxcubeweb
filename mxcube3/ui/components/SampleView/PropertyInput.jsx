@@ -1,12 +1,9 @@
 'use strict';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import "x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js";
-import "x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css";
-
-var $ = require('jquery');
+import {Button, OverlayTrigger, Popover, Input} from "react-bootstrap"
+import {ButtonToolbar} from "react-bootstrap"
 
 /**
  * Provides a simple input ui for a physical properties, displays a label,
@@ -28,79 +25,80 @@ var $ = require('jquery');
 export default class PropertyInput extends React.Component{
     constructor(props) {
         super(props);
-        this.disable_display = false;
+        this.save = this.save.bind(this);
+        this.cancel = this.cancel.bind(this);
+        this.submit = this.submit.bind(this);
+        this.state = {loading: false}
     }
 
 
-    componentDidMount() {
-        var editable = ReactDOM.findDOMNode(this.refs.label);
-
-        $(editable).editable({
-            title: this.props.propertyName,
-            mode: this.props.mode,
-            onblur: 'ignore',
-            url: (params) => {
-                var d = new $.Deferred();
-                this.setValue(params.value, d);
-                return d.promise();
-            },
-            value: this.props.propertyValue,
-            pk: this.props.ref,
-            tpl: "<input type=" + this.props.dataType + " style='width:" +
-                 this.props.inputSize + "'>"
-//            display: (value) => {
-                //this.setValue(value);
-//            }
-        });
-    }
-
-
-    componentWillReceiveProps(nextProps){
-        this.setDisplayValue(nextProps.propertyValue);
-    }
-
-
-    setDisplayValue(value){
-        // The setValue method calls the display callback of the editable
-        // so disable the callback so that we dont set the value twice.
-        var editable = ReactDOM.findDOMNode(this.refs.label);
-        $(editable).editable("option", "display", false);
-        $(editable).editable("setValue", value);
-        $(editable).editable("option","display",
-                             (value) => {this.setValue(value)})
-    }
-
-
-    setValue(value, promise){
+    setValue(value){
         if ( this.props.valueChangedCb != undefined ) {
             // Only update if value actually changed
             if (value != this.props.propertyValue) {
-                this.props.valueChangedCb(this.props.propertyKey, value, promise);
+                this.props.valueChangedCb(this.props.propertyKey, value);
             }
         }
     }
 
 
-    /**
-     * Uses dangerouslySetInnerHTML to be able to display "special" characters
-     * for units.
-     */
-    render(){
-        var valueStr = this.props.propertyValue + " " + this.props.propertyUnit;
+    save() {
+        this.setState({loading: true});
+        this.setValue(this.refs.input.getValue());
+        this.refs.overlay.hide();
+        this.setState({loading: false});
+    }
 
-        return(
+
+    cancel() {
+        this.refs.overlay.hide();
+    }
+    
+    
+    submit(event) {
+		    event.preventDefault();
+		    this.save();
+    }
+
+
+    render() {
+        var valueStr = this.props.propertyValue + " " + this.props.propertyUnit;
+        var linkClass = 'editable-click';
+        var loading = this.state.loading ? "" : "hidden";
+        var input = !this.state.loading ? "" : "hidden";
+
+        var popover =(
+        <Popover title={this.props.propertyName}>
+          <form ref='input-form' className={input + ' form-inline'} onSubmit={this.submit}>
+            <Input ref='input' type={this.props.dataType} style={{width: '100px'}} 
+                   placeholder='Empty' className='input-sm' 
+                   defaultValue={this.props.propertyValue} />
+            <ButtonToolbar className='editable-buttons'>
+              <Button bsStyle='primary' className='btn-sm' onClick={this.save}>
+                <i className='glyphicon glyphicon-ok'/>
+              </Button>
+              <Button bsStyle='default' className='btn-sm' onClick={this.cancel}>
+                <i className='glyphicon glyphicon-remove'/>
+              </Button>
+            </ButtonToolbar>
+          </form>
+          <div ref='loading-div' className={loading +  ' ' + 'property-input-loading'} >
+          </div>
+        </Popover>);
+        
+        return (
             <div className={this.props.className + " property-input-container"}>
               <span className={"property-input-label " + this.props.ref}>
                 {this.props.propertyName}:
               </span>
-              <span className={"property-input-value " + this.props.ref}>
-                <a className={"property-input-value-inner " + this.props.ref}
-                   href="#" ref="label"
-                   data-type={this.props.dataType} data-clear="false"
-                   data-inputclass="beamline-setup-input"
-                   dangerouslySetInnerHTML={{__html:valueStr}}/>
-              </span>
+              <OverlayTrigger ref='overlay' trigger='click' rootClose={true} placement='top' overlay={popover}>
+                <span className={"property-input-value " + this.props.ref}>
+                  <a ref='valueLabel' href='javascript:;' className={linkClass} 
+                     dangerouslySetInnerHTML={{__html:valueStr}} />
+                </span>
+              </OverlayTrigger>
             </div>
+            
         );
     }
 }
@@ -113,5 +111,5 @@ PropertyInput.defaultProps = {
     propertyUnit: "",
     propertyValue: 0,
     propertyKey: undefined,
-    valueChangedCb: undefined
+    valueChangedCb: undefined,
 }

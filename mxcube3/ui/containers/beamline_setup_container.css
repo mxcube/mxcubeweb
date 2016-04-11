@@ -22,3 +22,10 @@
   min-width: 70px;
 }
 
+
+.property-input-loading{ 
+  background-image: url(./busy.gif);
+  width: 32px;
+  height: 32px;
+  margin:auto;
+}
