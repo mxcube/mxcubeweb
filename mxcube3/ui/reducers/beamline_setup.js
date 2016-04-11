@@ -30,7 +30,7 @@ const initialState = {
 
 export default (state=initialState, action) => {
     switch (action.type) {
-    case "GET_BEAMLINE_PROPERTIES":
+    case "SET_BEAMLINE_PROPERTIES":
         {
             return Object.assign({}, state, action.data);
         }
