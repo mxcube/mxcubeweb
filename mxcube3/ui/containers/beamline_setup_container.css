@@ -22,10 +22,17 @@
   min-width: 70px;
 }
 
+.property-input-loading{  
+}
 
-.property-input-loading{ 
-  background-image: url(./busy.gif);
-  width: 32px;
+.property-input-busy{
+  display: inline-block;
+  background-image: url(../../busy-indicator.gif);
   height: 32px;
-  margin:auto;
+  width: 32px;
+}
+
+.visibility-hidden{ 
+	visibility: hidden;
+  display: inline;
 }
