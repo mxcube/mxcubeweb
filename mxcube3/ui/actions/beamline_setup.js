@@ -19,7 +19,7 @@ export function getBeamlinePropertiesRequest() {
 }
 
 
-export function setBeamlinePropertyRequest(name, value){
+export function setBeamlinePropertyRequest(name, value, deferred){
     return function(dispatch) {
         fetch('mxcube/api/v0.1/beamline/' + name, {
             method: 'PUT',
@@ -31,12 +31,36 @@ export function setBeamlinePropertyRequest(name, value){
             body: JSON.stringify({name, value})
         }).then(response => response.json())
           .then(data => {
-              dispatch(setPropertyValueDispatch(data));
-//              promise.resolve();
+              if( data.status === "VALID" ){
+                  dispatch(setPropertyValueDispatch(data));
+                  deferred.resolve(data);
+              } 
+              else if( data.status === "ABORTED" ){
+                  dispatch(setPropertyValueDispatch(data));
+                  deferred.reject(data);
+              }
+              else{
+                  deferred.reject(data);
+              }
+
           }, () => {
-//              promise.reject("Server connection problem");
+              deferred.reject({msg: "Server connection problem"});
               throw new Error("Server connection problem");
           });
+    };
+}
+
+
+export function cancelValueChangeRequest(name, deferred){
+    return function(dispatch) {
+        fetch('mxcube/api/v0.1/beamline/' + name + '/abort', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-type': 'application/json'
+            },
+            credentials: 'include'
+        });
     };
 }
 

@@ -14,22 +14,40 @@ def connect():
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
-def get_beamline_attributes():
+def beamline_get_all_attributes():
     ho = BeamlineSetupMediator(mxcube.beamline)
     data = ho.dict_repr()
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
+@mxcube.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=['GET'])
+def beamline_abort_process(name):
+    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    ho.abort()
+    return Response('', status=200, mimetype='application/json')
+
+
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['PUT'])
-def set_beamline_attribute(name):
+def beamline_set_attribute(name):
     data = json.loads(request.data)
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
-    data["value"] = ho.set(data["value"], None)
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+
+    try:
+        data["value"] = ho.set(data["value"])
+        data["status"] = "VALID"
+        data["msg"] = ""
+        result, code = json.dumps(data), 200
+    except Exception as ex:
+        data["value"] = ho.get()
+        data["status"] = "ABORTED"
+        data["msg"] = str(ex)
+        result, code = json.dumps(data), 520
+
+    return Response(result, status=code, mimetype='application/json')
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
-def get_beamline_attribute(name):
+def beamline_get_attribute(name):
     value = 2
     print("/mxcube/api/v0.1/beamline/%s/" % (name))
     data = {"name": name, "value":value}
