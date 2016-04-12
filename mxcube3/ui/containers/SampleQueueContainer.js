@@ -47,27 +47,6 @@ function mapDispatchToProps(dispatch) {
 @connect(mapStateToProps, mapDispatchToProps)
 export default class SampleQueueContainer extends React.Component {
 
-// 0 = Started(Blue), 1 = Finished(Green), 2 = Failed(Red), 3 = Warning (Orange)
-// Mount will kick down
-
-   componentDidMount() {
-    const {socket} = this.props;
-    //const {getState} = this.props.queueActions;
-
-     //Populate queue with previous state
-     //getState();
-
-    // Start listening to socketIO to get results of task/sample execution
-    socket.on('hwr_record', (record) => {
-          // if(record.sample !==0 && record.queueId !== 0){
-          //   doAddTaskResult(record.sample, record.queueId, record.state)
-          // }
-          if(record.signal === "minidiffStateChanged"){
-            this.props.sampleViewActions.updatePointsPosition(record.data);
-          }
-     });
-  
-   }
 
    filterList(list){
      let listFiltered = list.filter((queue_id) => {

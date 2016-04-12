@@ -53,6 +53,7 @@ savePoint(){
 }
 
 goToPoint(){
+    this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendGoToPoint(this.props.shape.id);
 }
 

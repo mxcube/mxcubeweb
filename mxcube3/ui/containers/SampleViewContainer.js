@@ -5,6 +5,7 @@ import SampleImage from '../components/SampleView/SampleImage'
 import MotorControl from '../components/SampleView/MotorControl'
 import ContextMenu from '../components/SampleView/ContextMenu'
 import SampleControls from '../components/SampleView/SampleControls'
+import {showPopOver} from '../actions/general'
 import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
@@ -22,7 +23,7 @@ class SampleViewContainer extends Component {
       <div className="row">
         <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters}/>
         <div className="col-xs-8">
-            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors}/>
+            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors} showPopOver={this.props.showPopOver} popOver={this.props.PopOver}/>
             <SampleImage 
                 sampleActions={this.props.sampleViewActions} 
                 imageHeight={height} 
@@ -46,6 +47,7 @@ class SampleViewContainer extends Component {
 
 function mapStateToProps(state) {
   return { 
+          PopOver : state.general.showPopOver,
           current : state.queue.current,
           sampleInformation: state.samples_grid.samples_list,
           sampleViewState: state.sampleview,
@@ -56,6 +58,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
  return  {
+    showPopOver: bindActionCreators(showPopOver, dispatch),
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleActions : bindActionCreators(SampleActions, dispatch),
     sampleViewActions : bindActionCreators(SampleViewActions, dispatch),

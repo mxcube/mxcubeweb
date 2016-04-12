@@ -16,6 +16,13 @@ export function showErrorPanel(show, message="") {
     }
 }
 
+export function showPopOver(name) {
+    return { 
+      type: "SHOW_POP_OVER", name
+    }
+}
+
+
 export function getInitialStatus() {
   return function(dispatch) {
     fetch('mxcube/api/v0.1/initialstatus', { 

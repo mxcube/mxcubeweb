@@ -50,6 +50,8 @@
     font-size: 14px;
     font-weight: bold;
     margin-left: 5px;
+    border-bottom:1px dotted #f00;
+    cursor:pointer;
 }
 
 
@@ -162,7 +164,9 @@
 }
 
 
-
+.input-sm{
+    width: 80px !important;
+}
 
 
 

@@ -2,6 +2,14 @@ import fetch from 'isomorphic-fetch'
 import { showErrorPanel } from './general'
 
 
+
+export function setMotorStep(name, value) {
+  return { 
+    type: "SET_MOTOR_STEP", name, value
+  }
+}
+
+
 export function setImageRatio(ratio) {
   return { 
     type: "SET_IMAGE_RATIO",
