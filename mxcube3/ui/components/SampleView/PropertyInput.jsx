@@ -1,9 +1,12 @@
 'use strict';
 
 import React from 'react';
+import {Promise} from "bluebird";
+
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import {Button, OverlayTrigger, Popover, Input} from "react-bootstrap"
-import {ButtonToolbar} from "react-bootstrap"
+import {Button, OverlayTrigger, Popover, Input} from "react-bootstrap";
+import {ButtonToolbar} from "react-bootstrap";
+
 
 /**
  * Provides a simple input ui for a physical properties, displays a label,
@@ -28,41 +31,108 @@ export default class PropertyInput extends React.Component{
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
         this.submit = this.submit.bind(this);
-        this.state = {loading: false}
+        this.showLoading = this.showLoading.bind(this);
+        this.hideLoading = this.hideLoading.bind(this);
+        this.handleError = this.handleError.bind(this);
+        this.handleSucess = this.handleSucess.bind(this);
+        this.state = {loading: false, value: "", msg: ""};
+        this._updateValueState(this.props.propertyValue);
+    }
+
+
+    componentDidMount() {
+        this._updateValueState(this.props.propertyValue);
+    }
+
+
+    componentWillReceiveProps(nextProps){
+        this._updateValueState(nextProps.propertyValue);
+    }
+
+
+    _updateValueState(value){
+        var valueStr = value + " " + this.props.propertyUnit;
+        this.setState({"value": valueStr});
     }
 
 
     setValue(value){
-        if ( this.props.valueChangedCb != undefined ) {
+        if ( this.props.onSave != undefined ) {
             // Only update if value actually changed
             if (value != this.props.propertyValue) {
-                this.props.valueChangedCb(this.props.propertyKey, value);
+                var dp = Deferred(this.handleSucess, this.handleError);
+                this.showLoading();
+                this.props.onSave(this.props.propertyKey, value, dp);
+            }
+            else{   
+                this.refs.overlay.hide();
             }
         }
     }
 
 
-    save() {
+    setDisplayValue(value){
+        this._updateValueState(value);
+    }
+
+
+    showLoading() {
         this.setState({loading: true});
-        this.setValue(this.refs.input.getValue());
-        this.refs.overlay.hide();
+    }
+
+
+    hideLoading(){
         this.setState({loading: false});
+    }
+   
+
+    handleSucess(data){
+        this.setState({"msg": ""});
+        this.hideLoading();
+
+        // No message to display to user, hide overlay
+        if( data.msg === "" ){
+            this.refs.overlay.hide();
+        }
+    }
+
+
+    handleError(data){
+        this.setState({"msg": data.msg});
+        this.hideLoading();
+
+        // No message to display to user, hide overlay
+        if( data.msg === "" ){
+            this.refs.overlay.hide();
+        }
+    }
+
+
+    save() {
+        this.setValue(this.refs.input.getValue());
     }
 
 
     cancel() {
-        this.refs.overlay.hide();
+        if ( this.props.onCancel != undefined ) {
+            this.props.onCancel(this.props.propertyKey);
+        }
+
+        if ( this.state.loading ){
+            this.hideLoading();
+        } else {
+            this.refs.overlay.hide();
+        }
     }
-    
-    
+
+
     submit(event) {
-		    event.preventDefault();
-		    this.save();
+        event.preventDefault();
+        this.save();
     }
 
 
     render() {
-        var valueStr = this.props.propertyValue + " " + this.props.propertyUnit;
         var linkClass = 'editable-click';
         var loading = this.state.loading ? "" : "hidden";
         var input = !this.state.loading ? "" : "hidden";
@@ -70,38 +140,41 @@ export default class PropertyInput extends React.Component{
         var popover =(
         <Popover title={this.props.propertyName}>
           <form ref='input-form' className={input + ' form-inline'} onSubmit={this.submit}>
-            <Input ref='input' type={this.props.dataType} style={{width: '100px'}} 
-                   placeholder='Empty' className='input-sm' 
-                   defaultValue={this.props.propertyValue} />
+            <Input ref='input' type={this.props.dataType} style={{width: '100px'}} placeholder='Empty' className='input-sm' defaultValue={this.props.propertyValue} />
             <ButtonToolbar className='editable-buttons'>
-              <Button bsStyle='primary' className='btn-sm' onClick={this.save}>
-                <i className='glyphicon glyphicon-ok'/>
-              </Button>
+              <Button bsStyle='primary' className='btn-sm' onClick={this.save}><i className='glyphicon glyphicon-ok'/></Button>
+              <Button bsStyle='default' className='btn-sm' onClick={this.cancel}><i className='glyphicon glyphicon-remove'/></Button>
+            </ButtonToolbar>
+          </form>
+          <div ref="statusMessage" className={input} >{this.state.msg}</div>
+          <div ref='loadingDiv' className={loading +  ' ' + 'property-input-loading'} >
+            <div className='property-input-busy'>
+            </div>
+            <ButtonToolbar className='editable-buttons'>
               <Button bsStyle='default' className='btn-sm' onClick={this.cancel}>
                 <i className='glyphicon glyphicon-remove'/>
               </Button>
             </ButtonToolbar>
-          </form>
-          <div ref='loading-div' className={loading +  ' ' + 'property-input-loading'} >
           </div>
         </Popover>);
-        
+
         return (
             <div className={this.props.className + " property-input-container"}>
               <span className={"property-input-label " + this.props.ref}>
                 {this.props.propertyName}:
               </span>
-              <OverlayTrigger ref='overlay' trigger='click' rootClose={true} placement='top' overlay={popover}>
+              <OverlayTrigger ref='overlay' trigger='click' rootClose={true} placement='right' overlay={popover}>
                 <span className={"property-input-value " + this.props.ref}>
                   <a ref='valueLabel' href='javascript:;' className={linkClass} 
-                     dangerouslySetInnerHTML={{__html:valueStr}} />
+                     dangerouslySetInnerHTML={{__html:this.state.value}} />
                 </span>
               </OverlayTrigger>
             </div>
-            
+
         );
     }
 }
+
 
 PropertyInput.defaultProps = {
     className: "",
@@ -111,5 +184,18 @@ PropertyInput.defaultProps = {
     propertyUnit: "",
     propertyValue: 0,
     propertyKey: undefined,
-    valueChangedCb: undefined,
+    onSave: undefined,
+    onCancel: undefined
+}
+
+
+function Deferred(_resolve, _reject) {
+    var promise = new Promise(function(_resolve, _reject) {
+    });
+
+    return {
+        resolve: _resolve,
+        reject: _reject,
+        promise: promise
+    };
 }

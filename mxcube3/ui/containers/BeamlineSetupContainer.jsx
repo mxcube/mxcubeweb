@@ -9,29 +9,34 @@ import PropertyInput from "../components/SampleView/PropertyInput";
 import "./beamline_setup_container.css";
 import {getBeamlinePropertiesRequest, setBeamlinePropertyRequest} from '../actions/beamline_setup';
 import {setPropertyValueDispatch} from '../actions/beamline_setup';
+import {cancelValueChangeRequest} from '../actions/beamline_setup';
 
 
 class BeamlineSetupContainer extends React.Component{
     constructor(props) {
-       super(props);
-       this.valueChange = this.valueChange.bind(this);
+        super(props);
+        this.onSaveHandler = this.onSaveHandler.bind(this);
+        this.onCancelHandler = this.onCancelHandler.bind(this);
     }
-
-
+    
+    
     componentDidMount() {
         this.props.getBeamlinePropertiesRequest();
         var ws = io.connect('http://' + document.domain + ':' + location.port + "/beamline/energy");
         ws.on('value_change', (value) => {
-            //this.props.setPropertyValue({"name": "energy", "value":value});
-            //this.props.getBeamlinePropertiesRequest();
             this.refs.energy.setDisplayValue(value);
-            console.log("ws: " + value);
+            
         });
     }
 
 
-    valueChange(name, value, promise){
+    onSaveHandler(name, value, promise){
         this.props.setBeamlinePropertyRequest(name, value, promise);
+    }
+
+    
+    onCancelHandler(name){
+        this.props.cancelValueChangeRequest(name);
     }
 
 
@@ -50,7 +55,8 @@ class BeamlineSetupContainer extends React.Component{
                           <PropertyInput ref="energy" propertyName="Energy"
                                          propertyKey="energy" propertyUnit="keV"
                                          propertyValue={this.props.data.energy.value}
-                                         valueChangedCb={this.valueChange}
+                                         onSave={this.onSaveHandler}
+                                         onCancel={this.onCancelHandler}
                                          inputSize="100px" dataType="number" />
                         </td>
                         <td>
@@ -70,7 +76,7 @@ class BeamlineSetupContainer extends React.Component{
                           <PropertyInput ref="resolution" propertyName="Resolution"
                                          propertyKey="resolution" propertyUnit="&Aring"
                                          propertyValue={this.props.data.resolution.value}
-                                         valueChangedCb={this.valueChange}
+                                         onSave={this.onSaveHandler}
                                          inputSize="100px" dataType="number"/>
                         </td>
                         <td>
@@ -89,7 +95,7 @@ class BeamlineSetupContainer extends React.Component{
                           <PropertyInput ref="transmission" propertyName="Transmission"
                                          propertyKey="transmission" propertyUnit="%"
                                          propertyValue={this.props.data.transmission.value}
-                                         valueChangedCb={this.valueChange}
+                                         onSave={this.onSaveHandler}
                                          inputSize="100px" dataType="number"/>
                         </td>
                         <td>
@@ -124,7 +130,8 @@ function mapDispatchToProps(dispatch) {
     return {
         getBeamlinePropertiesRequest: bindActionCreators(getBeamlinePropertiesRequest, dispatch),
         setPropertyValue: bindActionCreators(setPropertyValueDispatch, dispatch),
-        setBeamlinePropertyRequest: bindActionCreators(setBeamlinePropertyRequest, dispatch)
+        setBeamlinePropertyRequest: bindActionCreators(setBeamlinePropertyRequest, dispatch),
+        cancelValueChangeRequest: bindActionCreators(cancelValueChangeRequest, dispatch)
     }
 }
 
