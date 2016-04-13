@@ -52,10 +52,6 @@ export default (state=initialState, action) => {
             {
                 return {...state, motors: {...state.motors, [action.name] : {position: action.value}} };
             }
-        case 'SET_MOTOR_STEP':
-            {
-                return {...state, motors: {...state.motors, [action.name] : {stepValue: action.value}} };
-            }
         case 'SET_LIGHT':
             {
                 return {...state, lightOn: {...state.lightOn, [action.name]: action.on} };

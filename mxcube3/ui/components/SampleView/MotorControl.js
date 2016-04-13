@@ -84,7 +84,7 @@ class MotorControl extends React.Component {
                         </Popover>
                         }
                     >
-                        <span className="motor-value">{PhiY}</span>
+                        <span className="motor-value">{PhiY} mm</span>
                     </OverlayTrigger>
                 </div>
 
@@ -103,7 +103,7 @@ class MotorControl extends React.Component {
                         </Popover>
                         }
                     >
-                        <span className="motor-value">{PhiZ}</span>
+                        <span className="motor-value">{PhiZ} mm</span>
                     </OverlayTrigger>
                 </div>
 
@@ -121,7 +121,7 @@ class MotorControl extends React.Component {
                         </Popover>
                         }
                     >
-                        <span className="motor-value">{Focus}</span>
+                        <span className="motor-value">{Focus} mm</span>
                     </OverlayTrigger>
                 </div>
 
