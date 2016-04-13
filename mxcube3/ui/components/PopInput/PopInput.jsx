@@ -64,7 +64,6 @@ export default class PopInput extends React.Component{
             if (value != this.props.value) {
                 var dp = Deferred(this.handleSucess, this.handleError);
                 this.showLoading();
-                debugger;
                 this.props.onSave(this.props.pkey, value, dp);
             }
             else{
