@@ -51,7 +51,7 @@ export function setBeamlinePropertyRequest(name, value, deferred){
 }
 
 
-export function cancelValueChangeRequest(name, deferred){
+export function cancelValueChangeRequest(name){
     return function(dispatch) {
         fetch('mxcube/api/v0.1/beamline/' + name + '/abort', {
             method: 'GET',
