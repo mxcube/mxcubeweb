@@ -24,3 +24,16 @@
 	visibility: hidden;
   display: inline;
 }
+
+.value-label-enter-success {
+  background-color: #FF0;
+}
+
+.value-label-leave-success{
+  transition: background-color 1000ms ease-out;
+}
+
+.value-label-enter-error{
+  background-color: #F66;
+  transition: background-color 1000ms ease-in;
+}

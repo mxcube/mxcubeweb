@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react';
+import React from "react";
 import {Promise} from "bluebird";
 
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
@@ -23,6 +23,10 @@ import "./style.css"
  *   name:       Name displayed in label
  *   suffix:     Suffix to display after value
  *   value:      Value
+ *   title:      Title displayed at the top of popover
+ *   placement:  Placement of Popover (left, right, bottom, top)
+ *   onSave:     Callback called when user hits save button
+ *   onCancel:   Callback called when user hits cancel button
  *
  * @class
  *
@@ -36,8 +40,8 @@ export default class PopInput extends React.Component{
         this.showLoading = this.showLoading.bind(this);
         this.hideLoading = this.hideLoading.bind(this);
         this.handleError = this.handleError.bind(this);
-        this.handleSucess = this.handleSucess.bind(this);
-        this.state = {loading: false, value: "", msg: ""};
+        this.handleSuccess = this.handleSuccess.bind(this);
+        this.state = {loading: false, value: "", msg: "", anim_class: ""};
         this._updateValueState(this.props.value);
     }
 
@@ -57,18 +61,25 @@ export default class PopInput extends React.Component{
         this.setState({"value": valueStr});
     }
 
+    _updateSucessState(){
+        this.setState({msg: "", anim_class: "value-label-enter-success"});
+        setTimeout(function(){
+            this.setState({anim_class: "value-label-leave-success"});
+        }.bind(this), 100);
+    }
+
 
     setValue(value){
         if ( this.props.onSave != undefined ) {
             // Only update if value actually changed
             if (value != this.props.value) {
-                var dp = Deferred(this.handleSucess, this.handleError);
+                var dp = Deferred(this.handleSuccess, this.handleError);
                 this.showLoading();
                 this.props.onSave(this.props.pkey, value, dp);
             }
             else{
                 this.refs.overlay.hide();
-                this.setState({"msg": ""});
+                this._updateSucessState();
             }
         }
     }
@@ -88,20 +99,20 @@ export default class PopInput extends React.Component{
         this.setState({loading: false});
     }
 
-
-    handleSucess(data){
-        this.setState({"msg": ""});
+    handleSuccess(data){
         this.hideLoading();
 
         // No message to display to user, hide overlay
         if( data.msg === "" ){
             this.refs.overlay.hide();
         }
+
+        this._updateSucessState();
     }
 
 
     handleError(data){
-        this.setState({"msg": data.msg});
+        this.setState({msg: data.msg, anim_class: "value-label-enter-error"});
         this.hideLoading();
 
         // No message to display to user, hide overlay
@@ -155,7 +166,7 @@ export default class PopInput extends React.Component{
             </ButtonToolbar>
           </form>
           <div ref="statusMessage" className={input} >{this.state.msg}</div>
-          <div ref="loadingDiv" className={loading +  " " + "popinput-input-loading"} >
+          <div ref="loadingDiv" className={loading + " " + "popinput-input-loading"} >
             <div className="popinput-input-busy">
             </div>
             <ButtonToolbar className="editable-buttons">
@@ -172,13 +183,13 @@ export default class PopInput extends React.Component{
                 {this.props.name}:
               </span>
               <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement} overlay={popover}>
-                <span className={"popinput-input-value " + this.props.ref}>
-                  <a ref="valueLabel" href="javascript:;" className={linkClass} 
+                <span className={"popinput-input-value " + this.props.pkey}>
+                  <a ref="valueLabel" key="valueLabel" href="javascript:;" className={linkClass + " " + this.state.anim_class} 
                      dangerouslySetInnerHTML={{__html:this.state.value}} />
+
                 </span>
               </OverlayTrigger>
             </div>
-
         );
     }
 }
