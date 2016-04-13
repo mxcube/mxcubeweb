@@ -10,29 +10,3 @@
   table-layout: fixed;
 }
 
-.property-input-label{ 
-  display: inline-block;
-  min-width: 90px;
-  margin-right: 1rem;
-  text-align: right;
-}
-
-.property-input-value{
-  display: inline-block;
-  min-width: 70px;
-}
-
-.property-input-loading{  
-}
-
-.property-input-busy{
-  display: inline-block;
-  background-image: url(../../busy-indicator.gif);
-  height: 32px;
-  width: 32px;
-}
-
-.visibility-hidden{ 
-	visibility: hidden;
-  display: inline;
-}

@@ -7,25 +7,27 @@ import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import {Button, OverlayTrigger, Popover, Input} from "react-bootstrap";
 import {ButtonToolbar} from "react-bootstrap";
 
+import "./style.css"
+
 
 /**
- * Provides a simple input ui for a physical properties, displays a label,
- * value and unit for the value.
+ * A simple "Popover Input" input conrol, the value is displayed as text and
+ * the associated input is displayed in an overlay when the text is clicked.
  *
- * Valid react properties (html attributes) are:
+ * Valid react properties are:
  *
- *   dataType:       The data type of the value (the input will addapt
- *                   accordingly)
- *   inputSize:      Input field size, with any html unit; px, em, rem ...
- *   propertyKey:    Key used when retreiving or sending data to server
- *   propertyName:   Name displayed in label
- *   propertyUnit:   Unit of property
- *   propertyValue:  Value
+ *   dataType:   The data type of the value (the input will addapt
+ *               accordingly)
+ *   inputSize:  Input field size, with any html unit; px, em, rem ...
+ *   pkey:       Key used when retreiving or sending data to server
+ *   name:       Name displayed in label
+ *   suffix:     Suffix to display after value
+ *   value:      Value
  *
  * @class
  *
  */
-export default class PropertyInput extends React.Component{
+export default class PopInput extends React.Component{
     constructor(props) {
         super(props);
         this.save = this.save.bind(this);
@@ -36,22 +38,22 @@ export default class PropertyInput extends React.Component{
         this.handleError = this.handleError.bind(this);
         this.handleSucess = this.handleSucess.bind(this);
         this.state = {loading: false, value: "", msg: ""};
-        this._updateValueState(this.props.propertyValue);
+        this._updateValueState(this.props.value);
     }
 
 
     componentDidMount() {
-        this._updateValueState(this.props.propertyValue);
+        this._updateValueState(this.props.value);
     }
 
 
     componentWillReceiveProps(nextProps){
-        this._updateValueState(nextProps.propertyValue);
+        this._updateValueState(nextProps.value);
     }
 
 
     _updateValueState(value){
-        var valueStr = value + " " + this.props.propertyUnit;
+        var valueStr = value + " " + this.props.suffix;
         this.setState({"value": valueStr});
     }
 
@@ -59,13 +61,15 @@ export default class PropertyInput extends React.Component{
     setValue(value){
         if ( this.props.onSave != undefined ) {
             // Only update if value actually changed
-            if (value != this.props.propertyValue) {
+            if (value != this.props.value) {
                 var dp = Deferred(this.handleSucess, this.handleError);
                 this.showLoading();
-                this.props.onSave(this.props.propertyKey, value, dp);
+                debugger;
+                this.props.onSave(this.props.pkey, value, dp);
             }
-            else{   
+            else{
                 this.refs.overlay.hide();
+                this.setState({"msg": ""});
             }
         }
     }
@@ -84,7 +88,7 @@ export default class PropertyInput extends React.Component{
     hideLoading(){
         this.setState({loading: false});
     }
-   
+
 
     handleSucess(data){
         this.setState({"msg": ""});
@@ -115,7 +119,7 @@ export default class PropertyInput extends React.Component{
 
     cancel() {
         if ( this.props.onCancel != undefined ) {
-            this.props.onCancel(this.props.propertyKey);
+            this.props.onCancel(this.props.pkey);
         }
 
         if ( this.state.loading ){
@@ -133,39 +137,44 @@ export default class PropertyInput extends React.Component{
 
 
     render() {
-        var linkClass = 'editable-click';
+        var linkClass = "editable-click";
         var loading = this.state.loading ? "" : "hidden";
         var input = !this.state.loading ? "" : "hidden";
+        var title = (this.props.title === "") ? this.props.name : this.props.title
 
         var popover =(
-        <Popover title={this.props.propertyName}>
-          <form ref='input-form' className={input + ' form-inline'} onSubmit={this.submit}>
-            <Input ref='input' type={this.props.dataType} style={{width: '100px'}} placeholder='Empty' className='input-sm' defaultValue={this.props.propertyValue} />
-            <ButtonToolbar className='editable-buttons'>
-              <Button bsStyle='primary' className='btn-sm' onClick={this.save}><i className='glyphicon glyphicon-ok'/></Button>
-              <Button bsStyle='default' className='btn-sm' onClick={this.cancel}><i className='glyphicon glyphicon-remove'/></Button>
+        <Popover title={title}>
+          <form ref="popinput-form" className={input + " form-inline"} onSubmit={this.submit}>
+            <Input ref="input" type={this.props.dataType} style={{width: this.props.inputSize}} placeholder="" className="input-sm" defaultValue={this.props.value} />
+            <ButtonToolbar className="editable-buttons">
+              <Button bsStyle="primary" className="btn-sm" onClick={this.save}>
+                <i className="glyphicon glyphicon-ok"/>
+              </Button>
+              <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+                <i className="glyphicon glyphicon-remove"/>
+              </Button>
             </ButtonToolbar>
           </form>
           <div ref="statusMessage" className={input} >{this.state.msg}</div>
-          <div ref='loadingDiv' className={loading +  ' ' + 'property-input-loading'} >
-            <div className='property-input-busy'>
+          <div ref="loadingDiv" className={loading +  " " + "popinput-input-loading"} >
+            <div className="popinput-input-busy">
             </div>
-            <ButtonToolbar className='editable-buttons'>
-              <Button bsStyle='default' className='btn-sm' onClick={this.cancel}>
-                <i className='glyphicon glyphicon-remove'/>
+            <ButtonToolbar className="editable-buttons">
+              <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+                <i className="glyphicon glyphicon-remove"/>
               </Button>
             </ButtonToolbar>
           </div>
         </Popover>);
-
+        
         return (
-            <div className={this.props.className + " property-input-container"}>
-              <span className={"property-input-label " + this.props.ref}>
-                {this.props.propertyName}:
+            <div className={this.props.className + " popinput-input-container"}>
+              <span className={"popinput-input-label " + this.props.ref}>
+                {this.props.name}:
               </span>
-              <OverlayTrigger ref='overlay' trigger='click' rootClose={true} placement='right' overlay={popover}>
-                <span className={"property-input-value " + this.props.ref}>
-                  <a ref='valueLabel' href='javascript:;' className={linkClass} 
+              <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement} overlay={popover}>
+                <span className={"popinput-input-value " + this.props.ref}>
+                  <a ref="valueLabel" href="javascript:;" className={linkClass} 
                      dangerouslySetInnerHTML={{__html:this.state.value}} />
                 </span>
               </OverlayTrigger>
@@ -176,14 +185,16 @@ export default class PropertyInput extends React.Component{
 }
 
 
-PropertyInput.defaultProps = {
+PopInput.defaultProps = {
     className: "",
     dataType: "number",
     inputSize: "100px",
-    propertyName: "",
-    propertyUnit: "",
-    propertyValue: 0,
-    propertyKey: undefined,
+    name: "",
+    title: "",
+    suffix: "",
+    value: 0,
+    placement: "right",
+    pkey: undefined,
     onSave: undefined,
     onCancel: undefined
 }

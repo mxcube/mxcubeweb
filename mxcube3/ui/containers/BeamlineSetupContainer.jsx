@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
-import PropertyInput from "../components/SampleView/PropertyInput";
+import PopInput from "../components/PopInput/PopInput";
 import "./beamline_setup_container.css";
 import {getBeamlinePropertiesRequest, setBeamlinePropertyRequest} from '../actions/beamline_setup';
 import {setPropertyValueDispatch} from '../actions/beamline_setup';
@@ -52,61 +52,52 @@ class BeamlineSetupContainer extends React.Component{
                     <tbody>
                       <tr>
                         <td>
-                          <PropertyInput ref="energy" propertyName="Energy"
-                                         propertyKey="energy" propertyUnit="keV"
-                                         propertyValue={this.props.data.energy.value}
-                                         onSave={this.onSaveHandler}
-                                         onCancel={this.onCancelHandler}
-                                         inputSize="100px" dataType="number" />
+                          <PopInput ref="energy" name="Energy" pkey="energy" 
+                                    suffix="keV" value={this.props.data.energy.value} 
+                                    onSave={this.onSaveHandler} onCancel={this.onCancelHandler} 
+                                    inputSize="100px" dataType="number" />
                         </td>
                         <td>
-                          <PropertyInput propertyName="Resolution" 
-                                         propertyUnit="&Aring" propertyValue="0"
-                                         ref="key1" inputSize="100px"
-                                         dataType="number"/>
+                          <PopInput ref="key1" name="Resolution" suffix="&Aring" 
+                                    value="0" inputSize="100px" dataType="number"/>
                         </td>
                         <td>
-                          <PropertyInput propertyName="Transmission"
-                                         propertyUnit="%" ref="key2"
-                                         inputSize="100px" dataType="number"/>
+                          <PopInput ref="key2" name="Transmission" suffix="%" 
+                                    size="100px" dataType="number"/>
                         </td>
                       </tr>
                       <tr>
                         <td>
-                          <PropertyInput ref="resolution" propertyName="Resolution"
-                                         propertyKey="resolution" propertyUnit="&Aring"
-                                         propertyValue={this.props.data.resolution.value}
-                                         onSave={this.onSaveHandler}
-                                         inputSize="100px" dataType="number"/>
+                          <PopInput ref="resolution" name="Resolution"
+                                    pkey="resolution" unit="&Aring"
+                                    value={this.props.data.resolution.value}
+                                    onSave={this.onSaveHandler}
+                                    inputSize="100px" dataType="number"/>
                         </td>
                         <td>
-                          <PropertyInput propertyName="Energy" propertyUnit="KeV"
-                                         ref="key3" inputSize="100px"
-                                         dataType="number"/>
+                          <PopInput ref="key3" name="Energy" suffix="KeV"
+                                    inputSize="100px" dataType="number"/>
                           </td>
                           <td>
-                            <PropertyInput propertyName="Transmission"
-                                           propertyUnit="%" ref="key4"
-                                           inputSize="100px" dataType="number"/>
+                            <PopInput ref="key4" name="Transmission" suffix="%"
+                                      inputSize="100px" dataType="number"/>
                           </td>
                       </tr>
                       <tr>
                         <td>
-                          <PropertyInput ref="transmission" propertyName="Transmission"
-                                         propertyKey="transmission" propertyUnit="%"
-                                         propertyValue={this.props.data.transmission.value}
-                                         onSave={this.onSaveHandler}
-                                         inputSize="100px" dataType="number"/>
+                          <PopInput ref="transmission" name="Transmission"
+                                    pkey="transmission" suffi="%"
+                                    value={this.props.data.transmission.value}
+                                    onSave={this.onSaveHandler}
+                                    inputSize="100px" dataType="number"/>
                         </td>
                         <td>
-                          <PropertyInput propertyName="Resolution"
-                                         propertyUnit="&Aring" ref="key5"
-                                         inputSize="100px" dataType="number"/>
+                          <PopInput ref="key5" name="Resolution" suffix="&Aring" 
+                                    inputSize="100px" dataType="number"/>
                         </td>
                         <td>
-                          <PropertyInput propertyName="Energy" propertyUnit="KeV"
-                                         ref="key6" inputSize="100px"
-                                         dataType="number"/>
+                          <PopInput ref="key6" name="Energy" suffix="KeV"
+                                    inputSize="100px" dataType="number"/>
                         </td>
                       </tr>
                     </tbody>
