@@ -6,8 +6,8 @@ class BeamlineSetupMediator(object):
     """
     Mediator between Beamline route and BeamlineSetup hardware object. Providing
     missing functionality while the HardwareObjects are frozen. The
-    functionality should eventually be included in the hardware objects once
-    the UI part have stabilized.
+    functionality should eventually be included in the hardware objects or other
+    suitable places once the UI part have stabilized.
     """
     def __init__(self, beamline_setup):
         self._bl = beamline_setup
@@ -27,6 +27,9 @@ class BeamlineSetupMediator(object):
 
 
     def dict_repr(self):
+        """
+        :returns: Dictionary value-representation for each beamline attribute
+        """
         energy =  self.getObjectByRole("energy").get()
         transmission = self.getObjectByRole("transmission").get()
         resolution = self.getObjectByRole("resolution").get()
@@ -45,7 +48,15 @@ class BeamlineSetupMediator(object):
 
 
 class EnergyHOMediator(object):
+    """
+    Mediator for Energy Hardware Object, a web socket is used communicate
+    information on longer running processes.
+    """
     def __init__(self, ho):
+        """
+        :param HardwareObject ho: Hardware object to mediate for.
+        :returns: None
+        """
         self._ho = ho
         ho.connect("energyChanged", self.value_change)
 
@@ -54,25 +65,39 @@ class EnergyHOMediator(object):
 
 
     def set(self, value):
-        # This might take an arbitrary amount of time to perform so, we need to
-        # to inform caller of whats happening !. Use stream to communicate
-        # progress.
-        self._ho.start_move_energy(float(value))
-        return self.get()
+        """
+        :param value: Value (castable to float) to set
+
+        :raises ValueError: When value for any reason can't be retrieved
+        :raises StopItteration: When a value change was interrupted
+                                (aborted or cancelled)
+
+        :returns: The actual value set
+        :rtype: float
+        """
+        try:
+            self._ho.start_move_energy(float(value))
+            res = self.get()
+        except:
+            raise
+
+        return res
 
 
     def get(self):
-        # The get should return fairly immediately so no special consideration
-        # needs to be taken to caller timing out or needs progress info ?.
+        """
+        :returns: The value
+        :rtype: float
+        :raises ValueError: When value for any reason can't be retrieved
+        """
         try:
             energy = self._ho.getCurrentEnergy()
             energy = round(float(energy), 4)
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
-        except StopIteration:
-            raise
 
         return energy
+
 
     def value_change(self, energy, wavelength):
         socketio.emit("value_change", energy, namespace='/beamline/energy')
@@ -90,7 +115,7 @@ class TransmissionHOMediator(object):
         try:
             self._ho.setValue(value, True)
         except Exception as ex:
-            raise StopIteration("Can't set transmission: %s" % str(ex))
+            raise ValueError("Can't set transmission: %s" % str(ex))
 
         return self.get()
 
@@ -122,9 +147,7 @@ class ResolutionHOMediator(object):
         try:
             resolution = self._ho.getPosition()
             resolution = round(float(resolution), 3)
-        except AttributeError:
-            resolution = 0
-        except TypeError:
+        except (TypeError, AttributeError):
             resolution = 0
 
         return resolution
