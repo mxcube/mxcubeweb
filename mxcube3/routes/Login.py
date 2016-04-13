@@ -161,7 +161,6 @@ def get_initial_state():
             data['current_phase'] = mxcube.diffractometer.current_phase
         except AttributeError:
             data['current_phase'] =  'None' # in case the diff does not have this implemented
-
         resp = jsonify(data)
         resp.status_code = 200
         return resp
