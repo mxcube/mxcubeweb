@@ -22,12 +22,12 @@ qm = QueueManager.QueueManager('Mxcube3')
 qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
 def init_signals():
-    # for signal in signals.queueSignals:
-    #     mxcube.queue.connect(mxcube.queue.queue_hwobj, signal, signals.signalCallback)
-    #for signal in signals.collectSignals:
-    #    mxcube.collect.connect(mxcube.collect, signal, signals.signalCallback)
     for signal in signals.collectSignals:
-        mxcube.queue.connect(mxcube.queue, signal, signals.signalCallback)
+        if signal in signals.task_signals:
+            mxcube.queue.connect(mxcube.queue, signal, signals.task_event_callback)
+        else:
+            pass
+        #mxcube.queue.connect(mxcube.queue, signal, signals.signalCallback)
     mxcube.queue.lastQueueNode = {'id':0, 'sample':'0:0'}
 
 # ##----QUEUE ACTIONS----##
