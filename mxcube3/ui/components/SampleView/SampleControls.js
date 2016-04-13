@@ -78,7 +78,7 @@ render() {
                 <button type="button" data-toggle="tooltip"  title="Frontlight On/Off" className="btn btn-link pull-center light-button">
                     <i id="front-light-icon" className={"fa fa-2x fa-fw fa fa-lightbulb-o" + (this.props.sampleViewState.lightOn.front ? " button-active" : "")} onClick={this.toogleFrontLight}></i>
                     <input type="number" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.FrontLight.position} onChange={this.setLigthStrengthFront} />                 
-                </button>                                
+                </button>                           
 
             </div>
         </div>

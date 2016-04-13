@@ -2,14 +2,6 @@ import fetch from 'isomorphic-fetch'
 import { showErrorPanel } from './general'
 
 
-
-export function setMotorStep(name, value) {
-  return { 
-    type: "SET_MOTOR_STEP", name, value
-  }
-}
-
-
 export function setImageRatio(ratio) {
   return { 
     type: "SET_IMAGE_RATIO",
@@ -272,7 +264,7 @@ export function sendLightOff(name) {
 }
 
 export function sendMotorPosition(motorName, value) {
-  return function(dispatch) {
+  return function() {
    fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/' + value, { 
     method: 'PUT', 
     credentials: 'include',
@@ -283,8 +275,6 @@ export function sendMotorPosition(motorName, value) {
   }).then(function(response) {
     if (response.status >= 400) {
       throw new Error("Server refused to move motors");
-    }else{
-      dispatch(saveMotorPosition(motorName, value));
     }
   });
 }

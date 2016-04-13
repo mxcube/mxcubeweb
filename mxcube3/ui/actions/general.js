@@ -16,12 +16,6 @@ export function showErrorPanel(show, message="") {
     }
 }
 
-export function showPopOver(name) {
-    return { 
-      type: "SHOW_POP_OVER", name
-    }
-}
-
 
 export function getInitialStatus() {
   return function(dispatch) {
