@@ -1,6 +1,7 @@
+import logging
 import json
 
-from flask import request, Response
+from flask import request, Response, jsonify
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
@@ -89,3 +90,27 @@ def beamline_get_attribute(name):
         result, code = json.dumps(data), 520
 
     return Response(json.dumps(data), status=200, mimetype='application/json')
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline/beamInfo", methods=['GET'])
+def getBeamInfo():
+    """Beam information: position,size,shape
+    return_data={"position":,"shape":,"size_x":,"size_y":}     
+    """
+    try:
+        beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+        if beamInfo is None:
+             logging.getLogger('HWR').error("beamInfo is not defined")
+             return Response(status=409)
+        beamInfoDict = beamInfo.get_beam_info()
+        print beamInfoDict
+        data = {'position': beamInfo.get_beam_position(), \
+                'shape': beamInfoDict["shape"], \
+                'size_x': beamInfoDict["size_x"], \
+                'size_y': beamInfoDict["size_y"], \
+               }       
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp
+    except Exception:
+        return Response(status=409)
