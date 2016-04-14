@@ -37,8 +37,6 @@ export default class PopInput extends React.Component{
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
         this.submit = this.submit.bind(this);
-        this.showLoading = this.showLoading.bind(this);
-        this.hideLoading = this.hideLoading.bind(this);
         this.handleError = this.handleError.bind(this);
         this.handleSuccess = this.handleSuccess.bind(this);
         this.state = {loading: false, value: "", msg: "", anim_class: ""};
@@ -63,9 +61,6 @@ export default class PopInput extends React.Component{
 
     _updateSucessState(){
         this.setState({msg: "", anim_class: "value-label-enter-success"});
-        setTimeout(function(){
-            this.setState({anim_class: "value-label-leave-success"});
-        }.bind(this), 100);
     }
 
 
@@ -91,7 +86,7 @@ export default class PopInput extends React.Component{
 
 
     showLoading() {
-        this.setState({loading: true});
+        this.setState({loading: true, anim_class: "value-label-enter-loading"});
     }
 
 
