@@ -53,7 +53,7 @@ export default class PopInput extends React.Component{
         console.log(nextProps.data.status === "ABORTED");
 
         if( nextProps.data.status === "BUSY" ){
-            this.handleBusy(nextProps.data);
+            this.handleBusy();
         } else if ( nextProps.data.status === "IDLE" ){
             this.handleIdle(nextProps.data);
         } else if ( nextProps.data.status === "ABORTED" ){
@@ -98,7 +98,7 @@ export default class PopInput extends React.Component{
     }
 
 
-    handleBusy(data){
+    handleBusy(){
         this.setState({anim_class: "value-label-enter-loading"});
     }
 
