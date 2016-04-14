@@ -1,46 +1,96 @@
-from flask import session, redirect, url_for, render_template, request, Response, jsonify
-from mxcube3 import app as mxcube
-
 import logging
+import json
 
-###----BEAMLINE----###
-@mxcube.route("/mxcube/api/v0.1/beamline/<id>/move", methods=['PUT'])
-def moveBlMotor(id):
-    """Beamline: move "id" moveable (energy, resolution ...) to the position specified
-    data = {generic_data, "moveable": id, "position": pos}
-    return_data={"result": True/False}
+from flask import request, Response, jsonify
+from mxcube3 import app as mxcube
+from mxcube3 import socketio
+from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
+
+
+@socketio.on('connect', namespace='/beamline/energy')
+def connect():
+    # this is needed to create the namespace, and the actual connection
+    # to the server, but we don't need to do anything more
+    pass
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
+def beamline_get_all_attributes():
+    ho = BeamlineSetupMediator(mxcube.beamline)
+    data = ho.dict_repr()
+    return Response(json.dumps(data), status=200, mimetype='application/json')
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=['GET'])
+def beamline_abort_action(name):
     """
-    new_pos = request.args.get('newpos','')
-    motor = mxcube.beamline.getObjectByRole(id.lower())
-    motor.move
-    return mxcube.beamline.move(data)
+    Aborts an action in progress.
 
-@mxcube.route("/mxcube/api/v0.1/beamline/status", methods=['GET'])
-def get_bl_status(id):
-    """Beamline: get beamline generic status (energy, resolution ...)
-    data = {generic_data}
-    return_data = { generic_data, {"moveable1":position}, ..., {"moveableN":position} , xxxx }
-    """  
-    motors = ['Energy', 'Resolution', 'Transmission'] #more are needed
-
-    data = {}
-    for mot in motors:
-        motor_hwobj = mxcube.beamline.getObjectByRole(mot.lower())
-        data[mot] = {'Status': motor_hwobj.get_state(), 'position': motor_hwobj.getPosition()}    
-
-    return data
+    :param str name: Owner / Actuator of the process/action to abort
+    """
+    # This could be made to give access to arbitrary method of HO, possible
+    # security issues to be discussed.
+    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    ho.abort()
+    return Response('', status=200, mimetype='application/json')
 
 
-@mxcube.route("/mxcube/api/v0.1/beamline/<id>/status", methods=['GET'])
-def get_bl_id_status(id):
-    """Beamline: get beamline status of id:"id"
-    data = {generic_data, "Moveable":id}
-    return_data = {"Moveable": id, "Status": status}
-    """ 
-    data = {}
-    motor_hwobj = mxcube.beamline.getObjectByRole(id.lower())    
-    data[id] = {'Status': motor_hwobj.get_state(), 'position': motor_hwobj.getPosition()}
-    return data
+@mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['PUT'])
+def beamline_set_attribute(name):
+    """
+    Tries to set <name> to value, replies with the following json:
+    
+        {name: <name>, value: <value>, msg: <msg>, status: <status>
+
+    Where msg is an arbitrary msg to user, status is the internal state
+    of the set operation (for the moment, VALID, ABORTED, ERROR).
+
+    Replies with status code 200 in success and 520 on exceptions.
+    """
+    data = json.loads(request.data)
+    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+
+    try:
+        data["value"] = ho.set(data["value"])
+        data["status"] = "VALID"
+        data["msg"] = ""
+        result, code = json.dumps(data), 200
+    except Exception as ex:
+        data["value"] = ho.get()
+        data["status"] = "ABORTED"
+        data["msg"] = str(ex)
+        result, code = json.dumps(data), 520
+
+    return Response(result, status=code, mimetype='application/json')
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
+def beamline_get_attribute(name):
+    """
+    Retrieves value of attribute <name>, replies with the following json:
+    
+        {name: <name>, value: <value>, msg: <msg>, status: <status>
+
+    Where msg is an arbitrary msg to user, status is the internal state
+    of the get operation (for the moment, VALID, ABORTED, ERROR).
+
+    Replies with status code 200 in success and 520 on exceptions.
+    """
+    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    data = {"name": name, "value": ""}
+
+    try:
+        data["value"] = ho.get()
+        data["status"] = "VALID"
+        data["msg"] = ""
+    except Exception as ex:
+        data["value"] = ""
+        data["status"] = "ERROR"
+        data["msg"] = str(ex)
+        result, code = json.dumps(data), 520
+
+    return Response(json.dumps(data), status=200, mimetype='application/json')
+
 
 @mxcube.route("/mxcube/api/v0.1/beamline/beamInfo", methods=['GET'])
 def getBeamInfo():
