@@ -195,12 +195,12 @@ export default class PopInput extends React.Component{
               <span className={"popinput-input-label " + this.props.ref}>
                 {this.props.name}:
               </span>
-              <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement} overlay={popover}>
-                <span className={"popinput-input-value " + this.props.pkey}>
+              <span className={"popinput-input-value " + this.props.pkey}>
+                <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement} overlay={popover}>
                   <a ref="valueLabel" key="valueLabel" href="javascript:;" className={linkClass + " " + this.state.anim_class} 
                      dangerouslySetInnerHTML={{__html:this.state.value}} />
+                </OverlayTrigger>
                 </span>
-              </OverlayTrigger>
             </div>
         );
     }
