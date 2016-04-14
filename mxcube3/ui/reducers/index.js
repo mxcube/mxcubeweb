@@ -6,6 +6,7 @@ import taskForm from './taskForm'
 import sampleview from './sampleview'
 import logger from './logger'
 import general from './general'
+import beamlineSetup from './beamline_setup'
 import {reducer as formReducer} from 'redux-form';
 
 
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   sampleview,
   logger,
   general,
+  beamlineSetup,
   form: formReducer.plugin({
     characterisation: (state, action) => { // <------ 'characterisation' is name of form given to reduxForm()
       switch(action.type) {
