@@ -10,6 +10,7 @@ import * as QueueActions from '../actions/queue'
 import * as SampleActions from '../actions/samples_grid'
 import * as SampleViewActions from '../actions/sampleview'
 import { showTaskParametersForm } from '../actions/taskForm'
+import BeamlineSetupContainer from './BeamlineSetupContainer'
 
 class SampleViewContainer extends Component {
 
@@ -23,6 +24,7 @@ class SampleViewContainer extends Component {
       <div className="row">
         <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters}/>
         <div className="col-xs-8">
+            <BeamlineSetupContainer />
             <SampleImage 
                 sampleActions={this.props.sampleViewActions} 
                 imageHeight={height} 

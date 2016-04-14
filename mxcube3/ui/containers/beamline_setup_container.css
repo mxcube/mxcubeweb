@@ -1,0 +1,12 @@
+.beamline-setup-container{
+  margin-bottom: 10px;
+  padding: 17px;
+  border: 1px solid #ccc;
+}
+
+.beamline-setup-container table{
+  border-collapse: separate;
+  border-spacing: 0 1rem;
+  table-layout: fixed;
+}
+
