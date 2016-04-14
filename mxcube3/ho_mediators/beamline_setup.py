@@ -30,19 +30,26 @@ class BeamlineSetupMediator(object):
         """
         :returns: Dictionary value-representation for each beamline attribute
         """
-        energy =  self.getObjectByRole("energy").get()
-        transmission = self.getObjectByRole("transmission").get()
-        resolution = self.getObjectByRole("resolution").get()
+        energy =  self.getObjectByRole("energy")
+        transmission = self.getObjectByRole("transmission")
+        resolution = self.getObjectByRole("resolution")
 
         data = {"energy": {"name": "energy",
-                           "value": energy,
-                           "limits": (0, 1000, 0.1)},
+                           "value": energy.get(),
+                           "limits": (0, 1000, 0.1),
+                           "status": energy.status(),
+                           "msg": ""
+                           },
                 "transmission": {"name": "transmission",
-                                 "value": transmission,
-                                 "limits": (0, 1000, 0.1)},
+                                 "value": transmission.get(),
+                                 "limits": (0, 1000, 0.1),
+                                 "status": transmission.status(),
+                                 "msg": ""},
                 "resolution": {"name": "resolution",
-                               "value": resolution,
-                               "limits": (0, 1000, 0.1)}}
+                               "value": resolution.get(),
+                               "limits": (0, 1000, 0.1),
+                               "status": resolution.status(),
+                               "msg": ""}}
 
         return data
 
@@ -81,7 +88,7 @@ class EnergyHOMediator(object):
         except:
             raise
 
-        return res
+        return res       
 
 
     def get(self):
@@ -97,6 +104,10 @@ class EnergyHOMediator(object):
             raise ValueError("Could not get value")
 
         return energy
+
+
+    def status(self):
+        return "BUSY" if self._ho.moving else "IDLE"
 
 
     def value_change(self, energy, wavelength):
@@ -130,6 +141,10 @@ class TransmissionHOMediator(object):
         return transmission
 
 
+    def status(self):
+        return "IDLE"
+
+
 class ResolutionHOMediator(object):
     def __init__(self, ho):
         self._ho = ho
@@ -151,3 +166,7 @@ class ResolutionHOMediator(object):
             resolution = 0
 
         return resolution
+
+
+    def status(self):
+        return "IDLE"
