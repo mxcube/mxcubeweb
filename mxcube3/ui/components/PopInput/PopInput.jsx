@@ -70,13 +70,7 @@ export default class PopInput extends React.Component{
     setValue(value){
         if ( this.props.onSave != undefined ) {
             // Only update if value actually changed
-            if (value != this.props.data.value) {
-                this.props.onSave(this.props.pkey, value);
-            }
-            else{
-                this.refs.overlay.hide();
-                this.setState({anim_class: "value-label-enter-success"});
-            }
+            this.props.onSave(this.props.pkey, value);
         }
     }
 
