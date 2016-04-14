@@ -25,7 +25,6 @@ class BeamlineSetupContainer extends React.Component{
         var ws = io.connect('http://' + document.domain + ':' + location.port + "/beamline/energy");
         ws.on('value_change', (value) => {
             this.refs.energy.setDisplayValue(value);
-            
         });
     }
 
@@ -55,7 +54,7 @@ class BeamlineSetupContainer extends React.Component{
                           <PopInput ref="energy" name="Energy" pkey="energy" 
                                     suffix="keV" value={this.props.data.energy.value} 
                                     onSave={this.onSaveHandler} onCancel={this.onCancelHandler} 
-                                    inputSize="100px" dataType="number" />
+                                    inputSize="100px" dataType="number"/>
                         </td>
                         <td>
                           <PopInput ref="key1" name="Resolution" suffix="&Aring" 
@@ -69,10 +68,12 @@ class BeamlineSetupContainer extends React.Component{
                       <tr>
                         <td>
                           <PopInput ref="resolution" name="Resolution"
-                                    pkey="resolution" unit="&Aring"
+                                    pkey="resolution" suffix="&Aring"
                                     value={this.props.data.resolution.value}
                                     onSave={this.onSaveHandler}
-                                    inputSize="100px" dataType="number"/>
+                                    inputSize="100px" dataType="number">
+                            <div key="loading"> A loading message !</div>
+                          </PopInput>
                         </td>
                         <td>
                           <PopInput ref="key3" name="Energy" suffix="KeV"
@@ -86,7 +87,7 @@ class BeamlineSetupContainer extends React.Component{
                       <tr>
                         <td>
                           <PopInput ref="transmission" name="Transmission"
-                                    pkey="transmission" suffi="%"
+                                    pkey="transmission" suffix="%"
                                     value={this.props.data.transmission.value}
                                     onSave={this.onSaveHandler}
                                     inputSize="100px" dataType="number"/>

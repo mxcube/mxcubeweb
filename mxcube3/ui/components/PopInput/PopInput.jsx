@@ -141,6 +141,39 @@ export default class PopInput extends React.Component{
     }
 
 
+    loadingDivContent(){
+        var children = this.props.children
+        var content = (
+            <div>
+              <div className="popinput-input-busy">
+              </div>
+              <ButtonToolbar className="editable-buttons">
+                <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+                  <i className="glyphicon glyphicon-remove"/>
+                </Button>
+              </ButtonToolbar>
+            </div>);
+
+        // We need to create a real array here since react is so kind to give
+        // us undefined if there is no children and an object of there is only
+        // one.
+        if( this.props.children == undefined ){
+            children = [];
+        }
+        else if( !Array.isArray(this.props.children) ){
+            children = [this.props.children];
+        }
+
+        for( let child in children ){
+            if ( children[child].key === "loading" ){
+                content = children[child]
+            }
+        }
+
+       return content;
+    }
+
+
     render() {
         var linkClass = "editable-click";
         var loading = this.state.loading ? "" : "hidden";
@@ -162,16 +195,10 @@ export default class PopInput extends React.Component{
           </form>
           <div ref="statusMessage" className={input} >{this.state.msg}</div>
           <div ref="loadingDiv" className={loading + " " + "popinput-input-loading"} >
-            <div className="popinput-input-busy">
-            </div>
-            <ButtonToolbar className="editable-buttons">
-              <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
-                <i className="glyphicon glyphicon-remove"/>
-              </Button>
-            </ButtonToolbar>
+            {this.loadingDivContent()}
           </div>
         </Popover>);
-        
+
         return (
             <div className={this.props.className + " popinput-input-container"}>
               <span className={"popinput-input-label " + this.props.ref}>
@@ -181,7 +208,6 @@ export default class PopInput extends React.Component{
                 <span className={"popinput-input-value " + this.props.pkey}>
                   <a ref="valueLabel" key="valueLabel" href="javascript:;" className={linkClass + " " + this.state.anim_class} 
                      dangerouslySetInnerHTML={{__html:this.state.value}} />
-
                 </span>
               </OverlayTrigger>
             </div>
