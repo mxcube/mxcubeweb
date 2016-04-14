@@ -71,7 +71,7 @@ class BeamlineSetupContainer extends React.Component{
                                     data={this.props.data.resolution}
                                     onSave={this.onSaveHandler}
                                     inputSize="100px" dataType="number">
-                            <div key="loading"> A loading message !</div>
+                            <div key="loading">A loading message !</div>
                           </PopInput>
                         </td>
                         <td>
