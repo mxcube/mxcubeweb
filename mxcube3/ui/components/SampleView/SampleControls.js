@@ -1,6 +1,7 @@
 'use strict';
 import './SampleView.css';
 import React from 'react'
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 export default class SampleControls extends React.Component {
 
@@ -73,11 +74,37 @@ render() {
 
                 <button type="button" data-toggle="tooltip"  title="Backlight On/Off" className="btn btn-link pull-center light-button">
                     <i id="back-light-icon" className={"fa fa-2x fa-fw fa fa-lightbulb-o" + (this.props.sampleViewState.lightOn.back ? " button-active" : "")} onClick={this.toogleBackLight}></i>
-                    <input type="number" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.BackLight.position} onChange={this.setLigthStrengthBack} />
+                    <OverlayTrigger trigger="click" placement="top" rootClose overlay={
+                        <Popover id="Backlight" title="Backlight">
+                            <div className="form-inline">
+                                <div className="form-group">
+                                    <form onSubmit={this.setLigthStrengthBack} noValidate>
+                                        <input className="form-control input-sm" onKeyUp={this.setLigthStrengthBack} onClick={this.setLigthStrengthBack} type="number" step="0.1" min="0" max="2" defaultValue={this.props.sampleViewState.motors.BackLight.position}/>
+                                    </form>
+                                </div>
+                            </div>
+                        </Popover>
+                        }
+                    >
+                        <span>{this.props.sampleViewState.motors.BackLight.position}</span>
+                    </OverlayTrigger>
                 </button>
                 <button type="button" data-toggle="tooltip"  title="Frontlight On/Off" className="btn btn-link pull-center light-button">
                     <i id="front-light-icon" className={"fa fa-2x fa-fw fa fa-lightbulb-o" + (this.props.sampleViewState.lightOn.front ? " button-active" : "")} onClick={this.toogleFrontLight}></i>
-                    <input type="number" min="0.0" max="2.0" step="0.1" defaultValue={this.props.sampleViewState.motors.FrontLight.position} onChange={this.setLigthStrengthFront} />                 
+                    <OverlayTrigger trigger="click" placement="top" rootClose overlay={
+                        <Popover id="Backlight" title="Backlight">
+                            <div className="form-inline">
+                                <div className="form-group">
+                                    <form onSubmit={this.setLigthStrengthFront} noValidate>
+                                        <input className="form-control input-sm" onKeyUp={this.setLigthStrengthFront} onClick={this.setLigthStrengthFront} type="number" step="0.1" min="0" max="2" defaultValue={this.props.sampleViewState.motors.FrontLight.position}/>
+                                    </form>
+                                </div>
+                            </div>
+                        </Popover>
+                        }
+                    >
+                        <span>{this.props.sampleViewState.motors.FrontLight.position}</span>
+                    </OverlayTrigger>                
                 </button>                           
 
             </div>
