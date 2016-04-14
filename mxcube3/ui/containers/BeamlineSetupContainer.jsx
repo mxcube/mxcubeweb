@@ -8,7 +8,6 @@ import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 import PopInput from "../components/PopInput/PopInput";
 import "./beamline_setup_container.css";
 import {getBeamlinePropertiesRequest, setBeamlinePropertyRequest} from '../actions/beamline_setup';
-import {setPropertyValueDispatch} from '../actions/beamline_setup';
 import {cancelValueChangeRequest} from '../actions/beamline_setup';
 
 
@@ -52,7 +51,7 @@ class BeamlineSetupContainer extends React.Component{
                       <tr>
                         <td>
                           <PopInput ref="energy" name="Energy" pkey="energy" 
-                                    suffix="keV" value={this.props.data.energy.value} 
+                                    suffix="keV" data={this.props.data.energy} 
                                     onSave={this.onSaveHandler} onCancel={this.onCancelHandler} 
                                     inputSize="100px" dataType="number"/>
                         </td>
@@ -69,7 +68,7 @@ class BeamlineSetupContainer extends React.Component{
                         <td>
                           <PopInput ref="resolution" name="Resolution"
                                     pkey="resolution" suffix="&Aring"
-                                    value={this.props.data.resolution.value}
+                                    data={this.props.data.resolution}
                                     onSave={this.onSaveHandler}
                                     inputSize="100px" dataType="number">
                             <div key="loading"> A loading message !</div>
@@ -88,7 +87,7 @@ class BeamlineSetupContainer extends React.Component{
                         <td>
                           <PopInput ref="transmission" name="Transmission"
                                     pkey="transmission" suffix="%"
-                                    value={this.props.data.transmission.value}
+                                    data={this.props.data.transmission}
                                     onSave={this.onSaveHandler}
                                     inputSize="100px" dataType="number"/>
                         </td>
@@ -121,7 +120,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         getBeamlinePropertiesRequest: bindActionCreators(getBeamlinePropertiesRequest, dispatch),
-        setPropertyValue: bindActionCreators(setPropertyValueDispatch, dispatch),
         setBeamlinePropertyRequest: bindActionCreators(setBeamlinePropertyRequest, dispatch),
         cancelValueChangeRequest: bindActionCreators(cancelValueChangeRequest, dispatch)
     }
