@@ -49,9 +49,6 @@ export default class PopInput extends React.Component{
     componentWillReceiveProps(nextProps){
         this._updateValueState(nextProps.data.value);
 
-
-        console.log(nextProps.data.status === "ABORTED");
-
         if( nextProps.data.status === "BUSY" ){
             this.handleBusy();
         } else if ( nextProps.data.status === "IDLE" ){
