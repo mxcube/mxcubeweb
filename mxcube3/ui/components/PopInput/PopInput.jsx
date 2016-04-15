@@ -21,7 +21,12 @@ import "./style.css"
  *   pkey:       Key used when retreiving or sending data to server
  *   name:       Name displayed in label
  *   suffix:     Suffix to display after value
- *   value:      Value
+ *   data:       Object containing value, the current state of the value and
+ *               a message describing the state. The object have the following
+ *               format:
+ *
+ *                    data: {value: <value>, state: <state>, msg: <msg>}
+ *
  *   title:      Title displayed at the top of popover
  *   placement:  Placement of Popover (left, right, bottom, top)
  *   onSave:     Callback called when user hits save button
@@ -50,11 +55,11 @@ export default class PopInput extends React.Component{
     componentWillReceiveProps(nextProps){
         this._updateValueState(nextProps.data.value);
 
-        if( nextProps.data.status === "BUSY" ){
+        if( nextProps.data.state === "BUSY" ){
             this.handleBusy();
-        } else if ( nextProps.data.status === "IDLE" ){
+        } else if ( nextProps.data.state === "IDLE" ){
             this.handleIdle(nextProps.data);
-        } else if ( nextProps.data.status === "ABORTED" ){
+        } else if ( nextProps.data.state === "ABORTED" ){
             this.handleError(nextProps.data);
         } else {
             this.handleError(nextProps.data);
@@ -81,12 +86,12 @@ export default class PopInput extends React.Component{
 
 
     handleIdle(data){
+        this.anim_class = "value-label-enter-success";
+
         // No message to display to user, hide overlay
         if( data.msg === "" ){
             this.refs.overlay.hide();
         }
-
-        this.anim_class = "value-label-enter-success";
     }
 
 
@@ -162,8 +167,8 @@ export default class PopInput extends React.Component{
 
     render() {
         var linkClass = "editable-click";
-        var loading = (this.props.data.status === "BUSY") ? "" : "hidden";
-        var input = (this.props.data.status !== "BUSY") ? "" : "hidden";
+        var loading = (this.props.data.state === "BUSY") ? "" : "hidden";
+        var input = (this.props.data.state !== "BUSY") ? "" : "hidden";
         var title = (this.props.title === "") ? this.props.name : this.props.title
 
         var popover =(

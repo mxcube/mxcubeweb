@@ -1,14 +1,16 @@
 'use strict';
 
-import React from 'react';
+import React from "react";
 import io from "socket.io-client";
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import {bindActionCreators} from "redux";
+import {connect} from "react-redux";
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
+
 import PopInput from "../components/PopInput/PopInput";
+import {getAllAttributes, setAttribute} from "../actions/beamline_setup";
+import {abortCurrentAction} from "../actions/beamline_setup";
+
 import "./beamline_setup_container.css";
-import {getBeamlinePropertiesRequest, setBeamlinePropertyRequest} from '../actions/beamline_setup';
-import {cancelValueChangeRequest} from '../actions/beamline_setup';
 
 
 class BeamlineSetupContainer extends React.Component{
@@ -17,24 +19,27 @@ class BeamlineSetupContainer extends React.Component{
         this.onSaveHandler = this.onSaveHandler.bind(this);
         this.onCancelHandler = this.onCancelHandler.bind(this);
     }
-    
-    
+
+
     componentDidMount() {
-        this.props.getBeamlinePropertiesRequest();
-        var ws = io.connect('http://' + document.domain + ':' + location.port + "/beamline/energy");
-        ws.on('value_change', (value) => {
+        this.props.getAllAttributes();
+
+        var ws = io.connect("http://" + document.domain + ":" + location.port +
+                            "/beamline/energy");
+
+        ws.on("value_change", (value) => {
             this.refs.energy.setDisplayValue(value);
         });
     }
 
 
     onSaveHandler(name, value, promise){
-        this.props.setBeamlinePropertyRequest(name, value, promise);
+        this.props.setAttribute(name, value, promise);
     }
 
-    
+
     onCancelHandler(name){
-        this.props.cancelValueChangeRequest(name);
+        this.props.abortCurrentAction(name);
     }
 
 
@@ -50,17 +55,19 @@ class BeamlineSetupContainer extends React.Component{
                     <tbody>
                       <tr>
                         <td>
-                          <PopInput ref="energy" name="Energy" pkey="energy" 
-                                    suffix="keV" data={this.props.data.energy} 
-                                    onSave={this.onSaveHandler} onCancel={this.onCancelHandler} 
+                          <PopInput ref="energy" name="Energy" pkey="energy"
+                                    suffix="keV" data={this.props.data.energy}
+                                    onSave={this.onSaveHandler}
+                                    onCancel={this.onCancelHandler}
                                     inputSize="100px" dataType="number"/>
                         </td>
                         <td>
-                          <PopInput ref="key1" name="Resolution" suffix="&Aring" 
-                                    value="0" inputSize="100px" dataType="number"/>
+                          <PopInput ref="key1" name="Resolution" suffix="&Aring"
+                                    value="0" inputSize="100px"
+                                    dataType="number"/>
                         </td>
                         <td>
-                          <PopInput ref="key2" name="Transmission" suffix="%" 
+                          <PopInput ref="key2" name="Transmission" suffix="%"
                                     size="100px" dataType="number"/>
                         </td>
                       </tr>
@@ -92,7 +99,7 @@ class BeamlineSetupContainer extends React.Component{
                                     inputSize="100px" dataType="number"/>
                         </td>
                         <td>
-                          <PopInput ref="key5" name="Resolution" suffix="&Aring" 
+                          <PopInput ref="key5" name="Resolution" suffix="&Aring"
                                     inputSize="100px" dataType="number"/>
                         </td>
                         <td>
@@ -119,9 +126,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        getBeamlinePropertiesRequest: bindActionCreators(getBeamlinePropertiesRequest, dispatch),
-        setBeamlinePropertyRequest: bindActionCreators(setBeamlinePropertyRequest, dispatch),
-        cancelValueChangeRequest: bindActionCreators(cancelValueChangeRequest, dispatch)
+        getAllAttributes: bindActionCreators(getAllAttributes, dispatch),
+        setAttribute: bindActionCreators(setAttribute, dispatch),
+        abortCurrentAction: bindActionCreators(abortCurrentAction, dispatch)
     }
 }
 

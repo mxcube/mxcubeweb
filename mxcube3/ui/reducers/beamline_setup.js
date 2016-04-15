@@ -1,59 +1,26 @@
-const initialState = {
-    energy: {
-        limits: [
-            0,
-            1000,
-            0.1
-        ],
-        name: "energy",
-        value: "0",
-        status: "IDLE",
-        msg: ""
-    }, 
-    resolution: {
-        limits: [
-            0,
-            1000,
-            0.1
-        ],
-        name: "resolution",
-        value: "0",
-        status: "IDLE",
-        msg: ""
-    },
-    transmission: {
-        limits: [
-            0,
-            1000,
-            0.1
-        ],
-        name: "transmission",
-        value: "0",
-        status: "IDLE",
-        msg: ""
-    }
-}
+import {INITIAL_STATE, SET_ATTRIBUTE, SET_ALL_ATTRIBUTES, 
+        SET_BUSY_STATE} from "../actions/beamline_setup_atypes";
 
-export default (state=initialState, action) => {
+export default (state=INITIAL_STATE, action) => {
     switch (action.type) {
-    case "SET_BEAMLINE_PROPERTIES":{
+    case SET_ALL_ATTRIBUTES:
         return Object.assign({}, state, action.data);
-    }
-    case "SET_BEAMLINE_PROPERTY":{
+        
+    case SET_ATTRIBUTE:
         var data = {};
         data[action.data.name] = {name: action.data.name, 
                                   value: action.data.value,
-                                  status: action.data.status,
+                                  state: action.data.state,
                                   msg: action.data.msg};
-
+        
         return Object.assign({}, state, data);
-    }
-    case "SET_BUSY_STATE":{
+        
+    case SET_BUSY_STATE:
         data = Object.assign({}, state);
-        data[action.data.name].status = action.data.status;
-
+        data[action.data.name].state = action.data.state;
+        
         return data;
-    }
+        
     default:
         return state;
     }

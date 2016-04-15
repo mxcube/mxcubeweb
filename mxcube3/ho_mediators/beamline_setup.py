@@ -33,22 +33,22 @@ class BeamlineSetupMediator(object):
         energy =  self.getObjectByRole("energy")
         transmission = self.getObjectByRole("transmission")
         resolution = self.getObjectByRole("resolution")
-
+        
         data = {"energy": {"name": "energy",
                            "value": energy.get(),
                            "limits": (0, 1000, 0.1),
-                           "status": energy.status(),
+                           "state": energy.state(),
                            "msg": ""
                            },
                 "transmission": {"name": "transmission",
                                  "value": transmission.get(),
                                  "limits": (0, 1000, 0.1),
-                                 "status": transmission.status(),
+                                 "state": transmission.state(),
                                  "msg": ""},
                 "resolution": {"name": "resolution",
                                "value": resolution.get(),
                                "limits": (0, 1000, 0.1),
-                               "status": resolution.status(),
+                               "state": resolution.state(),
                                "msg": ""}}
 
         return data
@@ -106,7 +106,7 @@ class EnergyHOMediator(object):
         return energy
 
 
-    def status(self):
+    def state(self):
         return "BUSY" if self._ho.moving else "IDLE"
 
 
@@ -141,7 +141,7 @@ class TransmissionHOMediator(object):
         return transmission
 
 
-    def status(self):
+    def state(self):
         return "IDLE"
 
 
@@ -168,5 +168,5 @@ class ResolutionHOMediator(object):
         return resolution
 
 
-    def status(self):
+    def state(self):
         return "IDLE"

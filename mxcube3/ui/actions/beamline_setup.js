@@ -1,6 +1,10 @@
 import fetch from 'isomorphic-fetch';
 
-export function getBeamlinePropertiesRequest() {
+import {SET_ATTRIBUTE, SET_ALL_ATTRIBUTES, 
+        SET_BUSY_STATE, STATE} from "./beamline_setup_atypes";
+
+
+export function getAllAttributes() {
     return function(dispatch) {
         fetch('mxcube/api/v0.1/beamline', {
             method: 'GET',
@@ -19,7 +23,7 @@ export function getBeamlinePropertiesRequest() {
 }
 
 
-export function setBeamlinePropertyRequest(name, value){
+export function setAttribute(name, value){
     return function(dispatch) {
         dispatch(busyStateAction(name));
         fetch('mxcube/api/v0.1/beamline/' + name, {
@@ -40,8 +44,8 @@ export function setBeamlinePropertyRequest(name, value){
 }
 
 
-export function cancelValueChangeRequest(name){
-    return function(dispatch) {
+export function abortCurrentAction(name){
+    return function() {
         fetch('mxcube/api/v0.1/beamline/' + name + '/abort', {
             method: 'GET',
             headers: {
@@ -56,7 +60,7 @@ export function cancelValueChangeRequest(name){
 
 export function beamlinePropertyValueAction(data) {
     return {
-        type: "SET_BEAMLINE_PROPERTY",
+        type: SET_ATTRIBUTE,
         data: data
     };
 }
@@ -64,7 +68,7 @@ export function beamlinePropertyValueAction(data) {
 
 export function beamlinePropertiesAction(data) {
     return {
-        type: "SET_BEAMLINE_PROPERTIES",
+        type: SET_ALL_ATTRIBUTES,
         data: data
     };
 }
@@ -72,7 +76,7 @@ export function beamlinePropertiesAction(data) {
 
 export function busyStateAction(name) {
     return {
-        type: "SET_BUSY_STATE",
-        data: {name: name, status: "BUSY"}
+        type: SET_BUSY_STATE,
+        data: {name: name, state: STATE.BUSY}
     };
 }
