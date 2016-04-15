@@ -41,13 +41,12 @@
 
 .motor-name{
     line-height: 45px;
-    font-size: 14px;
+    font-size: 1.0em;
     margin-bottom: 0px;
     margin-left: 5px;
 }
 .motor-value{
-    line-height: 45px;
-    font-size: 14px;
+    font-size: 1.0em;
     font-weight: bold;
     margin-left: 5px;
     border-bottom:1px dotted #f00;

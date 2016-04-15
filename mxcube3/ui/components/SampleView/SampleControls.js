@@ -9,10 +9,10 @@ export default class SampleControls extends React.Component {
         super(props);
         this.takeSnapShot = this.takeSnapShot.bind(this);
         this.setZoom = this.setZoom.bind(this);
-        this.setLigthStrengthFront = this.setLigthStrength.bind(this,"FrontLight");
-        this.setLigthStrengthBack = this.setLigthStrength.bind(this,"BackLight");
-        this.toogleBackLight = this.toogleLight.bind(this,"back");
-        this.toogleFrontLight = this.toogleLight.bind(this,"front");
+        this.setLigthStrength = this.setLigthStrength.bind(this);
+        this.setLigthStrengthStep = this.setLigthStrengthStep.bind(this);
+        this.toogleFrontLight = this.toogleLight.bind(this,'front');
+        this.toogleBackLight = this.toogleLight.bind(this,'back');
     }
 
 
@@ -26,10 +26,16 @@ export default class SampleControls extends React.Component {
     }
 
 
-    setLigthStrength(name, option){
-        this.props.sampleActions.sendMotorPosition(name, option.target.value);
+    setLigthStrength(option){
+        option.preventDefault(); 
+        option.stopPropagation();
+        if([13,38,40].includes(option.keyCode)){
+            this.props.sampleActions.sendMotorPosition(option.target.name, option.target.value);
+        }
     }
-
+    setLigthStrengthStep(option){
+            this.props.sampleActions.sendMotorPosition(option.target.name, option.target.value);
+    }
 
     toogleLight(name){
 
@@ -74,38 +80,38 @@ render() {
 
                 <button type="button" data-toggle="tooltip"  title="Backlight On/Off" className="btn btn-link pull-center light-button">
                     <i id="back-light-icon" className={"fa fa-2x fa-fw fa fa-lightbulb-o" + (this.props.sampleViewState.lightOn.back ? " button-active" : "")} onClick={this.toogleBackLight}></i>
+                </button>
                     <OverlayTrigger trigger="click" placement="top" rootClose overlay={
                         <Popover id="Backlight" title="Backlight">
                             <div className="form-inline">
                                 <div className="form-group">
-                                    <form onSubmit={this.setLigthStrengthBack} noValidate>
-                                        <input className="form-control input-sm" onKeyUp={this.setLigthStrengthBack} onClick={this.setLigthStrengthBack} type="number" step="0.1" min="0" max="2" defaultValue={this.props.sampleViewState.motors.BackLight.position}/>
+                                    <form onSubmit={this.setLigthStrength} noValidate>
+                                        <input className="form-control input-sm" onKeyUp={this.setLigthStrength} onClick={this.setLigthStrengthStep} type="number" step="0.1" min="0" max="2" defaultValue={this.props.sampleViewState.motors.BackLight.position} name="BackLight"/>
                                     </form>
                                 </div>
                             </div>
                         </Popover>
                         }
                     >
-                        <span>{this.props.sampleViewState.motors.BackLight.position}</span>
+                        <span className="motor-value">{this.props.sampleViewState.motors.BackLight.position}</span>
                     </OverlayTrigger>
-                </button>
                 <button type="button" data-toggle="tooltip"  title="Frontlight On/Off" className="btn btn-link pull-center light-button">
                     <i id="front-light-icon" className={"fa fa-2x fa-fw fa fa-lightbulb-o" + (this.props.sampleViewState.lightOn.front ? " button-active" : "")} onClick={this.toogleFrontLight}></i>
+                </button>
                     <OverlayTrigger trigger="click" placement="top" rootClose overlay={
                         <Popover id="Backlight" title="Backlight">
                             <div className="form-inline">
                                 <div className="form-group">
-                                    <form onSubmit={this.setLigthStrengthFront} noValidate>
-                                        <input className="form-control input-sm" onKeyUp={this.setLigthStrengthFront} onClick={this.setLigthStrengthFront} type="number" step="0.1" min="0" max="2" defaultValue={this.props.sampleViewState.motors.FrontLight.position}/>
+                                    <form onSubmit={this.setLigthStrength} noValidate>
+                                        <input className="form-control input-sm" onKeyUp={this.setLigthStrength} onClick={this.setLigthStrengthStep} type="number" step="0.1" min="0" max="2" defaultValue={this.props.sampleViewState.motors.FrontLight.position} name="FrontLight"/>
                                     </form>
                                 </div>
                             </div>
                         </Popover>
                         }
                     >
-                        <span>{this.props.sampleViewState.motors.FrontLight.position}</span>
-                    </OverlayTrigger>                
-                </button>                           
+                        <span className="motor-value">{this.props.sampleViewState.motors.FrontLight.position}</span>
+                    </OverlayTrigger>                                           
 
             </div>
         </div>
