@@ -23,7 +23,7 @@ class SampleViewContainer extends Component {
       <div className="row">
         <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters}/>
         <div className="col-xs-8">
-            <BeamlineSetupContainer />
+            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors}/>
             <SampleImage 
                 sampleActions={this.props.sampleViewActions} 
                 imageHeight={height} 
@@ -38,6 +38,7 @@ class SampleViewContainer extends Component {
             <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>
         <div className="col-xs-4">
+          <BeamlineSetupContainer />
         </div>
       </div>
     )

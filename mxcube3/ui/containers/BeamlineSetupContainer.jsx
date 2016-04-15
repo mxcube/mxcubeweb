@@ -42,7 +42,6 @@ class BeamlineSetupContainer extends React.Component{
 
     render(){
         return(
-            <div className="row">
               <div className="beamline-setup-container">
                 <legend className="beamline-setup-header">
                   Beamline setup
@@ -52,59 +51,73 @@ class BeamlineSetupContainer extends React.Component{
                     <tbody>
                       <tr>
                         <td>
-                          <PopInput ref="energy" name="Energy" pkey="energy" 
-                                    suffix="keV" value={this.props.data.energy.value} 
-                                    onSave={this.onSaveHandler} onCancel={this.onCancelHandler} 
-                                    inputSize="100px" dataType="number" />
+                            <PopInput 
+                                ref="energy" name="Energy" pkey="energy" 
+                                suffix="keV" value={this.props.data.energy.value} 
+                                onSave={this.onSaveHandler} onCancel={this.onCancelHandler} 
+                                inputSize="100px" dataType="number" 
+                            />
                         </td>
                         <td>
-                          <PopInput ref="key1" name="Resolution" suffix="&Aring" 
-                                    value="0" inputSize="100px" dataType="number"/>
+                            <PopInput 
+                                ref="key1" name="Resolution" suffix="&Aring" 
+                                value="0" inputSize="100px" dataType="number"
+                            />
+                        </td>
+                        </tr>
+                        <tr>
+                        <td>
+                            <PopInput 
+                                ref="key2" name="Transmission" suffix="%" 
+                                size="100px" dataType="number"
+                            />
                         </td>
                         <td>
-                          <PopInput ref="key2" name="Transmission" suffix="%" 
-                                    size="100px" dataType="number"/>
+                            <PopInput 
+                                ref="resolution" name="Resolution"
+                                pkey="resolution" unit="&Aring"
+                                value={this.props.data.resolution.value}
+                                onSave={this.onSaveHandler}
+                                inputSize="100px" dataType="number"
+                            />
                         </td>
-                      </tr>
-                      <tr>
+                        </tr>
+                        <tr>                        
                         <td>
-                          <PopInput ref="resolution" name="Resolution"
-                                    pkey="resolution" unit="&Aring"
-                                    value={this.props.data.resolution.value}
-                                    onSave={this.onSaveHandler}
-                                    inputSize="100px" dataType="number"/>
-                        </td>
-                        <td>
-                          <PopInput ref="key3" name="Energy" suffix="KeV"
-                                    inputSize="100px" dataType="number"/>
+                            <PopInput 
+                                ref="key3" name="Energy" suffix="KeV"
+                                inputSize="100px" dataType="number"
+                            />
                           </td>
                           <td>
-                            <PopInput ref="key4" name="Transmission" suffix="%"
-                                      inputSize="100px" dataType="number"/>
+                                <PopInput 
+                                    ref="key4" name="Transmission" suffix="%"
+                                    inputSize="100px" dataType="number"
+                                />
                           </td>
                       </tr>
+
                       <tr>
                         <td>
-                          <PopInput ref="transmission" name="Transmission"
-                                    pkey="transmission" suffi="%"
-                                    value={this.props.data.transmission.value}
-                                    onSave={this.onSaveHandler}
-                                    inputSize="100px" dataType="number"/>
+                            <PopInput 
+                                ref="transmission" name="Transmission"
+                                pkey="transmission" suffi="%"
+                                value={this.props.data.transmission.value}
+                                onSave={this.onSaveHandler}
+                                inputSize="100px" dataType="number"
+                            />
                         </td>
                         <td>
-                          <PopInput ref="key5" name="Resolution" suffix="&Aring" 
-                                    inputSize="100px" dataType="number"/>
-                        </td>
-                        <td>
-                          <PopInput ref="key6" name="Energy" suffix="KeV"
-                                    inputSize="100px" dataType="number"/>
+                            <PopInput 
+                                ref="key5" name="Resolution" suffix="&Aring" 
+                                inputSize="100px" dataType="number"
+                            />
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
-            </div>
         )
     }
 }
