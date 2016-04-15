@@ -52,12 +52,12 @@ def beamline_set_attribute(name):
 
     try:
         data["value"] = ho.set(data["value"])
-        data["status"] = "VALID"
+        data["state"] = "IDLE"
         data["msg"] = ""
         result, code = json.dumps(data), 200
     except Exception as ex:
         data["value"] = ho.get()
-        data["status"] = "ABORTED"
+        data["state"] = "ABORTED"
         data["msg"] = str(ex)
         result, code = json.dumps(data), 520
 
@@ -81,11 +81,11 @@ def beamline_get_attribute(name):
 
     try:
         data["value"] = ho.get()
-        data["status"] = "VALID"
+        data["state"] = "IDLE"
         data["msg"] = ""
     except Exception as ex:
         data["value"] = ""
-        data["status"] = "ERROR"
+        data["state"] = "ERROR"
         data["msg"] = str(ex)
         result, code = json.dumps(data), 520
 
