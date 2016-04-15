@@ -36,7 +36,8 @@ export default class PopInput extends React.Component{
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
         this.submit = this.submit.bind(this);
-        this.state = {value: "", anim_class: ""};
+        this.anim_class = "";
+        this.state = {value: ""};
         this._updateValueState(this.props.data.value);
     }
 
@@ -85,17 +86,17 @@ export default class PopInput extends React.Component{
             this.refs.overlay.hide();
         }
 
-        this.setState({anim_class: "value-label-enter-success"});
+        this.anim_class = "value-label-enter-success";
     }
 
 
     handleBusy(){
-        this.setState({anim_class: "value-label-enter-loading"});
+        this.anim_class = "value-label-enter-loading";
     }
 
 
     handleError(data){
-        this.setState({anim_class: "value-label-enter-error"});
+        this.anim_class = "value-label-enter-error";
 
         // No message to display to user, hide overlay
         if( data.msg === "" ){
@@ -191,7 +192,7 @@ export default class PopInput extends React.Component{
               </span>
               <span className={"popinput-input-value " + this.props.pkey}>
                 <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement} overlay={popover}>
-                  <a ref="valueLabel" key="valueLabel" href="javascript:;" className={linkClass + " " + this.state.anim_class} 
+                  <a ref="valueLabel" key="valueLabel" href="javascript:;" className={linkClass + " " + this.anim_class}
                      dangerouslySetInnerHTML={{__html:this.state.value}} />
                 </OverlayTrigger>
                 </span>
