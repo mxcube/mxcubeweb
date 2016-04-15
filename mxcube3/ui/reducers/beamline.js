@@ -1,5 +1,5 @@
 import {INITIAL_STATE, SET_ATTRIBUTE, SET_ALL_ATTRIBUTES, 
-        SET_BUSY_STATE} from "../actions/beamline_setup_atypes";
+        SET_BUSY_STATE} from "../actions/beamline_atypes";
 
 export default (state=INITIAL_STATE, action) => {
     switch (action.type) {
