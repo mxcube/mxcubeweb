@@ -10,7 +10,7 @@
   min-width: 70px;
 }
 
-.popinput-input-loading{  
+.popinput-input-loading{
 }
 
 .popinput-input-busy{
@@ -24,7 +24,6 @@
 	visibility: hidden;
   display: inline;
 }
-
 
 .value-label-enter-loading {
   background-color: #FF0;
