@@ -40,12 +40,12 @@ def beamline_set_attribute(name):
     """
     Tries to set <name> to value, replies with the following json:
     
-        {name: <name>, value: <value>, msg: <msg>, status: <status>
+        {name: <name>, value: <value>, msg: <msg>, state: <state>
 
-    Where msg is an arbitrary msg to user, status is the internal state
+    Where msg is an arbitrary msg to user, state is the internal state
     of the set operation (for the moment, VALID, ABORTED, ERROR).
 
-    Replies with status code 200 in success and 520 on exceptions.
+    Replies with status code 200 on success and 520 on exceptions.
     """
     data = json.loads(request.data)
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
@@ -69,12 +69,12 @@ def beamline_get_attribute(name):
     """
     Retrieves value of attribute <name>, replies with the following json:
     
-        {name: <name>, value: <value>, msg: <msg>, status: <status>
+        {name: <name>, value: <value>, msg: <msg>, state: <state>
 
-    Where msg is an arbitrary msg to user, status is the internal state
+    Where msg is an arbitrary msg to user, state is the internal state
     of the get operation (for the moment, VALID, ABORTED, ERROR).
 
-    Replies with status code 200 in success and 520 on exceptions.
+    Replies with status code 200 on success and 520 on exceptions.
     """
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
     data = {"name": name, "value": ""}

@@ -7,8 +7,8 @@ import {connect} from "react-redux";
 import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
 
 import PopInput from "../components/PopInput/PopInput";
-import {getAllAttributes, setAttribute} from "../actions/beamline_setup";
-import {abortCurrentAction} from "../actions/beamline_setup";
+import {getAllAttributes, setAttribute} from "../actions/beamline";
+import {abortCurrentAction} from "../actions/beamline";
 
 import "./beamline_setup_container.css";
 
@@ -119,7 +119,7 @@ class BeamlineSetupContainer extends React.Component{
 
 function mapStateToProps(state) {
     return {
-        data: state.beamlineSetup
+        data: state.beamline
     }
 }
 
