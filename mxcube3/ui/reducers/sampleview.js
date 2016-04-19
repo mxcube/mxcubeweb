@@ -13,7 +13,8 @@ const initialState = {
   canvas: null,
   contextMenu: {show:false, shape: {type: "NONE"}, x: 0, y:0},
   apertureList: [],
-  currentAperture: 0
+  currentAperture: 0,
+  currentPhase: "Centring"
 }
 
 export default (state=initialState, action) => {
@@ -77,6 +78,10 @@ export default (state=initialState, action) => {
         case 'SET_APERTURE':
             {
                 return {...state, currentAperture: action.size };
+            }
+        case 'SET_CURRENT_PHASE':
+            {
+                return {...state, currentPhase: action.phase };
             }
          case 'MOUNT_SAMPLE':
             {

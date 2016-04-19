@@ -2,6 +2,12 @@ import fetch from 'isomorphic-fetch'
 import { showErrorPanel } from './general'
 
 
+export function setCurrentPhase(phase) {
+  return { 
+    type: "SET_CURRENT_PHASE", phase
+  }
+}
+
 export function setImageRatio(ratio) {
   return { 
     type: "SET_IMAGE_RATIO",
@@ -326,13 +332,14 @@ export function sendGoToPoint(id) {
 
 export function sendChangeAperture(size) {
   return function(dispatch) {
-   fetch('/mxcube/api/v0.1/beamline/' + size + '/move' , { 
+   fetch('/mxcube/api/v0.1/beamline/aperture' , { 
     method: 'PUT', 
     credentials: 'include',
     headers: {
       'Accept': 'application/json',
       'Content-type': 'application/json'
-    }
+    },
+    body: JSON.stringify({pos: size})
   }).then(function(response) {
     if (response.status >= 400) {
       dispatch(showErrorPanel(true, "Server refused to change Aperture"));
