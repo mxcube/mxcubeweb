@@ -16,6 +16,13 @@ export function setCanvas(canvas) {
   }
 }
 
+
+export function setAperture(size) {
+  return { 
+    type: "SET_APERTURE", size
+  }
+}
+
 export function setLight(name, on) {
   return { 
     type: "SET_LIGHT",
@@ -316,6 +323,28 @@ export function sendGoToPoint(id) {
   });
 }
 }
+
+export function sendChangeAperture(size) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/beamline/' + size + '/move' , { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, "Server refused to change Aperture"));
+      dispatch(setAperture(size));
+    }else{
+      dispatch(setAperture(size));
+    }
+  });
+}
+}
+
+
 
 export function getSampleImageSize() {
   return function(dispatch) {

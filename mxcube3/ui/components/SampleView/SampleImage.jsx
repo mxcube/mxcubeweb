@@ -29,7 +29,7 @@ export default class SampleImage extends React.Component {
 
     componentWillReceiveProps(nextProps){
         this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio);
-        this.drawImageOverlay(nextProps.canvas, nextProps.imageRatio);
+        this.drawImageOverlay(nextProps.canvas, nextProps.imageRatio, nextProps.currentAperture);
     }
 
     drawCanvas(canvas){
@@ -60,11 +60,12 @@ export default class SampleImage extends React.Component {
         return imageRatio;
     }
 
-    drawImageOverlay(canvas, imageRatio){
-        let l = 0.05 * this.props.pixelsPerMm / imageRatio;
-        canvas.add(makeBeam(canvas.width/2,canvas.height/2, l/2));
-        canvas.add(makeLine(10,canvas.height-10,l + 10,canvas.height-10));
-        canvas.add(makeLine(10,canvas.height-10,10,canvas.height-10-l));
+    drawImageOverlay(canvas, imageRatio, currentAperture){
+        let apertureDiameter = currentAperture * 0.001 * this.props.pixelsPerMm / imageRatio;
+        let scaleLength = 0.05 * this.props.pixelsPerMm / imageRatio;
+        canvas.add(makeBeam(canvas.width/2,canvas.height/2, apertureDiameter/2));
+        canvas.add(makeLine(10,canvas.height-10,scaleLength + 10,canvas.height-10));
+        canvas.add(makeLine(10,canvas.height-10,10,canvas.height-10-scaleLength));
         canvas.add(makeText(20,canvas.height-30,16));
     }
 

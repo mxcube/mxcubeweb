@@ -16,7 +16,7 @@ class SampleViewContainer extends Component {
   render() {
 
     const {show, shape, x, y} = this.props.sampleViewState.contextMenu;
-    const {width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas } = this.props.sampleViewState
+    const {width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture } = this.props.sampleViewState
     const sampleId = this.props.lookup[this.props.current.node];
 
     return (
@@ -33,7 +33,8 @@ class SampleViewContainer extends Component {
                 clickCentring={clickCentring} 
                 contextMenuShow={show}
                 imageRatio={imageRatio}
-                canvas={canvas} 
+                canvas={canvas}
+                currentAperture={currentAperture} 
             />
             <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>

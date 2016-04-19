@@ -10,6 +10,7 @@ export default class SampleControls extends React.Component {
         this.takeSnapShot = this.takeSnapShot.bind(this);
         this.setZoom = this.setZoom.bind(this);
         this.setLigthStrength = this.setLigthStrength.bind(this);
+        this.setApertureSize = this.setApertureSize.bind(this);
         this.setLigthStrengthStep = this.setLigthStrengthStep.bind(this);
         this.toogleFrontLight = this.toogleLight.bind(this,'front');
         this.toogleBackLight = this.toogleLight.bind(this,'back');
@@ -25,6 +26,9 @@ export default class SampleControls extends React.Component {
         document.getElementById("downloadLink").href = this.props.canvas.toDataURL();
     }
 
+    setApertureSize(option){
+        this.props.sampleActions.sendChangeAperture(option.target.value);
+    }    
 
     setLigthStrength(option){
         option.preventDefault(); 
@@ -54,6 +58,24 @@ render() {
     return (
         <div className="sample-controlls sample-controlls-bottom">
             <div className="text-center"> 
+                    <OverlayTrigger trigger="click" placement="top" rootClose overlay={
+                        <Popover id="Aperture" title="Aperture">
+                            <div className="form-inline">
+                                <div className="form-group">
+                                    <form onSubmit={this.setLigthStrength} noValidate>
+                                        <select className="form-control" defaultValue={this.props.sampleViewState.currentAperture} onChange={this.setApertureSize}>
+                                            {this.props.sampleViewState.apertureList.map((val) => {
+                                                return <option value={val}>{val}</option>
+                                            })}
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </Popover>
+                        }
+                    >
+                        <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link pull-center"><i className="fa fa-2x fa-fw fa-dot-circle-o"></i></button>
+                    </OverlayTrigger>
                 <button type="button" data-toggle="tooltip"  title="Measure distance" className="btn btn-link  pull-center"><i className="fa fa-2x fa-fw fa-calculator"></i></button>                              
                 <a href="#" id="downloadLink" type="button" data-toggle="tooltip"  title="Take snapshot" className="btn btn-link  pull-center" onClick={this.takeSnapShot} download><i className="fa fa-2x fa-fw fa-camera"></i></a>                            
                 <button type="button" data-toggle="tooltip"  title="Start auto centring" className="btn btn-link pull-center" onClick={this.props.sampleActions.sendStartAutoCentring}><i className="fa fa-2x fa-fw fa-arrows"></i></button>
