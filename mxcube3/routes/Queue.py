@@ -303,7 +303,7 @@ def executeEntryWithId(nodeId):
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
                         mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queueList[nodeId]['SampleId']})
                         #mxcube.queue.lastQueueNode = lastQueueNode
-                        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+                        mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                     except Exception:
                         logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
@@ -317,9 +317,16 @@ def executeEntryWithId(nodeId):
             #     entry.set_enabled(True)
             entry._view = Mock()  # associated text deps
             entry._set_background_color = Mock()  # widget color deps
-            parent = int(node.get_parent()._node_id)
+            #parent = int(node.get_parent()._node_id)
+            parentNode = node.get_parent() # this is a TaskGroup, so it is not in the parsed queue
+            # go a level up,
+            parentNode = parentNode.get_parent() # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
+            if isinstance(parentNode, qmo.TaskGroup):
+                parentNode = parentNode.get_parent()
+            parent = int(parentNode._node_id)
+
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queueList[parent]['SampleId']})
-            #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+            mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
         return Response(status=200)
     except Exception:
@@ -428,40 +435,61 @@ def toggleNode(id):
 
     try:
         if isinstance(entry, qe.SampleQueueEntry):
-            queueList[nodeId]['checked'] = int(not queueList[nodeId]['checked'])
             #this is a sample entry, thus, go through its checked children and toggle those
-            if queueList[nodeId]['checked'] == 1:
-                entry.set_enabled(True)
-            else:
+            if entry.is_enabled():
                 entry.set_enabled(False)
+                node.set_enabled(False)
 
-            for elem in queueList[nodeId]['methods']:
-                elem['checked'] = int(queueList[nodeId]['checked'])
+            else:
+                entry.set_enabled(True)
+                node.set_enabled(True)
+
+            new_state = entry.is_enabled()
+            for elem in queueList[nodeId]['methods']:              
                 childNode = mxcube.queue.get_node(elem['QueueId'])
                 childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
-                if elem['checked'] == 1:
+                if new_state:
                     childEntry.set_enabled(True)
+                    childNode.set_enabled(True)
                 else:
                     childEntry.set_enabled(False)
+                    childNode.set_enabled(False)
+
         else:
             #not a sample so find the parent and toggle directly
             logging.getLogger('HWR').info('[QUEUE] toggling entry with id: %s' % nodeId)
-            parentNode = node.get_parent()
-            parent = node.get_parent()._node_id
+            parentNode = node.get_parent() # this is a TaskGroup, so it is not in the parsed queue
+            # go a level up,
+            parentNode = parentNode.get_parent() # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
+            if isinstance(parentNode, qmo.TaskGroup):
+                parentNode = parentNode.get_parent()
+            parent = parentNode._node_id
             parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parentNode)
+            #now that we know the sample parent no matter what is the entry (char, dc)
+            #check if the brother&sisters are enabled (and enable the parent)
             checked = 0
+
             for i in queueList[parent]['methods']:
-                if i['QueueId'] != nodeId and i['checked'] == 1:
+                if i['QueueId'] != nodeId and i['checked'] == 1: # at least one brother is enabled, no need to change parent
                     checked = 1
                     break
+            if entry.is_enabled():
+                entry.set_enabled(False)
+                node.set_enabled(False)
+
+            else:
+                entry.set_enabled(True)
+                node.set_enabled(True)
+
+            new_state = entry.is_enabled()
             for met in queueList[parent]['methods']:
                 if int(met.get('QueueId')) == nodeId:
-                    met['checked'] = int(not met['checked'])
-                    if met['checked'] == 0 and checked == 0:
+                    if new_state == 0 and checked == 0:
                         parentEntry.set_enabled(False)
-                    elif met['checked'] == 1 and checked == 0:
+                        parentNode.set_enabled(False)
+                    elif new_state == 1 and checked == 0:
                         parentEntry.set_enabled(True)
-
+                        parentNode.set_enabled(True)
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue element %s could not be toggled' % id)
@@ -816,7 +844,7 @@ def jsonParser(fromSession = False):
     aux = {}
     for sampEntry in queueEntryList:
         dataModel = sampEntry['py/state']['_data_model']
-        aux[dataModel['_node_id']] = {"QueueId": dataModel['_node_id'],"SampleId": dataModel['loc_str'],"checked": 0,"methods":[]}
+        aux[dataModel['_node_id']] = {"QueueId": dataModel['_node_id'],"SampleId": dataModel['loc_str'],"checked": dataModel['_enabled'],"methods":[]}
 
         children = dataModel['_children']
         for child in children:
@@ -825,8 +853,8 @@ def jsonParser(fromSession = False):
                     if grandChild['py/object'].split('.')[1] == 'TaskGroup': #keep going down one more time for the Char
                         for grandGrandChild in grandChild['_children']:
                             if grandGrandChild['py/object'].split('.')[1] == 'Characterisation':
-                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Type': 'Characterisation','Params': grandGrandChild['characterisation_parameters'], 'AcquisitionParams': grandGrandChild['reference_image_collection']['acquisitions'][0]['acquisition_parameters'],'checked': 0, 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
+                                aux[dataModel['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'],'Type': 'Characterisation','Params': grandGrandChild['characterisation_parameters'], 'AcquisitionParams': grandGrandChild['reference_image_collection']['acquisitions'][0]['acquisition_parameters'],'checked': dataModel['_enabled'], 'executed': grandChild['_executed'], 'html_report': ''}) #grandGrandChild['characterisation_parameters']
                     elif grandChild['py/object'].split('.')[1] == 'DataCollection':
-                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Type': 'DataCollection','Params': {},'checked': 0, 'executed': grandChild['_executed'], 'Params': grandChild['acquisitions'][0]['acquisition_parameters']})
+                        aux[dataModel['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'],'Type': 'DataCollection','Params': {},'checked': dataModel['_enabled'], 'executed': grandChild['_executed'], 'Params': grandChild['acquisitions'][0]['acquisition_parameters']})
                     ## acq limited for now to only one element of the array, so a DataCollection entry only has a single Acquisition , done like this to simplify devel... just belean!
     return aux
