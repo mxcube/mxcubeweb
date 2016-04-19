@@ -15,7 +15,7 @@ microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStart
                     'centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning', 'positionChanged', \
                     'phiMotorStateChanged','phiyMotorStateChanged','phizMotorStateChanged', 'sampxMotorStateChanged', \
                     'sampyMotorStateChanged', 'minidiffStateChanged','minidiffPhaseChanged','minidiffSampleIsLoadedChanged',\
-                    'zoomMotorPredefinedPositionChanged','diffractometerMoved', 'minidiffTransferModeChanged']
+                    'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged']
 
 okSignals = ['Successful', 'Finished', 'finished','Ended', 'Accepted'] 
 failedSignals = ['Failed','Invalid']
