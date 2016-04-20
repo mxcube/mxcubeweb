@@ -132,7 +132,6 @@ def get_initial_state():
             
         beamInfo = mxcube.beamline.getObjectByRole("beam_info")
         data['beamInfo'] = {}
-
         if beamInfo is None:
              logging.getLogger('HWR').error("beamInfo is not defined")
         try:
@@ -161,14 +160,13 @@ def get_initial_state():
             data['current_phase'] = mxcube.diffractometer.current_phase
         except AttributeError:
             data['current_phase'] =  'None' # in case the diff does not have this implemented
+
         resp = jsonify(data)
         resp.status_code = 200
         return resp
     except Exception:
         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get all motor  status')
         return Response(status=409)
-
-### TODO: when we have the main login page this method should redirect to '/'
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
 def proposal_samples(proposal_id):
