@@ -74,7 +74,7 @@ def queueAbort():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to abort')
     try:
-        mxcube.queue.queue_hwobj.abort()
+        mxcube.queue.queue_hwobj.stop()
         logging.getLogger('HWR').info('[QUEUE] Queue aborted')
         return Response(status=200)
     except Exception:
@@ -90,7 +90,7 @@ def queuePause():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
     try:
-        mxcube.queue.queue_hwobj.set_pause(True)
+        mxcube.queue.queue_hwobj.pause(True)
         logging.getLogger('HWR').info('[QUEUE] Queue paused')
         return Response(status=200)
     except Exception:
@@ -106,7 +106,7 @@ def queueUnpause():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to unpause')
     try:
-        mxcube.queue.queue_hwobj.set_pause(False)
+        mxcube.queue.queue_hwobj.pause(False)
         logging.getLogger('HWR').info('[QUEUE] Queue unpaused')
         return Response(status=200)
     except Exception:
