@@ -33,6 +33,12 @@ export function collapseList(listName) {
         }
 }
 
+export function collapseSample(queueID) {
+        return {
+               type: "COLLAPSE_SAMPLE", queueID
+        }
+}
+
 export function setState(queueState, sampleGridState) {
         return {
                type: "QUEUE_STATE",

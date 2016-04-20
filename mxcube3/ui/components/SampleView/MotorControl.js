@@ -1,118 +1,136 @@
+
 'use strict';
 
-import React from 'react'
-import {reduxForm} from 'redux-form';
+import React from 'react';
+import "bootstrap-webpack!bootstrap-webpack/bootstrap.config.js";
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 class MotorControl extends React.Component {
 
 
   constructor(props) {
         super(props);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleType = this.handleType.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+
   }
 
-    componentWillMount(){
-      const motors = this.props.motors;
-       this.props.initializeForm({
-                Phi: motors.Phi.position, 
-                PhiY: motors.PhiY.position, 
-                PhiZ: motors.PhiZ.position, 
-                Sampx: motors.Sampx.position, 
-                Sampy: motors.Sampy.position,
-                Zoom: motors.Zoom.position
-        });
+    handleType(e){
+        e.preventDefault(); // Let's stop this event.
+        e.stopPropagation(); // Really this time.
+        if([13,38,40].includes(e.keyCode)){
+            this.props.sampleActions.sendMotorPosition(e.target.name, e.target.valueAsNumber);
+        }
     }
 
-    handleSubmit(){
-      const fields = this.props.fields;
-      for(let id in fields){
-        if(fields[id].dirty){
-          this.props.sampleActions.sendMotorPosition(id, fields[id].value);
-        }
-      }
+    handleClick(e){
+        this.props.sampleActions.sendMotorPosition(e.target.name, e.target.valueAsNumber);
     }
 
     render() { 
-
-        const {fields: {Kappa, Kappa_phi, Phi, PhiY, PhiZ, Sampx, Sampy, Zoom}} = this.props;
+        const motors = this.props.motors;
+        const Phi = motors.Phi.position.toFixed(2);
+        const PhiY = motors.PhiY.position.toFixed(2);
+        const PhiZ = motors.PhiZ.position.toFixed(2);
+        const Focus = motors.Focus.position.toFixed(2);
 
         return (
        
-        <div className="information-box"><h2 className="text-center">Motors</h2>
-        <hr className="divider" />
+        <div className="sample-controlls sample-controlls-top">
 
-        <form className="form-horizontal">
+                <div className="row">
 
-            <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">Kappa</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Kappa} />
-                </div>
-
-                 <label className="col-sm-2 control-label">Kappa_Phi</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Kappa_phi} />
-                </div>
-
-
-            </div>
-            <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">Phi</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Phi} />
-                </div>
-
-                 <label className="col-sm-2 control-label">PhiY</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...PhiY} />
+                <div className="col-sm-2">
+                    <label className="motor-name">Omega: </label>
+                    <OverlayTrigger trigger="click" placement="bottom" rootClose overlay={
+                        <Popover id="Omega" title="Omega">
+                            <div className="form-inline">
+                                <div className="form-group">
+                                    <form onSubmit={this.handleType} noValidate>
+                                        <input className="form-control input-sm" title="asdas" onKeyUp={this.handleType} onClick={this.handleClick} type="number" step="90" defaultValue={Phi} name="Phi"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </Popover>
+                        }
+                    >
+                        <span className="motor-value">{Phi}&deg;</span>
+                    </OverlayTrigger>
                 </div>
 
 
-            </div>
 
-            <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">PhiZ</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...PhiZ} />
+                <div className="col-sm-2">
+                    <label className="motor-name">Kappa: </label>
+                    <span className="motor-value">NA</span>
                 </div>
 
-                 <label className="col-sm-2 control-label">SampX</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Sampx} />
+                <div className="col-sm-2">
+                    <label className="motor-name">Phi: </label>
+                    <span className="motor-value">NA</span>
+                </div>
+
+                <div className="col-sm-2">
+                    <label className="motor-name">Y: </label>
+                    <OverlayTrigger trigger="click" placement="bottom" rootClose overlay={
+                        <Popover id="Y" title="Y">
+                            <div className="form-inline">
+                                <div className="form-group">
+                                    <form onSubmit={this.handleType} noValidate>
+                                        <input className="form-control input-sm" onKeyUp={this.handleType} onClick={this.handleClick} type="number" step="0.1" defaultValue={PhiY} name="PhiY"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </Popover>
+                        }
+                    >
+                        <span className="motor-value">{PhiY} mm</span>
+                    </OverlayTrigger>
                 </div>
 
 
-            </div>
-
-             <div className="form-group motor-group">
-
-                <label className="col-sm-2 control-label">SampY</label>
-                <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Sampy} />
+                <div className="col-sm-2">
+                    <label className="motor-name">Z: </label>
+                    <OverlayTrigger trigger="click" placement="bottom" rootClose overlay={
+                        <Popover id="Z" title="Z">
+                            <div className="form-inline">
+                                <div className="form-group">
+                                    <form onSubmit={this.handleType} noValidate>
+                                        <input className="form-control input-sm" onKeyUp={this.handleType} onClick={this.handleClick} type="number" step="0.1" defaultValue={PhiZ} name="PhiZ"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </Popover>
+                        }
+                    >
+                        <span className="motor-value">{PhiZ} mm</span>
+                    </OverlayTrigger>
                 </div>
 
-                <label className="col-sm-2 control-label">Zoom</label>
-                 <div className="col-sm-4">
-                    <input type="number" className="form-control" {...Zoom} />
+               <div className="col-sm-2">
+                    <label className="motor-name">Focus: </label>
+                    <OverlayTrigger trigger="click" placement="bottom" rootClose overlay={
+                        <Popover id="Focus" title="Focus">
+                            <div className="form-inline">
+                                <div className="form-group">
+                                    <form onSubmit={this.handleType} noValidate>
+                                        <input className="form-control input-sm" onKeyUp={this.handleType} onClick={this.handleClick} type="number" step="0.1" defaultValue={Focus} name="Focus"/>
+                                    </form>
+                                </div>
+                            </div>
+                        </Popover>
+                        }
+                    >
+                        <span className="motor-value">{Focus} mm</span>
+                    </OverlayTrigger>
                 </div>
 
-            </div>
-        </form>
-
-          <button type="button" className="btn btn-primary pull-right motor-button" onClick={this.handleSubmit}>Change Motors</button>
+                </div>
         </div>
 
         );
     }
 }
-
-MotorControl = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'MotorControl',                           // a unique name for this form
-  fields: ['Kappa', 'Kappa_phi', 'Phi', 'PhiY', 'PhiZ', 'Sampx', 'Sampy', 'Zoom'] // all the fields in your form
-})(MotorControl);
 
 export default MotorControl;
 

@@ -6,6 +6,7 @@ import taskForm from './taskForm';
 import sampleview from './sampleview';
 import general from './general';
 import beamline from './beamline';
+import logger from './logger'
 import {reducer as formReducer} from 'redux-form';
 
 
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   samples_grid,
   taskForm,
   sampleview,
+  logger,
   general,
   beamline,
   form: formReducer.plugin({

@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import { showErrorPanel } from './general'
 
 
 export function setImageRatio(ratio) {
@@ -263,7 +264,7 @@ export function sendLightOff(name) {
 }
 
 export function sendMotorPosition(motorName, value) {
-  return function(dispatch) {
+  return function() {
    fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/' + value, { 
     method: 'PUT', 
     credentials: 'include',
@@ -274,15 +275,13 @@ export function sendMotorPosition(motorName, value) {
   }).then(function(response) {
     if (response.status >= 400) {
       throw new Error("Server refused to move motors");
-    }else{
-      dispatch(saveMotorPosition(motorName, value));
     }
   });
 }
 }
 
 export function sendAbortCentring() {
-  return function() {
+  return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/centring/abort', { 
     method: 'PUT', 
     credentials: 'include',
@@ -292,10 +291,29 @@ export function sendAbortCentring() {
     }
   }).then(function(response) {
     if (response.status >= 400) {
-      throw new Error("Server refused to turn light off");
+      dispatch(showErrorPanel(true, "Server refused to abort centring"))
+    }else{
+      dispatch(StopClickCentring());
     }
   });
 
+}
+}
+
+export function sendGoToPoint(id) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/centring/' + id + '/moveto', { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, "Server refused to move to point"))
+    }
+  });
 }
 }
 

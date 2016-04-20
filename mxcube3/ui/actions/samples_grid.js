@@ -17,7 +17,7 @@ export function doGetSamplesList() {
                 dispatch(doUpdateSamples(json));
             }, () => { 
                 dispatch(setLoading(false));
-                dispatch(showErrorPanel(true, "Could not get samples list"))
+                dispatch(showErrorPanel(true, "Could not get samples list"));
             })
     }
 }
