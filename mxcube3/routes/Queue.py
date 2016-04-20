@@ -295,7 +295,7 @@ def executeEntryWithId(nodeId):
                     childEntry._view = Mock()  # associated text deps
                     childEntry._set_background_color = Mock()  # widget color deps
                     # if not childEntry.is_enabled():
-                    #     childEntry.set_enabled(True)
+                    #      childEntry.set_enabled(True)
                     try:
                         if mxcube.queue.queue_hwobj.is_paused():
                             logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
@@ -303,7 +303,7 @@ def executeEntryWithId(nodeId):
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
                         mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queueList[nodeId]['SampleId']})
                         #mxcube.queue.lastQueueNode = lastQueueNode
-                        mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+                        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                     except Exception:
                         logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
@@ -326,7 +326,7 @@ def executeEntryWithId(nodeId):
             parent = int(parentNode._node_id)
 
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queueList[parent]['SampleId']})
-            mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+            # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
         return Response(status=200)
     except Exception:
@@ -629,7 +629,8 @@ def addCharacterisation(id):
 
         newNode = mxcube.queue.add_child_at_id(task2Id, characNode)  # add_child does not return id!
         task2Entry.enqueue(characEntry)
-
+        characEntry.set_enabled(True)
+        characNode.set_enabled(True)
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
 
         session["queueList"] = jsonpickle.encode(mxcube.queue)
@@ -669,7 +670,8 @@ def addDataCollection(id):
                     colNode.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
 
         colEntry.set_data_model(colNode)
-
+        colEntry.set_enabled(True)
+        colNode.set_enabled(True)
         node = mxcube.queue.get_node(int(id))
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
 
