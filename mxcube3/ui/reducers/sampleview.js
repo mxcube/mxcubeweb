@@ -14,7 +14,7 @@ const initialState = {
   contextMenu: {show:false, shape: {type: "NONE"}, x: 0, y:0},
   apertureList: [],
   currentAperture: 0,
-  currentPhase: "Centring"
+  currentPhase: ''
 }
 
 export default (state=initialState, action) => {

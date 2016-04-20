@@ -5,7 +5,7 @@ import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
 import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, sendManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
-import { showTaskParametersForm } from '../actions/taskForm'
+import { showTaskForm } from '../actions/taskForm'
 import SampleTaskButtons from '../components/SampleGrid/TaskButtons' 
 
 
@@ -118,7 +118,7 @@ function mapDispatchToProps(dispatch) {
         addSampleToQueue: (id) => dispatch(sendAddSample(id)),
         sendManualMount: (manual) => dispatch(sendManualMount(manual)),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
-        showTaskParametersForm: bindActionCreators(showTaskParametersForm, dispatch),
+        showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
         deleteTask: (parent_id, queue_id, sample_id) => dispatch(sendDeleteSampleTask(parent_id, queue_id, sample_id))
     }
 }

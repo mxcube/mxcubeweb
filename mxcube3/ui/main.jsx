@@ -10,16 +10,16 @@ import Main from './components/Main';
 import { Provider } from 'react-redux';
 import configureStore from './store/configureStore';
 import ServerIO from './serverIO';
-import "font-awesome-webpack";
-require("file?name=[name].[ext]!index.html");
+import 'font-awesome-webpack';
+require('file?name=[name].[ext]!index.html');
 
 
-const store = configureStore({}); //samples_grid: {samples_list: samples_list}});
+const store = configureStore({});
 
-function requireAuth(nextState, replace){
-    if (!store.getState().login.loggedIn) {
-        replace(null, '/login');
-    }
+function requireAuth(nextState, replace) {
+  if (!store.getState().login.loggedIn) {
+    replace(null, '/login');
+  }
 }
 
 const serverIO = new ServerIO(store.dispatch);
@@ -30,11 +30,11 @@ ReactDOM.render((
 <Provider store={store}>
     <Router>
         <Route path="/" component={Main} onEnter={requireAuth}>
-            <IndexRoute component={SampleGridContainer} onEnter={requireAuth}/>
-            <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth}/>
-            <Route path="logging" component={LoggerContainer} onEnter={requireAuth}/>
+            <IndexRoute component={SampleGridContainer} onEnter={requireAuth} />
+            <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
+            <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
         </Route>
         <Route path="/login" component={LoginContainer} />
     </Router>
 </Provider>
-), document.getElementById("main"));
+), document.getElementById('main'));

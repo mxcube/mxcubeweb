@@ -64,8 +64,8 @@ render() {
                                 <div className="form-group">
                                     <form onSubmit={this.setLigthStrength} noValidate>
                                         <select className="form-control" defaultValue={this.props.sampleViewState.currentAperture} onChange={this.setApertureSize}>
-                                            {this.props.sampleViewState.apertureList.map((val) => {
-                                                return <option value={val}>{val}</option>
+                                            {this.props.sampleViewState.apertureList.map((val, i) => {
+                                                return <option key={i} value={val}>{val}</option>
                                             })}
                                         </select>
                                     </form>

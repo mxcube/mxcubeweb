@@ -416,3 +416,25 @@ export function getPointsPosition() {
 
 }
 }
+
+
+export function sendCurrentPhase(phase) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/diffractometer/phase', { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({phase: phase})
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to set phase");
+    }else{
+      dispatch(setCurrentPhase(phase));
+    }
+ 
+  });
+}
+}
