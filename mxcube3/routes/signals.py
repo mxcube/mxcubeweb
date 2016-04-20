@@ -134,7 +134,7 @@ def motor_event_callback(*args, **kwargs):
     for p in mxcube.diffractometer.savedCentredPos:
             aux.update({p['posId']:p})
     ## sending all motors position/status, and the current centred positions
-    msg = {'Signal': signal,'Message': motor_signals[signal], 'Motors':motors_info, 'CentredPositions': aux}
+    msg = {'Signal': signal,'Message': motor_signals[signal], 'Motors':motors_info, 'CentredPositions': aux, 'Data': args[0] if len(args) ==1 else args}
     logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
     try:
         socketio.emit('Motors', msg, namespace='/hwr')
