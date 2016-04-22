@@ -12,7 +12,7 @@ import signals
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
-posId = 1
+mxcube.diffractometer.savedCentredPosCount = 1
 
 def init_signals():
     for signal in signals.microdiffSignals:
@@ -519,8 +519,7 @@ def waitForCentringFinishes(*args, **kwargs):
                 return
 
         #if no temp point found, let's create the first one
-        global posId
-        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
+        centredPosId = 'pos' + str(mxcube.diffractometer.savedCentredPosCount) # pos1, pos2, ..., pos42
         data = {'name': centredPosId,
             'posId': posId,
             'motorPositions': motorPositions,
@@ -529,7 +528,7 @@ def waitForCentringFinishes(*args, **kwargs):
             'x': x,
             'y': y 
             }
-        posId += 1
+        mxcube.diffractometer.savedCentredPosCount += 1
         mxcube.diffractometer.savedCentredPos.append(data)
         mxcube.diffractometer.emit('minidiffStateChanged', (True,))
 
