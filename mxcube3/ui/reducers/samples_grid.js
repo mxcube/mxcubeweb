@@ -1,10 +1,13 @@
 import {omit} from 'lodash/object';
 
-export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked_task: Object(), manual_mount: false, login_data: {} }, action) => {
+export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked_task: Object(), manualMount: {set: false, id: 0}, login_data: {} }, action) => {
     switch (action.type) {
     case "UPDATE_SAMPLES":
           // should have session samples
           return Object.assign({}, state, { samples_list: action.samples_list });
+    case "ADD_SAMPLE_TO_GRID":
+          // should have session samples
+          return {...state, samples_list: {...state.samples_list , [action.id] : action.data }, manualMount : {...state.manualMount, id : state.manualMount.id + 1}};
     case "TOGGLE_SELECTED":
       {
           let new_selected = Object.assign({}, state.selected);
@@ -63,7 +66,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
       }
     case "SET_MANUAL_MOUNT":
       {
-          return Object.assign({}, state, { manual_mount: action.manual });
+          return Object.assign({}, state, { manualMount: {...state.manualMount, set : action.manual} });
       }
     case "ADD_METHOD":
       {

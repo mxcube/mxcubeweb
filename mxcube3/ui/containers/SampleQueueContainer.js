@@ -26,7 +26,8 @@ function mapStateToProps(state) {
           sampleInformation: state.samples_grid.samples_list,
           checked: state.queue.checked,
           lookup: state.queue.lookup,
-          select_all: state.queue.selectAll
+          select_all: state.queue.selectAll,
+          mounted : state.samples_grid.manualMount.set
     }
 }
 
@@ -78,8 +79,8 @@ export default class SampleQueueContainer extends React.Component {
     
   render() {
 
-    const {checked, lookup, todo, history, current, sampleInformation, queue} = this.props;
-    const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, changeOrder, changeTaskOrder, collapseList} = this.props.queueActions;
+    const {checked, lookup, todo, history, current, sampleInformation, queue , mounted} = this.props;
+    const {sendToggleCheckBox, sendDeleteSample, sendRunSample,sendMountSample, sendUnmountSample, changeOrder, changeTaskOrder, collapseList} = this.props.queueActions;
     const {sendDeleteSampleTask} = this.props.sampleActions;
     const {showTaskParametersForm} = this.props.taskFormActions;
 
@@ -90,8 +91,8 @@ export default class SampleQueueContainer extends React.Component {
                 <SampleQueueSearch />
             </div>
             <div className="queue-body">
-                <CurrentTree changeOrder={changeTaskOrder} show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteTask={sendDeleteSampleTask} run={sendRunSample} showForm={showTaskParametersForm} />
-                <TodoTree  show={todo.collapsed} collapse={collapseList} list={this.filterList(todo.nodes)} sampleInformation={sampleInformation} lookup={lookup} deleteSample={sendDeleteSample} mountSample={sendMountSample} changeOrder={changeOrder} />
+                <CurrentTree changeOrder={changeTaskOrder} show={current.collapsed} collapse={collapseList} mounted={current.node} sampleInformation={sampleInformation} queue={queue} lookup={lookup} toggleCheckBox={sendToggleCheckBox} checked={checked} deleteTask={sendDeleteSampleTask} run={sendRunSample} showForm={showTaskParametersForm} unmount={sendUnmountSample} />
+                {!mounted ? <TodoTree show={todo.collapsed} collapse={collapseList} list={this.filterList(todo.nodes)} sampleInformation={sampleInformation} lookup={lookup} deleteSample={sendDeleteSample} mountSample={sendMountSample} changeOrder={changeOrder} /> : null}
                 <HistoryTree show={history.collapsed} collapse={collapseList} list={this.filterList(history.nodes)} sampleInformation={sampleInformation} queue={queue} lookup={lookup}/>
             </div>
       </div>

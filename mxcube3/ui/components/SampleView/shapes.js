@@ -34,7 +34,8 @@ export function makeText(x, y, fontSize) {
     fill: 'green',
     stroke: 'green',
     left: x,
-    top: y
+    top: y,
+    selectable: false
   });
 }
 

@@ -21,6 +21,9 @@ import shlex
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 sys.path.append(os.path.abspath('../../'))
+sys.path.append(os.path.abspath('../../mxcube3/'))
+sys.path.append(os.path.abspath('../../mxcube3/HardwareObjects'))
+sys.path.append(os.path.abspath('../../mxcube3/HardwareRepository'))
 
 # -- General configuration ------------------------------------------------
 

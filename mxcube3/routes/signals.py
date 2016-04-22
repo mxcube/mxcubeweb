@@ -3,8 +3,6 @@ from mxcube3 import socketio
 from mxcube3 import app as mxcube
 import time
 
-centredPos = []
-
 @socketio.on('connect', namespace='/hwr')
 def connect():
     # this is needed to create the namespace, and the actual connection
@@ -13,7 +11,11 @@ def connect():
 
 collectSignals = ['collectStarted', 'collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished','collectEnded', 'testSignal', 'collectReady', 'warning']
 queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] #'centringAllowed',
-microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving','centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning', 'positionChanged', 'phiMotorStateChanged','phiyMotorStateChanged','phizMotorStateChanged', 'sampxMotorStateChanged', 'sampyMotorStateChanged', 'minidiffStateChanged'] #'diffractometerMoved', 
+microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving',\
+                    'centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning', 'positionChanged', \
+                    'phiMotorStateChanged','phiyMotorStateChanged','phizMotorStateChanged', 'sampxMotorStateChanged', \
+                    'sampyMotorStateChanged', 'minidiffStateChanged','minidiffPhaseChanged','minidiffSampleIsLoadedChanged',\
+                    'zoomMotorPredefinedPositionChanged'] #'diffractometerMoved',
 
 okSignals = ['Successful', 'Finished', 'finished','Ended', 'Accepted'] 
 failedSignals = ['Failed','Invalid']
@@ -51,7 +53,7 @@ def signalCallback(*args, **kwargs):
         else:
             if signal == 'minidiffStateChanged':
                 aux = {}
-                for p in centredPos:
+                for p in mxcube.diffractometer.savedCentredPos:
                     aux.update({p['posId']:p})
                 msg = {'data': aux, 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
             else:
@@ -59,7 +61,7 @@ def signalCallback(*args, **kwargs):
     else:
         if signal == 'minidiffStateChanged':
             aux = {}
-            for p in centredPos:
+            for p in mxcube.diffractometer.savedCentredPos:
                 aux.update({p['posId']:p})
             msg = {'data': aux, 'signal': signal,'sender':sender, 'queueId':lastQueueNode['id'],'sample' :lastQueueNode['sample'] ,'state':result}
         else:

@@ -3,7 +3,7 @@ const initialState = {
   taskData: {},
   pointId: -1,
   showForm: '',
-  defaultParameters:{parameters: {numImages: 2, transmission: 30, expTime: 10,oscStart: 0.0, oscRange: 0.5, resolution: 2.5, energy: 12.5 , kappa: 0, phi: 0, stratComp: 1, radiationDamage: true} }
+  defaultParameters:{parameters: {num_images: 2, transmission: 30, exp_time: 10,osc_start: 0.0, osc_range: 0.5, resolution: 2.5, energy: 12.5 , kappa: 0, kappa_phi: 0, strategy_complexity: 1, account_rad_damage: true, opt_sad: false} }
 }
 
 export default (state=initialState, action) => {

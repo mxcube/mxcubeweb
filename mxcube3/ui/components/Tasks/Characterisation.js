@@ -2,7 +2,7 @@
 
 import React from 'react'
 import {reduxForm} from 'redux-form';
-import Modal from 'react-modal';
+import { Modal } from 'react-bootstrap';
 
 
 class Characterisation extends React.Component {
@@ -47,52 +47,14 @@ class Characterisation extends React.Component {
 
     render() {
 
-        const {fields: {numImages, expTime, resolution, oscStart , energy, oscRange, transmission, centringMethod, detectorMode, kappa, phi, radiationDamage, optSAD, spaceGroup, crystMin, crystMax, omegaMin, omegaMax, stratComp }} = this.props;
-
-        const style = {
-          overlay : {
-            position          : 'fixed',
-            top               : 0,
-            left              : 0,
-            right             : 0,
-            bottom            : 0,
-            backgroundColor   : 'rgba(255, 255, 255, 0.75)'
-        },
-        content : {
-            position                   : 'absolute',
-            top                        : '40px',
-            left                       : '40px',
-            right                      : '40px',
-            bottom                     : '40px',
-            border                     : 'none',
-            background                 : 'none',
-            overflow                   : 'auto',
-            WebkitOverflowScrolling    : 'touch',
-            borderRadius               : '4px',
-            outline                    : 'none',
-            padding                    : '20px'
-
-        }
-        };
-
+        const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity }} = this.props;
 
         return (
-        <Modal
-            className="Modal__Bootstrap modal-dialog"
-            closeTimeoutMS={150}
-            isOpen={this.props.show}
-            onRequestClose={this.handleModalCloseRequest}
-            style={style}
-        >
-          <div className="modal-content">
-            <div className="modal-header">
-              <button type="button" className="close" onClick={this.props.hide}>
-                <span aria-hidden="true">&times;</span>
-                <span className="sr-only">Close</span>
-              </button>
-              <h4 className="modal-title">Characterisation</h4>
-            </div>
-            <div className="modal-body">
+        <Modal show={this.props.show} onHide={this.props.hide}>
+            <Modal.Header closeButton>
+                <Modal.Title>Characterisation</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
 
                 <h5>Acquisition</h5>
                 <hr />
@@ -102,7 +64,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Number of images:</label>
                         <div className="col-sm-3">
-                             <select className="form-control" {...numImages}>
+                             <select className="form-control" {...num_images}>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="4">4</option>
@@ -119,12 +81,12 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Exposure time(ms):</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...expTime} />
+                            <input type="number" className="form-control" {...exp_time} />
                         </div>
 
                         <label className="col-sm-3 control-label">Detector mode:</label>
                         <div className="col-sm-3">
-                             <select className="form-control"  {...detectorMode}>
+                             <select className="form-control"  {...detector_mode}>
                                 <option value="1"></option>
                                 <option value="1">X</option>
                                 <option value="1">Y</option>
@@ -134,12 +96,12 @@ class Characterisation extends React.Component {
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Oscillation range</label>
+                        <label className="col-sm-3 control-label">Oscillation range:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...oscRange} />
+                            <input type="number" className="form-control" {...osc_range} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Resolution (A)</label>
+                        <label className="col-sm-3 control-label">Resolution (A):</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...resolution} />
                         </div>
@@ -150,12 +112,12 @@ class Characterisation extends React.Component {
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Oscillation start</label>
+                        <label className="col-sm-3 control-label">Oscillation start:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...oscStart} />
+                            <input type="number" className="form-control" {...osc_start} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Energy (KeV)</label>
+                        <label className="col-sm-3 control-label">Energy (KeV):</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...energy} />
                         </div>
@@ -171,10 +133,47 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Phi:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...phi} />
+                            <input type="number" className="form-control" {...kappa_phi} />
                         </div>
 
                     </div>
+
+                    <h5>Data location</h5>
+                    <hr />
+
+
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Data path:</label>
+                        <div className="col-sm-9">
+                            <input type="text" className="form-control" />
+                        </div>
+
+
+                    </div>  
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">File name:</label>
+                        <div className="col-sm-9">
+                            <input type="text" className="form-control"/>
+                        </div>
+
+
+                    </div>  
+
+                     <div className="form-group">
+
+                        <label className="col-sm-3 control-label">Prefix:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" />
+                        </div>
+
+                        <label className="col-sm-3 control-label">Run number:</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" />
+                        </div>
+
+                    </div>                        
 
                     <h5>Characterisation</h5>
                     <hr />
@@ -183,7 +182,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-6 control-label">Strategy complexity:</label>
                         <div className="col-sm-6">
-                             <select className="form-control"  {...stratComp}>
+                             <select className="form-control"  {...strategy_complexity}>
                                 <option value="1">Single subwedge</option>
                                 <option value="2">Multiple subwedge</option>
                             </select>
@@ -194,11 +193,11 @@ class Characterisation extends React.Component {
                     <div className="form-group">
 
                         <label className="col-sm-6 control-label">
-                            <input type="checkbox" {...radiationDamage} />
+                            <input type="checkbox" {...account_rad_damage} />
                              Account for radiation damage
                         </label>
                         <label className="col-sm-6 control-label">
-                            <input type="checkbox" {...optSAD} />
+                            <input type="checkbox" {...opt_sad} />
                              Optimised SAD
                         </label>
 
@@ -211,7 +210,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-6 control-label">Space group:</label>
                         <div className="col-sm-6">
-                             <select className="form-control"  {...spaceGroup}>
+                             <select className="form-control"  {...space_group}>
                                 <option value="1"></option>
                                 <option value="1">X</option>
                             </select>
@@ -223,29 +222,29 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Min:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...crystMin} />
+                            <input type="number" className="form-control" {...min_crystal_vdim} />
                         </div>
 
                         <label className="col-sm-3 control-label">Max:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...crystMax} />
+                            <input type="number" className="form-control" {...max_crystal_vdim} />
                         </div>
 
                         <label className="col-sm-3 control-label">  &omega; at min:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...omegaMin} />
+                            <input type="number" className="form-control" {...min_crystal_vphi} />
                         </div>
 
                         <label className="col-sm-3 control-label">  &omega; at max:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...omegaMax} />
+                            <input type="number" className="form-control" {...max_crystal_vphi} />
                         </div>
 
                     </div>
 
                 </form>
-            </div>
-            <div className="modal-footer">
+            </Modal.Body>
+            <Modal.Footer>
           <div className={this.props.pointId === -1 ? "pull-left" : "hidden"}>
             <label className="centring-method">
               <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'}/> Lucid Only  
@@ -256,8 +255,7 @@ class Characterisation extends React.Component {
           </div>
               <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
               <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? "Change": "Add to Queue"}</button>
-            </div>
-          </div>
+          </Modal.Footer>
         </Modal>
         );
     }
@@ -265,7 +263,7 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['numImages', 'expTime', 'resolution', 'oscStart' , 'energy', 'oscRange', 'transmission', 'centringMethod', 'detectorMode', 'kappa', 'phi', 'radiationDamage' , 'optSAD', 'spaceGroup', 'crystMin', 'crystMax', 'omegaMin', 'omegaMax', 'stratComp' ] // all the fields in your form
+  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
   initialValues: {...state.taskForm.taskData.parameters} // will pull state into form's initialValues
