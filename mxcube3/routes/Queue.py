@@ -19,7 +19,7 @@ import queue_entry as qe
 from queue_entry import QueueEntryContainer
 import jsonpickle
 qm = QueueManager.QueueManager('Mxcube3')
-qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
+#qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
 def init_signals():
     for signal in signals.collectSignals:
@@ -42,7 +42,7 @@ def queueStart():
     try:
         mxcube.queue.queue_hwobj.disable(False)
         mxcube.queue.queue_hwobj.execute()
-        mxcube.queue.queue_hwobj._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, mxcube.queue.queue_hwobj)
+        #mxcube.queue.queue_hwobj._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, mxcube.queue.queue_hwobj)
         logging.getLogger('HWR').info('[QUEUE] Queue started')
         return Response(status=200)
     except Exception:
