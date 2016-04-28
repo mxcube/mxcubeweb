@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import { addLogRecord } from './actions/logger';
 import { updatePointsPosition, saveMotorPositions, setCurrentPhase } from './actions/sampleview';
-//import { doAddTaskResult } from './actions/samples_grid';
+import { doAddTaskResult } from './actions/samples_grid';
 
 
 export default class ServerIO{
@@ -32,10 +32,10 @@ export default class ServerIO{
             } 
         });
   
-        // socketHWR.on('Task', (record) => {
-        //     //console.log(record);
-        //     //this.dispatch(doAddTaskResult(record.CentredPositions));
-        // });
+        socketHWR.on('hwr_record', (record) => {
+            console.log(record);
+            this.dispatch(doAddTaskResult(record.sample, record.queueId, record.state));
+        });
 
     }
 
