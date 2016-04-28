@@ -221,16 +221,19 @@ def queueLoadState():
                     }
                  }
                 )
-        if session.get("queueList") is None:
-            logging.getLogger('HWR').info('[QUEUE] No queue was stored...')
-            mxcube.queue.clear_model(mxcube.queue.get_model_root()._name)
-            session["queueList"] = {}
-        else:
+
+        if mxcube.queue.queue_hwobj._queue_entry_list:
+            import pdb
+            pdb.set_trace() 
             logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored...')
-            mxcube.queue = jsonpickle.decode(session.get("queueList"))
-        resp = jsonify({'queueState': jsonParser(), 'sampleList': samples})
-        resp.status_code = 200
-        return resp
+            resp = jsonify({'queueState': jsonParser(), 'sampleList': samples})
+            resp.status_code = 200
+            return resp
+        else:
+            logging.getLogger('HWR').info('[QUEUE] No queue was stored...')
+            resp = jsonify({'queueState': {}, 'sampleList': samples})
+            resp.status_code = 200
+            return resp
     except Exception:
         return Response(status=409)
 
