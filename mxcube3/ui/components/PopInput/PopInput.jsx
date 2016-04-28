@@ -43,7 +43,6 @@ export default class PopInput extends React.Component{
         this.submit = this.submit.bind(this);
         this.anim_class = "";
         this.state = {value: ""};
-        this._updateValueState(this.props.data.value);
     }
 
 
@@ -172,7 +171,7 @@ export default class PopInput extends React.Component{
         var title = (this.props.title === "") ? this.props.name : this.props.title
 
         var popover =(
-        <Popover title={title}>
+        <Popover id={title} title={title}>
           <form ref="popinput-form" className={input + " form-inline"} onSubmit={this.submit}>
             <Input ref="input" type={this.props.dataType} style={{width: this.props.inputSize}} placeholder="" className="input-sm" defaultValue={this.props.data.value} />
             <ButtonToolbar className="editable-buttons">
