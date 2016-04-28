@@ -15,14 +15,15 @@ class SampleViewContainer extends Component {
 
   render() {
     const { show, shape, x, y } = this.props.sampleViewState.contextMenu;
-    const { width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture } = this.props.sampleViewState;
+    const { width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture, motors } = this.props.sampleViewState;
+    const { sendMotorPosition } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
 
     return (
       <div className="row">
         <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters} />
         <div className="col-xs-8">
-            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors} />
+            <MotorControl save={sendMotorPosition} motors={motors} />
             <SampleImage
               sampleActions={this.props.sampleViewActions}
               imageHeight={height}
