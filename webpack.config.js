@@ -23,13 +23,13 @@ var config = {
         },
     },
     module: {
-	preLoaders: [
-	    {
-		test: /\.jsx?$/,
-		loaders: ['eslint'],
-		exclude: /node_modules/
-	    }
-	],
+	// preLoaders: [
+	//     {
+	// 	test: /\.jsx?$/,
+	// 	loaders: ['eslint'],
+	// 	exclude: /node_modules/
+	//     }
+	// ],
 	loaders: [
 	    {
 		test: /isotope-layout/,
