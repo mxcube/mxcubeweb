@@ -16,7 +16,7 @@ class MotorControl extends React.Component {
             <div className="row">
 
                 <div className="col-sm-2">
-                    <label className="motor-name">Omega: </label>
+                    <span className="motor-name">Omega: </span>
                     <MotorInput 
                         title="Omega" 
                         save={save} 
@@ -29,16 +29,16 @@ class MotorControl extends React.Component {
                 </div>
 
                 <div className="col-sm-2">
-                    <label className="motor-name">Kappa: </label>
+                    <span className="motor-name">Kappa: </span>
                 </div>
 
                 <div className="col-sm-2">
-                    <label className="motor-name">Phi: </label>
+                    <span className="motor-name">Phi: </span>
 
                 </div>
 
                 <div className="col-sm-2">
-                    <label className="motor-name">Y: </label>
+                    <span className="motor-name">Y: </span>
                     <MotorInput 
                         title="Y" 
                         save={save} 
@@ -51,7 +51,7 @@ class MotorControl extends React.Component {
                 </div>
 
                 <div className="col-sm-2">
-                    <label className="motor-name">Z: </label>
+                    <span className="motor-name">Z: </span>
                     <MotorInput 
                         title="Z" 
                         save={save} 
@@ -64,7 +64,7 @@ class MotorControl extends React.Component {
                 </div>
 
                <div className="col-sm-2">
-                    <label className="motor-name">Focus: </label>
+                    <span className="motor-name">Focus: </span>
                     <MotorInput 
                         title="Focus" 
                         save={save} 
