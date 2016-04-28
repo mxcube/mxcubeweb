@@ -1,5 +1,12 @@
 import fetch from 'isomorphic-fetch'
+import { showErrorPanel } from './general'
 
+
+export function setCurrentPhase(phase) {
+  return { 
+    type: "SET_CURRENT_PHASE", phase
+  }
+}
 
 export function setImageRatio(ratio) {
   return { 
@@ -12,6 +19,13 @@ export function setCanvas(canvas) {
   return { 
     type: "SET_CANVAS",
     canvas: canvas
+  }
+}
+
+
+export function setAperture(size) {
+  return { 
+    type: "SET_APERTURE", size
   }
 }
 
@@ -263,7 +277,7 @@ export function sendLightOff(name) {
 }
 
 export function sendMotorPosition(motorName, value) {
-  return function(dispatch) {
+  return function() {
    fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/' + value, { 
     method: 'PUT', 
     credentials: 'include',
@@ -274,15 +288,13 @@ export function sendMotorPosition(motorName, value) {
   }).then(function(response) {
     if (response.status >= 400) {
       throw new Error("Server refused to move motors");
-    }else{
-      dispatch(saveMotorPosition(motorName, value));
     }
   });
 }
 }
 
 export function sendAbortCentring() {
-  return function() {
+  return function(dispatch) {
    fetch('/mxcube/api/v0.1/sampleview/centring/abort', { 
     method: 'PUT', 
     credentials: 'include',
@@ -292,12 +304,54 @@ export function sendAbortCentring() {
     }
   }).then(function(response) {
     if (response.status >= 400) {
-      throw new Error("Server refused to turn light off");
+      dispatch(showErrorPanel(true, "Server refused to abort centring"))
+    }else{
+      dispatch(StopClickCentring());
     }
   });
 
 }
 }
+
+export function sendGoToPoint(id) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/sampleview/centring/' + id + '/moveto', { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then(function(response) {
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, "Server refused to move to point"))
+    }
+  });
+}
+}
+
+export function sendChangeAperture(size) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/beamline/aperture' , { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({pos: size})
+  }).then(function(response) {
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, "Server refused to change Aperture"));
+      dispatch(setAperture(size));
+    }else{
+      dispatch(setAperture(size));
+    }
+  });
+}
+}
+
+
 
 export function getSampleImageSize() {
   return function(dispatch) {
@@ -360,5 +414,27 @@ export function getPointsPosition() {
       dispatch(updatePointsPosition(json));
     });
 
+}
+}
+
+
+export function sendCurrentPhase(phase) {
+  return function(dispatch) {
+   fetch('/mxcube/api/v0.1/diffractometer/phase', { 
+    method: 'PUT', 
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({phase: phase})
+  }).then(function(response) {
+    if (response.status >= 400) {
+      throw new Error("Server refused to set phase");
+    }else{
+      dispatch(setCurrentPhase(phase));
+    }
+ 
+  });
 }
 }

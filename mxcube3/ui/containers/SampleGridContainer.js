@@ -5,7 +5,7 @@ import SampleGrid from '../components/SampleGrid/SampleGrid'
 import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem  } from "react-bootstrap"
 import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples, sendManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid'
 import { sendAddSample } from '../actions/queue'
-import { showTaskParametersForm } from '../actions/taskForm'
+import { showTaskForm } from '../actions/taskForm'
 import SampleTaskButtons from '../components/SampleGrid/TaskButtons' 
 
 
@@ -58,9 +58,9 @@ class SampleGridContainer extends React.Component {
             <div className="navbar-default col-xs-12" style={{position: 'fixed', zIndex:1, paddingTop: 11, marginTop: -12}} >
               <div className="row">
                 <div className="col-xs-3">
-                    <form className="form-horizontal">
+                    <div className="form-horizontal">
                         <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon} onChange={this.filterSampleGrid}/>
-                    </form>
+                    </div>
                 </div>
                 <div className={"col-xs-3"} >
                   <ButtonToolbar>
@@ -118,7 +118,7 @@ function mapDispatchToProps(dispatch) {
         addSampleToQueue: (id) => dispatch(sendAddSample(id)),
         sendManualMount: (manual) => dispatch(sendManualMount(manual)),
         updateSamples: (samples_list) => dispatch(doUpdateSamples(samples_list)),
-        showTaskParametersForm: bindActionCreators(showTaskParametersForm, dispatch),
+        showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
         deleteTask: (parent_id, queue_id, sample_id) => dispatch(sendDeleteSampleTask(parent_id, queue_id, sample_id))
     }
 }

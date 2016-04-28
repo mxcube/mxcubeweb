@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { sendClearQueue, sendRunSample, sendAddSample, sendMountSample } from './queue'
-import { showTaskParametersForm } from './taskForm'
+import { showTaskForm } from './taskForm'
 import { setLoading, showErrorPanel } from './general'
 
 export function doUpdateSamples(samples_list) {
@@ -17,7 +17,7 @@ export function doGetSamplesList() {
                 dispatch(doUpdateSamples(json));
             }, () => { 
                 dispatch(setLoading(false));
-                dispatch(showErrorPanel(true, "Could not get samples list"))
+                dispatch(showErrorPanel(true, "Could not get samples list"));
             })
     }
 }
@@ -118,7 +118,7 @@ export function sendManualMount(manual) {
                 dispatch(sendClearQueue());
                 dispatch(doSetManualMount(manual));
                 if (manual) {
-                    dispatch(showTaskParametersForm("AddSample")); 
+                    dispatch(showTaskForm("AddSample")); 
                 } 
             }
         });

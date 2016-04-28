@@ -24,12 +24,35 @@
 }
 
 .sample-controlls{
-    margin-top: 10px;
     background-color: white;
     border: 1px solid #AAA;
     border-radius: 3px;
     box-shadow: 0px 2px 3px 0px #AAA;
+    height: 45px;
 }
+
+.sample-controlls-top{
+    margin-bottom: 10px;
+}
+
+.sample-controlls-bottom{
+    margin-top: 10px;
+}
+
+.motor-name{
+    line-height: 45px;
+    font-size: 1.0em;
+    margin-bottom: 0px;
+    margin-left: 5px;
+}
+.motor-value{
+    font-size: 1.0em;
+    font-weight: bold;
+    margin-left: 5px;
+    border-bottom:1px dotted #f00;
+    cursor:pointer;
+}
+
 
 .information-box{
     background-color: white;
@@ -93,4 +116,55 @@
 .btn:active{
     color: grey !important;
 }
+
+
+
+
+.overlay-box{
+    position: absolute;
+    margin-top: 10px;
+    z-index: 2;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    background-color: #ffffff;
+}
+
+.overlay-arrow{
+    top: -11px;
+    border-width: 5px;
+        left: 50%;
+  position: absolute;
+  width: 0; 
+  height: 0;
+  border-style: solid;
+  border-color: transparent transparent rgb(0, 0, 0);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: rgb(0, 0, 0);
+  border-left-color: transparent;
+
+}
+
+
+
+.overlay-head{
+    padding: 8px 14px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 18px;
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #ebebeb;
+    border-radius: 5px 5px 0 0;
+}
+
+.overlay-body{
+    padding: 5px;
+}
+
+
+.input-sm{
+    width: 80px !important;
+}
+
 
