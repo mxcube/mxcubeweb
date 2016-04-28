@@ -164,7 +164,9 @@
 
 
 .input-sm{
-    width: 80px !important;
+    width: 70px !important;
 }
 
-
+.inline{
+    display: inline;
+}
