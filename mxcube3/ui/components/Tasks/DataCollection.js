@@ -47,8 +47,7 @@ class DataCollection extends React.Component {
 
     render() {
 
-        const {fields: {num_images, first_image, exp_time, resolution, osc_start , energy, osc_range, transmission, shutterless, inverse_beam,centringMethod, detector_mode, kappa, kappa_phi, space_group}} = this.props;
-
+        const {fields: {num_images, first_image, exp_time, resolution, osc_start , energy, osc_range, transmission, shutterless, inverse_beam,centringMethod, detector_mode, kappa, kappa_phi, space_group, prefix, run_number, beam_size }} = this.props;
 
         return (
         <Modal show={this.props.show} onHide={this.props.hide}>
@@ -130,8 +129,6 @@ class DataCollection extends React.Component {
                             </select>
                         </div>
 
-
-
                     </div>
 
                     <div className="form-group">
@@ -159,7 +156,11 @@ class DataCollection extends React.Component {
 
                         <label className="col-sm-3 control-label">Beam size:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" />
+                            <select className="form-control" {...beam_size}>
+                                {this.props.apertureList.map((val, i) => {
+                                    return <option key={i} value={val}>{val}</option>
+                                })}
+                            </select>
                         </div>
 
 
@@ -189,39 +190,24 @@ class DataCollection extends React.Component {
                     <h5>Data location</h5>
                     <hr />
 
-
                      <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Data path:</label>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" />
-                        </div>
-
-
-                    </div>  
-                     <div className="form-group">
-
-                        <label className="col-sm-3 control-label">File name:</label>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control"/>
-                        </div>
-
-
+                        <label className="col-sm-12 control-label">File name: /user/biomax/experiment/{prefix.value + '/' + run_number.value}</label>
                     </div>  
 
                      <div className="form-group">
 
                         <label className="col-sm-3 control-label">Prefix:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" />
+                            <input type="number" className="form-control" {...prefix}/>
                         </div>
 
                         <label className="col-sm-3 control-label">Run number:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" />
+                            <input type="number" className="form-control" {...run_number}/>
                         </div>
 
-                    </div>                   
+                    </div>                     
 
                     <h5>Processing</h5>
                     <hr />
@@ -298,10 +284,10 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'datacollection',                           // a unique name for this form
-  fields: ['num_images', 'first_image', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'shutterless','inverse_beam','centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'space_group' ] // all the fields in your form
+  fields: ['num_images', 'first_image', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'shutterless','inverse_beam','centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'space_group', 'prefix', 'run_number', 'beam_size'] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: {...state.taskForm.taskData.parameters} // will pull state into form's initialValues
+  initialValues: {...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture} // will pull state into form's initialValues
 }))(DataCollection);
 
 export default DataCollection;
