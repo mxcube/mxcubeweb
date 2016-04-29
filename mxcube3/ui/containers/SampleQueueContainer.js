@@ -34,11 +34,11 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-   queueActions: bindActionCreators(QueueActions, dispatch),
-   sampleActions : bindActionCreators(SampleActions, dispatch),
-   sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
-   showForm : bindActionCreators(showTaskForm, dispatch)
- };
+    queueActions: bindActionCreators(QueueActions, dispatch),
+    sampleActions : bindActionCreators(SampleActions, dispatch),
+    sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
+    showForm : bindActionCreators(showTaskForm, dispatch)
+  };
 }
 
 
@@ -48,12 +48,12 @@ export default class SampleQueueContainer extends React.Component {
 
 
   filterList(list) {
-     let listFiltered = list.filter((queue_id) => {
+    let listFiltered = list.filter((queue_id) => {
        let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
        return (this.props.searchString === '' || sampleData.id.indexOf(this.props.searchString) > -1);
      });
-     return (listFiltered);
-   }
+    return (listFiltered);
+  }
 
 
   render() {

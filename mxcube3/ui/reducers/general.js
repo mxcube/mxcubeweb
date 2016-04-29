@@ -1,15 +1,26 @@
 const initialState = {
   loading: false,
-  showErrorPanel: false,
-  errorMessage: ''
+  showErrorPanel:false,
+  errorMessage: '',
+  dialogMessage: '',
+  dialogTitle: '',
+  showDialog:false
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_LOADING':
-      return { ...state, loading: action.loading };
+      {
+          return { ...state, loading : action.loading };
+        }
     case 'SHOW_ERROR_PANEL':
-      return { ...state, showErrorPanel: action.show, errorMessage: action.message };
+      {
+          return { ...state, showErrorPanel : action.show, errorMessage : action.message };
+        }
+    case 'SHOW_DIALOG':
+      {
+          return { ...state, showDialog : action.show, dialogTitle: action.title, dialogMessage : action.message };
+        }
     default:
       return state;
   }

@@ -6,14 +6,14 @@ export function setInitialStatus(data) {
 
 export function setLoading(loading) {
   return {
-    type: 'SET_LOADING', loading
-  };
+      type: 'SET_LOADING', loading
+    };
 }
 
-export function showErrorPanel(show, message = '') {
+export function showErrorPanel(show, message='') {
   return {
-    type: 'SHOW_ERROR_PANEL', show, message
-  };
+      type: 'SHOW_ERROR_PANEL', show, message
+    };
 }
 
 export function getInitialStatus() {
@@ -22,17 +22,18 @@ export function getInitialStatus() {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json'
-      }
+          'Accept': 'application/json',
+          'Content-type': 'application/json'
+        }
     }).then(function (response) {
       if (response.status >= 400) {
-        throw new Error('Server refused to send initialstatus');
-      }
+          throw new Error('Server refused to send initialstatus');
+        }
       return response.json();
     })
     .then(function (json) {
       dispatch(setInitialStatus(json));
     });
+
   };
 }

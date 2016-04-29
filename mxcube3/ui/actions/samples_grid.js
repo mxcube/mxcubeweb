@@ -118,8 +118,8 @@ export function sendManualMount(manual) {
         dispatch(sendClearQueue());
         dispatch(doSetManualMount(manual));
         if (manual) {
-            dispatch(showTaskForm('AddSample'));
-          }
+          dispatch(showTaskForm('AddSample'));
+        }
       }
     });
   };
@@ -163,8 +163,8 @@ export function sendAddSampleTask(queue_id, sample_id, parameters, runNow) {
       return response.json();
     }).then(function (json) {
       if (runNow) {
-          dispatch(sendRunSample(json.QueueId));
-        }
+        dispatch(sendRunSample(json.QueueId));
+      }
       dispatch(doAddTask(queue_id, sample_id, json, parameters));
     });
   };
@@ -197,8 +197,8 @@ export function sendChangeSampleTask(task_queue_id, sample_queue_id, sample_id, 
       return response.json();
     }).then(function () {
       if (runNow) {
-              dispatch(sendRunSample(task_queue_id));
-            }
+        dispatch(sendRunSample(task_queue_id));
+      }
       dispatch(doChangeTask(task_queue_id, sample_id, parameters));
     });
   };
