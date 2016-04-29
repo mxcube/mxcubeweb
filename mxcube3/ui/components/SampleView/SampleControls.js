@@ -21,7 +21,13 @@ export default class SampleControls extends React.Component {
     }
 
     takeSnapShot(){
-        document.getElementById("downloadLink").href = this.props.canvas.toDataURL();
+        let img = document.getElementById("sample-img");
+        let fimg = new fabric.Image(img);
+        this.props.canvas.setBackgroundImage(fimg);     
+        this.props.canvas.renderAll();
+        document.getElementById("downloadLink").href = this.props.canvas.toDataURL(); 
+        this.props.canvas.setBackgroundImage(0);
+        this.props.canvas.renderAll();
     }
 
     setApertureSize(option){

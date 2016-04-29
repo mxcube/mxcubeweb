@@ -32,6 +32,10 @@ def beamline_abort_action(name):
     # security issues to be discussed.
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
     ho.abort()
+
+    data = {"name": name, "value": ho.get(), "status": "ABORTED", "msg": ""}
+    socketio.emit("value_change", data, namespace="/beamline/energy")
+    
     return Response('', status=200, mimetype='application/json')
 
 
@@ -46,7 +50,7 @@ def beamline_set_attribute(name):
     of the set operation (for the moment, VALID, ABORTED, ERROR).
 
     Replies with status code 200 on success and 520 on exceptions.
-    """
+    """    
     data = json.loads(request.data)
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
 
