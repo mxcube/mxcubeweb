@@ -24,11 +24,6 @@ class BeamlineSetupContainer extends React.Component {
 
   componentDidMount() {
     this.props.getAllAttributes();
-    const ws = io.connect(`http://${document.domain}:${location.port}/beamline/energy`);
-
-    ws.on('value_change', (value) => {
-      this.refs.energy.setDisplayValue(value);
-    });
   }
 
 
