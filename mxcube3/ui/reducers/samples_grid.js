@@ -23,8 +23,8 @@ export default (state = { samples_list: {}, filter_text: '', selected: {}, click
           // Creating a new SampleList with the "selected" state toggled to "true"
         let new_selected = {};
         Object.keys(state.samples_list).forEach(function (key) {
-            new_selected[key] = action.selected;
-          });
+          new_selected[key] = action.selected;
+        });
 
         return Object.assign({}, state, { selected: new_selected });
       }
@@ -40,27 +40,27 @@ export default (state = { samples_list: {}, filter_text: '', selected: {}, click
       {
         let samples_list = {};
         Object.keys(state.samples_list).forEach(key => {
-            let sample = state.samples_list[key];
-            let sample_info;
-            for (sample_info of action.sample_info_list) {
-            if (sample_info.code) {
+          let sample = state.samples_list[key];
+          let sample_info;
+          for (sample_info of action.sample_info_list) {
+              if (sample_info.code) {
                       // find sample with data matrix code
-                if (sample.code == sample_info.code) {
-                    samples_list[key] = Object.assign({}, sample, { sample_info: sample_info });
-                    break;
-                  }
-              } else {
+              if (sample.code == sample_info.code) {
+                  samples_list[key] = Object.assign({}, sample, { sample_info: sample_info });
+                  break;
+                }
+            } else {
                       // check with sample changer location
-                let lims_location = sample_info.containerSampleChangerLocation + ':' + sample_info.sampleLocation;
-                if (sample.location == lims_location) {
-                    samples_list[key] = Object.assign({}, sample, { sample_info: sample_info });
-                    break;
-                  }
-              }
-          }
-            if (samples_list[key] === undefined) {
-            samples_list[key] = Object.assign({}, sample, { sample_info: null });
-          }
+              let lims_location = sample_info.containerSampleChangerLocation + ':' + sample_info.sampleLocation;
+              if (sample.location == lims_location) {
+                  samples_list[key] = Object.assign({}, sample, { sample_info: sample_info });
+                  break;
+                }
+            }
+            }
+          if (samples_list[key] === undefined) {
+              samples_list[key] = Object.assign({}, sample, { sample_info: null });
+            }
         });
         return Object.assign({}, state, { samples_list: samples_list });
       }
