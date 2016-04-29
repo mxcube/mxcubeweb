@@ -29,11 +29,11 @@ class Characterisation extends React.Component {
         let queueId = this.props.lookup[sampleId];
 
         if (queueId) {
-            this.props.addTask(queueId, sampleId, parameters);
-          } else {
+          this.props.addTask(queueId, sampleId, parameters);
+        } else {
                     // the sample is not in queue yet
-            this.props.addSampleAndTask(sampleId, parameters);
-          }
+          this.props.addSampleAndTask(sampleId, parameters);
+        }
       });
 
     } else {

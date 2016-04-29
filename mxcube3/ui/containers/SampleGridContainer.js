@@ -24,8 +24,8 @@ class SampleGridContainer extends React.Component {
     Object.keys(this.props.samples_list).forEach(key => {
 
       if (this.props.selected[key]) {
-              this.props.addSampleToQueue(key);
-            }
+        this.props.addSampleToQueue(key);
+      }
 
     });
     this.props.unselectAll();
@@ -35,8 +35,8 @@ class SampleGridContainer extends React.Component {
     try {
       var proposal_id = this.props.login_data.session.proposalId;
     } catch (e) {
-            return;
-          }
+      return;
+    }
 
     this.props.syncSamples(proposal_id);
   }
