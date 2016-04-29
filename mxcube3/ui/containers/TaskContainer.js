@@ -1,11 +1,11 @@
-import React from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import Characterisation from '../components/Tasks/Characterisation'
-import DataCollection from '../components/Tasks/DataCollection'
-import AddSample from '../components/Tasks/AddSample'
-import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask, doAddSample } from '../actions/samples_grid'
-import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm'
+import React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import Characterisation from '../components/Tasks/Characterisation';
+import DataCollection from '../components/Tasks/DataCollection';
+import AddSample from '../components/Tasks/AddSample';
+import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask, doAddSample } from '../actions/samples_grid';
+import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 
 class TaskContainer extends React.Component {
@@ -23,32 +23,32 @@ class TaskContainer extends React.Component {
 
 
 function mapStateToProps(state) {
-  return { 
-        showForm: state.taskForm.showForm,
-        lookup_queue_id: state.queue.lookup_queue_id,
-        taskData: state.taskForm.taskData,
-        sampleIds: state.taskForm.sampleIds,
-        pointId: state.taskForm.pointId,
-        defaultParameters: state.taskForm.defaultParameters,
-        manualMountID: state.samples_grid.manualMount.id,
-        currentPhase: state.sampleview.currentPhase,
-        apertureList: state.sampleview.apertureList
-  }
+  return {
+    showForm: state.taskForm.showForm,
+    lookup_queue_id: state.queue.lookup_queue_id,
+    taskData: state.taskForm.taskData,
+    sampleIds: state.taskForm.sampleIds,
+    pointId: state.taskForm.pointId,
+    defaultParameters: state.taskForm.defaultParameters,
+    manualMountID: state.samples_grid.manualMount.id,
+    currentPhase: state.sampleview.currentPhase
+    apertureList: state.sampleview.apertureList
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-      showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
-      hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-      addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
-      addTask: bindActionCreators(sendAddSampleTask, dispatch),
-      changeTask: bindActionCreators(sendChangeSampleTask, dispatch),
-      doAddSample: bindActionCreators(doAddSample, dispatch)
-  }
+    showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
+    hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
+    addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
+    addTask: bindActionCreators(sendAddSampleTask, dispatch),
+    changeTask: bindActionCreators(sendChangeSampleTask, dispatch),
+    doAddSample: bindActionCreators(doAddSample, dispatch)
+  };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TaskContainer)
+)(TaskContainer);
 

@@ -1,20 +1,20 @@
-import io from "socket.io-client";
+import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
 import { updatePointsPosition, saveMotorPositions, setCurrentPhase } from './actions/sampleview';
 import { beamlinePropertyValueAction } from './actions/beamline';
-//import { doAddTaskResult } from './actions/samples_grid';
+// import { doAddTaskResult } from './actions/samples_grid';
 
 
-export default class ServerIO{
+export default class ServerIO {
 
   constructor(dispatch) {
-    this.dispatch = dispatch; 
+    this.dispatch = dispatch;
   }
 
-  listen(){
-    const socketHWR = io.connect('http://' + document.domain + ':' + location.port+"/hwr");
+  listen() {
+    const socketHWR = io.connect('http://' + document.domain + ':' + location.port + '/hwr');
 
-    const socket =  io.connect('http://' + document.domain + ':' + location.port+"/logging");
+    const socket = io.connect('http://' + document.domain + ':' + location.port + '/logging');
 
     const energy = io.connect(`http://${document.domain}:${location.port}/beamline/energy`);
 
@@ -25,16 +25,16 @@ export default class ServerIO{
     socketHWR.on('Motors', (record) => {
       this.dispatch(updatePointsPosition(record.CentredPositions));
       this.dispatch(saveMotorPositions(record.Motors));
-      switch(record.Signal) {
-      case 'minidiffPhaseChanged':
-        this.dispatch(setCurrentPhase(record.Args[0]));
-        break;
-      case 'n':
-        console.log("sada");
-        break;
-      } 
+      switch (record.Signal) {
+        case 'minidiffPhaseChanged':
+          this.dispatch(setCurrentPhase(record.Args[0]));
+          break;
+        case 'n':
+          console.log('sada');
+          break;
+      }
     });
-    
+
     energy.on('value_change', (data) => {
       this.dispatch(beamlinePropertyValueAction(data));
     });
