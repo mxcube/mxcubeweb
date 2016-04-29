@@ -6,6 +6,8 @@
   },
 
   "rules": {
+    'react/prop-types': [0, { 'ignore': [], 'customValidators': [] }],
+    'comma-dangle': [0, 'always-multiline'],
     // "no-undef": 1,
     // "no-console": 1,
     // "no-debugger": 1,
