@@ -36,6 +36,7 @@ def mountSample(sample):
         #mxcube.sample_changer.load_sample
         #TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
         mxcube.diffractometer.savedCentredPos = []
+        mxcube.diffractometer.savedCentredPosCount = 1
         logging.getLogger('HWR').info('[SC] %s sample mounted, location: %s' % (sample, sampleLocation))
         return Response(status=200)
     except Exception:
