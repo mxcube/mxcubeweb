@@ -99,9 +99,9 @@ export default (state=initialState, action) => {
                     zoom: action.data.Motors.Zoom.position,
                     width: action.data.Camera.imageWidth, 
                     height: action.data.Camera.imageHeight, 
-                    pixelsPerMm: action.data.Camera.pixelsPerMm[0],
-                    apertureList : action.data.beamInfo.apertureList,
-                    currentAperture : action.data.beamInfo.currentAperture
+                    pixelsPerMm: action.data.Camera.pixelsPerMm[0]
+//                    apertureList : action.data.beamInfo.apertureList,
+//                    currentAperture : action.data.beamInfo.currentAperture
 
                 };
             }
