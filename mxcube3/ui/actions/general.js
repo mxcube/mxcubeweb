@@ -16,6 +16,7 @@ export function showErrorPanel(show, message="") {
     }
 }
 
+
 export function getInitialStatus() {
   return function(dispatch) {
     fetch('mxcube/api/v0.1/initialstatus', { 

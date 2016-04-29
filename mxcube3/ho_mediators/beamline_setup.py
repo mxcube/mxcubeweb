@@ -111,7 +111,8 @@ class EnergyHOMediator(object):
 
 
     def value_change(self, energy, wavelength):
-        socketio.emit("value_change", energy, namespace='/beamline/energy')
+        data = {"name": "energy", "value": energy, "state": self.state(), "msg": ""}
+        socketio.emit("value_change", data, namespace="/beamline/energy")
 
 
 class TransmissionHOMediator(object):

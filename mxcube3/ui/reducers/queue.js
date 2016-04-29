@@ -10,6 +10,7 @@ export default (state={
     checked: [],
     lookup:{},
     lookup_queue_id:{},
+    collapsedSample: {}, 
     searchString: ""
 }, action) => {
     switch (action.type) {
@@ -20,7 +21,8 @@ export default (state={
                             todo: {...state.todo, nodes: state.todo.nodes.concat(action.queue_id)},
                             queue: {...state.queue, [action.queue_id] : [] },
                             lookup: {...state.lookup, [action.queue_id] : action.sample_id},
-                            lookup_queue_id: {...state.lookup_queue_id, [action.sample_id] : action.queue_id}
+                            lookup_queue_id: {...state.lookup_queue_id, [action.sample_id] : action.queue_id},
+                            collapsedSample : {...state.collapsedSample, [action.queue_id] : true}
                         }                       
                         );
 
@@ -31,6 +33,7 @@ export default (state={
                             todo: {...state.todo, nodes: without(state.todo.nodes, action.queue_id)},
                             queue: omit(state.queue, action.queue_id),
                             lookup: omit(state.lookup, action.queue_id),
+                            collapsedSample: omit(state.collapsedSample, action.queue_id),
                             lookup_queue_id: omit(state.lookup_queue_id, action.index)
                         }
                         );
@@ -90,6 +93,12 @@ export default (state={
             return {
                 ...state,
                 [action.list_name] : {...state[action.list_name], collapsed : !state[action.list_name].collapsed }
+            }
+                // Collapse list
+        case 'COLLAPSE_SAMPLE':
+            return {
+                ...state,
+                collapsedSample : {...state.collapsedSample, [action.queueID] : !state.collapsedSample[action.queueID] }
             }
 
         // Change order of samples in queue on drag and drop

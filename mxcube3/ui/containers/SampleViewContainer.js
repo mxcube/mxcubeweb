@@ -1,73 +1,72 @@
-import React, { Component } from 'react'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import SampleImage from '../components/SampleView/SampleImage'
-import MotorControl from '../components/SampleView/MotorControl'
-import ShapeList from '../components/SampleView/ShapeList'
-import ContextMenu from '../components/SampleView/ContextMenu'
-import SampleControls from '../components/SampleView/SampleControls'
-import * as QueueActions from '../actions/queue'
-import * as SampleActions from '../actions/samples_grid'
-import * as SampleViewActions from '../actions/sampleview'
-import { showTaskParametersForm } from '../actions/taskForm'
-import BeamlineSetupContainer from './BeamlineSetupContainer'
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import SampleImage from '../components/SampleView/SampleImage';
+import MotorControl from '../components/SampleView/MotorControl';
+import ContextMenu from '../components/SampleView/ContextMenu';
+import SampleControls from '../components/SampleView/SampleControls';
+import * as QueueActions from '../actions/queue';
+import * as SampleActions from '../actions/samples_grid';
+import * as SampleViewActions from '../actions/sampleview';
+import { showTaskForm } from '../actions/taskForm';
+import BeamlineSetupContainer from './BeamlineSetupContainer';
 
 class SampleViewContainer extends Component {
 
   render() {
-
-    const {show, shape, x, y} = this.props.sampleViewState.contextMenu;
-    const {width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas } = this.props.sampleViewState
+    const { show, shape, x, y } = this.props.sampleViewState.contextMenu;
+    const { width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture, motors } = this.props.sampleViewState;
+    const { sendMotorPosition } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
 
     return (
       <div className="row">
-        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters}/>
+        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters} />
         <div className="col-xs-8">
-            <BeamlineSetupContainer />
-            <SampleImage 
-                sampleActions={this.props.sampleViewActions} 
-                imageHeight={height} 
-                imageWidth={width}
-                pixelsPerMm={pixelsPerMm} 
-                shapeList={points} 
-                clickCentring={clickCentring} 
-                contextMenuShow={show}
-                imageRatio={imageRatio}
-                canvas={canvas} 
+            <MotorControl save={sendMotorPosition} motors={motors} />
+            <SampleImage
+              sampleActions={this.props.sampleViewActions}
+              imageHeight={height}
+              imageWidth={width}
+              pixelsPerMm={pixelsPerMm}
+              shapeList={points}
+              clickCentring={clickCentring}
+              contextMenuShow={show}
+              imageRatio={imageRatio}
+              canvas={canvas}
+              currentAperture={currentAperture}
             />
             <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>
         <div className="col-xs-4">
-            <MotorControl sampleActions={this.props.sampleViewActions} motors={this.props.sampleViewState.motors}/>
-            <ShapeList sampleViewState={this.props.sampleViewState} />
+          <BeamlineSetupContainer />
         </div>
       </div>
-    )
+    );
   }
 }
 
 
 function mapStateToProps(state) {
-  return { 
-          current : state.queue.current,
-          sampleInformation: state.samples_grid.samples_list,
-          sampleViewState: state.sampleview,
-          lookup: state.queue.lookup,
-          defaultParameters: state.taskForm.defaultParameters
-    }
+  return {
+    current: state.queue.current,
+    sampleInformation: state.samples_grid.samples_list,
+    sampleViewState: state.sampleview,
+    lookup: state.queue.lookup,
+    defaultParameters: state.taskForm.defaultParameters
+  };
 }
 
 function mapDispatchToProps(dispatch) {
- return  {
+  return {
     queueActions: bindActionCreators(QueueActions, dispatch),
-    sampleActions : bindActionCreators(SampleActions, dispatch),
-    sampleViewActions : bindActionCreators(SampleViewActions, dispatch),
-    showForm : bindActionCreators(showTaskParametersForm, dispatch)
-  }
+    sampleActions: bindActionCreators(SampleActions, dispatch),
+    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    showForm: bindActionCreators(showTaskForm, dispatch)
+  };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SampleViewContainer)
+)(SampleViewContainer);

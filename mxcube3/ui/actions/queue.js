@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { doUpdateSamples } from './samples_grid'
-import { showTaskParametersForm } from './taskForm'
+import { showTaskForm } from './taskForm'
 
 
 export function addSample(sample_id, queue_id) {
@@ -30,6 +30,12 @@ export function collapseList(listName) {
         return {
                type: "COLLAPSE_LIST",
                list_name: listName
+        }
+}
+
+export function collapseSample(queueID) {
+        return {
+               type: "COLLAPSE_SAMPLE", queueID
         }
 }
 
@@ -283,7 +289,7 @@ export function sendUnmountSample(queue_id) {
 				throw new Error("Server refused to unmount sample");
 			}else {
 				if(getState().samples_grid.manualMount.set){
-					dispatch(showTaskParametersForm("AddSample")); 
+					dispatch(showTaskForm("AddSample")); 
 				}
 				dispatch(unmountSample(queue_id));
 			}

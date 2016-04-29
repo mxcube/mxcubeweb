@@ -14,7 +14,6 @@ class AddSample extends React.Component {
 
      handleSubmit(){
         this.props.add(this.props.id ,  {...this.props.values, location: "Manual", id : this.props.id })
-
         this.props.hide();
     }
   
@@ -22,6 +21,7 @@ class AddSample extends React.Component {
     render() {
 
         const {fields: {sampleName, proteinAcronym}} = this.props;
+        const phase = this.props.phase;
 
         return (
         <Modal show={this.props.show} onHide={this.props.hide}>
@@ -31,7 +31,6 @@ class AddSample extends React.Component {
             <Modal.Body>
 
                 <form className="form-horizontal">
-
                     <div className="form-group">
 
                         <label className="col-sm-3 control-label">Sample Name:</label>
@@ -48,7 +47,8 @@ class AddSample extends React.Component {
 
             </Modal.Body>
             <Modal.Footer>
-              <button className="btn btn-primary" type="button" onClick={this.handleSubmit}>Add Sample</button>
+                <p className="pull-left">Current Phase: <b>{this.props.phase}</b></p>
+                <button className="btn btn-primary" disabled={phase !== 'Transfer'} type="button" onClick={this.handleSubmit}>Add Sample</button>
           </Modal.Footer>
         </Modal>
         );

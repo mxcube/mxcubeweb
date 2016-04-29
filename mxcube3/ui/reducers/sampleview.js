@@ -11,7 +11,10 @@ const initialState = {
   pixelsPerMm: 0,
   imageRatio: 0,
   canvas: null,
-  contextMenu: {show:false, shape: {type: "NONE"}, x: 0, y:0}
+  contextMenu: {show:false, shape: {type: "NONE"}, x: 0, y:0},
+  apertureList: [],
+  currentAperture: 0,
+  currentPhase: ''
 }
 
 export default (state=initialState, action) => {
@@ -72,6 +75,14 @@ export default (state=initialState, action) => {
             {
                 return {...state, canvas: action.canvas };
             }
+        case 'SET_APERTURE':
+            {
+                return {...state, currentAperture: action.size };
+            }
+        case 'SET_CURRENT_PHASE':
+            {
+                return {...state, currentPhase: action.phase };
+            }
          case 'MOUNT_SAMPLE':
             {
                 return {...state, points: {} };
@@ -88,7 +99,9 @@ export default (state=initialState, action) => {
                     zoom: action.data.Motors.Zoom.position,
                     width: action.data.Camera.imageWidth, 
                     height: action.data.Camera.imageHeight, 
-                    pixelsPerMm: action.data.Camera.pixelsPerMm[0]
+                    pixelsPerMm: action.data.Camera.pixelsPerMm[0],
+                    apertureList : action.data.beamInfo.apertureList,
+                    currentAperture : action.data.beamInfo.currentAperture
 
                 };
             }
