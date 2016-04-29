@@ -159,7 +159,7 @@ def get_initial_state():
                                 'size_y': beamInfoDict["size_y"],
                                 'apertureList' : aperture.getPredefinedPositionsList(),
                                 'currentAperture' : aperture.getCurrentPositionName()
-                                }
+                                })
         except Exception:
              logging.getLogger('HWR').error("Error retrieving beam position")
 
