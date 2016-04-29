@@ -1,7 +1,7 @@
 from flask import session, request, jsonify, Response
 from mxcube3 import app as mxcube
 import logging
-import os
+import os, jsonpickle
 import types
 
 
@@ -49,6 +49,7 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
+        mxcube.queue = jsonpickle.decode(session.get("queueList"))
     return jsonify(convert_to_dict(loginRes))
 
 @mxcube.route("/mxcube/api/v0.1/signout")
