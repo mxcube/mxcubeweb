@@ -2,7 +2,7 @@
 export const STATE = {
   IDLE: 'IDLE',
   BUSY: 'BUSY',
-  ABORT:'ABORT'
+  ABORT: 'ABORT'
 };
 
 
@@ -57,6 +57,3 @@ export const INITIAL_STATE = {
 export const SET_ATTRIBUTE = 'SET_ATTRIBUTE';
 export const SET_ALL_ATTRIBUTES = 'SET_ALL_ATTRIBUTES';
 export const SET_BUSY_STATE = 'SET_BUSY_STATE';
-
-
-
