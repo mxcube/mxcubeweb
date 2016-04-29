@@ -1,7 +1,7 @@
-export function makeCircle(x, y, id = "no id", color = "red", type = "TMP") {
+export function makeCircle(x, y, id = 'no id', color = 'red', type = 'TMP') {
   return new fabric.Circle({
-    radius: 10, 
-    strokeWidth: 2, 
+    radius: 10,
+    strokeWidth: 2,
     stroke: color,
     fill: '',
     left: x,
@@ -29,7 +29,7 @@ export function makeLine(x1, y1, x2, y2) {
 }
 
 export function makeText(x, y, fontSize) {
-  return new fabric.Text("50 µm", {
+  return new fabric.Text('50 µm', {
     fontSize: fontSize,
     fill: 'green',
     stroke: 'green',
@@ -41,9 +41,9 @@ export function makeText(x, y, fontSize) {
 
 export function makeBeam(x, y, radius) {
   return new fabric.Circle({
-    radius: radius, 
-    strokeWidth: 2, 
-    stroke: "blue",
+    radius: radius,
+    strokeWidth: 2,
+    stroke: 'blue',
     fill: '',
     left: x,
     top: y,
