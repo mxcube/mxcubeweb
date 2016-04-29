@@ -23,20 +23,20 @@ class SampleGridContainer extends React.Component {
             // Loop through all samples, check which was selected and add to the queue.
     Object.keys(this.props.samples_list).forEach(key => {
 
-            if (this.props.selected[key]) {
-                this.props.addSampleToQueue(key);
-              }
+      if (this.props.selected[key]) {
+              this.props.addSampleToQueue(key);
+            }
 
-          });
+    });
     this.props.unselectAll();
   }
 
   syncSamples() {
     try {
-            var proposal_id = this.props.login_data.session.proposalId;
-          } catch (e) {
-              return;
-            }
+      var proposal_id = this.props.login_data.session.proposalId;
+    } catch (e) {
+            return;
+          }
 
     this.props.syncSamples(proposal_id);
   }

@@ -7,7 +7,7 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, action.data);
 
     case SET_ATTRIBUTE:
-      var data = {};
+      let data = {};
       data[action.data.name] = { name: action.data.name,
                                   value: action.data.value,
                                   state: action.data.state,

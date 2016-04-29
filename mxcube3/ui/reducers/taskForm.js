@@ -10,12 +10,12 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'SHOW_FORM':
       {
-          return Object.assign({}, state, { showForm : action.name, sampleIds: action.sample_ids, taskData: action.taskData, pointId: action.point_id });
-        }
+        return Object.assign({}, state, { showForm : action.name, sampleIds: action.sample_ids, taskData: action.taskData, pointId: action.point_id });
+      }
     case 'HIDE_FORM':
       {
-          return initialState;
-        }
+        return initialState;
+      }
     default:
       return state;
   }
