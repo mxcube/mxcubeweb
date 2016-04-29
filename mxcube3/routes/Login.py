@@ -125,14 +125,55 @@ def get_initial_state():
             'imageWidth':  mxcube.diffractometer.image_width,
             'imageHeight':  mxcube.diffractometer.image_height,
             }
+
+        try:
+            data['useSC'] = mxcube.diffractometer.use_sc  
+        except AttributeError:
+            data['useSC'] = False # in case the diff does not have this implemented
+            
+        beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+        data['beamInfo'] = {}
+        if beamInfo is None:
+             logging.getLogger('HWR').error("beamInfo is not defined")
+        try:
+            beamInfoDict = beamInfo.get_beam_info()
+        except Exception:
+            pass
+
+        data['beamInfo'] = {}
+
+        try:
+            aperture = mxcube.diffractometer.getObjectByRole('aperture')
+            aperture_list = aperture.getPredefinedPositionsList()
+            currentAperture = aperture.getCurrentPositionName()
+            data['beamInfo'].update({'apertureList' : aperture_list,
+                                'currentAperture' : currentAperture
+                                })
+        except Exception:
+            logging.getLogger('HWR').exception('could not get all Aperture hwobj')
+        
+        try:
+            data['beamInfo'].update({'position': beamInfo.get_beam_position(),
+                                'shape': beamInfoDict["shape"],
+                                'size_x': beamInfoDict["size_x"],
+                                'size_y': beamInfoDict["size_y"],
+                                'apertureList' : aperture.getPredefinedPositionsList(),
+                                'currentAperture' : aperture.getCurrentPositionName()
+                                }
+        except Exception:
+             logging.getLogger('HWR').error("Error retrieving beam position")
+
+        try:
+            data['current_phase'] = mxcube.diffractometer.current_phase
+        except AttributeError:
+            data['current_phase'] =  'None' # in case the diff does not have this implemented
+
         resp = jsonify(data)
         resp.status_code = 200
         return resp
     except Exception:
         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get all motor  status')
         return Response(status=409)
-
-### TODO: when we have the main login page this method should redirect to '/'
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
 def proposal_samples(proposal_id):

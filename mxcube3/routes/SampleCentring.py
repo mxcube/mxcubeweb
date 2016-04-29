@@ -12,7 +12,6 @@ import signals
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
-posId = 1
 
 def init_signals():
     for signal in signals.microdiffSignals:
@@ -33,6 +32,7 @@ def init_signals():
     mxcube.diffractometer.savedCentredPos = []
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
+    mxcube.diffractometer.savedCentredPosCount = 1
 
 ############
 
@@ -224,8 +224,10 @@ def moveToCentredPosition(id):
         :statuscode: 409: error
     """
     motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('posId') == int(id)]
+    if 'kappa' in motorPositions[0]: motorPositions[0].pop('kappa')
+    if 'kappa_phi' in motorPositions[0]: motorPositions[0].pop('kappa_phi')
     try:
-        mxcube.diffractometer.moveToCentredPosition(motorPositions)
+        mxcube.diffractometer.move_to_motors_positions(motorPositions[0]) # moveToCentredPosition(motorPositions)
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
         return Response(status=200)
     except Exception:
@@ -519,8 +521,7 @@ def waitForCentringFinishes(*args, **kwargs):
                 return
 
         #if no temp point found, let's create the first one
-        global posId
-        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
+        centredPosId = 'pos' + str(mxcube.diffractometer.savedCentredPosCount) # pos1, pos2, ..., pos42
         data = {'name': centredPosId,
             'posId': posId,
             'motorPositions': motorPositions,
@@ -529,7 +530,7 @@ def waitForCentringFinishes(*args, **kwargs):
             'x': x,
             'y': y 
             }
-        posId += 1
+        mxcube.diffractometer.savedCentredPosCount += 1
         mxcube.diffractometer.savedCentredPos.append(data)
         mxcube.diffractometer.emit('minidiffStateChanged', (True,))
 
