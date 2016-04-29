@@ -223,8 +223,6 @@ def queueLoadState():
                 )
 
         if mxcube.queue.queue_hwobj._queue_entry_list:
-            import pdb
-            pdb.set_trace() 
             logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored...')
             resp = jsonify({'queueState': jsonParser(), 'sampleList': samples})
             resp.status_code = 200
