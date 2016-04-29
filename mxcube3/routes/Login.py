@@ -132,13 +132,15 @@ def get_initial_state():
             
         beamInfo = mxcube.beamline.getObjectByRole("beam_info")
         data['beamInfo'] = {}
-
         if beamInfo is None:
              logging.getLogger('HWR').error("beamInfo is not defined")
         try:
             beamInfoDict = beamInfo.get_beam_info()
         except Exception:
             pass
+
+        data['beamInfo'] = {}
+
         try:
             aperture = mxcube.diffractometer.getObjectByRole('aperture')
             aperture_list = aperture.getPredefinedPositionsList()
@@ -148,14 +150,17 @@ def get_initial_state():
                                 })
         except Exception:
             logging.getLogger('HWR').exception('could not get all Aperture hwobj')
-
-        data['beamInfo'].update({'position': beamInfo.get_beam_position(),
+        
+        try:
+            data['beamInfo'].update({'position': beamInfo.get_beam_position(),
                                 'shape': beamInfoDict["shape"],
                                 'size_x': beamInfoDict["size_x"],
-                                'size_y': beamInfoDict["size_y"]
-                            })
+                                'size_y': beamInfoDict["size_y"],
+                                'apertureList' : aperture.getPredefinedPositionsList(),
+                                'currentAperture' : aperture.getCurrentPositionName()
+                                }
         except Exception:
-             logging.getLogger('HWR').error("Error retrieving beam info")
+             logging.getLogger('HWR').error("Error retrieving beam position")
 
         try:
             data['current_phase'] = mxcube.diffractometer.current_phase
@@ -168,8 +173,6 @@ def get_initial_state():
     except Exception:
         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get all motor  status')
         return Response(status=409)
-
-### TODO: when we have the main login page this method should redirect to '/'
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
 def proposal_samples(proposal_id):

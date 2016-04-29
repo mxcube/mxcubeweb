@@ -12,7 +12,6 @@ import signals
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
-mxcube.diffractometer.savedCentredPosCount = 1
 
 def init_signals():
     for signal in signals.microdiffSignals:
@@ -33,6 +32,7 @@ def init_signals():
     mxcube.diffractometer.savedCentredPos = []
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
+    mxcube.diffractometer.savedCentredPosCount = 1
 
 ############
 
