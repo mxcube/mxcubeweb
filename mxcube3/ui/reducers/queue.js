@@ -11,7 +11,9 @@ export default (state={
     lookup:{},
     lookup_queue_id:{},
     collapsedSample: {}, 
-    searchString: ""
+    searchString: "",
+    showRestoreDialog: false,
+    queueRestoreState: {}
 }, action) => {
     switch (action.type) {
         // Adding sample to queue
@@ -141,6 +143,10 @@ export default (state={
                     todo: {nodes: [], collapsed: false},
                     history: {nodes: [], collapsed: false}
                 });
+        case 'SHOW_RESTORE_DIALOG':
+            {
+            return {...state, showRestoreDialog : action.show, queueRestoreState: action.queueState}
+            }
         case 'QUEUE_STATE':
              return action.queueState;
         default:

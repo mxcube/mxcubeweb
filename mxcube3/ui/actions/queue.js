@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch'
 import { doUpdateSamples } from './samples_grid'
 import { showTaskForm } from './taskForm'
 
-
 export function addSample(sample_id, queue_id) {
 	return { 
 		type: "ADD_SAMPLE", 
@@ -43,7 +42,7 @@ export function setState(queueState, sampleGridState) {
         return {
                type: "QUEUE_STATE",
                queueState: queueState,
-               sampleGridState: sampleGridState
+               //sampleGridState: sampleGridState 
         }
 }
 
@@ -93,8 +92,9 @@ export function toggleChecked(queue_id) {
 	}
 }
 
-export function getState() {
+export function synchState() {
 	return function(dispatch) {
+
 		fetch('mxcube/api/v0.1/queue/state', { 
 			method: 'GET', 
                         credentials: 'include',
@@ -109,12 +109,23 @@ export function getState() {
 			return response.json();
 		})
 		.then(function(json) {
-			if(Object.keys(json.queueState).length !==0 ){
-				dispatch(setState(json.queueState, json.sampleGridState));
-			}
-		});
-
+			
+			json.queueState.current = {}
+			json.queueState.todo = {nodes:[]}
+			json.queueState.history = {nodes:[]}
+			if (Object.keys(json.queueState).length > 0) {
+			    dispatch(showRestoreDialog(json.queueState))
+			} else {
+                dispatch(setState(json.queueState, {})); //TODO: json.sampleList));
+		    }
+	    });
 	}
+}
+
+export function showRestoreDialog(queueState, show = true) {
+    return { 
+      type: "SHOW_RESTORE_DIALOG", queueState, show
+    }
 }
 
 export function sendRunQueue() {

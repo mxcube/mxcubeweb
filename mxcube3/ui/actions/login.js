@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import { getInitialStatus } from './general'
 import { showErrorPanel, setLoading } from './general'
+import { synchState } from './queue'
 
 
 export function doLogin(proposal, password) {
@@ -47,6 +48,7 @@ export function getLoginInfo() {
               if (loginInfo.loginRes.Proposal) {
                   dispatch(afterLogin(loginInfo.loginRes));
                   dispatch(getInitialStatus());
+                  dispatch(synchState());
               } 
           }, () => {
             throw new Error("Server connection problem (getLoginInfo)"); 
@@ -71,4 +73,3 @@ export function afterLogin(data) {
 export function signOut() {
     return { type: "SIGNOUT" }
 }
-

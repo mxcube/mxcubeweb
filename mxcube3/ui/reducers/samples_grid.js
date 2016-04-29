@@ -138,7 +138,7 @@ export default (state={ samples_list: {}, filter_text: "", selected: {}, clicked
           );
       }
     case 'QUEUE_STATE':
-      return action.sampleGridState;
+      return state //action.sampleGridState;
     case "SET_INITIAL_STATUS":
        {    
         return {...state, manualMount : {set: !action.data.useSC, id: 0}}

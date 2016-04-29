@@ -16,6 +16,11 @@ export function showErrorPanel(show, message="") {
     }
 }
 
+export function showDialog(show, title="", message="") {
+    return { 
+      type: "SHOW_DIALOG", show , title, message
+    }
+}
 
 export function getInitialStatus() {
   return function(dispatch) {
