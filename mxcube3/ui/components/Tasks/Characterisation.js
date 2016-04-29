@@ -17,29 +17,29 @@ class Characterisation extends React.Component {
   handleSubmit(runNow) {
 
     let parameters = {
-        ...this.props.values,
-        Type : 'Characterisation',
-        point : this.props.pointId
-      };
+      ...this.props.values,
+      Type : 'Characterisation',
+      point : this.props.pointId
+    };
 
     if (this.props.sampleIds.constructor == Array) {
 
-        this.props.sampleIds.map((sampleId) => {
+      this.props.sampleIds.map((sampleId) => {
 
-            let queueId = this.props.lookup[sampleId];
+        let queueId = this.props.lookup[sampleId];
 
-            if (queueId) {
-                this.props.addTask(queueId, sampleId, parameters);
-              } else {
+        if (queueId) {
+            this.props.addTask(queueId, sampleId, parameters);
+          } else {
                     // the sample is not in queue yet
-                this.props.addSampleAndTask(sampleId, parameters);
-              }
-          });
+            this.props.addSampleAndTask(sampleId, parameters);
+          }
+      });
 
-      } else {
-        let sample_queue_id = this.props.lookup[this.props.sampleIds];
-        this.props.changeTask(this.props.taskData.queue_id, sample_queue_id, this.props.sampleIds, parameters, runNow);
-      }
+    } else {
+      let sample_queue_id = this.props.lookup[this.props.sampleIds];
+      this.props.changeTask(this.props.taskData.queue_id, sample_queue_id, this.props.sampleIds, parameters, runNow);
+    }
 
     this.props.hide();
   }

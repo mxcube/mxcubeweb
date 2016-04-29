@@ -10,10 +10,10 @@ export default (state = initialState, action) => {
     case 'LOGIN':
       {
         if (action.status.code == 'error') {
-            return Object.assign({}, state, action, { loggedIn: false });
-          } else {
-            return Object.assign({}, state, action, { loggedIn: true });
-          }
+          return Object.assign({}, state, action, { loggedIn: false });
+        } else {
+          return Object.assign({}, state, action, { loggedIn: true });
+        }
       }
     case 'SIGNOUT':
       {
@@ -24,9 +24,9 @@ export default (state = initialState, action) => {
       {
                 // window.error_notification.clear();
         return Object.assign({}, state,
-            {
-              loginInfo: action.loginInfo
-            });
+          {
+            loginInfo: action.loginInfo
+          });
       }
 
     default:

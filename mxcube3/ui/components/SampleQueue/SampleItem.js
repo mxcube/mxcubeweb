@@ -10,7 +10,7 @@ const cardSource = {
     };
   },
   endDrag(props) {
-    //insert call to server for changing order
+    // insert call to server for changing order
     return {
       id: props.id,
       index: props.index
@@ -85,9 +85,9 @@ export default class SampleItem extends Component {
   };
 
   constructor(props) {
-        super(props);
-        this.mountSample = () => this.props.mountSample(this.props.id);
-        this.deleteSample = () => this.props.deleteSample(this.props.id, this.props.sampleId);
+    super(props);
+    this.mountSample = () => this.props.mountSample(this.props.id);
+    this.deleteSample = () => this.props.deleteSample(this.props.id, this.props.sampleId);
   }
 
   render() {
