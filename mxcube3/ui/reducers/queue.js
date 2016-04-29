@@ -148,7 +148,10 @@ export default (state={
             return {...state, showRestoreDialog : action.show, queueRestoreState: action.queueState}
             }
         case 'QUEUE_STATE':
-             return action.queueState;
+            {
+                let new_state = Object.assign({ current:{}, todo:{nodes:[]}, history:{nodes:[]}},action.queueState);
+                return Object.assign({},state,new_state);    
+            }
         default:
             return state;
     }
