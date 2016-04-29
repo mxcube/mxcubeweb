@@ -53,15 +53,10 @@ class BeamlineSetupContainer extends React.Component {
                       ref="energy" name="Energy" pkey="energy" suffix="keV"
                       data={this.props.data.energy} onSave={this.onSaveHandler}
                       onCancel={this.onCancelHandler}
-                    >
-                      <DefaultInput
-                        key="input" dataType={this.props.dataType} inputSize={this.props.inputSize}
-                      />
-                      <DefaultBusy key="busy" />
-                    </PopInput>
+                    />
                   </td>
                   <td>
-                    <PopInput ref="key1" name="Resolution" suffix="&Aring" value="0" />
+                    <PopInput ref="key1" name="Resolution" suffix="&Aring;" value="0" />
                   </td>
                   <td>
                     <PopInput ref="key2" name="Transmission" suffix="%" />
@@ -70,7 +65,7 @@ class BeamlineSetupContainer extends React.Component {
                 <tr>
                   <td>
                     <PopInput
-                      ref="resolution" name="Resolution" pkey="resolution" suffix="&Aring"
+                      ref="resolution" name="Resolution" pkey="resolution" suffix="&Aring;"
                       data={this.props.data.resolution} onSave={this.onSaveHandler}
                     />
                   </td>
@@ -89,7 +84,7 @@ class BeamlineSetupContainer extends React.Component {
                     />
                   </td>
                   <td>
-                    <PopInput ref="key5" name="Resolution" suffix="&Aring" />
+                    <PopInput ref="key5" name="Resolution" suffix="&Aring;" />
                   </td>
                   <td>
                     <PopInput ref="key6" name="Energy" suffix="KeV" />
