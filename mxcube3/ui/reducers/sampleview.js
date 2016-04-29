@@ -1,4 +1,4 @@
-import {omit} from 'lodash/object';
+import { omit } from 'lodash/object';
 const initialState = {
   clickCentring: false,
   clickCentringPoints: 0,
@@ -6,99 +6,99 @@ const initialState = {
   points: {},
   width: 0,
   height: 0,
-  lightOn: {back: false, front: false},
+  lightOn: { back: false, front: false },
   motors: {},
   pixelsPerMm: 0,
   imageRatio: 0,
   canvas: null,
-  contextMenu: {show:false, shape: {type: "NONE"}, x: 0, y:0},
+  contextMenu: { show:false, shape: { type: "NONE" }, x: 0, y:0 },
   apertureList: [],
   currentAperture: 0,
   currentPhase: ''
-}
+};
 
-export default (state=initialState, action) => {
-    switch (action.type) {
-        case 'SET_ZOOM':
-            {
-                return {...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm};
+export default (state = initialState, action) => {
+  switch (action.type) {
+      case 'SET_ZOOM':
+        {
+              return { ...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm };
             }
-        case 'START_CLICK_CENTRING':
-            {
-                return {...state, clickCentring: true, clickCentringPoints: 0};
+      case 'START_CLICK_CENTRING':
+        {
+              return { ...state, clickCentring: true, clickCentringPoints: 0 };
             }
-        case 'STOP_CLICK_CENTRING':
-            {
-                return {...state, clickCentring: false};
+      case 'STOP_CLICK_CENTRING':
+        {
+              return { ...state, clickCentring: false };
             }
-        case 'ADD_CENTRING_POINT':
-            {
-                return (state.clickCentringPoints === 2 ? {...state, clickCentring: false, clickCentringPoints:0} : {...state, clickCentringPoints: (state.clickCentringPoints + 1)})
-            }        
-        case 'SAVE_POINT':
-            {
-                return {...state, points: {...state.points, [action.point.posId] : action.point }};
+      case 'ADD_CENTRING_POINT':
+        {
+              return (state.clickCentringPoints === 2 ? { ...state, clickCentring: false, clickCentringPoints:0 } : { ...state, clickCentringPoints: (state.clickCentringPoints + 1) });
             }
-        case 'DELETE_POINT':
-            {
-                return {...state, points: omit(state.points, action.id)};
+      case 'SAVE_POINT':
+        {
+              return { ...state, points: { ...state.points, [action.point.posId] : action.point } };
             }
-        case 'SAVE_IMAGE_SIZE':
-            {
-                return {...state, width: action.width, height: action.height, pixelsPerMm: action.pixelsPerMm };
+      case 'DELETE_POINT':
+        {
+              return { ...state, points: omit(state.points, action.id) };
             }
-        case 'SAVE_MOTOR_POSITIONS':
-            {
-                return {...state, motors: action.data, lightOn: {back: action.data.BackLightSwitch.Status, front: action.data.FrontLightSwitch.Status}, zoom: action.data.Zoom.position };
+      case 'SAVE_IMAGE_SIZE':
+        {
+              return { ...state, width: action.width, height: action.height, pixelsPerMm: action.pixelsPerMm };
             }
-        case 'SAVE_MOTOR_POSITION':
-            {
-                return {...state, motors: {...state.motors, [action.name] : {position: action.value}} };
+      case 'SAVE_MOTOR_POSITIONS':
+        {
+              return { ...state, motors: action.data, lightOn: { back: action.data.BackLightSwitch.Status, front: action.data.FrontLightSwitch.Status }, zoom: action.data.Zoom.position };
             }
-        case 'SET_LIGHT':
-            {
-                return {...state, lightOn: {...state.lightOn, [action.name]: action.on} };
+      case 'SAVE_MOTOR_POSITION':
+        {
+              return { ...state, motors: { ...state.motors, [action.name] : { position: action.value } } };
             }
-        case 'UPDATE_POINTS_POSITION':
-            {
-                return {...state, points: action.points };
+      case 'SET_LIGHT':
+        {
+              return { ...state, lightOn: { ...state.lightOn, [action.name]: action.on } };
             }
-        case 'SHOW_CONTEXT_MENU':
-            {
-                return {...state, contextMenu: {show: action.show, shape: action.shape, x: action.x, y: action.y} };
+      case 'UPDATE_POINTS_POSITION':
+        {
+              return { ...state, points: action.points };
             }
-        case 'SET_IMAGE_RATIO':
-            {
-                return {...state, imageRatio: action.ratio };
+      case 'SHOW_CONTEXT_MENU':
+        {
+              return { ...state, contextMenu: { show: action.show, shape: action.shape, x: action.x, y: action.y } };
             }
-        case 'SET_CANVAS':
-            {
-                return {...state, canvas: action.canvas };
+      case 'SET_IMAGE_RATIO':
+        {
+              return { ...state, imageRatio: action.ratio };
             }
-        case 'SET_APERTURE':
-            {
-                return {...state, currentAperture: action.size };
+      case 'SET_CANVAS':
+        {
+              return { ...state, canvas: action.canvas };
             }
-        case 'SET_CURRENT_PHASE':
-            {
-                return {...state, currentPhase: action.phase };
+      case 'SET_APERTURE':
+        {
+              return { ...state, currentAperture: action.size };
             }
-         case 'MOUNT_SAMPLE':
-            {
-                return {...state, points: {} };
+      case 'SET_CURRENT_PHASE':
+        {
+              return { ...state, currentPhase: action.phase };
             }
-         case 'UNMOUNT_SAMPLE':
-            {
-                return {...state, points: {} };
+      case 'MOUNT_SAMPLE':
+        {
+              return { ...state, points: {} };
             }
-        case 'SET_INITIAL_STATUS':
-            {
-                return {...state, 
-                    motors: action.data.Motors, 
-                    lightOn: {back: action.data.Motors.BackLightSwitch.Status, front: action.data.Motors.FrontLightSwitch.Status}, 
+      case 'UNMOUNT_SAMPLE':
+        {
+              return { ...state, points: {} };
+            }
+      case 'SET_INITIAL_STATUS':
+        {
+              return { ...state,
+                    motors: action.data.Motors,
+                    lightOn: { back: action.data.Motors.BackLightSwitch.Status, front: action.data.Motors.FrontLightSwitch.Status },
                     zoom: action.data.Motors.Zoom.position,
-                    width: action.data.Camera.imageWidth, 
-                    height: action.data.Camera.imageHeight, 
+                    width: action.data.Camera.imageWidth,
+                    height: action.data.Camera.imageHeight,
                     pixelsPerMm: action.data.Camera.pixelsPerMm[0]
 //                    apertureList : action.data.beamInfo.apertureList,
 //                    currentAperture : action.data.beamInfo.currentAperture
@@ -106,7 +106,7 @@ export default (state=initialState, action) => {
                 };
             }
 
-        default:
-            return state;
+      default:
+        return state;
     }
-}
+};

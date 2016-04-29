@@ -19,10 +19,10 @@ export const STATE = {
 export const INITIAL_STATE = {
   energy: {
     limits: [
-        0,
-        1000,
-        0.1
-      ],
+      0,
+      1000,
+      0.1
+    ],
     name: 'energy',
     value: '0',
     state: STATE.IDLE,
@@ -30,10 +30,10 @@ export const INITIAL_STATE = {
   },
   resolution: {
     limits: [
-        0,
-        1000,
-        0.1
-      ],
+      0,
+      1000,
+      0.1
+    ],
     name: 'resolution',
     value: '0',
     state: STATE.IDLE,
@@ -41,10 +41,10 @@ export const INITIAL_STATE = {
   },
   transmission: {
     limits: [
-        0,
-        1000,
-        0.1
-      ],
+      0,
+      1000,
+      0.1
+    ],
     name: 'transmission',
     value: '0',
     state: STATE.IDLE,

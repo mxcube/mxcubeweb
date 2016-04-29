@@ -124,16 +124,16 @@ export function sendStartClickCentring() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to start 3click');
-    } else {
-      dispatch(StartClickCentring());
-    }
-   });
+      if (response.status >= 400) {
+        throw new Error('Server refused to start 3click');
+      } else {
+        dispatch(StartClickCentring());
+      }
+    });
   };
 }
 
@@ -143,17 +143,17 @@ export function sendCentringPoint(x, y) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     },
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
       body: JSON.stringify({ clickPos:{ x : x, y: y } })
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to add point');
-    }
-   }).then(function () {
-    dispatch(addCentringPoint());
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to add point');
+      }
+    }).then(function () {
+      dispatch(addCentringPoint());
+    });
   };
 }
 
@@ -163,14 +163,14 @@ export function sendStartAutoCentring() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to start autocentring');
-    }
-   });
+      if (response.status >= 400) {
+        throw new Error('Server refused to start autocentring');
+      }
+    });
   };
 }
 
@@ -180,17 +180,17 @@ export function sendSavePoint(id) {
       method: 'POST',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to save point');
-    }
-     return response.json();
-   }).then(function (json) {
-    dispatch(SavePoint(json));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to save point');
+      }
+      return response.json();
+    }).then(function (json) {
+      dispatch(SavePoint(json));
+    });
 
   };
 }
@@ -200,17 +200,17 @@ export function sendDeletePoint(id) {
     fetch('/mxcube/api/v0.1/sampleview/centring/' + id, {
       method: 'DELETE',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to delete point');
-    }
-     return response.json();
-   }).then(function () {
-    dispatch(DeletePoint(id));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to delete point');
+      }
+      return response.json();
+    }).then(function () {
+      dispatch(DeletePoint(id));
+    });
 
   };
 }
@@ -221,18 +221,18 @@ export function sendZoomPos(level) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     },
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
       body: JSON.stringify({ level: level })
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to zoom');
-    }
-     return response.json();
-   }).then(function (json) {
-    dispatch(setZoom(level, json.pixelsPerMm[0]));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to zoom');
+      }
+      return response.json();
+    }).then(function (json) {
+      dispatch(setZoom(level, json.pixelsPerMm[0]));
+    });
 
   };
 }
@@ -243,16 +243,16 @@ export function sendLightOn(name) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to turn light on');
-    }
-   }).then(function () {
-    dispatch(setLight(name, true));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to turn light on');
+      }
+    }).then(function () {
+      dispatch(setLight(name, true));
+    });
   };
 }
 
@@ -262,16 +262,16 @@ export function sendLightOff(name) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to turn light off');
-    }
-   }).then(function () {
-    dispatch(setLight(name, false));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to turn light off');
+      }
+    }).then(function () {
+      dispatch(setLight(name, false));
+    });
 
   };
 }
@@ -282,14 +282,14 @@ export function sendMotorPosition(motorName, value) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to move motors');
-    }
-   });
+      if (response.status >= 400) {
+        throw new Error('Server refused to move motors');
+      }
+    });
   };
 }
 
@@ -299,16 +299,16 @@ export function sendAbortCentring() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      dispatch(showErrorPanel(true, 'Server refused to abort centring'));
-    } else {
-      dispatch(StopClickCentring());
-    }
-   });
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to abort centring'));
+      } else {
+        dispatch(StopClickCentring());
+      }
+    });
 
   };
 }
@@ -319,14 +319,14 @@ export function sendGoToPoint(id) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      dispatch(showErrorPanel(true, 'Server refused to move to point'));
-    }
-   });
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to move to point'));
+      }
+    });
   };
 }
 
@@ -336,18 +336,18 @@ export function sendChangeAperture(size) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     },
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
       body: JSON.stringify({ pos: size })
     }).then(function (response) {
-     if (response.status >= 400) {
-      dispatch(showErrorPanel(true, 'Server refused to change Aperture'));
-      dispatch(setAperture(size));
-    } else {
-      dispatch(setAperture(size));
-    }
-   });
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to change Aperture'));
+        dispatch(setAperture(size));
+      } else {
+        dispatch(setAperture(size));
+      }
+    });
   };
 }
 
@@ -359,17 +359,17 @@ export function getSampleImageSize() {
       method: 'GET',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to return image size');
-    }
-     return response.json();
-   }).then(function (json) {
-    dispatch(SaveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to return image size');
+      }
+      return response.json();
+    }).then(function (json) {
+      dispatch(SaveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
+    });
 
   };
 }
@@ -381,17 +381,17 @@ export function getMotorPositions() {
       method: 'GET',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to get motorposition');
-    }
-     return response.json();
-   }).then(function (json) {
-    dispatch(saveMotorPositions(json));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to get motorposition');
+      }
+      return response.json();
+    }).then(function (json) {
+      dispatch(saveMotorPositions(json));
+    });
 
   };
 }
@@ -402,17 +402,17 @@ export function getPointsPosition() {
     fetch('mxcube/api/v0.1/sampleview/centring', {
       method: 'GET',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     }
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to return points position');
-    }
-     return response.json();
-   }).then(function (json) {
-    dispatch(updatePointsPosition(json));
-  });
+      if (response.status >= 400) {
+        throw new Error('Server refused to return points position');
+      }
+      return response.json();
+    }).then(function (json) {
+      dispatch(updatePointsPosition(json));
+    });
 
   };
 }
@@ -424,17 +424,17 @@ export function sendCurrentPhase(phase) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     },
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
       body: JSON.stringify({ phase: phase })
     }).then(function (response) {
-     if (response.status >= 400) {
-      throw new Error('Server refused to set phase');
-    } else {
-      dispatch(setCurrentPhase(phase));
-    }
+      if (response.status >= 400) {
+        throw new Error('Server refused to set phase');
+      } else {
+        dispatch(setCurrentPhase(phase));
+      }
 
-   });
+    });
   };
 }

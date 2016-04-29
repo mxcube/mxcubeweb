@@ -7,13 +7,13 @@ import { SET_ATTRIBUTE, SET_ALL_ATTRIBUTES,
 export function getAllAttributes() {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/beamline', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-type': 'application/json'
-          },
-        credentials: 'include'
-      }).then(response => response.json())
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include'
+    }).then(response => response.json())
           .then(data => {
             dispatch(beamlinePropertiesAction(data));
           }, () => {
@@ -27,14 +27,14 @@ export function setAttribute(name, value) {
   return function (dispatch) {
     dispatch(busyStateAction(name));
     fetch('mxcube/api/v0.1/beamline/' + name, {
-        method: 'PUT',
-        headers: {
-            'Accept': 'application/json',
-            'Content-type': 'application/json'
-          },
-        credentials: 'include',
-        body: JSON.stringify({ name, value })
-      }).then(response => response.json())
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ name, value })
+    }).then(response => response.json())
           .then(data => {
             dispatch(beamlinePropertyValueAction(data));
           }, () => {
@@ -47,13 +47,13 @@ export function setAttribute(name, value) {
 export function abortCurrentAction(name) {
   return function () {
     fetch('mxcube/api/v0.1/beamline/' + name + '/abort', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-type': 'application/json'
-          },
-        credentials: 'include'
-      });
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include'
+    });
   };
 }
 

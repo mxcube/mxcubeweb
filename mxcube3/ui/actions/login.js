@@ -6,14 +6,14 @@ import { showErrorPanel, setLoading } from './general';
 export function doLogin(proposal, password) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/login', {
-        method: 'POST',
-        headers: {
-             'Accept': 'application/json',
-             'Content-type': 'application/json'
-           },
-        credentials: 'include',
-        body: JSON.stringify({ proposal, password })
-      }).then(response => response.json())
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ proposal, password })
+    }).then(response => response.json())
           .then(loginRes => {
               // Here one should check if login is successfull and if so get initial state of MxCube
             dispatch(showErrorPanel(false));
@@ -37,9 +37,9 @@ export function getLoginInfo() {
     fetch('mxcube/api/v0.1/login_info', {
       method: 'GET',
       headers: {
-       'Accept': 'application/json',
-       'Content-type': 'application/json'
-     },
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
       credentials: 'include'
     }).then(response => response.json())
           .then(loginInfo => {

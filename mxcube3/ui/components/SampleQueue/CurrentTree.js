@@ -40,13 +40,13 @@ export default class CurrentTree extends React.Component {
     let sampleData, sampleTasks = [];
 
     if (node) {
-        sampleData = this.props.sampleInformation[this.props.lookup[node]];
-        sampleTasks = this.props.queue[node];
-      }
+      sampleData = this.props.sampleInformation[this.props.lookup[node]];
+      sampleTasks = this.props.queue[node];
+    }
 
     var bodyClass = cx('list-body', {
-        'hidden': (this.props.show || !node)
-      });
+      'hidden': (this.props.show || !node)
+    });
     return (
             <div className="m-tree">
                 <div className="list-head">

@@ -1,7 +1,7 @@
 'use strict';
 
-import React from 'react'
-import {reduxForm} from 'redux-form';
+import React from 'react';
+import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 
 
@@ -9,47 +9,47 @@ class Characterisation extends React.Component {
 
 
   constructor(props) {
-        super(props);
-        this.runNow = this.handleSubmit.bind(this, true);
-        this.addToQueue = this.handleSubmit.bind(this, false);
+    super(props);
+    this.runNow = this.handleSubmit.bind(this, true);
+    this.addToQueue = this.handleSubmit.bind(this, false);
   }
 
-    handleSubmit(runNow){
+  handleSubmit(runNow) {
 
-        let parameters = {
-            ...this.props.values,
-            Type : "Characterisation",
-            point : this.props.pointId
-        };
+    let parameters = {
+        ...this.props.values,
+        Type : 'Characterisation',
+        point : this.props.pointId
+      };
 
-        if (this.props.sampleIds.constructor == Array){
+    if (this.props.sampleIds.constructor == Array) {
 
-            this.props.sampleIds.map((sampleId) =>{
+        this.props.sampleIds.map((sampleId) => {
 
-                let queueId = this.props.lookup[sampleId];
+            let queueId = this.props.lookup[sampleId];
 
-                if (queueId) {
-                    this.props.addTask(queueId, sampleId, parameters);
-                } else {
+            if (queueId) {
+                this.props.addTask(queueId, sampleId, parameters);
+              } else {
                     // the sample is not in queue yet
-                    this.props.addSampleAndTask(sampleId, parameters);
-                }  
-            });
-          
-        }else{
-            let sample_queue_id = this.props.lookup[ this.props.sampleIds];
-            this.props.changeTask(this.props.taskData.queue_id, sample_queue_id,this.props.sampleIds, parameters, runNow);
-        }
+                this.props.addSampleAndTask(sampleId, parameters);
+              }
+          });
 
-        this.props.hide();
-    }
+      } else {
+        let sample_queue_id = this.props.lookup[this.props.sampleIds];
+        this.props.changeTask(this.props.taskData.queue_id, sample_queue_id, this.props.sampleIds, parameters, runNow);
+      }
+
+    this.props.hide();
+  }
 
 
-    render() {
+  render() {
 
-        const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity }} = this.props;
+    const { fields: { num_images, exp_time, resolution, osc_start, energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity } } = this.props;
 
-        return (
+    return (
         <Modal show={this.props.show} onHide={this.props.hide}>
             <Modal.Header closeButton>
                 <Modal.Title>Characterisation</Modal.Title>
@@ -86,7 +86,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-3 control-label">Detector mode:</label>
                         <div className="col-sm-3">
-                             <select className="form-control"  {...detector_mode}>
+                             <select className="form-control" {...detector_mode}>
                                 <option value="1"></option>
                                 <option value="1">X</option>
                                 <option value="1">Y</option>
@@ -150,16 +150,16 @@ class Characterisation extends React.Component {
                         </div>
 
 
-                    </div>  
+                    </div>
                      <div className="form-group">
 
                         <label className="col-sm-3 control-label">File name:</label>
                         <div className="col-sm-9">
-                            <input type="text" className="form-control"/>
+                            <input type="text" className="form-control" />
                         </div>
 
 
-                    </div>  
+                    </div>
 
                      <div className="form-group">
 
@@ -173,7 +173,7 @@ class Characterisation extends React.Component {
                             <input type="number" className="form-control" />
                         </div>
 
-                    </div>                        
+                    </div>
 
                     <h5>Characterisation</h5>
                     <hr />
@@ -182,7 +182,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-6 control-label">Strategy complexity:</label>
                         <div className="col-sm-6">
-                             <select className="form-control"  {...strategy_complexity}>
+                             <select className="form-control" {...strategy_complexity}>
                                 <option value="1">Single subwedge</option>
                                 <option value="2">Multiple subwedge</option>
                             </select>
@@ -210,7 +210,7 @@ class Characterisation extends React.Component {
 
                         <label className="col-sm-6 control-label">Space group:</label>
                         <div className="col-sm-6">
-                             <select className="form-control"  {...space_group}>
+                             <select className="form-control" {...space_group}>
                                 <option value="1"></option>
                                 <option value="1">X</option>
                             </select>
@@ -245,28 +245,28 @@ class Characterisation extends React.Component {
                 </form>
             </Modal.Body>
             <Modal.Footer>
-          <div className={this.props.pointId === -1 ? "pull-left" : "hidden"}>
+          <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
             <label className="centring-method">
-              <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'}/> Lucid Only  
+              <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'} /> Lucid Only
             </label>
             <label className="centring-method">
-              <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'}/> X-ray Centring 
+              <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'} /> X-ray Centring
             </label>
           </div>
-              <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
-              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? "Change": "Add to Queue"}</button>
+              <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
+              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? 'Change' : 'Add to Queue'}</button>
           </Modal.Footer>
         </Modal>
         );
-    }
+  }
 }
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity' ] // all the fields in your form
+  fields: ['num_images', 'exp_time', 'resolution', 'osc_start', 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage', 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity'] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: {...state.taskForm.taskData.parameters} // will pull state into form's initialValues
+  initialValues: { ...state.taskForm.taskData.parameters } // will pull state into form's initialValues
 }))(Characterisation);
 
 export default Characterisation;

@@ -37,10 +37,10 @@ export default class SampleControls extends React.Component {
   toogleLight(name) {
     let lighStatus = this.props.sampleViewState.lightOn[name];
     if (lighStatus) {
-        this.props.sampleActions.sendLightOff(name);
-      } else {
-        this.props.sampleActions.sendLightOn(name);
-      }
+      this.props.sampleActions.sendLightOff(name);
+    } else {
+      this.props.sampleActions.sendLightOn(name);
+    }
   }
 
 
