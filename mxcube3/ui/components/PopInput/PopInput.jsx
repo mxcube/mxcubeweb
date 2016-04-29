@@ -41,28 +41,26 @@ export default class PopInput extends React.Component {
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
     this.anim_class = '';
-    this.state = { value: '' };
-    this._updateValueState(this.props.data.value);
-  }
-
-
-  componentDidMount() {
-    this._updateValueState(this.props.data.value);
   }
 
 
   componentWillReceiveProps(nextProps) {
-    this._updateValueState(nextProps.data.value);
-
-    if (nextProps.data.state === 'BUSY') {
-      this.handleBusy();
-    } else if (nextProps.data.state === 'IDLE') {
-      this.handleIdle(nextProps.data);
-    } else if (nextProps.data.state === 'ABORTED') {
-      this.handleError(nextProps.data);
-    } else {
-      this.handleError(nextProps.data);
+    if (nextProps.data.state !== this.props.data.state) {
+      if (nextProps.data.state === 'BUSY') {
+        this.handleBusy();
+      } else if (nextProps.data.state === 'IDLE') {
+        this.handleIdle(nextProps.data);
+      } else if (nextProps.data.state === 'ABORTED') {
+        this.handleError(nextProps.data);
+      } else {
+        this.handleError(nextProps.data);
+      }
     }
+  }
+
+
+  shouldComponentUpdate(nextProps) {
+    return nextProps.data !== this.props.data;
   }
 
 
@@ -96,19 +94,21 @@ export default class PopInput extends React.Component {
   }
 
 
-  setDisplayValue(value) {
-    this._updateValueState(value);
-  }
-
-
-  _updateValueState(value) {
-    this.setState({ value: `${value} ${this.props.suffix}` });
+  handleState(data) {
+    if (data.state === 'BUSY') {
+      this.handleBusy();
+    } else if (data.state === 'IDLE') {
+      this.handleIdle(data);
+    } else if (data.state === 'ABORTED') {
+      this.handleError(data);
+    } else {
+      this.handleError(data);
+    }
   }
 
 
   handleIdle(data) {
     this.anim_class = 'value-label-enter-success';
-
     // No message to display to user, hide overlay
     if (data.msg === '') {
       this.refs.overlay.hide();
@@ -215,10 +215,11 @@ export default class PopInput extends React.Component {
           <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
             overlay={popover}
           >
-            <a ref="valueLabel" key="valueLabel" href="javascript:void(0);"
+            <span ref="valueLabel" key="valueLabel"
               className={`${linkClass} ${this.anim_class}`}
-              dangerouslySetInnerHTML={{ __html: this.state.value }}
-            />
+            >
+              {this.props.data.value} {this.props.suffix}
+            </span>
           </OverlayTrigger>
         </span>
       </div>
@@ -239,5 +240,5 @@ PopInput.defaultProps = {
   pkey: undefined,
   onSave: undefined,
   onCancel: undefined,
-  data: { value: 0 , state: 'ABORTED', msg:''}
+  data: { value: 0, state: 'ABORTED', msg: '' }
 };
