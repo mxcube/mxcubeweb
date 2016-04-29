@@ -224,8 +224,10 @@ def moveToCentredPosition(id):
         :statuscode: 409: error
     """
     motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('posId') == int(id)]
+    if 'kappa' in motorPositions[0]: motorPositions[0].pop('kappa')
+    if 'kappa_phi' in motorPositions[0]: motorPositions[0].pop('kappa_phi')
     try:
-        mxcube.diffractometer.moveToCentredPosition(motorPositions)
+        mxcube.diffractometer.move_to_motors_positions(motorPositions[0]) # moveToCentredPosition(motorPositions)
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
         return Response(status=200)
     except Exception:

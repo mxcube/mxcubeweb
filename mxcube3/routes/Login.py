@@ -124,6 +124,44 @@ def get_initial_state():
             'imageWidth':  mxcube.diffractometer.image_width,
             'imageHeight':  mxcube.diffractometer.image_height,
             }
+
+        try:
+            data['useSC'] = mxcube.diffractometer.use_sc  
+        except AttributeError:
+            data['useSC'] = False # in case the diff does not have this implemented
+            
+        beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+        data['beamInfo'] = {}
+
+        if beamInfo is None:
+             logging.getLogger('HWR').error("beamInfo is not defined")
+        try:
+            beamInfoDict = beamInfo.get_beam_info()
+        except Exception:
+            pass
+        try:
+            aperture = mxcube.diffractometer.getObjectByRole('aperture')
+            aperture_list = aperture.getPredefinedPositionsList()
+            currentAperture = aperture.getCurrentPositionName()
+            data['beamInfo'].update({'apertureList' : aperture_list,
+                                'currentAperture' : currentAperture
+                                })
+        except Exception:
+            logging.getLogger('HWR').exception('could not get all Aperture hwobj')
+
+        data['beamInfo'].update({'position': beamInfo.get_beam_position(),
+                                'shape': beamInfoDict["shape"],
+                                'size_x': beamInfoDict["size_x"],
+                                'size_y': beamInfoDict["size_y"]
+                            })
+        except Exception:
+             logging.getLogger('HWR').error("Error retrieving beam info")
+
+        try:
+            data['current_phase'] = mxcube.diffractometer.current_phase
+        except AttributeError:
+            data['current_phase'] =  'None' # in case the diff does not have this implemented
+
         resp = jsonify(data)
         resp.status_code = 200
         return resp
