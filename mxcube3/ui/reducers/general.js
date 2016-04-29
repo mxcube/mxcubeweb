@@ -1,7 +1,10 @@
 const initialState = {
     loading: false,
     showErrorPanel:false,
-    errorMessage: ""
+    errorMessage: "",
+    dialogMessage: "",
+    dialogTitle: "",
+    showDialog:false
 }
 
 export default (state=initialState, action) => {
@@ -13,6 +16,10 @@ export default (state=initialState, action) => {
         case 'SHOW_ERROR_PANEL':
             {
              return {...state, showErrorPanel : action.show, errorMessage : action.message}
+            }
+        case 'SHOW_DIALOG':
+            {
+            return {...state, showDialog : action.show, dialogTitle: action.title, dialogMessage : action.message }
             }
         default:
             return state
