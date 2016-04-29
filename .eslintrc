@@ -4,7 +4,12 @@
     "browser": true,
     "node": true
   },
-
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+  },
   "rules": {
     'react/prop-types': [0, { 'ignore': [], 'customValidators': [] }],
     'comma-dangle': [0, 'always-multiline'],
