@@ -167,4 +167,6 @@
     width: 80px !important;
 }
 
-
+.inline{ 
+  display: inline;
+}

@@ -1,6 +1,5 @@
 'use strict';
-import React from 'react'
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import React from 'react';
 
 export default class MotorInput extends React.Component {
 
@@ -27,14 +26,9 @@ export default class MotorInput extends React.Component {
     const valueCropped = value.toFixed(decimalPoints);
 
     return (
-              <div className="form-inline">
-                <div className="form-group">
-                  <form onSubmit={this.handleKey} noValidate>
-                    <input className="form-control input-sm" onKeyUp={this.handleKey} onClick={this.handleClick} type="number" step={step} defaultValue={valueCropped} name={motorName}/>
-                  </form>
-                </div>
-              </div>
-
+          <form className="inline form-inline form-group" onSubmit={this.handleKey} noValidate>
+              <input className="form-control input-sm" onKeyUp={this.handleKey} onClick={this.handleClick} type="number" step={step} defaultValue={valueCropped} name={motorName}/>
+          </form>
       );
   }
 }
