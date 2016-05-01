@@ -49,7 +49,10 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-        mxcube.queue = jsonpickle.decode(session.get("queueList"))
+	try:
+            mxcube.queue = jsonpickle.decode(session.get("queueList"))
+    	except Exception:
+	    logging.getLogger('HWR').error("Error retrieving saved queue from the session")
     return jsonify(convert_to_dict(loginRes))
 
 @mxcube.route("/mxcube/api/v0.1/signout")
