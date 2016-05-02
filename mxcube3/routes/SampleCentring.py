@@ -12,17 +12,27 @@ import signals
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
-posId = 1
 
 def init_signals():
     for signal in signals.microdiffSignals:
-        mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
-    #camera_hwobj = mxcube.diffractometer.getObjectByRole("camera")
+        if signal in signals.motor_signals:
+            mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.motor_event_callback)
+        elif signal in signals.task_signals:
+            mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.task_event_callback)
+        else:
+            pass
+
+    frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+    frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)
+    backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+    backlight_hwobj.connect(backlight_hwobj, 'positionChanged', signals.motor_event_callback)
+        #mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
     mxcube.diffractometer.savedCentredPos = []
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
+    mxcube.diffractometer.savedCentredPosCount = 1
 
 ############
 
@@ -214,8 +224,10 @@ def moveToCentredPosition(id):
         :statuscode: 409: error
     """
     motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('posId') == int(id)]
+    if 'kappa' in motorPositions[0]: motorPositions[0].pop('kappa')
+    if 'kappa_phi' in motorPositions[0]: motorPositions[0].pop('kappa_phi')
     try:
-        mxcube.diffractometer.moveToCentredPosition(motorPositions)
+        mxcube.diffractometer.move_to_motors_positions(motorPositions[0]) # moveToCentredPosition(motorPositions)
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
         return Response(status=200)
     except Exception:
@@ -509,8 +521,7 @@ def waitForCentringFinishes(*args, **kwargs):
                 return
 
         #if no temp point found, let's create the first one
-        global posId
-        centredPosId = 'pos' + str(posId) # pos1, pos2, ..., pos42
+        centredPosId = 'pos' + str(mxcube.diffractometer.savedCentredPosCount) # pos1, pos2, ..., pos42
         data = {'name': centredPosId,
             'posId': posId,
             'motorPositions': motorPositions,
@@ -519,7 +530,7 @@ def waitForCentringFinishes(*args, **kwargs):
             'x': x,
             'y': y 
             }
-        posId += 1
+        mxcube.diffractometer.savedCentredPosCount += 1
         mxcube.diffractometer.savedCentredPos.append(data)
         mxcube.diffractometer.emit('minidiffStateChanged', (True,))
 
