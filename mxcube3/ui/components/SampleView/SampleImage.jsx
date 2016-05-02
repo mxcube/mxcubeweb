@@ -5,6 +5,11 @@ import {makeCircle, makeLine, makeBeam, makeText} from './shapes'
 
 export default class SampleImage extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.setImageRatio = this.setImageRatio.bind(this);
+    }
+
     componentDidMount(){
         // Create fabric and set image background to sample
         var canvas = new fabric.Canvas('canvas');
@@ -12,52 +17,61 @@ export default class SampleImage extends React.Component {
         // Bind leftClick to function
         canvas.on('mouse:down', (option) => this.leftClick(option));
 
-          // Bind rigth click to functions, this is not supported by fabric.js and has to be added manually with javascript
+        // Bind rigthclick to functions, this is not supported by fabric.js and has to be added manually with javascript
         document.getElementById('insideWrapper').addEventListener('contextmenu', (e) => this.rightClick(e,canvas), false);
+
+        //Add so that the canvas will resize if the window changes size
+        window.addEventListener('resize', this.setImageRatio);
+        this.setImageRatio();
 
         //Bind canvas to state, this is done to let other functions manipulate the canvas such as removing objecs
         this.props.sampleActions.setCanvas(canvas);
-
-        // Draw canvas and set img size depending on screen size
-        let imageRatio = this.drawCanvas(canvas);
-        this.renderPoints(this.props.shapeList, canvas, imageRatio);
-        this.drawImageOverlay(canvas, imageRatio);
-
-        window.addEventListener('resize', () => this.drawCanvas(canvas));
-
     }
+
+    componentWillUnmount() {
+        // Important to remove listener if component isn't active
+        window.removeEventListener('resize', this.setImageRatio);
+    }
+    
 
     componentWillReceiveProps(nextProps){
-        this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio);
-        this.drawImageOverlay(nextProps.canvas, nextProps.imageRatio, nextProps.currentAperture);
+        this.renderSampleView(nextProps);
     }
 
-    drawCanvas(canvas){
-
+    setImageRatio(){
         const ratioWidthHeigth = this.props.imageWidth/this.props.imageHeight;
+        var w = document.getElementById('outsideWrapper').clientWidth;
+        let imageRatio = this.props.imageWidth/w;
+        this.props.sampleActions.setImageRatio(imageRatio);
+    }
+
+    renderSampleView(nextProps){
+        this.drawCanvas(nextProps.canvas, nextProps.imageRatio);
+        this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio);
+        this.drawImageOverlay(nextProps.canvas, nextProps.imageRatio, nextProps.currentAperture);
+
+    }
+
+    drawCanvas(canvas, imageRatio){
 
         //Getting the size of screen
-        var w = document.getElementById('outsideWrapper').clientWidth;
-        var h = w/ratioWidthHeigth;
+        var w = this.props.imageWidth / imageRatio;
+        var h = this.props.imageHeight / imageRatio;
 
-        //Canvas
+        //Set the size of the original html Canvas
         var canvasWindow = document.getElementById('canvas');
         canvasWindow.width = w;
         canvasWindow.height = h;
 
-        //FabricJS
+        //Set the size of the created FabricJS Canvas
         canvas.setDimensions({width: w, height: h});
         canvas.renderAll();
+        canvas.clear();
 
-        //Image from MD2
+        //Set size of the Image from MD2
         document.getElementById("sample-img").style.height = h + "px";
         document.getElementById("sample-img").style.width = w + "px";
         document.getElementById("insideWrapper").style.height = h + "px";
-
-        let imageRatio = this.props.imageHeight/h;
-        this.props.sampleActions.setImageRatio(imageRatio);
-
-        return imageRatio;
     }
 
     drawImageOverlay(canvas, imageRatio, currentAperture){
@@ -71,14 +85,15 @@ export default class SampleImage extends React.Component {
 
 
     rightClick(e, canvas){
-        this.props.sampleActions.showContextMenu(false);
+        if(this.props.contextMenuShow){
+            this.props.sampleActions.showContextMenu(false);
+        }        
         var objectFound = false;
         var clickPoint = new fabric.Point(e.offsetX, e.offsetY);
         e.preventDefault();
         canvas.forEachObject((obj) => {
             if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
               objectFound = true;
-              canvas.setActiveObject(obj);
               this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
             }
         });
@@ -94,10 +109,7 @@ export default class SampleImage extends React.Component {
         }
     }
 
-
-
     renderPoints(points, canvas, imageRatio){ 
-        canvas.clear();
         for(let id in points){
           switch (points[id].type){
             case "SAVED":
@@ -111,7 +123,6 @@ export default class SampleImage extends React.Component {
           }
         } 
     }
-
 
   render() {
     return (
