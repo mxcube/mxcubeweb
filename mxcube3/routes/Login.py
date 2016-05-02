@@ -146,11 +146,13 @@ def get_initial_state():
             aperture = mxcube.diffractometer.getObjectByRole('aperture')
             aperture_list = aperture.getPredefinedPositionsList()
             currentAperture = aperture.getCurrentPositionName()
-            data['beamInfo'].update({'apertureList' : aperture_list,
-                                'currentAperture' : currentAperture
-                                })
         except Exception:
             logging.getLogger('HWR').exception('could not get all Aperture hwobj')
+            aperture_list = []
+            currentAperture = None
+ 
+        data['beamInfo'].update({'apertureList' : aperture_list,
+                                'currentAperture' : currentAperture })
         
         try:
             data['beamInfo'].update({'position': beamInfo.get_beam_position(),
