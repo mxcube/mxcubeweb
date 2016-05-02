@@ -49,7 +49,7 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-        mxcube.queue = jsonpickle.decode(session.get("queueList"))
+        mxcube.queue = jsonpickle.decode(session.get("queueList", "{}"))
     return jsonify(convert_to_dict(loginRes))
 
 @mxcube.route("/mxcube/api/v0.1/signout")
