@@ -1,3 +1,6 @@
+import 'fabric';
+var fabric = window['fabric'];
+
 export function makeCircle(x, y, id = "no id", color = "red", type = "TMP") {
   return new fabric.Circle({
     radius: 10, 
