@@ -2,6 +2,8 @@
 import './SampleView.css';
 import React from 'react'
 import {makeCircle, makeLine, makeBeam, makeText} from './shapes'
+import 'fabric';
+var fabric = window['fabric'];
 
 export default class SampleImage extends React.Component {
 
