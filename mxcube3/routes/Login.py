@@ -49,7 +49,7 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-        mxcube.queue = jsonpickle.decode(session.get("queueList"))
+        mxcube.queue = jsonpickle.decode(session.get("queueList", "{}"))
     return jsonify(convert_to_dict(loginRes))
 
 @mxcube.route("/mxcube/api/v0.1/signout")
@@ -146,11 +146,13 @@ def get_initial_state():
             aperture = mxcube.diffractometer.getObjectByRole('aperture')
             aperture_list = aperture.getPredefinedPositionsList()
             currentAperture = aperture.getCurrentPositionName()
-            data['beamInfo'].update({'apertureList' : aperture_list,
-                                'currentAperture' : currentAperture
-                                })
         except Exception:
             logging.getLogger('HWR').exception('could not get all Aperture hwobj')
+            aperture_list = []
+            currentAperture = None
+ 
+        data['beamInfo'].update({'apertureList' : aperture_list,
+                                'currentAperture' : currentAperture })
         
         try:
             data['beamInfo'].update({'position': beamInfo.get_beam_position(),
