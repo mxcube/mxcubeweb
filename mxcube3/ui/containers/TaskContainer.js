@@ -31,7 +31,7 @@ function mapStateToProps(state) {
     pointId: state.taskForm.pointId,
     defaultParameters: state.taskForm.defaultParameters,
     manualMountID: state.samples_grid.manualMount.id,
-    currentPhase: state.sampleview.currentPhase
+    currentPhase: state.sampleview.currentPhase,
     apertureList: state.sampleview.apertureList
   };
 }

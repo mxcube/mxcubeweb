@@ -97,6 +97,7 @@ export default class SampleImage extends React.Component {
           this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
         }
     });
+  }
 
   leftClick(option) {
     if (this.props.contextMenuShow) {
@@ -119,7 +120,8 @@ export default class SampleImage extends React.Component {
           break;
         default:
           throw new Error("Server gave point with unknown type"); 
-     }
+      }
+    }
   } 
 
   render() {
