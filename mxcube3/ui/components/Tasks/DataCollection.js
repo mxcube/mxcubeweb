@@ -1,55 +1,50 @@
 'use strict';
 
-import React from 'react'
-import {reduxForm} from 'redux-form';
+import React from 'react';
+import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 
 
 class DataCollection extends React.Component {
-
-
   constructor(props) {
-        super(props);
-        this.runNow = this.handleSubmit.bind(this, true);
-        this.addToQueue = this.handleSubmit.bind(this, false);
+    super(props);
+    this.runNow = this.handleSubmit.bind(this, true);
+    this.addToQueue = this.handleSubmit.bind(this, false);
   }
 
-    handleSubmit(runNow){
+  handleSubmit(runNow) {
+    let parameters = {
+      ...this.props.values,
+      Type : 'DataCollection',
+      point : this.props.pointId
+    };
+    if (this.props.sampleIds.constructor == Array) {
 
+      this.props.sampleIds.map((sampleId) => {
 
-        let parameters = {
-            ...this.props.values,
-            Type : "DataCollection",
-            point : this.props.pointId
-        };
-        if (this.props.sampleIds.constructor == Array){
+        let queueId = this.props.lookup[sampleId];
 
-            this.props.sampleIds.map((sampleId) =>{
-
-                let queueId = this.props.lookup[sampleId];
-
-                if (queueId) {
-                    this.props.addTask(queueId, sampleId, parameters);
-                } else {
+        if (queueId) {
+          this.props.addTask(queueId, sampleId, parameters);
+        } else {
                     // the sample is not in queue yet
-                    this.props.addSampleAndTask(sampleId, parameters);
-                }  
-            });
-          
-        }else{
-            let sample_queue_id = this.props.lookup[ this.props.sampleIds];
-            this.props.changeTask(this.props.taskData.queue_id, sample_queue_id,this.props.sampleIds, parameters, runNow);
+          this.props.addSampleAndTask(sampleId, parameters);
         }
+      });
 
-        this.props.hide();
+    } else {
+      let sample_queue_id = this.props.lookup[this.props.sampleIds];
+      this.props.changeTask(this.props.taskData.queue_id, sample_queue_id, this.props.sampleIds, parameters, runNow);
     }
 
+    this.props.hide();
+  }
 
-    render() {
 
-        const {fields: {num_images, first_image, exp_time, resolution, osc_start , energy, osc_range, transmission, shutterless, inverse_beam,centringMethod, detector_mode, kappa, kappa_phi, space_group, prefix, run_number, beam_size }} = this.props;
+  render() {
+    const {fields: {num_images, first_image, exp_time, resolution, osc_start , energy, osc_range, transmission, shutterless, inverse_beam,centringMethod, detector_mode, kappa, kappa_phi, space_group, prefix, run_number, beam_size }} = this.props;
 
-        return (
+    return (
         <Modal show={this.props.show} onHide={this.props.hide}>
             <Modal.Header closeButton>
                 <Modal.Title>Standard Collection</Modal.Title>
@@ -141,7 +136,7 @@ class DataCollection extends React.Component {
 
                         <label className="col-sm-3 control-label">Detector mode:</label>
                         <div className="col-sm-3">
-                             <select className="form-control"  {...detector_mode}>
+                             <select className="form-control" {...detector_mode}>
                                 <option value="0">0</option>
                                 <option value="C18">C18</option>
                                 <option value="C2">C2</option>
@@ -207,7 +202,7 @@ class DataCollection extends React.Component {
                             <input type="number" className="form-control" {...run_number}/>
                         </div>
 
-                    </div>                     
+                    </div>
 
                     <h5>Processing</h5>
                     <hr />
@@ -239,7 +234,7 @@ class DataCollection extends React.Component {
 
                         <label className="col-sm-2 control-label">b:</label>
                         <div className="col-sm-2">
-                            <input type="number" className="form-control"/>
+                            <input type="number" className="form-control" />
                         </div>
 
                         <label className="col-sm-2 control-label">c:</label>
@@ -250,7 +245,7 @@ class DataCollection extends React.Component {
                         <label className="col-sm-2 control-label"> &alpha;:</label>
                         <div className="col-sm-2">
                             <input type="number" className="form-control" />
-                        </div>                                                
+                        </div>
 
                         <label className="col-sm-2 control-label">  &beta;:</label>
                         <div className="col-sm-2">
@@ -266,20 +261,20 @@ class DataCollection extends React.Component {
                 </form>
             </Modal.Body>
             <Modal.Footer>
-          <div className={this.props.pointId === -1 ? "pull-left" : "hidden"}>
+          <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
             <label className="centring-method">
-              <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'}/> Lucid Only  
+              <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'} /> Lucid Only
             </label>
             <label className="centring-method">
-              <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'}/> X-ray Centring 
+              <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'} /> X-ray Centring
             </label>
           </div>
-              <button type="button" className={this.props.pointId !== -1 ? "btn btn-success" : "hidden"} onClick={this.runNow}>Run Now</button>
-              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? "Change": "Add to Queue"}</button>
+              <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
+              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? 'Change' : 'Add to Queue'}</button>
             </Modal.Footer>
         </Modal>
         );
-    }
+  }
 }
 
 DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
