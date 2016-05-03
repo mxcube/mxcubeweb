@@ -7,6 +7,14 @@ const initialState = {
   width: 0,
   height: 0,
   lightOn: {back: false, front: false},
+  motorSteps: {
+    FocusStep: 0.1, 
+    PhiStep: 90, 
+    PhiYStep: 0.1, 
+    PhiZStep: 0.1, 
+    SampxStep: 0.1, 
+    SampyStep: 0.1, 
+  },
   motors: {},
   pixelsPerMm: 0,
   imageRatio: 0,
@@ -83,13 +91,17 @@ export default (state=initialState, action) => {
             {
                 return {...state, currentPhase: action.phase };
             }
-         case 'MOUNT_SAMPLE':
+        case 'MOUNT_SAMPLE':
             {
                 return {...state, points: {} };
             }
-         case 'UNMOUNT_SAMPLE':
+        case 'UNMOUNT_SAMPLE':
             {
                 return {...state, points: {} };
+            }
+        case 'SET_STEP_SIZE':
+            {
+                return {...state, motorSteps: {...state.motorSteps, [action.name]: action.value }};
             }
         case 'SET_INITIAL_STATUS':
             {

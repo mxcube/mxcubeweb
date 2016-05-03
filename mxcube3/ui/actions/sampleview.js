@@ -37,6 +37,12 @@ export function setLight(name, on) {
   }
 }
 
+export function setStepSize(name, value) {
+  return { 
+    type: "SET_STEP_SIZE", name, value
+  }
+}
+
 export function showContextMenu(show, shape={type: "NONE"} , x=0, y=0) {
   return { 
     type: "SHOW_CONTEXT_MENU",

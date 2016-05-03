@@ -28,11 +28,6 @@
     border: 1px solid #AAA;
     border-radius: 3px;
     box-shadow: 0px 2px 3px 0px #AAA;
-    height: 45px;
-}
-
-.sample-controlls-top{
-    margin-bottom: 10px;
 }
 
 .sample-controlls-bottom{
@@ -44,6 +39,7 @@
     font-size: 1.0em;
     margin-bottom: 0px;
     margin-left: 5px;
+    font-weight: bold;
 }
 .motor-value{
     font-size: 1.0em;
@@ -117,6 +113,9 @@
     color: grey !important;
 }
 
+.motor-step{
+    font-size: 0.7em;
+}
 
 
 
@@ -169,4 +168,15 @@
 
 .inline{ 
   display: inline;
+}
+.step-size .popinput-input-label {
+    min-width: 0px;
+}
+
+.step-size .popinput-input-value  {
+    min-width: 0px;
+}
+
+.step-size span{
+    font-size:11px;
 }

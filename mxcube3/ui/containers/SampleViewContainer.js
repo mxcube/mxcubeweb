@@ -10,20 +10,24 @@ import * as SampleActions from '../actions/samples_grid';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
+import SampleQueueContainer from './SampleQueueContainer';
+
 
 class SampleViewContainer extends Component {
 
   render() {
     const { show, shape, x, y } = this.props.sampleViewState.contextMenu;
-    const { width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture, motors } = this.props.sampleViewState;
-    const { sendMotorPosition } = this.props.sampleViewActions;
+    const { width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture, motors, motorSteps } = this.props.sampleViewState;
+    const { sendMotorPosition, setStepSize } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
 
     return (
       <div className="row">
         <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters} />
+        <div className="col-xs-1">
+            <MotorControl save={sendMotorPosition} saveStep={setStepSize} motors={motors} steps={motorSteps} />
+        </div>
         <div className="col-xs-8">
-            <MotorControl save={sendMotorPosition} motors={motors} />
             <SampleImage
               sampleActions={this.props.sampleViewActions}
               imageHeight={height}
@@ -38,8 +42,9 @@ class SampleViewContainer extends Component {
             />
             <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>
-        <div className="col-xs-4">
+        <div className="col-xs-3">
           <BeamlineSetupContainer />
+          <SampleQueueContainer/>
         </div>
       </div>
     );

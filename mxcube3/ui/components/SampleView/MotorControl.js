@@ -1,88 +1,133 @@
 
-'use strict';
 import React from 'react';
 import MotorInput from './MotorInput';
 
-class MotorControl extends React.Component {
+export default class MotorControl extends React.Component {
 
-    render() { 
-        const {Phi, PhiY, PhiZ, Focus} = this.props.motors;
+    render() {
+        const { Phi, PhiY, PhiZ, Focus, Sampx, Sampy } = this.props.motors;
+        const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampxStep, SampyStep } = this.props.steps;
         const save = this.props.save;
+        const saveStep = this.props.saveStep;
 
         return (
-       
-        <div className="sample-controlls sample-controlls-top">
 
             <div className="row">
 
-                <div className="col-sm-2">
-                    <span className="motor-name">Omega: </span>
-                    <MotorInput 
-                        title="Omega" 
-                        save={save} 
-                        value={Phi.position} 
-                        motorName="Phi" 
-                        step="90" 
-                        suffix="&deg;"
-                        decimalPoints="2"
+                <div className="col-sm-12">
+                    <p className="motor-name">Omega: </p>
+                    <MotorInput
+                      save={save}
+                      saveStep={saveStep}
+                      step={PhiStep}
+                      value={Phi.position}
+                      motorName="Phi"
+                      suffix="&deg;"
+                      decimalPoints="2"
+                      state={Phi.Status}
                     />
                 </div>
 
-                <div className="col-sm-2">
-                    <span className="motor-name">Kappa: </span>
+                <div className="col-sm-12">
+                    <p className="motor-name">Kappa: </p>
+                    <MotorInput
+                      save={save}
+                      saveStep={saveStep}
+                      step="0.1"
+                      value={0}
+                      motorName="Kappa"
+                      suffix="mm"
+                      decimalPoints="2"
+                      state="3"
+                    />
                 </div>
 
-                <div className="col-sm-2">
-                    <span className="motor-name">Phi: </span>
-
+                <div className="col-sm-12">
+                    <p className="motor-name">Phi: </p>
+                    <MotorInput
+                      save={save}
+                      saveStep={saveStep}
+                      step="0.1"
+                      value={0}
+                      motorName="Phi"
+                      suffix="mm"
+                      decimalPoints="2"
+                      state="3"
+                    />
                 </div>
 
-                <div className="col-sm-2">
-                    <span className="motor-name">Y: </span>
-                    <MotorInput 
-                        title="Y" 
-                        save={save} 
-                        value={PhiY.position} 
-                        motorName="PhiY" 
-                        step="0.1" 
-                        suffix="mm"
-                        decimalPoints="2"
-                    />                    
+                <div className="col-sm-12">
+                    <p className="motor-name">Y: </p>
+                    <MotorInput
+                      save={save}
+                      value={PhiY.position}
+                      saveStep={saveStep}
+                      step={PhiYStep}
+                      motorName="PhiY"
+                      suffix="mm"
+                      decimalPoints="2"
+                      state={PhiY.Status}
+                    />
                 </div>
 
-                <div className="col-sm-2">
-                    <span className="motor-name">Z: </span>
-                    <MotorInput 
-                        title="Z" 
-                        save={save} 
-                        value={PhiZ.position} 
-                        motorName="PhiZ" 
-                        step="0.1" 
-                        suffix="mm"
-                        decimalPoints="2"
-                    />   
+                <div className="col-sm-12">
+                    <p className="motor-name">Z: </p>
+                    <MotorInput
+                      save={save}
+                      value={PhiZ.position}
+                      saveStep={saveStep}
+                      step={PhiZStep}
+                      motorName="PhiZ"
+                      suffix="mm"
+                      decimalPoints="2"
+                      state={PhiZ.Status}
+                    />
                 </div>
 
-               <div className="col-sm-2">
-                    <span className="motor-name">Focus: </span>
-                    <MotorInput 
-                        title="Focus" 
-                        save={save} 
-                        value={Focus.position} 
-                        motorName="Focus" 
-                        step="0.1" 
-                        suffix="mm"
-                        decimalPoints="2"
-                    />                    
+               <div className="col-sm-12">
+                    <p className="motor-name">Focus: </p>
+                    <MotorInput
+                      save={save}
+                      value={Focus.position}
+                      saveStep={saveStep}
+                      step={FocusStep}
+                      motorName="Focus"
+                      suffix="mm"
+                      decimalPoints="2"
+                      state={Focus.Status}
+                    />
+                </div>
+
+                <div className="col-sm-12">
+                    <p className="motor-name">SampX: </p>
+                    <MotorInput
+                      save={save}
+                      value={Sampx.position}
+                      saveStep={saveStep}
+                      step={SampxStep}
+                      motorName="SampX"
+                      suffix="mm"
+                      decimalPoints="2"
+                      state={Sampx.Status}
+                    />
+                </div>
+
+               <div className="col-sm-12">
+                    <p className="motor-name">SampY: </p>
+                    <MotorInput
+                      save={save}
+                      value={Sampy.position}
+                      saveStep={saveStep}
+                      step={SampyStep}
+                      motorName="SampX"
+                      suffix="mm"
+                      decimalPoints="2"
+                      state={Sampy.Status}
+                    />
                 </div>
 
             </div>
 
-        </div>
-
         );
     }
 }
-
-export default MotorControl;
-
