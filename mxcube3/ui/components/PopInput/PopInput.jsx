@@ -90,6 +90,22 @@ export default class PopInput extends React.Component {
       // Only update if value actually changed
       this.props.onSave(this.props.pkey, value);
     }
+    if(this.props.data.state === 'IMMEDIATE'){
+      this.refs.overlay.hide();
+    }
+  }
+
+
+  handleState(data) {
+    if (data.state === 'BUSY') {
+      this.handleBusy();
+    } else if (data.state === 'IDLE') {
+      this.handleIdle(data);
+    } else if (data.state === 'ABORTED') {
+      this.handleError(data);
+    } else {
+      this.handleIdle(data);
+    }
   }
 
 

@@ -37,7 +37,7 @@ export default class DefaultInput extends React.Component {
 
   render() {
     return (
-      <form ref="popinput-form" className="form-inline" onSubmit={this.submit}>
+      <form ref="popinput-form" className="form-inline" onSubmit={this.submit} noValidate>
         <Input ref="input" type={this.props.dataType} style={{ width: this.props.inputSize }}
           placeholder="" className="input-sm" defaultValue={this.props.value}
         />
