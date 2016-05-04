@@ -1,8 +1,8 @@
 {
   "scripts": {
     "start": "npm run dev",
-    "dev": "./node_modules/.bin/webpack-dev-server --hot --inline --colors --host 0.0.0.0 --port 8090 --display-error-details --content-base mxcube3/ui",
-    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.config.js",
+    "dev": "NODE_ENV=production ./node_modules/.bin/webpack-dev-server --hot --inline --colors --host 0.0.0.0 --port 8090 --display-error-details --content-base mxcube3/ui",
+    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js",
     "esformatter": "./node_modules/.bin/esformatter",
     "lint": "eslint . --ext .js --ext .jsx",
     "postinstall": "npm install fabric --no-optional"
@@ -67,6 +67,7 @@
     "extract-text-webpack-plugin": "0.9.1",
     "file-loader": "^0.8.4",
     "http-server": "0.8.5",
+    "image-webpack-loader": "^1.8.0",
     "img-loader": "1.2.0",
     "imports-loader": "0.6.5",
     "json5": "0.4.0",
