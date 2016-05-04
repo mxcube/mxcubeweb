@@ -3,6 +3,7 @@ from mxcube3 import app as mxcube
 from PIL import Image, ImageDraw, ImageFont
 
 import time
+import copy
 import logging
 import collections
 import gevent.event
@@ -227,7 +228,7 @@ def moveToCentredPosition(id):
     if 'kappa' in motorPositions[0]: motorPositions[0].pop('kappa')
     if 'kappa_phi' in motorPositions[0]: motorPositions[0].pop('kappa_phi')
     try:
-        mxcube.diffractometer.move_to_motors_positions(motorPositions[0]) # moveToCentredPosition(motorPositions)
+        mxcube.diffractometer.move_to_motors_positions(copy.deepcopy(motorPositions[0]))
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
         return Response(status=200)
     except Exception:
@@ -523,7 +524,7 @@ def waitForCentringFinishes(*args, **kwargs):
         #if no temp point found, let's create the first one
         centredPosId = 'pos' + str(mxcube.diffractometer.savedCentredPosCount) # pos1, pos2, ..., pos42
         data = {'name': centredPosId,
-            'posId': posId,
+            'posId': mxcube.diffractometer.savedCentredPosCount,
             'motorPositions': motorPositions,
             'selected': True,
             'type': 'TMP',
