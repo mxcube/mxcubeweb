@@ -2,6 +2,8 @@ import React from 'react';
 
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { STATE } from '../../actions/beamline_atypes';
+
 
 import DefaultInput from './DefaultInput';
 import DefaultBusy from './DefaultBusy';
@@ -40,17 +42,14 @@ export default class PopInput extends React.Component {
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
-    this.anim_class = '';
   }
 
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.data.state !== this.props.data.state) {
-      if (nextProps.data.state === 'BUSY') {
-        this.handleBusy();
-      } else if (nextProps.data.state === 'IDLE') {
+      if (this.isIdle()) {
         this.handleIdle(nextProps.data);
-      } else if (nextProps.data.state === 'ABORTED') {
+      } else if (this.isAborted()) {
         this.handleError(nextProps.data);
       } else {
         this.handleError(nextProps.data);
@@ -94,21 +93,7 @@ export default class PopInput extends React.Component {
   }
 
 
-  handleState(data) {
-    if (data.state === 'BUSY') {
-      this.handleBusy();
-    } else if (data.state === 'IDLE') {
-      this.handleIdle(data);
-    } else if (data.state === 'ABORTED') {
-      this.handleError(data);
-    } else {
-      this.handleError(data);
-    }
-  }
-
-
   handleIdle(data) {
-    this.anim_class = 'value-label-enter-success';
     // No message to display to user, hide overlay
     if (data.msg === '') {
       this.refs.overlay.hide();
@@ -116,14 +101,8 @@ export default class PopInput extends React.Component {
   }
 
 
-  handleBusy() {
-    this.anim_class = 'value-label-enter-loading';
-  }
-
 
   handleError(data) {
-    this.anim_class = 'value-label-enter-error';
-
     // No message to display to user, hide overlay
     if (data.msg === '') {
       this.refs.overlay.hide();
@@ -137,11 +116,12 @@ export default class PopInput extends React.Component {
 
 
   cancel() {
+    # Calling cancel when "aborted" changes state, why ?
     if (this.props.onCancel !== undefined) {
       this.props.onCancel(this.props.pkey);
     }
 
-    if (this.props.data.status !== 'BUSY') {
+    if (!this.isBusy()) {
       this.refs.overlay.hide();
     }
   }
@@ -160,11 +140,7 @@ export default class PopInput extends React.Component {
                     onCancel: this.cancel,
                     onSave: this.save };
 
-    let input = (
-      <DefaultInput
-        dataType={this.props.dataType}
-        inputSize={this.props.inputSize}
-      />);
+    let input = (<DefaultInput dataType={this.props.dataType} inputSize={this.props.inputSize} />);
 
     input = this.getChild('input') || input;
     input = React.cloneElement(input, props);
@@ -185,7 +161,18 @@ export default class PopInput extends React.Component {
 
 
   isBusy() {
-    return this.props.data.state === 'BUSY';
+    return this.props.data.state === STATE.BUSY;
+  }
+
+
+  isIdle() {
+    return this.props.data.state === STATE.IDLE;
+  }
+
+
+  isAborted() {
+    debugger;
+    return this.props.data.state === STATE.ABORT;
   }
 
 
@@ -194,6 +181,14 @@ export default class PopInput extends React.Component {
     const busyVisibility = this.isBusy() ? '' : 'hidden';
     const inputVisibility = !this.isBusy() ? '' : 'hidden';
     const title = (this.props.title === '') ? this.props.name : this.props.title;
+    
+    let stateClass = '';
+
+    if(this.isBusy()) {
+      stateClass = 'value-label-enter-loading';
+    } else if(this.isAborted()){
+      stateClass = 'value-label-enter-error';      
+    }
 
     const popover = (
       <Popover title={title}>
@@ -215,11 +210,9 @@ export default class PopInput extends React.Component {
           <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
             overlay={popover}
           >
-            <span ref="valueLabel" key="valueLabel"
-              className={`${linkClass} ${this.anim_class}`}
-            >
+            <a ref="valueLabel" key="valueLabel" className={`${linkClass} ${stateClass}`}>
               {this.props.data.value} {this.props.suffix}
-            </span>
+            </a>
           </OverlayTrigger>
         </span>
       </div>
