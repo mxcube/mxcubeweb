@@ -15,6 +15,8 @@ SAMPLE_IMAGE = None
 CLICK_COUNT = 0
 
 def init_signals():
+    mxcube.diffractometer.savedCentredPos = []
+    mxcube.diffractometer.savedCentredPosCount = 1
     for signal in signals.microdiffSignals:
         if signal in signals.motor_signals:
             mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.motor_event_callback)
@@ -30,10 +32,8 @@ def init_signals():
         #mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
-    mxcube.diffractometer.savedCentredPos = []
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
-    mxcube.diffractometer.savedCentredPosCount = 1
 
 ############
 
