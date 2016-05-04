@@ -37,9 +37,15 @@ export function setLight(name, on) {
   };
 }
 
-export function showContextMenu(show, shape = { type: 'NONE' }, x = 0, y = 0) {
-  return {
-    type: 'SHOW_CONTEXT_MENU',
+export function setStepSize(name, value) {
+  return { 
+    type: "SET_STEP_SIZE", name, value
+  }
+}
+
+export function showContextMenu(show, shape={type: "NONE"} , x=0, y=0) {
+  return { 
+    type: "SHOW_CONTEXT_MENU",
     show: show,
     shape: shape,
     x: x,
@@ -275,6 +281,25 @@ export function sendLightOff(name) {
 
   };
 }
+
+export function sendStopMotor(motorName) {
+  return function () {
+    fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/stop', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
+    }).then(function (response) {
+      if (response.status >= 400) {
+        throw new Error('Server refused to stop motor');
+      }
+    });
+  };
+}
+
+
 
 export function sendMotorPosition(motorName, value) {
   return function () {
