@@ -57,12 +57,12 @@ class SampleGridContainer extends React.Component {
     return (<div className="row">
             <div className="navbar-default col-xs-12" style={{ position: 'fixed', zIndex:1, paddingTop: 11, marginTop: -12 }} >
               <div className="row">
-                <div className="col-xs-3">
+                <div className="col-xs-4">
                     <div className="form-horizontal">
                         <Input type="text" ref="filter_input" defaultValue={this.props.filter_text} label="Filter" labelClassName="col-xs-2" wrapperClassName="col-xs-9" buttonAfter={innerSearchIcon} onChange={this.filterSampleGrid} />
                     </div>
                 </div>
-                <div className={"col-xs-3"} >
+                <div className={"col-xs-4"} >
                   <ButtonToolbar>
                     <SplitButton bsStyle="primary" pullRight title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'} onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples} onSelect={this.manualMount} id="split-button-sample-changer-selection">
                       <MenuItem eventKey="1">{this.props.manualMount ? 'Sample changer' : 'Manual mount'}</MenuItem>
