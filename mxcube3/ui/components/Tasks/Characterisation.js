@@ -47,7 +47,7 @@ class Characterisation extends React.Component {
 
   render() {
 
-    const { fields: { num_images, exp_time, resolution, osc_start, energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity } } = this.props;
+    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number }} = this.props;
 
     return (
         <Modal show={this.props.show} onHide={this.props.hide}>
@@ -141,36 +141,21 @@ class Characterisation extends React.Component {
                     <h5>Data location</h5>
                     <hr />
 
-
                      <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Data path:</label>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" />
-                        </div>
-
-
-                    </div>
-                     <div className="form-group">
-
-                        <label className="col-sm-3 control-label">File name:</label>
-                        <div className="col-sm-9">
-                            <input type="text" className="form-control" />
-                        </div>
-
-
-                    </div>
+                        <label className="col-sm-12 control-label">File name: /user/biomax/experiment/{prefix.value + '/' + run_number.value}</label>
+                    </div>  
 
                      <div className="form-group">
 
                         <label className="col-sm-3 control-label">Prefix:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" />
+                            <input type="number" className="form-control" {...prefix}/>
                         </div>
 
                         <label className="col-sm-3 control-label">Run number:</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" />
+                            <input type="number" className="form-control" {...run_number}/>
                         </div>
 
                     </div>
@@ -263,7 +248,7 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['num_images', 'exp_time', 'resolution', 'osc_start', 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage', 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity'] // all the fields in your form
+  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
   initialValues: { ...state.taskForm.taskData.parameters } // will pull state into form's initialValues

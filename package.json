@@ -4,7 +4,8 @@
     "dev": "./node_modules/.bin/webpack-dev-server --hot --inline --colors --host 0.0.0.0 --port 8090 --display-error-details --content-base mxcube3/ui",
     "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js",
     "esformatter": "./node_modules/.bin/esformatter",
-    "lint": "eslint . --ext .js --ext .jsx"
+    "lint": "eslint . --ext .js --ext .jsx",
+    "postinstall": "npm install fabric --no-optional"
   },
   "name": "mxcube3",
   "description": "The next version of MxCUBE",
