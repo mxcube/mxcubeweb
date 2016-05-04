@@ -1,5 +1,6 @@
 from flask import session, request, jsonify, Response
 from mxcube3 import app as mxcube
+from mxcube3.routes import Queue
 import logging
 import os, jsonpickle
 import types
@@ -51,6 +52,10 @@ def login():
 #        "laboratory": prop['Laboratory']}
         serialized_queue = session.get("queue") or mxcube.empty_queue
         mxcube.queue = jsonpickle.decode(serialized_queue)
+        try:
+            Queue.init_signals()
+        except Exception: 
+            sys.excepthook(*sys.exc_info())
 
     return jsonify(convert_to_dict(loginRes))
 

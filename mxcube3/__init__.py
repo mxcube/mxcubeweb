@@ -65,7 +65,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     app.log_handler = custom_log_handler
 
     ###Importing all REST-routes
-    import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue, routes.Diffractometer
+    import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Diffractometer
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
@@ -75,7 +75,6 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         routes.SampleCentring.init_signals()
         app.db_connection = app.beamline.getObjectByRole("lims_client")
         app.empty_queue = jsonpickle.encode(hwr.getHardwareObject(cmdline_options.queue_model))
-        routes.Queue.init_signals()
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
 
     # starting from here, requests can be received by server;
