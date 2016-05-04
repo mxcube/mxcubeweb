@@ -33,9 +33,6 @@ def beamline_abort_action(name):
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
     ho.abort()
 
-    data = {"name": name, "value": ho.get(), "status": "ABORTED", "msg": ""}
-    socketio.emit("value_change", data, namespace="/beamline/energy")
-    
     return Response('', status=200, mimetype='application/json')
 
 
