@@ -9,15 +9,15 @@ export default class MotorInput extends React.Component {
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleKey(e){
+  handleKey(e) {
     e.preventDefault();
     e.stopPropagation();
-    if([13,38,40].includes(e.keyCode)){
+    if ([13, 38, 40].includes(e.keyCode)) {
       this.props.save(e.target.name, e.target.valueAsNumber);
     }
   }
 
-  handleClick(e){
+  handleClick(e) {
     this.props.save(e.target.name, e.target.valueAsNumber);
   }
 
@@ -27,7 +27,7 @@ export default class MotorInput extends React.Component {
 
     return (
           <form className="inline form-inline form-group" onSubmit={this.handleKey} noValidate>
-              <input className="form-control input-sm" onKeyUp={this.handleKey} onClick={this.handleClick} type="number" step={step} defaultValue={valueCropped} name={motorName}/>
+              <input className="form-control input-sm" onKeyUp={this.handleKey} onClick={this.handleClick} type="number" step={step} defaultValue={valueCropped} name={motorName} />
           </form>
       );
   }

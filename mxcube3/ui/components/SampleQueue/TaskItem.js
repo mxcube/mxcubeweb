@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import { DragSource, DropTarget } from 'react-dnd';
-import cx from 'classnames'
+import cx from 'classnames';
 
 const cardSource = {
   beginDrag(props) {
@@ -11,7 +11,7 @@ const cardSource = {
     };
   },
   endDrag(props) {
-    //insert call to server for changing order
+    // insert call to server for changing order
     return {
       id: props.id,
       index: props.index
@@ -85,13 +85,13 @@ export default class TaskItem extends Component {
   };
 
   constructor(props) {
-        super(props);
-        this.showForm = () => this.props.showForm(this.props.data.type, this.props.sampleId, this.props.data, this.props.data.parameters.point );
-        this.deleteTask = () => this.props.deleteTask(this.props.id);
-        this.onClick= this.onClick.bind(this);
+    super(props);
+    this.showForm = () => this.props.showForm(this.props.data.type, this.props.sampleId, this.props.data, this.props.data.parameters.point);
+    this.deleteTask = () => this.props.deleteTask(this.props.id);
+    this.onClick = this.onClick.bind(this);
   }
 
-  onClick(){
+  onClick() {
     this.props.toggleChecked(this.props.id);
   }
 
