@@ -2,7 +2,7 @@
 export const STATE = {
   IDLE: 'IDLE',
   BUSY: 'BUSY',
-  ABORT: 'ABORT'
+  ABORT: 'ABORTED'
 };
 
 

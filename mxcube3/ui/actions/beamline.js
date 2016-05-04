@@ -1,7 +1,5 @@
 import fetch from 'isomorphic-fetch';
-
-import { SET_ATTRIBUTE, SET_ALL_ATTRIBUTES,
-        SET_BUSY_STATE, STATE } from './beamline_atypes';
+import { SET_ATTRIBUTE, SET_ALL_ATTRIBUTES, SET_BUSY_STATE, STATE } from './beamline_atypes';
 
 
 export function beamlinePropertyValueAction(data) {
