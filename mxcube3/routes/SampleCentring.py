@@ -355,6 +355,22 @@ def moveMotor(motid, newpos):
         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not move motor "%s" to position "%s"' %(motid, newpos))
         return Response(status=409)
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/<motid>/stop", methods=['PUT'])
+def stopMotor(motid):
+    """
+        Stop the given motor.
+        :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
+        :statuscode: 200: no error
+        :statuscode: 409: error 
+    """
+    motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
+    try:
+        motor_hwobj.stop()
+        return Response(status=200)
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not stop motor "%s"' %motid)
+        return Response(status=409)
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/<id>", methods=['GET'])
 def get_status_of_id(id):
     """

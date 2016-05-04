@@ -39,7 +39,6 @@ class BeamlineSetupContainer extends React.Component {
 
   render() {
     return (
-      <div className="row">
         <div className="beamline-setup-container">
           <legend className="beamline-setup-header">
             Beamline setup
@@ -94,7 +93,6 @@ class BeamlineSetupContainer extends React.Component {
             </table>
           </div>
         </div>
-      </div>
     );
   }
 }
