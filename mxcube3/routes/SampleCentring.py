@@ -3,6 +3,7 @@ from mxcube3 import app as mxcube
 from PIL import Image, ImageDraw, ImageFont
 
 import time
+import copy
 import logging
 import collections
 import gevent.event
@@ -14,6 +15,8 @@ SAMPLE_IMAGE = None
 CLICK_COUNT = 0
 
 def init_signals():
+    mxcube.diffractometer.savedCentredPos = []
+    mxcube.diffractometer.savedCentredPosCount = 1
     for signal in signals.microdiffSignals:
         if signal in signals.motor_signals:
             mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.motor_event_callback)
@@ -29,10 +32,8 @@ def init_signals():
         #mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
-    mxcube.diffractometer.savedCentredPos = []
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
-    mxcube.diffractometer.savedCentredPosCount = 1
 
 ############
 
@@ -227,7 +228,7 @@ def moveToCentredPosition(id):
     if 'kappa' in motorPositions[0]: motorPositions[0].pop('kappa')
     if 'kappa_phi' in motorPositions[0]: motorPositions[0].pop('kappa_phi')
     try:
-        mxcube.diffractometer.move_to_motors_positions(motorPositions[0]) # moveToCentredPosition(motorPositions)
+        mxcube.diffractometer.move_to_motors_positions(copy.deepcopy(motorPositions[0]))
         logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
         return Response(status=200)
     except Exception:
@@ -340,35 +341,43 @@ def frontLightOff():
 @mxcube.route("/mxcube/api/v0.1/sampleview/<motid>/<newpos>", methods=['PUT'])
 def moveMotor(motid, newpos):
     """
-        Move the given motor.
+        Move or Stop the given motor.
         :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
-        :parameter newpos: new position, double
+        :parameter newpos: new position, double, stop: string
         :statuscode: 200: no error
         :statuscode: 409: error 
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
-    try:
-        motor_hwobj.move(float(newpos))
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not move motor "%s" to position "%s"' %(motid, newpos))
-        return Response(status=409)
+    if newpos == "stop":
+        try:
+            motor_hwobj.stop()
+            return Response(status=200)
+        except Exception:
+            logging.getLogger('HWR').exception('[SAMPLEVIEW] could not stop motor "%s"' %motid)
+            return Response(status=409)
+    else:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
+        try:
+            motor_hwobj.move(float(newpos))
+            return Response(status=200)
+        except Exception:
+            logging.getLogger('HWR').exception('[SAMPLEVIEW] could not move motor "%s" to position "%s"' %(motid, newpos))
+            return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/<motid>/stop", methods=['PUT'])
-def stopMotor(motid):
-    """
-        Stop the given motor.
-        :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
-        :statuscode: 200: no error
-        :statuscode: 409: error 
-    """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
-    try:
-        motor_hwobj.stop()
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not stop motor "%s"' %motid)
-        return Response(status=409)
+# @mxcube.route("/mxcube/api/v0.1/sampleview/<motid>/stop", methods=['PUT'])
+# def stopMotor(motid):
+#     """
+#         Stop the given motor.
+#         :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
+#         :statuscode: 200: no error
+#         :statuscode: 409: error 
+#     """
+#     motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
+#     try:
+#         motor_hwobj.stop()
+#         return Response(status=200)
+#     except Exception:
+#         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not stop motor "%s"' %motid)
+#         return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/<id>", methods=['GET'])
 def get_status_of_id(id):
@@ -539,7 +548,7 @@ def waitForCentringFinishes(*args, **kwargs):
         #if no temp point found, let's create the first one
         centredPosId = 'pos' + str(mxcube.diffractometer.savedCentredPosCount) # pos1, pos2, ..., pos42
         data = {'name': centredPosId,
-            'posId': posId,
+            'posId': mxcube.diffractometer.savedCentredPosCount,
             'motorPositions': motorPositions,
             'selected': True,
             'type': 'TMP',
