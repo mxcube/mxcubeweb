@@ -6,6 +6,7 @@ from optparse import OptionParser
 import os
 import sys
 import logging
+import jsonpickle
 import gevent
 
 opt_parser = OptionParser()
@@ -73,7 +74,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
         routes.SampleCentring.init_signals()
         app.db_connection = app.beamline.getObjectByRole("lims_client")
-        app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
+        app.empty_queue = jsonpickle.encode(hwr.getHardwareObject(cmdline_options.queue_model))
         routes.Queue.init_signals()
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
 

@@ -49,11 +49,9 @@ def login():
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-        session_queue = session.get("queueList", "{}")
-        if len(session_queue) == 0:
-          mxcube.queue = None
-        else:
-          mxcube.queue = jsonpickle.decode(session_queue)
+        serialized_queue = session.get("queue") or mxcube.empty_queue
+        mxcube.queue = jsonpickle.decode(serialized_queue)
+
     return jsonify(convert_to_dict(loginRes))
 
 @mxcube.route("/mxcube/api/v0.1/signout")
