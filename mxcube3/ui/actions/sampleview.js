@@ -282,6 +282,25 @@ export function sendLightOff(name) {
   };
 }
 
+export function sendStopMotor(motorName) {
+  return function () {
+    fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/stop', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
+    }).then(function (response) {
+      if (response.status >= 400) {
+        throw new Error('Server refused to stop motor');
+      }
+    });
+  };
+}
+
+
+
 export function sendMotorPosition(motorName, value) {
   return function () {
     fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/' + value, {

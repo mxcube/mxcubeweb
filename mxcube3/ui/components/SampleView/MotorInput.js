@@ -9,7 +9,7 @@ export default class MotorInput extends React.Component {
     super(props);
     this.handleKey = this.handleKey.bind(this);
     this.handleClick = this.handleClick.bind(this);
-    this.abort = this.abort.bind(this);
+    this.stopMotor = this.stopMotor.bind(this, props.motorName);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -37,8 +37,8 @@ export default class MotorInput extends React.Component {
     }
   }
 
-  abort(name) {
-    this.props.abort(name);
+  stopMotor(name) {
+    this.props.stop(name);
   }
 
   render() {
@@ -71,7 +71,7 @@ export default class MotorInput extends React.Component {
                     bsStyle="default"
                     className="btn-sm"
                     disabled={this.props.state !== 4}
-                    onClick={this.abort}
+                    onClick={this.stopMotor}
                   >
                     <i className="glyphicon glyphicon-remove" />
                   </Button>

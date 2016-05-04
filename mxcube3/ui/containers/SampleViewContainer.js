@@ -18,14 +18,14 @@ class SampleViewContainer extends Component {
   render() {
     const { show, shape, x, y } = this.props.sampleViewState.contextMenu;
     const { width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture, motors, motorSteps } = this.props.sampleViewState;
-    const { sendMotorPosition, setStepSize } = this.props.sampleViewActions;
+    const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
 
     return (
       <div className="row">
         <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters} />
         <div className="col-xs-1">
-            <MotorControl save={sendMotorPosition} saveStep={setStepSize} motors={motors} steps={motorSteps} />
+            <MotorControl save={sendMotorPosition} saveStep={setStepSize} motors={motors} steps={motorSteps} stop={sendStopMotor} />
         </div>
         <div className="col-xs-8">
             <SampleImage

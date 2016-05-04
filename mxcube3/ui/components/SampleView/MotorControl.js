@@ -9,6 +9,7 @@ export default class MotorControl extends React.Component {
         const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampxStep, SampyStep } = this.props.steps;
         const save = this.props.save;
         const saveStep = this.props.saveStep;
+        const stop = this.props.stop;
 
         return (
 
@@ -25,6 +26,7 @@ export default class MotorControl extends React.Component {
                       suffix="&deg;"
                       decimalPoints="2"
                       state={Phi.Status}
+                      stop={stop}
                     />
                 </div>
 
@@ -39,6 +41,7 @@ export default class MotorControl extends React.Component {
                       suffix="mm"
                       decimalPoints="2"
                       state="3"
+                      stop={stop}
                     />
                 </div>
 
@@ -53,6 +56,7 @@ export default class MotorControl extends React.Component {
                       suffix="mm"
                       decimalPoints="2"
                       state="3"
+                      stop={stop}
                     />
                 </div>
 
@@ -67,6 +71,7 @@ export default class MotorControl extends React.Component {
                       suffix="mm"
                       decimalPoints="2"
                       state={PhiY.Status}
+                      stop={stop}
                     />
                 </div>
 
@@ -81,6 +86,7 @@ export default class MotorControl extends React.Component {
                       suffix="mm"
                       decimalPoints="2"
                       state={PhiZ.Status}
+                      stop={stop}
                     />
                 </div>
 
@@ -95,6 +101,7 @@ export default class MotorControl extends React.Component {
                       suffix="mm"
                       decimalPoints="2"
                       state={Focus.Status}
+                      stop={stop}
                     />
                 </div>
 
@@ -109,6 +116,7 @@ export default class MotorControl extends React.Component {
                       suffix="mm"
                       decimalPoints="2"
                       state={Sampx.Status}
+                      stop={stop}
                     />
                 </div>
 
@@ -119,10 +127,11 @@ export default class MotorControl extends React.Component {
                       value={Sampy.position}
                       saveStep={saveStep}
                       step={SampyStep}
-                      motorName="SampX"
+                      motorName="SampY"
                       suffix="mm"
                       decimalPoints="2"
                       state={Sampy.Status}
+                      stop={stop}
                     />
                 </div>
 
