@@ -2,7 +2,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "./node_modules/.bin/webpack-dev-server --hot --inline --colors --host 0.0.0.0 --port 8090 --display-error-details --content-base mxcube3/ui",
-    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js",
+    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.config.js",
     "esformatter": "./node_modules/.bin/esformatter",
     "lint": "eslint . --ext .js --ext .jsx",
     "postinstall": "npm install fabric --no-optional"

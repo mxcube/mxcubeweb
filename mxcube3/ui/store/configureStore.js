@@ -4,10 +4,14 @@ import thunk from 'redux-thunk';
 import rootReducer from '../reducers';
 
 export default function configureStore(initialState) {
-  const middleware = [thunk, logger()];
+  const middleware;
   const createStoreWithMiddleware = applyMiddleware(...middleware)(createStore);
   const store = createStoreWithMiddleware(rootReducer, initialState);
-
+  if (process.env.NODE_ENV !== 'production') {
+    middleware = [thunk, logger()];
+  } else {
+    middleware = [thunk];
+  }
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
     module.hot.accept('../reducers', () => {

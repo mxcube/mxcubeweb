@@ -27,7 +27,7 @@ export default class ServerIO {
       this.dispatch(saveMotorPositions(record.Motors));
       switch (record.Signal) {
         case 'minidiffPhaseChanged':
-          this.dispatch(setCurrentPhase(record.Args[0]));
+          this.dispatch(setCurrentPhase(record.Data));
           break;
         case 'n':
           console.log('sada');
