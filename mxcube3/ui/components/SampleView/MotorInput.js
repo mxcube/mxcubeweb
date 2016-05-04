@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames'
+import cx from 'classnames';
 import { Button } from 'react-bootstrap';
 import PopInput from '../PopInput/PopInput';
 
@@ -15,20 +15,25 @@ export default class MotorInput extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
       this.refs.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
+      this.refs.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
     }
   }
 
   handleKey(e) {
     e.preventDefault();
     e.stopPropagation();
-    if ([13, 38, 40].includes(e.keyCode)) {
+    if ([13, 38, 40].includes(e.keyCode) && this.props.state == 2) {
       this.props.save(e.target.name, e.target.valueAsNumber);
+    } else if(this.props.state == 4){
+      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
   }
 
   handleClick(e) {
-    if (e.target.valueAsNumber != this.props.value.toFixed(this.props.decimalPoints)) {
+    if (e.target.valueAsNumber != this.props.value.toFixed(this.props.decimalPoints) && this.props.state == 2) {
       this.props.save(e.target.name, e.target.valueAsNumber);
+    } else if(this.props.state == 4){
+      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
   }
 
@@ -39,7 +44,6 @@ export default class MotorInput extends React.Component {
   render() {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
-
     let inputCSS = cx('form-control input-sm', {
       active: this.props.state === 4,
       success: this.props.state === 2,
@@ -60,7 +64,6 @@ export default class MotorInput extends React.Component {
                 step={step}
                 defaultValue={valueCropped}
                 name={motorName}
-                disabled={this.props.state !== 2}
               />
               {this.props.saveStep ?
                 <span>

@@ -129,6 +129,7 @@ export default class SampleControls extends React.Component {
                       motorName="BackLight"
                       step="0.1"
                       decimalPoints="2"
+                      state="2"
                     />
                 </div>
 
@@ -142,7 +143,8 @@ export default class SampleControls extends React.Component {
                       value={this.props.sampleViewState.motors.FrontLight.position}
                       motorName="FrontLight"
                       step="0.1"
-                      ecimalPoints="2"
+                      decimalPoints="2"
+                      state="2"
                     />
                 </div>
                </div>
