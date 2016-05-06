@@ -1,9 +1,8 @@
 from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
-from mxcube3.routes import Queue
+from mxcube3.routes import Queue, Utils
 import logging
 import os
-import jsonpickle
 import types
 
 
@@ -22,6 +21,7 @@ def convert_to_dict(ispyb_object):
                 val = dict([(k, convert_to_dict(x) if type(x) == types.InstanceType else x) for k, x in val.iteritems()])
             d[key] = val
     return d
+
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
@@ -71,18 +71,8 @@ def loginInfo():
     if loginInfo is not None:
         loginInfo["loginRes"] = mxcube.db_connection.login(loginInfo["loginID"], loginInfo["password"])
         session['loginInfo'] = loginInfo
-    
-    serialized_queue = session.get("queue")
-    print 'saved queue =', serialized_queue
-    if not serialized_queue:
-       print 'making new queue'
-       serialized_queue = mxcube.empty_queue
-    mxcube.queue = jsonpickle.decode(serialized_queue)
- 
-    try:
-        Queue.init_signals()
-    except Exception: 
-        sys.excepthook(*sys.exc_info())
+  
+    mxcube.queue = Utils.get_queue(session) 
  
     return jsonify(
                     { "synchrotron_name": mxcube.session.synchrotron_name,

@@ -21,14 +21,11 @@ import jsonpickle
 qm = QueueManager.QueueManager('Mxcube3')
 #qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
-def init_signals():
+def init_signals(queue):
     for signal in signals.collectSignals:
         if signal in signals.task_signals:
-            mxcube.queue.connect(mxcube.queue, signal, signals.task_event_callback)
-        else:
-            pass
-        #mxcube.queue.connect(mxcube.queue, signal, signals.signalCallback)
-    mxcube.queue.lastQueueNode = {'id':0, 'sample':'0:0'}
+            queue.connect(queue, signal, signals.task_event_callback)
+    queue.lastQueueNode = {'id':0, 'sample':'0:0'}
 
 # ##----QUEUE ACTIONS----##
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
@@ -123,11 +120,8 @@ def queueClear():
     logging.getLogger('HWR').info('[QUEUE] Queue going to clear')
 
     try:
-        # not sure how to handle this, clearing all of them...
-        mxcube.queue.clear_model('sc_one')
-        mxcube.queue._selected_model._children = []
-        mxcube.queue.queue_hwobj.clear()
-        session.pop("queue", None) #remove queue from session, it will be added later when needed
+        mxcube.queue = Utils.new_queue() # maybe we can just clear the queue object itself instead
+        Utils.save_queue(session)
         logging.getLogger('HWR').info('[QUEUE] Queue cleared  '+ str(mxcube.queue.get_model_root()._name))
         return Response(status=200)
     except Exception:
@@ -188,9 +182,9 @@ def queueSaveState():
 
     sampleGridState = session.get("sampleGridState")
     #queueState = jsonpickle.encode(mxcube.queue) #.update(params['queueState'])
-
+ 
     try:
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
     except Exception:
         return Response(status=409)
 
@@ -377,7 +371,7 @@ def addSample():
         mxcube.queue.queue_hwobj.enqueue(sampleEntry)
         logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' %(sampleId, nodeId))
         #queue.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
         return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
@@ -402,7 +396,7 @@ def updateSample(sampleId):
             #TODO: update here the model with the new 'params'
             ### missing lines...
             sampleEntry.set_data_model(sampleNode)
-            session["queue"] = jsonpickle.encode(mxcube.queue)
+            Utils.save_queue(session)
             logging.getLogger('HWR').info('[QUEUE] sample updated')
             resp = jsonify({'QueueId': nodeId})
             resp.status_code = 200
@@ -512,7 +506,7 @@ def deleteSampleOrMethod(id):
         else:  # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
             mxcube.queue.queue_hwobj.dequeue(entryToRemove)
 
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         return Response(status=200)
     except Exception:
@@ -537,7 +531,7 @@ def deleteMethod(sampleid, methodid):
         parentEntry.dequeue(entryToRemove)
         parent = parent._node_id
         nodeToRemove = nodeToRemove._node_id
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         return Response(status=200)
     except Exception:
@@ -569,7 +563,7 @@ def addCentring(id):
 
         logging.getLogger('HWR').info('[QUEUE] centring added to sample')
 
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         resp = jsonify({'QueueId': newNode, 'Type': 'Centring', 'Params': params})
         resp.status_code = 200
@@ -627,7 +621,7 @@ def addCharacterisation(id):
         characNode.set_enabled(True)
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
 
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         resp = jsonify({'QueueId': newNode, 'Type': 'Characterisation'})
         resp.status_code = 200
@@ -675,7 +669,7 @@ def addDataCollection(id):
         newNode = mxcube.queue.add_child_at_id(task1Id, colNode)  # add_child does not return id!
         task1Entry.enqueue(colEntry)
 
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
         resp = jsonify({'QueueId': newNode, 'Type': 'DataCollection'})
@@ -739,7 +733,7 @@ def updateMethod(sampleid, methodid):
             pass
         ####
 
-        session["queue"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         logging.getLogger('HWR').info('[QUEUE] method updated')
         resp = jsonify({'QueueId': methodid})
