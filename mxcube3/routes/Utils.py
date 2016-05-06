@@ -1,12 +1,11 @@
 from mxcube3 import app as mxcube
-from flask import Response
+from flask import Response, session
 from functools import wraps
 
 def mxlogin_required(func):
     """
     If you decorate a view with this, it will ensure that the current user is
-    logged in calling the actual view. It checks the session hardware object
-    to see if the proposal_id has a number (the routes.login does that)
+    logged in calling the actual view. 
     TODO: how much secure is this? need to implement OAuth2 as well
     For example::
 
@@ -20,7 +19,7 @@ def mxlogin_required(func):
     """
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        if not mxcube.session.proposal_id:
+        if not session.get("loginInfo"):
             return Response(status=401)
         return func(*args, **kwargs)
     return decorated_view
@@ -73,7 +72,7 @@ def my_execute_entry(self, entry):
 
 def __execute_entry(self, entry):
     print "my execute_entry"
-    from routes.Queue import queueList, lastQueueNode
+    from routes.Queue import queue, lastQueueNode
     import logging
     logging.getLogger('queue_exec').info('Executing mxcube3 customized entry')
 
@@ -83,7 +82,7 @@ def __execute_entry(self, entry):
     #if this is a sample, parentId will be '0'
     if parentId == 0:  # Sample... 0 is your father...
         parentId = nodeId
-    lastQueueNode.update({'id': nodeId, 'sample': queueList[parentId]['SampleId']})
+    lastQueueNode.update({'id': nodeId, 'sample': queue[parentId]['SampleId']})
     print "enabling....", entry
     #entry.set_enabled(True)
     if not entry.is_enabled() or self._is_stopped:
