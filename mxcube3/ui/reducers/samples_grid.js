@@ -1,5 +1,4 @@
 import { omit } from 'lodash/object';
-
 const initialState = { samples_list: {},
                        filter_text: '',
                        selected: {},
@@ -9,6 +8,8 @@ const initialState = { samples_list: {},
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case "SIGNOUT":
+      return Object.assign({}, initialState);
     case 'UPDATE_SAMPLES':
           // should have session samples
       return Object.assign({}, state, { samples_list: action.samples_list });
