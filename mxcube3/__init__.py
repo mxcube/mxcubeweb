@@ -31,6 +31,7 @@ cmdline_options, args = opt_parser.parse_args()
 socketio = SocketIO()
 app = Flask(__name__, static_url_path='')
 app.config['SESSION_TYPE'] = "redis"
+app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
 app.config['SECRET_KEY'] = "nosecretfornow"
 sess = Session()
 sess.init_app(app)
