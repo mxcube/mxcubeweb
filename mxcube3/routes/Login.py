@@ -1,8 +1,9 @@
-from flask import session, request, jsonify, Response
+from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
 from mxcube3.routes import Queue
 import logging
-import os, jsonpickle
+import os
+import jsonpickle
 import types
 
 
@@ -57,32 +58,40 @@ def signout():
     mxcube.queue = None
     return make_response("", 200)
 
-# information to display on the login page
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
 def loginInfo():
     """
-    Retrieve sessoin/login info
+    Retrieve session/login info
      :response Content-Type: application/json, {"synchrotron_name": synchrotron_name, "beamline_name": beamline_name,
                     "loginType": loginType, "loginRes": {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal, 'session': todays_session, "local_contact": local_contact, "person": someone, "laboratory": a_laboratory']} }
     """
-    synchrotron_name = mxcube.session.synchrotron_name
-    beamline_name = mxcube.session.beamline_name
-    loginType = mxcube.db_connection.loginType.title()
-
     loginInfo = session.get("loginInfo")
-    if loginInfo is None:
-        session["queueList"] = {}
-    else:
+    print '>'*50, 'login info',loginInfo
+
+    if loginInfo is not None:
         loginInfo["loginRes"] = mxcube.db_connection.login(loginInfo["loginID"], loginInfo["password"])
         session['loginInfo'] = loginInfo
+    
+    serialized_queue = session.get("queue")
+    print 'saved queue =', serialized_queue
+    if not serialized_queue:
+       print 'making new queue'
+       serialized_queue = mxcube.empty_queue
+    mxcube.queue = jsonpickle.decode(serialized_queue)
+ 
+    try:
+        Queue.init_signals()
+    except Exception: 
+        sys.excepthook(*sys.exc_info())
  
     return jsonify(
-                    {"synchrotron_name": synchrotron_name,
-                    "beamline_name": beamline_name,
-                    "loginType": loginType,
-                    "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {})
+                    { "synchrotron_name": mxcube.session.synchrotron_name,
+                      "beamline_name": mxcube.session.beamline_name,
+                      "loginType": mxcube.db_connection.loginType.title(),
+                      "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {}),
+                      "queue": Queue.serializeQueueToJson()
                     }
-                   )
+                  )
 
 @mxcube.route("/mxcube/api/v0.1/initialstatus", methods=["GET"])
 def get_initial_state():
