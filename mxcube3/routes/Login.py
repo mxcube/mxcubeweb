@@ -32,32 +32,21 @@ def login():
         :statuscode: 200: no error
         :statuscode: 409: could not log in
     """
-
-#    beamline_name = os.environ.get("SMIS_BEAMLINE_NAME")
     content = request.get_json()
     loginID = content['proposal']
     password = content['password']
-    logging.getLogger('HWR').info(loginID)
-
     loginRes = mxcube.db_connection.login(loginID, password)
+   
     if loginRes['status']['code'] == 'ok':
-        session['proposal_id'] = loginID
         session['loginInfo'] = { 'loginID': loginID, 'password': password, 'loginRes': loginRes }
-        mxcube.session.proposal_id = loginID #do we still need this?
 #        loginRes structure
 #        {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal,
 #        'session': todays_session,
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-        serialized_queue = session.get("queue") or mxcube.empty_queue
-        mxcube.queue = jsonpickle.decode(serialized_queue)
-        try:
-            Queue.init_signals()
-        except Exception: 
-            sys.excepthook(*sys.exc_info())
 
-    return jsonify(convert_to_dict(loginRes))
+    return make_response(loginRes['status']['code'], 200)
 
 @mxcube.route("/mxcube/api/v0.1/signout")
 def signout():
