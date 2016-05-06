@@ -72,10 +72,13 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
-        routes.SampleCentring.init_signals()
         app.db_connection = app.beamline.getObjectByRole("lims_client")
         app.empty_queue = jsonpickle.encode(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
+        try:
+            routes.SampleCentring.init_signals()
+        except Exception:
+            sys.excepthook(*sys.exc_info())
 
     # starting from here, requests can be received by server;
     # however, objects are not all initialized, so requests can return errors
