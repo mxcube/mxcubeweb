@@ -92,34 +92,15 @@ export function toggleChecked(queue_id) {
       };
 }
 
-export function synchState() {
-  return function (dispatch) {
-
-        fetch('mxcube/api/v0.1/queue/state', {
-          method: 'GET',
-          credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-            'Content-type': 'application/json'
-          }
-        }).then(function (response) {
-      if (response.status >= 400) {
-            throw new Error('Server refused send state');
-          }
-      return response.json();
-    })
-    .then(function (json) {
-
-      json.queueState.current = {};
-      json.queueState.todo = { nodes:[] };
-      json.queueState.history = { nodes:[] };
-      if (Object.keys(json.queueState).length > 0) {
-            dispatch(showRestoreDialog(json.queueState));
-          } else {
-            dispatch(setState(json.queueState, {})); // TODO: json.sampleList));
-          }
-    });
-      };
+export function synchState(saved_queue) {
+  if (Object.keys(saved_queue).length > 0) {
+      saved_queue.current = {};
+      saved_queue.todo = { nodes:[] };
+      saved_queue.history = { nodes:[] };
+      return showRestoreDialog(saved_queue);
+  } else {
+      return {};
+  }
 }
 
 export function showRestoreDialog(queueState, show = true) {

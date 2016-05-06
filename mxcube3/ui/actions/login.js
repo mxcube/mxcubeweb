@@ -46,7 +46,7 @@ export function getLoginInfo() {
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
               dispatch(getInitialStatus());
-              dispatch(synchState());
+              dispatch(synchState(loginInfo.queue));
             }
           }, () => {
             throw new Error('Server connection problem (getLoginInfo)');
