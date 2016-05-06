@@ -10,3 +10,6 @@ scipy
 mock
 jsonpickle
 pillow
+suds
+python-ldap
+lxml
