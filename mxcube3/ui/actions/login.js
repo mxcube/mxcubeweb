@@ -42,6 +42,11 @@ export function getLoginInfo() {
     credentials: 'include'
     }).then(response => response.json())
           .then(loginInfo => {
+            let stored_proposal = "";
+            try { 
+              let stored_login = localStorage.getItem("reduxPersist:login")
+              stored_proposal = JSON.parse(stored_login).data.Proposal.number
+            } catch(e) { }
             dispatch(setLoginInfo(loginInfo));
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
