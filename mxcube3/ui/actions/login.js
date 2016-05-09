@@ -47,10 +47,17 @@ export function getLoginInfo() {
               let stored_login = localStorage.getItem("reduxPersist:login")
               stored_proposal = JSON.parse(stored_login).data.Proposal.number
             } catch(e) { }
+
             dispatch(setLoginInfo(loginInfo));
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
-              //dispatch(synchState(loginInfo.queue));
+              dispatch(getInitialStatus());
+              // check if proposal number is the same as the one stored
+              // in local session storage, otherwise we need to do a manual
+              // synchronisation
+              if (loginInfo.loginRes.Proposal.number != stored_proposal) {
+                  dispatch(synchState(loginInfo.queue));
+              }
             }
           }, () => {
             throw new Error('Server connection problem (getLoginInfo)');
