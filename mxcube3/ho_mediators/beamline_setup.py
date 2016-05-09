@@ -107,7 +107,14 @@ class EnergyHOMediator(object):
 
 
     def state(self):
-        return "BUSY" if self._ho.moving else "IDLE"
+        state = "IDLE"
+
+        if self._ho._abort:
+            state = "ABORTED"
+        elif self._ho.moving:
+            state = "BUSY"
+
+        return state
 
 
     def value_change(self, energy, wavelength):

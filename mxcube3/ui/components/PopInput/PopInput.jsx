@@ -90,6 +90,9 @@ export default class PopInput extends React.Component {
       // Only update if value actually changed
       this.props.onSave(this.props.pkey, value);
     }
+    if (this.props.data.state === 'IMMEDIATE') {
+      this.refs.overlay.hide();
+    }
   }
 
 
@@ -99,7 +102,6 @@ export default class PopInput extends React.Component {
       this.refs.overlay.hide();
     }
   }
-
 
 
   handleError(data) {
@@ -116,7 +118,6 @@ export default class PopInput extends React.Component {
 
 
   cancel() {
-    # Calling cancel when "aborted" changes state, why ?
     if (this.props.onCancel !== undefined) {
       this.props.onCancel(this.props.pkey);
     }
@@ -171,7 +172,6 @@ export default class PopInput extends React.Component {
 
 
   isAborted() {
-    debugger;
     return this.props.data.state === STATE.ABORT;
   }
 
@@ -181,13 +181,13 @@ export default class PopInput extends React.Component {
     const busyVisibility = this.isBusy() ? '' : 'hidden';
     const inputVisibility = !this.isBusy() ? '' : 'hidden';
     const title = (this.props.title === '') ? this.props.name : this.props.title;
-    
+
     let stateClass = '';
 
-    if(this.isBusy()) {
+    if (this.isBusy()) {
       stateClass = 'value-label-enter-loading';
-    } else if(this.isAborted()){
-      stateClass = 'value-label-enter-error';      
+    } else if (this.isAborted()) {
+      stateClass = 'value-label-enter-error';
     }
 
     const popover = (
