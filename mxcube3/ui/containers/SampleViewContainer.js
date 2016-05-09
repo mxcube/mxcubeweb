@@ -17,7 +17,7 @@ class SampleViewContainer extends Component {
 
   render() {
     const { show, shape, x, y } = this.props.sampleViewState.contextMenu;
-    const { width, height, points, clickCentring, pixelsPerMm, imageRatio, canvas, currentAperture, motors, motorSteps } = this.props.sampleViewState;
+    const { width, height, points, clickCentring, clickCentringPoints, pixelsPerMm, imageRatio, canvas, currentAperture, motors, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
 
@@ -39,6 +39,7 @@ class SampleViewContainer extends Component {
               imageRatio={imageRatio}
               canvas={canvas}
               currentAperture={currentAperture}
+              clickCentringPoints={clickCentringPoints}
             />
             <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>

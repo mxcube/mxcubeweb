@@ -22,11 +22,11 @@ export function makeCircle(x, y, id = 'no id', color = 'red', type = 'TMP') {
   });
 }
 
-export function makeLine(x1, y1, x2, y2) {
+export function makeLine(x1, y1, x2, y2, color, width) {
   return new fabric.Line([x1, y1, x2, y2], {
-    fill: 'green',
-    stroke: 'green',
-    strokeWidth: 4,
+    fill: color,
+    stroke: color,
+    strokeWidth: width,
     selectable: false
   });
 }
@@ -43,7 +43,18 @@ export function makeText(x, y, fontSize) {
 }
 
 export function makeBeam(x, y, radius) {
-  return new fabric.Circle({
+  return [
+  new fabric.Line([x-20, y, x+20, y], {
+    fill: 'red',
+    stroke: 'red',
+    strokeWidth: 2,
+    selectable: false
+  }),new fabric.Line([x, y-20, x, y+20], {
+    fill: 'red',
+    stroke: 'red',
+    strokeWidth: 2,
+    selectable: false
+  }),new fabric.Circle({
     radius: radius,
     strokeWidth: 2,
     stroke: 'blue',
@@ -53,5 +64,7 @@ export function makeBeam(x, y, radius) {
     selectable: false,
     originX: 'center',
     originY: 'center'
-  });
+  })
+  ];
 }
+
