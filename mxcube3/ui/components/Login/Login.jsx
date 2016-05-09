@@ -4,6 +4,8 @@ import { Input, ButtonInput } from 'react-bootstrap';
 import './Login.css';
 import { reduxForm } from 'redux-form';
 import { Alert } from 'react-bootstrap';
+import logo from '../../img/mxcube_logo20.png'
+import loader from '../../img/loader.gif'
 
 
 class Login extends React.Component {
@@ -45,7 +47,7 @@ class Login extends React.Component {
           <div className="container">
           <div className="row row-centered">
           <div>
-           <img src="../../img/mxcube_logo20.png" className="img-logo" />
+           <img src={logo} className="img-logo" />
           </div>
           <h3 >Welcome to {loginInfo.beamline_name} at {loginInfo.synchrotron_name}</h3>
           <div className="col-md-5 col-centered">
@@ -61,7 +63,7 @@ class Login extends React.Component {
               </div>
              </div>
             <div className={this.props.loading ? '' : 'hidden'}>
-               <img src="../../img/loader.gif" className="img-responsive" />
+               <img src={loader} className="img-responsive" />
              </div>
             </div>
             </div>
