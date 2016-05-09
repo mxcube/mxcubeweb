@@ -10,27 +10,28 @@ export default class SampleTaskButtons extends React.Component {
 
 
   handleSubmit(formName) {
+    const sampleIds = [];
 
-    let sampleIds = [];
-
-    for (let sampleId in this.props.selected) {
-
+    for (const sampleId in this.props.selected) {
       if (this.props.selected[sampleId]) {
         sampleIds.push(sampleId);
       }
     }
+
     this.props.showForm(formName, sampleIds, this.props.defaultParameters);
   }
 
   render() {
-    return (<ButtonToolbar>
-                    <Button className="btn-primary" onClick={this.showCharacterisationForm}>
-                         <Glyphicon glyph="plus" /> Characterisation
-                    </Button>
-                    <Button className="btn-primary" onClick={this.showDataCollectionForm}>
-                         <Glyphicon glyph="plus" /> Data collection
-                    </Button>
-               </ButtonToolbar>);
+    return (
+      <ButtonToolbar>
+        <Button className="btn-primary" onClick={this.showCharacterisationForm}>
+          <Glyphicon glyph="plus" /> Characterisation
+        </Button>
+        <Button className="btn-primary" onClick={this.showDataCollectionForm}>
+          <Glyphicon glyph="plus" /> Data collection
+        </Button>
+      </ButtonToolbar>
+    );
   }
 }
 
