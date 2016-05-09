@@ -140,64 +140,6 @@ def queueGet():
     resp.status_code = 200
     return resp
 
-@mxcube.route("/mxcube/api/v0.1/queue/state", methods=['PUT', 'POST'])
-def queueSaveState():
-    """
-    Save the queue to the session.
-        :request Content-Type: application/json, sampleGrid state sent by the client.
-        :statuscode: 200: no error
-        :statuscode: 409: queue could not be saved
-    """
-
-    params = request.data
-    params = json.loads(params)
-
-    sampleGridState = session.get("sampleGridState")
-    #queueState = jsonpickle.encode(mxcube.queue) #.update(params['queueState'])
- 
-    try:
-        Utils.save_queue(session)
-    except Exception:
-        return Response(status=409)
-
-    sampleGridState.update(params['sampleGridState'])
-    session["sampleGridState"] = sampleGridState
-
-    return Response(status=200)
-
-@mxcube.route("/mxcube/api/v0.1/queue/state", methods=['GET'])
-def queueLoadState():
-    """
-    Load and apply the queue from the session and return the simplified saved queue and sample_list. NOTE: the client does not do anything with it yet.
-        :statuscode: 200: no error
-        :statuscode: 409: queue could not be loaded
-    """
-    samples_list = mxcube.sample_changer.getSampleList()
-    samples = {}
-    for s in samples_list:
-        sample_dm = s.getID() or ""
-        samples.update(
-            {s.getAddress():
-                {
-                    "id": s.getAddress(),
-                    "location": ":".join(map(str, s.getCoords())),
-                    "code": sample_dm,
-                    "methods": {}
-                }
-             }
-            )
-
-    if mxcube.queue.queue_hwobj._queue_entry_list:
-        logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored...')
-        resp = jsonify({'queueState': serializeQueueToJson(), 'sampleList': samples})
-        resp.status_code = 200
-        return resp
-    else:
-        logging.getLogger('HWR').info('[QUEUE] No queue was stored...')
-        resp = jsonify({'queueState': {}, 'sampleList': samples})
-        resp.status_code = 200
-        return resp
-
 @mxcube.route("/mxcube/api/v0.1/queue/<int:nodeId>/execute", methods=['PUT'])
 def executeEntryWithId(nodeId):
     """
