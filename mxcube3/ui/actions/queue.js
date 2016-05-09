@@ -99,8 +99,8 @@ export function synchState(saved_queue) {
       saved_queue.history = { nodes:[] };
       return showRestoreDialog(saved_queue);
   } else {
-      return {};
-  }
+      return showRestoreDialog(saved_queue, false);
+  } 
 }
 
 export function showRestoreDialog(queueState, show = true) {
