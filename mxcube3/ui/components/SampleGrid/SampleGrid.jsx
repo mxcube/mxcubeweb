@@ -1,8 +1,10 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import './SampleGrid.css';
 import SampleGridItem from './SampleGridItem';
 import Isotope from 'isotope-layout';
+
+import './SampleGrid.css';
+
 
 export default class SampleGrid extends React.Component {
 
@@ -11,16 +13,23 @@ export default class SampleGrid extends React.Component {
     this.filter = this.filter.bind(this);
   }
 
+
   componentDidMount() {
     if (! this.isotope) {
-      let container = ReactDOM.findDOMNode(this);
-      this.isotope = new Isotope(container, { itemSelector: '.samples-grid-item', layoutMode: 'masonry', masonry: { isFitWidth: true } });
+      const container = ReactDOM.findDOMNode(this);
+      const options = { itemSelector: '.samples-grid-item',
+                        layoutMode: 'masonry',
+                        masonry: { isFitWidth: true } };
+
+      this.isotope = new Isotope(container, options);
     }
   }
 
+
   componentDidUpdate(prevProps) {
     if (this.isotope) {
-      if ((this.props.filter_text != prevProps.filter_text) || (this.props.samples_list != prevProps.samples_list)) {
+      if ((this.props.filter_text !== prevProps.filter_text) ||
+          (this.props.samples_list !== prevProps.samples_list)) {
         this.isotope.reloadItems();
         this.isotope.layout();
       }
@@ -28,37 +37,55 @@ export default class SampleGrid extends React.Component {
     }
   }
 
+
   filter(key) {
-    let sampleData = this.props.samples_list[key];
-    let sampleFilter = (sampleData.sampleName + ' ' + sampleData.proteinAcronym + ' ' + sampleData.code + ' ' + sampleData.location).toLowerCase();
+    const sample = this.props.samples_list[key];
+    let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
+    sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
+
     return sampleFilter.includes(this.props.filter_text.toLowerCase());
   }
 
+
   render() {
-    var samples_list = this.props.samples_list;
-    var sample_grid = [];
-    var i = 0;
-    Object.keys(samples_list).forEach(key => {
+    const samplesList = this.props.samples_list;
+    let [sampleGrid, i] = [[], 0];
+
+    Object.keys(samplesList).forEach(key => {
       if (this.filter(key)) {
-        let sample = samples_list[key];
-        let acronym = sample.proteinAcronym;
-        let name = sample.sampleName;
-        let tags = [];
-        for (let id in sample.tasks) {
-          tags.push(sample.tasks[id]); // .name);
+        const sample = samplesList[key];
+        const [acronym, name, tags] = [sample.proteinAcronym, sample.sampleName, []];
+
+        for (const id in sample.tasks) {
+          tags.push(sample.tasks[id]);
         }
-        sample_grid.push(<SampleGridItem ref={i} key={key} selectKey={key} sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} location={sample.location} tags={tags} selected={this.props.selected[key] ? true : false} deleteTask={this.props.deleteTask} showTaskParametersForm={this.props.showTaskParametersForm} onClick={this.props.toggleSelected} />);
+
+        sampleGrid.push(
+          <SampleGridItem
+            ref={i} key={key} selectKey={key} sample_id={sample.id}
+            acronym={acronym} name={name} dm={sample.code}
+            loadable={false} location={sample.location} tags={tags}
+            selected={this.props.selected[key]}
+            deleteTask={this.props.deleteTask}
+            showTaskParametersForm={this.props.showTaskParametersForm}
+            onClick={this.props.toggleSelected}
+          />
+        );
+
         ++i;
       }
     });
-    return (<div className="samples-grid">
-                  {sample_grid}
-             </div>);
+
+    return (
+      <div className="samples-grid">
+        {sampleGrid}
+      </div>
+    );
   }
 }
+
 
 SampleGrid.propTypes = {
   filter_text: React.PropTypes.string,
   toggleSelected: React.PropTypes.func.isRequired
 };
-
