@@ -1,5 +1,3 @@
-'use strict';
-
 import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
@@ -13,44 +11,63 @@ class DataCollection extends React.Component {
   }
 
   handleSubmit(runNow) {
-    let parameters = {
+    const parameters = {
       ...this.props.values,
-      Type : 'DataCollection',
-      point : this.props.pointId
+      Type: 'DataCollection',
+      point: this.props.pointId
     };
-    if (this.props.sampleIds.constructor == Array) {
-
+    if (this.props.sampleIds.constructor === Array) {
       this.props.sampleIds.map((sampleId) => {
-
-        let queueId = this.props.lookup[sampleId];
+        const queueId = this.props.lookup[sampleId];
 
         if (queueId) {
           this.props.addTask(queueId, sampleId, parameters);
         } else {
-                    // the sample is not in queue yet
           this.props.addSampleAndTask(sampleId, parameters);
         }
       });
-
     } else {
-      let sample_queue_id = this.props.lookup[this.props.sampleIds];
-      this.props.changeTask(this.props.taskData.queue_id, sample_queue_id, this.props.sampleIds, parameters, runNow);
+      const { lookup, taskData, sampleIds } = this.props;
+      const sampleId = lookup[this.props.sampleIds];
+      this.props.changeTask(taskData.queue_id, sampleId, sampleIds, parameters, runNow);
     }
 
     this.props.hide();
   }
 
-  handleShowHide(e){
-    if(e.target.innerHTML === 'Show More'){
-        e.target.innerHTML = 'Show Less';
-    }else{
-        e.target.innerHTML = 'Show More';
+  handleShowHide(e) {
+    if (e.target.innerHTML === 'Show More') {
+      e.target.innerHTML = 'Show Less';
+    } else {
+      e.target.innerHTML = 'Show More';
     }
   }
 
 
   render() {
-    const {fields: {num_images, first_image, exp_time, resolution, osc_start , energy, osc_range, transmission, shutterless, inverse_beam,centringMethod, detector_mode, kappa, kappa_phi, space_group, prefix, run_number, beam_size, dir }} = this.props;
+    const {
+      fields: {
+        num_images,
+        first_image,
+        exp_time,
+        resolution,
+        osc_start,
+        energy,
+        osc_range,
+        transmission,
+        shutterless,
+        inverse_beam,
+        centringMethod,
+        detector_mode,
+        kappa,
+        kappa_phi,
+        space_group,
+        prefix,
+        run_number,
+        beam_size,
+        dir
+      }
+    } = this.props;
 
     return (
         <Modal show={this.props.show} onHide={this.props.hide}>
@@ -63,19 +80,19 @@ class DataCollection extends React.Component {
                             Data location
                         </span>
                     </div>
-                
+
                     <form className="form-horizontal">
 
                      <div className="form-group">
 
                         <label className="col-sm-12 control-label">Path: /home/20160502/RAWDATA/{dir.value} </label>
-                    </div>  
+                    </div>
 
                      <div className="form-group">
 
                         <label className="col-sm-2 control-label">Subdirectory</label>
                         <div className="col-sm-4">
-                            <input type="text" className="form-control" {...dir}/>
+                            <input type="text" className="form-control" {...dir} />
                         </div>
 
                     </div>
@@ -87,12 +104,12 @@ class DataCollection extends React.Component {
                     <div className="form-group">
                         <label className="col-sm-3 control-label">Prefix</label>
                         <div className="col-sm-3">
-                            <input type="text" className="form-control" {...prefix}/>
+                            <input type="text" className="form-control" {...prefix} />
                         </div>
 
                         <label className="col-sm-3 control-label">Run number</label>
                         <div className="col-sm-3">
-                            <input type="number" className="form-control" {...run_number}/>
+                            <input type="number" className="form-control" {...run_number} />
                         </div>
 
                     </div>
@@ -197,7 +214,7 @@ class DataCollection extends React.Component {
                             <div className="col-sm-3">
                                 <select className="form-control" {...beam_size}>
                                     {this.props.apertureList.map((val, i) => {
-                                        return <option key={i} value={val}>{val}</option>
+                                      return <option key={i} value={val}>{val}</option>;
                                     })}
                                 </select>
                             </div>
@@ -326,10 +343,10 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'datacollection',                           // a unique name for this form
-  fields: ['num_images', 'first_image', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'shutterless','inverse_beam','centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'space_group', 'prefix', 'run_number', 'beam_size', 'dir'] // all the fields in your form
+  fields: ['num_images', 'first_image', 'exp_time', 'resolution', 'osc_start', 'energy', 'osc_range', 'transmission', 'shutterless', 'inverse_beam', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'space_group', 'prefix', 'run_number', 'beam_size', 'dir'] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: {...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture, prefix: "data", run_number: 1, dir: 'username'} // will pull state into form's initialValues
+  initialValues: { ...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture, prefix: 'data', run_number: 1, dir: 'username' } // will pull state into form's initialValues
 }))(DataCollection);
 
 export default DataCollection;
