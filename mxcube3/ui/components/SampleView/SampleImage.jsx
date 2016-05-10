@@ -51,7 +51,7 @@ export default class SampleImage extends React.Component {
     renderSampleView(nextProps){
         this.drawCanvas(nextProps.canvas, nextProps.imageRatio);
         this.drawImageOverlay(nextProps.canvas, nextProps.imageRatio, nextProps.currentAperture);
-        this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio);
+        this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio, nextProps.selectedPoint);
 
 
     }
@@ -101,7 +101,7 @@ export default class SampleImage extends React.Component {
     canvas.forEachObject((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
-          this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
+          this.props.sampleActions.showContextMenu(true, obj, obj.left, obj.top);
         }
     });
   }
@@ -110,20 +110,24 @@ export default class SampleImage extends React.Component {
     if (this.props.contextMenuShow) {
       this.props.sampleActions.showContextMenu(false);
     }
-
     if (this.props.clickCentring) {
       this.props.sampleActions.sendCentringPoint(option.e.layerX * this.props.imageRatio, option.e.layerY * this.props.imageRatio);
     }
   }
 
-  renderPoints(points, canvas, imageRatio){ 
+  renderPoints(points, canvas, imageRatio, selectedPoint){ 
+    console.log(selectedPoint);
     for(let id in points){
       switch (points[id].type){
         case "SAVED":
-          canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "green", "SAVED"));
+          if(id === selectedPoint.id){
+            canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "green", "SAVED"));
+          }else{
+            canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "yellow", "SAVED"));
+          }
           break;
         case "TMP":
-          canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "yellow", "TMP"));
+          canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "white", "TMP"));
           break;
         default:
           throw new Error("Server gave point with unknown type"); 

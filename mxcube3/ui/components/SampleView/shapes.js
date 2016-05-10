@@ -47,12 +47,12 @@ export function makeBeam(x, y, radius) {
   new fabric.Line([x-20, y, x+20, y], {
     fill: 'red',
     stroke: 'red',
-    strokeWidth: 2,
+    strokeWidth: 1,
     selectable: false
   }),new fabric.Line([x, y-20, x, y+20], {
     fill: 'red',
     stroke: 'red',
-    strokeWidth: 2,
+    strokeWidth: 1,
     selectable: false
   }),new fabric.Circle({
     radius: radius,

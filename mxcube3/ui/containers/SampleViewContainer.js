@@ -40,6 +40,7 @@ class SampleViewContainer extends Component {
               canvas={canvas}
               currentAperture={currentAperture}
               clickCentringPoints={clickCentringPoints}
+              selectedPoint={shape}
             />
             <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>
