@@ -1,12 +1,11 @@
 import React from 'react';
-import io from 'socket.io-client';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
+import Switch from 'react-bootstrap-switch';
+import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 
 import PopInput from '../components/PopInput/PopInput';
-import DefaultInput from '../components/PopInput/DefaultInput';
-import DefaultBusy from '../components/PopInput/DefaultBusy';
 
 import { getAllAttributes, setAttribute,
          abortCurrentAction } from '../actions/beamline';
@@ -40,53 +39,79 @@ class BeamlineSetupContainer extends React.Component {
   render() {
     return (
         <div className="beamline-setup-container">
-          <legend className="beamline-setup-header">
-            Beamline setup
-          </legend>
           <div className="beamline-setup-content">
             <table>
               <tbody>
                 <tr>
                   <td>
                     <PopInput
-                      ref="energy" name="Energy" pkey="energy" suffix="keV"
-                      data={this.props.data.energy} onSave={this.onSaveHandler}
-                      onCancel={this.onCancelHandler}
+                      ref="transmission"
+                      name="Transmission"
+                      pkey="transmission"
+                      suffix="%"
+                      data={this.props.data.transmission}
+                      onSave={this.onSaveHandler}
                     />
                   </td>
                   <td>
-                    <PopInput ref="key1" name="Resolution" suffix="&Aring;" value="0" />
-                  </td>
-                  <td>
-                    <PopInput ref="key2" name="Transmission" suffix="%" />
+                    <PopInput
+                      ref="resolution"
+                      name="Resolution"
+                      pkey="resolution"
+                      suffix="&Aring;"
+                      data={this.props.data.resolution}
+                      onSave={this.onSaveHandler}
+                    />
                   </td>
                 </tr>
                 <tr>
                   <td>
                     <PopInput
-                      ref="resolution" name="Resolution" pkey="resolution" suffix="&Aring;"
-                      data={this.props.data.resolution} onSave={this.onSaveHandler}
+                      ref="energy"
+                      name="Energy"
+                      pkey="energy"
+                      suffix="keV"
+                      data={this.props.data.energy}
+                      onSave={this.onSaveHandler}
                     />
                   </td>
                   <td>
-                    <PopInput ref="key3" name="Energy" suffix="KeV" />
-                  </td>
-                  <td>
-                    <PopInput ref="key4" name="Transmission" suffix="%" />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <PopInput
-                      ref="transmission" name="Transmission" pkey="transmission" suffix="%"
-                      data={this.props.data.transmission} onSave={this.onSaveHandler}
+                    <Switch
+                      size="mini"
+                      onText="Opened"
+                      offText="Closed"
+                      labelText="Fast Shutter"
                     />
                   </td>
                   <td>
-                    <PopInput ref="key5" name="Resolution" suffix="&Aring;" />
+                    <Switch
+                      size="mini"
+                      onText="Opened"
+                      offText="Closed"
+                      labelText="Safety Shutter"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <Switch
+                      size="mini"
+                      onText="Opened"
+                      offText="Closed"
+                      labelText="Beamstop"
+                    />
                   </td>
                   <td>
-                    <PopInput ref="key6" name="Energy" suffix="KeV" />
+                    <Switch
+                      size="mini"
+                      onText="Opened"
+                      offText="Closed"
+                      labelText="Capillary"
+                    />
                   </td>
                 </tr>
               </tbody>

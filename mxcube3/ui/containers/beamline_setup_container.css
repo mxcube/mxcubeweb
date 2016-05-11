@@ -1,9 +1,5 @@
 .beamline-setup-container{
-    background-color: white;
-    border: 1px solid #AAA;
-    border-radius: 3px;
-    box-shadow: 0px 2px 3px 0px #AAA;
-    padding: 10px;
+
 }
 
 .beamline-setup-container table{
