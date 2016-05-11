@@ -44,20 +44,61 @@ class Characterisation extends React.Component {
     this.props.hide();
   }
 
+  handleShowHide(e) {
+    if (e.target.innerHTML === 'Show More') {
+      e.target.innerHTML = 'Show Less';
+    } else {
+      e.target.innerHTML = 'Show More';
+    }
+  }
+
 
   render() {
 
-    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number }} = this.props;
+    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number, dir }} = this.props;
 
     return (
-        <Modal show={this.props.show} onHide={this.props.hide}>
+        <Modal show={this.props.show} onHide={this.props.hide} bsSize="large">
             <Modal.Header closeButton>
                 <Modal.Title>Characterisation</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                    <h4>Data location</h4>
+                    <form className="form-horizontal">
 
-                <h5>Acquisition</h5>
-                <hr />
+                     <div className="form-group">
+
+                        <label className="col-sm-12 control-label">Path: /home/20160502/RAWDATA/{dir.value} </label>
+                    </div>
+
+                     <div className="form-group">
+
+                        <label className="col-sm-2 control-label">Subdirectory</label>
+                        <div className="col-sm-4">
+                            <input type="text" className="form-control" {...dir} />
+                        </div>
+
+                    </div>
+
+                    <div className="form-group">
+                        <label className="col-sm-12 control-label">Filename: { prefix.value + '_' + run_number.value + '_xxxx.cbf'}</label>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Prefix</label>
+                        <div className="col-sm-3">
+                            <input type="text" className="form-control" {...prefix} />
+                        </div>
+
+                        <label className="col-sm-3 control-label">Run number</label>
+                        <div className="col-sm-3">
+                            <input type="number" className="form-control" {...run_number} />
+                        </div>
+
+                    </div>
+                    </form>
+                    <hr />
+                    <h4>Acquisition</h4>
                 <form className="form-horizontal">
 
                     <div className="form-group">
@@ -123,7 +164,7 @@ class Characterisation extends React.Component {
                         </div>
 
                     </div>
-
+                    <div className="collapse" id="acquisition">
                     <div className="form-group">
 
                         <label className="col-sm-3 control-label">Kappa:</label>
@@ -137,32 +178,16 @@ class Characterisation extends React.Component {
                         </div>
 
                     </div>
-
-                    <h5>Data location</h5>
-                    <hr />
-
-                     <div className="form-group">
-
-                        <label className="col-sm-12 control-label">File name: /user/biomax/experiment/{prefix.value + '/' + run_number.value}</label>
-                    </div>  
-
-                     <div className="form-group">
-
-                        <label className="col-sm-3 control-label">Prefix:</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...prefix}/>
-                        </div>
-
-                        <label className="col-sm-3 control-label">Run number:</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...run_number}/>
-                        </div>
-
                     </div>
 
-                    <h5>Characterisation</h5>
+                      <p className="text-right">
+                        <a data-toggle="collapse" data-target="#acquisition" aria-expanded="false" aria-controls="acquisition" onClick={this.handleShowHide}>
+                            Show More
+                        </a>
+                    </p>
                     <hr />
-
+                    <h4>Characterisation</h4>                      
+                    <div className="collapse" id="characterisation">
                     <div className="form-group">
 
                         <label className="col-sm-6 control-label">Strategy complexity:</label>
@@ -187,10 +212,15 @@ class Characterisation extends React.Component {
                         </label>
 
                     </div>
-
-                    <h5>Crystal</h5>
+                    </div>
+                     <p className="text-right">
+                        <a data-toggle="collapse" data-target="#characterisation" aria-expanded="false" aria-controls="characterisation" onClick={this.handleShowHide}>
+                            Show More
+                        </a>
+                    </p>                   
                     <hr />
-
+                    <h4>Crystal</h4>    
+                  <div className="collapse" id="crystal">
                     <div className="form-group">
 
                         <label className="col-sm-6 control-label">Space group:</label>
@@ -226,7 +256,12 @@ class Characterisation extends React.Component {
                         </div>
 
                     </div>
-
+                  </div>
+                    <p className="text-right">
+                        <a data-toggle="collapse" data-target="#crystal" aria-expanded="false" aria-controls="crystal" onClick={this.handleShowHide}>
+                            Show More
+                        </a>
+                    </p>
                 </form>
             </Modal.Body>
             <Modal.Footer>
@@ -248,7 +283,7 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number' ] // all the fields in your form
+  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number', 'dir' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
   initialValues: { ...state.taskForm.taskData.parameters } // will pull state into form's initialValues
