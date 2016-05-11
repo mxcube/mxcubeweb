@@ -116,7 +116,6 @@ export default class SampleImage extends React.Component {
   }
 
   renderPoints(points, canvas, imageRatio, selectedPoint){ 
-    console.log(selectedPoint);
     for(let id in points){
       switch (points[id].type){
         case "SAVED":
