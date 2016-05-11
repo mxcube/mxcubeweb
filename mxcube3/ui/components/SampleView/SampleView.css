@@ -201,3 +201,8 @@
 .step-size span{
     font-size:11px;
 }
+
+
+.btn-link:hover {
+    text-decoration: initial !important;
+}

@@ -17,8 +17,22 @@ export default class SampleControls extends React.Component {
     this.toogleBackLight = this.toogleLight.bind(this, 'back');
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.sampleViewState.zoom !== this.props.sampleViewState.zoom) {
+      this.refs.zoomSlider.value = nextProps.sampleViewState.zoom;
+    }
+  }
+
   setZoom(option) {
-    this.props.sampleActions.sendZoomPos(option.target.value);
+    const currentZoom = this.props.sampleViewState.zoom;
+    if(option.target.name === 'zoomOut'){
+      this.props.sampleActions.sendZoomPos(currentZoom - 1);
+    }else if(option.target.name === 'zoomSlider'){
+      this.props.sampleActions.sendZoomPos(option.target.value);
+    }else if(option.target.name === 'zoomIn'){
+      this.props.sampleActions.sendZoomPos(currentZoom + 1);
+    }
+
   }
 
   setApertureSize(option) {
@@ -104,20 +118,22 @@ export default class SampleControls extends React.Component {
             type="button"
             data-toggle="tooltip"
             title="Start 3-click Centring"
-            className="fa fa-2x fa-fw fa-circle-o-notch sample-controll"
+            className="fa fa-2x fa-circle-o-notch sample-controll"
             bsStyle="link"
             onClick={this.props.sampleActions.sendStartClickCentring}
             active={this.props.sampleViewState.clickCentring}
           />
 
-          <button
-            type="button"
-            data-toggle="tooltip"
-            title="Zoom out"
-            className="btn btn-link pull-center"
-          >
-            <i className="fa fa-2x fa-fw fa fa-search-minus"></i>
-          </button>
+
+            <Button
+              type="button"
+              data-toggle="tooltip"
+              title="Zoom out"
+              className="fa fa-2x fa-search-minus sample-controll"
+              bsStyle="link"
+              onClick={this.setZoom}
+              name="zoomOut"
+            />
           <input
             className="bar"
             type="range"
@@ -127,6 +143,8 @@ export default class SampleControls extends React.Component {
             defaultValue={this.props.sampleViewState.zoom}
             onMouseUp={this.setZoom}
             list="volsettings"
+            ref="zoomSlider"
+            name="zoomSlider"
           />
             <datalist id="volsettings">
                 <option>0</option>
@@ -140,14 +158,15 @@ export default class SampleControls extends React.Component {
                 <option>8</option>
                 <option>9</option>
             </datalist>
-            <button
+            <Button
               type="button"
               data-toggle="tooltip"
               title="Zoom in"
-              className="btn btn-link pull-center"
-            >
-              <i className="fa fa-2x fa-fw fa fa-search-plus"></i>
-            </button>
+              className="fa fa-2x fa-search-plus sample-controll"
+              bsStyle="link"
+              onClick={this.setZoom}
+              name="zoomIn"
+            />
 
             <button
               type="button"
@@ -163,7 +182,7 @@ export default class SampleControls extends React.Component {
               type="button"
               data-toggle="tooltip"
               title="Backlight On/Off"
-              className="fa fa-2x fa-fw fa fa-lightbulb-o sample-controll"
+              className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleBackLight}
               active={this.props.sampleViewState.lightOn.back}
@@ -182,7 +201,7 @@ export default class SampleControls extends React.Component {
               type="button"
               data-toggle="tooltip"
               title="Frontlight On/Off"
-              className="fa fa-2x fa-fw fa fa-lightbulb-o sample-controll"
+              className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleFrontLight}
               active={this.props.sampleViewState.lightOn.front}
