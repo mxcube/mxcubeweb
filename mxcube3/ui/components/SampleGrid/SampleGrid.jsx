@@ -18,11 +18,8 @@ export default class SampleGrid extends React.Component {
     if (! this.isotope) {
       const container = ReactDOM.findDOMNode(this);
       const options = { itemSelector: '.samples-grid-item',
-                        percentPosition: true,
-                        cellsByRow: {
-                          columnWidth: '190px',
-                          rowHeight: 'auto'
-                        } };
+                        layoutMode: 'masonry',
+                        masonry: { isFitWidth: true } };
 
       this.isotope = new Isotope(container, options);
     }

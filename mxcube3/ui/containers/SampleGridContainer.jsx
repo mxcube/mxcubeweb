@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem } from 'react-bootstrap';
+import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem,
+         PanelGroup, Panel} from 'react-bootstrap';
 import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples,
          sendManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid';
 
@@ -62,6 +63,10 @@ class SampleGridContainer extends React.Component {
     const innerSearchIcon = (
       <Button><Glyphicon glyph="search" /></Button>
     );
+
+   const panelHeader = (
+     <div> Pipline mode <Glyphicon className="pull-right" glyph="chevron-down" /></div>
+   );
 
     return (
       <div>
@@ -137,16 +142,18 @@ class SampleGridContainer extends React.Component {
           </div>
         </div>
         <div className="row">
-          <div className="col-xs-12">
-            <SampleTaskButtons 
-              defaultParameters={this.props.defaultParameters}
-              showForm={this.props.showTaskParametersForm}
-              selected={this.props.selected}
-            />
+          <div className="col-xs-6">
+            <PanelGroup accordion>
+              <Panel header={panelHeader}>
+                <SampleTaskButtons 
+                  defaultParameters={this.props.defaultParameters}
+                  showForm={this.props.showTaskParametersForm}
+                  selected={this.props.selected}
+                />
+              </Panel>
+            </PanelGroup>
           </div>
-        </div>
-        <div className="row">
-          <div className="col-xs-11">
+          <div className="col-xs-5">
             <Button className="btn btn-success pull-right" href="#/datacollection">
               Collect <Glyphicon glyph="chevron-right" />
             </Button>
