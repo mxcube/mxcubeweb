@@ -184,7 +184,7 @@ class DataCollection extends React.Component {
                     <div className="form-group">
 
 
-                        <label className="col-sm-3 control-label">Resolution (A)</label>
+                        <label className="col-sm-3 control-label">Resolution (Å)</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" step="0.1" {...resolution} />
                         </div>

@@ -55,15 +55,20 @@ class Characterisation extends React.Component {
 
   render() {
 
-    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number, dir }} = this.props;
+    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number, dir, beam_size }} = this.props;
 
     return (
-        <Modal show={this.props.show} onHide={this.props.hide} bsSize="large">
+        <Modal show={this.props.show} onHide={this.props.hide}>
             <Modal.Header closeButton>
                 <Modal.Title>Characterisation</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                    <h4>Data location</h4>
+                    <div className="task-title-head">
+                        <span className="task-title-body">
+                            Data location
+                        </span>
+                    </div>
+
                     <form className="form-horizontal">
 
                      <div className="form-group">
@@ -81,7 +86,7 @@ class Characterisation extends React.Component {
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-12 control-label">Filename: { prefix.value + '_' + run_number.value + '_xxxx.cbf'}</label>
+                        <label className="col-sm-12 control-label">Filename: { 'ref-' + prefix.value + '_' + run_number.value + '_xxxx.cbf'}</label>
                     </div>
 
                     <div className="form-group">
@@ -97,13 +102,16 @@ class Characterisation extends React.Component {
 
                     </div>
                     </form>
-                    <hr />
-                    <h4>Acquisition</h4>
+                    <div className="task-title-head">
+                        <span className="task-title-body">
+                            Acquisition
+                        </span>
+                    </div>
                 <form className="form-horizontal">
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Number of images:</label>
+                        <label className="col-sm-3 control-label">Number of images</label>
                         <div className="col-sm-3">
                              <select className="form-control" {...num_images}>
                                 <option value="1">1</option>
@@ -120,29 +128,28 @@ class Characterisation extends React.Component {
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Exposure time(ms):</label>
+                        <label className="col-sm-3 control-label">Exposure time(ms)</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...exp_time} />
                         </div>
-
-                        <label className="col-sm-3 control-label">Detector mode:</label>
+                        <label className="col-sm-3 control-label">Beam size</label>
                         <div className="col-sm-3">
-                             <select className="form-control" {...detector_mode}>
-                                <option value="1"></option>
-                                <option value="1">X</option>
-                                <option value="1">Y</option>
+                            <select className="form-control" {...beam_size}>
+                                {this.props.apertureList.map((val, i) => {
+                                  return <option key={i} value={val}>{val}</option>;
+                                })}
                             </select>
                         </div>
                     </div>
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Oscillation range:</label>
+                        <label className="col-sm-3 control-label">Oscillation range</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...osc_range} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Resolution (A):</label>
+                        <label className="col-sm-3 control-label">Resolution (Å)</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...resolution} />
                         </div>
@@ -153,12 +160,12 @@ class Characterisation extends React.Component {
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Oscillation start:</label>
+                        <label className="col-sm-3 control-label">Oscillation start</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...osc_start} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Energy (KeV):</label>
+                        <label className="col-sm-3 control-label">Energy (KeV)</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...energy} />
                         </div>
@@ -167,16 +174,26 @@ class Characterisation extends React.Component {
                     <div className="collapse" id="acquisition">
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Kappa:</label>
+                        <label className="col-sm-3 control-label">Kappa</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...kappa} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Phi:</label>
+                        <label className="col-sm-3 control-label">Phi</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...kappa_phi} />
                         </div>
 
+                    </div>
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Detector mode</label>
+                        <div className="col-sm-3">
+                             <select className="form-control" {...detector_mode}>
+                                <option value="1"></option>
+                                <option value="1">X</option>
+                                <option value="1">Y</option>
+                            </select>
+                        </div>
                     </div>
                     </div>
 
@@ -185,12 +202,15 @@ class Characterisation extends React.Component {
                             Show More
                         </a>
                     </p>
-                    <hr />
-                    <h4>Characterisation</h4>                      
+                    <div className="task-title-head">
+                        <span className="task-title-body">
+                            Characterisation
+                        </span>
+                    </div>                  
                     <div className="collapse" id="characterisation">
                     <div className="form-group">
 
-                        <label className="col-sm-6 control-label">Strategy complexity:</label>
+                        <label className="col-sm-6 control-label">Strategy complexity</label>
                         <div className="col-sm-6">
                              <select className="form-control" {...strategy_complexity}>
                                 <option value="1">Single subwedge</option>
@@ -217,13 +237,16 @@ class Characterisation extends React.Component {
                         <a data-toggle="collapse" data-target="#characterisation" aria-expanded="false" aria-controls="characterisation" onClick={this.handleShowHide}>
                             Show More
                         </a>
-                    </p>                   
-                    <hr />
-                    <h4>Crystal</h4>    
+                    </p> 
+                    <div className="task-title-head">
+                        <span className="task-title-body">
+                            Crystal
+                        </span>
+                    </div>                   
                   <div className="collapse" id="crystal">
                     <div className="form-group">
 
-                        <label className="col-sm-6 control-label">Space group:</label>
+                        <label className="col-sm-6 control-label">Space group</label>
                         <div className="col-sm-6">
                              <select className="form-control" {...space_group}>
                                 <option value="1"></option>
@@ -235,22 +258,22 @@ class Characterisation extends React.Component {
                     <h6>Vertical crystal dimension(mm)</h6>
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Min:</label>
+                        <label className="col-sm-3 control-label">Min</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...min_crystal_vdim} />
                         </div>
 
-                        <label className="col-sm-3 control-label">Max:</label>
+                        <label className="col-sm-3 control-label">Max</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...max_crystal_vdim} />
                         </div>
 
-                        <label className="col-sm-3 control-label">  &omega; at min:</label>
+                        <label className="col-sm-3 control-label">  &omega; at min</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...min_crystal_vphi} />
                         </div>
 
-                        <label className="col-sm-3 control-label">  &omega; at max:</label>
+                        <label className="col-sm-3 control-label">  &omega; at max</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...max_crystal_vphi} />
                         </div>
@@ -283,10 +306,10 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number', 'dir' ] // all the fields in your form
+  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number', 'dir', 'beam_size' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: { ...state.taskForm.taskData.parameters } // will pull state into form's initialValues
+  initialValues: { ...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture,  prefix: 'insulin', run_number: 1, dir: 'username'  } // will pull state into form's initialValues
 }))(Characterisation);
 
 export default Characterisation;

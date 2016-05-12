@@ -14,7 +14,7 @@ class TaskContainer extends React.Component {
     const lookup = this.props.lookup_queue_id;
     return (
       <div className="col-xs-12">
-            <Characterisation pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'Characterisation'}/>
+            <Characterisation pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} apertureList={this.props.apertureList} show={this.props.showForm === 'Characterisation'}/>
             <DataCollection pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} apertureList={this.props.apertureList} show={this.props.showForm === 'DataCollection'}/>
             <AddSample hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'AddSample'} add={this.props.doAddSample} id={this.props.manualMountID} phase={this.props.currentPhase} />
       </div>);
