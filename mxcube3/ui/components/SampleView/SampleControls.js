@@ -24,12 +24,12 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const currentZoom = this.props.sampleViewState.zoom;
-    if(option.target.name === 'zoomOut'){
+    const currentZoom = parseInt(this.props.sampleViewState.zoom);
+    if(option.target.name === 'zoomOut' && currentZoom > 0 ){
       this.props.sampleActions.sendZoomPos(currentZoom - 1);
     }else if(option.target.name === 'zoomSlider'){
       this.props.sampleActions.sendZoomPos(option.target.value);
-    }else if(option.target.name === 'zoomIn'){
+    }else if(option.target.name === 'zoomIn' && currentZoom < 9){
       this.props.sampleActions.sendZoomPos(currentZoom + 1);
     }
 
@@ -81,14 +81,13 @@ export default class SampleControls extends React.Component {
             </Popover>
             }
           >
-            <button
-              type="button"
-              data-toggle="tooltip"
-              title="Set Aperture"
-              className="btn btn-link pull-center"
-            >
-              <i className="fa fa-2x fa-fw fa-dot-circle-o"></i>
-            </button>
+          <Button
+            type="button"
+            data-toggle="tooltip"
+            title="Set Aperture"
+            className="fa fa-2x fa-dot-circle-o sample-controll"
+            bsStyle="link"
+          />
           </OverlayTrigger>
 
           <a
@@ -104,16 +103,14 @@ export default class SampleControls extends React.Component {
             <i className="fa fa-2x fa-fw fa-camera"></i>
           </a>
 
-          <button
+          <Button
             type="button"
             data-toggle="tooltip"
             title="Start auto centring"
-            className="btn btn-link pull-center"
+            className="fa fa-2x fa-arrows sample-controll"
+            bsStyle="link"
             onClick={this.props.sampleActions.sendStartAutoCentring}
-          >
-            <i className="fa fa-2x fa-fw fa-arrows"></i>
-          </button>
-
+          />
           <Button
             type="button"
             data-toggle="tooltip"
@@ -124,16 +121,16 @@ export default class SampleControls extends React.Component {
             active={this.props.sampleViewState.clickCentring}
           />
 
+          <Button
+            type="button"
+            data-toggle="tooltip"
+            title="Zoom out"
+            className="fa fa-2x fa-search-minus sample-controll"
+            bsStyle="link"
+            onClick={this.setZoom}
+            name="zoomOut"
+          />
 
-            <Button
-              type="button"
-              data-toggle="tooltip"
-              title="Zoom out"
-              className="fa fa-2x fa-search-minus sample-controll"
-              bsStyle="link"
-              onClick={this.setZoom}
-              name="zoomOut"
-            />
           <input
             className="bar"
             type="range"
@@ -168,15 +165,14 @@ export default class SampleControls extends React.Component {
               name="zoomIn"
             />
 
-            <button
+            <Button
               type="button"
               data-toggle="tooltip"
               title="Abort Centring"
-              className="btn btn-link pull-center"
+              className="fa fa-2x fa-times sample-controll"
+              bsStyle="link"
               onClick={this.props.sampleActions.sendAbortCentring}
-            >
-              <i className="fa fa-2x fa-fw fa-times"></i>
-            </button>
+            />
 
             <Button
               type="button"
