@@ -202,7 +202,6 @@
     font-size:11px;
 }
 
-
-.btn-link:hover {
+.btn-link:hover, .btn-link:focus{
     text-decoration: initial !important;
 }
