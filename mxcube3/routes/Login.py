@@ -1,7 +1,8 @@
-from flask import session, request, jsonify, Response
+from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
+from mxcube3.routes import Queue, Utils
 import logging
-import os, jsonpickle
+import os
 import types
 
 
@@ -21,6 +22,7 @@ def convert_to_dict(ispyb_object):
             d[key] = val
     return d
 
+
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
     """
@@ -31,66 +33,55 @@ def login():
         :statuscode: 200: no error
         :statuscode: 409: could not log in
     """
-
-#    beamline_name = os.environ.get("SMIS_BEAMLINE_NAME")
     content = request.get_json()
     loginID = content['proposal']
     password = content['password']
-    logging.getLogger('HWR').info(loginID)
-
     loginRes = mxcube.db_connection.login(loginID, password)
+   
     if loginRes['status']['code'] == 'ok':
-        session['proposal_id'] = loginID
         session['loginInfo'] = { 'loginID': loginID, 'password': password, 'loginRes': loginRes }
-        mxcube.session.proposal_id = loginID #do we still need this?
 #        loginRes structure
 #        {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal,
 #        'session': todays_session,
 #        "local_contact": self.get_session_local_contact(todays_session['session']['sessionId']),
 #        "person": prop['Person'],
 #        "laboratory": prop['Laboratory']}
-        session_queue = session.get("queueList", "{}")
-        if len(session_queue) == 0:
-          mxcube.queue = None
-        else:
-          mxcube.queue = jsonpickle.decode(session_queue)
-    return jsonify(convert_to_dict(loginRes))
+
+    return make_response(loginRes['status']['code'], 200)
 
 @mxcube.route("/mxcube/api/v0.1/signout")
 def signout():
     """
     Signout from Mxcube3 and clean the session
     """
-    session['loginInfo'] = None
-    session['queueList'] = None
-    return ""
+    session.clear()
+    mxcube.queue = None
+    return make_response("", 200)
 
-# information to display on the login page
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
 def loginInfo():
     """
-    Retrieve sessoin/login info
+    Retrieve session/login info
      :response Content-Type: application/json, {"synchrotron_name": synchrotron_name, "beamline_name": beamline_name,
                     "loginType": loginType, "loginRes": {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal, 'session': todays_session, "local_contact": local_contact, "person": someone, "laboratory": a_laboratory']} }
     """
-    synchrotron_name = mxcube.session.synchrotron_name
-    beamline_name = mxcube.session.beamline_name
-    loginType = mxcube.db_connection.loginType.title()
-
     loginInfo = session.get("loginInfo")
-    if loginInfo is None:
-        session["queueList"] = {}
-    else:
+    print '>'*50, 'login info',loginInfo
+
+    if loginInfo is not None:
         loginInfo["loginRes"] = mxcube.db_connection.login(loginInfo["loginID"], loginInfo["password"])
         session['loginInfo'] = loginInfo
+  
+    mxcube.queue = Utils.get_queue(session) 
  
     return jsonify(
-                    {"synchrotron_name": synchrotron_name,
-                    "beamline_name": beamline_name,
-                    "loginType": loginType,
-                    "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {})
+                    { "synchrotron_name": mxcube.session.synchrotron_name,
+                      "beamline_name": mxcube.session.beamline_name,
+                      "loginType": mxcube.db_connection.loginType.title(),
+                      "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {}),
+                      "queue": Queue.serializeQueueToJson()
                     }
-                   )
+                  )
 
 @mxcube.route("/mxcube/api/v0.1/initialstatus", methods=["GET"])
 def get_initial_state():
