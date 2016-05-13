@@ -7,19 +7,32 @@ export default class MXNavbar extends React.Component {
   render() {
     let proposal = this.props.userInfo.Proposal;
     let propInfo = (this.props.loggedIn ? proposal.title + ' - ' + proposal.code : '');
-    return (
-                <Navbar inverse fluid fixedTop>
+    return (<div>
+            <Navbar fluid fixedTop className="main-menu-top">
                     <NavBrand>MXCuBE 3</NavBrand>
-                    <Nav navbar>
-                        <NavItem eventKey={1} active={(this.props.location.pathname === '/') ? true : false} href="#/">Samples</NavItem>
-                        <NavItem eventKey={2} active={(this.props.location.pathname === '/datacollection') ? true : false} href="#/datacollection">Data Collection</NavItem>
-                        <NavItem eventKey={3} active={(this.props.location.pathname === '/logging') ? true : false} href="#/logging">System log</NavItem>
-                    </Nav>
                     <Nav right eventKey={0}>
                         <p className="navbar-text" style={{ float: 'none', display: 'inline-block' }}>{propInfo}</p>
-                        <button className="btn btn-sm btn-info" style={{ marginRight: '15px' }} onClick={this.props.reset}>Reset</button>
                         <a className="btn btn-sm btn-danger" style={{ marginRight: '15px' }} onClick={this.props.signOut} href="#/login">Log out</a>
                  </Nav>
-                </Navbar>);
+            </Navbar>
+            <div className="main-menu">
+                <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} >
+                    <a className="fa fa-2x fa-bars icon" aria-hidden="true" href="#/"></a>
+                </p>
+                <hr className="menu-breaker" />
+                <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} >
+                    <a className="fa fa-2x fa-crosshairs icon" aria-hidden="true" href="#/datacollection"></a>
+                </p>
+                <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} href="#/">
+                    <a className="fa fa-2x fa-book icon" aria-hidden="true" href="#/logging"></a>
+                </p>
+                <hr className="menu-breaker" />
+                <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} href="#/">
+                    <i className="fa fa-2x fa-trash-o icon" aria-hidden="true" onClick={this.props.reset}></i>
+                </p>
+            </div>
+            </div>
+
+                );
   }
 }

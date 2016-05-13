@@ -4,6 +4,8 @@ import 'bootstrap';
 import './app.less';
 import cx from 'classnames';
 import TaskItem from './TaskItem';
+import { Button } from 'react-bootstrap';
+
 
 
 
@@ -16,6 +18,7 @@ export default class CurrentTree extends React.Component {
     this.collapse = props.collapse.bind(this, 'current');
     this.runSample = this.runSample.bind(this);
     this.unmount = this.unMountSample.bind(this);
+    this.showForm = this.props.showForm.bind(this, "AddSample");
 
   }
 
@@ -52,10 +55,11 @@ export default class CurrentTree extends React.Component {
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>{(node ? 'Vial ' + sampleData.id : 'No Sample Mounted')}</span>
                      <div className={node ? 'pull-right' : 'hidden'}>
-                        <i className="fa fa-sign-out" onClick={this.unmount}></i>
-                        <i className="fa fa-play" onClick={this.runSample}></i>
-                        <i className="fa fa-pause"></i>
-                        <i className="fa fa-stop"></i>
+                      <Button bsStyle="primary" bsSize="sm" onClick={this.unmount}>New Sample</Button>
+                      <Button bsStyle="success" bsSize="sm" onClick={this.runSample}>Run</Button>
+                    </div>
+                    <div className={!node ? 'pull-right' : 'hidden'}>
+                      <Button bsStyle="primary" bsSize="sm" onClick={this.showForm}>New Sample</Button>
                     </div>
                     <hr className="queue-divider" />
                 </div>

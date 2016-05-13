@@ -18,9 +18,9 @@ export default class ServerIO {
 
     const energy = io.connect(`http://${document.domain}:${location.port}/beamline/energy`);
 
-    // socket.on('log_record', (record) => {
-    //     this.dispatch(addLogRecord(record));
-    // });
+    socket.on('log_record', (record) => {
+        this.dispatch(addLogRecord(record));
+    });
 
     socketHWR.on('Motors', (record) => {
       this.dispatch(updatePointsPosition(record.CentredPositions));

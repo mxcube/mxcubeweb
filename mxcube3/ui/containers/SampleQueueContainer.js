@@ -65,9 +65,6 @@ export default class SampleQueueContainer extends React.Component {
     return (
 
       <div>
-            <div className="queue-head">
-                <SampleQueueSearch />
-            </div>
             <div className="queue-body">
                 <CurrentTree
                   changeOrder={changeTaskOrder}
@@ -84,7 +81,6 @@ export default class SampleQueueContainer extends React.Component {
                   showForm={showForm}
                   unmount={sendUnmountSample}
                 />
-                {!mounted ? <TodoTree show={todo.collapsed} collapse={collapseList} list={this.filterList(todo.nodes)} sampleInformation={sampleInformation} lookup={lookup} deleteSample={sendDeleteSample} mountSample={sendMountSample} changeOrder={changeOrder} /> : null}
                 <HistoryTree show={history.collapsed} collapse={collapseList} collapsedSamples={collapsedSamples} list={this.filterList(history.nodes)} sampleInformation={sampleInformation} queue={queue} lookup={lookup} collapseSample={collapseSample} />
             </div>
       </div>

@@ -67,7 +67,7 @@ class SampleGridContainer extends React.Component {
       <div className="row">
         <div
           className="navbar-default col-xs-12"
-          style={{ position: 'fixed', zIndex: 1, paddingTop: 11, marginTop: -12 }}
+          style={{ position: 'fixed', zIndex: 1, paddingTop: 11, marginTop: -12, paddingRight: 70 }}
         >
           <div className="row">
             <div className="col-xs-4">

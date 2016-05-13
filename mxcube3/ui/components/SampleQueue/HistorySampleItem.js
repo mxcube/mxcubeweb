@@ -32,9 +32,6 @@ export default class HistorySampleItem extends React.Component {
     return (
         <div className="node node-sample">
           <span className="node-name" onClick={this.collapseSample}>Vial {data.id}</span>
-            <div className="pull-right">
-                <i className="fa fa-sign-in"></i>
-            </div>
             <div className={this.props.show ? 'node-tasks' : 'hidden'}>
                 {queue[id].map((id, i) => {
                   return this.renderTask(data.tasks[id], i);
