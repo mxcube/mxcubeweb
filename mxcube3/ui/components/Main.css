@@ -51,3 +51,7 @@ input[type="radio"], input[type="checkbox"] {
         font-size: 10px;
     }
 }
+
+.modal-header {
+    border-bottom: none !important;
+}
