@@ -1,12 +1,41 @@
 from mxcube3 import app as mxcube
-from flask import Response
+from flask import Response, session
 from functools import wraps
+import jsonpickle
+import redis
+
+def _proposal_id(session):
+    try:      
+        return int(session["loginInfo"]["loginRes"]["Proposal"]["number"])
+    except (KeyError, TypeError, ValueError):
+        return None
+
+def save_queue(session, redis=redis.Redis()):
+    proposal_id = _proposal_id(session)
+    if proposal_id is not None:
+        redis.set("mxcube:queue:%d" % proposal_id, jsonpickle.encode(mxcube.queue))
+
+def new_queue(serialized_queue=None):
+    if not serialized_queue:
+        serialized_queue = mxcube.empty_queue
+    queue = jsonpickle.decode(serialized_queue)
+    import Queue
+    Queue.init_signals(queue)
+    return queue 
+
+def get_queue(session, redis=redis.Redis()): 
+    proposal_id = _proposal_id(session)
+    if proposal_id is not None:
+        serialized_queue = redis.get("mxcube:queue:%d" % proposal_id)
+    else:
+        serialized_queue = None
+
+    return new_queue(serialized_queue)
 
 def mxlogin_required(func):
     """
     If you decorate a view with this, it will ensure that the current user is
-    logged in calling the actual view. It checks the session hardware object
-    to see if the proposal_id has a number (the routes.login does that)
+    logged in calling the actual view. 
     TODO: how much secure is this? need to implement OAuth2 as well
     For example::
 
@@ -20,7 +49,7 @@ def mxlogin_required(func):
     """
     @wraps(func)
     def decorated_view(*args, **kwargs):
-        if not mxcube.session.proposal_id:
+        if not session.get("loginInfo"):
             return Response(status=401)
         return func(*args, **kwargs)
     return decorated_view
@@ -73,7 +102,7 @@ def my_execute_entry(self, entry):
 
 def __execute_entry(self, entry):
     print "my execute_entry"
-    from routes.Queue import queueList, lastQueueNode
+    from routes.Queue import queue, lastQueueNode
     import logging
     logging.getLogger('queue_exec').info('Executing mxcube3 customized entry')
 
@@ -83,7 +112,7 @@ def __execute_entry(self, entry):
     #if this is a sample, parentId will be '0'
     if parentId == 0:  # Sample... 0 is your father...
         parentId = nodeId
-    lastQueueNode.update({'id': nodeId, 'sample': queueList[parentId]['SampleId']})
+    lastQueueNode.update({'id': nodeId, 'sample': queue[parentId]['SampleId']})
     print "enabling....", entry
     #entry.set_enabled(True)
     if not entry.is_enabled() or self._is_stopped:

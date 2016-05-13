@@ -6,6 +6,7 @@ from optparse import OptionParser
 import os
 import sys
 import logging
+import jsonpickle
 import gevent
 
 opt_parser = OptionParser()
@@ -30,6 +31,7 @@ cmdline_options, args = opt_parser.parse_args()
 socketio = SocketIO()
 app = Flask(__name__, static_url_path='')
 app.config['SESSION_TYPE'] = "redis"
+app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
 app.config['SECRET_KEY'] = "nosecretfornow"
 sess = Session()
 sess.init_app(app)
@@ -64,18 +66,20 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     app.log_handler = custom_log_handler
 
     ###Importing all REST-routes
-    import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Queue, routes.Diffractometer
+    import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Diffractometer
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
-        routes.SampleCentring.init_signals()
         app.db_connection = app.beamline.getObjectByRole("lims_client")
-        app.queue = hwr.getHardwareObject(cmdline_options.queue_model)
-        routes.Queue.init_signals()
+        app.empty_queue = jsonpickle.encode(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
+        try:
+            routes.SampleCentring.init_signals()
+        except Exception:
+            sys.excepthook(*sys.exc_info())
 
     # starting from here, requests can be received by server;
     # however, objects are not all initialized, so requests can return errors
