@@ -39,9 +39,19 @@ input[type="radio"], input[type="checkbox"] {
 }
 @media all and (max-width: 1400px) { /* screen size until 1200px */
     body {
-        font-size: 10px; 
+        font-size: 12px; 
     }
-    .fa.fa-2x{
-        font-size: 1.0em;
+    .motor-abort{
+        display: none !important;
     }
+    .motor-name {
+        line-height: 25px;
+    }
+    .step-size span{
+        font-size: 10px;
+    }
+}
+
+.modal-header {
+    border-bottom: none !important;
 }

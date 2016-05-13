@@ -68,8 +68,8 @@ export default class MotorInput extends React.Component {
               {this.props.saveStep ?
                 <span>
                   <Button
+                    className="btn-sm motor-abort"
                     bsStyle="default"
-                    className="btn-sm"
                     disabled={this.props.state !== 4}
                     onClick={this.stopMotor}
                   >

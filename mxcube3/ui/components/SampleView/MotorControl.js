@@ -6,7 +6,7 @@ export default class MotorControl extends React.Component {
 
     render() {
         const { Phi, PhiY, PhiZ, Focus, Sampx, Sampy } = this.props.motors;
-        const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampxStep, SampyStep } = this.props.steps;
+        const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampXStep, SampYStep } = this.props.steps;
         const save = this.props.save;
         const saveStep = this.props.saveStep;
         const stop = this.props.stop;
@@ -111,7 +111,7 @@ export default class MotorControl extends React.Component {
                       save={save}
                       value={Sampx.position}
                       saveStep={saveStep}
-                      step={SampxStep}
+                      step={SampXStep}
                       motorName="SampX"
                       suffix="mm"
                       decimalPoints="2"
@@ -126,7 +126,7 @@ export default class MotorControl extends React.Component {
                       save={save}
                       value={Sampy.position}
                       saveStep={saveStep}
-                      step={SampyStep}
+                      step={SampYStep}
                       motorName="SampY"
                       suffix="mm"
                       decimalPoints="2"

@@ -73,9 +73,9 @@ export function StopClickCentring() {
   };
 }
 
-export function addCentringPoint() {
+export function addCentringPoint(x, y) {
   return {
-    type: 'ADD_CENTRING_POINT'
+    type: 'ADD_CENTRING_POINT', x, y
   };
 }
 
@@ -158,7 +158,7 @@ export function sendCentringPoint(x, y) {
         throw new Error('Server refused to add point');
       }
     }).then(function () {
-      dispatch(addCentringPoint());
+      dispatch(addCentringPoint(x, y));
     });
   };
 }

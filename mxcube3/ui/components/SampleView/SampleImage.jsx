@@ -15,6 +15,7 @@ export default class SampleImage extends React.Component {
   componentDidMount() {
         // Create fabric and set image background to sample
         var canvas = new fabric.Canvas('canvas');
+        canvas.defaultCursor = 'crosshair'
 
         // Bind leftClick to function
         canvas.on('mouse:down', (option) => this.leftClick(option));
@@ -49,8 +50,9 @@ export default class SampleImage extends React.Component {
 
     renderSampleView(nextProps){
         this.drawCanvas(nextProps.canvas, nextProps.imageRatio);
-        this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio);
         this.drawImageOverlay(nextProps.canvas, nextProps.imageRatio, nextProps.currentAperture);
+        this.renderPoints(nextProps.shapeList, nextProps.canvas, nextProps.imageRatio, nextProps.selectedPoint);
+
 
     }
 
@@ -78,10 +80,15 @@ export default class SampleImage extends React.Component {
   drawImageOverlay(canvas, imageRatio, currentAperture) {
     let apertureDiameter = currentAperture * 0.001 * this.props.pixelsPerMm / imageRatio;
     let scaleLength = 0.05 * this.props.pixelsPerMm / imageRatio;
-    canvas.add(makeBeam(canvas.width / 2, canvas.height / 2, apertureDiameter / 2));
-    canvas.add(makeLine(10, canvas.height - 10, scaleLength + 10, canvas.height - 10));
-    canvas.add(makeLine(10, canvas.height - 10, 10, canvas.height - 10 - scaleLength));
+    canvas.add(...makeBeam(canvas.width / 2, canvas.height / 2, apertureDiameter / 2));
+    canvas.add(makeLine(10, canvas.height - 10, scaleLength + 10, canvas.height - 10, 'green', 4));
+    canvas.add(makeLine(10, canvas.height - 10, 10, canvas.height - 10 - scaleLength, 'green', 4));
     canvas.add(makeText(20, canvas.height - 30, 16));
+    if(this.props.clickCentringPoints.length){
+      let point = this.props.clickCentringPoints[this.props.clickCentringPoints.length-1];
+      canvas.add(makeLine(point.x / imageRatio, 0, point.x / imageRatio, canvas.height, 'yellow', 2));
+      canvas.add(makeLine(0, point.y / imageRatio, canvas.width, point.y / imageRatio, 'yellow', 2));
+    }
   }
 
   rightClick(e, canvas) {
@@ -94,7 +101,7 @@ export default class SampleImage extends React.Component {
     canvas.forEachObject((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
-          this.props.sampleActions.showContextMenu(true, obj, e.offsetX, e.offsetY);
+          this.props.sampleActions.showContextMenu(true, obj, obj.left, obj.top);
         }
     });
   }
@@ -103,20 +110,23 @@ export default class SampleImage extends React.Component {
     if (this.props.contextMenuShow) {
       this.props.sampleActions.showContextMenu(false);
     }
-
     if (this.props.clickCentring) {
       this.props.sampleActions.sendCentringPoint(option.e.layerX * this.props.imageRatio, option.e.layerY * this.props.imageRatio);
     }
   }
 
-  renderPoints(points, canvas, imageRatio){ 
+  renderPoints(points, canvas, imageRatio, selectedPoint){ 
     for(let id in points){
       switch (points[id].type){
         case "SAVED":
-          canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "green", "SAVED"));
+          if(id === selectedPoint.id){
+            canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "green", "SAVED"));
+          }else{
+            canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "yellow", "SAVED"));
+          }
           break;
         case "TMP":
-          canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "grey", "TMP"));
+          canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id,  "white", "TMP"));
           break;
         default:
           throw new Error("Server gave point with unknown type"); 
