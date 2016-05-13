@@ -61,7 +61,6 @@ input[type="radio"], input[type="checkbox"] {
     width: 65px;
     background-color: #222;
     border-color: #080808;
-    padding-top: 20px;
 }
 
 .main-menu-icon{
@@ -85,11 +84,3 @@ input[type="radio"], input[type="checkbox"] {
     background-color: #5D5D5D;
 }
 
-
-.menu-breaker{
-    border-top: 1px solid #615F5F;
-    margin: 15px;
-}
-.main-menu-top{
-    margin-left: 65px !important;
-}
