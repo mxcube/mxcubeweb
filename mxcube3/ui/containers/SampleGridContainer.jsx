@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem } from 'react-bootstrap';
+import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem,
+         PanelGroup, Panel} from 'react-bootstrap';
 import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples,
          sendManualMount, doUnselectAll, sendDeleteSampleTask } from '../actions/samples_grid';
 
@@ -60,99 +61,103 @@ class SampleGridContainer extends React.Component {
 
   render() {
     const innerSearchIcon = (
-            <Button><Glyphicon glyph="search" /></Button>
-          );
+      <Button><Glyphicon glyph="search" /></Button>
+    );
+
+   const panelHeader = (
+     <div> Pipline mode <Glyphicon className="pull-right" glyph="chevron-down" /></div>
+   );
 
     return (
-      <div className="row">
-        <div
-          className="navbar-default col-xs-12"
-          style={{ position: 'fixed', zIndex: 1, paddingTop: 11, marginTop: -12 }}
-        >
-          <div className="row">
-            <div className="col-xs-4">
-              <div className="form-horizontal">
-                <Input
-                  type="text"
-                  ref="filter_input"
-                  defaultValue={this.props.filterText}
-                  label="Filter"
-                  labelClassName="col-xs-2"
-                  wrapperClassName="col-xs-9"
-                  buttonAfter={innerSearchIcon}
-                  onChange={this.filterSampleGrid}
-                />
-              </div>
-            </div>
-            <div className={"col-xs-4"} >
-              <ButtonToolbar>
-                <SplitButton
-                  bsStyle="primary"
-                  pullRight
-                  title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
-                  onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples}
-                  onSelect={this.manualMount}
-                  id="split-button-sample-changer-selection"
-                >
-                  <MenuItem eventKey="1">
-                    {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
-                  </MenuItem>
-                </SplitButton>
-                <Button
-                  className="btn-primary"
-                  disabled={this.props.manualMount}
-                  onClick={this.syncSamples}
-                >
-                  <Glyphicon glyph="refresh" /> Sync. ISPyB
-                </Button>
-              </ButtonToolbar>
-            </div>
-            <div className="col-xs-4">
-              <ButtonToolbar>
-                <Button
-                  className="btn-success pull-right"
-                  onClick={this.addSamples}
-                  disabled={this.props.manualMount}
-                >
-                  <Glyphicon glyph="plus" /> Add To Queue
-                </Button>
-                <Button
-                  className="btn pull-right"
-                  onClick={this.props.unselectAll}
-                  disabled={this.props.manualMount}
-                >
-                  Unselect all
-                </Button>
-                <Button
-                  className="btn pull-right"
-                  onClick={this.props.selectAll}
-                  disabled={this.props.manualMount}
-                >
-                  Select all
-                </Button>
-              </ButtonToolbar>
-            </div>
+      <div>
+        <div className="row row-centered">
+          <div className={"col-centered"} >
+            <ButtonToolbar>
+              <SplitButton
+                bsStyle="primary"
+                title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
+                onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples}
+                onSelect={this.manualMount}
+                id="split-button-sample-changer-selection"
+              >
+              <MenuItem eventKey="1">
+                {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
+              </MenuItem>
+              </SplitButton>
+              <Button
+                className="btn-primary"
+                disabled={this.props.manualMount}
+                onClick={this.syncSamples}
+              >
+                <Glyphicon glyph="refresh" /> Sync. ISPyB
+              </Button>
+            </ButtonToolbar>
           </div>
-          <div className="row">
-            <div className="col-xs-12">
-              <SampleTaskButtons
-                defaultParameters={this.props.defaultParameters}
-                showForm={this.props.showTaskParametersForm}
-                selected={this.props.selected}
+        </div>
+        <div className="row">
+          <div className="col-xs-4">
+            <ButtonToolbar>
+              <Button
+                className="btn"
+                onClick={this.props.unselectAll}
+                disabled={this.props.manualMount}
+              >
+                Unselect all
+              </Button>
+              <Button
+                className="btn"
+                onClick={this.props.selectAll}
+                disabled={this.props.manualMount}
+              >
+                Select all
+              </Button>
+            </ButtonToolbar>
+          </div>
+          <div className="col-xs-7">
+            <div className="form-horizontal pull-right">
+              <Input
+                type="text"
+                ref="filter_input"
+                defaultValue={this.props.filterText}
+                label="Filter:"
+                labelClassName="col-xs-2"
+                wrapperClassName="col-xs-10"
+                buttonAfter={innerSearchIcon}
+                onChange={this.filterSampleGrid}
               />
             </div>
           </div>
         </div>
-        <div className="col-xs-12" style={{ paddingTop: 103 }}>
-          <SampleGrid
-            samples_list={this.props.samplesList}
-            selected={this.props.selected}
-            toggleSelected={this.props.toggleSelected}
-            filter_text={this.props.filterText}
-            queue={this.props.queue}
-            showTaskParametersForm={this.props.showTaskParametersForm}
-            deleteTask={this.props.deleteTask}
-          />
+        <div className="row">
+          <div className="col-xs-12">
+            <SampleGrid
+              samples_list={this.props.samplesList}
+              selected={this.props.selected}
+              toggleSelected={this.props.toggleSelected}
+              filter_text={this.props.filterText}
+              queue={this.props.queue}
+              showTaskParametersForm={this.props.showTaskParametersForm}
+              deleteTask={this.props.deleteTask}
+            />
+          </div>
+        </div>
+        <div className="row">
+          <div className="col-xs-6">
+            <PanelGroup accordion>
+              <Panel header={panelHeader}>
+                <SampleTaskButtons 
+                  defaultParameters={this.props.defaultParameters}
+                  showForm={this.props.showTaskParametersForm}
+                  selected={this.props.selected}
+                />
+              </Panel>
+            </PanelGroup>
+          </div>
+          <div className="col-xs-5">
+            <Button className="btn btn-success pull-right" href="#/datacollection">
+              Collect <Glyphicon glyph="chevron-right" />
+            </Button>
+          </div>
         </div>
       </div>);
   }
