@@ -38,7 +38,7 @@ export default class MotorControl extends React.Component {
                       step="0.1"
                       value={0}
                       motorName="Kappa"
-                      suffix="mm"
+                      suffix="&deg;"
                       decimalPoints="2"
                       state="3"
                       stop={stop}
@@ -53,7 +53,7 @@ export default class MotorControl extends React.Component {
                       step="0.1"
                       value={0}
                       motorName="Phi"
-                      suffix="mm"
+                      suffix="&deg;"
                       decimalPoints="2"
                       state="3"
                       stop={stop}
@@ -68,7 +68,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={PhiYStep}
                       motorName="PhiY"
-                      suffix="mm"
+                      suffix="&deg;"
                       decimalPoints="2"
                       state={PhiY.Status}
                       stop={stop}
@@ -83,7 +83,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={PhiZStep}
                       motorName="PhiZ"
-                      suffix="mm"
+                      suffix="&deg;"
                       decimalPoints="2"
                       state={PhiZ.Status}
                       stop={stop}
@@ -98,7 +98,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={FocusStep}
                       motorName="Focus"
-                      suffix="mm"
+                      suffix="&deg;"
                       decimalPoints="2"
                       state={Focus.Status}
                       stop={stop}
@@ -113,7 +113,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={SampXStep}
                       motorName="SampX"
-                      suffix="mm"
+                      suffix="&deg;"
                       decimalPoints="2"
                       state={Sampx.Status}
                       stop={stop}
@@ -128,7 +128,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={SampYStep}
                       motorName="SampY"
-                      suffix="mm"
+                      suffix="&deg;"
                       decimalPoints="2"
                       state={Sampy.Status}
                       stop={stop}
