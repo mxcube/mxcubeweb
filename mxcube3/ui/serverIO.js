@@ -40,7 +40,6 @@ export default class ServerIO {
     });
 
     socketHWR.on('Task', (record) => {
-        console.log(record);
         this.dispatch(doAddTaskResult(record.Sample, record.QueueId, record.State));
     });
 
