@@ -42,6 +42,21 @@ export function makeText(x, y, fontSize) {
   });
 }
 
+export function makeScale(height, scaleLength) {
+  return [
+    makeLine(10, height - 10, scaleLength + 10, height - 10, 'green', 4),
+    makeLine(10, height - 10, 10, height - 10 - scaleLength, 'green', 4),
+    makeText(20, height - 30, 16)
+  ];
+}
+
+export function makeCross(point, imageRatio, width, height) {
+  return [
+    makeLine(point.x / imageRatio, 0, point.x / imageRatio, height, 'yellow', 2),
+    makeLine(0, point.y / imageRatio, width, point.y / imageRatio, 'yellow', 2)
+  ];
+}
+
 export function makeBeam(x, y, radius) {
   return [
   new fabric.Line([x-20, y, x+20, y], {

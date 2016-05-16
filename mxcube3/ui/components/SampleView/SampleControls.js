@@ -182,7 +182,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleBackLight}
-              active={this.props.sampleViewState.lightOn.back}
+              active={this.props.sampleViewState.lightOn.back === 1}
             />
             <MotorInput
               title="BackLight"
@@ -201,7 +201,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleFrontLight}
-              active={this.props.sampleViewState.lightOn.front}
+              active={this.props.sampleViewState.lightOn.front === 1}
             />
             <MotorInput
               title="FrontLight"

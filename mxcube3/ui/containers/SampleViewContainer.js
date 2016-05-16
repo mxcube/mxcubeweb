@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
-import SampleControls from '../components/SampleView/SampleControls';
 import * as QueueActions from '../actions/queue';
 import * as SampleActions from '../actions/samples_grid';
 import * as SampleViewActions from '../actions/sampleview';
@@ -17,7 +16,7 @@ class SampleViewContainer extends Component {
 
   render() {
     const { show, shape, x, y } = this.props.sampleViewState.contextMenu;
-    const { width, height, points, clickCentring, clickCentringPoints, pixelsPerMm, imageRatio, canvas, currentAperture, motors, motorSteps } = this.props.sampleViewState;
+    const { width, height, points, clickCentring, clickCentringPoints, pixelsPerMm, imageRatio, currentAperture, motors, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
 
@@ -30,6 +29,7 @@ class SampleViewContainer extends Component {
         <div className="col-xs-8">
             <SampleImage
               sampleActions={this.props.sampleViewActions}
+              sampleViewState={this.props.sampleViewState}
               imageHeight={height}
               imageWidth={width}
               pixelsPerMm={pixelsPerMm}
@@ -37,16 +37,14 @@ class SampleViewContainer extends Component {
               clickCentring={clickCentring}
               contextMenuShow={show}
               imageRatio={imageRatio}
-              canvas={canvas}
               currentAperture={currentAperture}
               clickCentringPoints={clickCentringPoints}
               selectedPoint={shape}
             />
-            <SampleControls sampleActions={this.props.sampleViewActions} sampleViewState={this.props.sampleViewState} canvas={canvas} />
         </div>
         <div className="col-xs-3">
           <BeamlineSetupContainer />
-          <SampleQueueContainer/>
+          <SampleQueueContainer />
         </div>
       </div>
     );

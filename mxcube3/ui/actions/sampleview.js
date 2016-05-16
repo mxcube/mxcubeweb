@@ -15,14 +15,6 @@ export function setImageRatio(ratio) {
   };
 }
 
-export function setCanvas(canvas) {
-  return {
-    type: 'SET_CANVAS',
-    canvas: canvas
-  };
-}
-
-
 export function setAperture(size) {
   return {
     type: 'SET_APERTURE', size

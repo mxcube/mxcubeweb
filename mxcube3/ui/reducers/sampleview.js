@@ -13,21 +13,24 @@ const initialState = {
     PhiYStep: 0.1, 
     PhiZStep: 0.1, 
     SampXStep: 0.1, 
-    SampYStep: 0.1, 
+    SampYStep: 0.1,
+    KappaStep: 0.1,
+    OmegaStep: 0.1 
   },
   motors: {
-    Focus: {position: 0}, 
-    Phi: {position: 0}, 
-    PhiY: {position: 0}, 
-    PhiZ: {position: 0}, 
-    Sampx: {position: 0}, 
-    Sampy: {position: 0},
-    BackLight: {position: 0},
-    FrontLight: {position: 0},
+    Focus: {position: 0, Status: 3}, 
+    Phi: {position: 0, Status: 3}, 
+    PhiY: {position: 0, Status: 3}, 
+    PhiZ: {position: 0, Status: 3}, 
+    Sampx: {position: 0, Status: 3}, 
+    Sampy: {position: 0, Status: 3},
+    BackLight: {position: 0, Status: 3},
+    FrontLight: {position: 0, Status: 3},
+    Kappa: {position: 0, Status: 3},
+    Omega: {position: 0, Status: 3}
   },
   pixelsPerMm: 0,
   imageRatio: 0,
-  canvas: null,
   contextMenu: {show:false, shape: {type: "NONE"}, x: 0, y:0},
   apertureList: [],
   currentAperture: 0,
@@ -66,7 +69,7 @@ export default (state=initialState, action) => {
             }
         case 'SAVE_MOTOR_POSITIONS':
             {
-                return {...state, motors: action.data, lightOn: {back: action.data.BackLightSwitch.Status, front: action.data.FrontLightSwitch.Status}, zoom: action.data.Zoom.position };
+                return {...state, motors: {...state.motors, ...action.data}, lightOn: {back: action.data.BackLightSwitch.Status, front: action.data.FrontLightSwitch.Status}, zoom: action.data.Zoom.position };
             }
         case 'SAVE_MOTOR_POSITION':
             {
@@ -87,10 +90,6 @@ export default (state=initialState, action) => {
         case 'SET_IMAGE_RATIO':
             {
                 return {...state, imageRatio: action.ratio };
-            }
-        case 'SET_CANVAS':
-            {
-                return {...state, canvas: action.canvas };
             }
         case 'SET_APERTURE':
             {
@@ -115,7 +114,7 @@ export default (state=initialState, action) => {
         case 'SET_INITIAL_STATUS':
             {
                 return {...state, 
-                    motors: action.data.Motors, 
+                    motors: {...state.motors, ...action.data.Motors}, 
                     lightOn: {back: action.data.Motors.BackLightSwitch.Status, front: action.data.Motors.FrontLightSwitch.Status}, 
                     zoom: action.data.Motors.Zoom.position,
                     width: action.data.Camera.imageWidth, 
