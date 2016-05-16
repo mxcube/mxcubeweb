@@ -1,7 +1,8 @@
 import fetch from 'isomorphic-fetch';
 import { getInitialStatus } from './general';
 import { showErrorPanel, setLoading } from './general';
-import { synchState } from './queue';
+import { synchState, sendClearQueue } from './queue';
+import { showTaskForm } from './taskForm';
 
 
 export function doLogin(proposal, password) {
@@ -33,6 +34,9 @@ export function doSignOut() {
 
 export function getLoginInfo() {
   return function (dispatch) {
+    dispatch(getInitialStatus());
+    dispatch(sendClearQueue());
+    dispatch(showTaskForm('AddSample'));
     fetch('mxcube/api/v0.1/login_info', {
       method: 'GET',
       headers: {
@@ -45,8 +49,7 @@ export function getLoginInfo() {
             dispatch(setLoginInfo(loginInfo));
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
-              dispatch(getInitialStatus());
-              dispatch(synchState(loginInfo.queue));
+              //dispatch(synchState(loginInfo.queue));
             }
           }, () => {
             throw new Error('Server connection problem (getLoginInfo)');

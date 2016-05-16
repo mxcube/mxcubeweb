@@ -21,7 +21,7 @@ class Login extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.status.code === 'ok') {
-      window.location.assign('#/');
+      window.location.assign('#datacollection');
       this.props.setLoading(false);
     }
   }

@@ -20,9 +20,6 @@ export default class MXNavbar extends React.Component {
                 <img src={logo} className="menu-logo"/>
                 <hr className="menu-breaker" />
                 <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} >
-                    <a className="fa fa-2x fa-bars icon" aria-hidden="true" href="#/"></a>
-                </p>
-                <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} >
                     <a className="fa fa-2x fa-crosshairs icon" aria-hidden="true" href="#/datacollection"></a>
                 </p>
                 <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} href="#/">
