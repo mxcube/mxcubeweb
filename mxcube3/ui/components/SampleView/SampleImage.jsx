@@ -46,7 +46,7 @@ export default class SampleImage extends React.Component {
   renderSampleView(nextProps) {
     this.drawCanvas(nextProps.imageRatio);
     this.drawImageOverlay(nextProps.imageRatio, nextProps.currentAperture, nextProps.clickCentringPoints);
-    this.renderPoints(nextProps.shapeList, nextProps.imageRatio, nextProps.selectedPoint);
+    this.renderPoints(nextProps.shapeList, nextProps.imageRatio);
   }
 
   drawCanvas(imageRatio) {
@@ -104,15 +104,11 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  renderPoints(points, imageRatio, selectedPoint) {
+  renderPoints(points, imageRatio) {
     for (const id in points) {
       switch (points[id].type) {
         case 'SAVED':
-          if (id === selectedPoint.id) {
-            this.canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id, 'green', 'SAVED'));
-          } else {
-            this.canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id, 'yellow', 'SAVED'));
-          }
+          this.canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id, 'yellow', 'SAVED'));
           break;
         case 'TMP':
           this.canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id, 'white', 'TMP'));

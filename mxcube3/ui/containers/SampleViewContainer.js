@@ -39,7 +39,6 @@ class SampleViewContainer extends Component {
               imageRatio={imageRatio}
               currentAperture={currentAperture}
               clickCentringPoints={clickCentringPoints}
-              selectedPoint={shape}
             />
         </div>
         <div className="col-xs-3">
