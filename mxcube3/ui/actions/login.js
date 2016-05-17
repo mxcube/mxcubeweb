@@ -19,6 +19,7 @@ export function doLogin(proposal, password) {
             dispatch(showErrorPanel(false));
             dispatch(setLoading(false));
             dispatch(getLoginInfo());
+            dispatch(showTaskForm('AddSample'));
           }, () => {
             dispatch(showErrorPanel(true));
             dispatch(setLoading(false));
@@ -36,7 +37,6 @@ export function getLoginInfo() {
   return function (dispatch) {
     dispatch(getInitialStatus());
     dispatch(sendClearQueue());
-    dispatch(showTaskForm('AddSample'));
     fetch('mxcube/api/v0.1/login_info', {
       method: 'GET',
       headers: {
