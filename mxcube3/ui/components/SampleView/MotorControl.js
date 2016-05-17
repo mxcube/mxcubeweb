@@ -5,8 +5,8 @@ import MotorInput from './MotorInput';
 export default class MotorControl extends React.Component {
 
     render() {
-        const { Phi, PhiY, PhiZ, Focus, Sampx, Sampy } = this.props.motors;
-        const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampXStep, SampYStep } = this.props.steps;
+        const { Phi, PhiY, PhiZ, Focus, Sampx, Sampy, Kappa, Kappa_phi } = this.props.motors;
+        const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampXStep, SampYStep, KappaStep, Kappa_phiStep } = this.props.steps;
         const save = this.props.save;
         const saveStep = this.props.saveStep;
         const stop = this.props.stop;
@@ -35,12 +35,12 @@ export default class MotorControl extends React.Component {
                     <MotorInput
                       save={save}
                       saveStep={saveStep}
-                      step="0.1"
-                      value={0}
+                      step={KappaStep}
+                      value={Kappa.position}
                       motorName="Kappa"
                       suffix="&deg;"
                       decimalPoints="2"
-                      state="3"
+                      state={Kappa.Status}
                       stop={stop}
                     />
                 </div>
@@ -50,12 +50,12 @@ export default class MotorControl extends React.Component {
                     <MotorInput
                       save={save}
                       saveStep={saveStep}
-                      step="0.1"
-                      value={0}
-                      motorName="Phi"
+                      step={Kappa_phiStep}
+                      value={Kappa_phi.position}
+                      motorName="Kappa_phi"
                       suffix="&deg;"
                       decimalPoints="2"
-                      state="3"
+                      state={Kappa_phi.Status}
                       stop={stop}
                     />
                 </div>
@@ -68,7 +68,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={PhiYStep}
                       motorName="PhiY"
-                      suffix="&deg;"
+                      suffix="mm"
                       decimalPoints="2"
                       state={PhiY.Status}
                       stop={stop}
@@ -83,7 +83,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={PhiZStep}
                       motorName="PhiZ"
-                      suffix="&deg;"
+                      suffix="mm"
                       decimalPoints="2"
                       state={PhiZ.Status}
                       stop={stop}
@@ -98,7 +98,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={FocusStep}
                       motorName="Focus"
-                      suffix="&deg;"
+                      suffix="mm"
                       decimalPoints="2"
                       state={Focus.Status}
                       stop={stop}
@@ -113,7 +113,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={SampXStep}
                       motorName="SampX"
-                      suffix="&deg;"
+                      suffix="mm"
                       decimalPoints="2"
                       state={Sampx.Status}
                       stop={stop}
@@ -128,7 +128,7 @@ export default class MotorControl extends React.Component {
                       saveStep={saveStep}
                       step={SampYStep}
                       motorName="SampY"
-                      suffix="&deg;"
+                      suffix="mm"
                       decimalPoints="2"
                       state={Sampy.Status}
                       stop={stop}

@@ -15,7 +15,7 @@ const initialState = {
     SampXStep: 0.1, 
     SampYStep: 0.1,
     KappaStep: 0.1,
-    OmegaStep: 0.1 
+    Kappa_phiStep: 0.1 
   },
   motors: {
     Focus: {position: 0, Status: 3}, 
@@ -27,7 +27,7 @@ const initialState = {
     BackLight: {position: 0, Status: 3},
     FrontLight: {position: 0, Status: 3},
     Kappa: {position: 0, Status: 3},
-    Omega: {position: 0, Status: 3}
+    Kappa_phi: {position: 0, Status: 3}
   },
   pixelsPerMm: 0,
   imageRatio: 0,
