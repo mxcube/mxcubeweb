@@ -56,7 +56,7 @@ export default class CurrentTree extends React.Component {
                     <span className="queue-root" onClick={this.collapse}>{(node ? sampleData.sampleName : 'No Sample Mounted')}</span>
                      <div className={node ? 'pull-right' : 'hidden'}>
                       <Button bsStyle="primary" bsSize="sm" onClick={this.unmount}>New Sample</Button>
-                      <Button bsStyle="success" bsSize="sm" onClick={this.runSample}>Run</Button>
+                      <Button bsStyle="success" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.runSample}>Run</Button>
                     </div>
                     <div className={!node ? 'pull-right' : 'hidden'}>
                       <Button bsStyle="primary" bsSize="sm" onClick={this.showForm}>New Sample</Button>
