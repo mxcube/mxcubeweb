@@ -24,12 +24,22 @@ def init_signals():
             mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.task_event_callback)
         else:
             pass
+    try:
+        frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+        frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)
+        frontlightswitch_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        frontlightswitch_hwobj.connect(frontlightswitch_hwobj, 'actuatorStateChanged', signals.motor_event_callback)  
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] front light hwobj error')
 
-    frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-    frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)
-    backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-    backlight_hwobj.connect(backlight_hwobj, 'positionChanged', signals.motor_event_callback)
-        #mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
+    try:
+        backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        backlight_hwobj.connect(backlight_hwobj, 'positionChanged', signals.motor_event_callback)
+        backlightswitch_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+        backlightswitch_hwobj.connect(backlightswitch_hwobj, 'actuatorStateChanged', signals.motor_event_callback)
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] back light hwobj error')
+
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
