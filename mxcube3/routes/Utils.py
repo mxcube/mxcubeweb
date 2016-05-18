@@ -3,6 +3,7 @@ from flask import Response, session
 from functools import wraps
 import jsonpickle
 import redis
+import logging
 
 def _proposal_id(session):
     try:      
@@ -68,17 +69,17 @@ def my_execute_entry(self, entry):
         time.sleep(1)
         # mxcube.collect.emit('collectOscillationStarted')
         # time.sleep(2)
-        #logging.getLogger('HWR').info('[COLLECT] collectOscillationStarted')
+        logging.getLogger('HWR').info('[COLLECT] collectOscillationStarted')
         mxcube.collect.emit('collectStarted')
         time.sleep(2)
-        # mxcube.collect.emit('collectOscillationFinished')
+        #mxcube.collect.emit('collectOscillationFinished')
         # time.sleep(2)
-        foo = ['collectOscillationFinished', 'collectOscillationFailed', 'warning']
+        foo = ['collectOscillationFinished', 'collectOscillationFailed']#, 'warning']
         mxcube.collect.emit(random.choice(foo))
     elif isinstance(entry, qe.CharacterisationGroupQueueEntry):
         time.sleep(1)
         mxcube.collect.emit('collectOscillationStarted')
-        #logging.getLogger('HWR').info('[COLLECT] collectOscillationStarted')
+        logging.getLogger('HWR').info('[COLLECT] collectOscillationStarted')
         time.sleep(2)
         foo = ['collectOscillationFinished', 'collectOscillationFailed', 'warning']
         mxcube.collect.emit(random.choice(foo))
