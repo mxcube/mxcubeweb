@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import { getInitialStatus } from './general';
 import { showErrorPanel, setLoading } from './general';
 import { synchState, sendClearQueue } from './queue';
-import { showTaskForm } from './taskForm';
 
 
 export function doLogin(proposal, password) {
@@ -19,7 +18,6 @@ export function doLogin(proposal, password) {
             dispatch(showErrorPanel(false));
             dispatch(setLoading(false));
             dispatch(getLoginInfo());
-            dispatch(showTaskForm('AddSample'));
           }, () => {
             dispatch(showErrorPanel(true));
             dispatch(setLoading(false));
