@@ -15,7 +15,7 @@ microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStart
                     'centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning', 'positionChanged', \
                     'phiMotorStateChanged','phiyMotorStateChanged','phizMotorStateChanged', 'sampxMotorStateChanged', \
                     'sampyMotorStateChanged', 'minidiffStateChanged','minidiffPhaseChanged','minidiffSampleIsLoadedChanged',\
-                    'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged']
+                    'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged', 'positionChanged', 'actuatorStateChanged']
 
 okSignals = ['Successful', 'Finished', 'finished','Ended', 'Accepted'] 
 failedSignals = ['Failed','Invalid']
@@ -36,7 +36,8 @@ task_signals = { ## missing egyscan, xrf, etc...
     'collectOscillationFinished':   'Data collecion oscillacion has finished',
     'collectEnded':                 'Data collecion has finished',
     'collectReady':                 'Data collecion ready',
-    'warning':                      'Data collection finished with a warning'
+    'warning':                      'Data collection finished with a warning',
+    'collect_finished':             'Data collecion has finished'
     # 'centringInvalid':              'Centring invalid',
     # 'newAutomaticCentringPoint':    'New automatic centring point found',
     # 'centringStarted':              'Centring procedure has started',
