@@ -21,7 +21,7 @@ class DataCollection extends React.Component {
         const queueId = this.props.lookup[sampleId];
 
         if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters);
+          this.props.addTask(queueId, sampleId, parameters, runNow);
         } else {
           this.props.addSampleAndTask(sampleId, parameters);
         }
