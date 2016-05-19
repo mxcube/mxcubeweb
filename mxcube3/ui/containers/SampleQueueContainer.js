@@ -59,7 +59,7 @@ export default class SampleQueueContainer extends React.Component {
   render() {
 
     const { checked, lookup, todo, history, current, sampleInformation, queue, mounted, collapsedSamples, showForm } = this.props;
-    const { sendToggleCheckBox, sendDeleteSample, sendRunSample, sendMountSample, sendUnmountSample, changeOrder, changeTaskOrder, collapseList, collapseSample } = this.props.queueActions;
+    const { sendToggleCheckBox, sendDeleteSample, sendRunSample, sendPauseQueue, sendStopQueue, sendMountSample, sendUnmountSample, changeOrder, changeTaskOrder, collapseList, collapseSample } = this.props.queueActions;
     const { sendDeleteSampleTask } = this.props.sampleActions;
 
     return (
@@ -78,6 +78,8 @@ export default class SampleQueueContainer extends React.Component {
                   checked={checked}
                   deleteTask={sendDeleteSampleTask}
                   run={sendRunSample}
+                  pause={sendPauseQueue}
+                  stop={sendStopQueue}
                   showForm={showForm}
                   unmount={sendUnmountSample}
                 />
