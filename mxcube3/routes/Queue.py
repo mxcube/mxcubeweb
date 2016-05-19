@@ -120,7 +120,8 @@ def queueClear():
     logging.getLogger('HWR').info('[QUEUE] Queue going to clear')
 
     try:
-        mxcube.queue = Utils.new_queue() # maybe we can just clear the queue object itself instead
+        mxcube.diffractometer.savedCentredPos = []
+	mxcube.queue = Utils.new_queue() # maybe we can just clear the queue object itself instead
         Utils.save_queue(session)
         logging.getLogger('HWR').info('[QUEUE] Queue cleared  '+ str(mxcube.queue.get_model_root()._name))
         return Response(status=200)
@@ -285,11 +286,11 @@ def executeEntryWithId(nodeId):
                     try:
                         if mxcube.queue.queue_hwobj.is_paused():
                             logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-                            #mxcube.queue.queue_hwobj.set_pause(False)
-                            mxcube.queue.queue_hwobj.wait_for_pause_event()
+                            mxcube.queue.queue_hwobj.set_pause(False)
+                            #mxcube.queue.queue_hwobj.wait_for_pause_event()
                         mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
                         #mxcube.queue.lastQueueNode = lastQueueNode
-                        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+                        mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                     except Exception:
                         logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
@@ -298,7 +299,8 @@ def executeEntryWithId(nodeId):
             logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' % nodeId)
             if mxcube.queue.queue_hwobj.is_paused():
                 logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-                mxcube.queue.queue_hwobj.wait_for_pause_event()
+		mxcube.queue.queue_hwobj.set_pause(False)
+                #mxcube.queue.queue_hwobj.wait_for_pause_event()
             # if not entry.is_enabled():
             #     entry.set_enabled(True)
             entry._view = Mock()  # associated text deps
@@ -312,7 +314,7 @@ def executeEntryWithId(nodeId):
             parent = int(parentNode._node_id)
 
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
-            # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+            mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
         return Response(status=200)
     except Exception:

@@ -35,15 +35,15 @@ task_signals = { ## missing egyscan, xrf, etc...
     'collectOscillationFailed':     'Data collecion oscillacion has failed', 
     'collectOscillationFinished':   'Data collecion oscillacion has finished',
     'collectEnded':                 'Data collecion has finished',
-    'collectReady':                 'Data collecion ready',
-    'centringInvalid':              'Centring invalid',
-    'newAutomaticCentringPoint':    'New automatic centring point found',
-    'centringStarted':              'Centring procedure has started',
-    'centringAccepted':             'Centring position accepted',
-    'centringMoving':               'Centring position moving',
-    'centringFailed':               'Centring procedure has failed',
-    'centringSuccessful':           'Centring procedure finished successfully',
-    'centringSnapshots':            'Centring saving snapshots'
+    'collectReady':                 'Data collecion ready'
+#    'centringInvalid':              'Centring invalid',
+#    'newAutomaticCentringPoint':    'New automatic centring point found',
+#    'centringStarted':              'Centring procedure has started',
+#    'centringAccepted':             'Centring position accepted',
+#    'centringMoving':               'Centring position moving',
+#    'centringFailed':               'Centring procedure has failed',
+#    'centringSuccessful':           'Centring procedure finished successfully',
+#    'centringSnapshots':            'Centring saving snapshots'
 }
 
 motor_signals = {   
