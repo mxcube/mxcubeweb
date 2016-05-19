@@ -8,10 +8,9 @@ export function setCurrentPhase(phase) {
   };
 }
 
-export function setImageRatio(ratio) {
+export function setImageRatio(clientWidth) {
   return {
-    type: 'SET_IMAGE_RATIO',
-    ratio: ratio
+    type: 'SET_IMAGE_RATIO', clientWidth
   };
 }
 
@@ -237,6 +236,7 @@ export function sendZoomPos(level) {
 
 export function sendLightOn(name) {
   return function (dispatch) {
+    dispatch(setLight(name, true));
     fetch('/mxcube/api/v0.1/sampleview/' + name + 'lighton', {
       method: 'PUT',
       credentials: 'include',
@@ -246,16 +246,16 @@ export function sendLightOn(name) {
       }
     }).then(function (response) {
       if (response.status >= 400) {
-        throw new Error('Server refused to turn light on');
+        dispatch(setLight(name, false));
+        dispatch(showErrorPanel(true, 'Server refused to turn light on'));
       }
-    }).then(function () {
-      dispatch(setLight(name, true));
     });
   };
 }
 
 export function sendLightOff(name) {
   return function (dispatch) {
+    dispatch(setLight(name, false));
     fetch('/mxcube/api/v0.1/sampleview/' + name + 'lightoff', {
       method: 'PUT',
       credentials: 'include',
@@ -265,12 +265,10 @@ export function sendLightOff(name) {
       }
     }).then(function (response) {
       if (response.status >= 400) {
-        throw new Error('Server refused to turn light off');
+        dispatch(setLight(name, true));
+        dispatch(showErrorPanel(true, 'Server refused to turn light off'));
       }
-    }).then(function () {
-      dispatch(setLight(name, false));
     });
-
   };
 }
 

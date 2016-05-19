@@ -89,7 +89,7 @@ export default (state=initialState, action) => {
             }
         case 'SET_IMAGE_RATIO':
             {
-                return {...state, imageRatio: action.ratio };
+                return {...state, imageRatio: state.width / action.clientWidth };
             }
         case 'SET_APERTURE':
             {

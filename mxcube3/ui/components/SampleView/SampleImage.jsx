@@ -24,6 +24,8 @@ export default class SampleImage extends React.Component {
     // Bind rigthclick to function manually with javascript
     document.getElementById('insideWrapper').addEventListener('contextmenu', (e) => this.rightClick(e), false);
 
+    this.setImageRatio();
+
     // Add so that the canvas will resize if the window changes size
     window.addEventListener('resize', this.setImageRatio);
   }
@@ -38,9 +40,7 @@ export default class SampleImage extends React.Component {
   }
 
   setImageRatio() {
-    const clientWidth = document.getElementById('outsideWrapper').clientWidth;
-    const imageWidth = document.getElementById('sample-img').naturalWidth;
-    this.props.sampleActions.setImageRatio(imageWidth / clientWidth);
+    this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
   }
 
   renderSampleView(nextProps) {
@@ -124,7 +124,7 @@ export default class SampleImage extends React.Component {
       <div>
         <div className="outsideWrapper" id="outsideWrapper">
             <div className="insideWrapper" id="insideWrapper">
-                <img id= "sample-img" className="img" src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="" onLoad={this.setImageRatio} />
+                <img id= "sample-img" className="img" src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="SampleView" />
                 <canvas id="canvas" className="coveringCanvas" />
             </div>
         </div>
