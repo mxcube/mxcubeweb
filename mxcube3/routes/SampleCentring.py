@@ -539,6 +539,8 @@ def waitForCentringFinishes(*args, **kwargs):
         mxcube.diffractometer.accept_centring()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
         motorPositions.pop('zoom')
+        motorPositions.pop('beam_y')
+        motorPositions.pop('beam_x')
         x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
         # only store one temp point so override if any
         for pos in mxcube.diffractometer.savedCentredPos:
