@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { makeCircle, makeCross, makeBeam, makeScale } from './shapes';
+import { makeCircle, makeCross, makeBeam, makeScale, makePoint } from './shapes';
 import 'fabric';
 import SampleControls from './SampleControls';
 
@@ -31,7 +31,11 @@ export default class SampleImage extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.renderSampleView(nextProps);
+    if(nextProps.imageWidth !== this.props.imageWidth){
+      this.setImageRatio();
+    }else{
+      this.renderSampleView(nextProps);
+    }
   }
 
   componentWillUnmount() {
@@ -73,7 +77,7 @@ export default class SampleImage extends React.Component {
     const apertureDiameter = currentAperture * 0.001 * this.props.pixelsPerMm / imageRatio;
     const scaleLength = 0.05 * this.props.pixelsPerMm / imageRatio;
     this.canvas.add(...makeBeam(this.canvas.width / 2, this.canvas.height / 2, apertureDiameter / 2));
-    this.canvas.add(...makeScale(this.canvas.height, scaleLength));
+    this.canvas.add(...makeScale(this.canvas.height, scaleLength, 'green', '50 µm'));
     if (clickCentringPoints.length) {
       const point = clickCentringPoints[clickCentringPoints.length - 1];
       this.canvas.add(...makeCross(point, imageRatio, this.canvas.width, this.canvas.height));
@@ -108,10 +112,10 @@ export default class SampleImage extends React.Component {
     for (const id in points) {
       switch (points[id].type) {
         case 'SAVED':
-          this.canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id, 'yellow', 'SAVED'));
+          this.canvas.add(...makePoint(points[id].x / imageRatio, points[id].y / imageRatio, id, 'yellow', 'SAVED'));
           break;
         case 'TMP':
-          this.canvas.add(makeCircle(points[id].x / imageRatio, points[id].y / imageRatio, id, 'white', 'TMP'));
+          this.canvas.add(...makePoint(points[id].x / imageRatio, points[id].y / imageRatio, id, 'white', 'TMP'));
           break;
         default:
           throw new Error('Server gave point with unknown type');
