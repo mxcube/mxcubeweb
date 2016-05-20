@@ -54,11 +54,17 @@ export default class CurrentTree extends React.Component {
             <div className="m-tree">
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>{(node ? sampleData.sampleName : 'No Sample Mounted')}</span>
-                     <div className={node ? '' : 'hidden'}>
+                     <div className={this.props.queueStatus === 'QueueStopped' && node ? '' : 'hidden'}>
                       <Button bsStyle="primary" bsSize="sm" onClick={this.unmount}>New Sample</Button>
+                      <Button bsStyle="success" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.runSample}>Run</Button>
+                    </div>
+                     <div className={this.props.queueStatus === 'QueueStarted' && node ? '' : 'hidden'}>
                       <Button bsStyle="danger" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.stop}>Stop</Button>
                       <Button bsStyle="warning" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.pause}>Pause</Button>
-                      <Button bsStyle="success" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.runSample}>Run</Button>
+                    </div>
+                     <div className={this.props.queueStatus === 'QueuePaused' && node ? '' : 'hidden'}>
+                      <Button bsStyle="danger" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.stop}>Stop</Button>
+                      <Button bsStyle="warning" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.unpause}>Unpause</Button>
                     </div>
                     <div className={!node ? 'pull-right' : 'hidden'}>
                       <Button bsStyle="primary" bsSize="sm" onClick={this.showForm}>New Sample</Button>

@@ -21,6 +21,7 @@ function mapStateToProps(state) {
     searchString : state.queue.searchString,
     current : state.queue.current,
     todo: state.queue.todo,
+    queueStatus: state.queue.queueStatus,
     history: state.queue.history,
     queue: state.queue.queue,
     sampleInformation: state.samples_grid.samples_list,
@@ -57,9 +58,8 @@ export default class SampleQueueContainer extends React.Component {
 
 
   render() {
-
-    const { checked, lookup, todo, history, current, sampleInformation, queue, mounted, collapsedSamples, showForm } = this.props;
-    const { sendToggleCheckBox, sendDeleteSample, sendRunSample, sendPauseQueue, sendStopQueue, sendMountSample, sendUnmountSample, changeOrder, changeTaskOrder, collapseList, collapseSample } = this.props.queueActions;
+    const { checked, lookup, todo, history, current, sampleInformation, queue, mounted, collapsedSamples, showForm, queueStatus } = this.props;
+    const { sendToggleCheckBox, sendDeleteSample, sendRunSample, sendPauseQueue, sendUnpauseQueue, sendStopQueue, sendMountSample, sendUnmountSample, changeOrder, changeTaskOrder, collapseList, collapseSample } = this.props.queueActions;
     const { sendDeleteSampleTask } = this.props.sampleActions;
 
     return (
@@ -79,9 +79,11 @@ export default class SampleQueueContainer extends React.Component {
                   deleteTask={sendDeleteSampleTask}
                   run={sendRunSample}
                   pause={sendPauseQueue}
+                  unpause={sendUnpauseQueue}
                   stop={sendStopQueue}
                   showForm={showForm}
                   unmount={sendUnmountSample}
+                  queueStatus={queueStatus}
                 />
                 <HistoryTree show={history.collapsed} collapse={collapseList} collapsedSamples={collapsedSamples} list={this.filterList(history.nodes)} sampleInformation={sampleInformation} queue={queue} lookup={lookup} collapseSample={collapseSample} />
             </div>

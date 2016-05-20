@@ -12,6 +12,7 @@ export default (state = {
   lookup_queue_id:{},
   collapsedSample: {},
   searchString: '',
+  queueStatus: 'QueueStopped',
   showRestoreDialog: false,
   queueRestoreState: {}
 }, action) => {
@@ -27,6 +28,13 @@ export default (state = {
             collapsedSample : { ...state.collapsedSample, [action.queue_id] : true }
           }
                         );
+
+        // Setting state
+    case 'SET_QUEUE_STATUS':
+      return { 
+          ...state, 
+          queueStatus: action.queueState 
+      };
 
         // Removing sample from queue
     case 'REMOVE_SAMPLE':

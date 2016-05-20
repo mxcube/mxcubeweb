@@ -24,6 +24,12 @@ export function clearAll() {
   };
 }
 
+export function setStatus(queueState) {
+  return {
+    type: 'SET_QUEUE_STATUS' , queueState
+  };
+}
+
 
 export function collapseList(listName) {
   return {
@@ -152,6 +158,29 @@ export function sendPauseQueue() {
 
       };
 }
+
+export function sendUnpauseQueue() {
+  return function () {
+
+        fetch('mxcube/api/v0.1/queue/unpause', {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json'
+          }
+        }).then(function (response) {
+      if (response.status >= 400) {
+            throw new Error('Server refused to unpause queue');
+          }
+    })
+    .then(function () {
+      // dispatch(setQueueState("paused"));
+    });
+
+      };
+}
+
 
 export function sendStopQueue() {
   return function () {

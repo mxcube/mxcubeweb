@@ -3,6 +3,7 @@ import { addLogRecord } from './actions/logger';
 import { updatePointsPosition, saveMotorPositions, setCurrentPhase } from './actions/sampleview';
 import { beamlinePropertyValueAction } from './actions/beamline';
 import { doAddTaskResult } from './actions/samples_grid';
+import { setStatus } from './actions/queue';
 
 
 export default class ServerIO {
@@ -41,6 +42,10 @@ export default class ServerIO {
 
     socketHWR.on('Task', (record) => {
         this.dispatch(doAddTaskResult(record.Sample, record.QueueId, record.State));
+    });
+
+    socketHWR.on('Queue', (record) => {
+        this.dispatch(setStatus(record.Signal));
     });
 
   }
