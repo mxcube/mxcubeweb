@@ -32,7 +32,8 @@ class BeamlineSetupMediator(object):
         """
         energy =  self.getObjectByRole("energy")
         transmission = self.getObjectByRole("transmission")
-        resolution = self.getObjectByRole("resolution")
+        resolution = self.getObjectByRole("resolution")        
+        fast_shutter = self.getObjectByRole("fast_shutter")
         
         data = {"energy": {"name": "energy",
                            "value": energy.get(),
@@ -49,7 +50,11 @@ class BeamlineSetupMediator(object):
                                "value": resolution.get(),
                                "limits": (0, 1000, 0.1),
                                "state": resolution.state(),
-                               "msg": ""}}
+                               "msg": ""},
+                "fastShutter": {"name": "fastShutter",
+                                "value": fast_shutter.getActuatorState(True),
+                                "limits": (0, 1, 1),
+                                "state": fast_shutter.getActuatorState(True)}}
 
         return data
 
@@ -120,6 +125,54 @@ class EnergyHOMediator(object):
     def value_change(self, energy, wavelength):
         data = {"name": "energy", "value": energy, "state": self.state(), "msg": ""}
         socketio.emit("value_change", data, namespace="/beamline/energy")
+
+
+class InOutHoMediator(object):
+    def __init__(self, ho):
+        self._ho = ho
+        ho.connect("actuatorStateChanged", self.value_change)
+
+
+    def __getattr__(self, attr):
+        return getattr(self._ho, attr)
+
+
+    def set(self, value=None):
+        state = self._ho.getActuatorState(True)
+
+        if state == "in":
+            self._ho.actuatorOut(False)
+        elif state == "out":
+            self._ho.actuatorIn(False)
+
+
+    def get(self):
+        state = self._ho.getActuatorState(True)
+
+        if state == "in":
+            state = True
+        else:
+            state = False
+
+        return state
+
+    def state(self):
+        return self._ho.getActuatorState(True)
+
+
+    def value_change(self, energy, wavelength):
+        data = self.dict_repr()
+        socketio.emit("value_change", data, namespace="/beamline/energy")
+
+
+    def dict_repr(self):
+        data = {"name": "fastShutter",
+                "value": self.get(),
+                "limits": (0, 1, 1),
+                "state": self.state()}
+
+        return data
+
 
 
 class TransmissionHOMediator(object):
