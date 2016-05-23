@@ -11,9 +11,9 @@ export default (state = INITIAL_STATE, action) => {
 
     case SET_ATTRIBUTE:
       data[action.data.name] = { name: action.data.name,
-                                  value: action.data.value,
-                                  state: action.data.state,
-                                  msg: action.data.msg };
+                                 value: action.data.value,
+                                 state: action.data.state,
+                                 msg: action.data.msg };
 
       return Object.assign({}, state, data);
 
