@@ -6,6 +6,7 @@ import Switch from 'react-bootstrap-switch';
 import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 
 import PopInput from '../components/PopInput/PopInput';
+import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 
 import { getAllAttributes, setAttribute,
          abortCurrentAction } from '../actions/beamline';
@@ -80,16 +81,15 @@ class BeamlineSetupContainer extends React.Component {
                 </tr>
                 <tr>
                   <td>
-                    <Switch
-                      size="mini"
+                    <InOutSwitch
                       onText="Opened"
                       offText="Closed"
+                      data={this.props.data.fastShutter}
                       labelText="Fast Shutter"
                     />
                   </td>
                   <td>
-                    <Switch
-                      size="mini"
+                    <InOutSwitch
                       onText="Opened"
                       offText="Closed"
                       labelText="Safety Shutter"
@@ -98,16 +98,14 @@ class BeamlineSetupContainer extends React.Component {
                 </tr>
                 <tr>
                   <td>
-                    <Switch
-                      size="mini"
+                    <InOutSwitch
                       onText="Opened"
                       offText="Closed"
                       labelText="Beamstop"
                     />
                   </td>
                   <td>
-                    <Switch
-                      size="mini"
+                    <InOutSwitch
                       onText="Opened"
                       offText="Closed"
                       labelText="Capillary"
