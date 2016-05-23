@@ -49,6 +49,17 @@ export const INITIAL_STATE = {
     value: '0',
     state: STATE.IDLE,
     msg: ''
+  },
+  fastShutter: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'fastShutter',
+    value: false,
+    state: 'in',
+    msg: ''
   }
 };
 
