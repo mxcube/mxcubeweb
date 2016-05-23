@@ -11,8 +11,25 @@ class DataCollection extends React.Component {
   }
 
   handleSubmit(runNow) {
+
+    let values = this.props.values;
+    const stringFields = [
+        'shutterless', 
+        'inverse_beam', 
+        'centringMethod', 
+        'detector_mode', 
+        'space_group', 
+        'prefix', 
+        'dir'
+    ]; 
+    for (var key in values) {
+        if (values.hasOwnProperty(key) && stringFields.indexOf(key) === -1) {
+            values[key] = Number(values[key]);
+        }
+    }
+    
     const parameters = {
-      ...this.props.values,
+      ...values,
       Type: 'DataCollection',
       point: this.props.pointId
     };
