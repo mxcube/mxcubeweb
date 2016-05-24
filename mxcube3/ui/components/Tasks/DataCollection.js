@@ -33,13 +33,10 @@ class DataCollection extends React.Component {
     ]; 
 
     for (var key in parameters) {
-        if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1) {
+        if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
             parameters[key] = Number(parameters[key]);
         }
     }
-
-    console.log(parameters);
-    console.log(this.props.values);
 
     if (this.props.sampleIds.constructor === Array) {
       this.props.sampleIds.map((sampleId) => {
