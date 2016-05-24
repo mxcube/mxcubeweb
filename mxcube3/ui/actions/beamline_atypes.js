@@ -1,8 +1,8 @@
 // The different states a beamline attribute can assume.
 export const STATE = {
-  IDLE: 'IDLE',
-  BUSY: 'BUSY',
-  ABORT: 'ABORTED'
+  IDLE: 'READY',
+  BUSY: 'MOVING',
+  ABORT: 'UNUSABLE'
 };
 
 
@@ -50,13 +50,13 @@ export const INITIAL_STATE = {
     state: STATE.IDLE,
     msg: ''
   },
-  fastShutter: {
+  fast_shutter: {
     limits: [
       0,
       1,
       1
     ],
-    name: 'fastShutter',
+    name: 'fast_shutter',
     value: false,
     state: 'in',
     msg: ''
