@@ -4,6 +4,7 @@ import { Modal } from 'react-bootstrap';
 
 
 class DataCollection extends React.Component {
+    
   constructor(props) {
     super(props);
     this.runNow = this.handleSubmit.bind(this, true);
@@ -11,17 +12,41 @@ class DataCollection extends React.Component {
   }
 
   handleSubmit(runNow) {
-    const parameters = {
+
+    let parameters = {
       ...this.props.values,
       Type: 'DataCollection',
       point: this.props.pointId
     };
+
+    // Form gives us all parameter values in strings so we need to transform numbers back
+    const stringFields = [
+        'shutterless', 
+        'inverse_beam', 
+        'centringMethod', 
+        'detector_mode', 
+        'space_group', 
+        'prefix', 
+        'path',
+        'Type',
+        'point'
+    ]; 
+
+    for (var key in parameters) {
+        if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1) {
+            parameters[key] = Number(parameters[key]);
+        }
+    }
+
+    console.log(parameters);
+    console.log(this.props.values);
+
     if (this.props.sampleIds.constructor === Array) {
       this.props.sampleIds.map((sampleId) => {
         const queueId = this.props.lookup[sampleId];
 
         if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters);
+          this.props.addTask(queueId, sampleId, parameters, runNow);
         } else {
           this.props.addSampleAndTask(sampleId, parameters);
         }
@@ -65,7 +90,7 @@ class DataCollection extends React.Component {
         prefix,
         run_number,
         beam_size,
-        dir
+        path
       }
     } = this.props;
 
@@ -85,14 +110,14 @@ class DataCollection extends React.Component {
 
                      <div className="form-group">
 
-                        <label className="col-sm-12 control-label">Path: /home/20160502/RAWDATA/{dir.value} </label>
+                        <label className="col-sm-12 control-label">Path: /home/20160502/RAWDATA/{path.value} </label>
                     </div>
 
                      <div className="form-group">
 
                         <label className="col-sm-2 control-label">Subdirectory</label>
                         <div className="col-sm-4">
-                            <input type="text" className="form-control" {...dir} />
+                            <input type="text" className="form-control" {...path} />
                         </div>
 
                     </div>
@@ -150,7 +175,7 @@ class DataCollection extends React.Component {
 
                     <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Exposure time(ms)</label>
+                        <label className="col-sm-3 control-label">Exposure time(s)</label>
                         <div className="col-sm-3">
                             <input type="number" className="form-control" {...exp_time} />
                         </div>
@@ -343,10 +368,10 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'datacollection',                           // a unique name for this form
-  fields: ['num_images', 'first_image', 'exp_time', 'resolution', 'osc_start', 'energy', 'osc_range', 'transmission', 'shutterless', 'inverse_beam', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'space_group', 'prefix', 'run_number', 'beam_size', 'dir'] // all the fields in your form
+  fields: ['num_images', 'first_image', 'exp_time', 'resolution', 'osc_start', 'energy', 'osc_range', 'transmission', 'shutterless', 'inverse_beam', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'space_group', 'prefix', 'run_number', 'beam_size', 'path'] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: { ...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture, prefix: 'data', run_number: 1, dir: 'username' } // will pull state into form's initialValues
+  initialValues: { ...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture } // will pull state into form's initialValues
 }))(DataCollection);
 
 export default DataCollection;

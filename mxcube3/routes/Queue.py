@@ -301,10 +301,10 @@ def executeEntryWithId(nodeId):
                             msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1} # 1: started
                             socketio.emit('Queue', msg, namespace='/hwr')
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
-                            
+                        mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
                         #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
-                        time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
+                        # time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
                     except Exception:
                         logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
         else:
@@ -318,6 +318,7 @@ def executeEntryWithId(nodeId):
                 
             if not entry.is_enabled():
                 entry.set_enabled(True)
+
             entry._view = Mock()  # associated text deps
             entry._set_background_color = Mock()  # widget color deps
             #parent = int(node.get_parent()._node_id)
@@ -329,7 +330,7 @@ def executeEntryWithId(nodeId):
             parent = int(parentNode._node_id)
 
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
-            #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+            # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
 
         msg = {'Signal': 'QueueStopped','Message': 'Queue execution stopped', 'State':1}

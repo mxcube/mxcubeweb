@@ -73,7 +73,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
-        app.db_connection = app.beamline.getObjectByRole("lims_client")
+        app.diffractometer.set_use_sc(False)
+	app.db_connection = app.beamline.getObjectByRole("lims_client")
         app.empty_queue = jsonpickle.encode(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         try:
