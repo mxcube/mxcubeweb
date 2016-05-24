@@ -59,6 +59,7 @@ class BeamlineSetupContainer extends React.Component {
                       ref="resolution"
                       name="Resolution"
                       pkey="resolution"
+		      placement="left"
                       suffix="&Aring;"
                       data={this.props.data.resolution}
                       onSave={this.onSaveHandler}
