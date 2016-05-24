@@ -5,13 +5,7 @@ from flask import request, Response, jsonify
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
-
-
-@socketio.on('connect', namespace='/beamline/energy')
-def connect():
-    # this is needed to create the namespace, and the actual connection
-    # to the server, but we don't need to do anything more
-    pass
+from mxcube3.routes import signals
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
@@ -31,7 +25,7 @@ def beamline_abort_action(name):
     # This could be made to give access to arbitrary method of HO, possible
     # security issues to be discussed.
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
-    ho.abort()
+    ho.stop()
 
     return Response('', status=200, mimetype='application/json')
 
@@ -47,18 +41,17 @@ def beamline_set_attribute(name):
     of the set operation (for the moment, VALID, ABORTED, ERROR).
 
     Replies with status code 200 on success and 520 on exceptions.
-    """    
+    """
     data = json.loads(request.data)
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
 
     try:
-        data["value"] = ho.set(data["value"])
-        data["state"] = "IDLE"
-        data["msg"] = ""
+        ho.set(data["value"])
+        data = ho.dict_repr()
         result, code = json.dumps(data), 200
     except Exception as ex:
         data["value"] = ho.get()
-        data["state"] = "ABORTED"
+        data["state"] = "UNUSABLE"
         data["msg"] = str(ex)
         result, code = json.dumps(data), 520
 
@@ -81,12 +74,10 @@ def beamline_get_attribute(name):
     data = {"name": name, "value": ""}
 
     try:
-        data["value"] = ho.get()
-        data["state"] = "IDLE"
-        data["msg"] = ""
+        data = ho.dict_repr()
     except Exception as ex:
         data["value"] = ""
-        data["state"] = "ERROR"
+        data["state"] = "UNUSABLE"
         data["msg"] = str(ex)
         result, code = json.dumps(data), 520
 
