@@ -48,10 +48,39 @@ input[type="radio"], input[type="checkbox"] {
         line-height: 25px;
     }
     .step-size span{
-        font-size: 10px;
+        font-size: 8px;
     }
 }
 
-.modal-header {
-    border-bottom: none !important;
+
+.main-menu{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 65px;
+    background-color: #222;
+    border-color: #080808;
 }
+
+.main-menu-icon{
+   width: 100%; 
+}
+
+.icon{
+    background-color: grey;
+    border-radius: 20px;
+    height: 40px;
+    width: 40px;
+    padding-top: 8px;
+    padding-left: 1px;
+    margin-left: 0px !important;
+    color: inherit !important;
+    text-decoration: none;
+}
+
+.icon:focus, .icon:hover{
+    text-decoration: none !important;
+    background-color: #5D5D5D;
+}
+

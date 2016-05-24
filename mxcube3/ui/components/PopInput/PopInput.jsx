@@ -191,7 +191,7 @@ export default class PopInput extends React.Component {
     }
 
     const popover = (
-      <Popover title={title}>
+      <Popover id={title} title={title}>
         <div className={`${inputVisibility} popinput-form-container`}>
           {this.inputComponent()}
         </div>

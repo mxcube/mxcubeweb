@@ -24,12 +24,22 @@ def init_signals():
             mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.task_event_callback)
         else:
             pass
+    try:
+        frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+        frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)
+        frontlightswitch_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        frontlightswitch_hwobj.connect(frontlightswitch_hwobj, 'actuatorStateChanged', signals.motor_event_callback)  
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] front light hwobj error')
 
-    frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-    frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)
-    backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-    backlight_hwobj.connect(backlight_hwobj, 'positionChanged', signals.motor_event_callback)
-        #mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
+    try:
+        backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        backlight_hwobj.connect(backlight_hwobj, 'positionChanged', signals.motor_event_callback)
+        backlightswitch_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+        backlightswitch_hwobj.connect(backlightswitch_hwobj, 'actuatorStateChanged', signals.motor_event_callback)
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] back light hwobj error')
+
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
@@ -257,7 +267,7 @@ def getCentringPositions():
         return Response(status=409)
 
 #### WORKING WITH MOVEABLES
-zoomLevels = ["Zoom 1","Zoom 2","Zoom 3","Zoom 4","Zoom 5","Zoom 6","Zoom 7","Zoom 8","Zoom 9", "Zoom 10"]
+zoomLevels = ["Zoom 0", "Zoom 1","Zoom 2","Zoom 3","Zoom 4","Zoom 5","Zoom 6","Zoom 7","Zoom 8","Zoom 9", "Zoom 10"]
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/zoom", methods=['PUT'])
 def moveZoomMotor():
@@ -273,7 +283,7 @@ def moveZoomMotor():
     newPos = params['level']
     zoomMotor = mxcube.diffractometer.getObjectByRole('zoom') 
     try:
-        logging.getLogger('HWR').info("Changing zoom level to: %s" %newPos)
+        logging.getLogger('HWR').info("Changing zoom level to: %s   %s" %(newPos, zoomLevels[int(newPos)]))
         zoomMotor.moveToPosition(zoomLevels[int(newPos)])
         scales = mxcube.diffractometer.get_pixels_per_mm()
         resp = jsonify({'pixelsPerMm': [scales[0],scales[1]]})
@@ -528,6 +538,9 @@ def waitForCentringFinishes(*args, **kwargs):
 
         mxcube.diffractometer.accept_centring()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
+        motorPositions.pop('zoom')
+        motorPositions.pop('beam_y')
+        motorPositions.pop('beam_x')
         x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
         # only store one temp point so override if any
         for pos in mxcube.diffractometer.savedCentredPos:

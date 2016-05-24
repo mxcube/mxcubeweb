@@ -16,6 +16,23 @@ class Characterisation extends React.Component {
 
   handleSubmit(runNow) {
 
+    let values = this.props.values;
+    const stringFields = [
+        'centringMethod', 
+        'detector_mode', 
+        'account_rad_damage' , 
+        'opt_sad', 
+        'space_group', 
+        'strategy_complexity', 
+        'prefix', 
+        'dir' 
+    ];
+    for (var key in values) {
+        if (values.hasOwnProperty(key) && stringFields.indexOf(key) === -1) {
+            values[key] = Number(values[key]);
+        }
+    }
+
     let parameters = {
       ...this.props.values,
       Type : 'Characterisation',
@@ -29,7 +46,7 @@ class Characterisation extends React.Component {
         let queueId = this.props.lookup[sampleId];
 
         if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters);
+          this.props.addTask(queueId, sampleId, parameters, runNow);
         } else {
                     // the sample is not in queue yet
           this.props.addSampleAndTask(sampleId, parameters);

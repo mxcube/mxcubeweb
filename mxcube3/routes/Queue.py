@@ -1,4 +1,5 @@
 from mxcube3 import app as mxcube
+from mxcube3 import socketio
 from flask import session, request, Response, jsonify
 from .Utils import *
 import time
@@ -14,7 +15,6 @@ from HardwareRepository.BaseHardwareObjects import Null as Mock #mock import Moc
 import signals
 import Utils
 import types
-from mxcube3 import socketio
 import queue_entry as qe
 from queue_entry import QueueEntryContainer
 import jsonpickle
@@ -24,7 +24,7 @@ qm = QueueManager.QueueManager('Mxcube3')
 def init_signals(queue):
     for signal in signals.collectSignals:
         if signal in signals.task_signals:
-            queue.connect(queue, signal, signals.task_event_callback)
+            mxcube.collect.connect(mxcube.collect, signal, signals.task_event_callback)
     queue.lastQueueNode = {'id':0, 'sample':'0:0'}
 
 # ##----QUEUE ACTIONS----##
@@ -55,6 +55,8 @@ def queueStop():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to stop')
     try:
+        global queue_has_to_be_stopped
+        queue_has_to_be_stopped = True
         mxcube.queue.queue_hwobj.stop()
         logging.getLogger('HWR').info('[QUEUE] Queue stopped')
         return Response(status=200)
@@ -88,6 +90,8 @@ def queuePause():
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
     try:
         mxcube.queue.queue_hwobj.pause(True)
+        msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
+        socketio.emit('Queue', msg, namespace='/hwr')
         logging.getLogger('HWR').info('[QUEUE] Queue paused')
         return Response(status=200)
     except Exception:
@@ -104,6 +108,8 @@ def queueUnpause():
     logging.getLogger('HWR').info('[QUEUE] Queue going to unpause')
     try:
         mxcube.queue.queue_hwobj.pause(False)
+        msg = {'Signal': 'QueueStarted','Message': 'Queue execution started', 'State':1}
+        socketio.emit('Queue', msg, namespace='/hwr')
         logging.getLogger('HWR').info('[QUEUE] Queue unpaused')
         return Response(status=200)
     except Exception:
@@ -120,6 +126,7 @@ def queueClear():
     logging.getLogger('HWR').info('[QUEUE] Queue going to clear')
 
     try:
+        mxcube.diffractometer.savedCentredPos = []
         mxcube.queue = Utils.new_queue() # maybe we can just clear the queue object itself instead
         Utils.save_queue(session)
         logging.getLogger('HWR').info('[QUEUE] Queue cleared  '+ str(mxcube.queue.get_model_root()._name))
@@ -265,42 +272,53 @@ def executeEntryWithId(nodeId):
     ## WARNING: serializeQueueToJson() should only be used for sending to the client,
     ## here on the back-end side we should just always use mxcube.queue !
     queue = serializeQueueToJson() 
-
+    global queue_has_to_be_stopped
+    queue_has_to_be_stopped = False 
     try:
         node = mxcube.queue.get_node(nodeId)
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
 
+        msg = {'Signal': 'QueueStarted','Message': 'Queue execution started', 'State':1}
+        socketio.emit('Queue', msg, namespace='/hwr')
+
+        mxcube.queue.queue_hwobj.set_pause(False)
         if isinstance(entry, qe.SampleQueueEntry):
             logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' % nodeId)
             #this is a sample entry, thus, go through its checked children and execute those
             for elem in queue[nodeId]['methods']:
+                if queue_has_to_be_stopped: break
                 if int(elem['checked']) == 1:
                     logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' % elem['QueueId'])
                     childNode = mxcube.queue.get_node(elem['QueueId'])
                     childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
                     childEntry._view = Mock()  # associated text deps
                     childEntry._set_background_color = Mock()  # widget color deps
-                    # if not childEntry.is_enabled():
-                    #      childEntry.set_enabled(True)
+                    if not childEntry.is_enabled():
+                        childEntry.set_enabled(True)
                     try:
                         if mxcube.queue.queue_hwobj.is_paused():
                             logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-                            #mxcube.queue.queue_hwobj.set_pause(False)
+                            msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1} # 1: started
+                            socketio.emit('Queue', msg, namespace='/hwr')
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
                         mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
-                        #mxcube.queue.lastQueueNode = lastQueueNode
-                        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+                        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
+                        # time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
                     except Exception:
                         logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
         else:
-            #not a sample so execte directly
+            #not a sample so execute directly
             logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' % nodeId)
             if mxcube.queue.queue_hwobj.is_paused():
                 logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
+                msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
+                socketio.emit('Queue', msg, namespace='/hwr')
                 mxcube.queue.queue_hwobj.wait_for_pause_event()
-            # if not entry.is_enabled():
-            #     entry.set_enabled(True)
+                
+            if not entry.is_enabled():
+                entry.set_enabled(True)
+
             entry._view = Mock()  # associated text deps
             entry._set_background_color = Mock()  # widget color deps
             #parent = int(node.get_parent()._node_id)
@@ -314,6 +332,10 @@ def executeEntryWithId(nodeId):
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
             # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
+
+        msg = {'Signal': 'QueueStopped','Message': 'Queue execution stopped', 'State':1}
+        socketio.emit('Queue', msg, namespace='/hwr')
+
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be started')

@@ -98,12 +98,12 @@ export default class TaskItem extends Component {
   render() {
     const { data, isDragging, connectDragSource, connectDropTarget } = this.props;
     const opacity = isDragging ? 0 : 1;
-    let taskCSS = cx('node node-sample',{
-        'passive': this.props.checked.indexOf(this.props.id) === -1,
-        'active': data.state===1,
-        'success': data.state===2,
-        'error': data.state===3,
-        'warning': data.state===4
+    let taskCSS = cx('node node-sample', {
+      passive: this.props.checked.indexOf(this.props.id) === -1,
+      active: data.state === 1,
+      success: data.state === 2,
+      error: data.state === 3,
+      warning: data.state === 4
     });
     return connectDragSource(connectDropTarget(
       <div className={taskCSS} style={{ opacity }}>
