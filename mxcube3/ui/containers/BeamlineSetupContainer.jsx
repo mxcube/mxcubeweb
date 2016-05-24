@@ -105,15 +105,15 @@ class BeamlineSetupContainer extends React.Component {
                 <tr>
                   <td>
                     <InOutSwitch
-                      onText="In"
-                      offText="Out"
+                      onText="Opened"
+                      offText="Closed"
                       labelText="Beamstop"
                     />
                   </td>
                   <td>
                     <InOutSwitch
-                      onText="In"
-                      offText="Out"
+                      onText="Opened"
+                      offText="Closed"
                       labelText="Capillary"
                     />
                   </td>
