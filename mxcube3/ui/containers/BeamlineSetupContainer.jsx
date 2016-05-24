@@ -52,6 +52,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="%"
                       data={this.props.data.transmission}
                       onSave={this.onSaveHandler}
+		      onCancel={this.onCancelHandler}
                     />
                   </td>
                   <td>
@@ -63,6 +64,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="&Aring;"
                       data={this.props.data.resolution}
                       onSave={this.onSaveHandler}
+		      onCancel={this.onCancelHandler}
                     />
                   </td>
                 </tr>
@@ -75,6 +77,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="keV"
                       data={this.props.data.energy}
                       onSave={this.onSaveHandler}
+		      onCancel={this.onCancelHandler}
                     />
                   </td>
                   <td>
@@ -85,7 +88,9 @@ class BeamlineSetupContainer extends React.Component {
                     <InOutSwitch
                       onText="Opened"
                       offText="Closed"
+		      pkey="fast_shutter"
                       data={this.props.data.fastShutter}
+		      onSave={this.onSaveHandler}
                       labelText="Fast Shutter"
                     />
                   </td>
