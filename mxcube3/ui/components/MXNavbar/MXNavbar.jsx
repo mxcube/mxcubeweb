@@ -8,6 +8,9 @@ export default class MXNavbar extends React.Component {
   render() {
     let proposal = this.props.userInfo.Proposal;
     let propInfo = (this.props.loggedIn ? proposal.title + ' - ' + proposal.code : '');
+    let sampleGrid = (<p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} >
+                        <a className="fa fa-2x fa-th-large icon" aria-hidden="true" href="#/"></a>
+                    </p>);
     return (<div>
             <Navbar fluid fixedTop className="main-menu-top">
                 <NavBrand>MXCuBE 3</NavBrand>
@@ -19,6 +22,7 @@ export default class MXNavbar extends React.Component {
             <div className="main-menu text-center">
                 <img src={logo} className="menu-logo"/>
                 <hr className="menu-breaker" />
+                {(process.env.NODE_ENV !== 'production' ? sampleGrid : '')}
                 <p className="main-menu-icon text-center" eventKey={1} active={(this.props.location.pathname === '/') ? true : false} >
                     <a className="fa fa-2x fa-crosshairs icon" aria-hidden="true" href="#/datacollection"></a>
                 </p>
