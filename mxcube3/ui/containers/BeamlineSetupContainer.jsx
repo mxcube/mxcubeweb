@@ -27,8 +27,8 @@ class BeamlineSetupContainer extends React.Component {
   }
 
 
-  onSaveHandler(name, value, promise) {
-    this.props.setAttribute(name, value, promise);
+  onSaveHandler(name, value) {
+    this.props.setAttribute(name, value);
   }
 
 
