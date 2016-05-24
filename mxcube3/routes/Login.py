@@ -93,84 +93,84 @@ def get_initial_state():
         :statuscode: 200: no error
         :statuscode: 409: error occurred
     """
-    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'] 
+    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY','Sampx', 'Sampy'] 
     #'Kappa', 'Kappa_phi',
     data = {}
     data['Motors'] = {}
+    for mot in motors:
+       motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
+       if motor_hwobj is not None:
+           try:
+               pos = motor_hwobj.getPosition()
+               status = motor_hwobj.getState()
+           except Exception:
+               logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
+           data['Motors'].update({mot: {'Status': status, 'position': pos}})
+
     try:
-        for mot in motors:
-            motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
-            if motor_hwobj is not None:
-                if mot == 'Zoom':
-                    pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
-                    status = "unknown"
-                elif mot == 'BackLightSwitch' or mot == 'FrontLightSwitch':
-                    states = {"in": 1, "out": 0}
-                    pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
-                    # 'in', 'out'
-                    status = pos 
-                else:
-                    try:
-                        pos = motor_hwobj.getPosition()
-                        status = motor_hwobj.getState()
-                    except Exception:
-                        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
-                data['Motors'].update({mot: {'Status': status, 'position': pos}})
-        data['Camera'] = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
-            'imageWidth':  mxcube.diffractometer.image_width,
-            'imageHeight':  mxcube.diffractometer.image_height,
-            }
-
-        try:
-            data['useSC'] = mxcube.diffractometer.use_sc  
-        except AttributeError:
-            data['useSC'] = False # in case the diff does not have this implemented
-            
-        beamInfo = mxcube.beamline.getObjectByRole("beam_info")
-        data['beamInfo'] = {}
-        if beamInfo is None:
-             logging.getLogger('HWR').error("beamInfo is not defined")
-        try:
-            beamInfoDict = beamInfo.get_beam_info()
-        except Exception:
-            pass
-
-        data['beamInfo'] = {}
-
-        try:
-            aperture = mxcube.diffractometer.getObjectByRole('aperture')
-            aperture_list = aperture.getPredefinedPositionsList()
-            currentAperture = aperture.getCurrentPositionName()
-        except Exception:
-            logging.getLogger('HWR').exception('could not get all Aperture hwobj')
-            aperture_list = []
-            currentAperture = None
- 
-        data['beamInfo'].update({'apertureList' : aperture_list,
-                                'currentAperture' : currentAperture })
-        
-        try:
-            data['beamInfo'].update({'position': beamInfo.get_beam_position(),
-                                'shape': beamInfoDict["shape"],
-                                'size_x': beamInfoDict["size_x"],
-                                'size_y': beamInfoDict["size_y"],
-                                'apertureList' : aperture.getPredefinedPositionsList(),
-                                'currentAperture' : aperture.getCurrentPositionName()
-                                })
-        except Exception:
-             logging.getLogger('HWR').error("Error retrieving beam position")
-
-        try:
-            data['current_phase'] = mxcube.diffractometer.current_phase
-        except AttributeError:
-            data['current_phase'] =  'None' # in case the diff does not have this implemented
-
-        resp = jsonify(data)
-        resp.status_code = 200
-        return resp
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('zoom')
+        data['Motors'].update({"Zoom": {"Status":motor_hwobj.getState(), "position": motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()] }})
     except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get all motor  status')
-        return Response(status=409)
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get Zoom motor')
+    
+    for light in ('BackLight','FrontLight'):
+        hwobj = mxcube.diffractometer.getObjectByRole(light)
+        switch_state = 1 if hwobj.getActuatorState()=='in' else 0
+        pos = hwobj.getPosition()
+        data['Motors'].update({light: {"Status":hwobj.getState(), "position":hwobj.getPosition()}, light+'Switch': {"Status": switch_state, "position":0}})
+
+    data['Camera'] = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
+        'imageWidth':  mxcube.diffractometer.image_width,
+        'imageHeight':  mxcube.diffractometer.image_height,
+    }
+
+    try:
+        data['useSC'] = mxcube.diffractometer.use_sc  
+    except AttributeError:
+        data['useSC'] = False # in case the diff does not have this implemented
+            
+    beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+    data['beamInfo'] = {}
+    if beamInfo is None:
+         logging.getLogger('HWR').error("beamInfo is not defined")
+    try:
+        beamInfoDict = beamInfo.get_beam_info()
+    except Exception:
+        pass
+
+    data['beamInfo'] = {}
+
+    try:
+        aperture = mxcube.diffractometer.getObjectByRole('aperture')
+        aperture_list = aperture.getPredefinedPositionsList()
+        currentAperture = aperture.getCurrentPositionName()
+    except Exception:
+        logging.getLogger('HWR').exception('could not get all Aperture hwobj')
+        aperture_list = []
+        currentAperture = None
+ 
+    data['beamInfo'].update({'apertureList' : aperture_list,
+                            'currentAperture' : currentAperture })
+        
+    try:
+        data['beamInfo'].update({'position': beamInfo.get_beam_position(),
+                             'shape': beamInfoDict["shape"],
+                             'size_x': beamInfoDict["size_x"],
+                             'size_y': beamInfoDict["size_y"],
+                             'apertureList' : aperture.getPredefinedPositionsList(),
+                             'currentAperture' : aperture.getCurrentPositionName()
+                             })
+    except Exception:
+         logging.getLogger('HWR').error("Error retrieving beam position")
+
+    try:
+        data['current_phase'] = mxcube.diffractometer.current_phase
+    except AttributeError:
+        data['current_phase'] =  'None' # in case the diff does not have this implemented
+
+    resp = jsonify(data)
+    resp.status_code = 200
+    return resp
 
 @mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
 def proposal_samples(proposal_id):
