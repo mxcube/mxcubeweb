@@ -7,7 +7,7 @@ const initialState = {
     parameters: {
       num_images: 2,
       transmission: 30,
-      exp_time: 10,
+      exp_time: 0.01,
       osc_start: 0.0,
       osc_range: 0.5,
       resolution: 2.5,
@@ -17,7 +17,13 @@ const initialState = {
       strategy_complexity: 1,
       account_rad_damage: true,
       opt_sad: false,
-      shutterless: true
+      shutterless: true,
+      prefix: 'data',
+      run_number: 1,
+      path: 'username',
+      first_image: 1,
+      inverse_beam: false,
+      detector_mode: '0'
     }
   }
 };
