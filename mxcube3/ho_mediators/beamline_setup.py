@@ -86,12 +86,12 @@ class _BeamlineSetupMediator(object):
         """
         energy =  self.getObjectByRole("energy")
         transmission = self.getObjectByRole("transmission")
-        resolution = self.getObjectByRole("resolution")    
+        resolution = self.getObjectByRole("resolution")
         fast_shutter = self.getObjectByRole("fast_shutter")
         safety_shutter = self.getObjectByRole("safety_shutter")
         beamstop = self.getObjectByRole("beamstop")
 #        capillary = self.getObjectByRole("capillary")
-        
+
         data = {"energy": energy.dict_repr(),
                 "transmission": transmission.dict_repr(),
                 "resolution": resolution.dict_repr(),
@@ -118,26 +118,33 @@ class HOMediatorBase(object):
             raise AttributeError(attr)
         return getattr(self._ho, attr)
 
+
+    # Abstract method
     def set(self, value):
         pass
 
 
+    # Abstract method
     def get(self):
         pass
 
 
+    # Abstract method
     def state(self):
         pass
 
 
+    # Abstract method
     def stop(self):
         pass
 
 
+    # Abstract method
     def limits(self):
         return (0, 1, 1)
 
 
+    # Abstract method
     def msg(self):
         pass
 
@@ -180,7 +187,7 @@ class EnergyHOMediator(HOMediatorBase):
         except:
             raise
 
-        return res       
+        return res
 
 
     def get(self):
@@ -250,7 +257,7 @@ class InOutHOMediator(HOMediatorBase):
             msg = "OPENED"
         elif state == INOUT_STATE.OUT:
             msg = "CLOSED"
-        
+ 
         return msg
 
 
@@ -304,7 +311,7 @@ class TangoShutterHOMediator(HOMediatorBase):
             msg = "IN"
         elif state == INOUT_STATE.OUT:
             msg = "OUT"
-        
+
         return msg
 
 
@@ -358,7 +365,7 @@ class BeamstopHOMediator(HOMediatorBase):
             msg = "IN"
         elif state == INOUT_STATE.OUT:
             msg = "OUT"
-        
+
         return msg
 
 
@@ -435,5 +442,4 @@ class ResolutionHOMediator(HOMediatorBase):
 
     def value_change(self, value):
         socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
-        
 
