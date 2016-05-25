@@ -3,19 +3,19 @@ from mxcube3 import socketio
 
 
 class MOTOR_STATE:
-     NOTINITIALIZED = "NOTINITIALIZED"
-     UNUSABLE = "UNUSABLE"
-     READY = "READY"
-     MOVESTARTED = "MOVESTARTED"
-     MOVING = "MOVING"
-     ONLIMIT = "ONLIMIT"
+    NOTINITIALIZED = "NOTINITIALIZED"
+    UNUSABLE = "UNUSABLE"
+    READY = "READY"
+    MOVESTARTED = "MOVESTARTED"
+    MOVING = "MOVING"
+    ONLIMIT = "ONLIMIT"
 
-     VALUE_TO_STR = {0: "NOTINITIALIZED",
-                     1: "UNUSABLE",
-                     2: "READY",
-                     3: "MOVESTARTED",
-                     4: "MOVING",
-                     5: "ONLIMIT"}
+    VALUE_TO_STR = {0: "NOTINITIALIZED",
+                    1: "UNUSABLE",
+                    2: "READY",
+                    3: "MOVESTARTED",
+                    4: "MOVING",
+                    5: "ONLIMIT"}
 
 
 class INOUT_STATE:
@@ -35,7 +35,7 @@ class INOUT_STATE:
 BEAMLINE_SETUP = None
 
 # Sinlgeton like interface is needed to keep the same referance to the 
-# mediator object and its corresponding hardware objects, so that signal
+# mediator object and its corresponding hardware objects, so that the signal
 # system wont cleanup signal handlers. (PyDispatcher removes signal handlers
 # when a object is garabge collected)
 def BeamlineSetupMediator(*args):
@@ -69,7 +69,13 @@ class _BeamlineSetupMediator(object):
         elif name == "transmission":
             return self._ho_dict.setdefault(name, TransmissionHOMediator(ho, "transmission"))
         elif name == "fast_shutter":
-            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fastShutter"))
+            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fast_shutter"))
+        elif name == "safety_shutter":
+            return self._ho_dict.setdefault(name, TangoShutterHOMediator(ho, "safety_shutter"))
+        elif name == "beamstop":
+            return self._ho_dict.setdefault(name, BeamstopHOMediator(ho, "beamstop"))
+        elif name == "capillary":
+            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
         else:
             return ho
 
@@ -82,11 +88,17 @@ class _BeamlineSetupMediator(object):
         transmission = self.getObjectByRole("transmission")
         resolution = self.getObjectByRole("resolution")    
         fast_shutter = self.getObjectByRole("fast_shutter")
+        safety_shutter = self.getObjectByRole("safety_shutter")
+        beamstop = self.getObjectByRole("beamstop")
+#        capillary = self.getObjectByRole("capillary")
         
         data = {"energy": energy.dict_repr(),
                 "transmission": transmission.dict_repr(),
                 "resolution": resolution.dict_repr(),
-                "fastShutter": fast_shutter.dict_repr()}
+                "fast_shutter": fast_shutter.dict_repr(),
+                "safety_shutter": safety_shutter.dict_repr(),
+#                "capillary": capillary.dict_repr(),
+                "beamstop": beamstop.dict_repr()}
 
         return data
 
@@ -126,12 +138,16 @@ class HOMediatorBase(object):
         return (0, 1, 1)
 
 
+    def msg(self):
+        pass
+
+
     def dict_repr(self):
         data = {"name": self._name,
                 "value": self.get(),
                 "limits":self.limits(),
                 "state": self.state(),
-                "msg": ""}
+                "msg": self.msg()}
 
         return data
 
@@ -145,10 +161,6 @@ class EnergyHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(EnergyHOMediator, self).__init__(ho, name)
         ho.connect("energyChanged", self.value_change)
-
-
-    def __getattr__(self, attr):
-        return getattr(self._ho, attr)
 
 
     def set(self, value):
@@ -211,11 +223,6 @@ class InOutHOMediator(HOMediatorBase):
         super(InOutHOMediator, self).__init__(ho, name)
         ho.connect("actuatorStateChanged", self.value_change)
 
-
-    def __getattr__(self, attr):
-        return getattr(self._ho, attr)
-
-
     def set(self, state):
         if state == INOUT_STATE.IN:
             self._ho.actuatorIn()
@@ -224,7 +231,7 @@ class InOutHOMediator(HOMediatorBase):
 
 
     def get(self):
-        return self._ho.getActuatorState()
+        return INOUT_STATE.STR_TO_VALUE.get(self._ho.getActuatorState(), 2)
 
 
     def stop(self):
@@ -235,28 +242,135 @@ class InOutHOMediator(HOMediatorBase):
         return self._ho.getActuatorState()
 
 
-    def value_change(self):
-        pass
+    def msg(self):
+        state = self._ho.getActuatorState()
+        msg = "UNKNOWN"
+
+        if state == INOUT_STATE.IN:
+            msg = "OPENED"
+        elif state == INOUT_STATE.OUT:
+            msg = "CLOSED"
+        
+        return msg
 
 
-    def dict_repr(self):
-        data = {"name": self._name,
-                "value": self.get(),
-                "limits": (0, 1, 1),
-                "state": self.state()}
+    def value_change(self, state):
+        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
-        return data
 
+
+class TangoShutterHOMediator(HOMediatorBase):
+    def __init__(self, ho, name=''):
+        super(TangoShutterHOMediator, self).__init__(ho, name)
+        ho.connect("shutterStateChanged", self.value_change)
+
+
+    def __getattr__(self, attr):
+        return getattr(self._ho, attr)
+
+
+    def set(self, state):
+        if state == INOUT_STATE.IN:
+            self._ho.closeShutter()
+        elif state == INOUT_STATE.OUT:
+            self._ho.openShutter()
+
+
+    def get(self):
+        return 0
+
+
+    def stop(self):
+        self._ho.stop()
+
+
+    def state(self):
+        state = INOUT_STATE.UNDEFINED
+        _state = self._ho.getShutterState()
+
+        if _state == "OPENED":
+            state = INOUT_STATE.OUT
+        elif _state == "CLOSED":
+            state = INOUT_STATE.IN
+ 
+        return state
+
+
+    def msg(self):
+        state = self._ho.getShutterState()
+        msg = "UNKNOWN"
+
+        if state == INOUT_STATE.IN:
+            msg = "IN"
+        elif state == INOUT_STATE.OUT:
+            msg = "OUT"
+        
+        return msg
+
+
+    def value_change(self, value):
+        print(value)
+        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
+
+
+class BeamstopHOMediator(HOMediatorBase):
+    def __init__(self, ho, name=''):
+        super(BeamstopHOMediator, self).__init__(ho, name)
+        ho.connect("stateChanged", self.value_change)
+
+
+    def __getattr__(self, attr):
+        return getattr(self._ho, attr)
+
+
+    def set(self, state):
+        if state == INOUT_STATE.IN:
+            self._ho.moveToPosition(state)
+        elif state == INOUT_STATE.OUT:
+            self._ho.moveToPosition(state)
+
+
+    def get(self):
+        return 0
+
+
+    def stop(self):
+        self._ho.stop()
+
+
+    def state(self):
+        state = INOUT_STATE.UNDEFINED
+        _state = self._ho.getPosition()
+
+        if _state == INOUT_STATE.OUT:
+            state = INOUT_STATE.OUT
+        elif _state == INOUT_STATE.IN:
+            state = INOUT_STATE.IN
+ 
+        return state
+
+
+    def msg(self):
+        state = self._ho.getPosition()
+        msg = "UNKNOWN"
+
+        if state == INOUT_STATE.IN:
+            msg = "IN"
+        elif state == INOUT_STATE.OUT:
+            msg = "OUT"
+        
+        return msg
+
+
+    def value_change(self, value):
+        print(value)
+        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
 class TransmissionHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(TransmissionHOMediator, self).__init__(ho, name)
         ho.connect("attFactorChanged", self.value_change)
-
-
-    def __getattr__(self, attr):
-        return getattr(self._ho, attr)
 
 
     def set(self, value):

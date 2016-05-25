@@ -57,9 +57,42 @@ export const INITIAL_STATE = {
       1
     ],
     name: 'fast_shutter',
-    value: false,
-    state: 'in',
-    msg: ''
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  safety_shutter: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'safety_shutter',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  beamstop: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'beamstop',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  capillary: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'capillary',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
   }
 };
 

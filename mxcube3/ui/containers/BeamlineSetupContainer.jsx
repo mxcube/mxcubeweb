@@ -2,7 +2,6 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
-import Switch from 'react-bootstrap-switch';
 import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 
 import PopInput from '../components/PopInput/PopInput';
@@ -86,19 +85,22 @@ class BeamlineSetupContainer extends React.Component {
                 <tr>
                   <td>
                     <InOutSwitch
-                      onText="Opened"
-                      offText="Closed"
+                      onText="Open"
+                      offText="Close"
+		      labelText="Fast Shutter"
 		      pkey="fast_shutter"
-                      data={this.props.data.fastShutter}
+                      data={this.props.data.fast_shutter}
 		      onSave={this.onSaveHandler}
-                      labelText="Fast Shutter"
                     />
                   </td>
                   <td>
                     <InOutSwitch
-                      onText="Opened"
-                      offText="Closed"
+                      onText="Open"
+                      offText="Close"
                       labelText="Safety Shutter"
+		      pkey="safety_shutter"
+                      data={this.props.data.safety_shutter}
+		      onSave={this.onSaveHandler}
                     />
                   </td>
                 </tr>
@@ -108,6 +110,9 @@ class BeamlineSetupContainer extends React.Component {
                       onText="In"
                       offText="Out"
                       labelText="Beamstop"
+		      pkey="beamstop"
+                      data={this.props.data.beamstop}
+		      onSave={this.onSaveHandler}
                     />
                   </td>
                   <td>
@@ -115,6 +120,9 @@ class BeamlineSetupContainer extends React.Component {
                       onText="In"
                       offText="Out"
                       labelText="Capillary"
+		      pkey="capillary"
+                      data={this.props.data.capillary}
+		      onSave={this.onSaveHandler}
                     />
                   </td>
                 </tr>
