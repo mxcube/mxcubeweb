@@ -33,8 +33,6 @@ export default class ServerIO {
       }
     });
     
-    });
-    
     //this.hwrSocket.on('Task', (record) => {
     //     //console.log(record);
     //     //this.dispatch(doAddTaskResult(record.CentredPositions));
