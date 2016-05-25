@@ -115,7 +115,11 @@ def get_initial_state():
     
     for light in ('BackLight','FrontLight'):
         hwobj = mxcube.diffractometer.getObjectByRole(light)
-        switch_state = 1 if hwobj.getActuatorState()=='in' else 0
+        if hasattr(hwobj, "getActuatorState"):
+            switch_state = 1 if hwobj.getActuatorState()=='in' else 0
+        else:
+            hwobj_switch = mxcube.diffractometer.getObjectByRole(light+'Switch')
+            switch_state = 1 if hwobj_switch.getActuatorState()=='in' else 0
         pos = hwobj.getPosition()
         data['Motors'].update({light: {"Status":hwobj.getState(), "position":hwobj.getPosition()}, light+'Switch': {"Status": switch_state, "position":0}})
 
