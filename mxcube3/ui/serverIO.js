@@ -21,8 +21,6 @@ export default class ServerIO {
     });
 
     this.hwrSocket.on('Motors', (record) => {
-	console.log(record);
-      /*
       this.dispatch(updatePointsPosition(record.CentredPositions));
       this.dispatch(saveMotorPositions(record.Motors));
       switch (record.Signal) {
@@ -32,8 +30,7 @@ export default class ServerIO {
         case 'n':
           console.log('sada');
           break;
-      }
-      */
+      }  
     });
     
     this.hwrSocket.on('beamline_value_change', (data) => {
