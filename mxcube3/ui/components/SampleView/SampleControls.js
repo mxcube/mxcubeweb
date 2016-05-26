@@ -25,11 +25,11 @@ export default class SampleControls extends React.Component {
 
   setZoom(option) {
     const currentZoom = parseInt(this.props.sampleViewState.zoom);
-    if(option.target.name === 'zoomOut' && currentZoom > 0 ){
+    if(option.target.name === 'zoomOut' && currentZoom > 1 ){
       this.props.sampleActions.sendZoomPos(currentZoom - 1);
     }else if(option.target.name === 'zoomSlider'){
       this.props.sampleActions.sendZoomPos(option.target.value);
-    }else if(option.target.name === 'zoomIn' && currentZoom < 9){
+    }else if(option.target.name === 'zoomIn' && currentZoom < 10){
       this.props.sampleActions.sendZoomPos(currentZoom + 1);
     }
 
@@ -135,7 +135,7 @@ export default class SampleControls extends React.Component {
             className="bar"
             type="range"
             id="zoom-control"
-            min="0" max="9"
+            min="1" max="10"
             step="1"
             defaultValue={this.props.sampleViewState.zoom}
             onMouseUp={this.setZoom}
@@ -154,6 +154,7 @@ export default class SampleControls extends React.Component {
                 <option>7</option>
                 <option>8</option>
                 <option>9</option>
+                <option>10</option>
             </datalist>
             <Button
               type="button"
@@ -181,7 +182,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleBackLight}
-              active={this.props.sampleViewState.lightOn.back}
+              active={this.props.sampleViewState.lightOn.back == 1}
             />
             <MotorInput
               title="BackLight"
@@ -200,7 +201,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleFrontLight}
-              active={this.props.sampleViewState.lightOn.front}
+              active={this.props.sampleViewState.lightOn.front == 1}
             />
             <MotorInput
               title="FrontLight"
