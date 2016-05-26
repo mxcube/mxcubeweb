@@ -116,40 +116,86 @@ class HOMediatorBase(object):
     def __getattr__(self, attr):
         if attr.startswith("__"):
             raise AttributeError(attr)
+
         return getattr(self._ho, attr)
 
 
     # Abstract method
     def set(self, value):
+        """
+        Sets a value on underlying hardware object.
+
+        :param value: Value to set (castable to float)
+
+        :raises ValueError: When conversion or treatment of value fails
+        :raises StopItteration: When a value change was interrupted
+        (aborted or cancelled)
+
+        :returns: The actual value set on the device
+                  (not necessarily the one passed)
+        :rtype: float
+        """
         pass
 
 
     # Abstract method
     def get(self):
+        """
+        Retrieves value from underlying hardware object.
+
+        :returns: The value
+        :rtype: float
+        :raises ValueError: When value for any reason can't be retrieved
+        """
         pass
 
 
     # Abstract method
     def state(self):
+        """
+        Retrieves the state of the underlying hardware object.
+
+        :returns: The state
+        :rtype: str
+        """
         pass
 
 
     # Abstract method
     def stop(self):
+        """
+        Stops a action/movement
+
+        :returns: None
+        :rtype: None
+        """
         pass
 
 
     # Abstract method
     def limits(self):
+        """
+        :returns: The limits and default stepsize of the device, on the format
+                  (upper, lower, step)
+        """
         return (0, 1, 1)
 
 
     # Abstract method
     def msg(self):
+        """
+        :returns: Returns a message describing the current state, should be used
+                  to communicate details of the state to the user.
+
+        :rtype: str
+        """
         pass
 
 
     def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
         data = {"name": self._name,
                 "value": self.get(),
                 "limits":self.limits(),
@@ -158,6 +204,13 @@ class HOMediatorBase(object):
 
         return data
 
+
+    def value_change(self, *args):
+        """
+        Signal handler to be used for sending values to the client via socketIO,
+        data should normally be sent in the "hwr" namespace.
+        """
+        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
 class EnergyHOMediator(HOMediatorBase):
@@ -210,7 +263,7 @@ class EnergyHOMediator(HOMediatorBase):
 
         try:
             state = self._ho.energy_motor.getState()
-        except Exception as ex:
+        except:
             pass
 
         return state
@@ -218,11 +271,6 @@ class EnergyHOMediator(HOMediatorBase):
 
     def stop(self):
         self._ho.stop()
-
-
-    def value_change(self, energy, wavelength):
-        data = {"name": "energy", "value": energy, "state": self.state(), "msg": ""}
-        socketio.emit("beamline_value_change", data, namespace="/hwr")
 
 
 class InOutHOMediator(HOMediatorBase):
@@ -257,13 +305,8 @@ class InOutHOMediator(HOMediatorBase):
             msg = "OPENED"
         elif state == INOUT_STATE.OUT:
             msg = "CLOSED"
- 
+
         return msg
-
-
-    def value_change(self, state):
-        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
-
 
 
 class TangoShutterHOMediator(HOMediatorBase):
@@ -299,7 +342,7 @@ class TangoShutterHOMediator(HOMediatorBase):
             state = INOUT_STATE.OUT
         elif _state == "CLOSED":
             state = INOUT_STATE.IN
- 
+
         return state
 
 
@@ -313,11 +356,6 @@ class TangoShutterHOMediator(HOMediatorBase):
             msg = "OUT"
 
         return msg
-
-
-    def value_change(self, value):
-        print(value)
-        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
 class BeamstopHOMediator(HOMediatorBase):
@@ -353,7 +391,7 @@ class BeamstopHOMediator(HOMediatorBase):
             state = INOUT_STATE.OUT
         elif _state == INOUT_STATE.IN:
             state = INOUT_STATE.IN
- 
+
         return state
 
 
@@ -370,7 +408,6 @@ class BeamstopHOMediator(HOMediatorBase):
 
 
     def value_change(self, value):
-        print(value)
         socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
@@ -407,10 +444,6 @@ class TransmissionHOMediator(HOMediatorBase):
         return MOTOR_STATE.READY if self._ho.isReady() else MOTOR_STATE.MOVING
 
 
-    def value_change(self, value):
-        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
-
-
 class ResolutionHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(ResolutionHOMediator, self).__init__(ho, name)
@@ -438,8 +471,3 @@ class ResolutionHOMediator(HOMediatorBase):
 
     def state(self):
         return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
-
-
-    def value_change(self, value):
-        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
-
