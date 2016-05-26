@@ -158,7 +158,7 @@ class HOMediatorBase(object):
         :returns: The state
         :rtype: str
         """
-        pass
+        return ""
 
 
     # Abstract method
@@ -189,7 +189,7 @@ class HOMediatorBase(object):
 
         :rtype: str
         """
-        pass
+        return ""
 
 
     def dict_repr(self):
