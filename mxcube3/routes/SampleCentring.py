@@ -257,7 +257,7 @@ def getCentringPositions():
         return Response(status=409)
 
 #### WORKING WITH MOVEABLES
-zoomLevels = ["Zoom 1","Zoom 2","Zoom 3","Zoom 4","Zoom 5","Zoom 6","Zoom 7","Zoom 8","Zoom 9", "Zoom 10"]
+zoomLevels = ["Zoom 0", "Zoom 1","Zoom 2","Zoom 3","Zoom 4","Zoom 5","Zoom 6","Zoom 7","Zoom 8","Zoom 9", "Zoom 10"]
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/zoom", methods=['PUT'])
 def moveZoomMotor():
@@ -273,7 +273,7 @@ def moveZoomMotor():
     newPos = params['level']
     zoomMotor = mxcube.diffractometer.getObjectByRole('zoom') 
     try:
-        logging.getLogger('HWR').info("Changing zoom level to: %s" %newPos)
+        logging.getLogger('HWR').info("Changing zoom level to: %s   %s" %(newPos, zoomLevels[int(newPos)]))
         zoomMotor.moveToPosition(zoomLevels[int(newPos)])
         scales = mxcube.diffractometer.get_pixels_per_mm()
         resp = jsonify({'pixelsPerMm': [scales[0],scales[1]]})
