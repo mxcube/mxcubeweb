@@ -14,12 +14,10 @@ export function doLogin(proposal, password) {
            },
         credentials: 'include',
         body: JSON.stringify({ proposal, password })
-      }).then(response => response.json())
-          .then(loginRes => {
-              // Here one should check if login is successfull and if so get initial state of MxCube
+      }).then(response => {
             dispatch(showErrorPanel(false));
-            dispatch(afterLogin(loginRes));
-            dispatch(getInitialStatus());
+            dispatch(setLoading(false));
+            dispatch(getLoginInfo());
           }, () => {
             dispatch(showErrorPanel(true));
             dispatch(setLoading(false));
@@ -48,7 +46,7 @@ export function getLoginInfo() {
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
               dispatch(getInitialStatus());
-              dispatch(synchState());
+              dispatch(synchState(loginInfo.queue));
             }
           }, () => {
             throw new Error('Server connection problem (getLoginInfo)');

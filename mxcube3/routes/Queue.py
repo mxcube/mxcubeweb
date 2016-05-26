@@ -21,7 +21,7 @@ import jsonpickle
 qm = QueueManager.QueueManager('Mxcube3')
 #qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
-def init_signals():
+def init_signals(queue):
     for signal in signals.collectSignals:
         if signal in signals.task_signals:
             mxcube.collect.connect(mxcube.collect, signal, signals.task_event_callback)
@@ -160,7 +160,7 @@ def queueGet():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting data')
     try:
-        resp = jsonify(jsonParser())
+        resp = jsonify(serializeQueueToJson())
         resp.status_code = 200
         return resp
     except Exception:
@@ -189,9 +189,9 @@ def queueSaveState():
 
     sampleGridState = session.get("sampleGridState")
     #queueState = jsonpickle.encode(mxcube.queue) #.update(params['queueState'])
-
+ 
     try:
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
     except Exception:
         return Response(status=409)
 
@@ -225,7 +225,7 @@ def queueLoadState():
 
         if mxcube.queue.queue_hwobj._queue_entry_list:
             logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored...')
-            resp = jsonify({'queueState': jsonParser(), 'sampleList': samples})
+            resp = jsonify({'queueState': serializeQueueToJson(), 'sampleList': samples})
             resp.status_code = 200
             return resp
         else:
@@ -236,16 +236,6 @@ def queueLoadState():
     except Exception:
         return Response(status=409)
 
-# @mxcube.route("/mxcube/api/v0.1/queue/load", methods=['GET'])
-# def queueLoad():
-#     """Queue: load the queue from a file, filename automatically selected under ./routes folder and based on the proposal name
-#     Args: None
-#     Return: queue data plus http status response, 200 ok, 409 something bad happened
-#     """
-#     resp = jsonify(jsonParser(True))
-#     resp.status_code = 200
-#     return resp
-   
 # @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
 # def getCurrentEntry():
 #     """Queue: get current entry. NOT IMPLEMENTED
@@ -270,7 +260,7 @@ def queueLoadState():
 #         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
 #         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/queue/<nodeId>/execute", methods=['PUT'])
+@mxcube.route("/mxcube/api/v0.1/queue/<int:nodeId>/execute", methods=['PUT'])
 def executeEntryWithId(nodeId):
     """
     Execute the given queue entry
@@ -285,7 +275,6 @@ def executeEntryWithId(nodeId):
     global queue_has_to_be_stopped
     queue_has_to_be_stopped = False 
     try:
-        nodeId = int(nodeId)
         node = mxcube.queue.get_node(nodeId)
         entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
 
@@ -296,9 +285,9 @@ def executeEntryWithId(nodeId):
         if isinstance(entry, qe.SampleQueueEntry):
             logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' % nodeId)
             #this is a sample entry, thus, go through its checked children and execute those
-
             for elem in queue[nodeId]['methods']:
                 if queue_has_to_be_stopped: break
+            for elem in queue[nodeId]['methods']:
                 if int(elem['checked']) == 1:
                     logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' % elem['QueueId'])
                     childNode = mxcube.queue.get_node(elem['QueueId'])
@@ -313,7 +302,9 @@ def executeEntryWithId(nodeId):
                             msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1} # 1: started
                             socketio.emit('Queue', msg, namespace='/hwr')
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
-                        mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queueList[nodeId]['SampleId']})
+
+                        mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
+                        #mxcube.queue.lastQueueNode = lastQueueNode
                         # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                         time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
@@ -341,7 +332,8 @@ def executeEntryWithId(nodeId):
             parent = int(parentNode._node_id)
 
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
-            #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+
+            # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
 
         msg = {'Signal': 'QueueStopped','Message': 'Queue execution stopped', 'State':1}
@@ -391,9 +383,11 @@ def addSample():
     sampleEntry._view = Mock()
     sampleEntry._set_background_color = Mock()
 
-    queueList = jsonParser()
-    for i in queueList:
-        if queueList[i]['SampleId'] == sampleId:
+    ## WARNING: serializeQueueToJson() should only be used for sending to the client,
+    ## here on the back-end side we should just always use mxcube.queue !
+    queue = serializeQueueToJson()
+    for i in queue:
+        if queue[i]['SampleId'] == sampleId:
             logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
             return Response(status=409)
     try:
@@ -401,8 +395,8 @@ def addSample():
         nodeId = sampleNode._node_id
         mxcube.queue.queue_hwobj.enqueue(sampleEntry)
         logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' %(sampleId, nodeId))
-        #queueList.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        #queue.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
+        Utils.save_queue(session)
         return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
@@ -427,7 +421,7 @@ def updateSample(sampleId):
             #TODO: update here the model with the new 'params'
             ### missing lines...
             sampleEntry.set_data_model(sampleNode)
-            session["queueList"] = jsonpickle.encode(mxcube.queue)
+            Utils.save_queue(session)
             logging.getLogger('HWR').info('[QUEUE] sample updated')
             resp = jsonify({'QueueId': nodeId})
             resp.status_code = 200
@@ -450,7 +444,9 @@ def toggleNode(id):
     nodeId = int(id)  # params['QueueId']
     node = mxcube.queue.get_node(nodeId)
     entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-    queueList = jsonParser()
+    ## WARNING: serializeQueueToJson() should only be used for sending to the client,
+    ## here on the back-end side we should just always use mxcube.queue !
+    queue = serializeQueueToJson()
 
     try:
         if isinstance(entry, qe.SampleQueueEntry):
@@ -464,7 +460,7 @@ def toggleNode(id):
                 node.set_enabled(True)
 
             new_state = entry.is_enabled()
-            for elem in queueList[nodeId]['methods']:              
+            for elem in queue[nodeId]['methods']:              
                 childNode = mxcube.queue.get_node(elem['QueueId'])
                 childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
                 if new_state:
@@ -488,7 +484,7 @@ def toggleNode(id):
             #check if the brother&sisters are enabled (and enable the parent)
             checked = 0
 
-            for i in queueList[parent]['methods']:
+            for i in queue[parent]['methods']:
                 if i['QueueId'] != nodeId and i['checked'] == 1: # at least one brother is enabled, no need to change parent
                     checked = 1
                     break
@@ -501,7 +497,7 @@ def toggleNode(id):
                 node.set_enabled(True)
 
             new_state = entry.is_enabled()
-            for met in queueList[parent]['methods']:
+            for met in queue[parent]['methods']:
                 if int(met.get('QueueId')) == nodeId:
                     if new_state == 0 and checked == 0:
                         parentEntry.set_enabled(False)
@@ -522,8 +518,6 @@ def deleteSampleOrMethod(id):
         :statuscode: 200: no error
         :statuscode: 409: node could not be deleted
     """
-    queueList = jsonParser() #session.get("queueList")
-
     try:
         nodeToRemove = mxcube.queue.get_node(int(id))
         parent = nodeToRemove.get_parent()
@@ -537,7 +531,7 @@ def deleteSampleOrMethod(id):
         else:  # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
             mxcube.queue.queue_hwobj.dequeue(entryToRemove)
 
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         return Response(status=200)
     except Exception:
@@ -562,7 +556,7 @@ def deleteMethod(sampleid, methodid):
         parentEntry.dequeue(entryToRemove)
         parent = parent._node_id
         nodeToRemove = nodeToRemove._node_id
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         return Response(status=200)
     except Exception:
@@ -594,7 +588,7 @@ def addCentring(id):
 
         logging.getLogger('HWR').info('[QUEUE] centring added to sample')
 
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         resp = jsonify({'QueueId': newNode, 'Type': 'Centring', 'Params': params})
         resp.status_code = 200
@@ -652,7 +646,7 @@ def addCharacterisation(id):
         characNode.set_enabled(True)
         logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
 
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         resp = jsonify({'QueueId': newNode, 'Type': 'Characterisation'})
         resp.status_code = 200
@@ -700,7 +694,7 @@ def addDataCollection(id):
         newNode = mxcube.queue.add_child_at_id(task1Id, colNode)  # add_child does not return id!
         task1Entry.enqueue(colEntry)
 
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
         resp = jsonify({'QueueId': newNode, 'Type': 'DataCollection'})
@@ -764,7 +758,7 @@ def updateMethod(sampleid, methodid):
             pass
         ####
 
-        session["queueList"] = jsonpickle.encode(mxcube.queue)
+        Utils.save_queue(session)
 
         logging.getLogger('HWR').info('[QUEUE] method updated')
         resp = jsonify({'QueueId': methodid})
@@ -784,12 +778,15 @@ def getSample(id):
         :statuscode: 409: sample could not be retrieved
     """
     try:
-        queueList = jsonParser()
-        if not queueList[int(id)]:
+        ## WARNING: serializeQueueToJson() should only be used for sending to the client,
+        ## here on the back-end side we should just always use mxcube.queue !
+        queue = serializeQueueToJson()
+
+        if not queue[int(id)]:
             logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
             return Response(status=409)
         else:
-            resp = jsonify(queueList[int(id)])
+            resp = jsonify(queue[int(id)])
             resp.status_code = 200
             return resp
     except Exception:
@@ -807,12 +804,15 @@ def getMethod(sampleid, methodid):
         :statuscode: 409: task could not be added to the sample
     """
     try:
-        queueList = jsonParser()
-        if not queueList[int(sampleid)]:
+        ## WARNING: serializeQueueToJson() should only be used for sending to the client,
+        ## here on the back-end side we should just always use mxcube.queue !
+        queue = serializeQueueToJson()
+
+        if not queue[int(sampleid)]:
             logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
             return Response(status=409)
         else:
-            methods = queueList[int(sampleid)]['methods']
+            methods = queue[int(sampleid)]['methods']
             #find the required one
             for met in methods:
                 if met['QueueId'] == int(methodid):
@@ -833,7 +833,7 @@ def serialize():
         logging.getLogger("HWR").exception("[QUEUE] cannot serialize")
         return Response(status=409)
 
-def jsonParser(fromSession = False):
+def serializeQueueToJson():
     """
       {
       "1": {
@@ -844,11 +844,9 @@ def jsonParser(fromSession = False):
           }
        }
     """
-    if not fromSession:
-        jsonobj = jsonpickle.encode(mxcube.queue)
-        queueEntryList = json.loads(jsonobj)['py/state']['_HardwareObjectNode__objects'][0][0]['py/state']['_queue_entry_list']
-    else:
-        queueEntryList = session['queueList']['py/state']['_HardwareObjectNode__objects'][0][0]['py/state']['_queue_entry_list']
+    jsonobj = jsonpickle.encode(mxcube.queue)
+    queueEntryList = json.loads(jsonobj)['py/state']['_HardwareObjectNode__objects'][0][0]['py/state']['_queue_entry_list']
+
     try:
         parent = queueEntryList[0]['py/state']['_data_model']['_parent'] ## is it always the first entry?
     except Exception:
