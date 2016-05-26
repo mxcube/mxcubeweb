@@ -47,7 +47,6 @@ export default class PopInput extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.data.state !== this.props.data.state) {
-    
       if (this.isIdle(nextProps.data)) {
         this.handleIdle(nextProps.data);
       } else if (this.isAborted(nextProps.data)) {
@@ -58,11 +57,11 @@ export default class PopInput extends React.Component {
     }
   }
 
-  
+
   shouldComponentUpdate(nextProps) {
     return nextProps.data !== this.props.data;
   }
-  
+
 
   getChild(key) {
     let children = this.props.children;
@@ -163,19 +162,19 @@ export default class PopInput extends React.Component {
 
 
   isBusy(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state
+    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
     return state === STATE.BUSY;
   }
 
 
   isIdle(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state
+    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
     return state === STATE.IDLE;
   }
 
 
   isAborted(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state
+    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
     return state === STATE.ABORT;
   }
 
@@ -209,8 +208,7 @@ export default class PopInput extends React.Component {
       <div className={`${this.props.className} popinput-input-container`}>
         <span className={`popinput-input-label ${this.props.ref}`}>
           {this.props.name}:
-
-.        </span>
+        </span>
         <span className={`popinput-input-value ${this.props.pkey}`}>
           <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
             overlay={popover}
