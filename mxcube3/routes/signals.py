@@ -15,7 +15,7 @@ microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStart
                     'centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning', 'positionChanged', \
                     'phiMotorStateChanged','phiyMotorStateChanged','phizMotorStateChanged', 'sampxMotorStateChanged', \
                     'sampyMotorStateChanged', 'minidiffStateChanged','minidiffPhaseChanged','minidiffSampleIsLoadedChanged',\
-                    'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged']
+                    'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged', 'positionChanged', 'actuatorStateChanged']
 
 okSignals = ['Successful', 'Finished', 'finished','Ended', 'Accepted'] 
 failedSignals = ['Failed','Invalid']
@@ -36,14 +36,16 @@ task_signals = { ## missing egyscan, xrf, etc...
     'collectOscillationFinished':   'Data collecion oscillacion has finished',
     'collectEnded':                 'Data collecion has finished',
     'collectReady':                 'Data collecion ready',
-    'centringInvalid':              'Centring invalid',
-    'newAutomaticCentringPoint':    'New automatic centring point found',
-    'centringStarted':              'Centring procedure has started',
-    'centringAccepted':             'Centring position accepted',
-    'centringMoving':               'Centring position moving',
-    'centringFailed':               'Centring procedure has failed',
-    'centringSuccessful':           'Centring procedure finished successfully',
-    'centringSnapshots':            'Centring saving snapshots'
+    'warning':                      'Data collection finished with a warning',
+    'collect_finished':             'Data collecion has finished'
+    # 'centringInvalid':              'Centring invalid',
+    # 'newAutomaticCentringPoint':    'New automatic centring point found',
+    # 'centringStarted':              'Centring procedure has started',
+    # 'centringAccepted':             'Centring position accepted',
+    # 'centringMoving':               'Centring position moving',
+    # 'centringFailed':               'Centring procedure has failed',
+    # 'centringSuccessful':           'Centring procedure finished successfully',
+    # 'centringSnapshots':            'Centring saving snapshots'
 }
 
 motor_signals = {   
@@ -67,6 +69,7 @@ motor_signals = {
 
 
 def get_signal_result(signal):
+    result = 0
     for sig in progressSignals:
         if sig in signal:
             result = 1

@@ -24,12 +24,28 @@ def init_signals():
             mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.task_event_callback)
         else:
             pass
+    try:
+        frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+        frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)
+        if hasattr(frontlight_hwobj, "getActuatorState"):
+            frontlight_hwobj.connect(frontlight_hwobj, 'actuatorStateChanged', signals.motor_event_callback)
+        else:
+            frontlightswitch_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+            frontlightswitch_hwobj.connect(frontlightswitch_hwobj, 'actuatorStateChanged', signals.motor_event_callback)  
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] front light hwobj error')
 
-    frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-    frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)
-    backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-    backlight_hwobj.connect(backlight_hwobj, 'positionChanged', signals.motor_event_callback)
-    #mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.signalCallback)
+    try:
+        backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        backlight_hwobj.connect(backlight_hwobj, 'positionChanged', signals.motor_event_callback)
+        if hasattr(backlight_hwobj, "getActuatorState"):
+            backlight_hwobj.connect(backlight_hwobj, 'actuatorStateChanged', signals.motor_event_callback)
+        else:
+            backlightswitch_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+            backlightswitch_hwobj.connect(backlightswitch_hwobj, 'actuatorStateChanged', signals.motor_event_callback)
+    except Exception:
+        logging.getLogger('HWR').exception('[SAMPLEVIEW] back light hwobj error')
+
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful", waitForCentringFinishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed", waitForCentringFinishes)
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
@@ -290,8 +306,12 @@ def backLightOn():
         :statuscode: 409: error
     """
     try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
-        motor_hwobj.actuatorIn(wait=False)
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        if hasattr(motor_hwobj, actuatorIn):
+            motor_hwobj.actuatorIn(wait=False)
+        else:
+            motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+            motor_hwobj.actuatorIn(wait=False)
         return Response(status=200)
     except:
         return Response(status=409)
@@ -304,8 +324,12 @@ def backLightOff():
         :statuscode: 409: error  
     """
     try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
-        motor_hwobj.actuatorOut(wait=False)
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+        if hasattr(motor_hwobj, actuatorOut):
+            motor_hwobj.actuatorOut(wait=False)
+        else:
+            motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+            motor_hwobj.actuatorOut(wait=False)
         return Response(status=200)
     except:
         return Response(status=409)
@@ -318,8 +342,12 @@ def frontLightOn():
         :statuscode: 409: error  
     """
     try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
-        motor_hwobj.actuatorIn(wait=False)
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+        if hasattr(motor_hwobj, actuatorIn):
+            motor_hwobj.actuatorIn(wait=False)
+        else:
+            motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+            motor_hwobj.actuatorIn(wait=False)
         return Response(status=200)
     except:
         return Response(status=409)
@@ -332,8 +360,12 @@ def frontLightOff():
         :statuscode: 409: error  
     """
     try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
-        motor_hwobj.actuatorOut(wait=False)
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+        if hasattr(motor_hwobj, actuatorOut):
+            motor_hwobj.actuatorOut(wait=False)
+        else:
+            motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+            motor_hwobj.actuatorOut(wait=False)
         return Response(status=200)
     except:
         return Response(status=409)
@@ -418,7 +450,7 @@ def get_status():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'] 
+    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom','Sampx', 'Sampy'] 
     #'Kappa', 'Kappa_phi',
     data = {}
     try:
@@ -440,6 +472,17 @@ def get_status():
                     except Exception:
                         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
                 data[mot] = {'Status': status, 'position': pos}
+        
+        for light in ('BackLight','FrontLight'):
+            hwobj = mxcube.diffractometer.getObjectByRole(light)
+            if hasattr(hwobj, "getActuatorState"):
+                switch_state = 1 if hwobj.getActuatorState()=='in' else 0
+            else:
+                hwobj_switch = mxcube.diffractometer.getObjectByRole(light+'Switch')
+                switch_state = 1 if hwobj_switch.getActuatorState()=='in' else 0
+            pos = hwobj.getPosition()
+            data.update({light: {"Status":hwobj.getState(), "position":hwobj.getPosition()}, light+'Switch': {"Status": switch_state, "position":0}})
+
         resp = jsonify(data)
         resp.status_code = 200
         return resp
