@@ -16,7 +16,12 @@ class Characterisation extends React.Component {
 
   handleSubmit(runNow) {
 
-    let values = this.props.values;
+    let parameters = {
+      ...this.props.values,
+      Type : 'Characterisation',
+      point : this.props.pointId
+    };
+
     const stringFields = [
         'centringMethod', 
         'detector_mode', 
@@ -25,34 +30,11 @@ class Characterisation extends React.Component {
         'space_group', 
         'strategy_complexity', 
         'prefix', 
-        'dir' 
-    ];
-    for (var key in values) {
-        if (values.hasOwnProperty(key) && stringFields.indexOf(key) === -1) {
-            values[key] = Number(values[key]);
-        }
-    }
-
-    let parameters = {
-      ...this.props.values,
-      Type : 'Characterisation',
-      point : this.props.pointId
-    };
-
-    // Form gives us all parameter values in strings so we need to transform numbers back
-    const stringFields = [
-        'centringMethod',
-        'detector_mode',
-        'account_rad_damage',
-        'opt_sad',
-        'space_group',
-        'strategy_complexity',
-        'prefix',
-        'dir',
+        'path',
         'Type',
-        'point'
+        'point' 
     ];
-
+    
     for (var key in parameters) {
         if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
             parameters[key] = Number(parameters[key]);
@@ -92,7 +74,7 @@ class Characterisation extends React.Component {
 
   render() {
 
-    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number, dir, beam_size }} = this.props;
+    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number, path, beam_size }} = this.props;
 
     return (
         <Modal show={this.props.show} onHide={this.props.hide}>
@@ -110,14 +92,14 @@ class Characterisation extends React.Component {
 
                      <div className="form-group">
 
-                        <label className="col-sm-12 control-label">Path: /home/20160502/RAWDATA/{dir.value} </label>
+                        <label className="col-sm-12 control-label">Path: /home/20160502/RAWDATA/{path.value} </label>
                     </div>
 
                      <div className="form-group">
 
-                        <label className="col-sm-2 control-label">Subdirectory</label>
+                        <label className="col-sm-2 control-label">Subpathectory</label>
                         <div className="col-sm-4">
-                            <input type="text" className="form-control" {...dir} />
+                            <input type="text" className="form-control" {...path} />
                         </div>
 
                     </div>
@@ -343,10 +325,10 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number', 'dir', 'beam_size' ] // all the fields in your form
+  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number', 'path', 'beam_size' ] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: { ...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture,  prefix: 'insulin', run_number: 1, dir: 'username'  } // will pull state into form's initialValues
+  initialValues: { ...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture,  prefix: 'insulin', run_number: 1, path: 'username'  } // will pull state into form's initialValues
 }))(Characterisation);
 
 export default Characterisation;

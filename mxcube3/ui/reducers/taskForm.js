@@ -23,7 +23,11 @@ const initialState = {
       path: 'username',
       first_image: 1,
       inverse_beam: false,
-      detector_mode: '0'
+      detector_mode: '0',
+      min_crystal_vdim: 0,
+      max_crystal_vdim: 0,
+      min_crystal_vphi: 0,
+      max_crystal_vphi: 0
     }
   }
 };
