@@ -15,7 +15,7 @@ export default class MotorControl extends React.Component {
 
             <div className="row">
 
-                <div className="col-sm-12">
+                <div className="col-sm-12 motor-input-container">
                     <p className="motor-name">Omega: </p>
                     <MotorInput
                       save={save}
@@ -30,7 +30,7 @@ export default class MotorControl extends React.Component {
                     />
                 </div>
 
-                <div className="col-sm-12">
+                <div className="col-sm-12 motor-input-container">
                     <p className="motor-name">Kappa: </p>
                     <MotorInput
                       save={save}
@@ -45,7 +45,7 @@ export default class MotorControl extends React.Component {
                     />
                 </div>
 
-                <div className="col-sm-12">
+                <div className="col-sm-12 motor-input-container">
                     <p className="motor-name">Phi: </p>
                     <MotorInput
                       save={save}
@@ -60,7 +60,7 @@ export default class MotorControl extends React.Component {
                     />
                 </div>
 
-                <div className="col-sm-12">
+                <div className="col-sm-12 motor-input-container">
                     <p className="motor-name">Y: </p>
                     <MotorInput
                       save={save}
@@ -75,7 +75,7 @@ export default class MotorControl extends React.Component {
                     />
                 </div>
 
-                <div className="col-sm-12">
+                <div className="col-sm-12 motor-input-container">
                     <p className="motor-name">Z: </p>
                     <MotorInput
                       save={save}
@@ -90,7 +90,7 @@ export default class MotorControl extends React.Component {
                     />
                 </div>
 
-               <div className="col-sm-12">
+               <div className="col-sm-12 motor-input-container">
                     <p className="motor-name">Focus: </p>
                     <MotorInput
                       save={save}
@@ -105,8 +105,8 @@ export default class MotorControl extends React.Component {
                     />
                 </div>
 
-                <div className="col-sm-12">
-                    <p className="motor-name">SampX: </p>
+                <div className="col-sm-12 motor-input-container">
+                    <p className="motor-name">Samp-X: </p>
                     <MotorInput
                       save={save}
                       value={Sampx.position}
@@ -120,8 +120,8 @@ export default class MotorControl extends React.Component {
                     />
                 </div>
 
-               <div className="col-sm-12">
-                    <p className="motor-name">SampY: </p>
+               <div className="col-sm-12 motor-input-container">
+                    <p className="motor-name">Samp-Y: </p>
                     <MotorInput
                       save={save}
                       value={Sampy.position}
