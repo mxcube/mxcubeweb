@@ -10,6 +10,8 @@ import gevent.event
 import os
 import json
 import signals
+import PIL
+import cStringIO
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
@@ -58,7 +60,21 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     for p in mxcube.diffractometer.savedCentredPos:
         x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
         p.update({'x':x, 'y': y})
+
+    # Assume that we are gettign a qimage if we are not getting a str,
+    # to be able to handle data sent by hardware objects used in MxCuBE 2.x
+    if not isinstance(img, str):
+        rawdata = img.bits().asstring(img.numBytes())
+            
+        strbuf = cStringIO.StringIO()
+        image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
+        (r, g, b, a) = image.split()
+        image = PIL.Image.merge('RGB', (b, g, r))
+        image.save(strbuf, "JPEG")
+        img = strbuf.getvalue()
+
     SAMPLE_IMAGE = img
+
     mxcube.diffractometer.camera.new_frame.set()
     mxcube.diffractometer.camera.new_frame.clear()
 
