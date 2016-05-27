@@ -8,7 +8,7 @@ const initialState = { samples_list: {},
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case "SIGNOUT":
+    case 'SIGNOUT':
       return Object.assign({}, initialState);
     case 'UPDATE_SAMPLES':
           // should have session samples
