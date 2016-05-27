@@ -22,6 +22,26 @@ class Characterisation extends React.Component {
       point : this.props.pointId
     };
 
+    // Form gives us all parameter values in strings so we need to transform numbers back
+    const stringFields = [
+        'centringMethod',
+        'detector_mode',
+        'account_rad_damage',
+        'opt_sad',
+        'space_group',
+        'strategy_complexity',
+        'prefix',
+        'dir',
+        'Type',
+        'point'
+    ];
+
+    for (var key in parameters) {
+        if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
+            parameters[key] = Number(parameters[key]);
+        }
+    }
+
     if (this.props.sampleIds.constructor == Array) {
 
       this.props.sampleIds.map((sampleId) => {
@@ -29,7 +49,7 @@ class Characterisation extends React.Component {
         let queueId = this.props.lookup[sampleId];
 
         if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters);
+          this.props.addTask(queueId, sampleId, parameters, runNow);
         } else {
                     // the sample is not in queue yet
           this.props.addSampleAndTask(sampleId, parameters);
