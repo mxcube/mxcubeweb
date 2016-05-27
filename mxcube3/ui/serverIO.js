@@ -2,27 +2,25 @@ import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
 import { updatePointsPosition, saveMotorPositions, setCurrentPhase } from './actions/sampleview';
 import { beamlinePropertyValueAction } from './actions/beamline';
-// import { doAddTaskResult } from './actions/samples_grid';
+import { doAddTaskResult } from './actions/samples_grid';
 
 
 export default class ServerIO {
 
   constructor(dispatch) {
-    this.dispatch = dispatch;
+      this.dispatch = dispatch;
   }
 
   listen() {
-    const socketHWR = io.connect('http://' + document.domain + ':' + location.port + '/hwr');
+    this.hwrSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
 
-    const socket = io.connect('http://' + document.domain + ':' + location.port + '/logging');
+    this.loggingSocket = io.connect(`http://${document.domain}:${location.port}/logging`);
 
-    const energy = io.connect(`http://${document.domain}:${location.port}/beamline/energy`);
-
-    socket.on('log_record', (record) => {
+    this.loggingSocket.on('log_record', (record) => {
         this.dispatch(addLogRecord(record));
     });
 
-    socketHWR.on('Motors', (record) => {
+    this.hwrSocket.on('Motors', (record) => {
       this.dispatch(updatePointsPosition(record.CentredPositions));
       this.dispatch(saveMotorPositions(record.Motors));
       switch (record.Signal) {
@@ -32,19 +30,21 @@ export default class ServerIO {
         case 'n':
           console.log('sada');
           break;
-      }
+      }  
+    });
+    
+    this.hwrSocket.on('beamline_value_change', (data) => {
+        this.dispatch(beamlinePropertyValueAction(data));
+    });
+    
+    this.hwrSocket.on('Task', (record) => {
+        this.dispatch(doAddTaskResult(record.CentredPositions));
     });
 
-    energy.on('value_change', (data) => {
-      this.dispatch(beamlinePropertyValueAction(data));
+    this.hwrSocket.on('Queue', (record) => {
+      this.dispatch(setStatus(record.Signal));
     });
 
-    // socketHWR.on('Task', (record) => {
-    //     //console.log(record);
-    //     //this.dispatch(doAddTaskResult(record.CentredPositions));
-    // });
-
-  }
-
+  }				
 }
 

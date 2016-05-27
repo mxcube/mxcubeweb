@@ -11,7 +11,7 @@ import './style.css';
 
 
 /**
- * A simple "Popover Input" input conrol, the value is displayed as text and
+ * A simple "Popover Input" input control, the value is displayed as text and
  * the associated input is displayed in an overlay when the text is clicked.
  *
  * Valid react properties are:
@@ -47,9 +47,9 @@ export default class PopInput extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.data.state !== this.props.data.state) {
-      if (this.isIdle()) {
+      if (this.isIdle(nextProps.data)) {
         this.handleIdle(nextProps.data);
-      } else if (this.isAborted()) {
+      } else if (this.isAborted(nextProps.data)) {
         this.handleError(nextProps.data);
       } else {
         this.handleError(nextProps.data);
@@ -161,18 +161,21 @@ export default class PopInput extends React.Component {
   }
 
 
-  isBusy() {
-    return this.props.data.state === STATE.BUSY;
+  isBusy(data) {
+    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
+    return state === STATE.BUSY;
   }
 
 
-  isIdle() {
-    return this.props.data.state === STATE.IDLE;
+  isIdle(data) {
+    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
+    return state === STATE.IDLE;
   }
 
 
-  isAborted() {
-    return this.props.data.state === STATE.ABORT;
+  isAborted(data) {
+    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
+    return state === STATE.ABORT;
   }
 
 

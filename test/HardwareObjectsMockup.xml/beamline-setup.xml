@@ -1,6 +1,7 @@
 <!-- Example beamline setup file -->
 <object class="BeamlineSetup" role="BeamlineSetup">
   <!-- Objects directly associatd with hardware -->
+  <object href="/fast-shutter-mockup" role="fast_shutter"/>
   <object href="/transmission-mockup" role="transmission"/>
   <object href="/minidiff-mockup" role="diffractometer"/>
   <object href="/udiff_omega" role="omega_axis"/>

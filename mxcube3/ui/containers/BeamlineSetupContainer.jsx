@@ -2,10 +2,10 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
-import Switch from 'react-bootstrap-switch';
 import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 
 import PopInput from '../components/PopInput/PopInput';
+import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 
 import { getAllAttributes, setAttribute,
          abortCurrentAction } from '../actions/beamline';
@@ -26,8 +26,8 @@ class BeamlineSetupContainer extends React.Component {
   }
 
 
-  onSaveHandler(name, value, promise) {
-    this.props.setAttribute(name, value, promise);
+  onSaveHandler(name, value) {
+    this.props.setAttribute(name, value);
   }
 
 
@@ -51,6 +51,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="%"
                       data={this.props.data.transmission}
                       onSave={this.onSaveHandler}
+		      onCancel={this.onCancelHandler}
                     />
                   </td>
                   <td>
@@ -58,9 +59,11 @@ class BeamlineSetupContainer extends React.Component {
                       ref="resolution"
                       name="Resolution"
                       pkey="resolution"
+		      placement="left"
                       suffix="&Aring;"
                       data={this.props.data.resolution}
                       onSave={this.onSaveHandler}
+		      onCancel={this.onCancelHandler}
                     />
                   </td>
                 </tr>
@@ -73,6 +76,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="keV"
                       data={this.props.data.energy}
                       onSave={this.onSaveHandler}
+		      onCancel={this.onCancelHandler}
                     />
                   </td>
                   <td>
@@ -80,37 +84,45 @@ class BeamlineSetupContainer extends React.Component {
                 </tr>
                 <tr>
                   <td>
-                    <Switch
-                      size="mini"
-                      onText="Opened"
-                      offText="Closed"
-                      labelText="Fast Shutter"
+                    <InOutSwitch
+                      onText="Open"
+                      offText="Close"
+		      labelText="Fast Shutter"
+		      pkey="fast_shutter"
+                      data={this.props.data.fast_shutter}
+		      onSave={this.onSaveHandler}
                     />
                   </td>
                   <td>
-                    <Switch
-                      size="mini"
-                      onText="Opened"
-                      offText="Closed"
+                    <InOutSwitch
+                      onText="Open"
+                      offText="Close"
                       labelText="Safety Shutter"
+		      pkey="safety_shutter"
+                      data={this.props.data.safety_shutter}
+		      onSave={this.onSaveHandler}
                     />
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <Switch
-                      size="mini"
-                      onText="Opened"
-                      offText="Closed"
+                    <InOutSwitch
+                      onText="In"
+                      offText="Out"
                       labelText="Beamstop"
+		      pkey="beamstop"
+                      data={this.props.data.beamstop}
+		      onSave={this.onSaveHandler}
                     />
                   </td>
                   <td>
-                    <Switch
-                      size="mini"
-                      onText="Opened"
-                      offText="Closed"
+                    <InOutSwitch
+                      onText="In"
+                      offText="Out"
                       labelText="Capillary"
+		      pkey="capillary"
+                      data={this.props.data.capillary}
+		      onSave={this.onSaveHandler}
                     />
                   </td>
                 </tr>
