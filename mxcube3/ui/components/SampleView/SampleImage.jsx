@@ -1,10 +1,9 @@
 import './SampleView.css';
 import React from 'react';
-import { makeCircle, makeCross, makeBeam, makeScale, makePoint } from './shapes';
+import { makeCross, makeBeam, makeScale, makePoint } from './shapes';
 import 'fabric';
 import SampleControls from './SampleControls';
-
-var fabric = window['fabric'];
+const fabric = window.fabric;
 
 export default class SampleImage extends React.Component {
 
@@ -48,9 +47,10 @@ export default class SampleImage extends React.Component {
   }
 
   renderSampleView(nextProps) {
-    this.drawCanvas(nextProps.imageRatio);
-    this.drawImageOverlay(nextProps.imageRatio, nextProps.currentAperture, nextProps.clickCentringPoints);
-    this.renderPoints(nextProps.shapeList, nextProps.imageRatio);
+    const { imageRatio, currentAperture, clickCentringPoints, shapeList } = nextProps;
+    this.drawCanvas(imageRatio);
+    this.drawImageOverlay(imageRatio, currentAperture, clickCentringPoints);
+    this.renderPoints(shapeList, imageRatio);
   }
 
   drawCanvas(imageRatio) {
