@@ -323,7 +323,7 @@ def backLightOn():
     """
     try:
         motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-        if hasattr(motor_hwobj, actuatorIn):
+        if hasattr(motor_hwobj, "actuatorIn"):
             motor_hwobj.actuatorIn(wait=False)
         else:
             motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
@@ -341,7 +341,7 @@ def backLightOff():
     """
     try:
         motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-        if hasattr(motor_hwobj, actuatorOut):
+        if hasattr(motor_hwobj, "actuatorOut"):
             motor_hwobj.actuatorOut(wait=False)
         else:
             motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
@@ -359,7 +359,7 @@ def frontLightOn():
     """
     try:
         motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-        if hasattr(motor_hwobj, actuatorIn):
+        if hasattr(motor_hwobj, "actuatorIn"):
             motor_hwobj.actuatorIn(wait=False)
         else:
             motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
@@ -377,7 +377,7 @@ def frontLightOff():
     """
     try:
         motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-        if hasattr(motor_hwobj, actuatorOut):
+        if hasattr(motor_hwobj, "actuatorOut"):
             motor_hwobj.actuatorOut(wait=False)
         else:
             motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
