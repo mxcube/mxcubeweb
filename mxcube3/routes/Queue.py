@@ -6,7 +6,7 @@ import time
 import logging
 import collections
 import gevent.event
-import os
+import os, sys
 import json
 import queue_model_objects_v1 as qmo
 import QueueManager
@@ -23,8 +23,10 @@ qm = QueueManager.QueueManager('Mxcube3')
 
 def init_signals(queue):
     for signal in signals.collectSignals:
-        if signal in signals.task_signals:
-            mxcube.collect.connect(mxcube.collect, signal, signals.task_event_callback)
+        mxcube.collect.connect(mxcube.collect, signal, signals.task_event_callback)
+    mxcube.collect.connect(mxcube.collect, 'collectOscillationStarted', signals.collectOscillationStarted)
+    mxcube.collect.connect(mxcube.collect, 'collectOscillationFailed', signals.collectOscillationFailed)
+    mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished', signals.collectOscillationFinished)
     queue.lastQueueNode = {'id':0, 'sample':'0:0'}
 
 # ##----QUEUE ACTIONS----##
@@ -309,6 +311,7 @@ def executeEntryWithId(nodeId):
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                         time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
                     except Exception:
+                        print sys.exc_info()
                         logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
         else:
             #not a sample so execute directly
@@ -677,6 +680,10 @@ def addDataCollection(id):
         task1Entry.set_data_model(taskNode1)
 
         colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        colNode.acquisitions[0].path_template.directory = params['path']
+        colNode.acquisitions[0].path_template.run_number = params['run_number']
+        colNode.acquisitions[0].path_template.base_prefix = params['prefix']
+
         if params['point'] > 0: # a point id has been added
             for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
                 if cpos['posId'] == int(params['point']):
