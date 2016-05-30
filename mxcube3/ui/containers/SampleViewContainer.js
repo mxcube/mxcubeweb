@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
-import * as QueueActions from '../actions/queue';
-import * as SampleActions from '../actions/samples_grid';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -15,16 +13,38 @@ import SampleQueueContainer from './SampleQueueContainer';
 class SampleViewContainer extends Component {
 
   render() {
-    const { show, shape, x, y } = this.props.sampleViewState.contextMenu;
-    const { width, height, points, clickCentring, clickCentringPoints, pixelsPerMm, imageRatio, currentAperture, motors, motorSteps } = this.props.sampleViewState;
+    const { show } = this.props.sampleViewState.contextMenu;
+    const {
+      width,
+      height,
+      points,
+      clickCentring,
+      clickCentringPoints,
+      pixelsPerMm,
+      imageRatio,
+      currentAperture,
+      motors,
+      motorSteps
+    } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
-
     return (
       <div className="row">
-        <ContextMenu show={show} shape={shape} x={x} y={y} sampleActions={this.props.sampleViewActions} showForm={this.props.showForm} sampleId={sampleId} defaultParameters={this.props.defaultParameters} />
+        <ContextMenu
+          {...this.props.sampleViewState.contextMenu}
+          sampleActions={this.props.sampleViewActions}
+          showForm={this.props.showForm}
+          sampleId={sampleId}
+          defaultParameters={this.props.defaultParameters}
+        />
         <div className="col-xs-1">
-            <MotorControl save={sendMotorPosition} saveStep={setStepSize} motors={motors} steps={motorSteps} stop={sendStopMotor} />
+            <MotorControl
+              save={sendMotorPosition}
+              saveStep={setStepSize}
+              motors={motors}
+              steps={motorSteps}
+              stop={sendStopMotor}
+            />
         </div>
         <div className="col-xs-8">
             <SampleImage
@@ -63,8 +83,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch),
-    sampleActions: bindActionCreators(SampleActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch)
   };
