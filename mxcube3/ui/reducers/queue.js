@@ -3,13 +3,13 @@ import { without, xor } from 'lodash/array';
 import update from 'react/lib/update';
 
 export default (state = {
-  queue:{},
-  current:{ node: null, collapsed: false, running: false },
-  todo:{ nodes: [], collapsed: false },
-  history:{ nodes: [], collapsed: false },
+  queue: {},
+  current: { node: null, collapsed: false, running: false },
+  todo: { nodes: [], collapsed: false },
+  history: { nodes: [], collapsed: false },
   checked: [],
-  lookup:{},
-  lookup_queue_id:{},
+  lookup: {},
+  lookup_queue_id: {},
   collapsedSample: {},
   searchString: '',
   queueStatus: 'QueueStopped',
@@ -22,12 +22,12 @@ export default (state = {
       return Object.assign({}, state,
         {
           todo: { ...state.todo, nodes: state.todo.nodes.concat(action.queue_id) },
-          queue: { ...state.queue, [action.queue_id] : [] },
-          lookup: { ...state.lookup, [action.queue_id] : action.sample_id },
-          lookup_queue_id: { ...state.lookup_queue_id, [action.sample_id] : action.queue_id },
-          collapsedSample : { ...state.collapsedSample, [action.queue_id] : true }
+          queue: { ...state.queue, [action.queue_id]: [] },
+          lookup: { ...state.lookup, [action.queue_id]: action.sample_id },
+          lookup_queue_id: { ...state.lookup_queue_id, [action.sample_id]: action.queue_id },
+          collapsedSample: { ...state.collapsedSample, [action.queue_id]: true }
         }
-                        );
+      );
 
         // Setting state
     case 'SET_QUEUE_STATUS':
@@ -46,55 +46,68 @@ export default (state = {
           collapsedSample: omit(state.collapsedSample, action.queue_id),
           lookup_queue_id: omit(state.lookup_queue_id, action.index)
         }
-                        );
+      );
 
         // Adding the new task to the queue
     case 'ADD_METHOD':
       return Object.assign({}, state,
         {
-          queue : { ...state.queue, [action.parent_id] :state.queue[action.parent_id].concat(action.queue_id) },
+          queue: {
+            ...state.queue,
+            [action.parent_id]: state.queue[action.parent_id].concat(action.queue_id)
+          },
           checked: state.checked.concat(action.queue_id)
         }
-                        );
+      );
 
          // Removing the task from the queue
     case 'REMOVE_METHOD':
       return Object.assign({}, state,
         {
-          queue : { ...state.queue, [action.parent_id] : without(state.queue[action.parent_id], action.queue_id) },
+          queue: {
+            ...state.queue,
+            [action.parent_id]: without(state.queue[action.parent_id],
+            action.queue_id)
+          },
           checked: without(state.checked, action.queue_id)
         }
-                        );
+      );
 
-        // Run Mount, this will add the mounted sample to history and if it is 0 it will be removed as it is the default value
+        // Run Mount, this will add the mounted sample to history
     case 'MOUNT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { ...state.current, node: action.queue_id, running: false },
-          todo:  { ...state.todo, nodes: without(state.todo.nodes, action.queue_id) },
-          history:  { ...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes) }
+          todo: { ...state.todo, nodes: without(state.todo.nodes, action.queue_id) },
+          history: {
+            ...state.history,
+            nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)
+          }
         }
-                        );
+      );
         //  UNMount, this will remove the sample from current and add it to history
     case 'UNMOUNT_SAMPLE':
       return Object.assign({}, state,
         {
-          current:{ node: null, collapsed: false, running: false },
-          history:  { ...state.history, nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes) }
+          current: { node: null, collapsed: false, running: false },
+          history: {
+            ...state.history,
+            nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)
+          }
         }
-                        );
+      );
         // Run Sample
     case 'RUN_SAMPLE':
       return Object.assign({}, state,
         {
-          current : { ...state.current, running: true }
+          current: { ...state.current, running: true }
         }
                         );
 
     case 'TOGGLE_CHECKED':
       return Object.assign({}, state,
         {
-          checked:  xor(state.checked, [action.queue_id])
+          checked: xor(state.checked, [action.queue_id])
         }
                         );
 
@@ -102,13 +115,18 @@ export default (state = {
     case 'COLLAPSE_LIST':
       return {
         ...state,
-        [action.list_name] : { ...state[action.list_name], collapsed : !state[action.list_name].collapsed }
+        [action.list_name]: { ...state[action.list_name],
+        collapsed: !state[action.list_name].collapsed
+        }
       };
-                // Collapse list
+    // Collapse list
     case 'COLLAPSE_SAMPLE':
       return {
         ...state,
-        collapsedSample : { ...state.collapsedSample, [action.queueID] : !state.collapsedSample[action.queueID] }
+        collapsedSample: {
+          ...state.collapsedSample,
+          [action.queueID]: !state.collapsedSample[action.queueID]
+        }
       };
 
         // Change order of samples in queue on drag and drop
@@ -116,8 +134,8 @@ export default (state = {
 
       return {
         ...state,
-        [action.listName] : { ...state[action.listName],
-                    nodes : update(state[action.listName].nodes, {
+        [action.listName]: { ...state[action.listName],
+                    nodes: update(state[action.listName].nodes, {
                       $splice: [
                             [action.oldIndex, 1],
                             [action.newIndex, 0, state[action.listName].nodes[action.oldIndex]]
@@ -129,36 +147,35 @@ export default (state = {
 
       return {
         ...state,
-        queue : { ...state.queue,
-                    [action.sampleId] : update(state.queue[action.sampleId], {
-                      $splice: [
-                            [action.oldIndex, 1],
-                            [action.newIndex, 0, state.queue[action.sampleId][action.oldIndex]]
-                      ] }) }
+        queue: { ...state.queue,
+                [action.sampleId]: update(state.queue[action.sampleId], {
+                  $splice: [
+                    [action.oldIndex, 1],
+                    [action.newIndex, 0, state.queue[action.sampleId][action.oldIndex]]
+                  ]
+                })
+              }
       };
 
     case 'redux-form/CHANGE':
       if (action.form === 'search-sample') {
-        return Object.assign({}, state, { searchString : action.value });
-      } else {
-        return state;
+        return Object.assign({}, state, { searchString: action.value });
       }
-      break;
+      return state;
     case 'CLEAR_QUEUE':
       return Object.assign({}, state,
         {
-          current:{ node: null, collapsed: false, running: false },
+          current: { node: null, collapsed: false, running: false },
           todo: { nodes: [], collapsed: false },
           history: { nodes: [], collapsed: false }
         });
     case 'SHOW_RESTORE_DIALOG':
       {
-        return { ...state, showRestoreDialog : action.show, queueRestoreState: action.queueState };
+        return { ...state, showRestoreDialog: action.show, queueRestoreState: action.queueState };
       }
     case 'QUEUE_STATE':
       {
-        let new_state = Object.assign({ current:{}, todo:{ nodes:[] }, history:{ nodes:[] } }, action.queueState);
-        return Object.assign({}, state, new_state);
+        return Object.assign({}, state, ...action.queueState);
       }
     default:
       return state;
