@@ -21,13 +21,13 @@ export default class PleaseWaitDialog extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    loading : state.general.loading
+    loading: state.general.loading
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    setLoading : bindActionCreators(setLoading.bind(this, false), dispatch)
+    setLoading: bindActionCreators(setLoading.bind(this, false), dispatch)
   };
 }
 

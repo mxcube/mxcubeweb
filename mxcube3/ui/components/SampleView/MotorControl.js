@@ -4,14 +4,14 @@ import MotorInput from './MotorInput';
 
 export default class MotorControl extends React.Component {
 
-    render() {
-        const { Phi, PhiY, PhiZ, Focus, Sampx, Sampy, Kappa, Kappa_phi } = this.props.motors;
-        const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampXStep, SampYStep, KappaStep, Kappa_phiStep } = this.props.steps;
-        const save = this.props.save;
-        const saveStep = this.props.saveStep;
-        const stop = this.props.stop;
+  render() {
+      const { Phi, PhiY, PhiZ, Focus, Sampx, Sampy, Kappa, Kappa_phi } = this.props.motors;
+      const { PhiStep, PhiYStep, PhiZStep, FocusStep, SampXStep, SampYStep, KappaStep, Kappa_phiStep } = this.props.steps;
+      const save = this.props.save;
+      const saveStep = this.props.saveStep;
+      const stop = this.props.stop;
 
-        return (
+      return (
 
             <div className="row">
 
