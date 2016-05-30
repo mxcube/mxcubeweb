@@ -311,8 +311,7 @@ def executeEntryWithId(nodeId):
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
                         time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
                     except Exception:
-                        print sys.exc_info()
-                        logging.getLogger('HWR').error('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
+                        logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
         else:
             #not a sample so execute directly
             logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' % nodeId)
