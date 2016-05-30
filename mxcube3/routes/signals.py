@@ -9,7 +9,9 @@ def connect():
     # to the server, but we don't need to do anything more
     pass
 
-collectSignals = ['collectStarted', 'collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished','collectEnded', 'testSignal', 'collectReady', 'warning']
+collectSignals = ['collectStarted','collectEnded', 'testSignal', 'collectReady', 'warning']
+collectOscSignals = [ 'collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
+
 queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] #'centringAllowed',
 microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving',\
                     'centringFailed','centringSuccessful','progressMessage','centringSnapshots', 'warning', 'positionChanged', \
@@ -38,14 +40,6 @@ task_signals = { ## missing egyscan, xrf, etc...
     'collectReady':                 'Data collecion ready',
     'warning':                      'Data collection finished with a warning',
     'collect_finished':             'Data collecion has finished'
-    # 'centringInvalid':              'Centring invalid',
-    # 'newAutomaticCentringPoint':    'New automatic centring point found',
-    # 'centringStarted':              'Centring procedure has started',
-    # 'centringAccepted':             'Centring position accepted',
-    # 'centringMoving':               'Centring position moving',
-    # 'centringFailed':               'Centring procedure has failed',
-    # 'centringSuccessful':           'Centring procedure finished successfully',
-    # 'centringSnapshots':            'Centring saving snapshots'
 }
 
 motor_signals = {   
@@ -84,14 +78,39 @@ def get_signal_result(signal):
             result = 4
     return result
 
-def task_event_callback(*args, **kwargs):
-    logging.getLogger('HWR').debug('[TASK CALLBACK]')
+def collectOscillationStarted(*args):
+    lastQueueNode = mxcube.queue.lastQueueNode
+    msg = {'Signal': 'collectOscillationStarted','Message': task_signals['collectOscillationStarted'], 'QueueId':lastQueueNode['id'], 'Sample' :lastQueueNode['sample'] ,'State':get_signal_result('collectOscillationStarted')}
+    logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
+    try:
+        socketio.emit('Task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: '+ str(msg))
+
+def collectOscillationFailed(*args):
+    lastQueueNode = mxcube.queue.lastQueueNode
+    msg = {'Signal': 'collectOscillationFailed','Message': task_signals['collectOscillationFailed'], 'QueueId':lastQueueNode['id'], 'Sample' :lastQueueNode['sample'] ,'State':get_signal_result('collectOscillationFailed')}
+    logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
+    try:
+        socketio.emit('Task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: '+ str(msg))
+
+def collectOscillationFinished(*args):
+    lastQueueNode = mxcube.queue.lastQueueNode
+    msg = {'Signal': 'collectOscillationFinished','Message': task_signals['collectOscillationFinished'], 'QueueId':lastQueueNode['id'], 'Sample' :lastQueueNode['sample'] ,'State':get_signal_result('collectOscillationFinished')}
+    logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
+    try:
+        socketio.emit('Task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: '+ str(msg))
+
+def task_event_callback(*args, **kwargs):#, **kwargs):
+    #logging.getLogger('HWR').debug('[TASK CALLBACK]')
     #logging.getLogger("HWR").debug(kwargs)
     #logging.getLogger("HWR").debug(args)
-    signal = kwargs['signal']
     lastQueueNode = mxcube.queue.lastQueueNode
-
-    msg = {'Signal': signal,'Message': task_signals[signal], 'QueueId':lastQueueNode['id'], 'Sample' :lastQueueNode['sample'] ,'State':get_signal_result(signal)}
+    msg = {'Signal': kwargs['signal'],'Message': task_signals[kwargs['signal']], 'QueueId':lastQueueNode['id'], 'Sample' :lastQueueNode['sample'] ,'State':get_signal_result(kwargs['signal'])}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
     try:
         socketio.emit('Task', msg, namespace='/hwr')
@@ -105,7 +124,7 @@ def task_event_callback(*args, **kwargs):
 
 
 def motor_event_callback(*args, **kwargs):
-    logging.getLogger('HWR').debug('[MOTOR CALLBACK]')
+    #logging.getLogger('HWR').debug('[MOTOR CALLBACK]')
     #logging.getLogger("HWR").debug(kwargs) 
     #logging.getLogger("HWR").debug(args) 
     signal = kwargs['signal']
@@ -138,7 +157,7 @@ def motor_event_callback(*args, **kwargs):
             aux.update({p['posId']:p})
     ## sending all motors position/status, and the current centred positions
     msg = {'Signal': signal,'Message': motor_signals[signal], 'Motors':motors_info, 'CentredPositions': aux, 'Data': args[0] if len(args) ==1 else args}
-    logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+    #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
     try:
         socketio.emit('Motors', msg, namespace='/hwr')
     except Exception:
