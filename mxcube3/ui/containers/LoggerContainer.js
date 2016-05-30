@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
 import { setLogPage } from '../actions/logger';
-
 
 export default class LoggerContainer extends React.Component {
 
@@ -16,10 +14,10 @@ export default class LoggerContainer extends React.Component {
   }
 
   changePage(amount) {
-    let newPage = this.props.page + amount;
+    const newPage = this.props.page + amount;
     if (newPage >= 0 && newPage <= Math.floor(this.props.records.length / 20)) {
-        this.props.setLogPage(newPage);
-      }
+      this.props.setLogPage(newPage);
+    }
   }
 
   lastPage() {
@@ -28,76 +26,79 @@ export default class LoggerContainer extends React.Component {
 
   render() {
     const { records, page } = this.props;
-    let filteredRecords = records.slice(page * 20, page * 20 + 20);
-    let logOutput = [];
 
-    filteredRecords.map((record, index) => {
-        logOutput.push(<tr key={index}><td>{record.timestamp}</td><td>{record.logger}</td><td>{record.severity}</td><td>{record.message}</td></tr>);
-      });
+    let filteredRecords = records.slice(page * 20, page * 20 + 20).map((record, index) => (
+        <tr key={index}>
+          <td>{record.timestamp}</td>
+          <td>{record.logger}</td><td>{record.severity}</td>
+          <td>{record.message}</td>
+        </tr>
+    ));
 
-    return (<div className="col-xs-12">
-                    <row>
-                    <div className="col-xs-12 text-center" style={{ float: 'none', margin: '0 auto' }}>
-                    <nav>
-                        <ul className="pagination">
-                            <li>
-                                <a onClick={this.firstPage}>
-                                    <span aria-hidden="true">first</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a onClick={this.backwardPage}>
-                                    <span aria-hidden="true">&laquo;</span>
-                                </a>
-                            </li>
-                            <li><a>{page}</a></li>
-                            <li>
-                        <a onClick={this.forwardPage}>
-                                    <span aria-hidden="true">&raquo;</span>
-                                </a>
-                            </li>
-                            <li>
-                        <a onClick={this.lastPage}>
-                                    <span aria-hidden="true">{"last"}</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </nav>
-                    </div>
-                    </row>
-                    <row>
-                    <div className="col-xs-12">
-                    <table className="table table-condensed table-striped">
-                        <thead>
-                            <tr>
-                                <th className="col-sm-2">Time</th>
-                                <th className="col-sm-1">Logger</th>
-                                <th className="col-sm-1">Severity</th>
-                                <th>Message</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {logOutput}
-                        </tbody>
-                    </table>
-                    </div>
-                    </row>
-               </div>
-      );
+    return (
+      <div className="col-xs-12">
+        <row>
+          <div className="col-xs-12 text-center" style={{ float: 'none', margin: '0 auto' }}>
+          <nav>
+              <ul className="pagination">
+                  <li>
+                      <a onClick={this.firstPage}>
+                          <span aria-hidden="true">first</span>
+                      </a>
+                  </li>
+                  <li>
+                      <a onClick={this.backwardPage}>
+                          <span aria-hidden="true">&laquo;</span>
+                      </a>
+                  </li>
+                  <li><a>{page}</a></li>
+                  <li>
+              <a onClick={this.forwardPage}>
+                          <span aria-hidden="true">&raquo;</span>
+                      </a>
+                  </li>
+                  <li>
+              <a onClick={this.lastPage}>
+                          <span aria-hidden="true">{"last"}</span>
+                      </a>
+                  </li>
+              </ul>
+          </nav>
+          </div>
+          </row>
+          <row>
+          <div className="col-xs-12">
+          <table className="table table-condensed table-striped">
+              <thead>
+                  <tr>
+                      <th className="col-sm-2">Time</th>
+                      <th className="col-sm-1">Logger</th>
+                      <th className="col-sm-1">Severity</th>
+                      <th>Message</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {filteredRecords}
+              </tbody>
+          </table>
+          </div>
+        </row>
+      </div>
+    );
   }
 }
 
 
 function mapStateToProps(state) {
   return {
-    records : state.logger.logRecords,
-    page : state.logger.activePage
+    records: state.logger.logRecords,
+    page: state.logger.activePage
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    setLogPage : bindActionCreators(setLogPage, dispatch)
+    setLogPage: bindActionCreators(setLogPage, dispatch)
   };
 }
 
