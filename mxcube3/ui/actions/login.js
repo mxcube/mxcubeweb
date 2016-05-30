@@ -1,27 +1,25 @@
 import fetch from 'isomorphic-fetch';
-import { getInitialStatus } from './general';
-import { showErrorPanel, setLoading } from './general';
+import { showErrorPanel, setLoading, getInitialStatus } from './general';
 import { synchState, sendClearQueue } from './queue';
-
 
 export function doLogin(proposal, password) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/login', {
-        method: 'POST',
-        headers: {
-             'Accept': 'application/json',
-             'Content-type': 'application/json'
-           },
-        credentials: 'include',
-        body: JSON.stringify({ proposal, password })
-      }).then(response => {
-            dispatch(showErrorPanel(false));
-            dispatch(setLoading(false));
-            dispatch(getLoginInfo());
-          }, () => {
-            dispatch(showErrorPanel(true));
-            dispatch(setLoading(false));
-          });
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify({ proposal, password })
+    }).then(response => {
+      dispatch(showErrorPanel(false));
+      dispatch(setLoading(false));
+      dispatch(getLoginInfo());
+    }, () => {
+      dispatch(showErrorPanel(true));
+      dispatch(setLoading(false));
+    });
   };
 }
 
@@ -41,7 +39,7 @@ export function getLoginInfo() {
        'Accept': 'application/json',
        'Content-type': 'application/json'
      },
-      credentials: 'include'
+    credentials: 'include'
     }).then(response => response.json())
           .then(loginInfo => {
             dispatch(setLoginInfo(loginInfo));

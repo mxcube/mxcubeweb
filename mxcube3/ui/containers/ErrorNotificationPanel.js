@@ -17,14 +17,14 @@ export class ErrorNotificationPanel extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    show :state.general.showErrorPanel,
-    message : state.general.errorMessage
+    show: state.general.showErrorPanel,
+    message: state.general.errorMessage
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    hideErrorPanel : bindActionCreators(showErrorPanel.bind(this, false), dispatch)
+    hideErrorPanel: bindActionCreators(showErrorPanel.bind(this, false), dispatch)
   };
 }
 

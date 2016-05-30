@@ -58,7 +58,7 @@ export function StartClickCentring() {
   };
 }
 
-export function StopClickCentring() {
+export function stopClickCentring() {
   return {
     type: 'STOP_CLICK_CENTRING'
   };
@@ -321,7 +321,7 @@ export function sendAbortCentring() {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to abort centring'));
       } else {
-        dispatch(StopClickCentring());
+        dispatch(stopClickCentring());
       }
     });
 
