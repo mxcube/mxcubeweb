@@ -129,7 +129,7 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
-              [action.index]: { ...state.samples_list[action.index],
+              [action.sample_id]: { ...state.samples_list[action.sample_id],
                 tasks: {}
               }
              } }
