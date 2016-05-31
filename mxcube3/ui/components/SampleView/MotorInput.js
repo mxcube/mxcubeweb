@@ -31,7 +31,7 @@ export default class MotorInput extends React.Component {
 
   handleClick(e) {
     const { value, decimalPoints, state } = this.props;
-    if (e.target.valueAsNumber !== value.toFixed(decimalPoints) && state === 2) {
+    if (e.target.value !== value.toFixed(decimalPoints) && state === 2) {
       this.props.save(e.target.name, e.target.valueAsNumber);
     } else if (state === 4) {
       this.refs.motorValue.value = value.toFixed(decimalPoints);
