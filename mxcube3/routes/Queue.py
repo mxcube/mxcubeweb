@@ -137,7 +137,6 @@ def queueClear():
         logging.getLogger('HWR').exception('[QUEUE] Queue could not be cleared')
         return Response(status=409)
 
-#@mxlogin_required
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['GET'])
 def queueGet():
     """
