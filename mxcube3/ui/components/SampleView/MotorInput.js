@@ -22,18 +22,19 @@ export default class MotorInput extends React.Component {
   handleKey(e) {
     e.preventDefault();
     e.stopPropagation();
-    if ([13, 38, 40].includes(e.keyCode) && this.props.state == 2) {
+    if ([13, 38, 40].includes(e.keyCode) && this.props.state === 2) {
       this.props.save(e.target.name, e.target.valueAsNumber);
-    } else if(this.props.state == 4){
+    } else if (this.props.state === 4) {
       this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
   }
 
   handleClick(e) {
-    if (e.target.valueAsNumber != this.props.value.toFixed(this.props.decimalPoints) && this.props.state == 2) {
+    const { value, decimalPoints, state } = this.props;
+    if (e.target.valueAsNumber !== value.toFixed(decimalPoints) && state === 2) {
       this.props.save(e.target.name, e.target.valueAsNumber);
-    } else if(this.props.state == 4){
-      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+    } else if (state === 4) {
+      this.refs.motorValue.value = value.toFixed(decimalPoints);
     }
   }
 
@@ -51,7 +52,7 @@ export default class MotorInput extends React.Component {
       warning: this.props.state === 1
     });
 
-    let data = { state: 'IMMEDIATE', value: step }
+    let data = { state: 'IMMEDIATE', value: step };
 
     return (
           <form className="inline form-inline form-group" onSubmit={this.handleKey} noValidate>
@@ -60,7 +61,7 @@ export default class MotorInput extends React.Component {
                 className={inputCSS}
                 onKeyUp={this.handleKey}
                 onClick={this.handleClick}
-                type="number" 
+                type="number"
                 step={step}
                 defaultValue={valueCropped}
                 name={motorName}
@@ -80,7 +81,7 @@ export default class MotorInput extends React.Component {
                     ref={motorName} name="Step size" pkey={`${motorName}Step`}
                     data={data} onSave={this.props.saveStep} suffix={suffix}
                   />
-                </span> 
+                </span>
                 : null
               }
 

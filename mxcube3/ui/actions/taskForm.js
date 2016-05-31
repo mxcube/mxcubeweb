@@ -1,23 +1,21 @@
 import { sendCurrentPhase } from './sampleview';
 
-export function showTaskForm(formName, sample_queueID = -1, taskData = {}, point_queueID = -1) {
+export function showForm(formName, sampleQueueID, taskData, pointQueueID) {
+  return {
+    type: 'SHOW_FORM',
+    name: formName,
+    sampleIDs: sampleQueueID,
+    taskData,
+    point_id: pointQueueID
+  };
+}
+
+export function showTaskForm(formName, sampleQueueID = -1, taskData = {}, pointQueueID = -1) {
   return function (dispatch) {
     if (formName === 'AddSample') {
       dispatch(sendCurrentPhase('Transfer'));
     }
-    dispatch(showForm(formName, sample_queueID, taskData, point_queueID));
-  };
-}
-
-
-
-export function showForm(formName, sample_queueID, taskData, point_queueID) {
-  return {
-    type: 'SHOW_FORM',
-    name: formName,
-    sampleIDs: sample_queueID,
-    taskData: taskData,
-    point_id: point_queueID
+    dispatch(showForm(formName, sampleQueueID, taskData, pointQueueID));
   };
 }
 
