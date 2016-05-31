@@ -11,7 +11,7 @@ import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 class TaskContainer extends React.Component {
 
   render() {
-    const lookup = this.props.lookup_queue_id;
+    const lookup = this.props.lookup_queueID;
     return (
       <div className="col-xs-12">
             <Characterisation pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} apertureList={this.props.apertureList} show={this.props.showForm === 'Characterisation'}/>
@@ -25,7 +25,7 @@ class TaskContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     showForm: state.taskForm.showForm,
-    lookup_queue_id: state.queue.lookup_queue_id,
+    lookup_queueID: state.queue.lookup_queueID,
     taskData: state.taskForm.taskData,
     sampleIds: state.taskForm.sampleIds,
     pointId: state.taskForm.pointId,

@@ -9,7 +9,7 @@ export default (state = {
   history: { nodes: [], collapsed: false },
   checked: [],
   lookup: {},
-  lookup_queue_id: {},
+  lookup_queueID: {},
   collapsedSample: {},
   searchString: '',
   queueStatus: 'QueueStopped',
@@ -21,11 +21,11 @@ export default (state = {
     case 'ADD_SAMPLE':
       return Object.assign({}, state,
         {
-          todo: { ...state.todo, nodes: state.todo.nodes.concat(action.queue_id) },
-          queue: { ...state.queue, [action.queue_id]: [] },
-          lookup: { ...state.lookup, [action.queue_id]: action.sample_id },
-          lookup_queue_id: { ...state.lookup_queue_id, [action.sample_id]: action.queue_id },
-          collapsedSample: { ...state.collapsedSample, [action.queue_id]: true }
+          todo: { ...state.todo, nodes: state.todo.nodes.concat(action.queueID) },
+          queue: { ...state.queue, [action.queueID]: [] },
+          lookup: { ...state.lookup, [action.queueID]: action.sample_id },
+          lookup_queueID: { ...state.lookup_queueID, [action.sample_id]: action.queueID },
+          collapsedSample: { ...state.collapsedSample, [action.queueID]: true }
         }
       );
 
@@ -40,11 +40,11 @@ export default (state = {
     case 'REMOVE_SAMPLE':
       return Object.assign({}, state,
         {
-          todo: { ...state.todo, nodes: without(state.todo.nodes, action.queue_id) },
-          queue: omit(state.queue, action.queue_id),
-          lookup: omit(state.lookup, action.queue_id),
-          collapsedSample: omit(state.collapsedSample, action.queue_id),
-          lookup_queue_id: omit(state.lookup_queue_id, action.index)
+          todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
+          queue: omit(state.queue, action.queueID),
+          lookup: omit(state.lookup, action.queueID),
+          collapsedSample: omit(state.collapsedSample, action.queueID),
+          lookup_queueID: omit(state.lookup_queueID, action.index)
         }
       );
 
@@ -54,9 +54,9 @@ export default (state = {
         {
           queue: {
             ...state.queue,
-            [action.parent_id]: state.queue[action.parent_id].concat(action.queue_id)
+            [action.parent_id]: state.queue[action.parent_id].concat(action.queueID)
           },
-          checked: state.checked.concat(action.queue_id)
+          checked: state.checked.concat(action.queueID)
         }
       );
 
@@ -67,9 +67,9 @@ export default (state = {
           queue: {
             ...state.queue,
             [action.parent_id]: without(state.queue[action.parent_id],
-            action.queue_id)
+            action.queueID)
           },
-          checked: without(state.checked, action.queue_id)
+          checked: without(state.checked, action.queueID)
         }
       );
 
@@ -77,8 +77,8 @@ export default (state = {
     case 'MOUNT_SAMPLE':
       return Object.assign({}, state,
         {
-          current: { ...state.current, node: action.queue_id, running: false },
-          todo: { ...state.todo, nodes: without(state.todo.nodes, action.queue_id) },
+          current: { ...state.current, node: action.queueID, running: false },
+          todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
           history: {
             ...state.history,
             nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)
@@ -107,7 +107,7 @@ export default (state = {
     case 'TOGGLE_CHECKED':
       return Object.assign({}, state,
         {
-          checked: xor(state.checked, [action.queue_id])
+          checked: xor(state.checked, [action.queueID])
         }
                         );
 

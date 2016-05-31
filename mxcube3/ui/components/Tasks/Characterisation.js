@@ -56,8 +56,8 @@ class Characterisation extends React.Component {
       });
 
     } else {
-      let sample_queue_id = this.props.lookup[this.props.sampleIds];
-      this.props.changeTask(this.props.taskData.queue_id, sample_queue_id, this.props.sampleIds, parameters, runNow);
+      let sample_queueID = this.props.lookup[this.props.sampleIds];
+      this.props.changeTask(this.props.taskData.queueID, sample_queueID, this.props.sampleIds, parameters, runNow);
     }
 
     this.props.hide();
@@ -316,7 +316,7 @@ class Characterisation extends React.Component {
             </label>
           </div>
               <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
-              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? 'Change' : 'Add to Queue'}</button>
+              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queueID ? 'Change' : 'Add to Queue'}</button>
           </Modal.Footer>
         </Modal>
         );

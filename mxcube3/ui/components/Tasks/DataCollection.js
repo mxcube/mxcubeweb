@@ -51,7 +51,7 @@ class DataCollection extends React.Component {
     } else {
       const { lookup, taskData, sampleIds } = this.props;
       const sampleId = lookup[this.props.sampleIds];
-      this.props.changeTask(taskData.queue_id, sampleId, sampleIds, parameters, runNow);
+      this.props.changeTask(taskData.queueID, sampleId, sampleIds, parameters, runNow);
     }
 
     this.props.hide();
@@ -356,7 +356,7 @@ class DataCollection extends React.Component {
             </label>
           </div>
               <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
-              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? 'Change' : 'Add to Queue'}</button>
+              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queueID ? 'Change' : 'Add to Queue'}</button>
             </Modal.Footer>
         </Modal>
         );

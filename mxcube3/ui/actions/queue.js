@@ -2,15 +2,15 @@ import fetch from 'isomorphic-fetch';
 import { doUpdateSamples } from './samples_grid';
 import { showTaskForm } from './taskForm';
 
-export function addSample(sample_id, queue_id) {
+export function addSample(sample_id, queueID) {
   return {
-    type: 'ADD_SAMPLE', sample_id, queue_id
+    type: 'ADD_SAMPLE', sample_id, queueID
   };
 }
 
-export function removeSample(queue_id, sample_id) {
+export function removeSample(queueID, sample_id) {
   return {
-    type: 'REMOVE_SAMPLE', queue_id, sample_id
+    type: 'REMOVE_SAMPLE', queueID, sample_id
   };
 }
 
@@ -60,27 +60,27 @@ export function changeTaskOrder(sampleId, oldIndex, newIndex) {
   };
 }
 
-export function runSample(queue_id) {
+export function runSample(queueID) {
   return {
-    type: 'RUN_SAMPLE', queue_id
+    type: 'RUN_SAMPLE', queueID
   };
 }
 
-export function mountSample(queue_id) {
+export function mountSample(queueID) {
   return {
-    type: 'MOUNT_SAMPLE', queue_id
+    type: 'MOUNT_SAMPLE', queueID
   };
 }
 
-export function unmountSample(queue_id) {
+export function unmountSample(queueID) {
   return {
-    type: 'UNMOUNT_SAMPLE', queue_id
+    type: 'UNMOUNT_SAMPLE', queueID
   };
 }
 
-export function toggleChecked(queue_id) {
+export function toggleChecked(queueID) {
   return {
-    type: 'TOGGLE_CHECKED', queue_id
+    type: 'TOGGLE_CHECKED', queueID
   };
 }
 
@@ -224,9 +224,9 @@ export function sendAddSample(id) {
 }
 
 
-export function sendDeleteSample(queue_id, sample_id) {
+export function sendDeleteSample(queueID, sample_id) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id, {
+    fetch('mxcube/api/v0.1/queue/' + queueID, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
@@ -237,15 +237,15 @@ export function sendDeleteSample(queue_id, sample_id) {
       if (response.status >= 400) {
         throw new Error('Server refused to remove sample');
       } else {
-        dispatch(removeSample(queue_id, sample_id));
+        dispatch(removeSample(queueID, sample_id));
       }
     });
   };
 }
 
-export function sendMountSample(queue_id) {
+export function sendMountSample(queueID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/sample_changer/' + queue_id + '/mount', {
+    fetch('mxcube/api/v0.1/sample_changer/' + queueID + '/mount', {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -256,15 +256,15 @@ export function sendMountSample(queue_id) {
       if (response.status >= 400) {
         throw new Error('Server refused to mount sample');
       } else {
-        dispatch(mountSample(queue_id));
+        dispatch(mountSample(queueID));
       }
     });
   };
 }
 
-export function sendUnmountSample(queue_id) {
+export function sendUnmountSample(queueID) {
   return function (dispatch, getState) {
-    fetch('mxcube/api/v0.1/sample_changer/' + queue_id + '/unmount', {
+    fetch('mxcube/api/v0.1/sample_changer/' + queueID + '/unmount', {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -278,15 +278,15 @@ export function sendUnmountSample(queue_id) {
         if (getState().samples_grid.manualMount.set) {
           dispatch(showTaskForm('AddSample'));
         }
-        dispatch(unmountSample(queue_id));
+        dispatch(unmountSample(queueID));
       }
     });
   };
 }
 
-export function sendRunSample(queue_id) {
+export function sendRunSample(queueID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id + '/execute', {
+    fetch('mxcube/api/v0.1/queue/' + queueID + '/execute', {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -297,16 +297,16 @@ export function sendRunSample(queue_id) {
       if (response.status >= 400) {
         throw new Error('Server refused to run sample');
       } else {
-        dispatch(runSample(queue_id));
+        dispatch(runSample(queueID));
       }
     });
   };
 }
 
 
-export function sendToggleCheckBox(queue_id) {
+export function sendToggleCheckBox(queueID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id + '/toggle', {
+    fetch('mxcube/api/v0.1/queue/' + queueID + '/toggle', {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -317,7 +317,7 @@ export function sendToggleCheckBox(queue_id) {
       if (response.status >= 400) {
         throw new Error('Server refused to toogle checked task');
       } else {
-        dispatch(toggleChecked(queue_id));
+        dispatch(toggleChecked(queueID));
       }
     });
   };

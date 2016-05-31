@@ -25,8 +25,8 @@ export function doGetSamplesList() {
 export function doAddSample(id, parameters) {
   return function (dispatch) {
     dispatch(sendAddSample(id)).then(
-            queue_id => {
-              dispatch(sendMountSample(queue_id));
+            queueID => {
+              dispatch(sendMountSample(queueID));
             }
         );
     dispatch(doAddSampleGrid(id, parameters));
@@ -83,20 +83,20 @@ export function doSyncSamples(proposal_id) {
   };
 }
 
-export function doAddTask(sample_queue_id, sample_id, task, parameters) {
+export function doAddTask(sample_queueID, sample_id, task, parameters) {
   return { type: 'ADD_METHOD',
             task_type: task.Type,
             index: sample_id,
-            parent_id: sample_queue_id,
-            queue_id: task.QueueId,
+            parent_id: sample_queueID,
+            queueID: task.QueueId,
             parameters: parameters
            };
 }
 
-export function doAddTaskResult(sample_id, task_queue_id, state) {
+export function doAddTaskResult(sample_id, task_queueID, state) {
   return { type: 'ADD_METHOD_RESULTS',
             index: sample_id,
-            queue_id: task_queue_id,
+            queueID: task_queueID,
             state: state
             };
 }
@@ -130,25 +130,25 @@ export function doSetManualMount(manual) {
 }
 
 
-export function doChangeTask(queue_id, sample_id, parameters) {
+export function doChangeTask(queueID, sample_id, parameters) {
   return { type: 'CHANGE_METHOD',
             index: sample_id,
-            queue_id: queue_id,
+            queueID: queueID,
             parameters: parameters
     };
 }
 
-export function doRemoveTask(sample_queue_id, queue_id, sample_id) {
+export function doRemoveTask(sample_queueID, queueID, sample_id) {
   return { type: 'REMOVE_METHOD',
             index: sample_id,
-            parent_id: sample_queue_id,
-            queue_id: queue_id
+            parent_id: sample_queueID,
+            queueID: queueID
             };
 }
 
-export function sendAddSampleTask(queue_id, sample_id, parameters, runNow) {
+export function sendAddSampleTask(queueID, sample_id, parameters, runNow) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id, {
+    fetch('mxcube/api/v0.1/queue/' + queueID, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -165,7 +165,7 @@ export function sendAddSampleTask(queue_id, sample_id, parameters, runNow) {
       if (runNow) {
         dispatch(sendRunSample(json.QueueId));
       }
-      dispatch(doAddTask(queue_id, sample_id, json, parameters));
+      dispatch(doAddTask(queueID, sample_id, json, parameters));
     });
   };
 }
@@ -173,15 +173,15 @@ export function sendAddSampleTask(queue_id, sample_id, parameters, runNow) {
 export function sendAddSampleAndTask(sample_id, parameters) {
   return function (dispatch) {
     dispatch(sendAddSample(sample_id)).then(
-            queue_id => {
-              dispatch(sendAddSampleTask(queue_id, sample_id, parameters));
+            queueID => {
+              dispatch(sendAddSampleTask(queueID, sample_id, parameters));
             });
   };
 }
 
-export function sendChangeSampleTask(task_queue_id, sample_queue_id, sample_id, parameters, runNow) {
+export function sendChangeSampleTask(task_queueID, sample_queueID, sample_id, parameters, runNow) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + sample_queue_id + '/' + task_queue_id, {
+    fetch('mxcube/api/v0.1/queue/' + sample_queueID + '/' + task_queueID, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -196,17 +196,17 @@ export function sendChangeSampleTask(task_queue_id, sample_queue_id, sample_id, 
       return response.json();
     }).then(function () {
       if (runNow) {
-        dispatch(sendRunSample(task_queue_id));
+        dispatch(sendRunSample(task_queueID));
       }
-      dispatch(doChangeTask(task_queue_id, sample_id, parameters));
+      dispatch(doChangeTask(task_queueID, sample_id, parameters));
     });
   };
 }
 
 
-export function sendDeleteSampleTask(parent_id, queue_id, sample_id) {
+export function sendDeleteSampleTask(parent_id, queueID, sample_id) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id, {
+    fetch('mxcube/api/v0.1/queue/' + queueID, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
@@ -218,7 +218,7 @@ export function sendDeleteSampleTask(parent_id, queue_id, sample_id) {
       if (response.status >= 400) {
         throw new Error('Server refused to remove sample');
       } else {
-        dispatch(doRemoveTask(parent_id, queue_id, sample_id));
+        dispatch(doRemoveTask(parent_id, queueID, sample_id));
       }
     });
   };

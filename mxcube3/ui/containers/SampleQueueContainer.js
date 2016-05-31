@@ -49,8 +49,8 @@ export default class SampleQueueContainer extends React.Component {
 
 
   filterList(list) {
-    let listFiltered = list.filter((queue_id) => {
-       let sampleData = this.props.sampleInformation[this.props.lookup[queue_id]];
+    let listFiltered = list.filter((queueID) => {
+       let sampleData = this.props.sampleInformation[this.props.lookup[queueID]];
        return (this.props.searchString === '' || sampleData.id.indexOf(this.props.searchString) > -1);
      });
     return (listFiltered);
