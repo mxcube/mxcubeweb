@@ -2,15 +2,15 @@ import fetch from 'isomorphic-fetch';
 import { doUpdateSamples } from './samples_grid';
 import { showTaskForm } from './taskForm';
 
-export function addSample(sample_id, queue_id) {
+export function addSample(sampleID, queueID) {
   return {
-    type: 'ADD_SAMPLE', sample_id, queue_id
+    type: 'ADD_SAMPLE', sampleID, queueID
   };
 }
 
-export function removeSample(queue_id, sample_id) {
+export function removeSample(queueID, sampleID) {
   return {
-    type: 'REMOVE_SAMPLE', queue_id, sample_id
+    type: 'REMOVE_SAMPLE', queueID, sampleID
   };
 }
 
@@ -40,11 +40,9 @@ export function collapseSample(queueID) {
   };
 }
 
-export function setState(queueState, sampleGridState) {
+export function setState(queueState) {
   return {
-    type: 'QUEUE_STATE',
-    queueState: queueState,
-               // sampleGridState: sampleGridState
+    type: 'QUEUE_STATE', queueState
   };
 }
 
@@ -60,40 +58,40 @@ export function changeTaskOrder(sampleId, oldIndex, newIndex) {
   };
 }
 
-export function runSample(queue_id) {
+export function runSample(queueID) {
   return {
-    type: 'RUN_SAMPLE', queue_id
+    type: 'RUN_SAMPLE', queueID
   };
 }
 
-export function mountSample(queue_id) {
+export function mountSample(queueID) {
   return {
-    type: 'MOUNT_SAMPLE', queue_id
+    type: 'MOUNT_SAMPLE', queueID
   };
 }
 
-export function unmountSample(queue_id) {
+export function unmountSample(queueID) {
   return {
-    type: 'UNMOUNT_SAMPLE', queue_id
+    type: 'UNMOUNT_SAMPLE', queueID
   };
 }
 
-export function toggleChecked(queue_id) {
+export function toggleChecked(queueID) {
   return {
-    type: 'TOGGLE_CHECKED', queue_id
+    type: 'TOGGLE_CHECKED', queueID
   };
 }
 
-export function synchState(saved_queue) {
-  if (Object.keys(saved_queue).length > 0) {
-    saved_queue.current = {};
-    saved_queue.todo = { nodes:[] };
-    saved_queue.history = { nodes:[] };
-    return showRestoreDialog(saved_queue);
-  } else {
-    return showRestoreDialog(saved_queue, false);
-  }
-}
+// export function synchState(savedQueue) {
+//   if (Object.keys(savedQueue).length > 0) {
+//     savedQueue.current = {};
+//     savedQueue.todo = { nodes:[] };
+//     savedQueue.history = { nodes:[] };
+//     return showRestoreDialog(savedQueue);
+//   } else {
+//     return showRestoreDialog(savedQueue, false);
+//   }
+// }
 
 export function showRestoreDialog(queueState, show = true) {
   return {
@@ -107,15 +105,13 @@ export function sendRunQueue() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to start queue');
       }
-    }).then(function () {
-      // dispatch(setQueueState("started"));
     });
   };
 }
@@ -126,15 +122,13 @@ export function sendPauseQueue() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to pause queue');
       }
-    }).then(function () {
-      // dispatch(setQueueState("paused"));
     });
   };
 }
@@ -145,16 +139,13 @@ export function sendUnpauseQueue() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to unpause queue');
       }
-    })
-    .then(function () {
-      // dispatch(setQueueState("paused"));
     });
   };
 }
@@ -166,16 +157,13 @@ export function sendStopQueue() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to stop queue');
       }
-    })
-    .then(function () {
-      // dispatch(setQueueState("stopped"));
     });
   };
 }
@@ -186,37 +174,36 @@ export function sendClearQueue() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to clear queue');
       }
-    })
-    .then(function () {
+    }).then(() => {
       dispatch(clearAll());
       dispatch(doUpdateSamples({}));
     });
   };
 }
 
-export function sendAddSample(id) {
+export function sendAddSample(SampleId) {
   return function (dispatch) {
     return fetch('mxcube/api/v0.1/queue', {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ SampleId : id })
-    }).then(function (response) {
+      body: JSON.stringify({ SampleId })
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to add sample to queue');
       }
       return response.json();
-    }).then(function (json) {
+    }).then((json) => {
       dispatch(addSample(json.SampleId, json.QueueId));
       return json.QueueId; // dispatch(sendState());
     });
@@ -224,103 +211,101 @@ export function sendAddSample(id) {
 }
 
 
-export function sendDeleteSample(queue_id, sample_id) {
+export function sendDeleteSample(queueID, sampleID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id, {
+    fetch(`mxcube/api/v0.1/queue/${queueID}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to remove sample');
       } else {
-        dispatch(removeSample(queue_id, sample_id));
+        dispatch(removeSample(queueID, sampleID));
       }
     });
   };
 }
 
-export function sendMountSample(queue_id) {
+export function sendMountSample(queueID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/sample_changer/' + queue_id + '/mount', {
+    fetch(`mxcube/api/v0.1/sample_changer/${queueID}/mount`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to mount sample');
       } else {
-        dispatch(mountSample(queue_id));
+        dispatch(mountSample(queueID));
       }
     });
   };
 }
 
-export function sendUnmountSample(queue_id) {
+export function sendUnmountSample(queueID) {
   return function (dispatch, getState) {
-    fetch('mxcube/api/v0.1/sample_changer/' + queue_id + '/unmount', {
+    fetch(`mxcube/api/v0.1/sample_changer/${queueID}/unmount`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to unmount sample');
       } else {
         if (getState().samples_grid.manualMount.set) {
           dispatch(showTaskForm('AddSample'));
         }
-        dispatch(unmountSample(queue_id));
+        dispatch(unmountSample(queueID));
       }
     });
   };
 }
 
-export function sendRunSample(queue_id) {
+export function sendRunSample(queueID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id + '/execute', {
+    fetch(`mxcube/api/v0.1/queue/${queueID}/execute`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to run sample');
       } else {
-        dispatch(runSample(queue_id));
+        dispatch(runSample(queueID));
       }
     });
   };
 }
 
 
-export function sendToggleCheckBox(queue_id) {
+export function sendToggleCheckBox(queueID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queue_id + '/toggle', {
+    fetch(`mxcube/api/v0.1/queue/${queueID}/toggle`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to toogle checked task');
       } else {
-        dispatch(toggleChecked(queue_id));
+        dispatch(toggleChecked(queueID));
       }
     });
   };
 }
-
-

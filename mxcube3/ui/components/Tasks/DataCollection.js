@@ -4,7 +4,7 @@ import { Modal } from 'react-bootstrap';
 
 
 class DataCollection extends React.Component {
-    
+
   constructor(props) {
     super(props);
     this.runNow = this.handleSubmit.bind(this, true);
@@ -12,7 +12,6 @@ class DataCollection extends React.Component {
   }
 
   handleSubmit(runNow) {
-
     let parameters = {
       ...this.props.values,
       Type: 'DataCollection',
@@ -21,27 +20,26 @@ class DataCollection extends React.Component {
 
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
-        'shutterless', 
-        'inverse_beam', 
-        'centringMethod', 
-        'detector_mode', 
-        'space_group', 
-        'prefix', 
-        'path',
-        'Type',
-        'point'
-    ]; 
+      'shutterless',
+      'inverse_beam',
+      'centringMethod',
+      'detector_mode',
+      'space_group',
+      'prefix',
+      'path',
+      'Type',
+      'point'
+    ];
 
-    for (var key in parameters) {
-        if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
-            parameters[key] = Number(parameters[key]);
-        }
+    for (let key in parameters) {
+      if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
+        parameters[key] = Number(parameters[key]);
+      }
     }
 
     if (this.props.sampleIds.constructor === Array) {
       this.props.sampleIds.map((sampleId) => {
         const queueId = this.props.lookup[sampleId];
-
         if (queueId) {
           this.props.addTask(queueId, sampleId, parameters, runNow);
         } else {
@@ -51,7 +49,7 @@ class DataCollection extends React.Component {
     } else {
       const { lookup, taskData, sampleIds } = this.props;
       const sampleId = lookup[this.props.sampleIds];
-      this.props.changeTask(taskData.queue_id, sampleId, sampleIds, parameters, runNow);
+      this.props.changeTask(taskData.queueID, sampleId, sampleIds, parameters, runNow);
     }
 
     this.props.hide();
@@ -322,17 +320,17 @@ class DataCollection extends React.Component {
                             <input type="number" className="form-control" />
                         </div>
 
-                        <label className="col-sm-2 control-label"> &alpha;</label>
+                        <label className="col-sm-2 control-label">&alpha;</label>
                         <div className="col-sm-2">
                             <input type="number" className="form-control" />
                         </div>
 
-                        <label className="col-sm-2 control-label">  &beta;</label>
+                        <label className="col-sm-2 control-label">&beta;</label>
                         <div className="col-sm-2">
                             <input type="number" className="form-control" />
                         </div>
 
-                        <label className="col-sm-2 control-label">  &gamma;</label>
+                        <label className="col-sm-2 control-label">&gamma;</label>
                         <div className="col-sm-2">
                             <input type="number" className="form-control" />
                         </div>
@@ -356,7 +354,7 @@ class DataCollection extends React.Component {
             </label>
           </div>
               <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
-              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queue_id ? 'Change' : 'Add to Queue'}</button>
+              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queueID ? 'Change' : 'Add to Queue'}</button>
             </Modal.Footer>
         </Modal>
         );

@@ -1,4 +1,3 @@
-'use strict';
 import React from 'react';
 import 'bootstrap-webpack';
 import SampleItem from './SampleItem';
@@ -16,10 +15,9 @@ export default class TodoTree extends React.Component {
     this.props.changeOrder('todo', dragIndex, hoverIndex);
   }
 
-
   render() {
-    var bodyClass = cx('list-body', {
-      'hidden': this.props.show
+    const bodyClass = cx('list-body', {
+      hidden: this.props.show
     });
     return (
             <div className="m-tree">
@@ -34,12 +32,12 @@ export default class TodoTree extends React.Component {
                 </div>
                 <div className={bodyClass}>
                 {this.props.list.map((id, i) => {
-                  let sampleData = this.props.sampleInformation[this.props.lookup[id]];
+                  const sampleData = this.props.sampleInformation[this.props.lookup[id]];
                   return (
                         <SampleItem key={id}
                           index={i}
                           id={id}
-                          text={'Vial ' + sampleData.id}
+                          text={`Vial ${sampleData.id}`}
                           moveCard={this.moveCard}
                           deleteSample={this.props.deleteSample}
                           mountSample={this.props.mountSample}

@@ -85,12 +85,12 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
                 {
                   type: action.task_type,
                   label: action.task_type.split(/(?=[A-Z])/).join(' '),
-                  sample_id: action.index,
-                  queue_id: action.queue_id,
+                  sampleID: action.index,
+                  queueID: action.queueID,
                   parent_id: action.parent_id,
                   parameters: action.parameters,
                   state: 0
@@ -104,11 +104,11 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
                 {
-                  ...state.samples_list[action.index].tasks[action.queue_id],
+                  ...state.samples_list[action.index].tasks[action.queueID],
                   type: action.parameters.Type,
-                  queue_id: action.queue_id,
+                  queueID: action.queueID,
                   parameters: action.parameters
                 } }
               }
@@ -120,7 +120,7 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: omit(state.samples_list[action.index].tasks, [action.queue_id])
+                tasks: omit(state.samples_list[action.index].tasks, [action.queueID])
               }
              } }
           );
@@ -129,7 +129,7 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
-              [action.sample_id]: { ...state.samples_list[action.sample_id],
+              [action.sampleID]: { ...state.samples_list[action.sampleID],
                 tasks: {}
               }
              } }
@@ -140,9 +140,9 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
                 {
-                  ...state.samples_list[action.index].tasks[action.queue_id],
+                  ...state.samples_list[action.index].tasks[action.queueID],
                   state: action.state
                 } }
               }

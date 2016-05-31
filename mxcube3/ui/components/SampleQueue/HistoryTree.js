@@ -1,4 +1,3 @@
-'use strict';
 import React from 'react';
 import 'bootstrap-webpack';
 import cx from 'classnames';
@@ -10,11 +9,9 @@ export default class HistoryTree extends React.Component {
     super(props);
     this.collapse = this.props.collapse.bind(this, 'history');
   }
-
-
   render() {
-    var bodyClass = cx('list-body', {
-      'hidden': this.props.show
+    const bodyClass = cx('list-body', {
+      hidden: this.props.show
     });
     return (
             <div className="m-tree">
@@ -25,7 +22,14 @@ export default class HistoryTree extends React.Component {
                 <div className={bodyClass}>
                     {this.props.list.map((id, i) => {
                       let sampleData = this.props.sampleInformation[this.props.lookup[id]];
-                      return <HistorySampleItem data={sampleData} show={this.props.collapsedSamples[id]} collapseSample={this.props.collapseSample} queue={this.props.queue} id={id} key={i} />;
+                      return (
+                        <HistorySampleItem
+                          data={sampleData}
+                          show={this.props.collapsedSamples[id]}
+                          collapseSample={this.props.collapseSample}
+                          queue={this.props.queue} id={id} key={i}
+                        />
+                      );
                     })}
                 </div>
             </div>

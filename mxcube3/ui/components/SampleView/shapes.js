@@ -1,5 +1,5 @@
 import 'fabric';
-var fabric = window['fabric'];
+const fabric = window.fabric;
 
 export function makeCircle(x, y, id = 'no id', color = 'red', type = 'TMP') {
   return new fabric.Circle({
@@ -15,10 +15,10 @@ export function makeCircle(x, y, id = 'no id', color = 'red', type = 'TMP') {
     lockScalingFlip: true,
     lockScalingX: true,
     lockScalingY: true,
-    type: type,
+    type,
     originX: 'center',
     originY: 'center',
-    id: id
+    id
   });
 }
 
@@ -33,7 +33,7 @@ export function makeLine(x1, y1, x2, y2, color, width) {
 
 export function makeText(x, y, fontSize, color, text) {
   return new fabric.Text(text, {
-    fontSize: fontSize,
+    fontSize,
     fill: color,
     stroke: color,
     left: x,
@@ -59,36 +59,35 @@ export function makeCross(point, imageRatio, width, height) {
 
 export function makeBeam(x, y, radius) {
   return [
-  new fabric.Line([x-20, y, x+20, y], {
-    fill: 'red',
-    stroke: 'red',
-    strokeWidth: 1,
-    selectable: false
-  }),new fabric.Line([x, y-20, x, y+20], {
-    fill: 'red',
-    stroke: 'red',
-    strokeWidth: 1,
-    selectable: false
-  }),new fabric.Circle({
-    radius: radius,
-    strokeWidth: 2,
-    stroke: 'blue',
-    fill: '',
-    left: x,
-    top: y,
-    selectable: false,
-    originX: 'center',
-    originY: 'center'
-  })
+    new fabric.Line([x - 20, y, x + 20, y], {
+      fill: 'red',
+      stroke: 'red',
+      strokeWidth: 1,
+      selectable: false
+    }),
+    new fabric.Line([x, y - 20, x, y + 20], {
+      fill: 'red',
+      stroke: 'red',
+      strokeWidth: 1,
+      selectable: false
+    }),
+    new fabric.Circle({
+      radius,
+      strokeWidth: 2,
+      stroke: 'blue',
+      fill: '',
+      left: x,
+      top: y,
+      selectable: false,
+      originX: 'center',
+      originY: 'center'
+    })
   ];
 }
 
 export function makePoint(x, y, id, color, type) {
   return [
     makeCircle(x, y, id, color, type),
-    makeText(x+10, y-25, 14, color, 'P' + id)
+    makeText(x + 10, y - 25, 14, color, `P${id}`)
   ];
 }
-
-
-

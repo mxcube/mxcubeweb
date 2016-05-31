@@ -62,7 +62,7 @@ export default class SampleGrid extends React.Component {
 
         sampleGrid.push(
           <SampleGridItem
-            ref={i} key={key} selectKey={key} sample_id={sample.id}
+            ref={i} key={key} selectKey={key} sampleID={sample.id}
             acronym={acronym} name={name} dm={sample.code}
             loadable={false} location={sample.location} tags={tags}
             selected={this.props.selected[key]}
