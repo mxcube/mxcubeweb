@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 import { doUpdateSamples } from './samples_grid';
-import { showTaskForm } from './taskForm';
 
 export function addSample(sampleID, queueID) {
   return {
@@ -250,7 +249,7 @@ export function sendMountSample(queueID) {
 }
 
 export function sendUnmountSample(queueID) {
-  return function (dispatch, getState) {
+  return function (dispatch) {
     fetch(`mxcube/api/v0.1/sample_changer/${queueID}/unmount`, {
       method: 'PUT',
       credentials: 'include',
@@ -262,9 +261,6 @@ export function sendUnmountSample(queueID) {
       if (response.status >= 400) {
         throw new Error('Server refused to unmount sample');
       } else {
-        if (getState().samples_grid.manualMount.set) {
-          dispatch(showTaskForm('AddSample'));
-        }
         dispatch(unmountSample(queueID));
       }
     });

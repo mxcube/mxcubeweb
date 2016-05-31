@@ -6,6 +6,7 @@ import DataCollection from '../components/Tasks/DataCollection';
 import AddSample from '../components/Tasks/AddSample';
 import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask, doAddSample } from '../actions/samples_grid';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
+import { sendCurrentPhase } from '../actions/sampleview';
 
 
 class TaskContainer extends React.Component {
@@ -16,7 +17,7 @@ class TaskContainer extends React.Component {
       <div className="col-xs-12">
             <Characterisation pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} apertureList={this.props.apertureList} show={this.props.showForm === 'Characterisation'}/>
             <DataCollection pointId={this.props.pointId} lookup={lookup} sampleIds={this.props.sampleIds} taskData={this.props.taskData} addSampleAndTask={this.props.addSampleAndTask} changeTask={this.props.changeTask} addTask={this.props.addTask} hide={this.props.hideTaskParametersForm} apertureList={this.props.apertureList} show={this.props.showForm === 'DataCollection'}/>
-            <AddSample hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'AddSample'} add={this.props.doAddSample} id={this.props.manualMountID} phase={this.props.currentPhase} />
+            <AddSample hide={this.props.hideTaskParametersForm} show={this.props.showForm === 'AddSample'} add={this.props.doAddSample} id={this.props.manualMountID} phase={this.props.currentPhase} setPhase={this.props.sendCurrentPhase} />
       </div>);
   }
 }
@@ -43,7 +44,8 @@ function mapDispatchToProps(dispatch) {
     addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
     addTask: bindActionCreators(sendAddSampleTask, dispatch),
     changeTask: bindActionCreators(sendChangeSampleTask, dispatch),
-    doAddSample: bindActionCreators(doAddSample, dispatch)
+    doAddSample: bindActionCreators(doAddSample, dispatch),
+    sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
   };
 }
 
