@@ -66,8 +66,7 @@ def loginInfo():
                     "loginType": loginType, "loginRes": {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal, 'session': todays_session, "local_contact": local_contact, "person": someone, "laboratory": a_laboratory']} }
     """
     loginInfo = session.get("loginInfo")
-    print '>'*50, 'login info',loginInfo
-
+ 
     if loginInfo is not None:
         loginInfo["loginRes"] = mxcube.db_connection.login(loginInfo["loginID"], loginInfo["password"])
         session['loginInfo'] = loginInfo
