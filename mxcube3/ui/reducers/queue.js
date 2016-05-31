@@ -23,8 +23,8 @@ export default (state = {
         {
           todo: { ...state.todo, nodes: state.todo.nodes.concat(action.queueID) },
           queue: { ...state.queue, [action.queueID]: [] },
-          lookup: { ...state.lookup, [action.queueID]: action.sample_id },
-          lookup_queueID: { ...state.lookup_queueID, [action.sample_id]: action.queueID },
+          lookup: { ...state.lookup, [action.queueID]: action.sampleID },
+          lookup_queueID: { ...state.lookup_queueID, [action.sampleID]: action.queueID },
           collapsedSample: { ...state.collapsedSample, [action.queueID]: true }
         }
       );

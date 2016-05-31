@@ -15,7 +15,7 @@ export function showForm(formName, sample_queueID, taskData, point_queueID) {
   return {
     type: 'SHOW_FORM',
     name: formName,
-    sample_ids: sample_queueID,
+    sampleIDs: sample_queueID,
     taskData: taskData,
     point_id: point_queueID
   };

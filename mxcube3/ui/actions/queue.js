@@ -2,15 +2,15 @@ import fetch from 'isomorphic-fetch';
 import { doUpdateSamples } from './samples_grid';
 import { showTaskForm } from './taskForm';
 
-export function addSample(sample_id, queueID) {
+export function addSample(sampleID, queueID) {
   return {
-    type: 'ADD_SAMPLE', sample_id, queueID
+    type: 'ADD_SAMPLE', sampleID, queueID
   };
 }
 
-export function removeSample(queueID, sample_id) {
+export function removeSample(queueID, sampleID) {
   return {
-    type: 'REMOVE_SAMPLE', queueID, sample_id
+    type: 'REMOVE_SAMPLE', queueID, sampleID
   };
 }
 
@@ -224,7 +224,7 @@ export function sendAddSample(id) {
 }
 
 
-export function sendDeleteSample(queueID, sample_id) {
+export function sendDeleteSample(queueID, sampleID) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/queue/' + queueID, {
       method: 'DELETE',
@@ -237,7 +237,7 @@ export function sendDeleteSample(queueID, sample_id) {
       if (response.status >= 400) {
         throw new Error('Server refused to remove sample');
       } else {
-        dispatch(removeSample(queueID, sample_id));
+        dispatch(removeSample(queueID, sampleID));
       }
     });
   };

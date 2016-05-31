@@ -39,7 +39,7 @@ export default (state = initialState, action) => {
         return {
           ...state,
           showForm: action.name,
-          sampleIds: action.sample_ids,
+          sampleIds: action.sampleIDs,
           taskData: action.taskData,
           pointId: action.point_id
         };

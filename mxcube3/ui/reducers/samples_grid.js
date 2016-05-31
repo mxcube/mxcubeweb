@@ -89,7 +89,7 @@ export default (state = initialState, action) => {
                 {
                   type: action.task_type,
                   label: action.task_type.split(/(?=[A-Z])/).join(' '),
-                  sample_id: action.index,
+                  sampleID: action.index,
                   queueID: action.queueID,
                   parent_id: action.parent_id,
                   parameters: action.parameters,
@@ -129,7 +129,7 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
-              [action.sample_id]: { ...state.samples_list[action.sample_id],
+              [action.sampleID]: { ...state.samples_list[action.sampleID],
                 tasks: {}
               }
              } }

@@ -45,12 +45,12 @@ export default class SampleGridItem extends React.Component {
               // assuming a Task
               let showForm = (e) => {
                 e.stopPropagation();
-                return this.props.showTaskParametersForm(tag.type, this.props.sample_id, tag);
+                return this.props.showTaskParametersForm(tag.type, this.props.sampleID, tag);
               };
 
               let deleteTask = (e) => {
                 e.stopPropagation();
-                return this.props.deleteTask(tag.parent_id, tag.queueID, tag.sample_id);
+                return this.props.deleteTask(tag.parent_id, tag.queueID, tag.sampleID);
               };
 
               content = (
