@@ -22,37 +22,29 @@ export function setAperture(size) {
 
 export function setLight(name, on) {
   return {
-    type: 'SET_LIGHT',
-    name: name,
-    on: on
+    type: 'SET_LIGHT', name, on
   };
 }
 
 export function setStepSize(name, value) {
-  return { 
-    type: "SET_STEP_SIZE", name, value
-  }
+  return {
+    type: 'SET_STEP_SIZE', name, value
+  };
 }
 
-export function showContextMenu(show, shape={type: "NONE"} , x=0, y=0) {
-  return { 
-    type: "SHOW_CONTEXT_MENU",
-    show: show,
-    shape: shape,
-    x: x,
-    y: y
+export function showContextMenu(show, shape = { type: 'NONE' }, x = 0, y = 0) {
+  return {
+    type: 'SHOW_CONTEXT_MENU', show, shape, x, y
   };
 }
 
 export function setZoom(level, pixelsPerMm) {
   return {
-    type: 'SET_ZOOM',
-    level: level,
-    pixelsPerMm: pixelsPerMm
+    type: 'SET_ZOOM', level, pixelsPerMm
   };
 }
 
-export function StartClickCentring() {
+export function startClickCentring() {
   return {
     type: 'START_CLICK_CENTRING'
   };
@@ -70,48 +62,39 @@ export function addCentringPoint(x, y) {
   };
 }
 
-export function SavePoint(point) {
+export function savePoint(point) {
   return {
-    type: 'SAVE_POINT',
-    point: point
+    type: 'SAVE_POINT', point
   };
 }
 
-export function DeletePoint(id) {
+export function deletePoint(id) {
   return {
-    type: 'DELETE_POINT',
-    id: id
+    type: 'DELETE_POINT', id
   };
 }
 
-export function SaveImageSize(x, y, pixelsPerMm) {
+export function saveImageSize(width, height, pixelsPerMm) {
   return {
-    type: 'SAVE_IMAGE_SIZE',
-    width: x,
-    height: y,
-    pixelsPerMm: pixelsPerMm
+    type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm
   };
 }
 
 export function saveMotorPositions(data) {
   return {
-    type: 'SAVE_MOTOR_POSITIONS',
-    data:data
+    type: 'SAVE_MOTOR_POSITIONS', data
   };
 }
 
 export function saveMotorPosition(name, value) {
   return {
-    type: 'SAVE_MOTOR_POSITION',
-    name:name,
-    value: value
+    type: 'SAVE_MOTOR_POSITION', name, value
   };
 }
 
 export function updatePointsPosition(points) {
   return {
-    type: 'UPDATE_POINTS_POSITION',
-    points: points
+    type: 'UPDATE_POINTS_POSITION', points
   };
 }
 
@@ -121,14 +104,14 @@ export function sendStartClickCentring() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to start 3click');
       } else {
-        dispatch(StartClickCentring());
+        dispatch(startClickCentring());
       }
     });
   };
@@ -140,15 +123,15 @@ export function sendCentringPoint(x, y) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ clickPos:{ x : x, y: y } })
-    }).then(function (response) {
+      body: JSON.stringify({ clickPos: { x, y } })
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to add point');
       }
-    }).then(function () {
+    }).then(() => {
       dispatch(addCentringPoint(x, y));
     });
   };
@@ -160,10 +143,10 @@ export function sendStartAutoCentring() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to start autocentring');
       }
@@ -173,42 +156,40 @@ export function sendStartAutoCentring() {
 
 export function sendSavePoint(id) {
   return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview/centring/' + id, {
+    fetch(`/mxcube/api/v0.1/sampleview/centring/${id}`, {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to save point');
       }
       return response.json();
-    }).then(function (json) {
-      dispatch(SavePoint(json));
+    }).then((json) => {
+      dispatch(savePoint(json));
     });
-
   };
 }
 
 export function sendDeletePoint(id) {
   return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview/centring/' + id, {
+    fetch(`/mxcube/api/v0.1/sampleview/centring/${id}`, {
       method: 'DELETE',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to delete point');
       }
       return response.json();
-    }).then(function () {
-      dispatch(DeletePoint(id));
+    }).then(() => {
+      dispatch(deletePoint(id));
     });
-
   };
 }
 
@@ -218,33 +199,32 @@ export function sendZoomPos(level) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ level: level })
-    }).then(function (response) {
+      body: JSON.stringify({ level })
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to zoom');
       }
       return response.json();
-    }).then(function (json) {
+    }).then((json) => {
       dispatch(setZoom(level, json.pixelsPerMm[0]));
     });
-
   };
 }
 
 export function sendLightOn(name) {
   return function (dispatch) {
     dispatch(setLight(name, true));
-    fetch('/mxcube/api/v0.1/sampleview/' + name + 'lighton', {
+    fetch(`/mxcube/api/v0.1/sampleview/${name}lighton`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(setLight(name, false));
         dispatch(showErrorPanel(true, 'Server refused to turn light on'));
@@ -256,14 +236,14 @@ export function sendLightOn(name) {
 export function sendLightOff(name) {
   return function (dispatch) {
     dispatch(setLight(name, false));
-    fetch('/mxcube/api/v0.1/sampleview/' + name + 'lightoff', {
+    fetch(`/mxcube/api/v0.1/sampleview/${name}lightoff`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(setLight(name, true));
         dispatch(showErrorPanel(true, 'Server refused to turn light off'));
@@ -274,14 +254,14 @@ export function sendLightOff(name) {
 
 export function sendStopMotor(motorName) {
   return function () {
-    fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/stop', {
+    fetch(`/mxcube/api/v0.1/sampleview/${motorName}/stop`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to stop motor');
       }
@@ -289,18 +269,16 @@ export function sendStopMotor(motorName) {
   };
 }
 
-
-
 export function sendMotorPosition(motorName, value) {
   return function () {
-    fetch('/mxcube/api/v0.1/sampleview/' + motorName + '/' + value, {
+    fetch(`/mxcube/api/v0.1/sampleview/${motorName}/${value}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to move motors');
       }
@@ -314,30 +292,29 @@ export function sendAbortCentring() {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to abort centring'));
       } else {
         dispatch(stopClickCentring());
       }
     });
-
   };
 }
 
 export function sendGoToPoint(id) {
   return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview/centring/' + id + '/moveto', {
+    fetch(`/mxcube/api/v0.1/sampleview/centring/${id}/moveto`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to move to point'));
       }
@@ -345,28 +322,26 @@ export function sendGoToPoint(id) {
   };
 }
 
-export function sendChangeAperture(size) {
+export function sendChangeAperture(pos) {
   return function (dispatch) {
     fetch('/mxcube/api/v0.1/beamline/aperture', {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ pos: size })
-    }).then(function (response) {
+      body: JSON.stringify({ pos })
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to change Aperture'));
-        dispatch(setAperture(size));
+        dispatch(setAperture(pos));
       } else {
-        dispatch(setAperture(size));
+        dispatch(setAperture(pos));
       }
     });
   };
 }
-
-
 
 export function getSampleImageSize() {
   return function (dispatch) {
@@ -374,21 +349,19 @@ export function getSampleImageSize() {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to return image size');
       }
       return response.json();
-    }).then(function (json) {
-      dispatch(SaveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
+    }).then((json) => {
+      dispatch(saveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
     });
-
   };
 }
-
 
 export function getMotorPositions() {
   return function (dispatch) {
@@ -396,39 +369,36 @@ export function getMotorPositions() {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to get motorposition');
       }
       return response.json();
-    }).then(function (json) {
+    }).then((json) => {
       dispatch(saveMotorPositions(json));
     });
-
   };
 }
-
 
 export function getPointsPosition() {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/sampleview/centring', {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to return points position');
       }
       return response.json();
-    }).then(function (json) {
+    }).then((json) => {
       dispatch(updatePointsPosition(json));
     });
-
   };
 }
 
@@ -439,17 +409,16 @@ export function sendCurrentPhase(phase) {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ phase: phase })
-    }).then(function (response) {
+      body: JSON.stringify({ phase })
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to set phase');
       } else {
         dispatch(setCurrentPhase(phase));
       }
-
     });
   };
 }

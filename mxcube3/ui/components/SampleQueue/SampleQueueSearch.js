@@ -13,7 +13,12 @@ class SampleQueueSearch extends Component {
 
     return (
          <div id="search-queue">
-                <Input type="text" placeholder="Search Sample" buttonAfter={innerSearchIcon} {...sampleName} />
+            <Input
+              type="text"
+              placeholder="Search Sample"
+              buttonAfter={innerSearchIcon}
+              {...sampleName}
+            />
          </div>
     );
   }

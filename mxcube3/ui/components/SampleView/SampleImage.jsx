@@ -1,8 +1,8 @@
 import './SampleView.css';
 import React from 'react';
 import { makeCross, makeBeam, makeScale, makePoint } from './shapes';
-import 'fabric';
 import SampleControls from './SampleControls';
+import 'fabric';
 const fabric = window.fabric;
 
 export default class SampleImage extends React.Component {
