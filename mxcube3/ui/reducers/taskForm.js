@@ -48,6 +48,10 @@ export default (state = initialState, action) => {
       {
         return initialState;
       }
+    case 'SIGNOUT':
+      {
+        return Object.assign({}, state, initialState);
+      }
     default:
       return state;
   }
