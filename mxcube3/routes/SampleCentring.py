@@ -1,5 +1,6 @@
 from flask import request, Response, jsonify
 from mxcube3 import app as mxcube
+from mxcube3.routes import Utils
 from PIL import Image, ImageDraw, ImageFont
 
 import time
@@ -436,26 +437,15 @@ def get_status_of_id(id):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    data = {}
-    motor = mxcube.diffractometer.getObjectByRole(id.lower())
-    try:
-        if motor.motor_name == 'Zoom':
-            pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
-            status = "unknown"
-        elif motor.motor_name == 'BackLightSwitch' or motor.motor_name == 'FrontLightSwitch':
-                states = {"in": 1, "out": 0}
-                pos = states[motor.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
-                # 'in', 'out'
-                status = pos 
-        else:
-            pos = motor.getPosition()
-            status = motor.getState()
-        data[motor.motor_name] = {'Status': status, 'position': pos}
-        resp = jsonify(data)
+    if 'Light' in id:
+        ret = Utils.get_light_state_and_intensity()
+    else:
+        ret = Utils.get_movable_state_and_position(id)
+    if ret:
+        resp = jsonify(ret)
         resp.status_code = 200
         return resp
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] could get motor "%s" status ' % id)
+    else:
         return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview", methods=['GET'])

@@ -92,35 +92,10 @@ def get_initial_state():
         :statuscode: 200: no error
         :statuscode: 409: error occurred
     """
-    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY','Sampx', 'Sampy'] 
-    #'Kappa', 'Kappa_phi',
-    data = {}
-    data['Motors'] = {}
-    for mot in motors:
-       motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
-       if motor_hwobj is not None:
-           try:
-               pos = motor_hwobj.getPosition()
-               status = motor_hwobj.getState()
-           except Exception:
-               logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
-           data['Motors'].update({mot: {'Status': status, 'position': pos}})
-
-    try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('zoom')
-        data['Motors'].update({"Zoom": {"Status":motor_hwobj.getState(), "position": motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()] }})
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get Zoom motor')
-    
-    for light in ('BackLight','FrontLight'):
-        hwobj = mxcube.diffractometer.getObjectByRole(light)
-        if hasattr(hwobj, "getActuatorState"):
-            switch_state = 1 if hwobj.getActuatorState()=='in' else 0
-        else:
-            hwobj_switch = mxcube.diffractometer.getObjectByRole(light+'Switch')
-            switch_state = 1 if hwobj_switch.getActuatorState()=='in' else 0
-        pos = hwobj.getPosition()
-        data['Motors'].update({light: {"Status":hwobj.getState(), "position":hwobj.getPosition()}, light+'Switch': {"Status": switch_state, "position":0}})
+    data = { "Motors": {} }
+    for movable in ['Phi', 'Focus', 'PhiZ', 'PhiY','Sampx', 'Sampy', 'Zoom']:
+        data['Motors'].update(Utils.get_movable_state_and_position(movable))
+    data['Motors'].update(Utils.get_light_state_and_intensity())
 
     data['Camera'] = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
         'imageWidth':  mxcube.diffractometer.image_width,
