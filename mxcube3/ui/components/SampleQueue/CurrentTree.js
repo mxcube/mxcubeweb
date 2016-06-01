@@ -51,20 +51,20 @@ export default class CurrentTree extends React.Component {
           <div className="list-head">
               <span className="queue-root" onClick={this.collapse}>{(node ? sampleData.sampleName : 'No Sample Mounted')}</span>
                <div className={this.props.queueStatus === 'QueueStopped' && node ? '' : 'hidden'}>
-                <Button bsStyle="primary" bsSize="sm" onClick={this.showForm}>New Sample</Button>
-                <Button bsStyle="danger" bsSize="sm" style={{ marginLeft: '5px' }}onClick={this.unmount}>Unmount</Button>
-                <Button bsStyle="success" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.runSample}>Run</Button>
+                <Button bsStyle="primary" bsSize="sm" style={{ width: '40%' }} onClick={this.showForm}>New Sample</Button>
+                <Button bsStyle="danger" bsSize="sm" style={{ width: '30%' }} onClick={this.unmount}>Unmount</Button>
+                <Button bsStyle="success" bsSize="sm" style={{ width: '30%' }} onClick={this.runSample}>Run</Button>
               </div>
                <div className={this.props.queueStatus === 'QueueStarted' && node ? '' : 'hidden'}>
-                <Button bsStyle="danger" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.stop}>Stop</Button>
-                <Button bsStyle="warning" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.pause}>Pause</Button>
+                <Button bsStyle="danger" bsSize="sm" style={{ width: '50%' }} onClick={this.props.stop}>Stop</Button>
+                <Button bsStyle="warning" bsSize="sm" style={{ width: '50%' }} onClick={this.props.pause}>Pause</Button>
               </div>
                <div className={this.props.queueStatus === 'QueuePaused' && node ? '' : 'hidden'}>
-                <Button bsStyle="danger" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.stop}>Stop</Button>
-                <Button bsStyle="warning" bsSize="sm" style={{ marginLeft: '5px' }} onClick={this.props.unpause}>Unpause</Button>
+                <Button bsStyle="danger" bsSize="sm" style={{ width: '50%' }} onClick={this.props.stop}>Stop</Button>
+                <Button bsStyle="warning" bsSize="sm" style={{ width: '50%' }} onClick={this.props.unpause}>Unpause</Button>
               </div>
               <div className={!node ? '' : 'hidden'}>
-                <Button bsStyle="primary" bsSize="sm" onClick={this.showForm}>New Sample</Button>
+                <Button bsStyle="primary" bsSize="sm" style={{ width: '100%' }} onClick={this.showForm}>New Sample</Button>
               </div>
               <hr className="queue-divider" />
           </div>
