@@ -209,3 +209,7 @@
 .btn-link:hover, .btn-link:focus{
     text-decoration: initial !important;
 }
+
+.list-head .btn-sm{
+    border-radius: 0px;
+}

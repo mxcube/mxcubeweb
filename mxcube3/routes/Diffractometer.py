@@ -47,6 +47,7 @@ def set_phase():
     params = json.loads(params)
     phase = params['phase']
     try:
+        mxcube.diffractometer.wait_device_ready(30)
         mxcube.diffractometer.set_phase(phase)
         return Response(status=200)
     except Exception:
