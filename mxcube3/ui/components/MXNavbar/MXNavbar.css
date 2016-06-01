@@ -1,12 +1,22 @@
-.menu-logo{
-	width:55%;
+.main-menu-logo {
+	width: 55%;
 	height: auto;
 }
 
-.menu-breaker{
+
+.main-menu-breaker {
 	margin-top: 4px;
-    border-top: 1px solid #615F5F;
+  border-top: 1px solid #615F5F;
 }
-.main-menu-top{
-    margin-left: 65px !important;
+
+
+.main-menu-bottom-icon {
+  dispaly: block;
+  position: absolute;
+  bottom: 5px;
+}
+
+
+.main-menu-icon{
+   width: 100%;
 }
