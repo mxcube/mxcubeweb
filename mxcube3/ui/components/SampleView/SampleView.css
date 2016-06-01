@@ -34,13 +34,16 @@
     margin-top: 10px;
 }
 
+.motor-input-container{
+    margin-bottom: 1em;
+}
+
 .motor-name{
-    line-height: 45px;
     font-size: 1.0em;
     margin-bottom: 0px;
-    margin-left: 5px;
     font-weight: bold;
 }
+
 .motor-value{
     font-size: 1.0em;
     font-weight: bold;
@@ -48,6 +51,7 @@
     border-bottom:1px dotted #f00;
     cursor:pointer;
 }
+
 
 
 .information-box{
