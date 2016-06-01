@@ -1,9 +1,7 @@
-'use strict';
-
 import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
-
+/* eslint camelcase: 0 */
 
 class Characterisation extends React.Component {
 
