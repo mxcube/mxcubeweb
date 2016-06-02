@@ -8,6 +8,12 @@ class AddSample extends React.Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleCancel = this.handleCancel.bind(this);
+  }
+
+  handleCancel() {
+    this.props.setPhase('Centring');
+    this.props.hide();
   }
 
   handleSubmit() {
@@ -20,7 +26,7 @@ class AddSample extends React.Component {
     const { fields: { sampleName, proteinAcronym } } = this.props;
     const phase = this.props.phase;
     return (
-        <Modal show={this.props.show} onHide={this.props.hide}>
+        <Modal show={this.props.show} onHide={this.handleCancel}>
             <Modal.Header closeButton>
                 <Modal.Title>Add Sample Manually</Modal.Title>
             </Modal.Header>

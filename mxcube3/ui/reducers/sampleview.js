@@ -159,6 +159,10 @@ export default (state = initialState, action) => {
           currentAperture: action.data.beamInfo.currentAperture
         };
       }
+    case 'SIGNOUT':
+      {
+        return Object.assign({}, state, initialState);
+      }
 
     default:
       return state;
