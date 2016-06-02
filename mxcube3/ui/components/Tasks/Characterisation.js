@@ -13,310 +13,335 @@ class Characterisation extends React.Component {
   }
 
   handleSubmit(runNow) {
-
-    let parameters = {
+    const parameters = {
       ...this.props.values,
-      Type : 'Characterisation',
-      point : this.props.pointId
+      Type: 'Characterisation',
+      point: this.props.pointId
     };
 
     const stringFields = [
-        'centringMethod', 
-        'detector_mode', 
-        'account_rad_damage' , 
-        'opt_sad', 
-        'space_group', 
-        'strategy_complexity', 
-        'prefix', 
-        'path',
-        'Type',
-        'point' 
+      'centringMethod',
+      'detector_mode',
+      'account_rad_damage',
+      'opt_sad',
+      'space_group',
+      'strategy_complexity',
+      'prefix',
+      'path',
+      'Type',
+      'point'
     ];
-    
-    for (var key in parameters) {
-        if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
-            parameters[key] = Number(parameters[key]);
-        }
+
+    for (const key in parameters) {
+      if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
+        parameters[key] = Number(parameters[key]);
+      }
     }
 
-    if (this.props.sampleIds.constructor == Array) {
-
-      this.props.sampleIds.map((sampleId) => {
-
-        let queueId = this.props.lookup[sampleId];
-
+    if (this.props.sampleIds.constructor === Array) {
+      for (const sampleId of this.props.sampleIds) {
+        const queueId = this.props.lookup[sampleId];
         if (queueId) {
           this.props.addTask(queueId, sampleId, parameters, runNow);
-        } else {
-                    // the sample is not in queue yet
+        } else {// the sample is not in queue yet
           this.props.addSampleAndTask(sampleId, parameters);
         }
-      });
-
+      }
     } else {
-      let sample_queueID = this.props.lookup[this.props.sampleIds];
-      this.props.changeTask(this.props.taskData.queueID, sample_queueID, this.props.sampleIds, parameters, runNow);
+      const { lookup, taskData, sampleIds } = this.props;
+      const sampleQueueID = lookup[sampleIds];
+      this.props.changeTask(taskData.queueID, sampleQueueID, sampleIds, parameters, runNow);
     }
 
     this.props.hide();
   }
 
   handleShowHide(e) {
-    if (e.target.innerHTML === 'Show More') {
-      e.target.innerHTML = 'Show Less';
+    const node = e.target;
+    if (node.innerHTML === 'Show More') {
+      node.innerHTML = 'Show Less';
     } else {
-      e.target.innerHTML = 'Show More';
+      node.innerHTML = 'Show More';
     }
   }
 
 
   render() {
-
-    const {fields: {num_images, exp_time, resolution, osc_start , energy, osc_range, transmission, centringMethod, detector_mode, kappa, kappa_phi, account_rad_damage, opt_sad, space_group, min_crystal_vdim, max_crystal_vdim, min_crystal_vphi, max_crystal_vphi, strategy_complexity, prefix, run_number, path, beam_size }} = this.props;
+    const {
+      fields: {
+        num_images,
+        exp_time,
+        resolution,
+        osc_start,
+        energy,
+        osc_range,
+        transmission,
+        centringMethod,
+        detector_mode,
+        kappa,
+        kappa_phi,
+        account_rad_damage,
+        opt_sad,
+        space_group,
+        min_crystal_vdim,
+        max_crystal_vdim,
+        min_crystal_vphi,
+        max_crystal_vphi,
+        strategy_complexity,
+        prefix,
+        run_number,
+        path,
+        beam_size
+      }
+    } = this.props;
 
     return (
-        <Modal show={this.props.show} onHide={this.props.hide}>
-            <Modal.Header closeButton>
-                <Modal.Title>Characterisation</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                    <div className="task-title-head">
-                        <span className="task-title-body">
-                            Data location
-                        </span>
-                    </div>
+      <Modal show={this.props.show} onHide={this.props.hide}>
+        <Modal.Header closeButton>
+          <Modal.Title>Characterisation</Modal.Title>
+        </Modal.Header>
+          <Modal.Body>
 
-                    <form className="form-horizontal">
+            <div className="task-title-head">
+                <span className="task-title-body">
+                    Data location
+                </span>
+            </div>
 
-                     <div className="form-group">
+            <form className="form-horizontal">
+             <div className="form-group">
+              <label className="col-sm-12 control-label">
+                Path: /home/20160502/RAWDATA/{path.value}
+              </label>
+            </div>
 
-                        <label className="col-sm-12 control-label">Path: /home/20160502/RAWDATA/{path.value} </label>
-                    </div>
+             <div className="form-group">
+              <label className="col-sm-2 control-label">Subpathectory</label>
+              <div className="col-sm-4">
+                <input type="text" className="form-control" {...path} />
+              </div>
+            </div>
 
-                     <div className="form-group">
+            <div className="form-group">
+                <label className="col-sm-12 control-label">
+                  Filename: { 'ref-' + prefix.value + '_' + run_number.value + '_xxxx.cbf'}
+                </label>
+            </div>
 
-                        <label className="col-sm-2 control-label">Subpathectory</label>
-                        <div className="col-sm-4">
-                            <input type="text" className="form-control" {...path} />
-                        </div>
+            <div className="form-group">
 
-                    </div>
+              <label className="col-sm-3 control-label">Prefix</label>
+              <div className="col-sm-3">
+                <input type="text" className="form-control" {...prefix} />
+              </div>
 
-                    <div className="form-group">
-                        <label className="col-sm-12 control-label">Filename: { 'ref-' + prefix.value + '_' + run_number.value + '_xxxx.cbf'}</label>
-                    </div>
+              <label className="col-sm-3 control-label">Run number</label>
+              <div className="col-sm-3">
+                <input type="number" className="form-control" {...run_number} />
+              </div>
+            </div>
 
-                    <div className="form-group">
-                        <label className="col-sm-3 control-label">Prefix</label>
-                        <div className="col-sm-3">
-                            <input type="text" className="form-control" {...prefix} />
-                        </div>
+            </form>
 
-                        <label className="col-sm-3 control-label">Run number</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...run_number} />
-                        </div>
+            <div className="task-title-head">
+              <span className="task-title-body">
+                Acquisition
+              </span>
+            </div>
+            <form className="form-horizontal">
 
-                    </div>
-                    </form>
-                    <div className="task-title-head">
-                        <span className="task-title-body">
-                            Acquisition
-                        </span>
-                    </div>
-                <form className="form-horizontal">
+            <div className="form-group">
 
-                    <div className="form-group">
+                <label className="col-sm-3 control-label">Number of images</label>
+                <div className="col-sm-3">
+                  <select className="form-control" {...num_images}>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                  </select>
+                </div>
 
-                        <label className="col-sm-3 control-label">Number of images</label>
-                        <div className="col-sm-3">
-                             <select className="form-control" {...num_images}>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="4">4</option>
-                            </select>
-                        </div>
+                <label className="col-sm-3 control-label">Transmission (%)</label>
+                <div className="col-sm-3">
+                  <input type="number" className="form-control" {...transmission} />
+                </div>
 
-                        <label className="col-sm-3 control-label">Transmission (%)</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...transmission} />
-                        </div>
-                    </div>
+            </div>
 
-                    <div className="form-group">
+            <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Exposure time(ms)</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...exp_time} />
-                        </div>
-                        <label className="col-sm-3 control-label">Beam size</label>
-                        <div className="col-sm-3">
-                            <select className="form-control" {...beam_size}>
-                                {this.props.apertureList.map((val, i) => {
-                                  return <option key={i} value={val}>{val}</option>;
-                                })}
-                            </select>
-                        </div>
-                    </div>
+              <label className="col-sm-3 control-label">Exposure time(ms)</label>
+              <div className="col-sm-3">
+                <input type="number" className="form-control" {...exp_time} />
+              </div>
+              <label className="col-sm-3 control-label">Beam size</label>
+              <div className="col-sm-3">
+                <select className="form-control" {...beam_size}>
+                  {this.props.apertureList.map((val, i) => {
+                    (<option key={i} value={val}>{val}</option>)
+                  })}
+                </select>
+              </div>
 
-                    <div className="form-group">
+            </div>
 
-                        <label className="col-sm-3 control-label">Oscillation range</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...osc_range} />
-                        </div>
+            <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Resolution (Å)</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...resolution} />
-                        </div>
+              <label className="col-sm-3 control-label">Oscillation range</label>
+              <div className="col-sm-3">
+                <input type="number" className="form-control" {...osc_range} />
+              </div>
 
+              <label className="col-sm-3 control-label">Resolution (Å)</label>
+              <div className="col-sm-3">
+                 <input type="number" className="form-control" {...resolution} />
+              </div>
 
-                    </div>
+            </div>
 
 
-                    <div className="form-group">
+            <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Oscillation start</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...osc_start} />
-                        </div>
+                <label className="col-sm-3 control-label">Oscillation start</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...osc_start} />
+                </div>
 
-                        <label className="col-sm-3 control-label">Energy (KeV)</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...energy} />
-                        </div>
+                <label className="col-sm-3 control-label">Energy (KeV)</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...energy} />
+                </div>
 
-                    </div>
-                    <div className="collapse" id="acquisition">
-                    <div className="form-group">
+            </div>
+            <div className="collapse" id="acquisition">
+            <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Kappa</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...kappa} />
-                        </div>
+                <label className="col-sm-3 control-label">Kappa</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...kappa} />
+                </div>
 
-                        <label className="col-sm-3 control-label">Phi</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...kappa_phi} />
-                        </div>
+                <label className="col-sm-3 control-label">Phi</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...kappa_phi} />
+                </div>
 
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-3 control-label">Detector mode</label>
-                        <div className="col-sm-3">
-                             <select className="form-control" {...detector_mode}>
-                                <option value="1"></option>
-                                <option value="1">X</option>
-                                <option value="1">Y</option>
-                            </select>
-                        </div>
-                    </div>
-                    </div>
+            </div>
+            <div className="form-group">
+                <label className="col-sm-3 control-label">Detector mode</label>
+                <div className="col-sm-3">
+                     <select className="form-control" {...detector_mode}>
+                        <option value="1"></option>
+                        <option value="1">X</option>
+                        <option value="1">Y</option>
+                    </select>
+                </div>
+            </div>
+            </div>
 
-                      <p className="text-right">
-                        <a data-toggle="collapse" data-target="#acquisition" aria-expanded="false" aria-controls="acquisition" onClick={this.handleShowHide}>
-                            Show More
-                        </a>
-                    </p>
-                    <div className="task-title-head">
-                        <span className="task-title-body">
-                            Characterisation
-                        </span>
-                    </div>                  
-                    <div className="collapse" id="characterisation">
-                    <div className="form-group">
+              <p className="text-right">
+                <a data-toggle="collapse" data-target="#acquisition" aria-expanded="false" aria-controls="acquisition" onClick={this.handleShowHide}>
+                    Show More
+                </a>
+            </p>
+            <div className="task-title-head">
+                <span className="task-title-body">
+                    Characterisation
+                </span>
+            </div>                  
+            <div className="collapse" id="characterisation">
+            <div className="form-group">
 
-                        <label className="col-sm-6 control-label">Strategy complexity</label>
-                        <div className="col-sm-6">
-                             <select className="form-control" {...strategy_complexity}>
-                                <option value="1">Single subwedge</option>
-                                <option value="2">Multiple subwedge</option>
-                            </select>
-                        </div>
+                <label className="col-sm-6 control-label">Strategy complexity</label>
+                <div className="col-sm-6">
+                     <select className="form-control" {...strategy_complexity}>
+                        <option value="1">Single subwedge</option>
+                        <option value="2">Multiple subwedge</option>
+                    </select>
+                </div>
 
-                    </div>
+            </div>
 
-                    <div className="form-group">
+            <div className="form-group">
 
-                        <label className="col-sm-6 control-label">
-                            <input type="checkbox" {...account_rad_damage} />
-                             Account for radiation damage
-                        </label>
-                        <label className="col-sm-6 control-label">
-                            <input type="checkbox" {...opt_sad} />
-                             Optimised SAD
-                        </label>
+                <label className="col-sm-6 control-label">
+                    <input type="checkbox" {...account_rad_damage} />
+                     Account for radiation damage
+                </label>
+                <label className="col-sm-6 control-label">
+                    <input type="checkbox" {...opt_sad} />
+                     Optimised SAD
+                </label>
 
-                    </div>
-                    </div>
-                     <p className="text-right">
-                        <a data-toggle="collapse" data-target="#characterisation" aria-expanded="false" aria-controls="characterisation" onClick={this.handleShowHide}>
-                            Show More
-                        </a>
-                    </p> 
-                    <div className="task-title-head">
-                        <span className="task-title-body">
-                            Crystal
-                        </span>
-                    </div>                   
-                  <div className="collapse" id="crystal">
-                    <div className="form-group">
+            </div>
+            </div>
+             <p className="text-right">
+                <a data-toggle="collapse" data-target="#characterisation" aria-expanded="false" aria-controls="characterisation" onClick={this.handleShowHide}>
+                    Show More
+                </a>
+            </p> 
+            <div className="task-title-head">
+                <span className="task-title-body">
+                    Crystal
+                </span>
+            </div>                   
+          <div className="collapse" id="crystal">
+            <div className="form-group">
 
-                        <label className="col-sm-6 control-label">Space group</label>
-                        <div className="col-sm-6">
-                             <select className="form-control" {...space_group}>
-                                <option value="1"></option>
-                                <option value="1">X</option>
-                            </select>
-                        </div>
+                <label className="col-sm-6 control-label">Space group</label>
+                <div className="col-sm-6">
+                     <select className="form-control" {...space_group}>
+                        <option value="1"></option>
+                        <option value="1">X</option>
+                    </select>
+                </div>
 
-                    </div>
-                    <h6>Vertical crystal dimension(mm)</h6>
-                    <div className="form-group">
+            </div>
+            <h6>Vertical crystal dimension(mm)</h6>
+            <div className="form-group">
 
-                        <label className="col-sm-3 control-label">Min</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...min_crystal_vdim} />
-                        </div>
+                <label className="col-sm-3 control-label">Min</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...min_crystal_vdim} />
+                </div>
 
-                        <label className="col-sm-3 control-label">Max</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...max_crystal_vdim} />
-                        </div>
+                <label className="col-sm-3 control-label">Max</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...max_crystal_vdim} />
+                </div>
 
-                        <label className="col-sm-3 control-label">  &omega; at min</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...min_crystal_vphi} />
-                        </div>
+                <label className="col-sm-3 control-label">  &omega; at min</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...min_crystal_vphi} />
+                </div>
 
-                        <label className="col-sm-3 control-label">  &omega; at max</label>
-                        <div className="col-sm-3">
-                            <input type="number" className="form-control" {...max_crystal_vphi} />
-                        </div>
+                <label className="col-sm-3 control-label">  &omega; at max</label>
+                <div className="col-sm-3">
+                    <input type="number" className="form-control" {...max_crystal_vphi} />
+                </div>
 
-                    </div>
-                  </div>
-                    <p className="text-right">
-                        <a data-toggle="collapse" data-target="#crystal" aria-expanded="false" aria-controls="crystal" onClick={this.handleShowHide}>
-                            Show More
-                        </a>
-                    </p>
-                </form>
-            </Modal.Body>
-            <Modal.Footer>
-          <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
-            <label className="centring-method">
-              <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'} /> Lucid Only
-            </label>
-            <label className="centring-method">
-              <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'} /> X-ray Centring
-            </label>
+            </div>
           </div>
-              <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
-              <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queueID ? 'Change' : 'Add to Queue'}</button>
-          </Modal.Footer>
-        </Modal>
+            <p className="text-right">
+                <a data-toggle="collapse" data-target="#crystal" aria-expanded="false" aria-controls="crystal" onClick={this.handleShowHide}>
+                    Show More
+                </a>
+            </p>
+        </form>
+          </Modal.Body>
+          <Modal.Footer>
+        <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
+          <label className="centring-method">
+            <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'} /> Lucid Only
+          </label>
+          <label className="centring-method">
+            <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'} /> X-ray Centring
+          </label>
+        </div>
+            <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
+            <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queueID ? 'Change' : 'Add to Queue'}</button>
+        </Modal.Footer>
+      </Modal>
         );
   }
 }
