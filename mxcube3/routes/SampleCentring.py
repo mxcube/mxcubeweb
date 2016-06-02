@@ -448,54 +448,6 @@ def get_status_of_id(id):
     else:
         return Response(status=409)
 
-@mxcube.route("/mxcube/api/v0.1/sampleview", methods=['GET'])
-def get_status():
-    """
-    Get position and status of all the elements: 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
-        :response Content-type: application/json, position and status of all moveables {motorname: {'Status': status, 'position': position} ...  }
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom','Sampx', 'Sampy'] 
-    #'Kappa', 'Kappa_phi',
-    data = {}
-    try:
-        for mot in motors:
-            motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
-            if motor_hwobj is not None:
-                if mot == 'Zoom':
-                    pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
-                    status = "unknown"
-                elif mot == 'BackLightSwitch' or mot == 'FrontLightSwitch':
-                    states = {"in": 1, "out": 0}
-                    pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
-                    # 'in', 'out'
-                    status = pos 
-                else:
-                    try:
-                        pos = motor_hwobj.getPosition()
-                        status = motor_hwobj.getState()
-                    except Exception:
-                        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
-                data[mot] = {'Status': status, 'position': pos}
-        
-        for light in ('BackLight','FrontLight'):
-            hwobj = mxcube.diffractometer.getObjectByRole(light)
-            if hasattr(hwobj, "getActuatorState"):
-                switch_state = 1 if hwobj.getActuatorState()=='in' else 0
-            else:
-                hwobj_switch = mxcube.diffractometer.getObjectByRole(light+'Switch')
-                switch_state = 1 if hwobj_switch.getActuatorState()=='in' else 0
-            pos = hwobj.getPosition()
-            data.update({light: {"Status":hwobj.getState(), "position":hwobj.getPosition()}, light+'Switch': {"Status": switch_state, "position":0}})
-
-        resp = jsonify(data)
-        resp.status_code = 200
-        return resp
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get all motor  status')
-        return Response(status=409)
-
 #### WORKING WITH THE SAMPLE CENTRING
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=['PUT'])
 def centreAuto():
