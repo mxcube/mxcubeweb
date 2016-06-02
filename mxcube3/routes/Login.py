@@ -172,6 +172,12 @@ def get_initial_state():
     except AttributeError:
         data['current_phase'] =  'None' # in case the diff does not have this implemented
 
+    try:
+        today = time.strftime("%Y%m%d")
+        data['rootPath'] = '/ramdisk' + today + '/RAW_DATA/'
+    except Exception, e:
+        logging.getLogger('HWR').error("Error retrieving data path")
+
     resp = jsonify(data)
     resp.status_code = 200
     return resp
