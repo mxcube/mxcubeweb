@@ -2,7 +2,7 @@ import { omit } from 'lodash/object';
 import { without, xor } from 'lodash/array';
 import update from 'react/lib/update';
 
-export default (state = {
+const initialState = {
   queue: {},
   current: { node: null, collapsed: false, running: false },
   todo: { nodes: [], collapsed: false },
@@ -14,8 +14,11 @@ export default (state = {
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
-  queueRestoreState: {}
-}, action) => {
+  queueRestoreState: {},
+  path: ''
+};
+
+export default (state = initialState, action) => {
   switch (action.type) {
         // Adding sample to queue
     case 'ADD_SAMPLE':
@@ -176,6 +179,14 @@ export default (state = {
     case 'QUEUE_STATE':
       {
         return Object.assign({}, state, ...action.queueState);
+      }
+    case 'SIGNOUT':
+      {
+        return Object.assign({}, state, initialState);
+      }
+    case 'SET_INITIAL_STATUS':
+      {
+        return { ...state, rootPath: action.data.rootPath };
       }
     default:
       return state;

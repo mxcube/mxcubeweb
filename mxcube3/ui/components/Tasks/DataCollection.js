@@ -87,7 +87,8 @@ class DataCollection extends React.Component {
         run_number,
         beam_size,
         path
-      }
+      },
+      rootPath
     } = this.props;
 
     return (
@@ -107,7 +108,7 @@ class DataCollection extends React.Component {
 
             <div className="form-group">
               <label className="col-sm-12 control-label">
-                Path: /home/20160502/RAWDATA/{path.value}
+                Path: {rootPath + path.value}
               </label>
             </div>
 
