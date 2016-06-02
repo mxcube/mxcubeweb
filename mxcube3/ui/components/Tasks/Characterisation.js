@@ -124,7 +124,7 @@ class Characterisation extends React.Component {
 
             <div className="form-group">
                 <label className="col-sm-12 control-label">
-                  Filename: { 'ref-' + prefix.value + '_' + run_number.value + '_xxxx.cbf'}
+                  Filename: { `ref-${prefix.value}_${run_number.value}_xxxx.cbf`}
                 </label>
             </div>
 
@@ -177,9 +177,9 @@ class Characterisation extends React.Component {
               <label className="col-sm-3 control-label">Beam size</label>
               <div className="col-sm-3">
                 <select className="form-control" {...beam_size}>
-                  {this.props.apertureList.map((val, i) => {
+                  {this.props.apertureList.map((val, i) =>
                     (<option key={i} value={val}>{val}</option>)
-                  })}
+                  )}
                 </select>
               </div>
 
@@ -240,15 +240,21 @@ class Characterisation extends React.Component {
             </div>
 
               <p className="text-right">
-                <a data-toggle="collapse" data-target="#acquisition" aria-expanded="false" aria-controls="acquisition" onClick={this.handleShowHide}>
-                    Show More
+                <a
+                  data-toggle="collapse"
+                  data-target="#acquisition"
+                  aria-expanded="false"
+                  aria-controls="acquisition"
+                  onClick={this.handleShowHide}
+                >
+                  Show More
                 </a>
             </p>
             <div className="task-title-head">
                 <span className="task-title-body">
                     Characterisation
                 </span>
-            </div>                  
+            </div>
             <div className="collapse" id="characterisation">
             <div className="form-group">
 
@@ -276,15 +282,21 @@ class Characterisation extends React.Component {
             </div>
             </div>
              <p className="text-right">
-                <a data-toggle="collapse" data-target="#characterisation" aria-expanded="false" aria-controls="characterisation" onClick={this.handleShowHide}>
-                    Show More
+                <a
+                  data-toggle="collapse"
+                  data-target="#characterisation"
+                  aria-expanded="false"
+                  aria-controls="characterisation"
+                  onClick={this.handleShowHide}
+                >
+                  Show More
                 </a>
-            </p> 
+            </p>
             <div className="task-title-head">
                 <span className="task-title-body">
                     Crystal
                 </span>
-            </div>                   
+            </div>
           <div className="collapse" id="crystal">
             <div className="form-group">
 
@@ -323,8 +335,14 @@ class Characterisation extends React.Component {
             </div>
           </div>
             <p className="text-right">
-                <a data-toggle="collapse" data-target="#crystal" aria-expanded="false" aria-controls="crystal" onClick={this.handleShowHide}>
-                    Show More
+                <a
+                  data-toggle="collapse"
+                  data-target="#crystal"
+                  aria-expanded="false"
+                  aria-controls="crystal"
+                  onClick={this.handleShowHide}
+                >
+                  Show More
                 </a>
             </p>
         </form>
@@ -332,14 +350,32 @@ class Characterisation extends React.Component {
           <Modal.Footer>
         <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
           <label className="centring-method">
-            <input type="radio" {...centringMethod} value="lucid" checked={centringMethod.value === 'lucid'} /> Lucid Only
+            <input
+              type="radio" {...centringMethod}
+              value="lucid"
+              checked={centringMethod.value === 'lucid'}
+            />
+              Lucid Only
           </label>
           <label className="centring-method">
-            <input type="radio" {...centringMethod} value="xray" checked={centringMethod.value === 'xray'} /> X-ray Centring
+            <input
+              type="radio" {...centringMethod}
+              value="xray"
+              checked={centringMethod.value === 'xray'}
+            />
+              X-ray Centring
           </label>
         </div>
-            <button type="button" className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'} onClick={this.runNow}>Run Now</button>
-            <button type="button" className="btn btn-primary" onClick={this.addToQueue}>{this.props.taskData.queueID ? 'Change' : 'Add to Queue'}</button>
+            <button
+              type="button"
+              className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'}
+              onClick={this.runNow}
+            >
+              Run Now
+            </button>
+            <button type="button" className="btn btn-primary" onClick={this.addToQueue}>
+              {this.props.taskData.queueID ? 'Change' : 'Add to Queue'}
+            </button>
         </Modal.Footer>
       </Modal>
         );
@@ -348,10 +384,40 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
-  fields: ['num_images', 'exp_time', 'resolution', 'osc_start' , 'energy', 'osc_range', 'transmission', 'centringMethod', 'detector_mode', 'kappa', 'kappa_phi', 'account_rad_damage' , 'opt_sad', 'space_group', 'min_crystal_vdim', 'max_crystal_vdim', 'min_crystal_vphi', 'max_crystal_vphi', 'strategy_complexity', 'prefix', 'run_number', 'path', 'beam_size' ] // all the fields in your form
+  fields: [
+    'num_images',
+    'exp_time',
+    'resolution',
+    'osc_start',
+    'energy',
+    'osc_range',
+    'transmission',
+    'centringMethod',
+    'detector_mode',
+    'kappa',
+    'kappa_phi',
+    'account_rad_damage',
+    'opt_sad',
+    'space_group',
+    'min_crystal_vdim',
+    'max_crystal_vdim',
+    'min_crystal_vphi',
+    'max_crystal_vphi',
+    'strategy_complexity',
+    'prefix',
+    'run_number',
+    'path',
+    'beam_size'
+  ] // all the fields in your form
 },
 state => ({ // mapStateToProps
-  initialValues: { ...state.taskForm.taskData.parameters, beam_size: state.sampleview.currentAperture,  prefix: 'insulin', run_number: 1, path: 'username'  } // will pull state into form's initialValues
+  initialValues: {
+    ...state.taskForm.taskData.parameters,
+    beam_size: state.sampleview.currentAperture,
+    prefix: 'insulin',
+    run_number: 1,
+    path: 'username'
+  } // will pull state into form's initialValues
 }))(Characterisation);
 
 export default Characterisation;
