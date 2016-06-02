@@ -10,7 +10,10 @@ export default class MXNavbar extends React.Component {
     const proposal = this.props.userInfo.Proposal;
     const propInfo = (this.props.loggedIn ? `${proposal.title} - ${proposal.code}` : '');
     const sampleGrid = (
-      <OverlayTrigger placement="right" overlay={(<Popover>Sample Overview</Popover>)}>
+      <OverlayTrigger
+        placement="right"
+        overlay={(<Popover className="main-menu-tooltip">Sample Overview</Popover>)}
+      >
         <p
           className="main-menu-icon text-center"
           eventKey={1}
@@ -29,7 +32,10 @@ export default class MXNavbar extends React.Component {
           <img src={logo} className="main-menu-logo" role="presentation" />
           <hr className="main-menu-breaker" />
           {(process.env.NODE_ENV !== 'production' ? sampleGrid : '')}
-          <OverlayTrigger placement="right" overlay={(<Popover>Data Collection</Popover>)}>
+          <OverlayTrigger
+            placement="right"
+            overlay={(<Popover className="main-menu-tooltip">Data Collection</Popover>)}
+          >
             <p
               className="main-menu-icon text-center"
               eventKey={1}
@@ -43,7 +49,10 @@ export default class MXNavbar extends React.Component {
               </a>
             </p>
           </OverlayTrigger>
-          <OverlayTrigger placement="right" overlay={(<Popover>System log</Popover>)}>
+          <OverlayTrigger
+            placement="right"
+            overlay={(<Popover className="main-menu-tooltip">System log</Popover>)}
+          >
             <p
               className="main-menu-icon text-center"
               eventKey={1}
@@ -53,7 +62,10 @@ export default class MXNavbar extends React.Component {
               <a className="fa fa-2x fa-book icon" aria-hidden="true" href="#/logging"></a>
             </p>
           </OverlayTrigger>
-          <OverlayTrigger placement="right" overlay={(<Popover>Reset Session</Popover>)}>
+          <OverlayTrigger
+            placement="right"
+            overlay={(<Popover className="main-menu-tooltip">Reset Session</Popover>)}
+          >
             <p
               className="main-menu-icon text-center pull-down"
               eventKey={1}
@@ -67,7 +79,10 @@ export default class MXNavbar extends React.Component {
               />
             </p>
           </OverlayTrigger>
-          <OverlayTrigger placement="right" overlay={(<Popover>Logout {proposal.title}</Popover>)}>
+          <OverlayTrigger
+            placement="right"
+            overlay={(<Popover className="main-menu-tooltip">Logout {proposal.title}</Popover>)}
+          >
             <p
               className="main-menu-icon text-center main-menu-bottom-icon"
               eventKey={1}

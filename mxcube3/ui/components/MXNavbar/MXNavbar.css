@@ -17,6 +17,18 @@
 }
 
 
-.main-menu-icon{
+.main-menu-icon {
    width: 100%;
+}
+
+
+.main-menu-tooltip.popover { 
+  background-color: #222;
+  color: #CCC;
+  font-weight: bold;
+}
+
+
+.main-menu-tooltip.popover.right > .arrow:after {
+  border-right-color: #222;
 }
