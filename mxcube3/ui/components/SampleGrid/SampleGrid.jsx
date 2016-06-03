@@ -227,7 +227,7 @@ export default class SampleGrid extends React.Component {
     });
 
     return (
-      <div ref="container" className="samples-grid" style={{width:this.props.gridWidth, 'margin-left':'auto', 'margin-right':'auto'}}>
+      <div ref="container" className="samples-grid" style={{width:this.props.gridWidth}}>
         {sampleGrid}
       </div>
     );
@@ -237,5 +237,5 @@ export default class SampleGrid extends React.Component {
 
 SampleGrid.propTypes = {
   filter_text: React.PropTypes.string,
-  toggleSelected: React.PropTypes.func.isRequired
+  toggleActiveItem: React.PropTypes.func.isRequired
 };
