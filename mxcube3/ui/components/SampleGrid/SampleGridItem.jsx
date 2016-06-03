@@ -135,7 +135,7 @@ export class SampleGridItem extends React.Component {
 
   render() {
     let classes = classNames('samples-grid-item',
-                             {'samples-grid-item-selected': this.props.selected,
+                             {'samples-grid-item-selected': (this.props.selected && !this.props.moving),
                               'samples-grid-item-moving': this.props.moving});
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
