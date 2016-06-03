@@ -1,10 +1,14 @@
 .samples-grid{ 
+  margin-left: auto; 
+  margin-right: auto;
 }
+
 
 .samples-grid-header{
   z-index: 1;
   background-color: #F6F6F6;
 }
+
 
 .move-arrow { 
   position: absolute;
@@ -20,9 +24,11 @@
   border: 1px solid #AAA;
 }
 
+
 .move-arrow:hover {
     opacity: 1;
 } 
+
 
 .move-arrow-up { 
   top: -16px; 
@@ -30,11 +36,13 @@
   margin-left: -16px;
 }
 
+
 .move-arrow-down { 
   bottom: -16px; 
   left: 50%;
   margin-left: -16px;
 }
+
 
 .move-arrow-left { 
   top: 50%; 
@@ -42,11 +50,13 @@
   margin-top: -16px;
 }
 
+
 .move-arrow-right{ 
   top: 50%;
   right: -16px;
   margin-top: -16px;
 }
+
 
 .samples-grid-header { 
   margin-left: auto; 
@@ -54,6 +64,7 @@
   padding-left: 20px;
   padding-right: 28px;
 }
+
 
 .samples-grid-item {
     border: 1px solid #AAA;
@@ -64,13 +75,17 @@
     border-radius: 3px;
 }
 
+
 .samples-grid-item-moving { 
-  border: 2px dashed  #888 !important;
+  border: 2px dashed #888;
+  padding: 4px;
 }
+
 
 .samples-grid-item-move-button {
   float: left;
 }
+
 
 .samples-grid-item-tasks {
     width: 180px;
@@ -78,18 +93,25 @@
     overflow-y: auto;
 }
 
+
 .protein-acronym {
     font-size: small;
     font-weight: bold;
 }
+
+
 .dm {
     font-size: small;
     font-style: italic;
 }
+
+
 .sc_location {
     float: right;
     font-size: x-small;
 }
+
+
 .dot {
     height: 7px;
     width: 7px;
@@ -101,13 +123,20 @@
     right: 0;
     top: 0;
 }
+
+
 .samples-grid-item-selected {
-    background: #CEE3F6;
+//    background: #CEE3F6;
+    border: 2px solid #888 !important;
+    padding: 4px;
 }
+
+
 
 .btn-link {
     color: #333 !important;
 }
+
 
 .seq-id {
   position: absolute;
