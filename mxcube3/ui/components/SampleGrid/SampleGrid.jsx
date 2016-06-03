@@ -1,10 +1,9 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import SampleGridItem from './SampleGridItem';
 import Isotope from 'isotope-layout';
 
+import { SampleGridItem, SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_HEIGHT, SAMPLE_ITEM_SPACE } from './SampleGridItem';
 import './SampleGrid.css';
-
 
 export default class SampleGrid extends React.Component {
 
@@ -14,7 +13,6 @@ export default class SampleGrid extends React.Component {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.moveItem = this.moveItem.bind(this);
     this.canMove = this.canMove.bind(this);
-    this.gridDimension = this.gridDimension.bind(this);
   }
 
 
@@ -34,6 +32,11 @@ export default class SampleGrid extends React.Component {
                             return parseFloat(seqId);
                           }
                         },
+                        fitRows: {
+                          width: SAMPLE_ITEM_WIDTH,
+                          height: SAMPLE_ITEM_HEIGHT,
+                          gutter: SAMPLE_ITEM_SPACE
+                        },
                         sortBy: 'seqId'
       };
 
@@ -46,22 +49,17 @@ export default class SampleGrid extends React.Component {
     let colArray = [];
     let _numCols = {}
 
-    if (this.isotope.items.length > 0) {
-      for (const idx in this.isotope.items){
-        let itemYPos = this.isotope.items[idx].position.y;
-        let itemXPos = this.isotope.items[idx].position.x;
+    const numItems = this.props.sampleOrder.size;
+    const numFullCols = Math.floor(this.props.gridWidth / 190);
+    const numFullRows = Math.floor(numItems / numFullCols);
+    const itemsOnLastRow = numItems - (numFullRows * numFullCols);
 
-        if (_numCols.hasOwnProperty(itemYPos)) {
-          _numCols[itemYPos].push(itemXPos);
-        } else {
-          _numCols[itemYPos] = [];
-          _numCols[itemYPos].push(itemXPos);
-        }
-      }
+    for(var i = 0; i < numFullRows; i++){
+      colArray[i] = numFullCols;
     }
 
-    for (const idx in _numCols) {
-      colArray.push(_numCols[idx].length);
+    if(itemsOnLastRow > 0) {
+      colArray[numFullRows] = itemsOnLastRow;
     }
 
     return colArray;

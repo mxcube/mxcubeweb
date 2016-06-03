@@ -14,6 +14,7 @@ import { showTaskForm } from '../actions/taskForm';
 
 import SampleGrid from '../components/SampleGrid/SampleGrid';
 import SampleTaskButtons from '../components/SampleGrid/TaskButtons';
+import { SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 
 import '../components/SampleGrid/SampleGrid.css';
 
@@ -69,8 +70,6 @@ class SampleGridContainer extends React.Component {
     // We know that the side menu is fixed width 65px and that the padding from
     // bootstrap is 15px so content starts at 80px;
 
-    //debugger;
-
     // Get the viewportWidth
     const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
 
@@ -81,7 +80,7 @@ class SampleGridContainer extends React.Component {
     const numCols = Math.floor(fullContentWidth / 190);
 
     // Caculating the actual grid size, space between sample items is 4px;
-    const actualGridWidth = numCols * 190 + (numCols * 4);
+    const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE);
 
 
     return actualGridWidth;

@@ -5,7 +5,12 @@ import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import './SampleGrid.css';
 
 
-export default class SampleGridItem extends React.Component {
+export const SAMPLE_ITEM_WIDTH = 190;
+export const SAMPLE_ITEM_HEIGHT = 130;
+export const SAMPLE_ITEM_SPACE = 4;
+
+
+export class SampleGridItem extends React.Component {
 
   constructor(props) {
     super(props);
