@@ -53,12 +53,14 @@ export function getInitialStatus() {
       }
     });
 
-    motors.then(response => { state.Motors = response.json() });
-    beamInfo.then(response => { state.beamInfo = response.json() });
-    sampleVideoInfo.then(response => { state.Camera = response.json() });
-    diffractometerInfo.then(response => { Object.assign(state, response.json()) });
+    let pchains = [
+        motors.then(response => { return response.json() }).then(json => { state.Motors = json }),
+        beamInfo.then(response => { return response.json() }).then(json => { state.beamInfo = json }),
+        sampleVideoInfo.then(response => { return response.json() }).then(json => { state.Camera = json }),
+        diffractometerInfo.then(response => { return response.json() }).then(json => { Object.assign(state, json) })
+    ]
     
-    Promise.all([motors,beamInfo,sampleVideoInfo,diffractometerInfo]).then(() => {
+    Promise.all(pchains).then(() => {
       dispatch(setInitialStatus(state));
     });
   };
