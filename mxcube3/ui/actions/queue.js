@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { doUpdateSamples } from './samples_grid';
+import { doUpdateSamples } from './SamplesGrid';
 
 export function addSample(sampleID, queueID) {
   return {

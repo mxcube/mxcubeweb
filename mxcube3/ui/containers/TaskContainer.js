@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
 import AddSample from '../components/Tasks/AddSample';
-import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask, doAddSample } from '../actions/samples_grid';
+import { sendAddSampleTask, sendChangeSampleTask, sendAddSampleAndTask, doAddSample } from '../actions/SamplesGrid';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 import { sendCurrentPhase } from '../actions/sampleview';
 

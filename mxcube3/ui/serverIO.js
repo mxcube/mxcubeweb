@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
 import { updatePointsPosition, saveMotorPositions, setCurrentPhase } from './actions/sampleview';
 import { beamlinePropertyValueAction } from './actions/beamline';
-import { doAddTaskResult } from './actions/samples_grid';
+import { doAddTaskResult } from './actions/SamplesGrid';
 import { setStatus } from './actions/queue';
 
 

@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import login from './login';
 import queue from './queue';
-import samples_grid from './samples_grid';
+import samples_grid from './SamplesGrid';
 import taskForm from './taskForm';
 import sampleview from './sampleview';
 import general from './general';
