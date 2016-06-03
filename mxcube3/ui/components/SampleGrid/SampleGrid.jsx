@@ -165,6 +165,10 @@ export default class SampleGrid extends React.Component {
     else if(event.key === 'ArrowUp'){
       this.moveItem('UP');
     }
+    else if(event.key === ' '){
+      //select sample
+      return;
+    }
     else{
       return;
     }
