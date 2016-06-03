@@ -4,7 +4,7 @@ from mxcube3.routes import Queue, Utils
 import logging
 import os
 import types
-
+import time
 
 def convert_to_dict(ispyb_object):
     d = {}
