@@ -66,21 +66,20 @@ class SampleGridContainer extends React.Component {
 
   
   calcGridWidth() {
-    // Width black magic
     // We know that the side menu is fixed width 65px and that the padding from
     // bootstrap is 15px so content starts at 80px;
 
     // Get the viewportWidth
     const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
 
-    // the full content width for this media (not forgeting the padding to the right 15px)
+    // The full content width for this media (not forgeting the padding to the right 15px)
     const fullContentWidth = viewportWidth - 80 - 15
 
-    // Each sample item is 190px, calculate maximum number of items for each row
-    const numCols = Math.floor(fullContentWidth / 190);
+    // Each sample item is 190px wide, calculate maximum number of items for each row
+    const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
 
     // Caculating the actual grid size, space between sample items is 4px;
-    const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE);
+    const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
 
 
     return actualGridWidth;
