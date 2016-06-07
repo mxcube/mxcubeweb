@@ -5,7 +5,7 @@ from flask import request, Response, jsonify
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
-from mxcube3.routes import signals
+from mxcube3.routes import signals, Utils
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
@@ -84,26 +84,55 @@ def beamline_get_attribute(name):
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
-@mxcube.route("/mxcube/api/v0.1/beamline/beamInfo", methods=['GET'])
+@mxcube.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
 def getBeamInfo():
     """Beam information: position,size,shape
     return_data={"position":,"shape":,"size_x":,"size_y":}     
     """
+    ret = {}
+
+    beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+    
+    if beamInfo is None:
+         logging.getLogger('HWR').error("beamInfo is not defined")
+         return Response(status=409)
+         
     try:
-        beamInfo = mxcube.beamline.getObjectByRole("beam_info")
-        if beamInfo is None:
-             logging.getLogger('HWR').error("beamInfo is not defined")
-             return Response(status=409)
         beamInfoDict = beamInfo.get_beam_info()
-        print beamInfoDict
-        data = {'position': beamInfo.get_beam_position(), \
-                'shape': beamInfoDict["shape"], \
-                'size_x': beamInfoDict["size_x"], \
-                'size_y': beamInfoDict["size_y"], \
-               }       
-        resp = jsonify(data)
+    except Exception:
+        beamInfoDict = dict()
+
+    try:
+        aperture = mxcube.diffractometer.getObjectByRole('aperture')
+        aperture_list = aperture.getPredefinedPositionsList()
+        current_aperture = aperture.getCurrentPositionName()
+    except Exception:
+        logging.getLogger('HWR').exception('could not get all Aperture hwobj')
+        aperture_list = []
+        current_aperture = None
+
+    try:
+        ret.update({'position': beamInfo.get_beam_position(),
+                    'shape': beamInfoDict.get("shape"),
+                    'size_x': beamInfoDict.get("size_x"),
+                    'size_y': beamInfoDict.get("size_y"),
+                    'apertureList' : aperture_list,
+                    'currentAperture' : current_aperture })
+    except Exception:
+        logging.getLogger("HWR").exception("Failed to get beam info")
+        return Response(status=409)
+    else:
+        resp = jsonify(ret)
         resp.status_code = 200
         return resp
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/camera/info", methods=['GET'])
+def get_sample_video_dims():
+    try:
+        resp = jsonify({'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
+            'imageWidth':  mxcube.diffractometer.image_width,
+            'imageHeight':  mxcube.diffractometer.image_height,
+        })
     except Exception:
         return Response(status=409)
 
@@ -118,3 +147,7 @@ def beamline_get_data_path():
         return Response(json.dumps(data), status=200, mimetype='application/json')
     except Exception:
         return Response(status=409)
+    else:
+        resp.status_code = 200
+        return resp
+

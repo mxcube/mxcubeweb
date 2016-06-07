@@ -1,5 +1,6 @@
 from flask import session, request, Response, jsonify
 from mxcube3 import app as mxcube
+from mxcube3.routes import Utils
 import json
 import logging
 
@@ -106,4 +107,34 @@ def md_in_plate_mode():
         logging.getLogger('HWR').exception('Could not get the head type of the diffractometer')
         return Response(status=409)
 
+@mxcube.route("/mxcube/api/v0.1/diffractometer/movables/state", methods=['GET'])
+def get_movables_state():
+    ret = {}
+
+    for movable in ['Phi', 'Focus', 'PhiZ', 'PhiY','Sampx', 'Sampy', 'Zoom']:
+        ret.update(Utils.get_movable_state_and_position(movable))
+
+    ret.update(Utils.get_light_state_and_intensity())
+
+    resp = jsonify(ret)
+    resp.status_code = 200
+    return resp
+
+@mxcube.route("/mxcube/api/v0.1/diffractometer/info", methods=['GET'])
+def get_diffractometer_info():
+    ret = {}
+
+    try:
+        ret['useSC'] = mxcube.diffractometer.use_sc  
+    except AttributeError:
+        ret['useSC'] = False # in case the diff does not have this implemented
+            
+    try:
+        ret['current_phase'] = mxcube.diffractometer.current_phase
+    except AttributeError:
+        ret['current_phase'] = 'None' # in case the diff does not have this implemented
+
+    resp = jsonify(ret)
+    resp.status_code = 200
+    return resp
 

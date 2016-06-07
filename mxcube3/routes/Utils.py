@@ -1,6 +1,7 @@
 from mxcube3 import app as mxcube
 from flask import Response, session
 from functools import wraps
+import logging
 import jsonpickle
 import redis
 
@@ -32,27 +33,49 @@ def get_queue(session, redis=redis.Redis()):
 
     return new_queue(serialized_queue)
 
-def mxlogin_required(func):
-    """
-    If you decorate a view with this, it will ensure that the current user is
-    logged in calling the actual view. 
-    TODO: how much secure is this? need to implement OAuth2 as well
-    For example::
+def get_light_state_and_intensity():
+    ret = dict()
 
-        @app.route('/post')
-        @mxlogin_required
-        def post():
-            pass
+    for light in ('BackLight','FrontLight'):
+        item_role = light.lower()
 
-    :param func: The view function to decorate.
-    :type func: function
-    """
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if not session.get("loginInfo"):
-            return Response(status=401)
-        return func(*args, **kwargs)
-    return decorated_view
+        hwobj = mxcube.diffractometer.getObjectByRole(item_role)
+
+        if hasattr(hwobj, "getActuatorState"):
+            switch_state = 1 if hwobj.getActuatorState()=='in' else 0
+        else:
+            hwobj_switch = mxcube.diffractometer.getObjectByRole(light+'Switch')
+            switch_state = 1 if hwobj_switch.getActuatorState()=='in' else 0
+
+        pos = hwobj.getPosition()
+
+        ret.update({light: {"Status":hwobj.getState(), "position":hwobj.getPosition()}, light+'Switch': {"Status": switch_state, "position":0}})
+
+    return ret
+ 
+def get_movable_state_and_position(item_name):
+    item_role = item_name.lower()
+    ret = dict()
+
+    try:
+        if 'light' in item_role:
+            # handle all *light* items in the same way;
+            # this returns more than needed, but it doesn't
+            # matter
+            return get_light_state_and_intensity()
+          
+        hwobj = mxcube.diffractometer.getObjectByRole(item_role)
+
+        if hwobj is None:
+            logging.getLogger("HWR").error('[UTILS.GET_MOVABLE_STATE_AND_POSITION] unknown role "%s"' % item_role)
+        else:
+            if hasattr(hwobj, "getCurrentPositionName"):
+                # a motor similar to zoom
+                return { item_name: {"Status": hwobj.getState(), "position": hwobj.predefinedPositions[hwobj.getCurrentPositionName()] }}
+            else:
+                return { item_name: {'Status': hwobj.getState(), 'position': hwobj.getPosition() }}
+    except Exception:
+        logging.getLogger('HWR').exception('[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item "%s"' % item_name)            
 
 
 def my_execute_entry(self, entry):

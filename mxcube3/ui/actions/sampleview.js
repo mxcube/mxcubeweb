@@ -365,7 +365,7 @@ export function getSampleImageSize() {
 
 export function getMotorPositions() {
   return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview', {
+    fetch('/mxcube/api/v0.1/diffractometer/movables/state', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -374,7 +374,7 @@ export function getMotorPositions() {
       }
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to get motorposition');
+        throw new Error('Server refused to get motor position');
       }
       return response.json();
     }).then((json) => {

@@ -18,22 +18,50 @@ export function showErrorPanel(show, message = '') {
 
 export function getInitialStatus() {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/initialstatus', {
+    let state = {};
+
+    let motors = fetch('mxcube/api/v0.1/diffractometer/movables/state', {
       method: 'GET',
       credentials: 'include',
       headers: {
         'Accept': 'application/json',
         'Content-type': 'application/json'
       }
-    }).then(function (response) {
-      if (response.status >= 400) {
-        throw new Error('Server refused to send initialstatus');
+    });
+    let beamInfo = fetch('mxcube/api/v0.1/beam/info', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
       }
-      return response.json();
-    })
-    .then(function (json) {
-      dispatch(setInitialStatus(json));
+    });
+    let sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera/info', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    let diffractometerInfo = fetch('mxcube/api/v0.1/diffractometer/info', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
     });
 
+    let pchains = [
+        motors.then(response => { return response.json() }).then(json => { state.Motors = json }),
+        beamInfo.then(response => { return response.json() }).then(json => { state.beamInfo = json }),
+        sampleVideoInfo.then(response => { return response.json() }).then(json => { state.Camera = json }),
+        diffractometerInfo.then(response => { return response.json() }).then(json => { Object.assign(state, json) })
+    ]
+    
+    Promise.all(pchains).then(() => {
+      dispatch(setInitialStatus(state));
+    });
   };
 }
