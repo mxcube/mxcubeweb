@@ -4,7 +4,7 @@ from mxcube3.routes import Queue, Utils
 import logging
 import os
 import types
-import time
+
 
 def convert_to_dict(ispyb_object):
     d = {}
@@ -171,12 +171,6 @@ def get_initial_state():
         data['current_phase'] = mxcube.diffractometer.current_phase
     except AttributeError:
         data['current_phase'] =  'None' # in case the diff does not have this implemented
-
-    try:
-        today = time.strftime("%Y%m%d")
-        data['rootPath'] = '/ramdisk' + today + '/RAW_DATA/'
-    except Exception, e:
-        logging.getLogger('HWR').error("Error retrieving data path")
 
     resp = jsonify(data)
     resp.status_code = 200
