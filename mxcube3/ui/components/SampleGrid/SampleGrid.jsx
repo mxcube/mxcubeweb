@@ -223,16 +223,11 @@ export default class SampleGrid extends React.Component {
     else if(event.key === 'ArrowUp'){
       this.moveItem('UP');
     }
-    else if(event.key === ' '){
-      event.stopPropagation();
-      event.preventDefault();
+    else if(event.key === 'p'){
       this.props.pickSelected();
-      return;
     }
-    else{
-      return;
-    }    
   }
+
 
   componentDidUpdate(prevProps) {
     if (this.isotope) {
