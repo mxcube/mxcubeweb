@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Button } from 'react-bootstrap';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import './SampleGrid.css';
 
@@ -17,22 +16,17 @@ export class SampleGridItem extends React.Component {
     this.onClick = props.onClick.bind(this, props.itemKey);
     this._toggleMoveable = this._toggleMoveable.bind(this);
     this._toggleToBeCollected = this._toggleToBeCollected.bind(this);
-    this._onItemClick = this._onItemClick.bind(this);
-
     this.moveItemUp = this.moveItemUp.bind(this);
     this.moveItemDown = this.moveItemDown.bind(this);
     this.moveItemRight = this.moveItemRight.bind(this);
     this.moveItemLeft = this.moveItemLeft.bind(this);
-
     this._onMouseDown = this._onMouseDown.bind(this);
     this._onMouseEnter = this._onMouseEnter.bind(this);
-
   }
 
 
   _onMouseDown(e) {
     if (e.nativeEvent.buttons === 1) {
-      console.log(`SELECT ${this.props.itemKey}`);
       this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
     }
   }
@@ -40,21 +34,14 @@ export class SampleGridItem extends React.Component {
 
   _onMouseEnter(e) {
     if (e.nativeEvent.buttons === 1) {
-      console.log(`SELECT ${this.props.itemKey}`);
       this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
     }
   }
 
 
-  _onItemClick(e){
+  _toggleMoveable(e) {
     e.stopPropagation();
-//    this.onClick();
-  }
-
-
-  _toggleMoveable(e){
-    e.stopPropagation();
-    this.props.toggleMoveable(this.props.itemKey)
+    this.props.toggleMoveable(this.props.itemKey);
   }
 
 
@@ -67,7 +54,7 @@ export class SampleGridItem extends React.Component {
   showItemControls() {
     let iconClassName = 'glyphicon glyphicon-unchecked';
 
-    if (this.props.toBeCollected){
+    if (this.props.toBeCollected) {
       iconClassName = 'glyphicon glyphicon-check';
     }
 
@@ -78,18 +65,18 @@ export class SampleGridItem extends React.Component {
         bsSize="s"
         onClick={this._toggleToBeCollected}
       >
-        <i className={iconClassName}/>
+        <i className={iconClassName} />
       </button>
-   );
-
-   const moveButton = (
-     <button
-       className="samples-grid-item-button"
-       onClick={this._toggleMoveable}
-     >
-       <i className="glyphicon glyphicon-move"/>
-     </button>
     );
+
+    const moveButton = (
+      <button
+        className="samples-grid-item-button"
+        onClick={this._toggleMoveable}
+      >
+        <i className="glyphicon glyphicon-move" />
+      </button>
+     );
 
     let content = (
       <div className="samples-item-controls-container">
@@ -105,82 +92,83 @@ export class SampleGridItem extends React.Component {
         </div>
       );
     }
- 
+
     return content;
   }
 
 
-  moveItemUp(e){
+  moveItemUp(e) {
     e.stopPropagation();
     this.props.moveItem('UP');
   }
 
 
-  moveItemDown(e){
+  moveItemDown(e) {
     e.stopPropagation();
     this.props.moveItem('DOWN');
   }
 
 
-  moveItemRight(e){
+  moveItemRight(e) {
     e.stopPropagation();
     this.props.moveItem('RIGHT');
   }
 
 
-  moveItemLeft(e){
+  moveItemLeft(e) {
     e.stopPropagation();
     this.props.moveItem('LEFT');
   }
 
 
-  showMoveArrows(){
-    let [displayUp, displayDown, displayLeft, displayRight] = ['', '', '', '']
-    let [canMoveUp, canMoveDown, canMoveLeft, canMoveRight]= this.props.canMove(this.props.itemKey);
+  showMoveArrows() {
+    let [displayUp, displayDown, displayLeft, displayRight] = ['', '', '', ''];
+    const [up, down, left, right] = this.props.canMove(this.props.itemKey);
+    let content = (<div className="seq-id">{this.props.seqId}</div>);
 
-    if (!canMoveLeft) {
+    if (!left) {
       displayLeft = 'none';
     }
 
-    if (!canMoveUp) {
+    if (!up) {
       displayUp = 'none';
     }
 
-    if (!canMoveDown) {
+    if (!down) {
       displayDown = 'none';
     }
 
-    if (!canMoveRight) {
+    if (!right) {
       displayRight = 'none';
     }
 
     if (this.props.moving) {
-      return (
+      content = (
         <div>
-          <div style={{opacity:0.7}} className="seq-id">{this.props.seqId}</div>
+          <div style={{ opacity: 0.7 }} className="seq-id">{this.props.seqId}</div>
           <button
-            style={{display:displayUp}}
+            style={{ display: displayUp }}
             className="move-arrow move-arrow-up"
             onClick={this.moveItemUp}
           >
             <i className="glyphicon glyphicon-arrow-up" />
           </button>
           <button
-            style={{display:displayLeft}}
+            style={{ display: displayLeft }}
             className="move-arrow move-arrow-left"
             onClick={this.moveItemLeft}
           >
             <i className="glyphicon glyphicon-arrow-left" />
           </button>
           <button
-            style={{display:displayRight}}
+            style={{ display: displayRight }}
             className="move-arrow move-arrow-right"
             onClick={this.moveItemRight}
           >
             <i className="glyphicon glyphicon-arrow-right" />
           </button>
           <button
-            style={{display:displayDown}}
+            style={{ display: displayDown }}
             className="move-arrow move-arrow-down"
             onClick={this.moveItemDown}
           >
@@ -188,17 +176,17 @@ export class SampleGridItem extends React.Component {
           </button>
         </div>
       );
-    } else {
-      return (<div className="seq-id">{this.props.seqId}</div>);
     }
+
+    return content;
   }
 
 
   render() {
     let classes = classNames('samples-grid-item',
-                             {'samples-grid-item-selected': (this.props.selected && !this.props.moving),
-                              'samples-grid-item-moving': this.props.moving,
-                              'samples-grid-item-to-be-collected': this.props.toBeCollected});
+      { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
+        'samples-grid-item-moving': this.props.moving,
+        'samples-grid-item-to-be-collected': this.props.toBeCollected });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
                                        { 'label-success': this.props.loadable });
@@ -207,7 +195,6 @@ export class SampleGridItem extends React.Component {
       <div
         className={classes}
         draggable="true"
-        onClick={this._onItemClick}
         onMouseDown={this._onMouseDown}
         onMouseEnter={this._onMouseEnter}
       >

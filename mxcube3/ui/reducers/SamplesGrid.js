@@ -9,12 +9,12 @@ const initialState = { samples_list: {},
                        clicked_task: Object(),
                        manualMount: { set: false, id: 0 },
                        login_data: {},
-                       moving: {}};
+                       moving: {} };
 
 
 function initialSampleOrder(sampleList) {
-  let sampleOrder = new Map();
-  
+  const sampleOrder = new Map();
+
   for (const key in sampleList) {
     sampleOrder.set(key, sampleOrder.size);
   }
@@ -30,48 +30,47 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { samples_list: action.samples_list,
                                         sampleOrder: initialSampleOrder(action.samples_list) });
     case 'ADD_SAMPLE_TO_GRID':
-    return { ...state, samples_list: { ...state.samples_list, [action.id]: action.data },
-             manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
+      return { ...state, samples_list: { ...state.samples_list, [action.id]: action.data },
+               manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
     case 'REORDER_SAMPLE': {
-      return Object.assign({}, state, {sampleOrder: action.sampleOrder});
+      return Object.assign({}, state, { sampleOrder: action.sampleOrder });
     }
     case 'TOGGLE_MOVEABLE_SAMPLE': {
       const movingItems = {};
       movingItems[action.key] = (!state.moving[action.key] && state.selected[action.key]);
-      return Object.assign({}, state, {moving: movingItems}); 
+      return Object.assign({}, state, { moving: movingItems });
     }
     case 'TOGGLE_SELECTED': {
       const selectedItems = {};
       const movingItems = {};
       movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
       selectedItems[action.index] = !state.selected[action.index];
-      return Object.assign({}, state, { selected: selectedItems, moving: movingItems});
+      return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
     }
     case 'TOGGLE_TO_BE_COLLECTED': {
       const samplesToBeCollected = Object.assign({}, state.samplesToBeCollected);
       samplesToBeCollected[action.key] = !state.samplesToBeCollected[action.key];
-      return Object.assign({}, state, {samplesToBeCollected: samplesToBeCollected});
+      return Object.assign({}, state, { samplesToBeCollected });
     }
     case 'SELECT_RANGE': {
-      let selectedItems = {};
+      const selectedItems = {};
 
-      for (let key of action.keys){
+      for (const key of action.keys) {
         selectedItems[key] = true;
       }
 
-      return Object.assign({}, state, {selected: selectedItems});
+      return Object.assign({}, state, { selected: selectedItems });
     }
     case 'PICK_SELECTED_SAMPLES': {
-      let selectedItems = Object.assign({}, state.selected);
-      let samplesToBeCollected = Object.assign({}, state.samplesToBeCollected);
+      const samplesToBeCollected = Object.assign({}, state.samplesToBeCollected);
 
-      for (let key in state.selected) {
+      for (const key in state.selected) {
         if (state.selected[key]) {
           samplesToBeCollected[key] = !samplesToBeCollected[key];
         }
       }
 
-      return Object.assign({}, state, {samplesToBeCollected: samplesToBeCollected});
+      return Object.assign({}, state, { samplesToBeCollected });
     }
     case 'CLICKED_TASK':
       {
@@ -85,7 +84,7 @@ export default (state = initialState, action) => {
           samplesToBeCollected[key] = action.selected;
         });
 
-        return Object.assign({}, state, { samplesToBeCollected: samplesToBeCollected });
+        return Object.assign({}, state, { samplesToBeCollected });
       }
     case 'UNFLAG_ALL_TO_BE_COLLECTED':
       {
