@@ -66,6 +66,7 @@ export default class MotorInput extends React.Component {
                 step={step}
                 defaultValue={valueCropped}
                 name={motorName}
+                disabled={this.props.state === 4 || this.props.state === 3 || this.props.state <= 1}
               />
               {this.props.saveStep ?
                 <span>
