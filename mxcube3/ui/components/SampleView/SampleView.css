@@ -34,26 +34,6 @@
     margin-top: 10px;
 }
 
-.motor-input-container{
-    margin-bottom: 1em;
-}
-
-.motor-name{
-    font-size: 1.0em;
-    margin-bottom: 0px;
-    font-weight: bold;
-}
-
-.motor-value{
-    font-size: 1.0em;
-    font-weight: bold;
-    margin-left: 5px;
-    border-bottom:1px dotted #f00;
-    cursor:pointer;
-}
-
-
-
 .information-box{
     background-color: white;
     border: 1px solid #AAA;
@@ -82,25 +62,6 @@
     text-align: left;
 }
 
-.motor-group{
-    padding-top: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 0px;
-}
-
-.motor-button{
-    margin: 15px !important;
-}
-
-#zoom-control{
-    display: inline;
-    width: auto;
-    position: relative;
-    top: 3px;
-}
-
-
 .button-active{
     color:orange;
 }
@@ -116,11 +77,6 @@
 .btn:active{
     color: grey !important;
 }
-
-.motor-step{
-    font-size: 0.7em;
-}
-
 
 .task-title-head{
     width: 100%; 
