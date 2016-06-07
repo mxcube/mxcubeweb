@@ -84,8 +84,8 @@ class SampleGridContainer extends React.Component {
 
 
     return actualGridWidth;
-  } 
-
+  }
+  
 
   render() {   
     const gridWidth = this.calcGridWidth();
@@ -138,8 +138,8 @@ class SampleGridContainer extends React.Component {
                  <span style={{'margin-left': '10px'}}>Pick: </span>
                  <ButtonGroup className="form-group">
                    <Button
-                       onClick={this.props.selectAll}
-                       disabled={this.props.manualMount}
+                     onClick={this.props.selectAll}
+                     disabled={this.props.manualMount}
                    >
                      All
                    </Button>
