@@ -1,35 +1,6 @@
 # -*- coding: utf-8 -*-
 from mxcube3 import socketio
-
-
-class MOTOR_STATE:
-    NOTINITIALIZED = "NOTINITIALIZED"
-    UNUSABLE = "UNUSABLE"
-    READY = "READY"
-    MOVESTARTED = "MOVESTARTED"
-    MOVING = "MOVING"
-    ONLIMIT = "ONLIMIT"
-
-    VALUE_TO_STR = {0: "NOTINITIALIZED",
-                    1: "UNUSABLE",
-                    2: "READY",
-                    3: "MOVESTARTED",
-                    4: "MOVING",
-                    5: "ONLIMIT"}
-
-
-class INOUT_STATE:
-    IN = "in"
-    OUT = "out"
-    UNDEFINED = "undefined"
-
-    VALUE_TO_STR = {0: IN,
-                    1: OUT,
-                    2: UNDEFINED}
-
-    STR_TO_VALUE = {IN: 0,
-                    OUT: 1,
-                    UNDEFINED: 2}
+from .statedefs import (MOTOR_STATE, INOUT_STATE)
 
 
 BEAMLINE_SETUP = None
