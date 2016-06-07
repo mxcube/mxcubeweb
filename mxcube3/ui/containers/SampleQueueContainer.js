@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import HistoryTree from '../components/SampleQueue/HistoryTree';
 import * as QueueActions from '../actions/queue';
-import * as SampleActions from '../actions/samples_grid';
+import * as SampleActions from '../actions/SamplesGrid';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext } from 'react-dnd';
