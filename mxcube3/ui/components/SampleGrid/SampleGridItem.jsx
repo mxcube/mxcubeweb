@@ -73,7 +73,7 @@ export class SampleGridItem extends React.Component {
 
     const pickButton = (
       <button
-        className="samples-grid-item-pick-button"
+        className="samples-grid-item-button"
         bsStyle="default"
         bsSize="s"
         onClick={this._toggleToBeCollected}
@@ -83,14 +83,12 @@ export class SampleGridItem extends React.Component {
    );
 
    const moveButton = (
-     <Button
-       className="samples-grid-item-move-button"
-       bsStyle="primary"
-       bsSize="xs"
+     <button
+       className="samples-grid-item-button"
        onClick={this._toggleMoveable}
      >
        <i className="glyphicon glyphicon-move"/>
-     </Button>
+     </button>
     );
 
     let content = (

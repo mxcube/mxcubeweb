@@ -87,16 +87,18 @@
 }
 
 
-.samples-grid-item-move-button {
-  margin-left: 4px;
+.samples-grid-item-button { 
+  border: 0px;
+  border-radius: 4px;
+  background: Transparent;
+  opacity: 1;
+  padding-left: 2px;
+  padding-right: 2px;
+  border: 1px solid Transparent;
 }
 
-
-.samples-grid-item-pick-button{ 
-  background: Transparent;
-  border: 0px;
-  margin: 0;
-  padding: 0;
+.samples-grid-item-button:hover {
+  border: 1px solid #888;
 }
 
 
