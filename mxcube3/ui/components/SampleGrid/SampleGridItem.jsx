@@ -157,7 +157,7 @@ export class SampleGridItem extends React.Component {
     if (this.props.moving) {
       return (
         <div>
-          <div className="seq-id">{this.props.seqId}</div>
+          <div style={{opacity:0.7}} className="seq-id">{this.props.seqId}</div>
           <button
             style={{display:displayUp}}
             className="move-arrow move-arrow-up"
@@ -189,7 +189,7 @@ export class SampleGridItem extends React.Component {
         </div>
       );
     } else {
-      return (<div style={{display:"none"}} className="seq-id">{this.props.seqId}</div>);
+      return (<div className="seq-id">{this.props.seqId}</div>);
     }
   }
 
