@@ -106,3 +106,15 @@ def getBeamInfo():
         return resp
     except Exception:
         return Response(status=409)
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
+def beamline_get_data_path():
+    """
+    Retrieve data directory from the session hwobj, this is specific for each beamline.
+    """
+    try:
+        data = mxcube.session.get_base_image_directory()
+        return Response(json.dumps(data), status=200, mimetype='application/json')
+    except Exception:
+        return Response(status=409)
