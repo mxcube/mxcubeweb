@@ -1,22 +1,37 @@
 import { omit } from 'lodash/object';
+
+
 const initialState = { samples_list: {},
                        filter_text: '',
                        selected: {},
+                       sampleOrder: {},
                        clicked_task: Object(),
                        manualMount: { set: false, id: 0 },
                        login_data: {} };
 
+
+function initialSampleOrder(sampleList) {
+  let sampleOrder = new Map();
+  
+  for (const key in sampleList) {
+    sampleOrder.set(key, sampleOrder.size);
+  }
+
+  return sampleOrder;
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'SIGNOUT':
-      return Object.assign({}, initialState);
-    case 'UPDATE_SAMPLES':
-          // should have session samples
-      return Object.assign({}, state, { samples_list: action.samples_list });
+    case 'UPDATE_SAMPLES': {
+      return Object.assign({}, state, { samples_list: action.samples_list,
+                                        sampleOrder: initialSampleOrder(action.samples_list) });
+    }
     case 'ADD_SAMPLE_TO_GRID':
-
       return { ...state, samples_list: { ...state.samples_list, [action.id]: action.data },
                manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
+    case 'REORDER_SAMPLE': {
+      return Object.assign({}, state, {sampleOrder: action.sampleOrder});
+    }
     case 'TOGGLE_SELECTED':
       {
         const newSelected = Object.assign({}, state.selected);
@@ -85,12 +100,12 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
                 {
                   type: action.task_type,
                   label: action.task_type.split(/(?=[A-Z])/).join(' '),
-                  sampleID: action.index,
-                  queueID: action.queueID,
+                  sample_id: action.index,
+                  queue_id: action.queue_id,
                   parent_id: action.parent_id,
                   parameters: action.parameters,
                   state: 0
@@ -104,11 +119,11 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
                 {
-                  ...state.samples_list[action.index].tasks[action.queueID],
+                  ...state.samples_list[action.index].tasks[action.queue_id],
                   type: action.parameters.Type,
-                  queueID: action.queueID,
+                  queue_id: action.queue_id,
                   parameters: action.parameters
                 } }
               }
@@ -120,7 +135,7 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: omit(state.samples_list[action.index].tasks, [action.queueID])
+                tasks: omit(state.samples_list[action.index].tasks, [action.queue_id])
               }
              } }
           );
@@ -129,7 +144,7 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
-              [action.sampleID]: { ...state.samples_list[action.sampleID],
+              [action.index]: { ...state.samples_list[action.index],
                 tasks: {}
               }
              } }
@@ -140,9 +155,9 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
                 {
-                  ...state.samples_list[action.index].tasks[action.queueID],
+                  ...state.samples_list[action.index].tasks[action.queue_id],
                   state: action.state
                 } }
               }
@@ -159,4 +174,3 @@ export default (state = initialState, action) => {
       return state;
   }
 };
-

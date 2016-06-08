@@ -14,7 +14,6 @@ export default class SampleGridItem extends React.Component {
     this.onClick = props.onClick.bind(this, props.selectKey);
   }
 
-
   render() {
     let classes = classNames('samples-grid-item',
                              { 'samples-grid-item-selected': this.props.selected });
@@ -26,6 +25,7 @@ export default class SampleGridItem extends React.Component {
       <div className={classes} onClick={this.onClick}>
         <span className={scLocationClasses}>{this.props.location}</span>
         <br />
+        <span className="seq-id">{this.props.seqId}</span>
         <a href="#" ref="pacronym" className="protein-acronym" data-type="text"
           data-pk="1" data-url="/post" data-title="Enter protein acronym"
         >
@@ -34,36 +34,38 @@ export default class SampleGridItem extends React.Component {
         <br />
         <span className="dm">{this.props.dm}</span>
         <br />
-        {
-          this.props.tags.map((tag, i) => {
-            const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
-            let content;
+        <div className="samples-grid-item-tasks">
+          {
+            this.props.tags.map((tag, i) => {
+              const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
+              let content;
 
-            if ((typeof tag) === 'string') {
-              content = <span key={i} className="label label-primary" style={style}>{tag}</span>;
-            } else {
-              // assuming a Task
-              let showForm = (e) => {
-                e.stopPropagation();
-                return this.props.showTaskParametersForm(tag.type, this.props.sampleID, tag);
-              };
+              if ((typeof tag) === 'string') {
+                content = <span key={i} className="label label-primary" style={style}>{tag}</span>;
+              } else {
+                // assuming a Task
+                let showForm = (e) => {
+                  e.stopPropagation();
+                  return this.props.showTaskParametersForm(tag.type, this.props.sample_id, tag);
+                };
 
-              let deleteTask = (e) => {
-                e.stopPropagation();
-                return this.props.deleteTask(tag.parent_id, tag.queueID, tag.sampleID);
-              };
+                let deleteTask = (e) => {
+                  e.stopPropagation();
+                  return this.props.deleteTask(tag.parent_id, tag.queue_id, tag.sample_id);
+                };
 
-              content = (
-                <span key={i} className="btn-primary label" style={style} onClick={showForm}>
-                  {`${tag.label} `}
-                  <i className="fa fa-times" onClick={deleteTask} />
-                </span>
-              );
+                content = (
+                  <span key={i} className="btn-primary label" style={style} onClick={showForm}>
+                    {`${tag.label} `}
+                    <i className="fa fa-times" onClick={deleteTask} />
+                  </span>
+                );
 
-              return content;
-            }
-          })
-        }
+                return content;
+              }
+            })
+          }
+        </div>
       </div>
     );
   }

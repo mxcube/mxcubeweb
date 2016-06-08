@@ -10,7 +10,7 @@ export function doUpdateSamples(samples_list) {
 export function doGetSamplesList() {
   return function (dispatch) {
     dispatch(setLoading(true));
-    fetch('mxcube/api/v0.1/sample_changer/samples_list', { credentials: 'include' })
+    fetch('mxcube/api/v0.1/sample_changer/samples_list' , { credentials: 'include' })
             .then(response => response.json())
             .then(json => {
               dispatch(setLoading(false));
@@ -222,4 +222,35 @@ export function sendDeleteSampleTask(parent_id, queueID, sampleID) {
       }
     });
   };
+}
+
+export function doReorderSample(sampleOrder, key, newPos){
+  let newSampleOrder = new Map(sampleOrder);
+  let tempPos = sampleOrder.get(key);
+  let tempKey;
+
+  for (let [key, pos] of sampleOrder.entries()) {
+    if (pos === newPos) {
+      tempKey = key;
+      break;
+    }
+  }
+
+//  newSampleOrder.set(tempKey, tempPos);
+
+  // Shift samples between the old and new position one step
+  for (let [key, pos] of sampleOrder.entries()) {
+    if((tempPos <= pos) && (pos < newPos)){
+      newSampleOrder.set(key, pos + 1);
+    }
+    else if((tempPos < pos) && (pos <= newPos)) { 
+      newSampleOrder.set(key, pos - 1);
+    }    
+  }
+
+  newSampleOrder.set(key, newPos);
+
+  return { type: 'REORDER_SAMPLE',
+           sampleOrder: newSampleOrder
+         };
 }
