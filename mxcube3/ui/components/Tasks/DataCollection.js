@@ -352,7 +352,7 @@ class DataCollection extends React.Component {
             X-ray Centring
           </label>
         </div>
-            <Button bsStyle="success" disabled={this.props.pointId !== -1} onClick={this.runNow}>
+            <Button bsStyle="success" disabled={this.props.pointId === -1} onClick={this.runNow}>
               Run Now
             </Button>
             <Button bsStyle="primary" onClick={this.addToQueue}>
