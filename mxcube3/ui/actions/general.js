@@ -36,7 +36,7 @@ export function getInitialStatus() {
         'Content-type': 'application/json'
       }
     });
-    let sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera/info', {
+    let sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -52,12 +52,21 @@ export function getInitialStatus() {
         'Content-type': 'application/json'
       }
     });
+    let dataPath = fetch('mxcube/api/v0.1/beamline/datapath', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
 
     let pchains = [
         motors.then(response => { return response.json() }).then(json => { state.Motors = json }),
         beamInfo.then(response => { return response.json() }).then(json => { state.beamInfo = json }),
         sampleVideoInfo.then(response => { return response.json() }).then(json => { state.Camera = json }),
-        diffractometerInfo.then(response => { return response.json() }).then(json => { Object.assign(state, json) })
+        diffractometerInfo.then(response => { return response.json() }).then(json => { Object.assign(state, json) }),
+        dataPath.then(response => { return response.json() }).then(path => { Object.assign(state, {rootPath: path} ) })
     ]
     
     Promise.all(pchains).then(() => {

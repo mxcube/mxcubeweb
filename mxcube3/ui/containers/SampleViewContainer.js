@@ -28,6 +28,7 @@ class SampleViewContainer extends Component {
     } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
+
     return (
       <div className="row">
         <ContextMenu
@@ -35,6 +36,7 @@ class SampleViewContainer extends Component {
           sampleActions={this.props.sampleViewActions}
           showForm={this.props.showForm}
           sampleId={sampleId}
+          samplesInformation={this.props.sampleInformation}
           defaultParameters={this.props.defaultParameters}
         />
         <div className="col-xs-1">
