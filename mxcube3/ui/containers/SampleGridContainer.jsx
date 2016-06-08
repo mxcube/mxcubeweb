@@ -63,8 +63,33 @@ class SampleGridContainer extends React.Component {
     this.props.filter(option.target.value);
   }
 
+  
+  calcGridWidth() {
+    // Width black magic
+    // We know that the side menu is fixed width 65px and that the padding from
+    // bootstrap is 15px so content starts at 80px;
 
-  render() {
+    //debugger;
+
+    // Get the viewportWidth
+    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+
+    // the full content width for this media (not forgeting the padding to the right 15px)
+    const fullContentWidth = viewportWidth - 80 - 15
+
+    // Each sample item is 190px, calculate maximum number of items for each row
+    const numCols = Math.floor(fullContentWidth / 190);
+
+    // Caculating the actual grid size, space between sample items is 4px;
+    const actualGridWidth = numCols * 190 + (numCols * 4);
+
+
+    return actualGridWidth;
+  } 
+
+
+  render() {   
+    const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
       <Button><Glyphicon glyph="search" /></Button>
     );
@@ -74,7 +99,7 @@ class SampleGridContainer extends React.Component {
    );
 
    return (
-     <StickyContainer>
+       <StickyContainer>
          <div className="row row-centered">
            <div className="col-centered" >
              <ButtonToolbar>
@@ -99,9 +124,9 @@ class SampleGridContainer extends React.Component {
              </ButtonToolbar>
            </div>
          </div>
-         <Sticky className="samples-grid-header" stickyStyle={{padding:'10px'}}>
+         <Sticky className="samples-grid-header" style={{width: gridWidth}} stickyStyle={{padding:'10px'}}>
            <div className="row">
-             <div className="col-xs-2">
+             <div className="col-xs-5">
                <div className="form-inline">
                  <Input
                    type="text"
@@ -111,10 +136,7 @@ class SampleGridContainer extends React.Component {
                    buttonAfter={innerSearchIcon}
                    onChange={this.filterSampleGrid}
                  />
-               </div>
-             </div>
-             <div className="col-xs-2">        
-               <ButtonToolbar>
+               <ButtonToolbar style={{'margin-left': '10px'}} className="form-group">
                  <Button
                    className="btn"
                    onClick={this.props.unselectAll}
@@ -130,8 +152,9 @@ class SampleGridContainer extends React.Component {
                    Select all
                  </Button>
                </ButtonToolbar>
+              </div>      
              </div>
-             <div className="col-xs-2 col-xs-offset-5">
+             <div className="col-xs-2 pull-right">
                <SampleTaskButtons 
                  defaultParameters={this.props.defaultParameters}
                  showForm={this.props.showTaskParametersForm}
@@ -158,6 +181,7 @@ class SampleGridContainer extends React.Component {
                deleteTask={this.props.deleteTask}
                toggleMoveable={this.props.toggleMoveable}
                moving={this.props.moving}
+               gridWidth={gridWidth}
              />
            </div>
          </div>

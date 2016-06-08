@@ -14,7 +14,7 @@ export default class SampleGrid extends React.Component {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.moveItem = this.moveItem.bind(this);
     this.canMove = this.canMove.bind(this);
-    this._isotopeLayoutWrapper = this._isotopeLayoutWrapper.bind(this);
+    this.gridDimension = this.gridDimension.bind(this);
   }
 
 
@@ -38,13 +38,7 @@ export default class SampleGrid extends React.Component {
       };
 
       this.isotope = new Isotope(this.refs.container, options);
-      this.isotope.layout = this._isotopeLayoutWrapper;
     }
-  }
-
-  _isotopeLayoutWrapper() {
-    this.isotope._layout();
-    this.width = this.isotope.size.outerWidth;
   }
 
 
@@ -231,7 +225,7 @@ export default class SampleGrid extends React.Component {
     });
 
     return (
-      <div ref="container" className="samples-grid" style={{width:this.width}}>
+      <div ref="container" className="samples-grid" style={{width:this.props.gridWidth, 'margin-left':'auto', 'margin-right':'auto'}}>
         {sampleGrid}
       </div>
     );

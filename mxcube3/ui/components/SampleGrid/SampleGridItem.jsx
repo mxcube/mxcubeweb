@@ -155,19 +155,19 @@ export default class SampleGridItem extends React.Component {
             this.props.tags.map((tag, i) => {
               const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
               let content;
-
+              
               if ((typeof tag) === 'string') {
                 content = <span key={i} className="label label-primary" style={style}>{tag}</span>;
               } else {
                 // assuming a Task
                 let showForm = (e) => {
                   e.stopPropagation();
-                  return this.props.showTaskParametersForm(tag.type, this.props.sample_id, tag);
+                  return this.props.showTaskParametersForm(tag.type, this.props.sampleID, tag);
                 };
 
                 let deleteTask = (e) => {
                   e.stopPropagation();
-                  return this.props.deleteTask(tag.parent_id, tag.queue_id, tag.sample_id);
+                  return this.props.deleteTask(tag.parent_id, tag.queueID, tag.sampleID);
                 };
 
                 content = (
@@ -176,9 +176,9 @@ export default class SampleGridItem extends React.Component {
                     <i className="fa fa-times" onClick={deleteTask} />
                   </span>
                 );
-
-                return content;
               }
+
+              return content;
             })
           }
         </div>
