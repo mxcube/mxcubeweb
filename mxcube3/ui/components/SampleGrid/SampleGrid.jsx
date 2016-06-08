@@ -12,6 +12,9 @@ export default class SampleGrid extends React.Component {
     super(props);
     this.filter = this.filter.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.moveItem = this.moveItem.bind(this);
+    this.canMove = this.canMove.bind(this);
+    this._isotopeLayoutWrapper = this._isotopeLayoutWrapper.bind(this);
   }
 
 
@@ -35,101 +38,153 @@ export default class SampleGrid extends React.Component {
       };
 
       this.isotope = new Isotope(this.refs.container, options);
+      this.isotope.layout = this._isotopeLayoutWrapper;
     }
   }
 
-  _numberOfCols() {
-    let [colArray, numRows, numCols] = [[], 0, 0];
+  _isotopeLayoutWrapper() {
+    this.isotope._layout();
+    this.width = this.isotope.size.outerWidth;
+  }
+
+
+  gridDimension() {
+    let colArray = [];
+    let _numCols = {}
 
     if (this.isotope.items.length > 0) {
       for (const idx in this.isotope.items){
-        if(idx > 0) {
-          if(this.isotope.items[idx].position.x == 0) {
-            numRows++; 
-            colArray.push(numCols);
-            numCols = 0;
-          }
+        let itemYPos = this.isotope.items[idx].position.y;
+        let itemXPos = this.isotope.items[idx].position.x;
+
+        if (_numCols.hasOwnProperty(itemYPos)) {
+          _numCols[itemYPos].push(itemXPos);
+        } else {
+          _numCols[itemYPos] = [];
+          _numCols[itemYPos].push(itemXPos);
         }
-
-        numCols++;
-
-       if(parseInt(idx) === (this.isotope.items.length - 1)){
-         colArray.push(numCols);
-       }
-
       }
+    }
+
+    for (const idx in _numCols) {
+      colArray.push(_numCols[idx].length);
     }
 
     return colArray;
   }
 
 
-  _gridPosition(key) {
-    let numCols = this._numberOfCols()[0];
+  itemGridPosition(key) {
+    let gridDim = this.gridDimension();
+    let numCols = gridDim[0];
     let pos = this.props.sampleOrder.get(key);
 
-    let rowPos = Math.floor(pos/numCols)
-    let colPos = pos - (rowPos * numCols)
-    
-    return {row:rowPos + 1, col:colPos + 1};
+    let rowPos = Math.floor(pos/numCols);
+    let colPos = pos - (rowPos * numCols);
+
+    return {row:rowPos, col:colPos, gridDimension: gridDim};
   }
 
- 
-  sortTest(event){
+
+  canMove(key) {
+    let [up, down, left, right] = [true, true, true, true]
+    let itemPos = this.itemGridPosition(key);
+
+    if (itemPos.col === 0) {
+      left = false;
+    }
+
+    if (itemPos.row === 0) {
+      up = false;
+    }
+
+    if (itemPos.row === (itemPos.gridDimension.length - 1)) {
+      down = false;
+    }
+
+    if (itemPos.col > (itemPos.gridDimension[itemPos.row + 1] - 1)) {
+      down = false;
+    }
+
+    if (itemPos.col === (itemPos.gridDimension[itemPos.row] - 1 )) {
+      right = false;
+    }
+
+    return [up, down, left, right];
+  }
+
+
+  moveItem(dir){
     let selectedItemKey, selected;
 
     for (const key in this.props.selected) {
       selected = this.props.selected[key];
 
       if (selected){
-          selectedItemKey = key;
-          break;
+        selectedItemKey = key;
+        break;
       }
     }
 
-    this._numberOfCols();
-
-    if (selectedItemKey){
-      let numCols = this._numberOfCols()[0];
-      let newPos = this.props.sampleOrder.get(selectedItemKey);
-
-      if (event.key === 'ArrowRight'){ 
-        newPos = newPos + 1;
-      }
-      else if(event.key === 'ArrowLeft'){
-        newPos = newPos - 1;
-      }
-      else if(event.key === 'ArrowDown'){
-        newPos = newPos + numCols;
-      }
-      else if(event.key === 'ArrowUp'){
-        newPos = newPos - numCols;
-      }
-      else{
-        return;
-      }
-
-      this.props.reorderSample(this.props.sampleOrder, selectedItemKey, newPos);
+    if (!selectedItemKey) {
+      return;
     }
+
+    if (!this.props.moving[selectedItemKey]) {
+      return;
+    }
+
+    let numCols = this.gridDimension()[0];
+    let newPos = this.props.sampleOrder.get(selectedItemKey);
+    let [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] = this.canMove(selectedItemKey);
+
+    if (dir === 'RIGHT' && canMoveRight){ 
+      newPos = newPos + 1;
+    }
+    else if(dir === 'LEFT' && canMoveLeft){
+      newPos = newPos - 1;
+    }
+    else if(dir === 'DOWN' && canMoveDown){
+      newPos = newPos + numCols;
+      //this.refs.container.scrollTop += 100; 
+    }
+    else if(dir === 'UP' && canMoveUp){
+      newPos = newPos - numCols;
+      //this.refs.container.scrollTop -= 100; 
+    }
+    else{
+      return;
+    }
+
+    this.props.reorderSample(this.props.sampleOrder, selectedItemKey, newPos);
   }
 
 
   onKeyDown(event){
-    console.log(event);
-    this.sortTest(event);
-    this.isotope.reloadItems();
-    this.isotope.layout();
-    this.isotope.arrange({sortBy: 'seqId'});
+    if (event.key === 'ArrowRight'){ 
+      this.moveItem('RIGHT');
+    }
+    else if(event.key === 'ArrowLeft'){
+      this.moveItem('LEFT');
+    }
+    else if(event.key === 'ArrowDown'){
+      this.moveItem('DOWN');
+    }
+    else if(event.key === 'ArrowUp'){
+      this.moveItem('UP');
+    }
+    else{
+      return;
+    }
+    
+    this.props.reorderSample(this.props.sampleOrder, selectedItemKey, newPos);
   }
 
   componentDidUpdate(prevProps) {
     if (this.isotope) {
-      if ((this.props.filter_text !== prevProps.filter_text) ||
-          (this.props.samples_list !== prevProps.samples_list)) {
-        this.isotope.reloadItems();
-        this.isotope.layout();
-      }
-      this.isotope.arrange();
+      this.isotope.reloadItems();
+      this.isotope.layout();
+      this.isotope.arrange({sortBy: 'seqId'});
     }
   }
 
@@ -158,12 +213,16 @@ export default class SampleGrid extends React.Component {
 
         sampleGrid.push(
           <SampleGridItem
-            ref={i} seqId={this.props.sampleOrder.get(key)} key={key} selectKey={key} 
+            ref={i} seqId={this.props.sampleOrder.get(key)} itemKey={key} selectKey={key} 
             sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} 
             location={sample.location} tags={tags} selected={this.props.selected[key]}
             deleteTask={this.props.deleteTask}
             showTaskParametersForm={this.props.showTaskParametersForm}
             onClick={this.props.toggleSelected}
+            toggleMoveable={this.props.toggleMoveable}
+            moving={this.props.moving[key]}
+            moveItem={this.moveItem}
+            canMove={this.canMove}
           />
         );
 
@@ -172,7 +231,7 @@ export default class SampleGrid extends React.Component {
     });
 
     return (
-      <div ref="container" className="samples-grid">
+      <div ref="container" className="samples-grid" style={{width:this.width}}>
         {sampleGrid}
       </div>
     );

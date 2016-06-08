@@ -1,16 +1,21 @@
 import React from 'react';
+
+import { StickyContainer, Sticky } from 'react-sticky';
+
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem,
-         PanelGroup, Panel} from 'react-bootstrap';
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples,
-         sendManualMount, doUnselectAll, sendDeleteSampleTask, doReorderSample } from '../actions/samples_grid';
+import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem } from 'react-bootstrap';
+import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, 
+         doSyncSamples, sendManualMount, doUnselectAll, sendDeleteSampleTask, 
+         doReorderSample, toggleMoveable } from '../actions/samples_grid';
 
 import { sendAddSample } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
 
 import SampleGrid from '../components/SampleGrid/SampleGrid';
 import SampleTaskButtons from '../components/SampleGrid/TaskButtons';
+
+import '../components/SampleGrid/SampleGrid.css';
 
 
 class SampleGridContainer extends React.Component {
@@ -69,99 +74,94 @@ class SampleGridContainer extends React.Component {
    );
 
    return (
-     <div>
-        <div className="row row-centered">
-          <div className={"col-centered"} >
-            <ButtonToolbar>
-              <SplitButton
-                bsStyle="primary"
-                title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
-                onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples}
-                onSelect={this.manualMount}
-                id="split-button-sample-changer-selection"
-              >
-              <MenuItem eventKey="1">
-                {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
-              </MenuItem>
-              </SplitButton>
-              <Button
-                className="btn-primary"
-                disabled={this.props.manualMount}
-                onClick={this.syncSamples}
-              >
-                <Glyphicon glyph="refresh" /> Sync. ISPyB
-              </Button>
-            </ButtonToolbar>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-xs-2">
-            <div className="form-inline">
-              <Input
-                type="text"
-                ref="filter_input"
-                defaultValue={this.props.filterText}
-                label="Filter:"
-                buttonAfter={innerSearchIcon}
-                onChange={this.filterSampleGrid}
-              />
-            </div>
-          </div>
-          <div className="col-xs-2">        
-            <ButtonToolbar>
-              <Button
-                className="btn"
-                onClick={this.props.unselectAll}
-                disabled={this.props.manualMount}
-              >
-                Unselect all
-              </Button>
-              <Button
-                className="btn"
-                onClick={this.props.selectAll}
-                disabled={this.props.manualMount}
-              >
-                Select all
-              </Button>
-            </ButtonToolbar>
-          </div>
-        </div>
-        <br />
-        <div className="row">
-          <div className="col-xs-12">
-            <SampleGrid
-              samples_list={this.props.samplesList}
-              sampleOrder={this.props.sampleOrder}
-              reorderSample={this.props.reorderSample}
-              selected={this.props.selected}
-              toggleSelected={this.props.toggleSelected}
-              filter_text={this.props.filterText}
-              queue={this.props.queue}
-              showTaskParametersForm={this.props.showTaskParametersForm}
-              deleteTask={this.props.deleteTask}
-            />
-          </div>
-        </div>
-        <br />
-        <div className="row">
-          <div className="col-xs-6">
-            <PanelGroup accordion >
-              <Panel header={panelHeader} expanded>
-                <SampleTaskButtons 
-                  defaultParameters={this.props.defaultParameters}
-                  showForm={this.props.showTaskParametersForm}
-                  selected={this.props.selected}
-                />
-              </Panel>
-            </PanelGroup>
-          </div>
-          <div className="col-xs-5">
-            <Button className="btn btn-success pull-right" href="#/datacollection">
-              Collect <Glyphicon glyph="chevron-right" />
-            </Button>
-          </div>
-        </div>
-      </div>);
+     <StickyContainer>
+         <div className="row row-centered">
+           <div className="col-centered" >
+             <ButtonToolbar>
+               <SplitButton
+                 bsStyle="primary"
+                 title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
+                 onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples}
+                 onSelect={this.manualMount}
+                 id="split-button-sample-changer-selection"
+               >
+                 <MenuItem eventKey="1">
+                   {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
+                 </MenuItem>
+               </SplitButton>
+               <Button
+                 className="btn-primary"
+                 disabled={this.props.manualMount}
+                 onClick={this.syncSamples}
+               >
+                 <Glyphicon glyph="refresh" /> Sync. ISPyB
+               </Button>
+             </ButtonToolbar>
+           </div>
+         </div>
+         <Sticky className="samples-grid-header" stickyStyle={{padding:'10px'}}>
+           <div className="row">
+             <div className="col-xs-2">
+               <div className="form-inline">
+                 <Input
+                   type="text"
+                   ref="filter_input"
+                   defaultValue={this.props.filterText}
+                   label="Filter:"
+                   buttonAfter={innerSearchIcon}
+                   onChange={this.filterSampleGrid}
+                 />
+               </div>
+             </div>
+             <div className="col-xs-2">        
+               <ButtonToolbar>
+                 <Button
+                   className="btn"
+                   onClick={this.props.unselectAll}
+                   disabled={this.props.manualMount}
+                 >
+                   Unselect all
+                 </Button>
+                 <Button
+                   className="btn"
+                   onClick={this.props.selectAll}
+                   disabled={this.props.manualMount}
+                 >
+                   Select all
+                 </Button>
+               </ButtonToolbar>
+             </div>
+             <div className="col-xs-2 col-xs-offset-5">
+               <SampleTaskButtons 
+                 defaultParameters={this.props.defaultParameters}
+                 showForm={this.props.showTaskParametersForm}
+                 selected={this.props.selected}
+               />
+               <Button className="btn btn-success pull-right" href="#/datacollection">
+                 Collect <Glyphicon glyph="chevron-right" />
+               </Button>
+             </div>
+           </div>
+         </Sticky>
+         <br />
+         <div className="row">
+           <div className="col-xs-12">
+             <SampleGrid
+               samples_list={this.props.samplesList}
+               sampleOrder={this.props.sampleOrder}
+               reorderSample={this.props.reorderSample}
+               selected={this.props.selected}
+               toggleSelected={this.props.toggleSelected}
+               filter_text={this.props.filterText}
+               queue={this.props.queue}
+               showTaskParametersForm={this.props.showTaskParametersForm}
+               deleteTask={this.props.deleteTask}
+               toggleMoveable={this.props.toggleMoveable}
+               moving={this.props.moving}
+             />
+           </div>
+         </div>
+     </StickyContainer>);
   }
 }
 
@@ -170,6 +170,7 @@ function mapStateToProps(state) {
     loginData: state.login.data,
     queue: state.queue,
     selected: state.samples_grid.selected,
+    moving: state.samples_grid.moving,
     samplesList: state.samples_grid.samples_list,
     defaultParameters: state.taskForm.defaultParameters,
     manualMount: state.samples_grid.manualMount.set,
@@ -193,7 +194,8 @@ function mapDispatchToProps(dispatch) {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: (parentId, queueId, sampleId) => {
       dispatch(sendDeleteSampleTask(parentId, queueId, sampleId));
-    }
+    },
+    toggleMoveable: (key) => dispatch(toggleMoveable(key))
   };
 }
 

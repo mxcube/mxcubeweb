@@ -4,10 +4,11 @@ import { omit } from 'lodash/object';
 const initialState = { samples_list: {},
                        filter_text: '',
                        selected: {},
-                       sampleOrder: {},
+                       sampleOrder: new Map(),
                        clicked_task: Object(),
                        manualMount: { set: false, id: 0 },
-                       login_data: {} };
+                       login_data: {},
+                       moving: {}};
 
 
 function initialSampleOrder(sampleList) {
@@ -22,21 +23,29 @@ function initialSampleOrder(sampleList) {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'UPDATE_SAMPLES': {
+    case "SIGNOUT":
+      return Object.assign({}, initialState);
+    case 'UPDATE_SAMPLES':
       return Object.assign({}, state, { samples_list: action.samples_list,
                                         sampleOrder: initialSampleOrder(action.samples_list) });
-    }
     case 'ADD_SAMPLE_TO_GRID':
-      return { ...state, samples_list: { ...state.samples_list, [action.id]: action.data },
-               manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
+    return { ...state, samples_list: { ...state.samples_list, [action.id]: action.data },
+             manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
     case 'REORDER_SAMPLE': {
       return Object.assign({}, state, {sampleOrder: action.sampleOrder});
     }
+    case 'TOGGLE_MOVEABLE_SAMPLE': {
+      const movingItems = {};
+      movingItems[action.key] = (!state.moving[action.key] && state.selected[action.key]);
+      return Object.assign({}, state, {moving: movingItems}); 
+    }
     case 'TOGGLE_SELECTED':
       {
-        const newSelected = Object.assign({}, state.selected);
-        newSelected[action.index] = !state.selected[action.index];
-        return Object.assign({}, state, { selected: newSelected });
+        const selectedItems = {};
+        const movingItems = {};
+        movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
+        selectedItems[action.index] = !state.selected[action.index];
+        return Object.assign({}, state, { selected: selectedItems, moving: movingItems});
       }
     case 'CLICKED_TASK':
       {
