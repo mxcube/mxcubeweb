@@ -11,7 +11,7 @@ import {
   sendChangeSampleTask,
   sendAddSampleAndTask,
   doAddSample
-} from '../actions/samples_grid';
+} from '../actions/samplesGrid';
 
 class TaskContainer extends React.Component {
 

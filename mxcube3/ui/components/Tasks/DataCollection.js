@@ -108,7 +108,7 @@ class DataCollection extends React.Component {
 
             <div className="form-group">
               <label className="col-sm-12 control-label">
-                Path: {rootPath + path.value}
+                Path: {`${rootPath}/${path.value}`}
               </label>
             </div>
 
@@ -391,7 +391,8 @@ DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
 state => ({ // mapStateToProps
   initialValues: {
     ...state.taskForm.taskData.parameters,
-    beam_size: state.sampleview.currentAperture
+    beam_size: state.sampleview.currentAperture,
+    path: state.login.loginInfo.loginRes.Proposal.code
   } // will pull state into form's initialValues
 }))(DataCollection);
 

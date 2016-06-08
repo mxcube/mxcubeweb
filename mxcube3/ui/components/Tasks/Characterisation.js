@@ -92,7 +92,8 @@ class Characterisation extends React.Component {
         run_number,
         path,
         beam_size
-      }
+      },
+    rootPath
     } = this.props;
 
     return (
@@ -111,12 +112,12 @@ class Characterisation extends React.Component {
             <form className="form-horizontal">
              <div className="form-group">
               <label className="col-sm-12 control-label">
-                Path: /home/20160502/RAWDATA/{path.value}
+                Path: {`${rootPath}/${path.value}`}
               </label>
             </div>
 
              <div className="form-group">
-              <label className="col-sm-2 control-label">Subpathectory</label>
+              <label className="col-sm-2 control-label">Subdirectory</label>
               <div className="col-sm-4">
                 <input type="text" className="form-control" {...path} />
               </div>
@@ -414,9 +415,7 @@ state => ({ // mapStateToProps
   initialValues: {
     ...state.taskForm.taskData.parameters,
     beam_size: state.sampleview.currentAperture,
-    prefix: 'insulin',
-    run_number: 1,
-    path: 'username'
+    path: state.login.loginInfo.loginRes.Proposal.code
   } // will pull state into form's initialValues
 }))(Characterisation);
 
