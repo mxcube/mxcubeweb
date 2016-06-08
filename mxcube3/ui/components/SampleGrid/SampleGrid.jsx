@@ -9,10 +9,13 @@ export default class SampleGrid extends React.Component {
 
   constructor(props) {
     super(props);
+    this._selectStartSeqId = -1;
     this.filter = this.filter.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
     this.moveItem = this.moveItem.bind(this);
     this.canMove = this.canMove.bind(this);
+    this.dragStartSelection = this.dragStartSelection.bind(this);
+    this.dragSelectItem = this.dragSelectItem.bind(this);
   }
 
 
@@ -105,8 +108,37 @@ export default class SampleGrid extends React.Component {
     return [up, down, left, right];
   }
 
+  
+  keysFromSeqId(start, end){
+    let keys = [];
+    let [_start, _end] = [start, end];
+    
+    if (start > end ){
+      [_start, _end] = [end, start];
+    }
 
-  moveItem(dir){
+    for (let [key, value] of this.props.sampleOrder.entries()) {
+      if (value >= _start && value <= _end){
+        keys.push(key);
+      }
+    }
+
+    return keys;
+  }
+
+
+  dragStartSelection(key, seqId) {
+    this._selectStartSeqId = seqId;
+    this.props.selectRange(this.keysFromSeqId(this._selectStartSeqId, seqId));
+  }
+
+
+  dragSelectItem(key, seqId) {
+    this.props.selectRange(this.keysFromSeqId(this._selectStartSeqId, seqId));
+  }
+
+
+  selectedItem() {
     let selectedItemKey, selected;
 
     for (const key in this.props.selected) {
@@ -119,6 +151,17 @@ export default class SampleGrid extends React.Component {
     }
 
     if (!selectedItemKey) {
+      return;
+    }
+
+    return selectedItemKey;
+  }
+
+
+  moveItem(dir){
+    let selectedItemKey = this.selectedItem();
+
+    if(!selectedItemKey) {
       return;
     }
 
@@ -151,6 +194,21 @@ export default class SampleGrid extends React.Component {
     this.props.reorderSample(this.props.sampleOrder, selectedItemKey, newPos);
   }
 
+  
+  toggleToBeCollected(itemKey){
+    let selectedItemKey = itemKey;
+
+    if (!selectedItemKey) {
+      selectedItemKey = this.selectedItem();
+    }
+
+    if(!selectedItemKey) {
+      return;
+    }
+ 
+    this.props.toggleToBeCollected(selectedItemKey);
+  }
+
 
   onKeyDown(event){
     if (event.key === 'ArrowRight'){ 
@@ -166,14 +224,14 @@ export default class SampleGrid extends React.Component {
       this.moveItem('UP');
     }
     else if(event.key === ' '){
-      //select sample
+      event.stopPropagation();
+      event.preventDefault();
+      this.props.pickSelected();
       return;
     }
     else{
       return;
-    }
-    
-    this.props.reorderSample(this.props.sampleOrder, selectedItemKey, newPos);
+    }    
   }
 
   componentDidUpdate(prevProps) {
@@ -209,16 +267,20 @@ export default class SampleGrid extends React.Component {
 
         sampleGrid.push(
           <SampleGridItem
-            ref={i} seqId={this.props.sampleOrder.get(key)} itemKey={key} selectKey={key} 
+            ref={i} seqId={this.props.sampleOrder.get(key)} itemKey={key}
             sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false} 
             location={sample.location} tags={tags} selected={this.props.selected[key]}
             deleteTask={this.props.deleteTask}
             showTaskParametersForm={this.props.showTaskParametersForm}
             onClick={this.props.toggleSelected}
             toggleMoveable={this.props.toggleMoveable}
+            toBeCollected={this.props.samplesToBeCollected[key]}
             moving={this.props.moving[key]}
             moveItem={this.moveItem}
             canMove={this.canMove}
+            toggleToBeCollected={this.props.toggleToBeCollected}
+            dragStartSelection={this.dragStartSelection}
+            dragSelectItem={this.dragSelectItem}
           />
         );
 

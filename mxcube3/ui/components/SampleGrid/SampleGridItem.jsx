@@ -14,38 +14,101 @@ export class SampleGridItem extends React.Component {
 
   constructor(props) {
     super(props);
-    this.onClick = props.onClick.bind(this, props.selectKey);
+    this.onClick = props.onClick.bind(this, props.itemKey);
     this._toggleMoveable = this._toggleMoveable.bind(this);
+    this._toggleToBeCollected = this._toggleToBeCollected.bind(this);
+    this._onItemClick = this._onItemClick.bind(this);
+
     this.moveItemUp = this.moveItemUp.bind(this);
     this.moveItemDown = this.moveItemDown.bind(this);
     this.moveItemRight = this.moveItemRight.bind(this);
     this.moveItemLeft = this.moveItemLeft.bind(this);
+
+    this._onMouseDown = this._onMouseDown.bind(this);
+    this._onMouseEnter = this._onMouseEnter.bind(this);
+
+  }
+
+
+  _onMouseDown(e) {
+    if (e.nativeEvent.buttons === 1) {
+      console.log(`SELECT ${this.props.itemKey}`);
+      this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+    }
+  }
+
+
+  _onMouseEnter(e) {
+    if (e.nativeEvent.buttons === 1) {
+      console.log(`SELECT ${this.props.itemKey}`);
+      this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
+    }
+  }
+
+
+  _onItemClick(e){
+    e.stopPropagation();
+//    this.onClick();
   }
 
 
   _toggleMoveable(e){
     e.stopPropagation();
-    this.props.toggleMoveable(this.props.selectKey)
+    this.props.toggleMoveable(this.props.itemKey)
   }
 
 
-  showMoveable(){
+  _toggleToBeCollected(e) {
+    e.stopPropagation();
+    this.props.toggleToBeCollected(this.props.itemKey);
+  }
+
+
+  showItemControls() {
+    let iconClassName = 'glyphicon glyphicon-unchecked';
+
+    if (this.props.toBeCollected){
+      iconClassName = 'glyphicon glyphicon-check';
+    }
+
+    const pickButton = (
+      <button
+        className="samples-grid-item-pick-button"
+        bsStyle="default"
+        bsSize="s"
+        onClick={this._toggleToBeCollected}
+      >
+        <i className={iconClassName}/>
+      </button>
+   );
+
+   const moveButton = (
+     <Button
+       className="samples-grid-item-move-button"
+       bsStyle="primary"
+       bsSize="xs"
+       onClick={this._toggleMoveable}
+     >
+       <i className="glyphicon glyphicon-move"/>
+     </Button>
+    );
+
+    let content = (
+      <div className="samples-item-controls-container">
+      {pickButton}
+      </div>
+    );
+
     if (this.props.selected) {
-      return (
-        <div>
-          <Button
-            className="samples-grid-item-move-button"
-            bsStyle="primary"
-            bsSize="xs"
-            onClick={this._toggleMoveable}
-          >
-            <i className="glyphicon glyphicon-move"/>
-          </Button>
+      content = (
+        <div className="samples-item-controls-container">
+          {pickButton}
+          {moveButton}
         </div>
       );
-    } else {
-      return ""
     }
+ 
+    return content;
   }
 
 
@@ -136,15 +199,22 @@ export class SampleGridItem extends React.Component {
   render() {
     let classes = classNames('samples-grid-item',
                              {'samples-grid-item-selected': (this.props.selected && !this.props.moving),
-                              'samples-grid-item-moving': this.props.moving});
+                              'samples-grid-item-moving': this.props.moving,
+                              'samples-grid-item-to-be-collected': this.props.toBeCollected});
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
                                        { 'label-success': this.props.loadable });
 
     return (
-      <div className={classes} onClick={this.onClick}>
+      <div
+        className={classes}
+        draggable="true"
+        onClick={this._onItemClick}
+        onMouseDown={this._onMouseDown}
+        onMouseEnter={this._onMouseEnter}
+      >
         {this.showMoveArrows()}
-        {this.showMoveable()}
+        {this.showItemControls()}
         <span className={scLocationClasses}>{this.props.location}</span>
         <br />
         <a href="#" ref="pacronym" className="protein-acronym" data-type="text"
@@ -160,7 +230,7 @@ export class SampleGridItem extends React.Component {
             this.props.tags.map((tag, i) => {
               const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
               let content;
-              
+
               if ((typeof tag) === 'string') {
                 content = <span key={i} className="label label-primary" style={style}>{tag}</span>;
               } else {

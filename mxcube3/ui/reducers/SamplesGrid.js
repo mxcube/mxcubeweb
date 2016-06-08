@@ -5,6 +5,7 @@ const initialState = { samples_list: {},
                        filter_text: '',
                        selected: {},
                        sampleOrder: new Map(),
+                       samplesToBeCollected: {},
                        clicked_task: Object(),
                        manualMount: { set: false, id: 0 },
                        login_data: {},
@@ -39,31 +40,56 @@ export default (state = initialState, action) => {
       movingItems[action.key] = (!state.moving[action.key] && state.selected[action.key]);
       return Object.assign({}, state, {moving: movingItems}); 
     }
-    case 'TOGGLE_SELECTED':
-      {
-        const selectedItems = {};
-        const movingItems = {};
-        movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
-        selectedItems[action.index] = !state.selected[action.index];
-        return Object.assign({}, state, { selected: selectedItems, moving: movingItems});
+    case 'TOGGLE_SELECTED': {
+      const selectedItems = {};
+      const movingItems = {};
+      movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
+      selectedItems[action.index] = !state.selected[action.index];
+      return Object.assign({}, state, { selected: selectedItems, moving: movingItems});
+    }
+    case 'TOGGLE_TO_BE_COLLECTED': {
+      const samplesToBeCollected = Object.assign({}, state.samplesToBeCollected);
+      samplesToBeCollected[action.key] = !state.samplesToBeCollected[action.key];
+      return Object.assign({}, state, {samplesToBeCollected: samplesToBeCollected});
+    }
+    case 'SELECT_RANGE': {
+      let selectedItems = {};
+
+      for (let key of action.keys){
+        selectedItems[key] = true;
       }
+
+      return Object.assign({}, state, {selected: selectedItems});
+    }
+    case 'PICK_SELECTED_SAMPLES': {
+      let selectedItems = Object.assign({}, state.selected);
+      let samplesToBeCollected = Object.assign({}, state.samplesToBeCollected);
+
+      for (let key in state.selected) {
+        if (state.selected[key]) {
+          samplesToBeCollected[key] = !samplesToBeCollected[key];
+        }
+      }
+
+      return Object.assign({}, state, {samplesToBeCollected: samplesToBeCollected});
+    }
     case 'CLICKED_TASK':
       {
         return Object.assign({}, state, { clicked_task: action.task });
       }
-    case 'SELECT_ALL':
+    case 'FLAG_ALL_TO_BE_COLLECTED':
       {
         // Creating a new SampleList with the "selected" state toggled to "true"
-        const newSelected = {};
+        const samplesToBeCollected = {};
         Object.keys(state.samples_list).forEach((key) => {
-          newSelected[key] = action.selected;
+          samplesToBeCollected[key] = action.selected;
         });
 
-        return Object.assign({}, state, { selected: newSelected });
+        return Object.assign({}, state, { samplesToBeCollected: samplesToBeCollected });
       }
-    case 'UNSELECT_ALL':
+    case 'UNFLAG_ALL_TO_BE_COLLECTED':
       {
-        return Object.assign({}, state, { selected: {} });
+        return Object.assign({}, state, { samplesToBeCollected: {} });
       }
     case 'FILTER':
       {

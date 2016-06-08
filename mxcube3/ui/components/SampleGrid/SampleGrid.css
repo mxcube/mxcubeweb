@@ -82,8 +82,21 @@
 }
 
 
+.samples-grid-item-to-be-collected { 
+  background-color: #CEE3F6;
+}
+
+
 .samples-grid-item-move-button {
-  float: left;
+  margin-left: 4px;
+}
+
+
+.samples-grid-item-pick-button{ 
+  background: Transparent;
+  border: 0px;
+  margin: 0;
+  padding: 0;
 }
 
 
@@ -91,6 +104,11 @@
     width: 180px;
     height: 60px;
     overflow-y: auto;
+}
+
+
+.samples-item-controls-container { 
+  float:left;
 }
 
 
@@ -107,8 +125,8 @@
 
 
 .sc_location {
-    float: right;
     font-size: x-small;
+    float: right;
 }
 
 
@@ -126,7 +144,6 @@
 
 
 .samples-grid-item-selected {
-//    background: #CEE3F6;
     border: 2px solid #888 !important;
     padding: 4px;
 }
