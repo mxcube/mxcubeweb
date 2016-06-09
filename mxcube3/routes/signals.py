@@ -57,7 +57,6 @@ motor_signals = {
     'minidiffSampleIsLoadedChanged':'minidiffSampleIsLoadedChanged',
     'zoomMotorPredefinedPositionChanged': 'zoomMotorPredefinedPositionChanged',
     'diffractometerMoved':          'diffractometerMoved',
-    'positionChanged':              'positionChanged',
     'stateChanged':                 'stateChanged'
 }
 
