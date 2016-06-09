@@ -6,12 +6,11 @@ import DataCollection from '../components/Tasks/DataCollection';
 import AddSample from '../components/Tasks/AddSample';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 import { sendCurrentPhase } from '../actions/sampleview';
-import {
-  sendAddSampleTask,
-  sendChangeSampleTask,
-  sendAddSampleAndTask,
-  doAddSample
-} from '../actions/samplesGrid';
+import { sendAddSampleTask,
+	 sendChangeSampleTask,
+	 sendAddSampleAndTask,
+	 doAddSample
+       } from '../actions/SamplesGrid';
 
 class TaskContainer extends React.Component {
 
