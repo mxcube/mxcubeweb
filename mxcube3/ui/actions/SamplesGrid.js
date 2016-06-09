@@ -246,7 +246,6 @@ export function sendDeleteSampleTask(parent_id, queueID, sampleID) {
 
 
 export function doReorderSample(sampleOrder, key, targetPos){
-  console.log(`REORDER ${key}->${targetPos}`);
   let newSampleOrder = new Map(sampleOrder);
   let sourcePos = sampleOrder.get(key);
   let tempKey;
