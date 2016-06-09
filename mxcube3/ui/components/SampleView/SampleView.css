@@ -44,6 +44,13 @@
     margin-bottom: 20px;
 }
 
+#zoom-control{
+    display: inline;
+    width: auto;
+    position: relative;
+    top: 3px;
+}
+
 .camera-controll{
     height: 42px;
     width: 33.33333333%;
@@ -128,8 +135,6 @@
   border-left-color: transparent;
 
 }
-
-
 
 .overlay-head{
     padding: 8px 14px;
