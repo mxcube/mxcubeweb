@@ -1,6 +1,6 @@
 import { sendCurrentPhase } from './sampleview';
 
-export function showForm(formName, sampleQueueID, taskData, pointQueueID) {
+export function showForm(formName, sampleQueueID = [], taskData = {}, pointQueueID = -1) {
   return {
     type: 'SHOW_FORM',
     name: formName,

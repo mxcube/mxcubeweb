@@ -44,9 +44,17 @@ export default (state = initialState, action) => {
           pointId: action.point_id
         };
       }
-    case 'HIDE_FORM':
+    case 'ADD_METHOD':
+      {
+        return { ...state, defaultParameters: { parameters: action.parameters } };
+      }
+    case 'MOUNT_SAMPLE':
       {
         return initialState;
+      }
+    case 'HIDE_FORM':
+      {
+        return { ...state, showForm: '' };
       }
     case 'SIGNOUT':
       {
