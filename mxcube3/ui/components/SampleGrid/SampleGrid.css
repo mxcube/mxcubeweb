@@ -1,29 +1,137 @@
+.samples-grid{ 
+  margin-left: auto; 
+  margin-right: auto;
+}
+
+
+.samples-grid-header{
+  z-index: 1;
+  background-color: #F6F6F6;
+}
+
+
+.move-arrow { 
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  z-index: 5;
+  text-align:center;
+  line-height: 32px;
+  background-color: #FFF;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+  border-radius: 15px;
+  border: 1px solid #AAA;
+}
+
+
+.move-arrow:hover {
+    opacity: 1;
+} 
+
+
+.move-arrow-up { 
+  top: -16px; 
+  left: 50%;
+  margin-left: -16px;
+}
+
+
+.move-arrow-down { 
+  bottom: -16px; 
+  left: 50%;
+  margin-left: -16px;
+}
+
+
+.move-arrow-left { 
+  top: 50%; 
+  left: -16px;
+  margin-top: -16px;
+}
+
+
+.move-arrow-right{ 
+  top: 50%;
+  right: -16px;
+  margin-top: -16px;
+}
+
+
+.samples-grid-header { 
+  margin-left: auto; 
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 28px;
+}
+
+
 .samples-grid-item {
-    width: 190px;
-    height: auto;
-    min-height: 100px;
     border: 1px solid #AAA;
     background: #FFF;
-    box-shadow: 0px 2px 3px 0px #AAA;
     padding: 5px;
-    margin-top: 5px;
-    margin-right: 3px;
-    margin-bottom: 5px;
-    overflow: hidden;
+    margin-top: 2px;
+    margin-bottom: 2px;
     border-radius: 3px;
 }
+
+
+.samples-grid-item-moving { 
+  border: 2px dashed #888;
+  padding: 4px;
+}
+
+
+.samples-grid-item-to-be-collected { 
+  background-color: #CEE3F6;
+}
+
+
+.samples-grid-item-button { 
+  border: 0px;
+  border-radius: 4px;
+  background: Transparent;
+  opacity: 1;
+  padding-left: 2px;
+  padding-right: 2px;
+  border: 1px solid Transparent;
+}
+
+.samples-grid-item-button:hover {
+  border: 1px solid #888;
+}
+
+
+.samples-grid-item-tasks {
+    width: 180px;
+    height: 60px;
+    overflow-y: auto;
+}
+
+
+.samples-item-controls-container { 
+  float:left;
+}
+
+
 .protein-acronym {
     font-size: small;
     font-weight: bold;
 }
+
+
 .dm {
     font-size: small;
     font-style: italic;
 }
+
+
 .sc_location {
-    float: right;
     font-size: x-small;
+    float: right;
 }
+
+
 .dot {
     height: 7px;
     width: 7px;
@@ -35,10 +143,33 @@
     right: 0;
     top: 0;
 }
+
+
 .samples-grid-item-selected {
-    background: #CEE3F6;
+    border: 2px solid #888 !important;
+    padding: 4px;
 }
+
+
 
 .btn-link {
     color: #333 !important;
+}
+
+
+.seq-id {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  margin-left: -20px;
+  text-align: center;
+  line-height:40px;
+  font-style: italic;
+  font-weight: bold;
+  font-size: 40px;
+  color: #222;
+  opacity: 0.2;
 }

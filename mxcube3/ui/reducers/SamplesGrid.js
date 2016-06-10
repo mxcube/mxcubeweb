@@ -1,45 +1,94 @@
 import { omit } from 'lodash/object';
+
+
 const initialState = { samples_list: {},
                        filter_text: '',
                        selected: {},
+                       sampleOrder: new Map(),
+                       samplesToBeCollected: {},
                        clicked_task: Object(),
                        manualMount: { set: false, id: 0 },
-                       login_data: {} };
+                       login_data: {},
+                       moving: {} };
+
+
+function initialSampleOrder(sampleList) {
+  const sampleOrder = new Map();
+
+  for (const key in sampleList) {
+    sampleOrder.set(key, sampleOrder.size);
+  }
+
+  return sampleOrder;
+}
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'SIGNOUT':
+    case "SIGNOUT":
       return Object.assign({}, initialState);
     case 'UPDATE_SAMPLES':
-          // should have session samples
-      return Object.assign({}, state, { samples_list: action.samples_list });
+      return Object.assign({}, state, { samples_list: action.samples_list,
+                                        sampleOrder: initialSampleOrder(action.samples_list) });
     case 'ADD_SAMPLE_TO_GRID':
-
       return { ...state, samples_list: { ...state.samples_list, [action.id]: action.data },
                manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
-    case 'TOGGLE_SELECTED':
-      {
-        const newSelected = Object.assign({}, state.selected);
-        newSelected[action.index] = !state.selected[action.index];
-        return Object.assign({}, state, { selected: newSelected });
+    case 'REORDER_SAMPLE': {
+      return Object.assign({}, state, { sampleOrder: action.sampleOrder });
+    }
+    case 'TOGGLE_MOVEABLE_SAMPLE': {
+      const movingItems = {};
+      movingItems[action.key] = (!state.moving[action.key] && state.selected[action.key]);
+      return Object.assign({}, state, { moving: movingItems });
+    }
+    case 'TOGGLE_SELECTED': {
+      const selectedItems = {};
+      const movingItems = {};
+      movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
+      selectedItems[action.index] = !state.selected[action.index];
+      return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
+    }
+    case 'TOGGLE_TO_BE_COLLECTED': {
+      const samplesToBeCollected = Object.assign({}, state.samplesToBeCollected);
+      samplesToBeCollected[action.key] = !state.samplesToBeCollected[action.key];
+      return Object.assign({}, state, { samplesToBeCollected });
+    }
+    case 'SELECT_RANGE': {
+      const selectedItems = {};
+
+      for (const key of action.keys) {
+        selectedItems[key] = true;
       }
+
+      return Object.assign({}, state, { selected: selectedItems });
+    }
+    case 'PICK_SELECTED_SAMPLES': {
+      const samplesToBeCollected = Object.assign({}, state.samplesToBeCollected);
+
+      for (const key in state.selected) {
+        if (state.selected[key]) {
+          samplesToBeCollected[key] = !samplesToBeCollected[key];
+        }
+      }
+
+      return Object.assign({}, state, { samplesToBeCollected });
+    }
     case 'CLICKED_TASK':
       {
         return Object.assign({}, state, { clicked_task: action.task });
       }
-    case 'SELECT_ALL':
+    case 'FLAG_ALL_TO_BE_COLLECTED':
       {
         // Creating a new SampleList with the "selected" state toggled to "true"
-        const newSelected = {};
+        const samplesToBeCollected = {};
         Object.keys(state.samples_list).forEach((key) => {
-          newSelected[key] = action.selected;
+          samplesToBeCollected[key] = action.selected;
         });
 
-        return Object.assign({}, state, { selected: newSelected });
+        return Object.assign({}, state, { samplesToBeCollected });
       }
-    case 'UNSELECT_ALL':
+    case 'UNFLAG_ALL_TO_BE_COLLECTED':
       {
-        return Object.assign({}, state, { selected: {} });
+        return Object.assign({}, state, { samplesToBeCollected: {} });
       }
     case 'FILTER':
       {
@@ -85,12 +134,12 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
                 {
                   type: action.task_type,
                   label: action.task_type.split(/(?=[A-Z])/).join(' '),
-                  sampleID: action.index,
-                  queueID: action.queueID,
+                  sample_id: action.index,
+                  queue_id: action.queue_id,
                   parent_id: action.parent_id,
                   parameters: action.parameters,
                   state: 0
@@ -104,11 +153,11 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
                 {
-                  ...state.samples_list[action.index].tasks[action.queueID],
+                  ...state.samples_list[action.index].tasks[action.queue_id],
                   type: action.parameters.Type,
-                  queueID: action.queueID,
+                  queue_id: action.queue_id,
                   parameters: action.parameters
                 } }
               }
@@ -120,7 +169,7 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: omit(state.samples_list[action.index].tasks, [action.queueID])
+                tasks: omit(state.samples_list[action.index].tasks, [action.queue_id])
               }
              } }
           );
@@ -129,7 +178,7 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
-              [action.sampleID]: { ...state.samples_list[action.sampleID],
+              [action.index]: { ...state.samples_list[action.index],
                 tasks: {}
               }
              } }
@@ -140,9 +189,9 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
              { samples_list: { ...state.samples_list,
               [action.index]: { ...state.samples_list[action.index],
-                tasks: { ...state.samples_list[action.index].tasks, [action.queueID]:
+                tasks: { ...state.samples_list[action.index].tasks, [action.queue_id]:
                 {
-                  ...state.samples_list[action.index].tasks[action.queueID],
+                  ...state.samples_list[action.index].tasks[action.queue_id],
                   state: action.state
                 } }
               }
@@ -159,4 +208,3 @@ export default (state = initialState, action) => {
       return state;
   }
 };
-
