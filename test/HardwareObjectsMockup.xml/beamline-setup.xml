@@ -4,6 +4,8 @@
   <object href="/fast-shutter-mockup" role="fast_shutter"/>
   <object href="/transmission-mockup" role="transmission"/>
   <object href="/minidiff-mockup" role="diffractometer"/>
+  <object href="/beamstop" role="beamstop"/>
+  <object href="/safety_shutter" role="safety_shutter"/>
   <object href="/udiff_omega" role="omega_axis"/>
   <object href="/udiff_kappa" role="kappa_axis"/>
   <object href="/udiff_kappaphi" role="kappa_phi_axis"/>

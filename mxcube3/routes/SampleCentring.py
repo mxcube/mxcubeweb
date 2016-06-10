@@ -396,6 +396,8 @@ def moveMotor(motid, newpos):
         :statuscode: 200: no error
         :statuscode: 409: error 
     """
+    motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
+
     if newpos == "stop":
         try:
             motor_hwobj.stop()
@@ -404,7 +406,6 @@ def moveMotor(motid, newpos):
             logging.getLogger('HWR').exception('[SAMPLEVIEW] could not stop motor "%s"' %motid)
             return Response(status=409)
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
         try:
             motor_hwobj.move(float(newpos))
             return Response(status=200)

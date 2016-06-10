@@ -126,17 +126,6 @@ def getBeamInfo():
         resp.status_code = 200
         return resp
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/camera/info", methods=['GET'])
-def get_sample_video_dims():
-    try:
-        resp = jsonify({'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
-            'imageWidth':  mxcube.diffractometer.image_width,
-            'imageHeight':  mxcube.diffractometer.image_height,
-        })
-    except Exception:
-        return Response(status=409)
-
-
 @mxcube.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
 def beamline_get_data_path():
     """
