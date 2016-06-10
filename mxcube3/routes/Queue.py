@@ -295,8 +295,6 @@ def executeEntryWithId(nodeId):
                     childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
                     childEntry._view = Mock()  # associated text deps
                     childEntry._set_background_color = Mock()  # widget color deps
-                    if not childEntry.is_enabled():
-                        childEntry.set_enabled(True)
                     try:
                         if mxcube.queue.queue_hwobj.is_paused():
                             logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
@@ -319,9 +317,7 @@ def executeEntryWithId(nodeId):
                 msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
                 socketio.emit('Queue', msg, namespace='/hwr')
                 mxcube.queue.queue_hwobj.wait_for_pause_event()
-                
-            if not entry.is_enabled():
-                entry.set_enabled(True)
+
             entry._view = Mock()  # associated text deps
             entry._set_background_color = Mock()  # widget color deps
             #parent = int(node.get_parent()._node_id)
@@ -398,7 +394,7 @@ def addSample():
         logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' %(sampleId, nodeId))
         #queue.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
         Utils.save_queue(session)
-        return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
+            return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
         return Response(status=409)
@@ -681,7 +677,9 @@ def addDataCollection(id):
         colNode.acquisitions[0].path_template.directory = params['path']
         colNode.acquisitions[0].path_template.run_number = params['run_number']
         colNode.acquisitions[0].path_template.base_prefix = params['prefix']
-
+        if mxcube.queue.check_for_path_collisions(colNode.acquisitions[0].path_template):
+            logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample: Data Collision')
+            return Response(status=409)
         if params['point'] > 0: # a point id has been added
             for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
                 if cpos['posId'] == int(params['point']):
