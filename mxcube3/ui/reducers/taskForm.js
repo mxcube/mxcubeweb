@@ -46,7 +46,15 @@ export default (state = initialState, action) => {
       }
     case 'ADD_METHOD':
       {
-        return { ...state, defaultParameters: { parameters: action.parameters } };
+        return {
+          ...state,
+          defaultParameters: {
+            parameters: {
+              ...action.parameters,
+              run_number: state.defaultParameters.parameters.run_number + 1
+            }
+          }
+        };
       }
     case 'MOUNT_SAMPLE':
       {
