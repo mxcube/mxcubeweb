@@ -43,7 +43,6 @@ task_signals = { ## missing egyscan, xrf, etc...
 }
 
 motor_signals = {   
-    'positionChanged':              'positionChanged',
     'phiMotorStateChanged':         'phiMotorStateChanged',
     'phiyMotorStateChanged':        'phiyMotorStateChanged',
     'phizMotorStateChanged':        'phizMotorStateChanged',

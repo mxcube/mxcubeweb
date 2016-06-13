@@ -1,0 +1,51 @@
+.motor-input-container{
+    margin-bottom: 1em;
+}
+
+.motor-name{
+    font-size: 1.0em;
+    margin-bottom: 0px;
+    font-weight: bold;
+}
+
+.motor-value{
+    font-size: 1.0em;
+    font-weight: bold;
+    margin-left: 5px;
+    border-bottom:1px dotted #f00;
+    cursor:pointer;
+}
+
+.motor-group{
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 0px;
+}
+
+.motor-button{
+    margin: 15px !important;
+}
+
+.motor-step{
+    font-size: 0.7em;
+}
+
+.motor-moving{
+    background-color: #ffff99 !important;
+    color: transparent;
+    text-shadow: 0 0 0 black;
+}
+
+.motor-ready{
+    background-color: #9BCE7B !important;
+}
+
+.motor-fault{
+    background-color: #ff9999 !important;
+}
+
+.motor-onlimit{
+    background-color: #ff9900 !important;
+}
+

@@ -1,6 +1,6 @@
-
 import React from 'react';
 import MotorInput from './MotorInput';
+import './motor.css';
 
 export default class MotorControl extends React.Component {
 

@@ -3,9 +3,11 @@ import { sendClearQueue, sendRunSample, sendAddSample, sendMountSample } from '.
 import { showTaskForm } from './taskForm';
 import { setLoading, showErrorPanel } from './general';
 
+
 export function doUpdateSamples(samples_list) {
   return { type: 'UPDATE_SAMPLES', samples_list };
 }
+
 
 export function doGetSamplesList() {
   return function (dispatch) {
@@ -22,6 +24,7 @@ export function doGetSamplesList() {
   };
 }
 
+
 export function doAddSample(id, parameters) {
   return function (dispatch) {
     dispatch(sendAddSample(id)).then(
@@ -33,6 +36,7 @@ export function doAddSample(id, parameters) {
   };
 }
 
+
 export function doAddSampleGrid(id, parameters) {
   return {
     type: 'ADD_SAMPLE_TO_GRID',
@@ -42,36 +46,46 @@ export function doAddSampleGrid(id, parameters) {
 }
 
 
-
 export function doSetLoadable(loadable) {
   return { type: 'SET_LOADABLE', loadable };
 }
+
 
 export function doAddTag(tag) {
   return { type: 'ADD_TAG', tag };
 }
 
+
 export function doToggleSelected(index) {
   return { type: 'TOGGLE_SELECTED', index };
 }
 
+
 export function doSelectAll() {
   let selected = true;
-  return { type: 'SELECT_ALL', selected };
+  return { type: 'FLAG_ALL_TO_BE_COLLECTED', selected };
 }
 
 export function doUnselectAll() {
   let selected = false;
-  return { type: 'UNSELECT_ALL', selected };
+  return { type: 'UNFLAG_ALL_TO_BE_COLLECTED', selected };
 }
+
+
+export function doSelectRange(keys) {
+  return {type: 'SELECT_RANGE', keys};
+}
+
 
 export function doFilter(filter_text) {
   return { type: 'FILTER', filter_text };
 }
 
+
 export function doSetSamplesInfo(sample_info_list) {
   return { type: 'SET_SAMPLES_INFO', sample_info_list };
 }
+
 
 export function doSyncSamples(proposal_id) {
   return function (dispatch) {
@@ -93,6 +107,7 @@ export function doAddTask(sample_queueID, sampleID, task, parameters) {
            };
 }
 
+
 export function doAddTaskResult(sampleID, task_queueID, state) {
   return { type: 'ADD_METHOD_RESULTS',
             index: sampleID,
@@ -100,6 +115,7 @@ export function doAddTaskResult(sampleID, task_queueID, state) {
             state: state
             };
 }
+
 
 export function sendManualMount(manual) {
   return function (dispatch) {
@@ -125,6 +141,7 @@ export function sendManualMount(manual) {
   };
 }
 
+
 export function doSetManualMount(manual) {
   return { type: 'SET_MANUAL_MOUNT', manual };
 }
@@ -138,6 +155,7 @@ export function doChangeTask(queueID, sampleID, parameters) {
     };
 }
 
+
 export function doRemoveTask(sample_queueID, queueID, sampleID) {
   return { type: 'REMOVE_METHOD',
             index: sampleID,
@@ -145,6 +163,7 @@ export function doRemoveTask(sample_queueID, queueID, sampleID) {
             queueID: queueID
             };
 }
+
 
 export function sendAddSampleTask(queueID, sampleID, parameters, runNow) {
   return function (dispatch) {
@@ -169,6 +188,7 @@ export function sendAddSampleTask(queueID, sampleID, parameters, runNow) {
     });
   };
 }
+
 
 export function sendAddSampleAndTask(sampleID, parameters) {
   return function (dispatch) {
@@ -222,4 +242,50 @@ export function sendDeleteSampleTask(parent_id, queueID, sampleID) {
       }
     });
   };
+}
+
+
+export function doReorderSample(sampleOrder, key, targetPos){
+  let newSampleOrder = new Map(sampleOrder);
+  let sourcePos = sampleOrder.get(key);
+  let tempKey;
+
+  for (let [key, pos] of sampleOrder.entries()) {
+    if (pos === targetPos) {
+      tempKey = key;
+      break;
+    }
+  }
+
+  // Shift samples between the old and new position one step
+  for (let [key, pos] of sampleOrder.entries()) {
+    if (sourcePos < targetPos) {
+      if ((sourcePos < pos) && (pos <= targetPos)) {
+        newSampleOrder.set(key, pos - 1);
+      }
+    } else if (sourcePos > targetPos) {
+      if ((sourcePos > pos) && (pos >= targetPos)) {
+        newSampleOrder.set(key, pos + 1);
+      }
+    }
+  }
+
+  newSampleOrder.set(key, targetPos);
+
+  return { type: 'REORDER_SAMPLE', sampleOrder: newSampleOrder };
+}
+
+
+export function toggleMoveable(key) {
+  return { type: 'TOGGLE_MOVEABLE_SAMPLE', key: key };
+}
+
+
+export function toggleToBeCollected(key) {
+  return { type: 'TOGGLE_TO_BE_COLLECTED', key: key };
+}
+
+
+export function doPickSelected() {
+  return { type: 'PICK_SELECTED_SAMPLES'};
 }
