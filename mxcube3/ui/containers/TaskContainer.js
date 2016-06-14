@@ -6,11 +6,13 @@ import DataCollection from '../components/Tasks/DataCollection';
 import AddSample from '../components/Tasks/AddSample';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 import { sendCurrentPhase } from '../actions/sampleview';
-import { sendAddSampleTask,
-	 sendChangeSampleTask,
-	 sendAddSampleAndTask,
-	 doAddSample
-       } from '../actions/SamplesGrid';
+
+import {
+  sendAddSampleTaskRequest, 
+  sendUpdateSampleTaskRequest, 
+  sendAddSampleAndTaskRequest, 
+  addSample
+} from '../actions/SamplesGrid';
 
 class TaskContainer extends React.Component {
 
@@ -49,7 +51,7 @@ class TaskContainer extends React.Component {
         <AddSample
           hide={this.props.hideTaskParametersForm}
           show={this.props.showForm === 'AddSample'}
-          add={this.props.doAddSample}
+          add={this.props.addSample}
           id={this.props.manualMountID}
           phase={this.props.currentPhase}
           setPhase={this.props.sendCurrentPhase}
@@ -79,10 +81,10 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-    addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
-    addTask: bindActionCreators(sendAddSampleTask, dispatch),
-    changeTask: bindActionCreators(sendChangeSampleTask, dispatch),
-    doAddSample: bindActionCreators(doAddSample, dispatch),
+    addSampleAndTask: bindActionCreators(sendAddSampleAndTaskRequest, dispatch),
+    addTask: bindActionCreators(sendAddSampleTaskRequest, dispatch),
+    changeTask: bindActionCreators(sendUpdateSampleTaskRequest, dispatch),
+    addSample: bindActionCreators(addSample, dispatch),
     sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
   };
 }

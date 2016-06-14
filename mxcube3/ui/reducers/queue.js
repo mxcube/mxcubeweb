@@ -63,8 +63,8 @@ export default (state = initialState, action) => {
         }
       );
 
-         // Removing the task from the queue
-    case 'REMOVE_METHOD':
+    // Removing the task from the queue
+    case 'REMOVE_TASK':
       return Object.assign({}, state,
         {
           queue: {

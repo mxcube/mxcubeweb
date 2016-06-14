@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { doUpdateSamples } from './SamplesGrid';
+import { updateSampleListAction  } from './SamplesGrid';
 
 export function addSample(sampleID, queueID) {
   return {
@@ -182,7 +182,7 @@ export function sendClearQueue() {
       }
     }).then(() => {
       dispatch(clearAll());
-      dispatch(doUpdateSamples({}));
+      dispatch(updateSampleListAction({}));
     });
   };
 }

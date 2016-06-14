@@ -4,19 +4,19 @@ import { showTaskForm } from './taskForm';
 import { setLoading, showErrorPanel } from './general';
 
 
-export function doUpdateSamples(samples_list) {
-  return { type: 'UPDATE_SAMPLES', samples_list };
+export function updateSampleListAction(sampleList) {
+  return { type: 'UPDATE_SAMPLE_LIST', sampleList };
 }
 
 
-export function doGetSamplesList() {
+export function sendGetSampleListRequest() {
   return function (dispatch) {
     dispatch(setLoading(true));
     fetch('mxcube/api/v0.1/sample_changer/samples_list', { credentials: 'include' })
             .then(response => response.json())
             .then(json => {
               dispatch(setLoading(false));
-              dispatch(doUpdateSamples(json));
+              dispatch(updateSampleListAction(json));
             }, () => {
               dispatch(setLoading(false));
               dispatch(showErrorPanel(true, 'Could not get samples list'));
@@ -25,114 +25,95 @@ export function doGetSamplesList() {
 }
 
 
-export function doAddSample(id, parameters) {
+export function addSampleToGridAction(id, parameters) {
+  return { type: 'ADD_SAMPLE_TO_GRID', id, data: parameters };
+}
+
+
+export function addSample(id, parameters) {
   return function (dispatch) {
     dispatch(sendAddSample(id)).then(
-            queueID => {
-              dispatch(sendMountSample(queueID));
-            }
-        );
-    dispatch(doAddSampleGrid(id, parameters));
+      queueID => {
+        dispatch(sendMountSample(queueID));
+      }
+    );
+    dispatch(addSampleToGridAction(id, parameters));
   };
 }
 
 
-export function doAddSampleGrid(id, parameters) {
-  return {
-    type: 'ADD_SAMPLE_TO_GRID',
-    id :id,
-    data: parameters
-  };
+export function pickAllAction(picked) {
+  return { type: 'PICK_ALL_SAMPLES', picked };
 }
 
 
-export function doSetLoadable(loadable) {
-  return { type: 'SET_LOADABLE', loadable };
+export function selectAction(indices) {
+  return { type: 'SELECT_SAMPLES', indices };
 }
 
 
-export function doAddTag(tag) {
-  return { type: 'ADD_TAG', tag };
+export function filterAction(filterText) {
+  return { type: 'FILTER_SAMPLE_LIST', filterText };
 }
 
 
-export function doToggleSelected(index) {
-  return { type: 'TOGGLE_SELECTED', index };
+export function setSamplesInfoAction(sampleInfoList) {
+  return { type: 'SET_SAMPLES_INFO', sampleInfoList };
 }
 
 
-export function doSelectAll() {
-  let selected = true;
-  return { type: 'FLAG_ALL_TO_BE_COLLECTED', selected };
-}
-
-export function doUnselectAll() {
-  let selected = false;
-  return { type: 'UNFLAG_ALL_TO_BE_COLLECTED', selected };
-}
-
-
-export function doSelectRange(keys) {
-  return {type: 'SELECT_RANGE', keys};
-}
-
-
-export function doFilter(filter_text) {
-  return { type: 'FILTER', filter_text };
-}
-
-
-export function doSetSamplesInfo(sample_info_list) {
-  return { type: 'SET_SAMPLES_INFO', sample_info_list };
-}
-
-
-export function doSyncSamples(proposal_id) {
+export function sendSyncSamplesRequest(proposalId) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/samples/' + proposal_id, { credentials: 'include' })
+    fetch(`mxcube/api/v0.1/samples/${proposalId}`, { credentials: 'include' })
             .then(response => response.json())
             .then(json => {
-              dispatch(doSetSamplesInfo(json.samples_info));
+              dispatch(setSamplesInfoAction(json.samples_info));
             });
   };
 }
 
-export function doAddTask(sample_queueID, sampleID, task, parameters) {
-  return { type: 'ADD_METHOD',
-            task_type: task.Type,
-            index: sampleID,
-            parent_id: sample_queueID,
-            queueID: task.QueueId,
-            parameters: parameters
-           };
+
+export function addTaskAction(sampleQueueID, sampleID, task, parameters) {
+  return { type: 'ADD_TASK',
+           taskType: task.Type,
+           index: sampleID,
+           parentID: sampleQueueID,
+           queueID: task.QueueId,
+           parameters
+         };
 }
 
 
-export function doAddTaskResult(sampleID, task_queueID, state) {
-  return { type: 'ADD_METHOD_RESULTS',
+export function addTaskResultAction(sampleID, taskQueueID, state) {
+  return { type: 'ADD_TASK_RESULT',
             index: sampleID,
-            queueID: task_queueID,
-            state: state
-            };
+            queueID: taskQueueID,
+            state
+         };
 }
 
 
-export function sendManualMount(manual) {
+export function setManualMountAction(manual) {
+  return { type: 'SET_MANUAL_MOUNT', manual };
+}
+
+
+export function sendManualMountRequest(manual) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/diffractometer/usesc', {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ 'use_sc': !manual })
+      body: JSON.stringify({ use_sc: !manual })
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Could not toogle manual mode'));
       } else {
         dispatch(sendClearQueue());
-        dispatch(doSetManualMount(manual));
+        dispatch(setManualMountAction(manual));
         if (manual) {
           dispatch(showTaskForm('AddSample'));
         }
@@ -142,36 +123,31 @@ export function sendManualMount(manual) {
 }
 
 
-export function doSetManualMount(manual) {
-  return { type: 'SET_MANUAL_MOUNT', manual };
+export function updateTaskAction(queueID, sampleID, parameters) {
+  return { type: 'UPDATE_TASK',
+           index: sampleID,
+           queueID,
+           parameters
+         };
 }
 
 
-export function doChangeTask(queueID, sampleID, parameters) {
-  return { type: 'CHANGE_METHOD',
-            index: sampleID,
-            queueID: queueID,
-            parameters: parameters
-    };
+export function removeTaskAction(sampleQueueID, queueID, sampleID) {
+  return { type: 'REMOVE_TASK',
+           index: sampleID,
+           parentID: sampleQueueID,
+           queueID
+         };
 }
 
 
-export function doRemoveTask(sample_queueID, queueID, sampleID) {
-  return { type: 'REMOVE_METHOD',
-            index: sampleID,
-            parent_id: sample_queueID,
-            queueID: queueID
-            };
-}
-
-
-export function sendAddSampleTask(queueID, sampleID, parameters, runNow) {
+export function sendAddSampleTaskRequest(queueID, sampleID, parameters, runNow) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queueID, {
+    fetch(`mxcube/api/v0.1/queue/${queueID}`, {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
       body: JSON.stringify(parameters)
@@ -180,112 +156,82 @@ export function sendAddSampleTask(queueID, sampleID, parameters, runNow) {
         throw new Error('Could not add sample task, server refused');
       }
       return response.json();
-    }).then(function (json) {
+    }).then((json) => {
       if (runNow) {
         dispatch(sendRunSample(json.QueueId));
       }
-      dispatch(doAddTask(queueID, sampleID, json, parameters));
+      dispatch(addTaskAction(queueID, sampleID, json, parameters));
     });
   };
 }
 
 
-export function sendAddSampleAndTask(sampleID, parameters) {
+export function sendAddSampleAndTaskRequest(sampleID, parameters) {
   return function (dispatch) {
     dispatch(sendAddSample(sampleID)).then(
             queueID => {
-              dispatch(sendAddSampleTask(queueID, sampleID, parameters));
+              dispatch(sendAddSampleTaskRequest(queueID, sampleID, parameters));
             });
   };
 }
 
-export function sendChangeSampleTask(task_queueID, sample_queueID, sampleID, parameters, runNow) {
+
+export function sendUpdateSampleTaskRequest(taskQueueID, sampleQueueID, sampleID, params, runNow) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + sample_queueID + '/' + task_queueID, {
+    fetch(`mxcube/api/v0.1/queue/${sampleQueueID}/${taskQueueID}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify(parameters)
+      body: JSON.stringify(params)
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Could not change sample task, server refused');
       }
       return response.json();
-    }).then(function () {
+    }).then(() => {
       if (runNow) {
-        dispatch(sendRunSample(task_queueID));
+        dispatch(sendRunSample(taskQueueID));
       }
-      dispatch(doChangeTask(task_queueID, sampleID, parameters));
+      dispatch(updateTaskAction(taskQueueID, sampleID, params));
     });
   };
 }
 
 
-export function sendDeleteSampleTask(parent_id, queueID, sampleID) {
+export function sendDeleteSampleTask(parentID, queueID, sampleID) {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/queue/' + queueID, {
+    fetch(`mxcube/api/v0.1/queue/${queueID}`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
 
-    }).then(function (response) {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to remove sample');
       } else {
-        dispatch(doRemoveTask(parent_id, queueID, sampleID));
+        dispatch(removeTaskAction(parentID, queueID, sampleID));
       }
     });
   };
 }
 
 
-export function doReorderSample(sampleOrder, key, targetPos){
-  let newSampleOrder = new Map(sampleOrder);
-  let sourcePos = sampleOrder.get(key);
-  let tempKey;
-
-  for (let [key, pos] of sampleOrder.entries()) {
-    if (pos === targetPos) {
-      tempKey = key;
-      break;
-    }
-  }
-
-  // Shift samples between the old and new position one step
-  for (let [key, pos] of sampleOrder.entries()) {
-    if (sourcePos < targetPos) {
-      if ((sourcePos < pos) && (pos <= targetPos)) {
-        newSampleOrder.set(key, pos - 1);
-      }
-    } else if (sourcePos > targetPos) {
-      if ((sourcePos > pos) && (pos >= targetPos)) {
-        newSampleOrder.set(key, pos + 1);
-      }
-    }
-  }
-
-  newSampleOrder.set(key, targetPos);
-
-  return { type: 'REORDER_SAMPLE', sampleOrder: newSampleOrder };
+export function setSampleOrderAction(newSampleOrder) {
+  return { type: 'SET_SAMPLE_ORDER', order: newSampleOrder };
 }
 
 
-export function toggleMoveable(key) {
-  return { type: 'TOGGLE_MOVEABLE_SAMPLE', key: key };
+export function toggleMovableAction(key) {
+  return { type: 'TOGGLE_MOVABLE_SAMPLE', key };
 }
 
 
-export function toggleToBeCollected(key) {
-  return { type: 'TOGGLE_TO_BE_COLLECTED', key: key };
-}
-
-
-export function doPickSelected() {
+export function pickSelectedAction() {
   return { type: 'PICK_SELECTED_SAMPLES'};
 }

@@ -1,22 +1,39 @@
 import React from 'react';
-
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { StickyContainer, Sticky } from 'react-sticky';
 
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Input, Button, Glyphicon, ButtonToolbar, SplitButton, MenuItem,
-         PanelGroup, Panel, ButtonGroup } from 'react-bootstrap';
-import { doGetSamplesList, doUpdateSamples, doToggleSelected, doSelectAll, doFilter, doSyncSamples,
-         sendManualMount, doUnselectAll, sendDeleteSampleTask, toggleMoveable, doReorderSample,
-         toggleToBeCollected, doSelectRange, doPickSelected } from '../actions/SamplesGrid';
+import {
+  Input,
+  Button,
+  Glyphicon,
+  ButtonToolbar,
+  SplitButton,
+  MenuItem,
+  ButtonGroup
+} from 'react-bootstrap';
+
+import {
+  sendGetSampleListRequest,
+  toggleSelectedAction,
+  pickAllAction,
+  filterAction,
+  sendSyncSamplesRequest,
+  sendManualMountRequest,
+  sendDeleteSampleTask,
+  toggleMovableAction,
+  setSampleOrderAction,
+  selectAction,
+  pickSelectedAction
+} from '../actions/SamplesGrid';
+
 
 import { sendAddSample } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
+import SampleTaskButtons from '../components/SampleGrid/TaskButtons';
 
 import SampleGrid from '../components/SampleGrid/SampleGrid';
-import SampleTaskButtons from '../components/SampleGrid/TaskButtons';
 import { SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
-
 import '../components/SampleGrid/SampleGrid.css';
 
 
@@ -39,6 +56,7 @@ class SampleGridContainer extends React.Component {
         this.props.addSampleToQueue(key);
       }
     });
+
     this.props.unselectAll();
   }
 
@@ -57,7 +75,7 @@ class SampleGridContainer extends React.Component {
 
 
   manualMount() {
-    this.props.sendManualMount(!this.props.manualMount);
+    this.props.setManualMount(!this.props.manualMount);
   }
 
 
@@ -79,9 +97,8 @@ class SampleGridContainer extends React.Component {
     // Each sample item is 190px wide, calculate maximum number of items for each row
     const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
 
-    // Caculating the actual grid size, space between sample items is 4px;
+    // Caculating the actual grid size, with space between sample items;
     const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
-
 
     return actualGridWidth;
   }
@@ -96,6 +113,7 @@ class SampleGridContainer extends React.Component {
    const panelHeader = (
      <div> Pipline mode <Glyphicon className="pull-right" glyph="chevron-down" /></div>
    );
+
 
    return (
        <StickyContainer>
@@ -174,21 +192,20 @@ class SampleGridContainer extends React.Component {
          <div className="row">
            <div className="col-xs-12">
              <SampleGrid
-               samples_list={this.props.samplesList}
-               sampleOrder={this.props.sampleOrder}
-               reorderSample={this.props.reorderSample}
+               sampleList={this.props.sampleList}
+               order={this.props.order}
+               setSampleOrder={this.props.setSampleOrderAction}
                selected={this.props.selected}
                toggleSelected={this.props.toggleSelected}
-               filter_text={this.props.filterText}
+               filterText={this.props.filterText}
                queue={this.props.queue}
                showTaskParametersForm={this.props.showTaskParametersForm}
                deleteTask={this.props.deleteTask}
-               toggleMoveable={this.props.toggleMoveable}
+               toggleMovable={this.props.toggleMovableAction}
                moving={this.props.moving}
                gridWidth={gridWidth}
-               samplesToBeCollected={this.props.samplesToBeCollected}
-               toggleToBeCollected={this.props.toggleToBeCollected}
-               selectRange={this.props.selectRange}
+               picked={this.props.picked}
+               select={this.props.select}
                pickSelected={this.props.pickSelected}
              />
            </div>
@@ -203,35 +220,33 @@ function mapStateToProps(state) {
     queue: state.queue,
     selected: state.samples_grid.selected,
     moving: state.samples_grid.moving,
-    samplesList: state.samples_grid.samples_list,
+    sampleList: state.samples_grid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
     manualMount: state.samples_grid.manualMount.set,
-    filterText: state.samples_grid.filter_text,
-    sampleOrder: state.samples_grid.sampleOrder,
-    samplesToBeCollected: state.samples_grid.samplesToBeCollected
+    filterText: state.samples_grid.filterText,
+    order: state.samples_grid.order,
+    picked: state.samples_grid.picked
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    getSamples: () => dispatch(doGetSamplesList()),
-    reorderSample: (sampleOrder, key, newPos) => dispatch(doReorderSample(sampleOrder, key, newPos)),
-    toggleSelected: (index) => dispatch(doToggleSelected(index)),
-    selectAll: () => dispatch(doSelectAll()),
-    unselectAll: () => dispatch(doUnselectAll()),
-    filter: (filterText) => dispatch(doFilter(filterText)),
-    syncSamples: (proposalId) => dispatch(doSyncSamples(proposalId)),
+    getSamples: () => dispatch(sendGetSampleListRequest()),
+    setSampleOrderAction: (order, key, newPos) => dispatch(setSampleOrderAction(order, key, newPos)),
+    toggleSelected: (index) => dispatch(toggleSelectedAction(index)),
+    selectAll: () => dispatch(pickAllAction(true)),
+    unselectAll: () => dispatch(pickAllAction(false)),
+    filter: (filterText) => dispatch(filterAction(filterText)),
+    syncSamples: (proposalId) => dispatch(sendSyncSamplesRequest(proposalId)),
     addSampleToQueue: (id) => dispatch(sendAddSample(id)),
-    sendManualMount: (manual) => dispatch(sendManualMount(manual)),
-    updateSamples: (samplesList) => dispatch(doUpdateSamples(samplesList)),
+    setManualMount: (manual) => dispatch(sendManualMountRequest(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: (parentId, queueId, sampleId) => {
       dispatch(sendDeleteSampleTask(parentId, queueId, sampleId));
     },
-    toggleMoveable: (key) => dispatch(toggleMoveable(key)),
-    toggleToBeCollected: (key) => dispatch(toggleToBeCollected(key)),
-    selectRange: (keys) => dispatch(doSelectRange(keys)),
-    pickSelected: () => dispatch(doPickSelected())
+    toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
+    select: (keys) => dispatch(selectAction(keys)),
+    pickSelected: () => dispatch(pickSelectedAction())
   };
 }
 
