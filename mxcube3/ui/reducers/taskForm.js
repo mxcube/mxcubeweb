@@ -20,7 +20,6 @@ const initialState = {
       shutterless: true,
       prefix: 'data',
       run_number: 1,
-      path: 'username',
       first_image: 1,
       inverse_beam: false,
       detector_mode: '0',
@@ -52,6 +51,17 @@ export default (state = initialState, action) => {
             parameters: {
               ...action.parameters,
               run_number: state.defaultParameters.parameters.run_number + 1
+            }
+          }
+        };
+      }
+    case 'CHANGE_METHOD':
+      {
+        return {
+          ...state,
+          defaultParameters: {
+            parameters: {
+              ...action.parameters,
             }
           }
         };
