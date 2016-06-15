@@ -9,7 +9,7 @@ def connect():
     # to the server, but we don't need to do anything more
     pass
 
-collectSignals = ['collectStarted','collectEnded', 'testSignal', 'collectReady', 'warning']
+collectSignals = ['collectStarted','collectEnded', 'testSignal', 'warning']
 collectOscSignals = [ 'collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
 
 queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] #'centringAllowed',
@@ -37,7 +37,6 @@ task_signals = { ## missing egyscan, xrf, etc...
     'collectOscillationFailed':     'Data collecion oscillacion has failed', 
     'collectOscillationFinished':   'Data collecion oscillacion has finished',
     'collectEnded':                 'Data collecion has finished',
-    'collectReady':                 'Data collecion ready',
     'warning':                      'Data collection finished with a warning',
     'collect_finished':             'Data collecion has finished'
 }
