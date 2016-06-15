@@ -51,7 +51,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="%"
                       data={this.props.data.transmission}
                       onSave={this.onSaveHandler}
-		      onCancel={this.onCancelHandler}
+                      onCancel={this.onCancelHandler}
                     />
                   </td>
                   <td>
@@ -59,11 +59,11 @@ class BeamlineSetupContainer extends React.Component {
                       ref="resolution"
                       name="Resolution"
                       pkey="resolution"
-		      placement="left"
+                      placement="left"
                       suffix="&Aring;"
                       data={this.props.data.resolution}
                       onSave={this.onSaveHandler}
-		      onCancel={this.onCancelHandler}
+                      onCancel={this.onCancelHandler}
                     />
                   </td>
                 </tr>
@@ -76,7 +76,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="keV"
                       data={this.props.data.energy}
                       onSave={this.onSaveHandler}
-		      onCancel={this.onCancelHandler}
+                      onCancel={this.onCancelHandler}
                     />
                   </td>
                   <td>
@@ -87,10 +87,10 @@ class BeamlineSetupContainer extends React.Component {
                     <InOutSwitch
                       onText="Open"
                       offText="Close"
-		      labelText="Fast Shutter"
-		      pkey="fast_shutter"
+                      labelText="Fast Shutter"
+                      pkey="fast_shutter"
                       data={this.props.data.fast_shutter}
-		      onSave={this.onSaveHandler}
+                      onSave={this.onSaveHandler}
                     />
                   </td>
                   <td>
@@ -98,9 +98,9 @@ class BeamlineSetupContainer extends React.Component {
                       onText="Open"
                       offText="Close"
                       labelText="Safety Shutter"
-		      pkey="safety_shutter"
+                      pkey="safety_shutter"
                       data={this.props.data.safety_shutter}
-		      onSave={this.onSaveHandler}
+                      onSave={this.onSaveHandler}
                     />
                   </td>
                 </tr>
@@ -110,9 +110,9 @@ class BeamlineSetupContainer extends React.Component {
                       onText="In"
                       offText="Out"
                       labelText="Beamstop"
-		      pkey="beamstop"
+                      pkey="beamstop"
                       data={this.props.data.beamstop}
-		      onSave={this.onSaveHandler}
+                      onSave={this.onSaveHandler}
                     />
                   </td>
                   <td>
@@ -120,9 +120,9 @@ class BeamlineSetupContainer extends React.Component {
                       onText="In"
                       offText="Out"
                       labelText="Capillary"
-		      pkey="capillary"
+                      pkey="capillary"
                       data={this.props.data.capillary}
-		      onSave={this.onSaveHandler}
+                      onSave={this.onSaveHandler}
                     />
                   </td>
                 </tr>
