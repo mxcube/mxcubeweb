@@ -52,7 +52,7 @@ export default (state = initialState, action) => {
       );
 
         // Adding the new task to the queue
-    case 'ADD_METHOD':
+    case 'ADD_TASK':
       return Object.assign({}, state,
         {
           queue: {

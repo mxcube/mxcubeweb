@@ -43,7 +43,7 @@ export default (state = initialState, action) => {
           pointId: action.point_id
         };
       }
-    case 'ADD_METHOD':
+    case 'ADD_TASK':
       {
         return {
           ...state,
@@ -55,7 +55,7 @@ export default (state = initialState, action) => {
           }
         };
       }
-    case 'CHANGE_METHOD':
+    case 'UPDATE_TASK':
       {
         return {
           ...state,
