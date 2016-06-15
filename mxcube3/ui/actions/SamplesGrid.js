@@ -233,5 +233,5 @@ export function toggleMovableAction(key) {
 
 
 export function pickSelectedAction() {
-  return { type: 'PICK_SELECTED_SAMPLES'};
+  return { type: 'PICK_SELECTED_SAMPLES' };
 }

@@ -83,16 +83,16 @@ class SampleGridContainer extends React.Component {
     this.props.filter(option.target.value);
   }
 
-  
+
   calcGridWidth() {
     // We know that the side menu is fixed width 65px and that the padding from
     // bootstrap is 15px so content starts at 80px;
 
     // Get the viewportWidth
-    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 
     // The full content width for this media (not forgeting the padding to the right 15px)
-    const fullContentWidth = viewportWidth - 80 - 15
+    const fullContentWidth = viewportWidth - 80 - 15;
 
     // Each sample item is 190px wide, calculate maximum number of items for each row
     const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
@@ -102,82 +102,81 @@ class SampleGridContainer extends React.Component {
 
     return actualGridWidth;
   }
-  
 
-  render() {   
+
+  render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
       <Button><Glyphicon glyph="search" /></Button>
     );
 
-   const panelHeader = (
-     <div> Pipline mode <Glyphicon className="pull-right" glyph="chevron-down" /></div>
-   );
-
-
-   return (
-       <StickyContainer>
-         <div className="row row-centered">
-           <div className="col-centered" >
-             <ButtonToolbar>
-               <SplitButton
-                 bsStyle="primary"
-                 title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
-                 onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples}
-                 onSelect={this.manualMount}
-                 id="split-button-sample-changer-selection"
-               >
-                 <MenuItem eventKey="1">
-                   {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
-                 </MenuItem>
-               </SplitButton>
-               <Button
-                 className="btn-primary"
-                 disabled={this.props.manualMount}
-                 onClick={this.syncSamples}
-               >
-                 <Glyphicon glyph="refresh" /> Sync. ISPyB
-               </Button>
-             </ButtonToolbar>
-           </div>
-         </div>
-         <Sticky className="samples-grid-header" style={{width: gridWidth}} stickyStyle={{padding:'10px'}}>
-           <div className="row">
-             <div className="col-xs-5">
-               <div className="form-inline">
-                 <Input
-                   type="text"
-                   ref="filter_input"
-                   defaultValue={this.props.filterText}
-                   label="Filter:"
-                   buttonAfter={innerSearchIcon}
-                   onChange={this.filterSampleGrid}
-                 />
-                 <span style={{'margin-left': '10px'}}>Pick: </span>
-                 <ButtonGroup className="form-group">
-                   <Button
-                     onClick={this.props.selectAll}
-                     disabled={this.props.manualMount}
-                   >
-                     All
-                   </Button>
-                   <Button
-                     onClick={this.props.pickSelected}
-                     disabled={this.props.manualMount}
-                   >
-                     Selected
-                   </Button>
-                   <Button
-                     onClick={this.props.unselectAll}
-                     disabled={this.props.manualMount}
-                   >
-                     None
-                   </Button>
-                 </ButtonGroup>
-               </div>      
+    return (
+      <StickyContainer>
+        <div className="row row-centered">
+          <div className="col-centered" >
+            <ButtonToolbar>
+              <SplitButton
+                bsStyle="primary"
+                title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
+                onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples}
+                onSelect={this.manualMount}
+                id="split-button-sample-changer-selection"
+              >
+                <MenuItem eventKey="1">
+                  {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
+                </MenuItem>
+              </SplitButton>
+              <Button
+                className="btn-primary"
+                disabled={this.props.manualMount}
+                onClick={this.syncSamples}
+              >
+                <Glyphicon glyph="refresh" /> Sync. ISPyB
+              </Button>
+            </ButtonToolbar>
+          </div>
+        </div>
+        <Sticky
+          className="samples-grid-header"
+          style={{ width: gridWidth }}
+          stickyStyle={{ padding: '10px' }}
+        >
+          <div className="row">
+            <div className="col-xs-5">
+              <div className="form-inline">
+                <Input
+                  type="text"
+                  ref="filter_input"
+                  defaultValue={this.props.filterText}
+                  label="Filter:"
+                  buttonAfter={innerSearchIcon}
+                  onChange={this.filterSampleGrid}
+                />
+                <span style={{ 'margin-left': '10px' }}>Pick: </span>
+                <ButtonGroup className="form-group">
+                  <Button
+                    onClick={this.props.selectAll}
+                    disabled={this.props.manualMount}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    onClick={this.props.pickSelected}
+                    disabled={this.props.manualMount}
+                  >
+                    Selected
+                  </Button>
+                  <Button
+                    onClick={this.props.unselectAll}
+                    disabled={this.props.manualMount}
+                  >
+                    None
+                  </Button>
+                </ButtonGroup>
+              </div>
              </div>
              <div className="col-xs-2 pull-right">
-               <SampleTaskButtons 
+               <SampleTaskButtons
                  defaultParameters={this.props.defaultParameters}
                  showForm={this.props.showTaskParametersForm}
                  selected={this.props.selected}
@@ -186,31 +185,31 @@ class SampleGridContainer extends React.Component {
                  Collect <Glyphicon glyph="chevron-right" />
                </Button>
              </div>
-           </div>
-         </Sticky>
-         <br />
-         <div className="row">
-           <div className="col-xs-12">
-             <SampleGrid
-               sampleList={this.props.sampleList}
-               order={this.props.order}
-               setSampleOrder={this.props.setSampleOrderAction}
-               selected={this.props.selected}
-               toggleSelected={this.props.toggleSelected}
-               filterText={this.props.filterText}
-               queue={this.props.queue}
-               showTaskParametersForm={this.props.showTaskParametersForm}
-               deleteTask={this.props.deleteTask}
-               toggleMovable={this.props.toggleMovableAction}
-               moving={this.props.moving}
-               gridWidth={gridWidth}
-               picked={this.props.picked}
-               select={this.props.select}
-               pickSelected={this.props.pickSelected}
-             />
-           </div>
-         </div>
-     </StickyContainer>);
+          </div>
+        </Sticky>
+        <br />
+        <div className="row">
+          <div className="col-xs-12">
+            <SampleGrid
+              sampleList={this.props.sampleList}
+              order={this.props.order}
+              setSampleOrder={this.props.setSampleOrderAction}
+              selected={this.props.selected}
+              toggleSelected={this.props.toggleSelected}
+              filterText={this.props.filterText}
+              queue={this.props.queue}
+              showTaskParametersForm={this.props.showTaskParametersForm}
+              deleteTask={this.props.deleteTask}
+              toggleMovable={this.props.toggleMovableAction}
+              moving={this.props.moving}
+              gridWidth={gridWidth}
+              picked={this.props.picked}
+              select={this.props.select}
+              pickSelected={this.props.pickSelected}
+            />
+          </div>
+        </div>
+      </StickyContainer>);
   }
 }
 
@@ -232,7 +231,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleListRequest()),
-    setSampleOrderAction: (order, key, newPos) => dispatch(setSampleOrderAction(order, key, newPos)),
+    setSampleOrderAction: (order, key, pos) => dispatch(setSampleOrderAction(order, key, pos)),
     toggleSelected: (index) => dispatch(toggleSelectedAction(index)),
     selectAll: () => dispatch(pickAllAction(true)),
     unselectAll: () => dispatch(pickAllAction(false)),
