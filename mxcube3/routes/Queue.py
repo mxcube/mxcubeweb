@@ -672,7 +672,7 @@ def addDataCollection(id):
         task1Entry.set_data_model(taskNode1)
 
         colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        colNode.acquisitions[0].path_template.directory = mxcube.session.get_base_image_directory() + '/' + params['path']
+        colNode.acquisitions[0].path_template.directory = os.path.join(mxcube.session.get_base_image_directory(), params['path'])
         colNode.acquisitions[0].path_template.run_number = params['run_number']
         colNode.acquisitions[0].path_template.base_prefix = params['prefix']
         if mxcube.queue.check_for_path_collisions(colNode.acquisitions[0].path_template):
