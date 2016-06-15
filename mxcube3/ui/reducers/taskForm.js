@@ -20,7 +20,6 @@ const initialState = {
       shutterless: true,
       prefix: 'data',
       run_number: 1,
-      path: 'username',
       first_image: 1,
       inverse_beam: false,
       detector_mode: '0',
@@ -44,9 +43,36 @@ export default (state = initialState, action) => {
           pointId: action.point_id
         };
       }
-    case 'HIDE_FORM':
+    case 'ADD_METHOD':
+      {
+        return {
+          ...state,
+          defaultParameters: {
+            parameters: {
+              ...action.parameters,
+              run_number: state.defaultParameters.parameters.run_number + 1
+            }
+          }
+        };
+      }
+    case 'CHANGE_METHOD':
+      {
+        return {
+          ...state,
+          defaultParameters: {
+            parameters: {
+              ...action.parameters,
+            }
+          }
+        };
+      }
+    case 'MOUNT_SAMPLE':
       {
         return initialState;
+      }
+    case 'HIDE_FORM':
+      {
+        return { ...state, showForm: '' };
       }
     case 'SIGNOUT':
       {

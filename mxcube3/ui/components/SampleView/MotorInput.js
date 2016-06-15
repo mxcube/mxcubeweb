@@ -2,6 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 import { Button } from 'react-bootstrap';
 import PopInput from '../PopInput/PopInput';
+import './motor.css';
 
 export default class MotorInput extends React.Component {
 
@@ -46,10 +47,10 @@ export default class MotorInput extends React.Component {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
     let inputCSS = cx('form-control input-sm', {
-      active: this.props.state === 4,
-      success: this.props.state === 2,
-      error: this.props.state === 3,
-      warning: this.props.state === 1
+      'motor-moving': this.props.state === 4 || this.props.state === 3,
+      'motor-ready': this.props.state === 2,
+      'motor-fault': this.props.state <= 1,
+      'motor-onlimit': this.props.state === 5
     });
 
     let data = { state: 'IMMEDIATE', value: step };
@@ -65,6 +66,7 @@ export default class MotorInput extends React.Component {
                 step={step}
                 defaultValue={valueCropped}
                 name={motorName}
+                disabled={this.props.state === 4 || this.props.state === 3 || this.props.state <= 1}
               />
               {this.props.saveStep ?
                 <span>

@@ -18,16 +18,16 @@ const initialState = {
     Kappa_phiStep: 0.1
   },
   motors: {
-    Focus: { position: 0, Status: 3 },
-    Phi: { position: 0, Status: 3 },
-    PhiY: { position: 0, Status: 3 },
-    PhiZ: { position: 0, Status: 3 },
-    Sampx: { position: 0, Status: 3 },
-    Sampy: { position: 0, Status: 3 },
-    BackLight: { position: 0, Status: 3 },
-    FrontLight: { position: 0, Status: 3 },
-    Kappa: { position: 0, Status: 3 },
-    Kappa_phi: { position: 0, Status: 3 }
+    Focus: { position: 0, Status: 0 },
+    Phi: { position: 0, Status: 0 },
+    PhiY: { position: 0, Status: 0 },
+    PhiZ: { position: 0, Status: 0 },
+    Sampx: { position: 0, Status: 0 },
+    Sampy: { position: 0, Status: 0 },
+    BackLight: { position: 0, Status: 0 },
+    FrontLight: { position: 0, Status: 0 },
+    Kappa: { position: 0, Status: 0 },
+    Kappa_phi: { position: 0, Status: 0 }
   },
   pixelsPerMm: 0,
   imageRatio: 0,
