@@ -57,7 +57,7 @@ export default (state = initialState, action) => {
         {
           queue: {
             ...state.queue,
-            [action.parent_id]: state.queue[action.parent_id].concat(action.queueID)
+            [action.parentID]: state.queue[action.parentID].concat(action.queueID)
           },
           checked: state.checked.concat(action.queueID)
         }
@@ -69,7 +69,7 @@ export default (state = initialState, action) => {
         {
           queue: {
             ...state.queue,
-            [action.parent_id]: without(state.queue[action.parent_id],
+            [action.parentID]: without(state.queue[action.parentID],
             action.queueID)
           },
           checked: without(state.checked, action.queueID)
