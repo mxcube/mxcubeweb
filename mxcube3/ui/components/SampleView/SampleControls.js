@@ -191,7 +191,7 @@ export default class SampleControls extends React.Component {
               motorName="BackLight"
               step="0.1"
               decimalPoints="2"
-              state="2"
+              state={this.props.sampleViewState.motors.BackLight.Status}
             />
 
             <Button
@@ -210,7 +210,7 @@ export default class SampleControls extends React.Component {
               motorName="FrontLight"
               step="0.1"
               decimalPoints="2"
-              state="2"
+              state={this.props.sampleViewState.motors.FrontLight.Status}
             />
           </div>
 

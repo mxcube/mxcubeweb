@@ -35,11 +35,17 @@ export default class ContextMenu extends React.Component {
   showModal(modalName) {
     const { sampleId, defaultParameters, shape, samplesInformation } = this.props;
     const node = samplesInformation[sampleId];
-    let runNumber = 1;
-    if (node.tasks) {
-      runNumber = Object.keys(node.tasks).length + 1;
-    }
-    this.props.showForm(modalName, [sampleId], {parameters: {...defaultParameters.parameters, run_number: runNumber, prefix: `${node.proteinAcronym}-${node.sampleName}`}}, shape.id);
+    this.props.showForm(
+      modalName,
+      [sampleId],
+      { parameters: 
+        { path: node.sampleName,
+          ...defaultParameters.parameters, 
+          prefix: `${node.proteinAcronym}-${node.sampleName}`
+        }
+      },
+      shape.id
+    );
     this.hideContextMenu();
     this.props.sampleActions.showContextMenu(false);
   }
