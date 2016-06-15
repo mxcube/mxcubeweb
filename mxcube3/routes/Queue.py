@@ -301,12 +301,10 @@ def executeEntryWithId(nodeId):
                             msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1} # 1: started
                             socketio.emit('Queue', msg, namespace='/hwr')
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
-
                         mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
-                        #mxcube.queue.lastQueueNode = lastQueueNode
-                        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+                        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
-                        time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
+                        childEntry.set_enabled(False)
                     except Exception:
                         logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
         else:
@@ -329,9 +327,9 @@ def executeEntryWithId(nodeId):
             parent = int(parentNode._node_id)
 
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
-
-            # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+            #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
+            entry.set_enabled(False)
 
         msg = {'Signal': 'QueueStopped','Message': 'Queue execution stopped', 'State':1}
         socketio.emit('Queue', msg, namespace='/hwr')
@@ -394,7 +392,7 @@ def addSample():
         logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' %(sampleId, nodeId))
         #queue.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
         Utils.save_queue(session)
-            return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
+        return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
     except Exception:
         logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
         return Response(status=409)
@@ -674,7 +672,7 @@ def addDataCollection(id):
         task1Entry.set_data_model(taskNode1)
 
         colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        colNode.acquisitions[0].path_template.directory = params['path']
+        colNode.acquisitions[0].path_template.directory = mxcube.session.get_base_image_directory() + '/' + params['path']
         colNode.acquisitions[0].path_template.run_number = params['run_number']
         colNode.acquisitions[0].path_template.base_prefix = params['prefix']
         if mxcube.queue.check_for_path_collisions(colNode.acquisitions[0].path_template):
