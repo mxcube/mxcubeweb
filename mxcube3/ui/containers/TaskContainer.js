@@ -70,10 +70,10 @@ function mapStateToProps(state) {
     sampleIds: state.taskForm.sampleIds,
     pointId: state.taskForm.pointId,
     defaultParameters: state.taskForm.defaultParameters,
-    manualMountID: state.samples_grid.manualMount.id,
+    manualMountID: state.sampleGrid.manualMount.id,
     currentPhase: state.sampleview.currentPhase,
     apertureList: state.sampleview.apertureList,
-    rootPath: state.queue.rootPath,
+    rootPath: state.queue.rootPath
   };
 }
 

@@ -217,14 +217,14 @@ function mapStateToProps(state) {
   return {
     loginData: state.login.data,
     queue: state.queue,
-    selected: state.samples_grid.selected,
-    moving: state.samples_grid.moving,
-    sampleList: state.samples_grid.sampleList,
+    selected: state.sampleGrid.selected,
+    moving: state.sampleGrid.moving,
+    sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
-    manualMount: state.samples_grid.manualMount.set,
-    filterText: state.samples_grid.filterText,
-    order: state.samples_grid.order,
-    picked: state.samples_grid.picked
+    manualMount: state.sampleGrid.manualMount.set,
+    filterText: state.sampleGrid.filterText,
+    order: state.sampleGrid.order,
+    picked: state.sampleGrid.picked
   };
 }
 

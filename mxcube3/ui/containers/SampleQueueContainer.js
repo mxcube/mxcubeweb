@@ -18,11 +18,11 @@ function mapStateToProps(state) {
     queueStatus: state.queue.queueStatus,
     history: state.queue.history,
     queue: state.queue.queue,
-    sampleInformation: state.samples_grid.sampleList,
+    sampleInformation: state.sampleGrid.sampleList,
     checked: state.queue.checked,
     lookup: state.queue.lookup,
     select_all: state.queue.selectAll,
-    mounted: state.samples_grid.manualMount.set,
+    mounted: state.sampleGrid.manualMount.set,
     collapsedSamples: state.queue.collapsedSample
   };
 }

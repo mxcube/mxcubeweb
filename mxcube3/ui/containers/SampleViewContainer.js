@@ -78,7 +78,7 @@ class SampleViewContainer extends Component {
 function mapStateToProps(state) {
   return {
     current: state.queue.current,
-    sampleInformation: state.samples_grid.sampleList,
+    sampleInformation: state.sampleGrid.sampleList,
     sampleViewState: state.sampleview,
     lookup: state.queue.lookup,
     defaultParameters: state.taskForm.defaultParameters
