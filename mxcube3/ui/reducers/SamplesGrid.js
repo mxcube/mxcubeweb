@@ -1,31 +1,71 @@
 import { omit } from 'lodash/object';
 
 
-const initialState = { sampleList: {},
-                       selected: {},
-                       order: new Map(),
-                       picked: {},
-                       moving: {},
-                       manualMount: { set: false, id: 0 },
-                       filterText: '' };
+/**
+*  Initial redux state for SampleGrid,
+*  
+*  sampleList:  Object consisting of sample objects, each sample object have
+*               the following peroperties:
+* 
+*               code        Data Matrix/Barcode of sample
+*               id          Unique id for the sample
+*               location    Location of sample in sample changer
+*               queueOrder  Order of sample in queue
+*
+*  selected:   Object (key, selected), selected indicating if sample with key 
+*              currently is selected
+*
+*  order:      Map (key, order) for each sample. The order map is kept sorted 
+*              (ascending)
+*
+*  picked:     Object (key, picked), picked indicating if sample with key
+*              currently is picked
+*
+*  moving:     Object (key, moving), moving indicating if sample with key is
+*              currently beeing moved
+*
+*  manulMount: Sample with id is manually mounted if set is true
+*
+*  filterText: Current filter text
+*/
+const INITIAL_STATE = { sampleList: {},
+                        selected: {},
+                        order: new Map(),
+                        picked: {},
+                        moving: {},
+                        manualMount: { set: false, id: 0 },
+                        filterText: '' };
 
 
 function initialSampleOrder(sampleList) {
-  const order = new Map();
+  const gridOrder = new Map();
 
   for (const key in sampleList) {
     if (key) {
-      order.set(key, order.size);
+      const order = gridOrder.size;
+      gridOrder.set(key, order);
+      sampleList[key]['queueOrder'] = -1;
     }
   }
 
-  return order;
+  return gridOrder;
 }
 
-export default (state = initialState, action) => {
+
+function togglePicked(keys, state){
+  const picked = Object.assign({}, state.picked);
+
+  // Toggle pick state for each key
+  for (let key of keys) {
+    picked[key] = !picked[key];
+  }
+
+  return picked;
+}
+export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'SIGNOUT': {
-      return Object.assign({}, initialState);
+      return Object.assign({}, INITIAL_STATE);
     }
     case 'UPDATE_SAMPLE_LIST': {
       return Object.assign({}, state, { sampleList: action.sampleList,
@@ -60,27 +100,32 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { selected: selectedItems });
     }
     case 'PICK_SELECTED_SAMPLES': {
-      const picked = Object.assign({}, state.picked);
+      let keys = [];
 
+      // Get keys of selected sample items
       for (const key in state.selected) {
         if (state.selected[key]) {
-          picked[key] = !picked[key];
+          keys.push(key);
         }
       }
 
-      return Object.assign({}, state, { picked });
+      let picked = togglePicked(keys, state);
+      
+      // Filter out only the picked keys
+      let reorderKeys = Object.keys(picked).map(key => picked[key] ? key : '');
+      let sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
+
+      return Object.assign({}, state, { picked, sampleList });
     }
     case 'PICK_ALL_SAMPLES': {
-      // Creating a new sampleList with the "selected" state toggled to "true"
-      const picked = {};
-      Object.keys(state.sampleList).forEach((key) => {
-        picked[key] = action.picked;
-      });
+      let picked = {}
+      Object.keys(state.sampleList).map(key => picked[key] = action.picked);
 
-      return Object.assign({}, state, { picked });
-    }
-    case 'UNFLAG_ALL_TO_BE_COLLECTED': {
-      return Object.assign({}, state, { picked: {} });
+      // Filter out only the picked keys
+      let reorderKeys = Object.keys(picked).map(key => picked[key] ? key : '');
+      let sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
+
+      return Object.assign({}, state, { picked, sampleList });
     }
     case 'FILTER_SAMPLE_LIST': {
       return Object.assign({}, state, { filterText: action.filterText });
