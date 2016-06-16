@@ -295,20 +295,16 @@ def executeEntryWithId(nodeId):
                     childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
                     childEntry._view = Mock()  # associated text deps
                     childEntry._set_background_color = Mock()  # widget color deps
-                    if not childEntry.is_enabled():
-                        childEntry.set_enabled(True)
                     try:
                         if mxcube.queue.queue_hwobj.is_paused():
                             logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
                             msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1} # 1: started
                             socketio.emit('Queue', msg, namespace='/hwr')
                             mxcube.queue.queue_hwobj.wait_for_pause_event()
-
                         mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
-                        #mxcube.queue.lastQueueNode = lastQueueNode
-                        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+                        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                         mxcube.queue.queue_hwobj.execute_entry(childEntry)
-                        time.sleep(1) # too fast to synch properly signals, it should not be a problem with real stuff
+                        childEntry.set_enabled(False)
                     except Exception:
                         logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
         else:
@@ -319,9 +315,7 @@ def executeEntryWithId(nodeId):
                 msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
                 socketio.emit('Queue', msg, namespace='/hwr')
                 mxcube.queue.queue_hwobj.wait_for_pause_event()
-                
-            if not entry.is_enabled():
-                entry.set_enabled(True)
+
             entry._view = Mock()  # associated text deps
             entry._set_background_color = Mock()  # widget color deps
             #parent = int(node.get_parent()._node_id)
@@ -333,9 +327,9 @@ def executeEntryWithId(nodeId):
             parent = int(parentNode._node_id)
 
             mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
-
-            # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+            #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
             mxcube.queue.queue_hwobj.execute_entry(entry)
+            entry.set_enabled(False)
 
         msg = {'Signal': 'QueueStopped','Message': 'Queue execution stopped', 'State':1}
         socketio.emit('Queue', msg, namespace='/hwr')
@@ -678,10 +672,12 @@ def addDataCollection(id):
         task1Entry.set_data_model(taskNode1)
 
         colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        colNode.acquisitions[0].path_template.directory = params['path']
+        colNode.acquisitions[0].path_template.directory = os.path.join(mxcube.session.get_base_image_directory(), params['path'])
         colNode.acquisitions[0].path_template.run_number = params['run_number']
         colNode.acquisitions[0].path_template.base_prefix = params['prefix']
-
+        if mxcube.queue.check_for_path_collisions(colNode.acquisitions[0].path_template):
+            logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample: Data Collision')
+            return Response(status=409)
         if params['point'] > 0: # a point id has been added
             for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
                 if cpos['posId'] == int(params['point']):
