@@ -66,7 +66,7 @@ AddSample = reduxForm({
   // A unique name for this form
   form: 'addsample',
   // All the fields in your form
-  fields: ['sampleName', 'proteinAcronym'] 
+  fields: ['sampleName', 'proteinAcronym']
 },
 state => ({ // will pull state into form's initialValues
   initialValues: { ...state.taskForm.taskData.parameters }
