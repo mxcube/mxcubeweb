@@ -62,6 +62,25 @@ function togglePicked(keys, state){
 
   return picked;
 }
+
+
+function recalculateQueueOrder(keys, gridOrder, state) {
+  const sampleList = Object.assign({}, state.sampleList);
+
+  // recalculate the order of the sample in the queue the grid sample order, 
+  // state.order, is always sorted ! 
+  let i = 0;
+  for (let key of gridOrder.keys()) {
+    if (keys.includes(key)) {
+      sampleList[key]['queueOrder'] = i;
+      i++;
+    }
+  }
+
+  return sampleList;
+}
+
+
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'SIGNOUT': {
@@ -73,10 +92,15 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'ADD_SAMPLE_TO_GRID': {
       return { ...state, sampleList: { ...state.sampleList, [action.id]: action.data },
-               manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
+                         manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
     }
     case 'SET_SAMPLE_ORDER': {
-      return Object.assign({}, state, { order: action.order });
+      const order = new Map([...action.order.entries()].sort((a, b) => a[1] > b[1]));
+
+      let reorderKeys = Object.keys(state.picked).map(key => state.picked[key] ? key : '');
+      let sampleList = recalculateQueueOrder(reorderKeys, order, state);
+
+      return Object.assign({}, state, { order, sampleList});
     }
     case 'TOGGLE_MOVABLE_SAMPLE': {
       const movingItems = {};
