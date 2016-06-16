@@ -34,7 +34,8 @@ const initialState = {
   contextMenu: { show: false, shape: { type: 'NONE' }, x: 0, y: 0 },
   apertureList: [],
   currentAperture: 0,
-  currentPhase: ''
+  currentPhase: '',
+  beamPosition: [0, 0]
 };
 
 export default (state = initialState, action) => {
@@ -156,7 +157,8 @@ export default (state = initialState, action) => {
           height: action.data.Camera.imageHeight,
           pixelsPerMm: action.data.Camera.pixelsPerMm[0],
           apertureList: action.data.beamInfo.apertureList,
-          currentAperture: action.data.beamInfo.currentAperture
+          currentAperture: action.data.beamInfo.currentAperture,
+          beamPosition: action.data.beamInfo.position
         };
       }
     case 'SIGNOUT':

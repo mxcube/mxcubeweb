@@ -47,9 +47,9 @@ export default class SampleImage extends React.Component {
   }
 
   renderSampleView(nextProps) {
-    const { imageRatio, currentAperture, clickCentringPoints, shapeList } = nextProps;
+    const { imageRatio, currentAperture, beamPosition, clickCentringPoints, shapeList } = nextProps;
     this.drawCanvas(imageRatio);
-    this.drawImageOverlay(imageRatio, currentAperture, clickCentringPoints);
+    this.drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints);
     this.renderPoints(shapeList, imageRatio);
   }
 
@@ -73,10 +73,10 @@ export default class SampleImage extends React.Component {
     document.getElementById('insideWrapper').style.height = h + 'px';
   }
 
-  drawImageOverlay(imageRatio, currentAperture, clickCentringPoints) {
+  drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints) {
     const apertureDiameter = currentAperture * 0.001 * this.props.pixelsPerMm / imageRatio;
     const scaleLength = 0.05 * this.props.pixelsPerMm / imageRatio;
-    this.canvas.add(...makeBeam(this.canvas.width / 2, this.canvas.height / 2, apertureDiameter / 2));
+    this.canvas.add(...makeBeam(beamPosition[0] / imageRatio, beamPosition[1] / imageRatio, apertureDiameter / 2));
     this.canvas.add(...makeScale(this.canvas.height, scaleLength, 'green', '50 µm'));
     if (clickCentringPoints.length) {
       const point = clickCentringPoints[clickCentringPoints.length - 1];
