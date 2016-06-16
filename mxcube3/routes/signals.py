@@ -149,6 +149,7 @@ def motor_event_callback(*args, **kwargs):
                     logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
             motors_info[mot] = {'Status': status, 'position': pos}
 
+    motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
     aux = {}
     for p in mxcube.diffractometer.savedCentredPos:
             aux.update({p['posId']:p})
