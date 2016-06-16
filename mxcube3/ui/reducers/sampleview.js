@@ -88,7 +88,8 @@ export default (state = initialState, action) => {
           motors: { ...state.motors, ...action.data },
           lightOn: { back: action.data.BackLightSwitch.Status,
           front: action.data.FrontLightSwitch.Status },
-          zoom: action.data.Zoom.position
+          zoom: action.data.Zoom.position,
+          pixelsPerMm: action.data.pixelsPerMm[0]
         };
       }
     case 'SAVE_MOTOR_POSITION':
