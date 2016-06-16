@@ -3,19 +3,19 @@ import { omit } from 'lodash/object';
 
 /**
 *  Initial redux state for SampleGrid,
-*  
+*
 *  sampleList:  Object consisting of sample objects, each sample object have
 *               the following peroperties:
-* 
+*
 *               code        Data Matrix/Barcode of sample
 *               id          Unique id for the sample
 *               location    Location of sample in sample changer
 *               queueOrder  Order of sample in queue
 *
-*  selected:   Object (key, selected), selected indicating if sample with key 
+*  selected:   Object (key, selected), selected indicating if sample with key
 *              currently is selected
 *
-*  order:      Map (key, order) for each sample. The order map is kept sorted 
+*  order:      Map (key, order) for each sample. The order map is kept sorted
 *              (ascending)
 *
 *  picked:     Object (key, picked), picked indicating if sample with key
@@ -37,14 +37,13 @@ const INITIAL_STATE = { sampleList: {},
                         filterText: '' };
 
 
-function initialSampleOrder(sampleList) {
+function initialGridOrder(sampleList) {
   const gridOrder = new Map();
 
   for (const key in sampleList) {
     if (key) {
       const order = gridOrder.size;
       gridOrder.set(key, order);
-      sampleList[key]['queueOrder'] = -1;
     }
   }
 
@@ -52,11 +51,24 @@ function initialSampleOrder(sampleList) {
 }
 
 
-function togglePicked(keys, state){
+function initSampleList(samples) {
+  const sampleList = Object.assign({}, samples);
+
+  for (const key in sampleList) {
+    if (key) {
+      sampleList[key].queueOrder = -1;
+    }
+  }
+
+  return sampleList;
+}
+
+
+function togglePicked(keys, state) {
   const picked = Object.assign({}, state.picked);
 
   // Toggle pick state for each key
-  for (let key of keys) {
+  for (const key of keys) {
     picked[key] = !picked[key];
   }
 
@@ -67,12 +79,12 @@ function togglePicked(keys, state){
 function recalculateQueueOrder(keys, gridOrder, state) {
   const sampleList = Object.assign({}, state.sampleList);
 
-  // recalculate the order of the sample in the queue the grid sample order, 
-  // state.order, is always sorted ! 
+  // recalculate the order of the sample in the queue the grid sample order,
+  // state.order, is always sorted !
   let i = 0;
-  for (let key of gridOrder.keys()) {
+  for (const key of gridOrder.keys()) {
     if (keys.includes(key)) {
-      sampleList[key]['queueOrder'] = i;
+      sampleList[key].queueOrder = i;
       i++;
     }
   }
@@ -87,8 +99,8 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, INITIAL_STATE);
     }
     case 'UPDATE_SAMPLE_LIST': {
-      return Object.assign({}, state, { sampleList: action.sampleList,
-                                        order: initialSampleOrder(action.sampleList) });
+      return Object.assign({}, state, { sampleList: initSampleList(action.sampleList),
+                                        order: initialGridOrder(action.sampleList) });
     }
     case 'ADD_SAMPLE_TO_GRID': {
       return { ...state, sampleList: { ...state.sampleList, [action.id]: action.data },
@@ -96,11 +108,10 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'SET_SAMPLE_ORDER': {
       const order = new Map([...action.order.entries()].sort((a, b) => a[1] > b[1]));
+      const reorderKeys = Object.keys(state.picked).map(key => (state.picked[key] ? key : ''));
+      const sampleList = recalculateQueueOrder(reorderKeys, order, state);
 
-      let reorderKeys = Object.keys(state.picked).map(key => state.picked[key] ? key : '');
-      let sampleList = recalculateQueueOrder(reorderKeys, order, state);
-
-      return Object.assign({}, state, { order, sampleList});
+      return Object.assign({}, state, { order, sampleList });
     }
     case 'TOGGLE_MOVABLE_SAMPLE': {
       const movingItems = {};
@@ -119,7 +130,7 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
     }
     case 'PICK_SELECTED_SAMPLES': {
-      let keys = [];
+      const keys = [];
 
       // Get keys of selected sample items
       for (const key in state.selected) {
@@ -128,21 +139,21 @@ export default (state = INITIAL_STATE, action) => {
         }
       }
 
-      let picked = togglePicked(keys, state);
-      
+      const picked = togglePicked(keys, state);
+
       // Filter out only the picked keys
-      let reorderKeys = Object.keys(picked).map(key => picked[key] ? key : '');
-      let sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
+      const reorderKeys = Object.keys(picked).map(key => (picked[key] ? key : ''));
+      const sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
 
       return Object.assign({}, state, { picked, sampleList });
     }
     case 'PICK_ALL_SAMPLES': {
-      let picked = {}
-      Object.keys(state.sampleList).map(key => picked[key] = action.picked);
+      const picked = {};
+      Object.keys(state.sampleList).forEach(key => (picked[key] = action.picked));
 
       // Filter out only the picked keys
-      let reorderKeys = Object.keys(picked).map(key => picked[key] ? key : '');
-      let sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
+      const reorderKeys = Object.keys(picked).map(key => (picked[key] ? key : ''));
+      const sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
 
       return Object.assign({}, state, { picked, sampleList });
     }

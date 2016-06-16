@@ -106,24 +106,28 @@ export default class SampleGrid extends React.Component {
     let [up, down, left, right] = [true, true, true, true];
     const itemPos = this.itemGridPosition(key);
 
-    if (itemPos.col === 0) {
-      left = false;
-    }
+    if (Object.keys(this.props.selected).map(_key => this.props.selected[_key]).length === 1) {
+      if (itemPos.col === 0) {
+        left = false;
+      }
 
-    if (itemPos.row === 0) {
-      up = false;
-    }
+      if (itemPos.row === 0) {
+        up = false;
+      }
 
-    if (itemPos.row === (itemPos.gridDimension.length - 1)) {
-      down = false;
-    }
+      if (itemPos.row === (itemPos.gridDimension.length - 1)) {
+        down = false;
+      }
 
-    if (itemPos.col > (itemPos.gridDimension[itemPos.row + 1] - 1)) {
-      down = false;
-    }
+      if (itemPos.col > (itemPos.gridDimension[itemPos.row + 1] - 1)) {
+        down = false;
+      }
 
-    if (itemPos.col === (itemPos.gridDimension[itemPos.row] - 1)) {
-      right = false;
+      if (itemPos.col === (itemPos.gridDimension[itemPos.row] - 1)) {
+        right = false;
+      }
+    } else {
+      [up, down, left, right] = [false, false, false, false];
     }
 
     return [up, down, left, right];
@@ -191,7 +195,6 @@ export default class SampleGrid extends React.Component {
     }
 
     newSampleOrder.set(key, targetPos);
-
     this.props.setSampleOrder(newSampleOrder);
   }
 
@@ -232,7 +235,13 @@ export default class SampleGrid extends React.Component {
     let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
     sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
 
-    return sampleFilter.includes(this.props.filterText.toLowerCase());
+    let filterItem = sampleFilter.includes(this.props.filterText.toLowerCase());
+
+    if (this.props.filterText.includes('is:picked')) {
+      filterItem = this.props.picked[key];
+    }
+
+    return filterItem;
   }
 
 
@@ -262,6 +271,7 @@ export default class SampleGrid extends React.Component {
             dm={sample.code}
             loadable={false}
             location={sample.location}
+            queueOrder={sample.queueOrder}
             tags={tags}
             selected={this.props.selected[key]}
             deleteTask={this.props.deleteTask}

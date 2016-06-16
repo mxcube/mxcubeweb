@@ -171,5 +171,19 @@
   font-weight: bold;
   font-size: 40px;
   color: #222;
-  opacity: 0.2;
+  opacity: 1;
+}
+
+.queue-order {
+  position: absolute;
+  right: 5px;
+  bottom: 1px;
+  margin-left: 0px;
+  font-size: 24px;
+  line-height: 24px;
+  text-align: center;
+  font-style: italic;
+  font-weight: bold;
+  color: #222;
+  opacity: 0.3;
 }
