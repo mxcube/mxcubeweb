@@ -80,24 +80,19 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'TOGGLE_MOVABLE_SAMPLE': {
       const movingItems = {};
-      movingItems[action.key] = (!state.moving[action.key] && state.selected[action.key]);
+      movingItems[action.key] = (!state.moving[action.key]);
       return Object.assign({}, state, { moving: movingItems });
-    }
-    case 'TOGGLE_SELECTED': {
-      const selectedItems = {};
-      const movingItems = {};
-      movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
-      selectedItems[action.id] = !state.selected[action.id];
-      return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
     }
     case 'SELECT_SAMPLES': {
       const selectedItems = {};
+      const movingItems = {};
 
       for (const key of action.indices) {
         selectedItems[key] = true;
+        movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
       }
 
-      return Object.assign({}, state, { selected: selectedItems });
+      return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
     }
     case 'PICK_SELECTED_SAMPLES': {
       let keys = [];
