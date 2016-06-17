@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from mxcube3 import socketio
 from .statedefs import (MOTOR_STATE, INOUT_STATE)
-
+import logging
 
 BEAMLINE_SETUP = None
 
@@ -32,44 +32,71 @@ class _BeamlineSetupMediator(object):
 
     def getObjectByRole(self, name):
         ho = self._bl.getObjectByRole(name.lower())
+        try:
+            if name == "energy":
+                return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
+            elif name == "resolution":
+                return self._ho_dict.setdefault(name, ResolutionHOMediator(ho, "resolution"))
+            elif name == "transmission":
+                return self._ho_dict.setdefault(name, TransmissionHOMediator(ho, "transmission"))
+            elif name == "fast_shutter":
+                return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fast_shutter"))
+            elif name == "safety_shutter":
+                return self._ho_dict.setdefault(name, TangoShutterHOMediator(ho, "safety_shutter"))
+            elif name == "beamstop":
+                return self._ho_dict.setdefault(name, BeamstopHOMediator(ho, "beamstop"))
+            elif name == "capillary":
+                return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
+            else:
+                return ho
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get get object with role: %s" %name)
 
-        if name == "energy":
-            return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
-        elif name == "resolution":
-            return self._ho_dict.setdefault(name, ResolutionHOMediator(ho, "resolution"))
-        elif name == "transmission":
-            return self._ho_dict.setdefault(name, TransmissionHOMediator(ho, "transmission"))
-        elif name == "fast_shutter":
-            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fast_shutter"))
-        elif name == "safety_shutter":
-            return self._ho_dict.setdefault(name, TangoShutterHOMediator(ho, "safety_shutter"))
-        elif name == "beamstop":
-            return self._ho_dict.setdefault(name, BeamstopHOMediator(ho, "beamstop"))
-        elif name == "capillary":
-            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
-        else:
-            return ho
 
 
     def dict_repr(self):
         """
         :returns: Dictionary value-representation for each beamline attribute
-        """
-        energy =  self.getObjectByRole("energy")
-        transmission = self.getObjectByRole("transmission")
-        resolution = self.getObjectByRole("resolution")
-        fast_shutter = self.getObjectByRole("fast_shutter")
-        safety_shutter = self.getObjectByRole("safety_shutter")
-        beamstop = self.getObjectByRole("beamstop")
+        """        
 #        capillary = self.getObjectByRole("capillary")
 
-        data = {"energy": energy.dict_repr(),
-                "transmission": transmission.dict_repr(),
-                "resolution": resolution.dict_repr(),
-                "fast_shutter": fast_shutter.dict_repr(),
-                "safety_shutter": safety_shutter.dict_repr(),
-#                "capillary": capillary.dict_repr(),
-                "beamstop": beamstop.dict_repr()}
+        data = dict()
+        
+        try:
+            energy =  self.getObjectByRole("energy")
+            data.update({"energy": energy.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get energy info")
+
+        try:
+            transmission = self.getObjectByRole("transmission")
+            data.update({"transmission": transmission.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get transmission info")
+
+        try:
+            resolution = self.getObjectByRole("resolution")
+            data.update({"resolution": resolution.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get resolution info")
+
+        try:
+            fast_shutter = self.getObjectByRole("fast_shutter")
+            data.update({"fast_shutter": fast_shutter.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get fast_shutter info")
+
+        try:
+            safety_shutter = self.getObjectByRole("safety_shutter")
+            data.update({"safety_shutter": safety_shutter.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get safety_shutter info")
+
+        try:
+            beamstop = self.getObjectByRole("beamstop")
+            data.update({"beamstop": beamstop.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get beamstop info")
 
         return data
 
