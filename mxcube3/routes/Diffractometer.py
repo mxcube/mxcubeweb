@@ -49,10 +49,13 @@ def set_phase():
     phase = params['phase']
     try:
         mxcube.diffractometer.wait_device_ready(30)
+    except Exception:
+        logging.getLogger('HWR').warning('diffractometer might not be ready')
+    try:
         mxcube.diffractometer.set_phase(phase)
         return Response(status=200)
     except Exception:
-        logging.getLogger('HWR').exception('Could not change the diffractometer phase to ' % phase)
+        logging.getLogger('HWR').exception('Could not change the diffractometer phase to ' %phase)
         return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/usesc", methods=['GET'])
