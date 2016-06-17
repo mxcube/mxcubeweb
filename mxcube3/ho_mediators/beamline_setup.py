@@ -47,6 +47,8 @@ class _BeamlineSetupMediator(object):
                 return self._ho_dict.setdefault(name, BeamstopHOMediator(ho, "beamstop"))
             elif name == "capillary":
                 return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
+            elif name == "dtox":
+                return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "dtox"))
             else:
                 return ho
         except Exception:
@@ -97,6 +99,13 @@ class _BeamlineSetupMediator(object):
             data.update({"beamstop": beamstop.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get beamstop info")
+
+        try:
+            detdist = self.getObjectByRole("dtox")
+            data.update({"detdist": detdist.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get detdist info")
+
 
         return data
 
@@ -201,7 +210,6 @@ class HOMediatorBase(object):
                 "msg": self.msg()}
 
         return data
-
 
     def value_change(self, *args):
         """
@@ -461,6 +469,35 @@ class ResolutionHOMediator(HOMediatorBase):
             resolution = 0
 
         return resolution
+
+
+    def stop(self):
+        self._ho.stop()
+
+
+    def state(self):
+        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
+
+
+class DetectorDistanceHOMediator(HOMediatorBase):
+    def __init__(self, ho, name=''):
+        super(DetectorDistanceHOMediator, self).__init__(ho, name)
+        ho.connect("positionChanged", self.value_change)
+
+
+    def set(self, value):
+        self._ho.move(round(float(value), 3))
+        return self.get()
+
+
+    def get(self):
+        try:
+            detdist = self._ho.getPosition()
+            detdist = round(float(detdist), 3)
+        except (TypeError, AttributeError):
+            detdist = 0
+
+        return detdist
 
 
     def stop(self):

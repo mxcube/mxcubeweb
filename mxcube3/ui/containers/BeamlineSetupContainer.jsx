@@ -80,6 +80,17 @@ class BeamlineSetupContainer extends React.Component {
                     />
                   </td>
                   <td>
+                    <PopInput
+                      ref="dtox"
+                      name="Detector Distance"
+                      pkey="dtox"
+                      suffix="mm"
+                      data={this.props.data.dtox}
+                      onSave={this.onSaveHandler}
+          onCancel={this.onCancelHandler}
+                    />
+                  </td>
+                  <td>
                   </td>
                 </tr>
                 <tr>
