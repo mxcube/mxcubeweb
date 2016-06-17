@@ -52,24 +52,24 @@ export default (state = initialState, action) => {
       );
 
         // Adding the new task to the queue
-    case 'ADD_METHOD':
+    case 'ADD_TASK':
       return Object.assign({}, state,
         {
           queue: {
             ...state.queue,
-            [action.parent_id]: state.queue[action.parent_id].concat(action.queueID)
+            [action.parentID]: state.queue[action.parentID].concat(action.queueID)
           },
           checked: state.checked.concat(action.queueID)
         }
       );
 
-         // Removing the task from the queue
-    case 'REMOVE_METHOD':
+    // Removing the task from the queue
+    case 'REMOVE_TASK':
       return Object.assign({}, state,
         {
           queue: {
             ...state.queue,
-            [action.parent_id]: without(state.queue[action.parent_id],
+            [action.parentID]: without(state.queue[action.parentID],
             action.queueID)
           },
           checked: without(state.checked, action.queueID)

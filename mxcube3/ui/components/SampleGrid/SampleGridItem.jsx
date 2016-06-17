@@ -13,48 +13,47 @@ export class SampleGridItem extends React.Component {
 
   constructor(props) {
     super(props);
-    this.onClick = props.onClick.bind(this, props.itemKey);
-    this._toggleMoveable = this._toggleMoveable.bind(this);
-    this._toggleToBeCollected = this._toggleToBeCollected.bind(this);
+    this.toggleMovable = this.toggleMovable.bind(this);
+    this.togglePicked = this.togglePicked.bind(this);
     this.moveItemUp = this.moveItemUp.bind(this);
     this.moveItemDown = this.moveItemDown.bind(this);
     this.moveItemRight = this.moveItemRight.bind(this);
     this.moveItemLeft = this.moveItemLeft.bind(this);
-    this._onMouseDown = this._onMouseDown.bind(this);
-    this._onMouseEnter = this._onMouseEnter.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onMouseEnter = this.onMouseEnter.bind(this);
   }
 
 
-  _onMouseDown(e) {
+  onMouseDown(e) {
     if (e.nativeEvent.buttons === 1) {
       this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
     }
   }
 
 
-  _onMouseEnter(e) {
+  onMouseEnter(e) {
     if (e.nativeEvent.buttons === 1) {
       this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
     }
   }
 
 
-  _toggleMoveable(e) {
+  toggleMovable(e) {
     e.stopPropagation();
-    this.props.toggleMoveable(this.props.itemKey);
+    this.props.toggleMovable(this.props.itemKey);
   }
 
 
-  _toggleToBeCollected(e) {
+  togglePicked(e) {
     e.stopPropagation();
-    this.props.toggleToBeCollected(this.props.itemKey);
+    this.props.pickSelected();
   }
 
 
   showItemControls() {
     let iconClassName = 'glyphicon glyphicon-unchecked';
 
-    if (this.props.toBeCollected) {
+    if (this.props.picked) {
       iconClassName = 'glyphicon glyphicon-check';
     }
 
@@ -63,7 +62,7 @@ export class SampleGridItem extends React.Component {
         className="samples-grid-item-button"
         bsStyle="default"
         bsSize="s"
-        onClick={this._toggleToBeCollected}
+        onClick={this.togglePicked}
       >
         <i className={iconClassName} />
       </button>
@@ -72,7 +71,7 @@ export class SampleGridItem extends React.Component {
     const moveButton = (
       <button
         className="samples-grid-item-button"
-        onClick={this._toggleMoveable}
+        onClick={this.toggleMovable}
       >
         <i className="glyphicon glyphicon-move" />
       </button>
@@ -186,7 +185,7 @@ export class SampleGridItem extends React.Component {
     let classes = classNames('samples-grid-item',
       { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
-        'samples-grid-item-to-be-collected': this.props.toBeCollected });
+        'samples-grid-item-to-be-collected': this.props.picked });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
                                        { 'label-success': this.props.loadable });
@@ -195,8 +194,8 @@ export class SampleGridItem extends React.Component {
       <div
         className={classes}
         draggable="true"
-        onMouseDown={this._onMouseDown}
-        onMouseEnter={this._onMouseEnter}
+        onMouseDown={this.onMouseDown}
+        onMouseEnter={this.onMouseEnter}
       >
         {this.showMoveArrows()}
         {this.showItemControls()}
@@ -249,16 +248,24 @@ export class SampleGridItem extends React.Component {
 
 
 SampleGridItem.defaultProps = {
+  seqId: '',
   itemKey: '',
-  tags: '',
+  sampleID: '',
   acronym: '',
+  name: '',
   dm: '',
   loadable: [],
   location: '',
-  name: '',
-  onClick: undefined,
+  tags: '',
   selected: false,
+  deleteTask: undefined,
+  showTaskParametersForm: undefined,
+  toggleMovable: undefined,
+  picked: false,
   moving: false,
   moveItem: undefined,
-  canMove: undefined
+  canMove: undefined,
+  pickSelected: undefined,
+  dragStartSelection: undefined,
+  dragSelectItem: undefined
 };

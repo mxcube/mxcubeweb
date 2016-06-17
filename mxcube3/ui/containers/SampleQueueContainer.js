@@ -18,7 +18,7 @@ function mapStateToProps(state) {
     queueStatus: state.queue.queueStatus,
     history: state.queue.history,
     queue: state.queue.queue,
-    sampleInformation: state.samples_grid.samples_list,
+    sampleInformation: state.samples_grid.sampleList,
     checked: state.queue.checked,
     lookup: state.queue.lookup,
     select_all: state.queue.selectAll,

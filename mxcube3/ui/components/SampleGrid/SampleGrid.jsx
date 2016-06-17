@@ -73,7 +73,7 @@ export default class SampleGrid extends React.Component {
 
   gridDimension() {
     const colArray = [];
-    const numItems = this.props.sampleOrder.size;
+    const numItems = this.props.order.size;
     const numFullCols = Math.floor(this.props.gridWidth / 190);
     const numFullRows = Math.floor(numItems / numFullCols);
     const itemsOnLastRow = numItems - (numFullRows * numFullCols);
@@ -93,7 +93,7 @@ export default class SampleGrid extends React.Component {
   itemGridPosition(key) {
     const gridDim = this.gridDimension();
     const numCols = gridDim[0];
-    const pos = this.props.sampleOrder.get(key);
+    const pos = this.props.order.get(key);
 
     const rowPos = Math.floor(pos / numCols);
     const colPos = pos - (rowPos * numCols);
@@ -138,7 +138,7 @@ export default class SampleGrid extends React.Component {
       [_start, _end] = [end, start];
     }
 
-    for (const [key, value] of this.props.sampleOrder.entries()) {
+    for (const [key, value] of this.props.order.entries()) {
       if (value >= _start && value <= _end) {
         keys.push(key);
       }
@@ -150,28 +150,49 @@ export default class SampleGrid extends React.Component {
 
   dragStartSelection(key, seqId) {
     this._selectStartSeqId = seqId;
-    this.props.selectRange(this.keysFromSeqId(this._selectStartSeqId, seqId));
+    this.props.select(this.keysFromSeqId(this._selectStartSeqId, seqId));
   }
 
 
   dragSelectItem(key, seqId) {
-    this.props.selectRange(this.keysFromSeqId(this._selectStartSeqId, seqId));
+    this.props.select(this.keysFromSeqId(this._selectStartSeqId, seqId));
   }
 
 
   selectedItem() {
-    let [selectedItemKey, selected] = ['', ''];
+    let selectedItemKey = '';
 
     for (const key in this.props.selected) {
-      selected = this.props.selected[key];
-
-      if (selected) {
+      if (this.props.selected[key]) {
         selectedItemKey = key;
         break;
       }
     }
 
     return selectedItemKey;
+  }
+
+
+  sortSample(order, key, targetPos) {
+    const newSampleOrder = new Map(order);
+    const sourcePos = order.get(key);
+
+    // Shift samples between the old and new position one step
+    for (const [_key, _pos] of order.entries()) {
+      if (sourcePos < targetPos) {
+        if ((sourcePos < _pos) && (_pos <= targetPos)) {
+          newSampleOrder.set(_key, _pos - 1);
+        }
+      } else if (sourcePos > targetPos) {
+        if ((sourcePos > _pos) && (_pos >= targetPos)) {
+          newSampleOrder.set(_key, _pos + 1);
+        }
+      }
+    }
+
+    newSampleOrder.set(key, targetPos);
+
+    this.props.setSampleOrder(newSampleOrder);
   }
 
 
@@ -187,7 +208,7 @@ export default class SampleGrid extends React.Component {
     }
 
     const numCols = this.gridDimension()[0];
-    let newPos = this.props.sampleOrder.get(selectedItemKey);
+    let newPos = this.props.order.get(selectedItemKey);
     const [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] = this.canMove(selectedItemKey);
 
     if (dir === 'RIGHT' && canMoveRight) {
@@ -202,36 +223,21 @@ export default class SampleGrid extends React.Component {
       return;
     }
 
-    this.props.reorderSample(this.props.sampleOrder, selectedItemKey, newPos);
-  }
-
-
-  toggleToBeCollected(itemKey) {
-    let selectedItemKey = itemKey;
-
-    if (!selectedItemKey) {
-      selectedItemKey = this.selectedItem();
-    }
-
-    if (!selectedItemKey) {
-      return;
-    }
-
-    this.props.toggleToBeCollected(selectedItemKey);
+    this.sortSample(this.props.order, selectedItemKey, newPos);
   }
 
 
   filter(key) {
-    const sample = this.props.samples_list[key];
+    const sample = this.props.sampleList[key];
     let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
     sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
 
-    return sampleFilter.includes(this.props.filter_text.toLowerCase());
+    return sampleFilter.includes(this.props.filterText.toLowerCase());
   }
 
 
   render() {
-    const samplesList = this.props.samples_list;
+    const samplesList = this.props.sampleList;
     let [sampleGrid, i] = [[], 0];
 
     Object.keys(samplesList).forEach(key => {
@@ -240,23 +246,32 @@ export default class SampleGrid extends React.Component {
         const [acronym, name, tags] = [sample.proteinAcronym, sample.sampleName, []];
 
         for (const id in sample.tasks) {
-          tags.push(sample.tasks[id]);
+          if (sample.tasks[id]) {
+            tags.push(sample.tasks[id]);
+          }
         }
 
         sampleGrid.push(
           <SampleGridItem
-            ref={i} seqId={this.props.sampleOrder.get(key)} itemKey={key}
-            sample_id={sample.id} acronym={acronym} name={name} dm={sample.code} loadable={false}
-            location={sample.location} tags={tags} selected={this.props.selected[key]}
+            ref={i}
+            seqId={this.props.order.get(key)}
+            itemKey={key}
+            sampleID={sample.id}
+            acronym={acronym}
+            name={name}
+            dm={sample.code}
+            loadable={false}
+            location={sample.location}
+            tags={tags}
+            selected={this.props.selected[key]}
             deleteTask={this.props.deleteTask}
             showTaskParametersForm={this.props.showTaskParametersForm}
-            onClick={this.props.toggleSelected}
-            toggleMoveable={this.props.toggleMoveable}
-            toBeCollected={this.props.samplesToBeCollected[key]}
+            toggleMovable={this.props.toggleMovable}
+            picked={this.props.picked[key]}
             moving={this.props.moving[key]}
             moveItem={this.moveItem}
             canMove={this.canMove}
-            toggleToBeCollected={this.props.toggleToBeCollected}
+            pickSelected={this.props.pickSelected}
             dragStartSelection={this.dragStartSelection}
             dragSelectItem={this.dragSelectItem}
           />
@@ -276,6 +291,6 @@ export default class SampleGrid extends React.Component {
 
 
 SampleGrid.propTypes = {
-  filter_text: React.PropTypes.string,
+  filterText: React.PropTypes.string,
   toggleActiveItem: React.PropTypes.func.isRequired
 };
