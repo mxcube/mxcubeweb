@@ -6,7 +6,7 @@ const initialState = {
   points: {},
   width: 0,
   height: 0,
-  lightOn: { back: false, front: false },
+  lightOn: { back: 0, front: 0 },
   motorSteps: {
     FocusStep: 0.1,
     PhiStep: 90,
@@ -86,8 +86,10 @@ export default (state = initialState, action) => {
         return {
           ...state,
           motors: { ...state.motors, ...action.data },
-          lightOn: { back: action.data.BackLightSwitch.Status,
-          front: action.data.FrontLightSwitch.Status },
+          lightOn: {
+            back: action.data.BackLightSwitch.Status,
+            front: action.data.FrontLightSwitch.Status
+          },
           zoom: action.data.Zoom.position,
           pixelsPerMm: action.data.pixelsPerMm[0]
         };
