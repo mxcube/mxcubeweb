@@ -6,7 +6,7 @@ const initialState = {
   points: {},
   width: 0,
   height: 0,
-  lightOn: { back: false, front: false },
+  lightOn: { back: 0, front: 0 },
   motorSteps: {
     FocusStep: 0.1,
     PhiStep: 90,
@@ -34,7 +34,8 @@ const initialState = {
   contextMenu: { show: false, shape: { type: 'NONE' }, x: 0, y: 0 },
   apertureList: [],
   currentAperture: 0,
-  currentPhase: ''
+  currentPhase: '',
+  beamPosition: [0, 0]
 };
 
 export default (state = initialState, action) => {
@@ -85,9 +86,12 @@ export default (state = initialState, action) => {
         return {
           ...state,
           motors: { ...state.motors, ...action.data },
-          lightOn: { back: action.data.BackLightSwitch.Status,
-          front: action.data.FrontLightSwitch.Status },
-          zoom: action.data.Zoom.position
+          lightOn: {
+            back: action.data.BackLightSwitch.Status,
+            front: action.data.FrontLightSwitch.Status
+          },
+          zoom: action.data.Zoom.position,
+          pixelsPerMm: action.data.pixelsPerMm[0]
         };
       }
     case 'SAVE_MOTOR_POSITION':
@@ -156,7 +160,8 @@ export default (state = initialState, action) => {
           height: action.data.Camera.imageHeight,
           pixelsPerMm: action.data.Camera.pixelsPerMm[0],
           apertureList: action.data.beamInfo.apertureList,
-          currentAperture: action.data.beamInfo.currentAperture
+          currentAperture: action.data.beamInfo.currentAperture,
+          beamPosition: action.data.beamInfo.position
         };
       }
     case 'SIGNOUT':

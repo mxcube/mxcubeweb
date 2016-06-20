@@ -8,9 +8,9 @@ import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 import { sendCurrentPhase } from '../actions/sampleview';
 
 import {
-  sendAddSampleTaskRequest, 
-  sendUpdateSampleTaskRequest, 
-  sendAddSampleAndTaskRequest, 
+  sendAddSampleTaskRequest,
+  sendUpdateSampleTaskRequest,
+  sendAddSampleAndTaskRequest,
   addSample
 } from '../actions/SamplesGrid';
 

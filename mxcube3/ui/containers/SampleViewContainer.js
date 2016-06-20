@@ -23,6 +23,7 @@ class SampleViewContainer extends Component {
       pixelsPerMm,
       imageRatio,
       currentAperture,
+      beamPosition,
       motors,
       motorSteps
     } = this.props.sampleViewState;
@@ -60,6 +61,7 @@ class SampleViewContainer extends Component {
               contextMenuShow={show}
               imageRatio={imageRatio}
               currentAperture={currentAperture}
+              beamPosition={beamPosition}
               clickCentringPoints={clickCentringPoints}
             />
         </div>
