@@ -31,30 +31,30 @@ class _BeamlineSetupMediator(object):
 
 
     def getObjectByRole(self, name):
-        ho = self._bl.getObjectByRole(name.lower())
         try:
-            if name == "energy":
-                return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
-            elif name == "resolution":
-                return self._ho_dict.setdefault(name, ResolutionHOMediator(ho, "resolution"))
-            elif name == "transmission":
-                return self._ho_dict.setdefault(name, TransmissionHOMediator(ho, "transmission"))
-            elif name == "fast_shutter":
-                return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fast_shutter"))
-            elif name == "safety_shutter":
-                return self._ho_dict.setdefault(name, TangoShutterHOMediator(ho, "safety_shutter"))
-            elif name == "beamstop":
-                return self._ho_dict.setdefault(name, BeamstopHOMediator(ho, "beamstop"))
-            elif name == "capillary":
-                return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
-            elif name == "dtox":
-                return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "dtox"))
-            else:
-                return ho
+            ho = self._bl.getObjectByRole(name.lower())
         except Exception:
             logging.getLogger("HWR").exception("Failed to get get object with role: %s" %name)
 
-
+        if name == "energy":
+            return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
+        elif name == "resolution":
+            return self._ho_dict.setdefault(name, ResolutionHOMediator(ho, "resolution"))
+        elif name == "transmission":
+            return self._ho_dict.setdefault(name, TransmissionHOMediator(ho, "transmission"))
+        elif name == "fast_shutter":
+            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fast_shutter"))
+        elif name == "safety_shutter":
+            return self._ho_dict.setdefault(name, TangoShutterHOMediator(ho, "safety_shutter"))
+        elif name == "beamstop":
+            return self._ho_dict.setdefault(name, BeamstopHOMediator(ho, "beamstop"))
+        elif name == "capillary":
+            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
+        elif name == "dtox":
+            return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "dtox"))
+        else:
+            return ho
+       
 
     def dict_repr(self):
         """
