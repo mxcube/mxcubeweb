@@ -18,7 +18,6 @@ const initialState = {
       account_rad_damage: true,
       opt_sad: false,
       shutterless: true,
-      prefix: 'data',
       run_number: 1,
       first_image: 1,
       inverse_beam: false,
