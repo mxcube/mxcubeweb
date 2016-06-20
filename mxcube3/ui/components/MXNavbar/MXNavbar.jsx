@@ -34,7 +34,7 @@ export default class MXNavbar extends React.Component {
           {(process.env.NODE_ENV !== 'production' ? sampleGrid : '')}
           <OverlayTrigger
             placement="right"
-              overlay={(<Popover className="main-menu-tooltip">Data Collection</Popover>)}
+            overlay={(<Popover className="main-menu-tooltip">Data Collection</Popover>)}
           >
             <p
               className="main-menu-icon text-center"
