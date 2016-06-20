@@ -47,10 +47,10 @@ export default class MotorInput extends React.Component {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
     let inputCSS = cx('form-control input-sm', {
-      'motor-moving': this.props.state === 4 || this.props.state === 3,
-      'motor-ready': this.props.state === 2,
-      'motor-fault': this.props.state <= 1,
-      'motor-onlimit': this.props.state === 5
+      'input-bg-moving': this.props.state === 4 || this.props.state === 3,
+      'input-bg-ready': this.props.state === 2,
+      'input-bg-fault': this.props.state <= 1,
+      'input-bg-onlimit': this.props.state === 5
     });
 
     let data = { state: 'IMMEDIATE', value: step };

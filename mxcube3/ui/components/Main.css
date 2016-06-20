@@ -3,10 +3,12 @@
     font-size: 14px;
 }
 
+
 body{
     background-color: rgba(0,0,0,0.035);
     font-size: 12px;
 }
+
 
 label {
     font-weight: normal;
@@ -17,15 +19,18 @@ label {
     text-align: initial !important;
 }
 
+
 input[type="radio"], input[type="checkbox"] {
     margin: 4px 4px 0;
     margin-top: 1px \9;
     line-height: normal;
 }
 
+
 .ReactModal__Overlay{
   z-index: 2;
 }
+
 
 .main-content{
     padding-top: 10px;
@@ -37,6 +42,8 @@ input[type="radio"], input[type="checkbox"] {
         font-size: 14px; 
     }
 }
+
+
 @media all and (max-width: 1400px) { /* screen size until 1200px */
     body {
         font-size: 12px; 
@@ -76,8 +83,35 @@ input[type="radio"], input[type="checkbox"] {
     text-decoration: none;
 }
 
+
 .icon:focus, .icon:hover{
     text-decoration: none !important;
     background-color: #5D5D5D;
 }
 
+
+.input-bg-moving{
+    background-color: #FFFF99 !important;
+    color: transparent;
+    text-shadow: 0 0 0 black;
+    transition: background-color 1000ms ease-in;
+}
+
+
+.input-bg-ready{
+    background-color: #9BCE7B !important;
+    transition: background-color 1000ms ease-in;
+}
+
+
+.input-bg-fault{
+    background-color: #FF9999 !important;
+    color: #000;
+    transition: background-color 1000ms ease-in;
+}
+
+
+.input-bg-onlimit{
+    background-color: #FF9900 !important;
+    transition: background-color 1000ms ease-in;
+}
