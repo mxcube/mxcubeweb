@@ -2,7 +2,7 @@ import React from 'react';
 
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
-import { STATE } from '../../actions/beamline_atypes';
+import { STATE } from '../../actions/beamline';
 
 
 import DefaultInput from './DefaultInput';
