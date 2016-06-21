@@ -1,6 +1,7 @@
 import logging, json, inspect
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
+from mxcube3.routes import Utils
 import time
 
 @socketio.on('connect', namespace='/hwr')
@@ -127,32 +128,17 @@ def motor_event_callback(*args, **kwargs):
     signal = kwargs['signal']
     sender = str(kwargs['sender'].__class__).split('.')[0]
 
-    motors = ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'] 
-    #'Kappa', 'Kappa_phi',
-    motors_info = {}
-    for mot in motors:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole(mot.lower())
-        if motor_hwobj is not None:
-            if mot == 'Zoom':
-                pos = motor_hwobj.predefinedPositions[motor_hwobj.getCurrentPositionName()]
-                status = "unknown"
-            elif mot == 'BackLightSwitch' or mot == 'FrontLightSwitch':
-                states = {"in": 1, "out": 0}
-                pos = states[motor_hwobj.getActuatorState()]  # {0:"out", 1:"in", True:"in", False:"out"}
-                # 'in', 'out'
-                status = pos 
-            else:
-                try:
-                    pos = motor_hwobj.getPosition()
-                    status = motor_hwobj.getState()
-                except Exception:
-                    logging.getLogger('HWR').exception('[SAMPLEVIEW] could not get "%s" motor' %mot)
-            motors_info[mot] = {'Status': status, 'position': pos}
+    motors_info = dict()
+
+    for name in ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy']:
+        motors_info.update(Utils.get_movable_state_and_position(name))
 
     motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
+
     aux = {}
     for p in mxcube.diffractometer.savedCentredPos:
             aux.update({p['posId']:p})
+
     ## sending all motors position/status, and the current centred positions
     msg = {'Signal': signal,'Message': motor_signals[signal], 'Motors':motors_info, 'CentredPositions': aux, 'Data': args[0] if len(args) ==1 else args}
     #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
