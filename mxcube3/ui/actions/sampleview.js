@@ -14,6 +14,12 @@ export function setImageRatio(clientWidth) {
   };
 }
 
+export function setBeamPosition(position) {
+  return {
+    type: 'SET_BEAM_POSITION', position
+  };
+}
+
 export function setAperture(size) {
   return {
     type: 'SET_APERTURE', size
