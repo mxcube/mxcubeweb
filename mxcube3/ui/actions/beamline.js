@@ -10,9 +10,9 @@ export const STATE = {
 
 
 /**
- *  Initial redux state for BeamlineSetup container, consists of each
- *  beamline attribute relevant to the beamline setup. Each attribute in turn
- *  have the follwoing proprties:
+ *  Initial redux state for beamline attributes, object containing each beamline 
+ *  attribute (name, attribute object). Each attribute object in turn have the 
+ *  follwoing properties:
  *
  *     name:   name of beamline attribute
  *     value:  attributes current value
