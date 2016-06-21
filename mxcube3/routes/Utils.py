@@ -71,7 +71,12 @@ def get_movable_state_and_position(item_name):
         else:
             if hasattr(hwobj, "getCurrentPositionName"):
                 # a motor similar to zoom
-                return { item_name: {"Status": hwobj.getState(), "position": hwobj.predefinedPositions[hwobj.getCurrentPositionName()] }}
+                pos_name = hwobj.getCurrentPositionName()
+                if pos_name:
+                    pos = hwobj.predefinedPositions[pos_name]
+                else:
+                    pos = None 
+                return { item_name: {"Status": hwobj.getState(), "position": pos }}
             else:
                 return { item_name: {'Status': hwobj.getState(), 'position': hwobj.getPosition() }}
     except Exception:
