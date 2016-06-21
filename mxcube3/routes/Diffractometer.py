@@ -67,7 +67,11 @@ def use_sc():
     params = request.data
     params = json.loads(params)
     use_sc = params['use_sc']
-    if mxcube.diffractometer.set_use_sc(use_sc):
+    try:
+        ret = mxcube.diffractometer.set_use_sc(use_sc)
+    except AttributeError:
+        ret = True
+    if ret:
         logging.getLogger('HWR').info("Set use_sample_changer mode to %s" % use_sc)
         return Response(status=200)
     else:
