@@ -32,7 +32,10 @@ class _BeamlineSetupMediator(object):
 
     def getObjectByRole(self, name):
         try:
-            ho = self._bl.getObjectByRole(name.lower())
+            if name == 'dtox':
+                ho = self._bl.getObjectByRole('resolution') # we retrieve dtox through res_hwobj
+            else:
+                ho = self._bl.getObjectByRole(name.lower())
         except Exception:
             logging.getLogger("HWR").exception("Failed to get get object with role: %s" %name)
 
@@ -486,13 +489,13 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
 
     def set(self, value):
-        self._ho.move(round(float(value), 3))
+        self._ho.dtox.move(round(float(value), 3))
         return self.get()
 
 
     def get(self):
         try:
-            detdist = self._ho.getPosition()
+            detdist = self._ho.dtox.getPosition()
             detdist = round(float(detdist), 3)
         except (TypeError, AttributeError):
             detdist = 0
