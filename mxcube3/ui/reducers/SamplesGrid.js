@@ -30,7 +30,7 @@ import { omit } from 'lodash/object';
 */
 const INITIAL_STATE = { sampleList: {},
                         selected: {},
-                        order: new Map(),
+                        order: {},
                         picked: {},
                         moving: {},
                         manualMount: { set: false, id: 0 },
@@ -38,12 +38,12 @@ const INITIAL_STATE = { sampleList: {},
 
 
 function initialGridOrder(sampleList) {
-  const gridOrder = new Map();
+  const gridOrder = {};
 
   for (const key in sampleList) {
     if (key) {
-      const order = gridOrder.size;
-      gridOrder.set(key, order);
+      const order = Object.keys(gridOrder).length;
+      gridOrder[key] = order;
     }
   }
 
@@ -78,11 +78,10 @@ function togglePicked(keys, state) {
 
 function recalculateQueueOrder(keys, gridOrder, state) {
   const sampleList = Object.assign({}, state.sampleList);
+  const sortedOrder = Object.entries(gridOrder).sort((a, b) => a[1] > b[1]);
 
-  // recalculate the order of the sample in the queue the grid sample order,
-  // state.order, is always sorted !
   let i = 0;
-  for (const key of gridOrder.keys()) {
+  for (const [key, order] of sortedOrder) {
     if (keys.includes(key)) {
       sampleList[key].queueOrder = i;
       i++;
@@ -103,15 +102,17 @@ export default (state = INITIAL_STATE, action) => {
                                         order: initialGridOrder(action.sampleList) });
     }
     case 'ADD_SAMPLE_TO_GRID': {
-      return { ...state, sampleList: { ...state.sampleList, [action.id]: action.data },
-                         manualMount: { ...state.manualMount, id: state.manualMount.id + 1 } };
+      const sampleList = { ...state.sampleList, [action.id]: action.data };
+
+      return { ...state, sampleList,
+                         manualMount: { ...state.manualMount, id: state.manualMount.id + 1 },
+                         order: initialGridOrder(sampleList)};
     }
     case 'SET_SAMPLE_ORDER': {
-      const order = new Map([...action.order.entries()].sort((a, b) => a[1] > b[1]));
       const reorderKeys = Object.keys(state.picked).map(key => (state.picked[key] ? key : ''));
-      const sampleList = recalculateQueueOrder(reorderKeys, order, state);
+      const sampleList = recalculateQueueOrder(reorderKeys, action.order, state);
 
-      return Object.assign({}, state, { order, sampleList });
+      return Object.assign({}, state, { order: action.order, sampleList });
     }
     case 'TOGGLE_MOVABLE_SAMPLE': {
       const movingItems = {};
