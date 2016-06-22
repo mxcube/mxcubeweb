@@ -9,6 +9,7 @@ import {
   Glyphicon,
   ButtonToolbar,
   SplitButton,
+  DropdownButton,
   MenuItem,
   ButtonGroup
 } from 'react-bootstrap';
@@ -135,7 +136,14 @@ class SampleGridContainer extends React.Component {
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
-      <Button onClick={this.filterSampleGrid}><Glyphicon glyph="search" /></Button>
+      <DropdownButton>
+        <MenuItem onClick={this.filterSampleGridClear}>
+          Clear
+        </MenuItem>
+        <MenuItem onClick={this.filterSampleGridPicked}>
+          Picked
+        </MenuItem>
+      </DropdownButton>
     );
 
     return (
@@ -201,14 +209,6 @@ class SampleGridContainer extends React.Component {
                   buttonAfter={innerSearchIcon}
                   onChange={this.filterSampleGrid}
                 />
-                <ButtonGroup>
-                  <Button onClick={this.filterSampleGridPicked}>
-                    Picked
-                  </Button>
-                  <Button onClick={this.filterSampleGridClear}>
-                    None
-                  </Button>
-                </ButtonGroup>
               </div>
              </div>
              <div className="col-xs-2 pull-right">
