@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from flask import Flask
+from flask import request
 from flask.ext.socketio import SocketIO
 from flask.ext.session import Session
 from optparse import OptionParser
@@ -8,6 +9,7 @@ import sys
 import logging
 import jsonpickle
 import gevent
+import traceback
 
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
@@ -33,6 +35,11 @@ app = Flask(__name__, static_url_path='')
 app.config['SESSION_TYPE'] = "redis"
 app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
 app.config['SECRET_KEY'] = "nosecretfornow"
+def exception_handler(e):
+    err_msg = "Uncaught exception while calling %s" % request.path
+    logging.exception(err_msg)
+    return err_msg+": "+traceback.format_exc(), 409
+app.register_error_handler(Exception, exception_handler)
 sess = Session()
 sess.init_app(app)
 app.debug = True

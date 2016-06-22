@@ -38,15 +38,11 @@ def queueStart():
         :statuscode: 409: queue could not be started
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
-    try:
-        mxcube.queue.queue_hwobj.disable(False)
-        mxcube.queue.queue_hwobj.execute()
-        #mxcube.queue.queue_hwobj._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, mxcube.queue.queue_hwobj)
-        logging.getLogger('HWR').info('[QUEUE] Queue started')
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue could not be started')
-        return Response(status=409)
+    mxcube.queue.queue_hwobj.disable(False)
+    mxcube.queue.queue_hwobj.execute()
+    #mxcube.queue.queue_hwobj._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, mxcube.queue.queue_hwobj)
+    logging.getLogger('HWR').info('[QUEUE] Queue started')
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue/stop", methods=['PUT'])
 def queueStop():
@@ -56,15 +52,11 @@ def queueStop():
         :statuscode: 409: queue could not be stopped
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to stop')
-    try:
-        global queue_has_to_be_stopped
-        queue_has_to_be_stopped = True
-        mxcube.queue.queue_hwobj.stop()
-        logging.getLogger('HWR').info('[QUEUE] Queue stopped')
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue could not be stopped')
-        return Response(status=409)
+    global queue_has_to_be_stopped
+    queue_has_to_be_stopped = True
+    mxcube.queue.queue_hwobj.stop()
+    logging.getLogger('HWR').info('[QUEUE] Queue stopped')
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue/abort", methods=['PUT'])
 def queueAbort():
@@ -74,13 +66,9 @@ def queueAbort():
         :statuscode: 409: queue could not be aborted
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to abort')
-    try:
-        mxcube.queue.queue_hwobj.stop()
-        logging.getLogger('HWR').info('[QUEUE] Queue aborted')
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue could not be aborted')
-        return Response(status=409)
+    mxcube.queue.queue_hwobj.stop()
+    logging.getLogger('HWR').info('[QUEUE] Queue aborted')
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue/pause", methods=['PUT'])
 def queuePause():
@@ -90,15 +78,11 @@ def queuePause():
         :statuscode: 409: queue could not be paused
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to pause')
-    try:
-        mxcube.queue.queue_hwobj.pause(True)
-        msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
-        socketio.emit('Queue', msg, namespace='/hwr')
-        logging.getLogger('HWR').info('[QUEUE] Queue paused')
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue could not be paused')
-        return Response(status=409)
+    mxcube.queue.queue_hwobj.pause(True)
+    msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
+    socketio.emit('Queue', msg, namespace='/hwr')
+    logging.getLogger('HWR').info('[QUEUE] Queue paused')
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue/unpause", methods=['PUT'])
 def queueUnpause():
@@ -108,15 +92,11 @@ def queueUnpause():
         :statuscode: 409: queue could not be unpause
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to unpause')
-    try:
-        mxcube.queue.queue_hwobj.pause(False)
-        msg = {'Signal': 'QueueStarted','Message': 'Queue execution started', 'State':1}
-        socketio.emit('Queue', msg, namespace='/hwr')
-        logging.getLogger('HWR').info('[QUEUE] Queue unpaused')
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue could not be paused')
-        return Response(status=409)
+    mxcube.queue.queue_hwobj.pause(False)
+    msg = {'Signal': 'QueueStarted','Message': 'Queue execution started', 'State':1}
+    socketio.emit('Queue', msg, namespace='/hwr')
+    logging.getLogger('HWR').info('[QUEUE] Queue unpaused')
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
 def queueClear():
@@ -127,15 +107,11 @@ def queueClear():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to clear')
 
-    try:
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.queue = Utils.new_queue() # maybe we can just clear the queue object itself instead
-        Utils.save_queue(session)
-        logging.getLogger('HWR').info('[QUEUE] Queue cleared  '+ str(mxcube.queue.get_model_root()._name))
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue could not be cleared')
-        return Response(status=409)
+    mxcube.diffractometer.savedCentredPos = []
+    mxcube.queue = Utils.new_queue() # maybe we can just clear the queue object itself instead
+    Utils.save_queue(session)
+    logging.getLogger('HWR').info('[QUEUE] Queue cleared  '+ str(mxcube.queue.get_model_root()._name))
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['GET'])
 def queueGet():
@@ -160,21 +136,9 @@ def queueGet():
                             }
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting data')
-    try:
-        resp = jsonify(serializeQueueToJson())
-        resp.status_code = 200
-        return resp
-    except Exception:
-        logging.getLogger('HWR').error('[QUEUE] Queue could not get')
-        return Response(status=409)
-
-# @mxcube.route("/mxcube/api/v0.1/queue/save2file", methods=['PUT'])
-# def queueSave2File():
-#     """Queue: save the queue to a file, filename automatically selected under ./routes folder
-#     Args: None
-#     Return: command sent successfully? http status response, 200 ok, 409 something bad happened
-#     """
-#     return Response(status=409)
+    resp = jsonify(serializeQueueToJson())
+    resp.status_code = 200
+    return resp
 
 @mxcube.route("/mxcube/api/v0.1/queue/state", methods=['PUT', 'POST'])
 def queueSaveState():
@@ -208,58 +172,31 @@ def queueLoadState():
         :statuscode: 200: no error
         :statuscode: 409: queue could not be loaded
     """
-    try:
-        samples_list = mxcube.sample_changer.getSampleList()
-        samples = {}
-        for s in samples_list:
-            sample_dm = s.getID() or ""
-            samples.update(
-                {s.getAddress():
-                    {
-                        "id": s.getAddress(),
-                        "location": ":".join(map(str, s.getCoords())),
-                        "code": sample_dm,
-                        "methods": {}
-                    }
-                 }
-                )
+    samples_list = mxcube.sample_changer.getSampleList()
+    samples = {}
+    for s in samples_list:
+        sample_dm = s.getID() or ""
+        samples.update(
+            {s.getAddress():
+                {
+                    "id": s.getAddress(),
+                    "location": ":".join(map(str, s.getCoords())),
+                    "code": sample_dm,
+                    "methods": {}
+                }
+             }
+            )
 
-        if mxcube.queue.queue_hwobj._queue_entry_list:
-            logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored...')
-            resp = jsonify({'queueState': serializeQueueToJson(), 'sampleList': samples})
-            resp.status_code = 200
-            return resp
-        else:
-            logging.getLogger('HWR').info('[QUEUE] No queue was stored...')
-            resp = jsonify({'queueState': {}, 'sampleList': samples})
-            resp.status_code = 200
-            return resp
-    except Exception:
-        return Response(status=409)
-
-# @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['GET'])
-# def getCurrentEntry():
-#     """Queue: get current entry. NOT IMPLEMENTED
-#     Return:    The currently executing QueueEntry:
-#     """
-#     logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
-#     try:
-#         return mxcube.queue.queue_hwobj.get_current_entry()
-#     except Exception:
-#         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
-#         return Response(status=409)
-
-# @mxcube.route("/mxcube/api/v0.1/queue/entry/", methods=['PUT'])
-# def setCurrentEntry(entry):
-#     """Queue: Sets the currently executing QueueEntry to <entry>. NOT IMPLEMENTED
-#     Return:    The currently executing QueueEntry:
-#     """
-#     logging.getLogger('HWR').info('[QUEUE] Queue getting current entry')
-#     try:
-#         return mxcube.queue.queue_hwobj.set_current_entry(entry)
-#     except Exception:
-#         logging.getLogger('HWR').error('[QUEUE] Queue could not get current entry')
-#         return Response(status=409)
+    if mxcube.queue.queue_hwobj._queue_entry_list:
+        logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored...')
+        resp = jsonify({'queueState': serializeQueueToJson(), 'sampleList': samples})
+        resp.status_code = 200
+        return resp
+    else:
+        logging.getLogger('HWR').info('[QUEUE] No queue was stored...')
+        resp = jsonify({'queueState': {}, 'sampleList': samples})
+        resp.status_code = 200
+        return resp
 
 @mxcube.route("/mxcube/api/v0.1/queue/<int:nodeId>/execute", methods=['PUT'])
 def executeEntryWithId(nodeId):
@@ -275,73 +212,66 @@ def executeEntryWithId(nodeId):
     queue = serializeQueueToJson() 
     global queue_has_to_be_stopped
     queue_has_to_be_stopped = False 
-    try:
-        node = mxcube.queue.get_node(nodeId)
-        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+    
+    node = mxcube.queue.get_node(nodeId)
+    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
 
-        msg = {'Signal': 'QueueStarted','Message': 'Queue execution started', 'State':1}
-        socketio.emit('Queue', msg, namespace='/hwr')
+    msg = {'Signal': 'QueueStarted','Message': 'Queue execution started', 'State':1}
+    socketio.emit('Queue', msg, namespace='/hwr')
 
-        mxcube.queue.queue_hwobj.set_pause(False)
-        if isinstance(entry, qe.SampleQueueEntry):
-            logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' % nodeId)
-            #this is a sample entry, thus, go through its checked children and execute those
-            for elem in queue[nodeId]['methods']:
-                if queue_has_to_be_stopped: break
-            for elem in queue[nodeId]['methods']:
-                if int(elem['checked']) == 1:
-                    logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' % elem['QueueId'])
-                    childNode = mxcube.queue.get_node(elem['QueueId'])
-                    childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
-                    childEntry._view = Mock()  # associated text deps
-                    childEntry._set_background_color = Mock()  # widget color deps
-                    try:
-                        if mxcube.queue.queue_hwobj.is_paused():
-                            logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-                            msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1} # 1: started
-                            socketio.emit('Queue', msg, namespace='/hwr')
-                            mxcube.queue.queue_hwobj.wait_for_pause_event()
-                        mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
-                        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-                        mxcube.queue.queue_hwobj.execute_entry(childEntry)
-                        childEntry.set_enabled(False)
-                    except Exception:
-                        logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
-        else:
-            #not a sample so execute directly
-            logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' % nodeId)
-            if mxcube.queue.queue_hwobj.is_paused():
-                logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-                msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
-                socketio.emit('Queue', msg, namespace='/hwr')
-                mxcube.queue.queue_hwobj.wait_for_pause_event()
+    mxcube.queue.queue_hwobj.set_pause(False)
+    if isinstance(entry, qe.SampleQueueEntry):
+        logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' % nodeId)
+        #this is a sample entry, thus, go through its checked children and execute those
+        for elem in queue[nodeId]['methods']:
+            if queue_has_to_be_stopped: break
+        for elem in queue[nodeId]['methods']:
+            if int(elem['checked']) == 1:
+                logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' % elem['QueueId'])
+                childNode = mxcube.queue.get_node(elem['QueueId'])
+                childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
+                childEntry._view = Mock()  # associated text deps
+                childEntry._set_background_color = Mock()  # widget color deps
+                try:
+                    if mxcube.queue.queue_hwobj.is_paused():
+                        logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
+                        msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1} # 1: started
+                        socketio.emit('Queue', msg, namespace='/hwr')
+                        mxcube.queue.queue_hwobj.wait_for_pause_event()
+                    mxcube.queue.lastQueueNode.update({'id': elem['QueueId'], 'sample': queue[nodeId]['SampleId']})
+                    #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+                    mxcube.queue.queue_hwobj.execute_entry(childEntry)
+                    childEntry.set_enabled(False)
+                except Exception:
+                    logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
+    else:
+        #not a sample so execute directly
+        logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' % nodeId)
+        if mxcube.queue.queue_hwobj.is_paused():
+            logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
+            msg = {'Signal': 'QueuePaused','Message': 'Queue execution paused', 'State':1}
+            socketio.emit('Queue', msg, namespace='/hwr')
+            mxcube.queue.queue_hwobj.wait_for_pause_event()
 
-            entry._view = Mock()  # associated text deps
-            entry._set_background_color = Mock()  # widget color deps
-            #parent = int(node.get_parent()._node_id)
-            parentNode = node.get_parent() # this is a TaskGroup, so it is not in the parsed queue
-            # go a level up,
-            parentNode = parentNode.get_parent() # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
-            if isinstance(parentNode, qmo.TaskGroup):
-                parentNode = parentNode.get_parent()
-            parent = int(parentNode._node_id)
+        entry._view = Mock()  # associated text deps
+        entry._set_background_color = Mock()  # widget color deps
+        #parent = int(node.get_parent()._node_id)
+        parentNode = node.get_parent() # this is a TaskGroup, so it is not in the parsed queue
+        # go a level up,
+        parentNode = parentNode.get_parent() # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
+        if isinstance(parentNode, qmo.TaskGroup):
+            parentNode = parentNode.get_parent()
+        parent = int(parentNode._node_id)
 
-            mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
-            #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-            mxcube.queue.queue_hwobj.execute_entry(entry)
-            entry.set_enabled(False)
+        mxcube.queue.lastQueueNode.update({'id': nodeId, 'sample': queue[parent]['SampleId']})
+        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+        mxcube.queue.queue_hwobj.execute_entry(entry)
+        entry.set_enabled(False)
 
-        msg = {'Signal': 'QueueStopped','Message': 'Queue execution stopped', 'State':1}
-        socketio.emit('Queue', msg, namespace='/hwr')
+    msg = {'Signal': 'QueueStopped','Message': 'Queue execution stopped', 'State':1}
+    socketio.emit('Queue', msg, namespace='/hwr')
 
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue could not be started')
-        return Response(status=409)
-
-###----QUEUE ELEMENTs MANAGEMENT----###
-## Deprecating Sample.py
-###----SAMPLE----###
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def addSample():
@@ -385,18 +315,15 @@ def addSample():
         if queue[i]['SampleId'] == sampleId:
             logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
             return Response(status=409)
-    try:
-        mxcube.queue.add_child(mxcube.queue._selected_model, sampleNode)
-        nodeId = sampleNode._node_id
-        mxcube.queue.queue_hwobj.enqueue(sampleEntry)
-        logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' %(sampleId, nodeId))
-        #queue.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
-        Utils.save_queue(session)
-        return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] sample could not be added')
-        return Response(status=409)
-
+    
+    mxcube.queue.add_child(mxcube.queue._selected_model, sampleNode)
+    nodeId = sampleNode._node_id
+    mxcube.queue.queue_hwobj.enqueue(sampleEntry)
+    logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' %(sampleId, nodeId))
+    #queue.update({nodeId: {'SampleId': sampleId, 'QueueId': nodeId, 'checked': 0, 'methods': []}})
+    Utils.save_queue(session)
+    return jsonify({'SampleId': sampleId, 'QueueId': nodeId})
+    
 @mxcube.route("/mxcube/api/v0.1/queue/<sampleId>", methods=['PUT'])
 def updateSample(sampleId):
     '''
@@ -409,25 +336,22 @@ def updateSample(sampleId):
     params = request.data
     params = json.loads(params)
     nodeId = int(sampleId)
-    try:
-        sampleNode = mxcube.queue.get_node(nodeId)
-        if sampleNode:
-            sampleEntry = mxcube.queue.queue_hwobj.get_entry_with_model(sampleNode)
-            #TODO: update here the model with the new 'params'
-            ### missing lines...
-            sampleEntry.set_data_model(sampleNode)
-            Utils.save_queue(session)
-            logging.getLogger('HWR').info('[QUEUE] sample updated')
-            resp = jsonify({'QueueId': nodeId})
-            resp.status_code = 200
-            return resp
-        else:
-            logging.getLogger('HWR').exception('[QUEUE] sample not in the queue, can not update')
-            return Response(status=409)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] sample could not be updated')
-        return Response(status=409)
 
+    sampleNode = mxcube.queue.get_node(nodeId)
+    if sampleNode:
+        sampleEntry = mxcube.queue.queue_hwobj.get_entry_with_model(sampleNode)
+        #TODO: update here the model with the new 'params'
+        ### missing lines...
+        sampleEntry.set_data_model(sampleNode)
+        Utils.save_queue(session)
+        logging.getLogger('HWR').info('[QUEUE] sample updated')
+        resp = jsonify({'QueueId': nodeId})
+        resp.status_code = 200
+        return resp
+    else:
+        logging.getLogger('HWR').exception('[QUEUE] sample not in the queue, can not update')
+        return Response(status=409)
+    
 @mxcube.route("/mxcube/api/v0.1/queue/<id>/toggle", methods=['PUT'])
 def toggleNode(id):
     '''
@@ -443,67 +367,64 @@ def toggleNode(id):
     ## here on the back-end side we should just always use mxcube.queue !
     queue = serializeQueueToJson()
 
-    try:
-        if isinstance(entry, qe.SampleQueueEntry):
-            #this is a sample entry, thus, go through its checked children and toggle those
-            if entry.is_enabled():
-                entry.set_enabled(False)
-                node.set_enabled(False)
-
-            else:
-                entry.set_enabled(True)
-                node.set_enabled(True)
-
-            new_state = entry.is_enabled()
-            for elem in queue[nodeId]['methods']:              
-                childNode = mxcube.queue.get_node(elem['QueueId'])
-                childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
-                if new_state:
-                    childEntry.set_enabled(True)
-                    childNode.set_enabled(True)
-                else:
-                    childEntry.set_enabled(False)
-                    childNode.set_enabled(False)
+    if isinstance(entry, qe.SampleQueueEntry):
+        #this is a sample entry, thus, go through its checked children and toggle those
+        if entry.is_enabled():
+            entry.set_enabled(False)
+            node.set_enabled(False)
 
         else:
-            #not a sample so find the parent and toggle directly
-            logging.getLogger('HWR').info('[QUEUE] toggling entry with id: %s' % nodeId)
-            parentNode = node.get_parent() # this is a TaskGroup, so it is not in the parsed queue
-            # go a level up,
-            parentNode = parentNode.get_parent() # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
-            if isinstance(parentNode, qmo.TaskGroup):
-                parentNode = parentNode.get_parent()
-            parent = parentNode._node_id
-            parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parentNode)
-            #now that we know the sample parent no matter what is the entry (char, dc)
-            #check if the brother&sisters are enabled (and enable the parent)
-            checked = 0
+            entry.set_enabled(True)
+            node.set_enabled(True)
 
-            for i in queue[parent]['methods']:
-                if i['QueueId'] != nodeId and i['checked'] == 1: # at least one brother is enabled, no need to change parent
-                    checked = 1
-                    break
-            if entry.is_enabled():
-                entry.set_enabled(False)
-                node.set_enabled(False)
-
+        new_state = entry.is_enabled()
+        for elem in queue[nodeId]['methods']:              
+            childNode = mxcube.queue.get_node(elem['QueueId'])
+            childEntry = mxcube.queue.queue_hwobj.get_entry_with_model(childNode)
+            if new_state:
+                childEntry.set_enabled(True)
+                childNode.set_enabled(True)
             else:
-                entry.set_enabled(True)
-                node.set_enabled(True)
+                childEntry.set_enabled(False)
+                childNode.set_enabled(False)
 
-            new_state = entry.is_enabled()
-            for met in queue[parent]['methods']:
-                if int(met.get('QueueId')) == nodeId:
-                    if new_state == 0 and checked == 0:
-                        parentEntry.set_enabled(False)
-                        parentNode.set_enabled(False)
-                    elif new_state == 1 and checked == 0:
-                        parentEntry.set_enabled(True)
-                        parentNode.set_enabled(True)
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queue element %s could not be toggled' % id)
-        return Response(status=409)
+    else:
+        #not a sample so find the parent and toggle directly
+        logging.getLogger('HWR').info('[QUEUE] toggling entry with id: %s' % nodeId)
+        parentNode = node.get_parent() # this is a TaskGroup, so it is not in the parsed queue
+        # go a level up,
+        parentNode = parentNode.get_parent() # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
+        if isinstance(parentNode, qmo.TaskGroup):
+            parentNode = parentNode.get_parent()
+        parent = parentNode._node_id
+        parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parentNode)
+        #now that we know the sample parent no matter what is the entry (char, dc)
+        #check if the brother&sisters are enabled (and enable the parent)
+        checked = 0
+
+        for i in queue[parent]['methods']:
+            if i['QueueId'] != nodeId and i['checked'] == 1: # at least one brother is enabled, no need to change parent
+                checked = 1
+                break
+        if entry.is_enabled():
+            entry.set_enabled(False)
+            node.set_enabled(False)
+
+        else:
+            entry.set_enabled(True)
+            node.set_enabled(True)
+
+        new_state = entry.is_enabled()
+        for met in queue[parent]['methods']:
+            if int(met.get('QueueId')) == nodeId:
+                if new_state == 0 and checked == 0:
+                    parentEntry.set_enabled(False)
+                    parentNode.set_enabled(False)
+                elif new_state == 1 and checked == 0:
+                    parentEntry.set_enabled(True)
+                    parentNode.set_enabled(True)
+    return Response(status=200)
+
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['DELETE'])
 def deleteSampleOrMethod(id):
@@ -513,26 +434,22 @@ def deleteSampleOrMethod(id):
         :statuscode: 200: no error
         :statuscode: 409: node could not be deleted
     """
-    try:
-        nodeToRemove = mxcube.queue.get_node(int(id))
-        parent = nodeToRemove.get_parent()
-        mxcube.queue.del_child(parent, nodeToRemove)
-        entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
-        if parent._node_id > 0:  # we are removing a method
-            parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
-            parentEntry.dequeue(entryToRemove)
-            parent = parent._node_id
-            nodeToRemove = nodeToRemove._node_id
-        else:  # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
-            mxcube.queue.queue_hwobj.dequeue(entryToRemove)
+    nodeToRemove = mxcube.queue.get_node(int(id))
+    parent = nodeToRemove.get_parent()
+    mxcube.queue.del_child(parent, nodeToRemove)
+    entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
+    if parent._node_id > 0:  # we are removing a method
+        parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
+        parentEntry.dequeue(entryToRemove)
+        parent = parent._node_id
+        nodeToRemove = nodeToRemove._node_id
+    else:  # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
+        mxcube.queue.queue_hwobj.dequeue(entryToRemove)
 
-        Utils.save_queue(session)
+    Utils.save_queue(session)
 
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queued sample could not be deleted')
-        return Response(status=409)
-
+    return Response(status=200)
+    
 @mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<methodid>", methods=['DELETE'])
 def deleteMethod(sampleid, methodid):
     """
@@ -542,22 +459,18 @@ def deleteMethod(sampleid, methodid):
         :statuscode: 200: no error
         :statuscode: 409: node could not be deleted
     """
-    try:
-        nodeToRemove = mxcube.queue.get_node(int(methodid))
-        parent = mxcube.queue.get_node(int(sampleid))
-        mxcube.queue.del_child(parent, nodeToRemove)
-        entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
-        parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
-        parentEntry.dequeue(entryToRemove)
-        parent = parent._node_id
-        nodeToRemove = nodeToRemove._node_id
-        Utils.save_queue(session)
+    nodeToRemove = mxcube.queue.get_node(int(methodid))
+    parent = mxcube.queue.get_node(int(sampleid))
+    mxcube.queue.del_child(parent, nodeToRemove)
+    entryToRemove = mxcube.queue.queue_hwobj.get_entry_with_model(nodeToRemove)
+    parentEntry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
+    parentEntry.dequeue(entryToRemove)
+    parent = parent._node_id
+    nodeToRemove = nodeToRemove._node_id
+    Utils.save_queue(session)
 
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] Queued sample could not be deleted')
-        return Response(status=409)
-
+    return Response(status=200)
+    
 ###Adding methods to a sample
 def addCentring(id):
     '''
@@ -569,28 +482,24 @@ def addCentring(id):
     '''
     logging.getLogger('HWR').info('[QUEUE] centring add requested with data: '+str(params))
 
-    try:
-        centNode = qmo.SampleCentring()
-        centEntry = qe.SampleCentringQueueEntry()
-        centEntry.set_data_model(centNode)
-        centEntry.set_queue_controller(qm)
-        node = mxcube.queue.get_node(int(id))
-        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-        entry._set_background_color = Mock()
-
-        newNode = mxcube.queue.add_child_at_id(int(id), centNode)  # add_child does not return id!
-        entry.enqueue(centEntry)
-
-        logging.getLogger('HWR').info('[QUEUE] centring added to sample')
-
-        Utils.save_queue(session)
-
-        resp = jsonify({'QueueId': newNode, 'Type': 'Centring', 'Params': params})
-        resp.status_code = 200
-        return resp
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] centring could not be added to sample')
-        return Response(status=409)
+    centNode = qmo.SampleCentring()
+    centEntry = qe.SampleCentringQueueEntry()
+    centEntry.set_data_model(centNode)
+    centEntry.set_queue_controller(qm)
+    node = mxcube.queue.get_node(int(id))
+    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+    entry._set_background_color = Mock()
+    
+    newNode = mxcube.queue.add_child_at_id(int(id), centNode)  # add_child does not return id!
+    entry.enqueue(centEntry)
+    
+    logging.getLogger('HWR').info('[QUEUE] centring added to sample')
+    
+    Utils.save_queue(session)
+    
+    resp = jsonify({'QueueId': newNode, 'Type': 'Centring', 'Params': params})
+    resp.status_code = 200
+    return resp
 
 def addCharacterisation(id):
     '''
@@ -601,54 +510,51 @@ def addCharacterisation(id):
        data ={ "CharacId": newId}    '''
     #no data received yet
     params = request.get_json()
-    try:
-        characNode = qmo.Characterisation()
-        characEntry = qe.CharacterisationGroupQueueEntry()
-        characEntry._view = Mock()
-        characEntry._set_background_color = Mock()
-        characEntry.set_data_model(characNode)
-        characEntry.set_queue_controller(qm)
-        ## char has two taskgroup levels so that the diff plan keeps under the same grandparent
-        taskNode1 = qmo.TaskGroup()
-        taskNode2 = qmo.TaskGroup()
-        task1Entry = qe.TaskGroupQueueEntry()
-        task2Entry = qe.TaskGroupQueueEntry()
-        task1Entry.set_data_model(taskNode1)
-        task2Entry.set_data_model(taskNode2)
+    
+    characNode = qmo.Characterisation()
+    characEntry = qe.CharacterisationGroupQueueEntry()
+    characEntry._view = Mock()
+    characEntry._set_background_color = Mock()
+    characEntry.set_data_model(characNode)
+    characEntry.set_queue_controller(qm)
+    ## char has two taskgroup levels so that the diff plan keeps under the same grandparent
+    taskNode1 = qmo.TaskGroup()
+    taskNode2 = qmo.TaskGroup()
+    task1Entry = qe.TaskGroupQueueEntry()
+    task2Entry = qe.TaskGroupQueueEntry()
+    task1Entry.set_data_model(taskNode1)
+    task2Entry.set_data_model(taskNode2)
 
-        characNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        #characNode.characterisation_parameters.set_from_dict(params)
-        for k, v in params.items():
-            if hasattr(characNode.characterisation_parameters, k):
-                setattr(characNode.characterisation_parameters, k, v)
-        if params['point'] > 0: # a point id has been added
-            for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that cpos
-                if cpos['posId'] == int(params['point']):
-                    characNode.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+    characNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
+    #characNode.characterisation_parameters.set_from_dict(params)
+    for k, v in params.items():
+        if hasattr(characNode.characterisation_parameters, k):
+            setattr(characNode.characterisation_parameters, k, v)
+    if params['point'] > 0: # a point id has been added
+        for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that cpos
+            if cpos['posId'] == int(params['point']):
+                characNode.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
 
-        node = mxcube.queue.get_node(int(id))  # this is a sampleNode
-        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node) # this is the corresponding sampleEntry
+    node = mxcube.queue.get_node(int(id))  # this is a sampleNode
+    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node) # this is the corresponding sampleEntry
 
-        task1Id = mxcube.queue.add_child_at_id(int(id), taskNode1)
-        entry.enqueue(task1Entry)
+    task1Id = mxcube.queue.add_child_at_id(int(id), taskNode1)
+    entry.enqueue(task1Entry)
 
-        task2Id = mxcube.queue.add_child_at_id(task1Id, taskNode2)
-        task1Entry.enqueue(task2Entry)
+    task2Id = mxcube.queue.add_child_at_id(task1Id, taskNode2)
+    task1Entry.enqueue(task2Entry)
+    
+    newNode = mxcube.queue.add_child_at_id(task2Id, characNode)  # add_child does not return id!
+    task2Entry.enqueue(characEntry)
+    characEntry.set_enabled(True)
+    characNode.set_enabled(True)
+    logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
+    
+    Utils.save_queue(session)
 
-        newNode = mxcube.queue.add_child_at_id(task2Id, characNode)  # add_child does not return id!
-        task2Entry.enqueue(characEntry)
-        characEntry.set_enabled(True)
-        characNode.set_enabled(True)
-        logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
-
-        Utils.save_queue(session)
-
-        resp = jsonify({'QueueId': newNode, 'Type': 'Characterisation'})
-        resp.status_code = 200
-        return resp
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] characterisation could not be added to sample')
-        return Response(status=409)
+    resp = jsonify({'QueueId': newNode, 'Type': 'Characterisation'})
+    resp.status_code = 200
+    return resp
 
 def addDataCollection(id):
     '''
@@ -660,50 +566,46 @@ def addDataCollection(id):
     #no data received yet
     params = request.get_json()
 
-    try:
-        colNode = qmo.DataCollection()
-        colEntry = qe.DataCollectionQueueEntry()
-        colEntry._view = Mock()
-        colEntry.set_queue_controller(qm)
-        colEntry._set_background_color = Mock()
+    colNode = qmo.DataCollection()
+    colEntry = qe.DataCollectionQueueEntry()
+    colEntry._view = Mock()
+    colEntry.set_queue_controller(qm)
+    colEntry._set_background_color = Mock()
 
-        taskNode1 = qmo.TaskGroup()
-        task1Entry = qe.TaskGroupQueueEntry()
-        task1Entry.set_data_model(taskNode1)
+    taskNode1 = qmo.TaskGroup()
+    task1Entry = qe.TaskGroupQueueEntry()
+    task1Entry.set_data_model(taskNode1)
 
-        colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        colNode.acquisitions[0].path_template.directory = os.path.join(mxcube.session.get_base_image_directory(), params['path'])
-        colNode.acquisitions[0].path_template.run_number = params['run_number']
-        colNode.acquisitions[0].path_template.base_prefix = params['prefix']
-        if mxcube.queue.check_for_path_collisions(colNode.acquisitions[0].path_template):
-            logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample: Data Collision')
-            return Response(status=409)
-        if params['point'] > 0: # a point id has been added
-            for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
-                if cpos['posId'] == int(params['point']):
-                    colNode.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
-
-        colEntry.set_data_model(colNode)
-        colEntry.set_enabled(True)
-        colNode.set_enabled(True)
-        node = mxcube.queue.get_node(int(id))
-        entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-
-        task1Id = mxcube.queue.add_child_at_id(int(id), taskNode1)
-        entry.enqueue(task1Entry)
-
-        newNode = mxcube.queue.add_child_at_id(task1Id, colNode)  # add_child does not return id!
-        task1Entry.enqueue(colEntry)
-
-        Utils.save_queue(session)
-
-        logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
-        resp = jsonify({'QueueId': newNode, 'Type': 'DataCollection'})
-        resp.status_code = 200
-        return resp
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample')
+    colNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
+    colNode.acquisitions[0].path_template.directory = os.path.join(mxcube.session.get_base_image_directory(), params['path'])
+    colNode.acquisitions[0].path_template.run_number = params['run_number']
+    colNode.acquisitions[0].path_template.base_prefix = params['prefix']
+    if mxcube.queue.check_for_path_collisions(colNode.acquisitions[0].path_template):
+        logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample: Data Collision')
         return Response(status=409)
+    if params['point'] > 0: # a point id has been added
+        for cpos in mxcube.diffractometer.savedCentredPos: # searching for the motor data associated with that centred_position
+            if cpos['posId'] == int(params['point']):
+                colNode.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+
+    colEntry.set_data_model(colNode)
+    colEntry.set_enabled(True)
+    colNode.set_enabled(True)
+    node = mxcube.queue.get_node(int(id))
+    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+
+    task1Id = mxcube.queue.add_child_at_id(int(id), taskNode1)
+    entry.enqueue(task1Entry)
+
+    newNode = mxcube.queue.add_child_at_id(task1Id, colNode)  # add_child does not return id!
+    task1Entry.enqueue(colEntry)
+
+    Utils.save_queue(session)
+
+    logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
+    resp = jsonify({'QueueId': newNode, 'Type': 'DataCollection'})
+    resp.status_code = 200
+    return resp
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST'])
 def addMethod(id):
@@ -740,34 +642,30 @@ def updateMethod(sampleid, methodid):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
-    try:
-        params = request.data
-        params = json.loads(params)
-        sampleNode = mxcube.queue.get_node(int(sampleid))
-        methodNode = mxcube.queue.get_node(int(methodid))
-        methodEntry = mxcube.queue.queue_hwobj.get_entry_with_model(methodNode)
-        #TODO: update fields here, I would say that the entry does not need to be updated, only the model node
+    params = request.data
+    params = json.loads(params)
+    sampleNode = mxcube.queue.get_node(int(sampleid))
+    methodNode = mxcube.queue.get_node(int(methodid))
+    methodEntry = mxcube.queue.queue_hwobj.get_entry_with_model(methodNode)
+    #TODO: update fields here, I would say that the entry does not need to be updated, only the model node
 
-        if isinstance(methodNode, qmo.DataCollection):
-            methodNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        elif isinstance(methodNode, qmo.Characterisation):
-            methodNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
-            for k, v in params.items():
-                if hasattr(methodNode.characterisation_parameters, k):
-                    setattr(methodNode.characterisation_parameters, k, v)
-        elif isinstance(methodNode, qmo.SampleCentring):
-            pass
-        ####
+    if isinstance(methodNode, qmo.DataCollection):
+        methodNode.acquisitions[0].acquisition_parameters.set_from_dict(params)
+    elif isinstance(methodNode, qmo.Characterisation):
+        methodNode.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        for k, v in params.items():
+            if hasattr(methodNode.characterisation_parameters, k):
+                setattr(methodNode.characterisation_parameters, k, v)
+    elif isinstance(methodNode, qmo.SampleCentring):
+        pass
+        
+    Utils.save_queue(session)
 
-        Utils.save_queue(session)
-
-        logging.getLogger('HWR').info('[QUEUE] method updated')
-        resp = jsonify({'QueueId': methodid})
-        resp.status_code = 200
-        return resp
-    except Exception as ex:
-        logging.getLogger('HWR').exception('[QUEUE] centring could not be added to sample')
-        return Response(status=409)
+    logging.getLogger('HWR').info('[QUEUE] method updated')
+    resp = jsonify({'QueueId': methodid})
+    resp.status_code = 200
+    return resp
+  
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
@@ -778,21 +676,18 @@ def getSample(id):
         :statuscode: 200: no error
         :statuscode: 409: sample could not be retrieved
     """
-    try:
-        ## WARNING: serializeQueueToJson() should only be used for sending to the client,
-        ## here on the back-end side we should just always use mxcube.queue !
-        queue = serializeQueueToJson()
+    ## WARNING: serializeQueueToJson() should only be used for sending to the client,
+    ## here on the back-end side we should just always use mxcube.queue !
+    queue = serializeQueueToJson()
 
-        if not queue[int(id)]:
-            logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
-            return Response(status=409)
-        else:
-            resp = jsonify(queue[int(id)])
-            resp.status_code = 200
-            return resp
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] sample info could not be retrieved')
+    if not queue[int(id)]:
+        logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
         return Response(status=409)
+    else:
+        resp = jsonify(queue[int(id)])
+        resp.status_code = 200
+        return resp
+ 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sampleid>/<int:methodid>", methods=['GET'])
 def getMethod(sampleid, methodid):
@@ -803,28 +698,25 @@ def getMethod(sampleid, methodid):
         :response Content-Type: application/json, object containing the parameter(s) of the task. Example without parameters {"QueueId": 52,  "Type": 'Centring'...}
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
-    """
-    try:
-        ## WARNING: serializeQueueToJson() should only be used for sending to the client,
-        ## here on the back-end side we should just always use mxcube.queue !
-        queue = serializeQueueToJson()
+    """    
+    ## WARNING: serializeQueueToJson() should only be used for sending to the client,
+    ## here on the back-end side we should just always use mxcube.queue !
+    queue = serializeQueueToJson()
 
-        if not queue[int(sampleid)]:
-            logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
-            return Response(status=409)
-        else:
-            methods = queue[int(sampleid)]['methods']
-            #find the required one
-            for met in methods:
-                if met['QueueId'] == int(methodid):
-                    resp = jsonify(met)
-                    resp.status_code = 200
-                    return resp
-        logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved, it does not exits for the given sample')
+    if not queue[int(sampleid)]:
+        logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
         return Response(status=409)
-    except Exception:
-        logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved')
-        return Response(status=409)
+    else:
+        methods = queue[int(sampleid)]['methods']
+        #find the required one
+        for met in methods:
+            if met['QueueId'] == int(methodid):
+                resp = jsonify(met)
+                resp.status_code = 200
+                return resp
+    logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved, it does not exits for the given sample')
+    return Response(status=409)
+  
 
 @mxcube.route("/mxcube/api/v0.1/queue/json", methods=["GET"])
 def serialize():

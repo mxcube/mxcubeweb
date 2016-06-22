@@ -111,32 +111,21 @@ def getBeamInfo():
         aperture_list = []
         current_aperture = None
 
-    try:
-        ret.update({'position': beamInfo.get_beam_position(),
-                    'shape': beamInfoDict.get("shape"),
-                    'size_x': beamInfoDict.get("size_x"),
-                    'size_y': beamInfoDict.get("size_y"),
-                    'apertureList' : aperture_list,
-                    'currentAperture' : current_aperture })
-    except Exception:
-        logging.getLogger("HWR").exception("Failed to get beam info")
-        return Response(status=409)
-    else:
-        resp = jsonify(ret)
-        resp.status_code = 200
-        return resp
+    ret.update({'position': beamInfo.get_beam_position(),
+                'shape': beamInfoDict.get("shape"),
+                'size_x': beamInfoDict.get("size_x"),
+                'size_y': beamInfoDict.get("size_y"),
+                'apertureList' : aperture_list,
+                'currentAperture' : current_aperture })
+    resp = jsonify(ret)
+    resp.status_code = 200
+    return resp
 
 @mxcube.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
 def beamline_get_data_path():
     """
     Retrieve data directory from the session hwobj, this is specific for each beamline.
     """
-    try:
-        data = mxcube.session.get_base_image_directory()
-        return Response(json.dumps(data), status=200, mimetype='application/json')
-    except Exception:
-        return Response(status=409)
-    else:
-        resp.status_code = 200
-        return resp
+    data = mxcube.session.get_base_image_directory()
+    return Response(json.dumps(data), status=200, mimetype='application/json')
 

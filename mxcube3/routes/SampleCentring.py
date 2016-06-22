@@ -111,10 +111,7 @@ def unsubscribeToCamera():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    try:
-        mxcube.diffractometer.camera.streaming_greenlet.kill()
-    except Exception:
-        Response(status=409)
+    mxcube.diffractometer.camera.streaming_greenlet.kill()
     return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/camera/save", methods=['PUT'])
@@ -139,16 +136,13 @@ def getImageData():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    try:
-        data = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
-                'imageWidth':  mxcube.diffractometer.image_width,
-                'imageHeight':  mxcube.diffractometer.image_height,
-                }
-        resp = jsonify(data)
-        resp.status_code = 200
-        return resp
-    except Exception:
-        return Response(status=409)
+    data = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
+            'imageWidth':  mxcube.diffractometer.image_width,
+            'imageHeight':  mxcube.diffractometer.image_height,
+            }
+    resp = jsonify(data)
+    resp.status_code = 200
+    return resp
 
 ###----SAMPLE CENTRING----###
 ####
@@ -165,17 +159,12 @@ def getCentringWithId(id):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    try:
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos['posId'] == int(id):
-                resp = jsonify(cpos)
-                resp.status_code = 200
-                return resp
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring position could not be retrieved, not found')
-        return Response(status=409)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring position could not be retrieved')
-        return Response(status=409)
+    for cpos in mxcube.diffractometer.savedCentredPos:
+        if cpos['posId'] == int(id):
+            resp = jsonify(cpos)
+            resp.status_code = 200
+            return resp
+    return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/<posid>", methods=['POST'])
 def saveCentringWithId(posid):
@@ -186,21 +175,17 @@ def saveCentringWithId(posid):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    try:
-        # unselect the any previous point
-        for pos in mxcube.diffractometer.savedCentredPos:
-            pos.update({'selected': False})
-        #search for the temp point
-        for pos in mxcube.diffractometer.savedCentredPos:
-            if pos['type'] == 'TMP':
-                pos.update({'type': 'SAVED', 'selected': True})
-                resp = jsonify(pos)
-                resp.status_code = 200
-                return resp
-        return Response(status=409)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring position could not be saved')
-        return Response(status=409)
+    # unselect the any previous point
+    for pos in mxcube.diffractometer.savedCentredPos:
+        pos.update({'selected': False})
+    #search for the temp point
+    for pos in mxcube.diffractometer.savedCentredPos:
+        if pos['type'] == 'TMP':
+            pos.update({'type': 'SAVED', 'selected': True})
+            resp = jsonify(pos)
+            resp.status_code = 200
+            return resp
+    return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/<id>", methods=['PUT'])
 def updateCentringWithId(id):
@@ -214,18 +199,14 @@ def updateCentringWithId(id):
     """
     params = request.data
     params = json.loads(params)
-    try:
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos['posId'] == id:
-                cpos.update(params)
-                resp = jsonify(cpos)
-                resp.status_code = 200
-                return resp
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring position could not be retrieved, not found')
-        return Response(status=409)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring position could not be updated')
-        return Response(status=409)
+    for cpos in mxcube.diffractometer.savedCentredPos:
+        if cpos['posId'] == id:
+            cpos.update(params)
+            resp = jsonify(cpos)
+            resp.status_code = 200
+            return resp
+    logging.getLogger('HWR').error('[SAMPLEVIEW] centring position could not be retrieved, not found')
+    return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/<posid>", methods=['DELETE'])
 def deleteCentringWithId(posid):
@@ -236,18 +217,14 @@ def deleteCentringWithId(posid):
         :statuscode: 200: no error
         :statuscode: 409: error    
     """
-    try:
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos.get('posId') == int(posid):
-                mxcube.diffractometer.savedCentredPos.remove(cpos)
-                resp = jsonify(cpos)
-                resp.status_code = 200
-                return resp
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring position could not be deleted, not found')
-        return Response(status=409)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring position could not be deleted')
-        return Response(status=409)
+    for cpos in mxcube.diffractometer.savedCentredPos:
+        if cpos.get('posId') == int(posid):
+            mxcube.diffractometer.savedCentredPos.remove(cpos)
+            resp = jsonify(cpos)
+            resp.status_code = 200
+            return resp
+    logging.getLogger('HWR').error('[SAMPLEVIEW] centring position could not be deleted, not found')
+    return Response(status=409)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/<id>/moveto", methods=['PUT'])
 def moveToCentredPosition(id):
@@ -260,13 +237,9 @@ def moveToCentredPosition(id):
     motorPositions = [d['motorPositions'] for d in mxcube.diffractometer.savedCentredPos if d.get('posId') == int(id)]
     if 'kappa' in motorPositions[0]: motorPositions[0].pop('kappa')
     if 'kappa_phi' in motorPositions[0]: motorPositions[0].pop('kappa_phi')
-    try:
-        mxcube.diffractometer.move_to_motors_positions(copy.deepcopy(motorPositions[0]))
-        logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
-        return Response(status=200)
-    except Exception:
-        logging.getLogger('HWR.MX3').info('[Centring] could not move to Centring Position')
-        return Response(status=409)
+    mxcube.diffractometer.move_to_motors_positions(copy.deepcopy(motorPositions[0]))
+    logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring", methods=['GET'])
 def getCentringPositions():
@@ -277,17 +250,13 @@ def getCentringPositions():
         :statuscode: 409: error
     """
     aux = {}
-    try:
-        for p in mxcube.diffractometer.savedCentredPos:
-            aux.update({p['posId']:p})
-            x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
-            aux[p['posId']].update({'x':x, 'y': y})
-        resp = jsonify(aux)
-        resp.status_code = 200
-        return resp
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] centring positions could not be retrieved')
-        return Response(status=409)
+    for p in mxcube.diffractometer.savedCentredPos:
+        aux.update({p['posId']:p})
+        x, y = mxcube.diffractometer.motor_positions_to_screen(p['motorPositions'])
+        aux[p['posId']].update({'x':x, 'y': y})
+    resp = jsonify(aux)
+    resp.status_code = 200
+    return resp
 
 #### WORKING WITH MOVEABLES
 zoomLevels = ["Zoom 0", "Zoom 1","Zoom 2","Zoom 3","Zoom 4","Zoom 5","Zoom 6","Zoom 7","Zoom 8","Zoom 9", "Zoom 10"]
@@ -305,16 +274,13 @@ def moveZoomMotor():
     params = json.loads(params)
     newPos = params['level']
     zoomMotor = mxcube.diffractometer.getObjectByRole('zoom') 
-    try:
-        logging.getLogger('HWR').info("Changing zoom level to: %s   %s" %(newPos, zoomLevels[int(newPos)]))
-        zoomMotor.moveToPosition(zoomLevels[int(newPos)])
-        scales = mxcube.diffractometer.get_pixels_per_mm()
-        resp = jsonify({'pixelsPerMm': [scales[0],scales[1]]})
-        resp.status_code = 200
-        return resp
-	return Response(status=200)
-    except Exception:
-        return Response(status=409)
+    logging.getLogger('HWR').info("Changing zoom level to: %s   %s" %(newPos, zoomLevels[int(newPos)]))
+    zoomMotor.moveToPosition(zoomLevels[int(newPos)])
+    scales = mxcube.diffractometer.get_pixels_per_mm()
+    resp = jsonify({'pixelsPerMm': [scales[0],scales[1]]})
+    resp.status_code = 200
+    return resp
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/backlighton", methods=['PUT'])
 def backLightOn():
     """
@@ -322,16 +288,13 @@ def backLightOn():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-        if hasattr(motor_hwobj, "actuatorIn"):
-            motor_hwobj.actuatorIn(wait=False)
-        else:
-            motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
-            motor_hwobj.actuatorIn(wait=False)
-        return Response(status=200)
-    except:
-        return Response(status=409)
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+    if hasattr(motor_hwobj, "actuatorIn"):
+        motor_hwobj.actuatorIn() #wait=False)
+    else:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+        motor_hwobj.actuatorIn() #wait=False)
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/backlightoff", methods=['PUT'])
 def backLightOff():
@@ -340,16 +303,13 @@ def backLightOff():
         :statuscode: 200: no error
         :statuscode: 409: error  
     """
-    try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-        if hasattr(motor_hwobj, "actuatorOut"):
-            motor_hwobj.actuatorOut(wait=False)
-        else:
-            motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
-            motor_hwobj.actuatorOut(wait=False)
-        return Response(status=200)
-    except:
-        return Response(status=409)
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+    if hasattr(motor_hwobj, "actuatorOut"):
+        motor_hwobj.actuatorOut()
+    else:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+        motor_hwobj.actuatorOut()
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/frontlighton", methods=['PUT'])
 def frontLightOn():
@@ -358,16 +318,13 @@ def frontLightOn():
         :statuscode: 200: no error
         :statuscode: 409: error  
     """
-    try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-        if hasattr(motor_hwobj, "actuatorIn"):
-            motor_hwobj.actuatorIn(wait=False)
-        else:
-            motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
-            motor_hwobj.actuatorIn(wait=False)
-        return Response(status=200)
-    except:
-        return Response(status=409)
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+    if hasattr(motor_hwobj, "actuatorIn"):
+        motor_hwobj.actuatorIn()
+    else:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        motor_hwobj.actuatorIn()
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/frontlightoff", methods=['PUT'])
 def frontLightOff():
@@ -376,16 +333,13 @@ def frontLightOff():
         :statuscode: 200: no error
         :statuscode: 409: error  
     """
-    try:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-        if hasattr(motor_hwobj, "actuatorOut"):
-            motor_hwobj.actuatorOut(wait=False)
-        else:
-            motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
-            motor_hwobj.actuatorOut(wait=False)
-        return Response(status=200)
-    except:
-        return Response(status=409)
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+    if hasattr(motor_hwobj, "actuatorOut"):
+        motor_hwobj.actuatorOut(wait=False)
+    else:
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        motor_hwobj.actuatorOut(wait=False)
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/<motid>/<newpos>", methods=['PUT'])
 def moveMotor(motid, newpos):
@@ -399,35 +353,11 @@ def moveMotor(motid, newpos):
     motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
 
     if newpos == "stop":
-        try:
-            motor_hwobj.stop()
-            return Response(status=200)
-        except Exception:
-            logging.getLogger('HWR').exception('[SAMPLEVIEW] could not stop motor "%s"' %motid)
-            return Response(status=409)
+        motor_hwobj.stop()
+        return Response(status=200)
     else:
-        try:
-            motor_hwobj.move(float(newpos))
-            return Response(status=200)
-        except Exception:
-            logging.getLogger('HWR').exception('[SAMPLEVIEW] could not move motor "%s" to position "%s"' %(motid, newpos))
-            return Response(status=409)
-
-# @mxcube.route("/mxcube/api/v0.1/sampleview/<motid>/stop", methods=['PUT'])
-# def stopMotor(motid):
-#     """
-#         Stop the given motor.
-#         :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
-#         :statuscode: 200: no error
-#         :statuscode: 409: error 
-#     """
-#     motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
-#     try:
-#         motor_hwobj.stop()
-#         return Response(status=200)
-#     except Exception:
-#         logging.getLogger('HWR').exception('[SAMPLEVIEW] could not stop motor "%s"' %motid)
-#         return Response(status=409)
+        motor_hwobj.move(float(newpos))
+        return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/<id>", methods=['GET'])
 def get_status_of_id(id):
@@ -458,11 +388,8 @@ def centreAuto():
         :statuscode: 409: error
     """
     logging.getLogger('HWR.MX3').info('[Centring] Auto centring method requested')
-    try:
-        mxcube.diffractometer.startAutoCentring()
-        return Response(status=200)  # this only means the call was succesfull
-    except Exception:
-        return Response(status=409)
+    mxcube.diffractometer.startAutoCentring()
+    return Response(status=200)  # this only means the call was succesfull
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/start3click", methods=['PUT'])
 def centre3click():
@@ -473,15 +400,12 @@ def centre3click():
     """
     global CLICK_COUNT
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
-    try:
-        mxcube.diffractometer.start3ClickCentring()
-        CLICK_COUNT = 0
-        data = {'clickLeft': 3 - CLICK_COUNT}
-        resp = jsonify(data)
-        resp.status_code = 200
-        return resp  # this only means the call was succesfull
-    except:
-        return Response(status=409)
+    mxcube.diffractometer.start3ClickCentring()
+    CLICK_COUNT = 0
+    data = {'clickLeft': 3 - CLICK_COUNT}
+    resp = jsonify(data)
+    resp.status_code = 200
+    return resp  # this only means the call was succesfull
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/abort", methods=['PUT'])
 def abortCentring():
@@ -491,11 +415,8 @@ def abortCentring():
         :statuscode: 409: error
     """
     logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
-    try:
-        currentCentringProcedure = mxcube.diffractometer.cancelCentringMethod()
-        return Response(status=200)  # this only means the call was succesfull
-    except:
-        return Response(status=409)
+    currentCentringProcedure = mxcube.diffractometer.cancelCentringMethod()
+    return Response(status=200)  # this only means the call was succesfull
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/click", methods=['PUT'])
 def aClick():
@@ -512,27 +433,26 @@ def aClick():
         params = json.loads(params)
         clickPosition = params['clickPos']
         logging.getLogger('HWR').info("A click requested, x: %s, y: %s" %(clickPosition['x'], clickPosition['y']))
-        try:
-            mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
-            ## we store the cpos as temporary, only when asked for save it we switch the type
-            CLICK_COUNT += 1
-            data = {'clickLeft': 3 - CLICK_COUNT}
-            resp = jsonify(data)
-            resp.status_code = 200
-            return resp
-        except Exception:
-            return Response(status=409)
+        mxcube.diffractometer.imageClicked(clickPosition['x'], clickPosition['y'], clickPosition['x'], clickPosition['y'])
+        ## we store the cpos as temporary, only when asked for save it we switch the type
+        CLICK_COUNT += 1
+        data = {'clickLeft': 3 - CLICK_COUNT}
+        resp = jsonify(data)
+        resp.status_code = 200
+        return resp
     else:
         return Response(status=409)
 
 def waitForCentringFinishes(*args, **kwargs):
     if mxcube.diffractometer.centringStatus["valid"]:
-
-        mxcube.diffractometer.accept_centring()
+        try:
+            mxcube.diffractometer.accept_centring()
+        except AttributeError:
+            mxcube.diffractometer.acceptCentring()
         motorPositions = mxcube.diffractometer.centringStatus["motors"]
         motorPositions.pop('zoom')
-        motorPositions.pop('beam_y')
-        motorPositions.pop('beam_x')
+        motorPositions.pop('beam_y',None)
+        motorPositions.pop('beam_x',None)
         x, y = mxcube.diffractometer.motor_positions_to_screen(motorPositions)
         # only store one temp point so override if any
         for pos in mxcube.diffractometer.savedCentredPos:
@@ -568,18 +488,12 @@ def waitForCentringFinishes(*args, **kwargs):
 def acceptCentring():
     """
     """
-    try:
-        mxcube.diffractometer.acceptCentring()
-        return Response(status=200)
-    except Exception:
-        return Response(status=409)
+    mxcube.diffractometer.acceptCentring()
+    return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=['PUT'])
 def rejectCentring():
     """
     """
-    try:
-        mxcube.diffractometer.rejectCentring()
-        return Response(status=200)
-    except Exception:
-        return Response(status=409)
+    mxcube.diffractometer.rejectCentring()
+    return Response(status=200)

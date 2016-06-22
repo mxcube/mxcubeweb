@@ -26,6 +26,8 @@ const initialState = {
     Sampy: { position: 0, Status: 0 },
     BackLight: { position: 0, Status: 0 },
     FrontLight: { position: 0, Status: 0 },
+    BackLightSwitch: { position: 0, Status: 0 },
+    FrontLightSwitch: { position: 0, Status: 0 },
     Kappa: { position: 0, Status: 0 },
     Kappa_phi: { position: 0, Status: 0 }
   },
