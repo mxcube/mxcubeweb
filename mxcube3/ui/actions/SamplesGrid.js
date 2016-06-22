@@ -113,6 +113,7 @@ export function sendManualMountRequest(manual) {
         dispatch(showErrorPanel(true, 'Could not toogle manual mode'));
       } else {
         dispatch(sendClearQueue());
+        dispatch(updateSampleListAction({}));
         dispatch(setManualMountAction(manual));
         if (manual) {
           dispatch(showTaskForm('AddSample'));
