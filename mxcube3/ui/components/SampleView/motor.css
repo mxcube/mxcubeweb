@@ -27,21 +27,4 @@
     font-size: 0.7em;
 }
 
-.motor-moving{
-    background-color: #ffff99 !important;
-    color: transparent;
-    text-shadow: 0 0 0 black;
-}
-
-.motor-ready{
-    background-color: #9BCE7B !important;
-}
-
-.motor-fault{
-    background-color: #ff9999 !important;
-}
-
-.motor-onlimit{
-    background-color: #ff9900 !important;
-}
 

@@ -185,12 +185,12 @@ export default class PopInput extends React.Component {
     const inputVisibility = !this.isBusy() ? '' : 'hidden';
     const title = (this.props.title === '') ? this.props.name : this.props.title;
 
-    let stateClass = '';
+    let stateClass = 'value-label-enter-success';
 
     if (this.isBusy()) {
-      stateClass = 'value-label-enter-loading';
+      stateClass = 'input-bg-moving';
     } else if (this.isAborted()) {
-      stateClass = 'value-label-enter-error';
+      stateClass = 'input-bg-fault';
     }
 
     const popover = (

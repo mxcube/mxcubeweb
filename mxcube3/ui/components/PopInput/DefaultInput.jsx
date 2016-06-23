@@ -41,7 +41,7 @@ export default class DefaultInput extends React.Component {
         <Input ref="input" type={this.props.dataType} style={{ width: this.props.inputSize }}
           placeholder="" className="input-sm" defaultValue={this.props.value}
         />
-        <ButtonToolbar className="editable-buttons">
+        <ButtonToolbar style={{ 'margin-left': '0px' }}  className="form-group editable-buttons">
           <Button bsStyle="primary" className="btn-sm" onClick={this.save}>
             <i className="glyphicon glyphicon-ok" />
           </Button>

@@ -36,12 +36,12 @@ export default class InOutSwitch extends React.Component {
     const isIn = this.props.data.state === 'in';
     const inButtonStyle = isIn ? 'success' : 'default';
     const outButtonStyle = isIn ? 'default' : 'success';
-    let msgBgStyle = 'bg-warning';
+    let msgBgStyle = 'input-bg-moving';
 
     if (this.props.data.state === 'in') {
-      msgBgStyle = 'bg-success';
+      msgBgStyle = 'input-bg-ready';
     } else if (this.props.data.state === 'out') {
-      msgBgStyle = 'bg-danger';
+      msgBgStyle = 'input-bg-fault';
     }
 
 

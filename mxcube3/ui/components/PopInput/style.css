@@ -24,16 +24,6 @@
   display: inline;
 }
 
-.value-label-enter-loading {
-  background-color: #FF0;
-}
-
 .value-label-enter-success{
   transition: background-color 1000ms ease-out;
-}
-
-.value-label-enter-error{
-  color: #000;
-  background-color: #F66;
-  transition: background-color 1000ms ease-in;
 }
