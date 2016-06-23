@@ -73,7 +73,7 @@ export default class SampleGrid extends React.Component {
 
   gridDimension() {
     const colArray = [];
-    const numItems = this.props.order.size;
+    const numItems = Object.keys(this.props.order).length;
     const numFullCols = Math.floor(this.props.gridWidth / 190);
     const numFullRows = Math.floor(numItems / numFullCols);
     const itemsOnLastRow = numItems - (numFullRows * numFullCols);
@@ -93,7 +93,7 @@ export default class SampleGrid extends React.Component {
   itemGridPosition(key) {
     const gridDim = this.gridDimension();
     const numCols = gridDim[0];
-    const pos = this.props.order.get(key);
+    const pos = this.props.order[key];
 
     const rowPos = Math.floor(pos / numCols);
     const colPos = pos - (rowPos * numCols);
@@ -106,24 +106,28 @@ export default class SampleGrid extends React.Component {
     let [up, down, left, right] = [true, true, true, true];
     const itemPos = this.itemGridPosition(key);
 
-    if (itemPos.col === 0) {
-      left = false;
-    }
+    if (Object.keys(this.props.selected).map(_key => this.props.selected[_key]).length === 1) {
+      if (itemPos.col === 0) {
+        left = false;
+      }
 
-    if (itemPos.row === 0) {
-      up = false;
-    }
+      if (itemPos.row === 0) {
+        up = false;
+      }
 
-    if (itemPos.row === (itemPos.gridDimension.length - 1)) {
-      down = false;
-    }
+      if (itemPos.row === (itemPos.gridDimension.length - 1)) {
+        down = false;
+      }
 
-    if (itemPos.col > (itemPos.gridDimension[itemPos.row + 1] - 1)) {
-      down = false;
-    }
+      if (itemPos.col > (itemPos.gridDimension[itemPos.row + 1] - 1)) {
+        down = false;
+      }
 
-    if (itemPos.col === (itemPos.gridDimension[itemPos.row] - 1)) {
-      right = false;
+      if (itemPos.col === (itemPos.gridDimension[itemPos.row] - 1)) {
+        right = false;
+      }
+    } else {
+      [up, down, left, right] = [false, false, false, false];
     }
 
     return [up, down, left, right];
@@ -138,7 +142,7 @@ export default class SampleGrid extends React.Component {
       [_start, _end] = [end, start];
     }
 
-    for (const [key, value] of this.props.order.entries()) {
+    for (const [key, value] of Object.entries(this.props.order)) {
       if (value >= _start && value <= _end) {
         keys.push(key);
       }
@@ -174,24 +178,23 @@ export default class SampleGrid extends React.Component {
 
 
   sortSample(order, key, targetPos) {
-    const newSampleOrder = new Map(order);
-    const sourcePos = order.get(key);
+    const newSampleOrder = Object.assign({}, order);
+    const sourcePos = order[key];
 
     // Shift samples between the old and new position one step
-    for (const [_key, _pos] of order.entries()) {
+    for (const [_key, _pos] of Object.entries(order)) {
       if (sourcePos < targetPos) {
         if ((sourcePos < _pos) && (_pos <= targetPos)) {
-          newSampleOrder.set(_key, _pos - 1);
+          newSampleOrder[_key] = _pos - 1;
         }
       } else if (sourcePos > targetPos) {
         if ((sourcePos > _pos) && (_pos >= targetPos)) {
-          newSampleOrder.set(_key, _pos + 1);
+          newSampleOrder[_key] = _pos + 1;
         }
       }
     }
 
-    newSampleOrder.set(key, targetPos);
-
+    newSampleOrder[key] = targetPos;
     this.props.setSampleOrder(newSampleOrder);
   }
 
@@ -208,7 +211,7 @@ export default class SampleGrid extends React.Component {
     }
 
     const numCols = this.gridDimension()[0];
-    let newPos = this.props.order.get(selectedItemKey);
+    let newPos = this.props.order[selectedItemKey];
     const [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] = this.canMove(selectedItemKey);
 
     if (dir === 'RIGHT' && canMoveRight) {
@@ -232,7 +235,13 @@ export default class SampleGrid extends React.Component {
     let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
     sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
 
-    return sampleFilter.includes(this.props.filterText.toLowerCase());
+    let filterItem = sampleFilter.includes(this.props.filterText.toLowerCase());
+
+    if (this.props.filterText.includes('is:picked')) {
+      filterItem = this.props.picked[key];
+    }
+
+    return filterItem;
   }
 
 
@@ -254,7 +263,7 @@ export default class SampleGrid extends React.Component {
         sampleGrid.push(
           <SampleGridItem
             ref={i}
-            seqId={this.props.order.get(key)}
+            seqId={this.props.order[key]}
             itemKey={key}
             sampleID={sample.id}
             acronym={acronym}
@@ -262,6 +271,7 @@ export default class SampleGrid extends React.Component {
             dm={sample.code}
             loadable={false}
             location={sample.location}
+            queueOrder={sample.queueOrder}
             tags={tags}
             selected={this.props.selected[key]}
             deleteTask={this.props.deleteTask}

@@ -1,6 +1,9 @@
 import React from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
+
+
 import './SampleGrid.css';
 
 
@@ -58,24 +61,48 @@ export class SampleGridItem extends React.Component {
     }
 
     const pickButton = (
-      <button
-        className="samples-grid-item-button"
-        bsStyle="default"
-        bsSize="s"
-        onClick={this.togglePicked}
+      <OverlayTrigger
+        placement="top"
+        overlay={(<Tooltip>Pick/Unpick sample for collect</Tooltip>)}
       >
-        <i className={iconClassName} />
-      </button>
+        <button
+          className="samples-grid-item-button"
+          bsStyle="default"
+          bsSize="s"
+          onClick={this.togglePicked}
+        >
+          <i className={iconClassName} />
+        </button>
+      </OverlayTrigger>
     );
 
     const moveButton = (
-      <button
-        className="samples-grid-item-button"
-        onClick={this.toggleMovable}
+      <OverlayTrigger
+        placement="top"
+        overlay={(<Tooltip>Move sample (change order in which sample is collected)</Tooltip>)}
       >
-        <i className="glyphicon glyphicon-move" />
-      </button>
+        <button
+          className="samples-grid-item-button"
+          onMouseDown={this.toggleMovable}
+        >
+          <i className="glyphicon glyphicon-move" />
+        </button>
+      </OverlayTrigger>
      );
+
+    const collectButton = (
+      <OverlayTrigger
+        placement="top"
+        overlay={(<Tooltip>Mount and collect THIS sample now</Tooltip>)}
+      >
+        <button
+          className="samples-grid-item-button"
+          onClick={ () => { location.href = '#/datacollection'; } }
+        >
+          <i className="glyphicon glyphicon-screenshot" />
+        </button>
+      </OverlayTrigger>
+    );
 
     let content = (
       <div className="samples-item-controls-container">
@@ -83,11 +110,12 @@ export class SampleGridItem extends React.Component {
       </div>
     );
 
-    if (this.props.selected) {
+    if (this.props.selected && !this.props.canMove().every(value => value === false)) {
       content = (
         <div className="samples-item-controls-container">
           {pickButton}
           {moveButton}
+          {collectButton}
         </div>
       );
     }
@@ -120,10 +148,20 @@ export class SampleGridItem extends React.Component {
   }
 
 
+  showSeqId() {
+    const showId = this.props.picked ? '' : 'none';
+    return (
+      <div>
+        <div style={{ display: 'none' }} className="seq-id">{this.props.seqId}</div>
+        <div style={{ display: showId }} className="queue-order">{this.props.queueOrder}</div>
+      </div>
+    );
+  }
+
+
   showMoveArrows() {
     let [displayUp, displayDown, displayLeft, displayRight] = ['', '', '', ''];
     const [up, down, left, right] = this.props.canMove(this.props.itemKey);
-    let content = (<div className="seq-id">{this.props.seqId}</div>);
 
     if (!left) {
       displayLeft = 'none';
@@ -141,35 +179,36 @@ export class SampleGridItem extends React.Component {
       displayRight = 'none';
     }
 
+    let content = (<div></div>);
+
     if (this.props.moving) {
       content = (
         <div>
-          <div style={{ opacity: 0.7 }} className="seq-id">{this.props.seqId}</div>
           <button
             style={{ display: displayUp }}
             className="move-arrow move-arrow-up"
-            onClick={this.moveItemUp}
+            onMouseDown={this.moveItemUp}
           >
             <i className="glyphicon glyphicon-arrow-up" />
           </button>
           <button
             style={{ display: displayLeft }}
             className="move-arrow move-arrow-left"
-            onClick={this.moveItemLeft}
+            onMouseDown={this.moveItemLeft}
           >
             <i className="glyphicon glyphicon-arrow-left" />
           </button>
           <button
             style={{ display: displayRight }}
             className="move-arrow move-arrow-right"
-            onClick={this.moveItemRight}
+            onMouseDown={this.moveItemRight}
           >
             <i className="glyphicon glyphicon-arrow-right" />
           </button>
           <button
             style={{ display: displayDown }}
             className="move-arrow move-arrow-down"
-            onClick={this.moveItemDown}
+            onMouseDown={this.moveItemDown}
           >
             <i className="glyphicon glyphicon-arrow-down" />
           </button>
@@ -207,6 +246,7 @@ export class SampleGridItem extends React.Component {
           {this.props.name + (this.props.acronym ? ` ( ${this.props.acronym} )` : '')}
         </a>
         <br />
+        {this.showSeqId()}
         <span className="dm">{this.props.dm}</span>
         <br />
         <div className="samples-grid-item-tasks">

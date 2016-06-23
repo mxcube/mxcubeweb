@@ -9,6 +9,7 @@ import {
   Glyphicon,
   ButtonToolbar,
   SplitButton,
+  DropdownButton,
   MenuItem,
   ButtonGroup
 } from 'react-bootstrap';
@@ -46,6 +47,8 @@ class SampleGridContainer extends React.Component {
     this.showAddSample = props.showTaskParametersForm.bind(this, 'AddSample');
     this.manualMount = this.manualMount.bind(this);
     this.filterSampleGrid = this.filterSampleGrid.bind(this);
+    this.filterSampleGridClear = this.filterSampleGridClear.bind(this);
+    this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
   }
 
 
@@ -79,8 +82,34 @@ class SampleGridContainer extends React.Component {
   }
 
 
-  filterSampleGrid(option) {
-    this.props.filter(option.target.value);
+  filterSampleGrid() {
+    this.props.filter(this.refs.filterInput.getInputDOMNode().value.trim());
+  }
+
+
+  filterSampleGridClear() {
+    this.refs.filterInput.getInputDOMNode().value = '';
+    this.filterSampleGrid();
+  }
+
+  filterSampleGridPicked() {
+    this.refs.filterInput.getInputDOMNode().value = 'is:picked';
+    this.filterSampleGrid();
+  }
+
+
+  numSamplesPicked() {
+    return Object.values(this.props.picked).filter(value => value === true).length;
+  }
+
+
+  isCollectDisabled() {
+    return this.numSamplesPicked() === 0;
+  }
+
+
+  numSamples() {
+    return Object.keys(this.props.sampleList).length;
   }
 
 
@@ -107,12 +136,19 @@ class SampleGridContainer extends React.Component {
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
-      <Button><Glyphicon glyph="search" /></Button>
+      <DropdownButton>
+        <MenuItem onClick={this.filterSampleGridClear}>
+          Clear
+        </MenuItem>
+        <MenuItem onClick={this.filterSampleGridPicked}>
+          Picked
+        </MenuItem>
+      </DropdownButton>
     );
 
     return (
       <StickyContainer>
-        <div className="row row-centered">
+        <div style={{ 'margin-bottom': '20px' }} className="row row-centered">
           <div className="col-centered" >
             <ButtonToolbar>
               <SplitButton
@@ -138,27 +174,19 @@ class SampleGridContainer extends React.Component {
         </div>
         <Sticky
           className="samples-grid-header"
-          style={{ width: gridWidth }}
+          style={{ width: gridWidth, 'margin-bottom': '5px' }}
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div className="col-xs-5">
+            <div className="col-xs-6">
               <div className="form-inline">
-                <Input
-                  type="text"
-                  ref="filter_input"
-                  defaultValue={this.props.filterText}
-                  label="Filter:"
-                  buttonAfter={innerSearchIcon}
-                  onChange={this.filterSampleGrid}
-                />
-                <span style={{ 'margin-left': '10px' }}>Pick: </span>
-                <ButtonGroup className="form-group">
+                <span>Pick for collect: </span>
+                <ButtonGroup>
                   <Button
                     onClick={this.props.selectAll}
                     disabled={this.props.manualMount}
                   >
-                    All
+                  All
                   </Button>
                   <Button
                     onClick={this.props.pickSelected}
@@ -173,6 +201,14 @@ class SampleGridContainer extends React.Component {
                     None
                   </Button>
                 </ButtonGroup>
+                <span style={{ 'margin-left': '5em' }}>Filter: </span>
+                <Input
+                  type="text"
+                  ref="filterInput"
+                  defaultValue={this.props.filterText}
+                  buttonAfter={innerSearchIcon}
+                  onChange={this.filterSampleGrid}
+                />
               </div>
              </div>
              <div className="col-xs-2 pull-right">
@@ -181,13 +217,17 @@ class SampleGridContainer extends React.Component {
                  showForm={this.props.showTaskParametersForm}
                  selected={this.props.selected}
                />
-               <Button className="btn btn-success pull-right" href="#/datacollection">
-                 Collect <Glyphicon glyph="chevron-right" />
+               <Button
+                 className="btn btn-success pull-right"
+                 href="#/datacollection"
+                 disabled={this.isCollectDisabled()}
+               >
+                 Collect {this.numSamplesPicked()}/{this.numSamples()}
+                 <Glyphicon glyph="chevron-right" />
                </Button>
              </div>
           </div>
         </Sticky>
-        <br />
         <div className="row">
           <div className="col-xs-12">
             <SampleGrid
@@ -217,14 +257,14 @@ function mapStateToProps(state) {
   return {
     loginData: state.login.data,
     queue: state.queue,
-    selected: state.samples_grid.selected,
-    moving: state.samples_grid.moving,
-    sampleList: state.samples_grid.sampleList,
+    selected: state.sampleGrid.selected,
+    moving: state.sampleGrid.moving,
+    sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
-    manualMount: state.samples_grid.manualMount.set,
-    filterText: state.samples_grid.filterText,
-    order: state.samples_grid.order,
-    picked: state.samples_grid.picked
+    manualMount: state.sampleGrid.manualMount.set,
+    filterText: state.sampleGrid.filterText,
+    order: state.sampleGrid.order,
+    picked: state.sampleGrid.picked
   };
 }
 

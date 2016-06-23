@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import login from './login';
 import queue from './queue';
-import samples_grid from './SamplesGrid';
+import sampleGrid from './SamplesGrid';
 import taskForm from './taskForm';
 import sampleview from './sampleview';
 import general from './general';
@@ -13,7 +13,7 @@ import { reducer as formReducer } from 'redux-form';
 const rootReducer = combineReducers({
   login,
   queue,
-  samples_grid,
+  sampleGrid,
   taskForm,
   sampleview,
   logger,

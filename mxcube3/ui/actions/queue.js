@@ -182,7 +182,6 @@ export function sendClearQueue() {
       }
     }).then(() => {
       dispatch(clearAll());
-      dispatch(updateSampleListAction({}));
     });
   };
 }
