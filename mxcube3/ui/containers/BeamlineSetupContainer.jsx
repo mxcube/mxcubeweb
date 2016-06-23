@@ -7,7 +7,8 @@ import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 import PopInput from '../components/PopInput/PopInput';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 
-import { getAllAttributes, setAttribute,
+import { getAllAttributesRequest, 
+         setAttributeRequest,
          abortCurrentAction } from '../actions/beamline';
 
 import './beamline_setup_container.css';
@@ -155,8 +156,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    getAllAttributes: bindActionCreators(getAllAttributes, dispatch),
-    setAttribute: bindActionCreators(setAttribute, dispatch),
+    getAllAttributes: bindActionCreators(getAllAttributesRequest, dispatch),
+    setAttribute: bindActionCreators(setAttributeRequest, dispatch),
     abortCurrentAction: bindActionCreators(abortCurrentAction, dispatch)
   };
 }

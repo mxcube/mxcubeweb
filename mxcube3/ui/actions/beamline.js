@@ -1,28 +1,134 @@
 import fetch from 'isomorphic-fetch';
-import { SET_ATTRIBUTE, SET_ALL_ATTRIBUTES, SET_BUSY_STATE, STATE } from './beamline_atypes';
 
 
-export function beamlinePropertyValueAction(data) {
-  return { type: SET_ATTRIBUTE, data };
+// The different states a beamline attribute can assume.
+export const STATE = {
+  IDLE: 'READY',
+  BUSY: 'MOVING',
+  ABORT: 'UNUSABLE'
+};
+
+
+/**
+ *  Initial redux state for beamline attributes, object containing each beamline 
+ *  attribute (name, attribute object). Each attribute object in turn have the 
+ *  follwoing properties:
+ *
+ *     name:   name of beamline attribute
+ *     value:  attributes current value
+ *     state:  attributes current state, see STATE for more information
+ *     msg:    arbitray message describing current state
+ */
+export const INITIAL_STATE = {
+  energy: {
+    limits: [
+      0,
+      1000,
+      0.1
+    ],
+    name: 'energy',
+    value: '0',
+    state: STATE.IDLE,
+    msg: ''
+  },
+  resolution: {
+    limits: [
+      0,
+      1000,
+      0.1
+    ],
+    name: 'resolution',
+    value: '0',
+    state: STATE.IDLE,
+    msg: ''
+  },
+  transmission: {
+    limits: [
+      0,
+      1000,
+      0.1
+    ],
+    name: 'transmission',
+    value: '0',
+    state: STATE.IDLE,
+    msg: ''
+  },
+  fast_shutter: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'fast_shutter',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  safety_shutter: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'safety_shutter',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  beamstop: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'beamstop',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  capillary: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'capillary',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  }
+};
+
+
+// Action types
+export const BL_ATTR_SET = 'BL_ATTR_SET';
+export const BL_ATTR_GET_ALL = 'BL_ATTR_GET_ALL';
+export const BL_ATTR_SET_STATE = 'BL_ATTR_SET_STATE';
+
+
+export function setBeamlineAttrAction(data) {
+  return { type: BL_ATTR_SET, data };
 }
 
 
-export function beamlinePropertiesAction(data) {
-  return { type: SET_ALL_ATTRIBUTES, data };
+export function getBeamlineAttrsAction(data) {
+  return { type: BL_ATTR_GET_ALL, data };
 }
 
 
 export function busyStateAction(name) {
   return {
-    type: SET_BUSY_STATE,
+    type: BL_ATTR_SET_STATE,
     data: { name, state: STATE.BUSY }
   };
 }
 
 
-export function getAllAttributes() {
+export function getAllAttributesRequest() {
+  const url = 'mxcube/api/v0.1/beamline';
+
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/beamline', {
+    fetch(url, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -31,18 +137,20 @@ export function getAllAttributes() {
       credentials: 'include'
     }).then(response => response.json())
           .then(data => {
-            dispatch(beamlinePropertiesAction(data));
+            dispatch(getBeamlineAttrsAction(data));
           }, () => {
-            throw new Error('Server connection problem (login)');
+            throw new Error(`GET ${url} failed`);
           });
   };
 }
 
 
-export function setAttribute(name, value) {
+export function setAttributeRequest(name, value) {
+  const url = `mxcube/api/v0.1/beamline/${name}`;
+
   return (dispatch) => {
     dispatch(busyStateAction(name));
-    fetch(`mxcube/api/v0.1/beamline/${name}`, {
+    fetch(url, {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
@@ -52,9 +160,9 @@ export function setAttribute(name, value) {
       body: JSON.stringify({ name, value })
     }).then(response => response.json())
           .then(data => {
-            dispatch(beamlinePropertyValueAction(data));
+            dispatch(setBeamlineAttrAction(data));
           }, () => {
-            throw new Error('Server connection problem');
+            throw new Error(`PUT ${url} failed`);
           });
   };
 }
