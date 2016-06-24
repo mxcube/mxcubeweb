@@ -1,5 +1,5 @@
-import { INITIAL_STATE, 
-         BL_ATTR_SET, 
+import { INITIAL_STATE,
+         BL_ATTR_SET,
          BL_ATTR_GET_ALL,
          BL_ATTR_SET_STATE } from '../actions/beamline';
 

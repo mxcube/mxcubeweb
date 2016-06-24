@@ -1,5 +1,4 @@
 import fetch from 'isomorphic-fetch';
-import { updateSampleListAction } from './SamplesGrid';
 
 export function addSample(sampleID, queueID) {
   return {
@@ -80,17 +79,6 @@ export function toggleChecked(queueID) {
     type: 'TOGGLE_CHECKED', queueID
   };
 }
-
-// export function synchState(savedQueue) {
-//   if (Object.keys(savedQueue).length > 0) {
-//     savedQueue.current = {};
-//     savedQueue.todo = { nodes:[] };
-//     savedQueue.history = { nodes:[] };
-//     return showRestoreDialog(savedQueue);
-//   } else {
-//     return showRestoreDialog(savedQueue, false);
-//   }
-// }
 
 export function showRestoreDialog(queueState, show = true) {
   return {

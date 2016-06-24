@@ -3,7 +3,7 @@ import { without, xor } from 'lodash/array';
 import update from 'react/lib/update';
 
 const initialState = {
-  queue: {},
+  queue: [],
   current: { node: null, collapsed: false, running: false },
   todo: { nodes: [], collapsed: false },
   history: { nodes: [], collapsed: false },
@@ -42,41 +42,34 @@ export default (state = initialState, action) => {
         // Removing sample from queue
     case 'REMOVE_SAMPLE':
       return Object.assign({}, state,
-        {
-          todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
+        { todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
           queue: omit(state.queue, action.queueID),
           lookup: omit(state.lookup, action.queueID),
           collapsedSample: omit(state.collapsedSample, action.queueID),
           lookup_queueID: omit(state.lookup_queueID, action.index)
-        }
-      );
+        });
 
         // Adding the new task to the queue
-    case 'ADD_TASK':
-      return Object.assign({}, state,
-        {
-          queue: {
-            ...state.queue,
-            [action.parentID]: state.queue[action.parentID].concat(action.queueID)
-          },
-          checked: state.checked.concat(action.queueID)
-        }
-      );
+    case 'ADD_TASK': {
+      let tasks = state.queue || [];
+      tasks = tasks.concat([{ type: action.taskType,
+                              label: action.taskType.split(/(?=[A-Z])/).join(' '),
+                              sampleID: action.sampleID,
+                              queueID: tasks.length,
+                              parentID: action.parentID,
+                              parameters: action.parameters,
+                              state: 0
+      }]);
 
+      return Object.assign({}, state, { queue: tasks, checked: state.checked.concat(0) });
+    }
     // Removing the task from the queue
-    case 'REMOVE_TASK':
-      return Object.assign({}, state,
-        {
-          queue: {
-            ...state.queue,
-            [action.parentID]: without(state.queue[action.parentID],
-            action.queueID)
-          },
-          checked: without(state.checked, action.queueID)
-        }
-      );
-
-        // Run Mount, this will add the mounted sample to history
+    case 'REMOVE_TASK': {
+      const index = state.queue.indexOf(action.task);
+      return Object.assign({}, state, { queue: without(state.queue, state.queue[index]),
+                                        checked: without(state.checked, action.queueID) });
+    }
+    // Run Mount, this will add the mounted sample to history
     case 'MOUNT_SAMPLE':
       return Object.assign({}, state,
         {

@@ -21,7 +21,7 @@ import {
   filterAction,
   sendSyncSamplesRequest,
   sendManualMountRequest,
-  sendDeleteSampleTask,
+  removeTask,
   toggleMovableAction,
   setSampleOrderAction,
   selectAction,
@@ -280,9 +280,7 @@ function mapDispatchToProps(dispatch) {
     addSampleToQueue: (id) => dispatch(sendAddSample(id)),
     setManualMount: (manual) => dispatch(sendManualMountRequest(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
-    deleteTask: (parentId, queueId, sampleId) => {
-      dispatch(sendDeleteSampleTask(parentId, queueId, sampleId));
-    },
+    deleteTask: (task) => dispatch(removeTask(task)),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     select: (keys) => dispatch(selectAction(keys)),
     pickSelected: () => dispatch(pickSelectedAction())
