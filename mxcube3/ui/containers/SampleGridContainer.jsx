@@ -53,9 +53,9 @@ class SampleGridContainer extends React.Component {
 
 
   addSamples() {
-    // Loop through all samples, check which was selected and add to the queue.
+    // Loop through all samples, check which was picked and add to the queue.
     Object.keys(this.props.samplesList).forEach(key => {
-      if (this.props.selected[key]) {
+      if (this.props.picked[key]) {
         this.props.addSampleToQueue(key);
       }
     });
@@ -215,7 +215,7 @@ class SampleGridContainer extends React.Component {
                <SampleTaskButtons
                  defaultParameters={this.props.defaultParameters}
                  showForm={this.props.showTaskParametersForm}
-                 selected={this.props.selected}
+                 samples={this.props.picked}
                />
                <Button
                  className="btn btn-success pull-right"
