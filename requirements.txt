@@ -13,3 +13,4 @@ pillow
 suds
 python-ldap
 lxml
+numpy
