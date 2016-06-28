@@ -12,6 +12,7 @@ import { Provider } from 'react-redux';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
 import {persistStore, autoRehydrate, storages} from 'redux-persist'
+import crosstabSync from 'redux-persist-crosstab';
 import rootReducer from './reducers';
 import ServerIO from './serverIO';
 import 'font-awesome-webpack';
@@ -44,10 +45,12 @@ export default class App extends React.Component {
     this.serverIO = new ServerIO(store.dispatch);
     this.serverIO.listen();
 
-    persistStore(store, { storage: storages.asyncLocalStorage }, (err, restoredState) => {
+    const persistor = persistStore(store, { storage: storages.asyncLocalStorage }, (err, restoredState) => {
       store.dispatch(getLoginInfo()) 
       this.setState({initialized: true});
     })
+  
+    crosstabSync(persistor);
   }
 
   render() {
