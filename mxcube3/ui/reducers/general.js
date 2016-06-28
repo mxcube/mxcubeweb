@@ -26,10 +26,6 @@ export default (state = initialState, action) => {
           dialogMessage: action.message
         };
       }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
-      }
     default:
       return state;
   }

@@ -166,11 +166,6 @@ export default (state = initialState, action) => {
           beamPosition: action.data.beamInfo.position
         };
       }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
-      }
-
     default:
       return state;
   }

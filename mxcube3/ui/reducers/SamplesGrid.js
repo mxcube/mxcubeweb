@@ -94,9 +94,6 @@ function recalculateQueueOrder(keys, gridOrder, state) {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'SIGNOUT': {
-      return Object.assign({}, INITIAL_STATE);
-    }
     case 'UPDATE_SAMPLE_LIST': {
       return Object.assign({}, state, { sampleList: initSampleList(action.sampleList),
                                         order: initialGridOrder(action.sampleList) });

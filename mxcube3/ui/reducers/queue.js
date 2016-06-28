@@ -180,10 +180,6 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state, ...action.queueState);
       }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
-      }
     case 'SET_INITIAL_STATUS':
       {
         return { ...state, rootPath: action.data.rootPath };
