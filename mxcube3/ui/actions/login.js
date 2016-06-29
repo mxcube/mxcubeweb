@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialStatus } from './general';
-import { synchState, sendClearQueue } from './queue';
+import { sendClearQueue } from './queue';
 
 export function doLogin(proposal, password) {
   return function (dispatch) {
@@ -56,7 +56,8 @@ export function getLoginInfo() {
               // in local session storage, otherwise we need to do a manual
               // synchronisation
               if (loginInfo.loginRes.Proposal.number != stored_proposal) {
-                  dispatch(synchState(loginInfo.queue));
+                  //this action has been commented... not sure what to do
+                  //dispatch(synchState(loginInfo.queue));
               }
             }
           }, () => {
