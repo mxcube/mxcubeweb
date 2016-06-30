@@ -178,3 +178,16 @@
 .list-head .btn-sm{
     border-radius: 0px;
 }
+
+.logger-window {
+    font-size: 16px;
+    line-height: 1.4;
+    width: auto;
+    background-color: #fff;
+    padding: 8px 12px;
+    border-left: 4px solid #009688;
+    word-wrap: break-word;
+    height: 100px;
+    overflow: scroll;
+}
+
