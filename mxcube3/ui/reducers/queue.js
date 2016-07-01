@@ -84,7 +84,10 @@ export default (state = initialState, action) => {
           todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
           history: {
             ...state.history,
-            nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)
+            nodes: (
+              state.current.node ?
+              state.history.nodes.concat(state.current.node) : state.history.nodes
+            )
           }
         }
       );
@@ -95,7 +98,10 @@ export default (state = initialState, action) => {
           current: { node: null, collapsed: false, running: false },
           history: {
             ...state.history,
-            nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)
+            nodes: (
+              state.current.node ?
+              state.history.nodes.concat(state.current.node) : state.history.nodes
+            )
           }
         }
       );

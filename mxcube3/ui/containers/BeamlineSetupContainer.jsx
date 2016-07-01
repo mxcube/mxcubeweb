@@ -7,7 +7,7 @@ import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 import PopInput from '../components/PopInput/PopInput';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 
-import { getAllAttributesRequest, 
+import { getAllAttributesRequest,
          setAttributeRequest,
          abortCurrentAction } from '../actions/beamline';
 
@@ -88,7 +88,7 @@ class BeamlineSetupContainer extends React.Component {
                       suffix="mm"
                       data={this.props.data.dtox}
                       onSave={this.onSaveHandler}
-          onCancel={this.onCancelHandler}
+                      onCancel={this.onCancelHandler}
                     />
                   </td>
                   <td>

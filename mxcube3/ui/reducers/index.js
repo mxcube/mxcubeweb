@@ -19,16 +19,7 @@ const rootReducer = combineReducers({
   logger,
   general,
   beamline,
-  form: formReducer.plugin({
-    characterisation: (state, action) => { // <------ 'characterisation' is name of form given to reduxForm()
-      switch (action.type) {
-        case 'ADD_METHOD':
-          return undefined;       // <--- blow away form data
-        default:
-          return state;
-      }
-    }
-  })
+  form: formReducer
 });
 
 export default rootReducer;

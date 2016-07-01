@@ -71,7 +71,7 @@ class SampleViewContainer extends Component {
           <SampleQueueContainer />
         </div>
         <div className="col-xs-12">
-          <UserLog messages={this.props.logMessages}/>
+          <UserLog messages={this.props.logMessages} />
         </div>
       </div>
     );
