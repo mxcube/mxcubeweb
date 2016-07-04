@@ -180,14 +180,17 @@
 }
 
 .logger-window {
-    font-size: 16px;
-    line-height: 1.4;
-    width: auto;
+    font-size: 12px;
     background-color: #fff;
     padding: 8px 12px;
-    border-left: 4px solid #009688;
+    border: 1px solid #009688;
     word-wrap: break-word;
-    height: 100px;
-    overflow: scroll;
+    height: 67px;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+
+.logger-window p{
+    margin: 0 0 2px;
 }
 
