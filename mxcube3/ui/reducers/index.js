@@ -19,10 +19,11 @@ const mxcubeReducer = combineReducers({
   general,
   beamline,
   form: formReducer.plugin({
-    characterisation: (state, action) => { // <------ 'characterisation' is name of form given to reduxForm()
+    // <------ 'characterisation' is name of form given to reduxForm()
+    characterisation: (state, action) => {
       switch (action.type) {
         case 'ADD_METHOD':
-          return undefined;       // <--- blow away form data
+          return undefined; // <--- blow away form data
         default:
           return state;
       }
@@ -31,12 +32,12 @@ const mxcubeReducer = combineReducers({
 });
 
 const rootReducer = (state, action) => {
-  if (action.type == 'SIGNOUT') {
-    state = undefined
+  if (action.type === 'SIGNOUT') {
+    state = undefined;
   }
 
-  return mxcubeReducer(state, action)
-}
+  return mxcubeReducer(state, action);
+};
 
 export default rootReducer;
 

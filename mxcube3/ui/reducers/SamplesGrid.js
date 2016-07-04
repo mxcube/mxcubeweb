@@ -103,7 +103,7 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList,
                          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 },
-                         order: initialGridOrder(sampleList)};
+                         order: initialGridOrder(sampleList) };
     }
     case 'SET_SAMPLE_ORDER': {
       const reorderKeys = Object.keys(state.picked).map(key => (state.picked[key] ? key : ''));
