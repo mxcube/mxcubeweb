@@ -1,3 +1,5 @@
+/* eslint no-unused-expressions: ["error", { "allowTernary": true }] */
+
 import './SampleView.css';
 import React from 'react';
 import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
@@ -15,6 +17,7 @@ export default class SampleControls extends React.Component {
     this.setApertureSize = this.setApertureSize.bind(this);
     this.toogleFrontLight = this.toogleLight.bind(this, 'front');
     this.toogleBackLight = this.toogleLight.bind(this, 'back');
+    this.toogleCentring = this.toogleCentring.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -24,15 +27,14 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const currentZoom = parseInt(this.props.sampleViewState.zoom);
-    if(option.target.name === 'zoomOut' && currentZoom > 1 ){
+    const currentZoom = this.props.sampleViewState.zoom;
+    if (option.target.name === 'zoomOut' && currentZoom > 1) {
       this.props.sampleActions.sendZoomPos(currentZoom - 1);
-    }else if(option.target.name === 'zoomSlider'){
+    } else if (option.target.name === 'zoomSlider') {
       this.props.sampleActions.sendZoomPos(option.target.value);
-    }else if(option.target.name === 'zoomIn' && currentZoom < 10){
+    } else if (option.target.name === 'zoomIn' && currentZoom < 10) {
       this.props.sampleActions.sendZoomPos(currentZoom + 1);
     }
-
   }
 
   setApertureSize(option) {
@@ -47,6 +49,12 @@ export default class SampleControls extends React.Component {
     document.getElementById('downloadLink').href = this.props.canvas.toDataURL();
     this.props.canvas.setBackgroundImage(0);
     this.props.canvas.renderAll();
+  }
+
+  toogleCentring() {
+    const { sendStartClickCentring, sendAbortCentring } = this.props.sampleActions;
+    const { clickCentring } = this.props.sampleViewState;
+    clickCentring ? sendAbortCentring() : sendStartClickCentring();
   }
 
   toogleLight(name) {
@@ -117,7 +125,7 @@ export default class SampleControls extends React.Component {
             title="Start 3-click Centring"
             className="fa fa-2x fa-circle-o-notch sample-controll"
             bsStyle="link"
-            onClick={this.props.sampleActions.sendStartClickCentring}
+            onClick={this.toogleCentring}
             active={this.props.sampleViewState.clickCentring}
           />
 
@@ -169,20 +177,11 @@ export default class SampleControls extends React.Component {
             <Button
               type="button"
               data-toggle="tooltip"
-              title="Abort Centring"
-              className="fa fa-2x fa-times sample-controll"
-              bsStyle="link"
-              onClick={this.props.sampleActions.sendAbortCentring}
-            />
-
-            <Button
-              type="button"
-              data-toggle="tooltip"
               title="Backlight On/Off"
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleBackLight}
-              active={this.props.sampleViewState.lightOn.back == 1}
+              active={this.props.sampleViewState.lightOn.back === 1}
             />
             <MotorInput
               title="BackLight"
@@ -201,7 +200,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toogleFrontLight}
-              active={this.props.sampleViewState.lightOn.front == 1}
+              active={this.props.sampleViewState.lightOn.front === 1}
             />
             <MotorInput
               title="FrontLight"
