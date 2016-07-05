@@ -324,14 +324,14 @@ export function sendGoToPoint(id) {
 
 export function sendChangeAperture(pos) {
   return function (dispatch) {
-    fetch('/mxcube/api/v0.1/beamline/aperture', {
+    fetch('/mxcube/api/v0.1/diffractometer/aperture', {
       method: 'PUT',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ pos })
+      body: JSON.stringify({ diameter: pos })
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to change Aperture'));
