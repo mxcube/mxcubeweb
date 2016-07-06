@@ -669,7 +669,7 @@ def updateMethod(sampleid, methodid):
 @mxcube.route("/mxcube/api/v0.1/queue/dc", methods=['GET'])
 def get_default_dc_params():
     """
-    returns the default values for an acquisition (data collection)
+    returns the default values for an acquisition (data collection). TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
     resp = jsonify({
@@ -694,9 +694,15 @@ def get_default_dc_params():
         })
     resp.status_code = 200
     return resp
-# @mxcube.route("/mxcube/api/v0.1/queue/char", methods=['GET'])
-# def get_default_char_params():
 
+@mxcube.route("/mxcube/api/v0.1/queue/char", methods=['GET'])
+def get_default_char_params():
+    """
+    returns the default values for a characterisation.
+    """
+    resp = jsonify(mxcube.beamline.get_default_characterisation_parameters().as_dict())
+    resp.status_code = 200
+    return resp
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
