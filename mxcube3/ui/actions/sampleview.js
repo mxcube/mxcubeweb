@@ -1,6 +1,11 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 
+export function setBeamInfo(info) {
+  return {
+    type: 'SET_BEAM_INFO', info
+  };
+}
 
 export function setCurrentPhase(phase) {
   return {
