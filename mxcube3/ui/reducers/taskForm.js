@@ -1,3 +1,5 @@
+import { omit } from 'lodash/object';
+
 const initialState = {
   sampleIds: [],
   taskData: {},
@@ -68,7 +70,15 @@ export default (state = initialState, action) => {
       }
     case 'MOUNT_SAMPLE':
       {
-        return initialState;
+        return {
+          ...state,
+          defaultParameters: {
+            parameters: {
+              ...omit(state.defaultParameters.parameters, 'path'),
+              run_number: 1
+            }
+          }
+        };
       }
     case 'HIDE_FORM':
       {
