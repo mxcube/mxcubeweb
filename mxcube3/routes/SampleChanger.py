@@ -22,17 +22,17 @@ def get_samples_list():
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/<sample>/mount", methods=['PUT'])
 def mountSample(sample):
-    lastQueueNode = session.get("lastQueueNode")
+    last_queue_node = session.get("last_queue_node")
 
     try:
         sampleNode = mxcube.queue.get_node(int(sample))
         sampleLocation = sampleNode.location
         if mxcube.diffractometer.use_sc:
-             mxcube.queue.lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[0] + ':' + sampleLocation[1])})
+             mxcube.queue.last_queue_node.update({'id': int(sample), 'sample': str(sampleLocation[0] + ':' + sampleLocation[1])})
         else:  # manual, not using sample_changer
              mxcube.diffractometer.set_phase("Centring")
-             mxcube.queue.lastQueueNode.update({'id': int(sample), 'sample': str(sampleLocation[1])})
-        session["lastQueueNode"] = lastQueueNode
+             mxcube.queue.last_queue_node.update({'id': int(sample), 'sample': str(sampleLocation[1])})
+        session["last_queue_node"] = last_queue_node
         #mxcube.sample_changer.load_sample
         #TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
         mxcube.diffractometer.savedCentredPos = []

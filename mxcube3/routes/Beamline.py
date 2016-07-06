@@ -1,11 +1,11 @@
-import logging
 import json
+import logging
 
-from flask import request, Response, jsonify
+from flask import Response, jsonify, request
+
 from mxcube3 import app as mxcube
-from mxcube3 import socketio
+
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
-from mxcube3.routes import signals, Utils
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
@@ -34,7 +34,7 @@ def beamline_abort_action(name):
 def beamline_set_attribute(name):
     """
     Tries to set <name> to value, replies with the following json:
-    
+
         {name: <name>, value: <value>, msg: <msg>, state: <state>
 
     Where msg is an arbitrary msg to user, state is the internal state
@@ -62,7 +62,7 @@ def beamline_set_attribute(name):
 def beamline_get_attribute(name):
     """
     Retrieves value of attribute <name>, replies with the following json:
-    
+
         {name: <name>, value: <value>, msg: <msg>, state: <state>
 
     Where msg is an arbitrary msg to user, state is the internal state
@@ -85,22 +85,22 @@ def beamline_get_attribute(name):
 
 
 @mxcube.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
-def getBeamInfo():
+def get_beam_info():
     """Beam information: position,size,shape
-    return_data={"position":,"shape":,"size_x":,"size_y":}     
+    return_data={"position":,"shape":,"size_x":,"size_y":}
     """
     ret = {}
 
-    beamInfo = mxcube.beamline.getObjectByRole("beam_info")
-    
-    if beamInfo is None:
-         logging.getLogger('HWR').error("beamInfo is not defined")
-         return Response(status=409)
-         
+    beam_info = mxcube.beamline.getObjectByRole("beam_info")
+
+    if beam_info is None:
+        logging.getLogger('HWR').error("beamInfo is not defined")
+        return Response(status=409)
+
     try:
-        beamInfoDict = beamInfo.get_beam_info()
+        beam_info_dict = beam_info.get_beam_info()
     except Exception:
-        beamInfoDict = dict()
+        beam_info_dict = dict()
 
     try:
         aperture = mxcube.diffractometer.getObjectByRole('aperture')
@@ -111,21 +111,22 @@ def getBeamInfo():
         aperture_list = []
         current_aperture = None
 
-    ret.update({'position': beamInfo.get_beam_position(),
-                'shape': beamInfoDict.get("shape"),
-                'size_x': beamInfoDict.get("size_x"),
-                'size_y': beamInfoDict.get("size_y"),
-                'apertureList' : aperture_list,
-                'currentAperture' : current_aperture })
+    ret.update({'position': beam_info.get_beam_position(),
+                'shape': beam_info_dict.get("shape"),
+                'size_x': beam_info_dict.get("size_x"),
+                'size_y': beam_info_dict.get("size_y"),
+                'apertureList': aperture_list,
+                'currentAperture': current_aperture})
     resp = jsonify(ret)
     resp.status_code = 200
     return resp
 
+
 @mxcube.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
 def beamline_get_data_path():
     """
-    Retrieve data directory from the session hwobj, this is specific for each beamline.
+    Retrieve data directory from the session hwobj,
+    this is specific for each beamline.
     """
     data = mxcube.session.get_base_image_directory()
     return Response(json.dumps(data), status=200, mimetype='application/json')
-
