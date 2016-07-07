@@ -14,8 +14,7 @@ const initialState = {
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
-  queueRestoreState: {},
-  path: ''
+  queueRestoreState: {}
 };
 
 export default (state = initialState, action) => {
@@ -183,10 +182,6 @@ export default (state = initialState, action) => {
     case 'SIGNOUT':
       {
         return Object.assign({}, state, initialState);
-      }
-    case 'SET_INITIAL_STATUS':
-      {
-        return { ...state, rootPath: action.data.rootPath };
       }
     default:
       return state;
