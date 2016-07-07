@@ -74,10 +74,6 @@ export default (state = initialState, action) => {
       {
         return { ...state, showForm: '' };
       }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
-      }
     default:
       return state;
   }
