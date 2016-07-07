@@ -31,7 +31,7 @@ class TaskContainer extends React.Component {
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'Characterisation'}
-          rootPath={this.props.rootPath}
+          rootPath={this.props.path}
         />
 
         <DataCollection
@@ -45,7 +45,7 @@ class TaskContainer extends React.Component {
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'DataCollection'}
-          rootPath={this.props.rootPath}
+          rootPath={this.props.path}
         />
 
         <AddSample
@@ -73,7 +73,7 @@ function mapStateToProps(state) {
     manualMountID: state.sampleGrid.manualMount.id,
     currentPhase: state.sampleview.currentPhase,
     apertureList: state.sampleview.apertureList,
-    rootPath: state.queue.rootPath
+    path: state.taskForm.path
   };
 }
 

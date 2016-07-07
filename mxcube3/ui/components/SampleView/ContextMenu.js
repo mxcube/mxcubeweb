@@ -40,7 +40,7 @@ export default class ContextMenu extends React.Component {
       [sampleId],
       { parameters: 
         { path: node.sampleName,
-          ...defaultParameters.parameters, 
+          ...defaultParameters[modalName.toLowerCase()], 
           prefix: `${node.proteinAcronym}-${node.sampleName}`
         }
       },

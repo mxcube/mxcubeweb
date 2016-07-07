@@ -60,13 +60,22 @@ export function getInitialStatus() {
         'Content-type': 'application/json'
       }
     });
+    let dcParameters = fetch('mxcube/api/v0.1/queue/dc', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
 
     let pchains = [
         motors.then(response => { return response.json() }).then(json => { state.Motors = json }),
         beamInfo.then(response => { return response.json() }).then(json => { state.beamInfo = json }),
         sampleVideoInfo.then(response => { return response.json() }).then(json => { state.Camera = json }),
         diffractometerInfo.then(response => { return response.json() }).then(json => { Object.assign(state, json) }),
-        dataPath.then(response => { return response.json() }).then(path => { Object.assign(state, {rootPath: path} ) })
+        dataPath.then(response => { return response.json() }).then(path => { Object.assign(state, {rootPath: path} ) }),
+        dcParameters.then(response => { return response.json() }).then(json => { state.dcParameters = json })
     ]
     
     Promise.all(pchains).then(() => {
