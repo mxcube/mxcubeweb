@@ -62,20 +62,6 @@ export default (state = initialState, action) => {
       {
         return { ...state, showForm: '' };
       }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
-      }
-    case 'SET_INITIAL_STATUS':
-      {
-        return {
-          ...state,
-          path: action.data.rootPath,
-          defaultParameters: {
-            datacollection: action.data.dcParameters
-          }
-        };
-      }
     default:
       return state;
   }

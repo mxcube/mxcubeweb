@@ -179,9 +179,9 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state, ...action.queueState);
       }
-    case 'SIGNOUT':
+    case 'SET_INITIAL_STATUS':
       {
-        return Object.assign({}, state, initialState);
+        return { ...state, rootPath: action.data.rootPath };
       }
     default:
       return state;
