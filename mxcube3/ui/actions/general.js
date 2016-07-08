@@ -16,6 +16,24 @@ export function showErrorPanel(show, message = '') {
   };
 }
 
+function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response
+  } else {
+    var error = new Error(response.statusText)
+    error.response = response
+    throw error
+  }
+}
+
+function parseJSON(response) {
+  return response.json()
+}
+
+function catchError(error){
+  console.log('request failed', error);
+}
+
 export function getInitialStatus() {
   return function (dispatch) {
     let state = {};
@@ -70,12 +88,12 @@ export function getInitialStatus() {
     });
 
     let pchains = [
-        motors.then(response => { return response.json() }).then(json => { state.Motors = json }),
-        beamInfo.then(response => { return response.json() }).then(json => { state.beamInfo = json }),
-        sampleVideoInfo.then(response => { return response.json() }).then(json => { state.Camera = json }),
-        diffractometerInfo.then(response => { return response.json() }).then(json => { Object.assign(state, json) }),
-        dataPath.then(response => { return response.json() }).then(path => { Object.assign(state, {rootPath: path} ) }),
-        dcParameters.then(response => { return response.json() }).then(json => { state.dcParameters = json })
+        motors.then(checkStatus).then(parseJSON).then(json => { state.Motors = json }).catch(catchError),
+        beamInfo.then(checkStatus).then(parseJSON).then(json => { state.beamInfo = json }).catch(catchError),
+        sampleVideoInfo.then(checkStatus).then(parseJSON).then(json => { state.Camera = json }).catch(catchError),
+        diffractometerInfo.then(checkStatus).then(parseJSON).then(json => { Object.assign(state, json) }).catch(catchError),
+        dataPath.then(checkStatus).then(parseJSON).then(path => { Object.assign(state, {rootPath: path} ) }).catch(catchError),
+        dcParameters.then(checkStatus).then(parseJSON).then(json => { state.dcParameters = json }).catch(catchError)
     ]
     
     Promise.all(pchains).then(() => {
