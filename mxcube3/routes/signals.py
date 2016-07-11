@@ -129,9 +129,11 @@ def motor_event_callback(*args, **kwargs):
     sender = str(kwargs['sender'].__class__).split('.')[0]
 
     motors_info = dict()
-
-    for name in ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight','Sampx', 'Sampy']:
+    # the centring motors are: ["phi", "focus", "phiz", "phiy", "zoom", "sampx", "sampy", "kappa", "kappa_phi"]
+    for name in mxcube.diffractometer.centring_motors_list:
         motors_info.update(Utils.get_movable_state_and_position(name))
+
+    motors_info.update(Utils.get_light_state_and_intensity)
 
     motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
 
