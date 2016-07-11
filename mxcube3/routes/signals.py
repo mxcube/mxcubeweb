@@ -12,6 +12,7 @@ def connect():
 
 collectSignals = ['collectStarted','collectEnded', 'testSignal', 'warning']
 collectOscSignals = [ 'collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
+beamSignals = ['beamPosChanged','beamInfoChanged']
 
 queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] #'centringAllowed',
 microdiffSignals = ['centringInvalid','newAutomaticCentringPoint','centringStarted','centringAccepted','centringMoving',\
@@ -152,5 +153,32 @@ def motor_event_callback(*args, **kwargs):
     try:
         msg = { "message": sender +':'+signal, "severity": 'INFO', "timestamp":time.asctime(), "logger":'HWR', "stack_trace":'' }
         socketio.emit('log_record', msg, namespace='/logging')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: %s'+str(msg))
+
+def beam_changed(*args, **kwargs):
+    ret = {}
+
+    beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+    
+    if beamInfo is None:
+         logging.getLogger('HWR').error("beamInfo is not defined")
+         return Response(status=409)
+
+    try:
+        beamInfoDict = beamInfo.get_beam_info()
+    except Exception:
+        beamInfoDict = dict()
+
+    ret.update({'position': beamInfo.get_beam_position(),
+                'shape': beamInfoDict.get("shape"),
+                'size_x': beamInfoDict.get("size_x"),
+                'size_y': beamInfoDict.get("size_y")
+                })
+
+    msg = {'Signal': signal,'Message': signal, 'Data': ret}
+    #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+    try:
+        socketio.emit('beam_changed', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s'+str(msg))

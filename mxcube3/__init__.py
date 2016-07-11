@@ -87,6 +87,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         try:
             routes.SampleCentring.init_signals()
+            routes.Beamline.init_signals()
         except Exception:
             sys.excepthook(*sys.exc_info())
 
