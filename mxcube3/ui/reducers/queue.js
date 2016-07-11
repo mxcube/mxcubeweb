@@ -14,8 +14,7 @@ const initialState = {
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
-  queueRestoreState: {},
-  path: ''
+  queueRestoreState: {}
 };
 
 export default (state = initialState, action) => {
