@@ -177,6 +177,6 @@ def beam_changed(*args, **kwargs):
     msg = {'Signal': signal,'Message': signal, 'Data': ret}
     #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
     try:
-        socketio.emit('beam_value_changed', msg, namespace='/hwr')
+        socketio.emit('beam_changed', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s'+str(msg))
