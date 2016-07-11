@@ -7,11 +7,11 @@ import SampleGridContainer from './containers/SampleGridContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
 import Main from './components/Main';
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import createLogger from 'redux-logger';
 import thunk from 'redux-thunk';
-import {persistStore, autoRehydrate, storages} from 'redux-persist'
+import { persistStore, autoRehydrate } from 'redux-persist';
 import crosstabSync from 'redux-persist-crosstab';
 import rootReducer from './reducers';
 import ServerIO from './serverIO';
@@ -45,30 +45,31 @@ export default class App extends React.Component {
     this.serverIO = new ServerIO(store.dispatch);
     this.serverIO.listen();
 
-    const persistor = persistStore(store, { storage: storages.asyncLocalStorage }, (err, restoredState) => {
-      store.dispatch(getLoginInfo()) 
-      this.setState({initialized: true});
-    })
-  
+    const persistor = persistStore(store, {}, () => {
+      store.dispatch(getLoginInfo());
+      this.setState({ initialized: true });
+    });
+
     crosstabSync(persistor);
   }
 
   render() {
-    if (!this.state.initialized) return <span>Loading...</span>
+    if (! this.state.initialized) return <span>Loading...</span>;
+
     return (<Provider store={store}>
             <Router>
               <Route path="/" component={Main} onEnter={requireAuth}>
-                <IndexRoute component={SampleGridContainer} onEnter={requireAuth} />
-                <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
-                <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
+               <IndexRoute component={SampleGridContainer} onEnter={requireAuth} />
+               <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
+               <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
               </Route>
               <Route path="/login" component={LoginContainer} />
             </Router>
-          </Provider>)
+          </Provider>);
   }
 }
 
 ReactDOM.render(
   <App />,
   document.getElementById('main')
-)
+);
