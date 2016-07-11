@@ -136,6 +136,14 @@ export default (state = initialState, action) => {
       {
         return { ...state, currentAperture: action.size };
       }
+    case 'SET_BEAM_INFO':
+      {
+        return {
+          ...state, 
+          beamPosition: action.info.position,
+          currentAperture: action.info.size_x * 1000 
+        };
+      }
     case 'SET_CURRENT_PHASE':
       {
         return { ...state, currentPhase: action.phase };
