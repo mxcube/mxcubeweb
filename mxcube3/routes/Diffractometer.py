@@ -103,7 +103,7 @@ def get_movables_state():
     return resp
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['PUT'])
-def set_aperture_motor():
+def set_aperture():
     """
     Move the aperture motor.
         :request Content-type: application/json, new position {'diameter': 50}. Note: level specified as integer (not 'Diameter 50')
@@ -121,7 +121,7 @@ def set_aperture_motor():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['GET'])
-def get_aperture_motor():
+def get_aperture():
     ret = {}
 
     aperture = mxcube.diffractometer.getObjectByRole('aperture')
