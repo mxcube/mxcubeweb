@@ -14,8 +14,7 @@ const initialState = {
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
-  queueRestoreState: {},
-  path: ''
+  queueRestoreState: {}
 };
 
 export default (state = initialState, action) => {
@@ -84,7 +83,10 @@ export default (state = initialState, action) => {
           todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
           history: {
             ...state.history,
-            nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)
+            nodes: (
+              state.current.node ?
+              state.history.nodes.concat(state.current.node) : state.history.nodes
+            )
           }
         }
       );
@@ -95,7 +97,10 @@ export default (state = initialState, action) => {
           current: { node: null, collapsed: false, running: false },
           history: {
             ...state.history,
-            nodes: (state.current.node ? state.history.nodes.concat(state.current.node) : state.history.nodes)
+            nodes: (
+              state.current.node ?
+              state.history.nodes.concat(state.current.node) : state.history.nodes
+            )
           }
         }
       );
@@ -179,10 +184,6 @@ export default (state = initialState, action) => {
     case 'QUEUE_STATE':
       {
         return Object.assign({}, state, ...action.queueState);
-      }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
       }
     case 'SET_INITIAL_STATUS':
       {

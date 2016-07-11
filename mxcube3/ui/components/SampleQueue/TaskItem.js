@@ -110,7 +110,7 @@ export default class TaskItem extends Component {
         <span className="node-name" onClick={this.onClick}>{data.parameters.point !== -1 ? 'P' + data.parameters.point + ' ' : ' '} {data.label}</span>
          <div className="pull-right">
              <i className="fa fa-cog task-controlls" onClick={this.showForm}></i>
-             <i className="fa fa-times task-controlls" onClick={this.deleteTask}></i>
+             <i className={data.state === 2 ? 'hidden' : 'fa fa-times task-controlls'} onClick={this.deleteTask}></i>
            </div>
       </div>
     ));

@@ -90,7 +90,6 @@ class DataCollection extends React.Component {
       },
       rootPath
     } = this.props;
-
     return (
       <Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
@@ -333,7 +332,7 @@ class DataCollection extends React.Component {
             </p>
               </form>
           </Modal.Body>
-          <Modal.Footer>
+          <Modal.Footer className={this.props.taskData.state ? 'hidden' : 'task-footer'}>
         <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
           <label className="centring-method">
             <input

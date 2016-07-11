@@ -124,6 +124,10 @@ export default (state = initialState, action) => {
           }
         };
       }
+    case 'SET_BEAM_POSITION':
+      {
+        return { ...state, beamPosition: action.position };
+      }
     case 'SET_IMAGE_RATIO':
       {
         return { ...state, imageRatio: state.width / action.clientWidth };
@@ -174,11 +178,6 @@ export default (state = initialState, action) => {
           beamPosition: action.data.beamInfo.position
         };
       }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
-      }
-
     default:
       return state;
   }
