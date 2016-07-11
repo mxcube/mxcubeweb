@@ -666,6 +666,43 @@ def updateMethod(sampleid, methodid):
     resp.status_code = 200
     return resp
   
+@mxcube.route("/mxcube/api/v0.1/queue/dc", methods=['GET'])
+def get_default_dc_params():
+    """
+    returns the default values for an acquisition (data collection). TODO: implement as_dict in the qmo.AcquisitionParameters
+    """
+    acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
+    resp = jsonify({
+        'first_image' :  acq_parameters.first_image,
+        'num_images' : acq_parameters.num_images,
+        'osc_start' : acq_parameters.osc_start,
+        'osc_range' : acq_parameters.osc_range,
+        'kappa' : acq_parameters.kappa,
+        'kappa_phi' : acq_parameters.kappa_phi,
+        'overlap' : acq_parameters.overlap,
+        'exp_time' : acq_parameters.exp_time,
+        'num_passes' : acq_parameters.num_passes,
+        'resolution' : acq_parameters.resolution,
+        'energy' : acq_parameters.energy,
+        'transmission' : acq_parameters.transmission,
+        'shutterless' : acq_parameters.shutterless,
+        'detector_mode' : acq_parameters.detector_mode,
+        'inverse_beam' : False,
+        'take_dark_current' : True,
+        'skip_existing_images' : False,
+        'take_snapshots' : True
+        })
+    resp.status_code = 200
+    return resp
+
+@mxcube.route("/mxcube/api/v0.1/queue/char", methods=['GET'])
+def get_default_char_params():
+    """
+    returns the default values for a characterisation.
+    """
+    resp = jsonify(mxcube.beamline.get_default_characterisation_parameters().as_dict())
+    resp.status_code = 200
+    return resp
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def getSample(id):
