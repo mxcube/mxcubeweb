@@ -134,7 +134,7 @@ def motor_event_callback(*args, **kwargs):
     for name in mxcube.diffractometer.centring_motors_list:
         motors_info.update(Utils.get_movable_state_and_position(name))
 
-    motors_info.update(Utils.get_light_state_and_intensity)
+    motors_info.update(Utils.get_light_state_and_intensity())
 
     motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
 
@@ -158,7 +158,7 @@ def motor_event_callback(*args, **kwargs):
 
 def beam_changed(*args, **kwargs):
     ret = {}
-
+    signal = kwargs['signal']
     beamInfo = mxcube.beamline.getObjectByRole("beam_info")
     
     if beamInfo is None:
