@@ -124,6 +124,10 @@ export default (state = initialState, action) => {
           }
         };
       }
+    case 'SET_BEAM_POSITION':
+      {
+        return { ...state, beamPosition: action.position };
+      }
     case 'SET_IMAGE_RATIO':
       {
         return { ...state, imageRatio: state.width / action.clientWidth };
