@@ -9,8 +9,7 @@ import beamline from './beamline';
 import logger from './logger';
 import { reducer as formReducer } from 'redux-form';
 
-
-const rootReducer = combineReducers({
+const mxcubeReducer = combineReducers({
   login,
   queue,
   sampleGrid,
@@ -19,8 +18,26 @@ const rootReducer = combineReducers({
   logger,
   general,
   beamline,
-  form: formReducer
+  form: formReducer.plugin({
+    // <------ 'characterisation' is name of form given to reduxForm()
+    characterisation: (state, action) => {
+      switch (action.type) {
+        case 'ADD_METHOD':
+          return undefined; // <--- blow away form data
+        default:
+          return state;
+      }
+    }
+  })
 });
+
+const rootReducer = (state, action) => {
+  if (action.type === 'SIGNOUT') {
+    state = undefined;
+  }
+
+  return mxcubeReducer(state, action);
+};
 
 export default rootReducer;
 

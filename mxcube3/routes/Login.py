@@ -55,7 +55,6 @@ def signout():
     Signout from Mxcube3 and clean the session
     """
     session.clear()
-    mxcube.queue = None
     return make_response("", 200)
 
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])

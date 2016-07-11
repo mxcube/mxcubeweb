@@ -92,8 +92,7 @@ def md_in_plate_mode():
 @mxcube.route("/mxcube/api/v0.1/diffractometer/movables/state", methods=['GET'])
 def get_movables_state():
     ret = {}
-
-    for movable in ['Phi', 'Focus', 'PhiZ', 'PhiY','Sampx', 'Sampy', 'Zoom']:
+    for movable in mxcube.diffractometer.centring_motors_list:
         ret.update(Utils.get_movable_state_and_position(movable))
 
     ret.update(Utils.get_light_state_and_intensity())

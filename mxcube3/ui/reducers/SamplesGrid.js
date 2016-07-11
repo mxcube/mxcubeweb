@@ -94,9 +94,6 @@ function recalculateQueueOrder(keys, gridOrder, state) {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'SIGNOUT': {
-      return Object.assign({}, INITIAL_STATE);
-    }
     case 'UPDATE_SAMPLE_LIST': {
       return Object.assign({}, state, { sampleList: initSampleList(action.sampleList),
                                         order: initialGridOrder(action.sampleList) });
@@ -106,7 +103,7 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList,
                          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 },
-                         order: initialGridOrder(sampleList)};
+                         order: initialGridOrder(sampleList) };
     }
     case 'SET_SAMPLE_ORDER': {
       const reorderKeys = Object.keys(state.picked).map(key => (state.picked[key] ? key : ''));
