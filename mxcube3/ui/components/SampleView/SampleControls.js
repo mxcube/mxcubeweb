@@ -15,9 +15,9 @@ export default class SampleControls extends React.Component {
     this.takeSnapShot = this.takeSnapShot.bind(this);
     this.setZoom = this.setZoom.bind(this);
     this.setApertureSize = this.setApertureSize.bind(this);
-    this.toogleFrontLight = this.toogleLight.bind(this, 'front');
-    this.toogleBackLight = this.toogleLight.bind(this, 'back');
-    this.toogleCentring = this.toogleCentring.bind(this);
+    this.toggleFrontLight = this.toggleLight.bind(this, 'front');
+    this.toggleBackLight = this.toggleLight.bind(this, 'back');
+    this.toggleCentring = this.toggleCentring.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -51,13 +51,13 @@ export default class SampleControls extends React.Component {
     this.props.canvas.renderAll();
   }
 
-  toogleCentring() {
+  toggleCentring() {
     const { sendStartClickCentring, sendAbortCentring } = this.props.sampleActions;
     const { clickCentring } = this.props.sampleViewState;
     clickCentring ? sendAbortCentring() : sendStartClickCentring();
   }
 
-  toogleLight(name) {
+  toggleLight(name) {
     const lighStatus = this.props.sampleViewState.lightOn[name];
     if (lighStatus) {
       this.props.sampleActions.sendLightOff(name);
@@ -125,7 +125,7 @@ export default class SampleControls extends React.Component {
             title="Start 3-click Centring"
             className="fa fa-2x fa-circle-o-notch sample-controll"
             bsStyle="link"
-            onClick={this.toogleCentring}
+            onClick={this.toggleCentring}
             active={this.props.sampleViewState.clickCentring}
           />
 
@@ -180,7 +180,7 @@ export default class SampleControls extends React.Component {
               title="Backlight On/Off"
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
-              onClick={this.toogleBackLight}
+              onClick={this.toggleBackLight}
               active={this.props.sampleViewState.lightOn.back === 1}
             />
             <MotorInput
@@ -199,7 +199,7 @@ export default class SampleControls extends React.Component {
               title="Frontlight On/Off"
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
-              onClick={this.toogleFrontLight}
+              onClick={this.toggleFrontLight}
               active={this.props.sampleViewState.lightOn.front === 1}
             />
             <MotorInput
