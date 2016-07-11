@@ -1,5 +1,3 @@
-/* eslint no-unused-expressions: ["error", { "allowTernary": true }] */
-
 import './SampleView.css';
 import React from 'react';
 import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
@@ -54,7 +52,11 @@ export default class SampleControls extends React.Component {
   toggleCentring() {
     const { sendStartClickCentring, sendAbortCentring } = this.props.sampleActions;
     const { clickCentring } = this.props.sampleViewState;
-    clickCentring ? sendAbortCentring() : sendStartClickCentring();
+    if (clickCentring) {
+      sendAbortCentring();
+    } else {
+      sendStartClickCentring();
+    }
   }
 
   toggleLight(name) {

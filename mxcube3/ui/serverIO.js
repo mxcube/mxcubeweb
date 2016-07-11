@@ -37,7 +37,7 @@ export default class ServerIO {
       }
     });
 
-    this.hwrSocket.on('beam_value_change', (data) => {
+    this.hwrSocket.on('beam_changed', (data) => {
       this.dispatch(setBeamPosition(data));
     });
 
