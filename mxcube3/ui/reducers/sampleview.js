@@ -4,8 +4,8 @@ const initialState = {
   clickCentringPoints: [],
   zoom: 0,
   points: {},
-  width: 0,
-  height: 0,
+  width: 659,
+  height: 493,
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,

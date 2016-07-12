@@ -222,7 +222,7 @@ export function sendZoomPos(level) {
 export function sendLightOn(name) {
   return function (dispatch) {
     dispatch(saveMotorPosition(name, true));
-    fetch(`/mxcube/api/v0.1/sampleview/${name}lighton`, {
+    fetch(`/mxcube/api/v0.1/sampleview/${name}on`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -241,7 +241,7 @@ export function sendLightOn(name) {
 export function sendLightOff(name) {
   return function (dispatch) {
     dispatch(saveMotorPosition(name, false));
-    fetch(`/mxcube/api/v0.1/sampleview/${name}lightoff`, {
+    fetch(`/mxcube/api/v0.1/sampleview/${name}off`, {
       method: 'PUT',
       credentials: 'include',
       headers: {

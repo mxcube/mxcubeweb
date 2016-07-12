@@ -13,8 +13,8 @@ export default class SampleControls extends React.Component {
     this.takeSnapShot = this.takeSnapShot.bind(this);
     this.setZoom = this.setZoom.bind(this);
     this.setApertureSize = this.setApertureSize.bind(this);
-    this.toggleFrontLight = this.toggleLight.bind(this, 'FrontLightSwitch');
-    this.toggleBackLight = this.toggleLight.bind(this, 'BackLightSwitch');
+    this.toggleFrontLight = this.toggleLight.bind(this, 'FrontLight');
+    this.toggleBackLight = this.toggleLight.bind(this, 'BackLight');
     this.toggleCentring = this.toggleCentring.bind(this);
   }
 
@@ -60,11 +60,11 @@ export default class SampleControls extends React.Component {
   }
 
   toggleLight(name) {
-    const lighStatus = this.props.sampleViewState.motors[name];
+    const lighStatus = this.props.sampleViewState.motors[`${name}Switch`].Status;
     if (lighStatus) {
-      this.props.sampleActions.sendLightOff(name);
+      this.props.sampleActions.sendLightOff(name.toLowerCase());
     } else {
-      this.props.sampleActions.sendLightOn(name);
+      this.props.sampleActions.sendLightOn(name.toLowerCase());
     }
   }
 
