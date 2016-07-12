@@ -31,12 +31,6 @@ export function setAperture(size) {
   };
 }
 
-export function setLight(name, on) {
-  return {
-    type: 'SET_LIGHT', name, on
-  };
-}
-
 export function setStepSize(name, value) {
   return {
     type: 'SET_STEP_SIZE', name, value
@@ -227,7 +221,7 @@ export function sendZoomPos(level) {
 
 export function sendLightOn(name) {
   return function (dispatch) {
-    dispatch(setLight(name, true));
+    dispatch(saveMotorPosition(name, true));
     fetch(`/mxcube/api/v0.1/sampleview/${name}lighton`, {
       method: 'PUT',
       credentials: 'include',
@@ -237,7 +231,7 @@ export function sendLightOn(name) {
       }
     }).then((response) => {
       if (response.status >= 400) {
-        dispatch(setLight(name, false));
+        dispatch(saveMotorPosition(name, false));
         dispatch(showErrorPanel(true, 'Server refused to turn light on'));
       }
     });
@@ -246,7 +240,7 @@ export function sendLightOn(name) {
 
 export function sendLightOff(name) {
   return function (dispatch) {
-    dispatch(setLight(name, false));
+    dispatch(saveMotorPosition(name, false));
     fetch(`/mxcube/api/v0.1/sampleview/${name}lightoff`, {
       method: 'PUT',
       credentials: 'include',
@@ -256,7 +250,7 @@ export function sendLightOff(name) {
       }
     }).then((response) => {
       if (response.status >= 400) {
-        dispatch(setLight(name, true));
+        dispatch(saveMotorPosition(name, true));
         dispatch(showErrorPanel(true, 'Server refused to turn light off'));
       }
     });

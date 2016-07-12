@@ -6,7 +6,6 @@ const initialState = {
   points: {},
   width: 0,
   height: 0,
-  lightOn: { back: 0, front: 0 },
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,
@@ -88,10 +87,6 @@ export default (state = initialState, action) => {
         return {
           ...state,
           motors: { ...state.motors, ...action.data },
-          lightOn: {
-            back: action.data.BackLightSwitch.Status,
-            front: action.data.FrontLightSwitch.Status
-          },
           zoom: action.data.zoom.position,
           pixelsPerMm: action.data.pixelsPerMm[0]
         };
@@ -104,10 +99,6 @@ export default (state = initialState, action) => {
             [action.name]: { position: action.value }
           }
         };
-      }
-    case 'SET_LIGHT':
-      {
-        return { ...state, lightOn: { ...state.lightOn, [action.name]: action.on } };
       }
     case 'UPDATE_POINTS_POSITION':
       {
@@ -165,10 +156,6 @@ export default (state = initialState, action) => {
         return {
           ...state,
           motors: { ...state.motors, ...action.data.Motors },
-          lightOn: {
-            back: action.data.Motors.BackLightSwitch.Status,
-            front: action.data.Motors.FrontLightSwitch.Status
-          },
           zoom: action.data.Motors.zoom.position,
           width: action.data.Camera.imageWidth,
           height: action.data.Camera.imageHeight,

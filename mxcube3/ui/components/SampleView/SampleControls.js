@@ -13,8 +13,8 @@ export default class SampleControls extends React.Component {
     this.takeSnapShot = this.takeSnapShot.bind(this);
     this.setZoom = this.setZoom.bind(this);
     this.setApertureSize = this.setApertureSize.bind(this);
-    this.toggleFrontLight = this.toggleLight.bind(this, 'front');
-    this.toggleBackLight = this.toggleLight.bind(this, 'back');
+    this.toggleFrontLight = this.toggleLight.bind(this, 'FrontLightSwitch');
+    this.toggleBackLight = this.toggleLight.bind(this, 'BackLightSwitch');
     this.toggleCentring = this.toggleCentring.bind(this);
   }
 
@@ -60,7 +60,7 @@ export default class SampleControls extends React.Component {
   }
 
   toggleLight(name) {
-    const lighStatus = this.props.sampleViewState.lightOn[name];
+    const lighStatus = this.props.sampleViewState.motors[name];
     if (lighStatus) {
       this.props.sampleActions.sendLightOff(name);
     } else {
@@ -183,7 +183,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toggleBackLight}
-              active={this.props.sampleViewState.lightOn.back === 1}
+              active={this.props.sampleViewState.motors.BackLightSwitch.Status === 1}
             />
             <MotorInput
               title="BackLight"
@@ -202,7 +202,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toggleFrontLight}
-              active={this.props.sampleViewState.lightOn.front === 1}
+              active={this.props.sampleViewState.motors.FrontLightSwitch.Status === 1}
             />
             <MotorInput
               title="FrontLight"
