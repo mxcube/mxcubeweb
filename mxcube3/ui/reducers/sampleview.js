@@ -8,28 +8,28 @@ const initialState = {
   height: 0,
   lightOn: { back: 0, front: 0 },
   motorSteps: {
-    FocusStep: 0.1,
-    PhiStep: 90,
-    PhiYStep: 0.1,
-    PhiZStep: 0.1,
-    SampXStep: 0.1,
-    SampYStep: 0.1,
-    KappaStep: 0.1,
-    Kappa_phiStep: 0.1
+    focusStep: 0.1,
+    phiStep: 90,
+    phiyStep: 0.1,
+    phizStep: 0.1,
+    sampxStep: 0.1,
+    sampyStep: 0.1,
+    kappaStep: 0.1,
+    kappaphiStep: 0.1
   },
   motors: {
-    Focus: { position: 0, Status: 0 },
-    Phi: { position: 0, Status: 0 },
-    PhiY: { position: 0, Status: 0 },
-    PhiZ: { position: 0, Status: 0 },
-    Sampx: { position: 0, Status: 0 },
-    Sampy: { position: 0, Status: 0 },
+    focus: { position: 0, Status: 0 },
+    phi: { position: 0, Status: 0 },
+    phiy: { position: 0, Status: 0 },
+    phiz: { position: 0, Status: 0 },
+    sampx: { position: 0, Status: 0 },
+    sampy: { position: 0, Status: 0 },
     BackLight: { position: 0, Status: 0 },
     FrontLight: { position: 0, Status: 0 },
     BackLightSwitch: { position: 0, Status: 0 },
     FrontLightSwitch: { position: 0, Status: 0 },
-    Kappa: { position: 0, Status: 0 },
-    Kappa_phi: { position: 0, Status: 0 }
+    kappa: { position: 0, Status: 0 },
+    kappa_phi: { position: 0, Status: 0 }
   },
   pixelsPerMm: 0,
   imageRatio: 0,
@@ -92,7 +92,7 @@ export default (state = initialState, action) => {
             back: action.data.BackLightSwitch.Status,
             front: action.data.FrontLightSwitch.Status
           },
-          zoom: action.data.Zoom.position,
+          zoom: action.data.zoom.position,
           pixelsPerMm: action.data.pixelsPerMm[0]
         };
       }
@@ -139,9 +139,9 @@ export default (state = initialState, action) => {
     case 'SET_BEAM_INFO':
       {
         return {
-          ...state, 
+          ...state,
           beamPosition: action.info.position,
-          currentAperture: action.info.size_x * 1000 
+          currentAperture: action.info.size_x * 1000
         };
       }
     case 'SET_CURRENT_PHASE':
@@ -169,7 +169,7 @@ export default (state = initialState, action) => {
             back: action.data.Motors.BackLightSwitch.Status,
             front: action.data.Motors.FrontLightSwitch.Status
           },
-          zoom: action.data.Motors.Zoom.position,
+          zoom: action.data.Motors.zoom.position,
           width: action.data.Camera.imageWidth,
           height: action.data.Camera.imageHeight,
           pixelsPerMm: action.data.Camera.pixelsPerMm[0],
