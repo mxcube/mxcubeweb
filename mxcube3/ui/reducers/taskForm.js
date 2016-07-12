@@ -62,6 +62,15 @@ export default (state = initialState, action) => {
       {
         return { ...state, showForm: '' };
       }
+    case 'SET_INITIAL_STATUS':
+      {
+        return {
+          ...state,
+          defaultParameters: {
+            datacollection: action.data.dcParameters
+          }
+        };
+      }
     default:
       return state;
   }
