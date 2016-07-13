@@ -45,7 +45,7 @@ export default class App extends React.Component {
     this.serverIO = new ServerIO(store.dispatch);
     this.serverIO.listen();
 
-    const persistor = persistStore(store, {}, () => {
+    const persistor = persistStore(store, {blacklist: ['beamline', 'form', 'login', 'sampleview', 'general', 'logger']}, () => {
       store.dispatch(getLoginInfo());
       this.setState({ initialized: true });
     });

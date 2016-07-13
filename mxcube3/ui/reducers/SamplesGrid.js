@@ -81,7 +81,7 @@ function recalculateQueueOrder(keys, gridOrder, state) {
   const sortedOrder = Object.entries(gridOrder).sort((a, b) => a[1] > b[1]);
 
   let i = 0;
-  for (const [key, order] of sortedOrder) {
+  for (const [key] of sortedOrder) {
     if (keys.includes(key)) {
       sampleList[key].queueOrder = i;
       i++;
@@ -261,7 +261,7 @@ export default (state = INITIAL_STATE, action) => {
       return state; // action.sampleGridState;
     }
     case 'SET_INITIAL_STATUS': {
-      return { ...state, manualMount: { set: !action.data.useSC, id: 0 } };
+      return { ...state, manualMount: { set: !action.data.useSC, id: state.manualMount.id } };
     }
     default: {
       return state;
