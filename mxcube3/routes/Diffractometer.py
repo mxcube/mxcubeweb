@@ -94,7 +94,7 @@ def get_movables_state():
     ret = {}
     for movable in mxcube.diffractometer.centring_motors_list:
         motor_info = Utils.get_movable_state_and_position(movable)
-	if motor_info[movable]['position']:
+	if motor_info[movable]['position'] is not None:
             ret.update(motor_info)
 
     ret.update(Utils.get_light_state_and_intensity())

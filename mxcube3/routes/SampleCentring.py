@@ -27,6 +27,8 @@ def init_signals():
             mxcube.diffractometer.connect(mxcube.diffractometer, signal, signals.task_event_callback)
         else:
             pass
+    for motor in mxcube.diffractometer.centring_motors_list:
+    	mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()), "positionChanged", signals.motor_event_callback)
     try:
         frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
         frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged', signals.motor_event_callback)

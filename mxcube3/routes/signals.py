@@ -133,7 +133,7 @@ def motor_event_callback(*args, **kwargs):
     # the centring motors are: ["phi", "focus", "phiz", "phiy", "zoom", "sampx", "sampy", "kappa", "kappa_phi"]
     for name in mxcube.diffractometer.centring_motors_list:
 	motor_info = Utils.get_movable_state_and_position(name)
-	if motor_info[name]['position']:
+	if motor_info[name]['position'] is not None:
 	    motors_info.update(motor_info)
 
     motors_info.update(Utils.get_light_state_and_intensity())
@@ -146,7 +146,7 @@ def motor_event_callback(*args, **kwargs):
 
     ## sending all motors position/status, and the current centred positions
     msg = {'Signal': signal,'Message': signal, 'Motors':motors_info, 'CentredPositions': aux, 'Data': args[0] if len(args) ==1 else args}
-    #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+    logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
     try:
         socketio.emit('Motors', msg, namespace='/hwr')
     except Exception:
