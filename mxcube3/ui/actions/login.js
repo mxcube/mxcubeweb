@@ -20,7 +20,6 @@ export function setLoginInfo(loginInfo) {
 export function getLoginInfo() {
   return function (dispatch) {
     dispatch(getInitialStatus());
-    dispatch(sendClearQueue());
     fetch('mxcube/api/v0.1/login_info', {
       method: 'GET',
       headers: {
@@ -83,7 +82,12 @@ export function doLogin(proposal, password) {
 
 export function doSignOut() {
   return function (dispatch) {
-    fetch('mxcube/api/v0.1/signout', { credentials: 'include' }).then(dispatch(signOut()));
+    fetch('mxcube/api/v0.1/signout', {
+      credentials: 'include'
+    }).then(() => {
+      dispatch(signOut());
+      dispatch(sendClearQueue());
+    });
   };
 }
 

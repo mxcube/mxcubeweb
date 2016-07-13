@@ -93,7 +93,9 @@ def md_in_plate_mode():
 def get_movables_state():
     ret = {}
     for movable in mxcube.diffractometer.centring_motors_list:
-        ret.update(Utils.get_movable_state_and_position(movable))
+        motor_info = Utils.get_movable_state_and_position(movable)
+	if motor_info[movable]['position'] is not None:
+            ret.update(motor_info)
 
     ret.update(Utils.get_light_state_and_intensity())
 

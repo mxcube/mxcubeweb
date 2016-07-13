@@ -132,19 +132,21 @@ def motor_event_callback(*args, **kwargs):
     motors_info = dict()
     # the centring motors are: ["phi", "focus", "phiz", "phiy", "zoom", "sampx", "sampy", "kappa", "kappa_phi"]
     for name in mxcube.diffractometer.centring_motors_list:
-        motors_info.update(Utils.get_movable_state_and_position(name))
+	motor_info = Utils.get_movable_state_and_position(name)
+	if motor_info[name]['position'] is not None:
+	    motors_info.update(motor_info)
 
-    motors_info.update(Utils.get_light_state_and_intensity)
+    motors_info.update(Utils.get_light_state_and_intensity())
 
     motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
-
+    
     aux = {}
     for p in mxcube.diffractometer.savedCentredPos:
             aux.update({p['posId']:p})
 
     ## sending all motors position/status, and the current centred positions
     msg = {'Signal': signal,'Message': signal, 'Motors':motors_info, 'CentredPositions': aux, 'Data': args[0] if len(args) ==1 else args}
-    #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+    logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
     try:
         socketio.emit('Motors', msg, namespace='/hwr')
     except Exception:
@@ -158,7 +160,7 @@ def motor_event_callback(*args, **kwargs):
 
 def beam_changed(*args, **kwargs):
     ret = {}
-
+    signal = kwargs['signal']
     beamInfo = mxcube.beamline.getObjectByRole("beam_info")
     
     if beamInfo is None:
