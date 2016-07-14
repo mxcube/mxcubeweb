@@ -80,7 +80,7 @@ export default class MotorInput extends React.Component {
                   </Button>
                   <PopInput
                     className="step-size"
-                    ref={motorName} name="Step size" pkey={`${motorName}Step`}
+                    ref={motorName} name="Step size" pkey={`${motorName.toLowerCase()}Step`}
                     data={data} onSave={this.props.saveStep} suffix={suffix}
                   />
                 </span>
