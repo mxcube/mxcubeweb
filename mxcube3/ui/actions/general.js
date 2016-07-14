@@ -85,6 +85,14 @@ export function getInitialStatus() {
         'Content-type': 'application/json'
       }
     });
+    const savedPoints = fetch('mxcube/api/v0.1/sampleview/centring', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
 
     const pchains = [
       motors.then(checkStatus).then(parseJSON).then(json => { state.Motors = json; }).catch(catchError),
@@ -92,7 +100,8 @@ export function getInitialStatus() {
       sampleVideoInfo.then(checkStatus).then(parseJSON).then(json => { state.Camera = json; }).catch(catchError),
       diffractometerInfo.then(checkStatus).then(parseJSON).then(json => { Object.assign(state, json); }).catch(catchError),
       dataPath.then(checkStatus).then(parseJSON).then(path => { Object.assign(state, { rootPath: path }); }).catch(catchError),
-      dcParameters.then(checkStatus).then(parseJSON).then(json => { state.dcParameters = json; }).catch(catchError)
+      dcParameters.then(checkStatus).then(parseJSON).then(json => { state.dcParameters = json; }).catch(catchError),
+      savedPoints.then(checkStatus).then(parseJSON).then(json => { state.points = json; }).catch(catchError)
     ];
 
     Promise.all(pchains).then(() => {
