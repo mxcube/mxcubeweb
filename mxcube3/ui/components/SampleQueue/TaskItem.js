@@ -108,10 +108,11 @@ export default class TaskItem extends Component {
     return connectDragSource(connectDropTarget(
       <div className={taskCSS} style={{ opacity }}>
         <span className="node-name" onClick={this.onClick}>{data.parameters.point !== -1 ? 'P' + data.parameters.point + ' ' : ' '} {data.label}</span>
-         <div className="pull-right">
-             <i className="fa fa-cog task-controlls" onClick={this.showForm}></i>
-             <i className={data.state === 2 ? 'hidden' : 'fa fa-times task-controlls'} onClick={this.deleteTask}></i>
-           </div>
+          <div className="pull-right">
+            <a className={data.state !== 2 ? 'hidden' : 'fa fa-info task-controlls'} href={`mxcube/api/v0.1/results/${this.props.id}`} target="_blank"></a>
+            <i className="fa fa-cog task-controlls" onClick={this.showForm}></i>
+            <i className={data.state === 2 ? 'hidden' : 'fa fa-times task-controlls'} onClick={this.deleteTask}></i>
+          </div>
       </div>
     ));
   }
