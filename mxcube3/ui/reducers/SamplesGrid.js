@@ -260,6 +260,9 @@ export default (state = INITIAL_STATE, action) => {
     case 'QUEUE_STATE': {
       return state; // action.sampleGridState;
     }
+    case 'CLEAR_ALL': {
+      return { ...INITIAL_STATE, manualMount: { set: state.manualMount.useSC, id: 0 } };
+    }
     case 'SET_INITIAL_STATUS': {
       return { ...state, manualMount: { set: !action.data.useSC, id: 0 } };
     }

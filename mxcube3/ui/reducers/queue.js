@@ -170,7 +170,7 @@ export default (state = initialState, action) => {
         return Object.assign({}, state, { searchString: action.value });
       }
       return state;
-    case 'CLEAR_QUEUE':
+    case 'CLEAR_ALL':
       return Object.assign({}, state,
         {
           current: { node: null, collapsed: false, running: false },
