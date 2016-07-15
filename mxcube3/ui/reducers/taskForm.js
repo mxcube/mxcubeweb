@@ -1,4 +1,3 @@
-
 const initialState = {
   sampleIds: [],
   taskData: {},
@@ -67,7 +66,10 @@ export default (state = initialState, action) => {
         return {
           ...state,
           defaultParameters: {
-            datacollection: action.data.dcParameters
+            datacollection: {
+              ...action.data.dcParameters,
+              ...state.defaultParameters.datacollection
+            }
           }
         };
       }
