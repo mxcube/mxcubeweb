@@ -73,7 +73,7 @@ function mapStateToProps(state) {
     manualMountID: state.sampleGrid.manualMount.id,
     currentPhase: state.sampleview.currentPhase,
     apertureList: state.sampleview.apertureList,
-    path: state.taskForm.path
+    path: state.queue.rootPath
   };
 }
 

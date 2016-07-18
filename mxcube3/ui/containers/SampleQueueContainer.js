@@ -23,7 +23,8 @@ function mapStateToProps(state) {
     lookup: state.queue.lookup,
     select_all: state.queue.selectAll,
     mounted: state.sampleGrid.manualMount.set,
-    collapsedSamples: state.queue.collapsedSample
+    collapsedSamples: state.queue.collapsedSample,
+    rootPath: state.queue.rootPath
   };
 }
 
@@ -52,8 +53,30 @@ export default class SampleQueueContainer extends React.Component {
 
 
   render() {
-    const { checked, lookup, history, current, sampleInformation, queue, collapsedSamples, showForm, queueStatus } = this.props;
-    const { sendToggleCheckBox, sendRunSample, sendPauseQueue, sendUnpauseQueue, sendStopQueue, sendUnmountSample, changeOrder, changeTaskOrder, collapseList, collapseSample } = this.props.queueActions;
+    const {
+      checked,
+      lookup,
+      history,
+      current,
+      sampleInformation,
+      queue,
+      collapsedSamples,
+      showForm,
+      queueStatus,
+      rootPath
+    } = this.props;
+    const {
+      sendToggleCheckBox,
+      sendRunSample,
+      sendPauseQueue,
+      sendUnpauseQueue,
+      sendStopQueue,
+      sendUnmountSample,
+      changeOrder,
+      changeTaskOrder,
+      collapseList,
+      collapseSample
+    } = this.props.queueActions;
     const { sendDeleteSampleTask } = this.props.sampleActions;
 
     return (
@@ -78,8 +101,20 @@ export default class SampleQueueContainer extends React.Component {
                   showForm={showForm}
                   unmount={sendUnmountSample}
                   queueStatus={queueStatus}
+                  rootPath={rootPath}
+                  collapseNode={collapseSample}
+                  collapsedNodes={collapsedSamples}
                 />
-                <HistoryTree show={history.collapsed} collapse={collapseList} collapsedSamples={collapsedSamples} list={this.filterList(history.nodes)} sampleInformation={sampleInformation} queue={queue} lookup={lookup} collapseSample={collapseSample} />
+                <HistoryTree
+                  show={history.collapsed}
+                  collapse={collapseList}
+                  collapsedSamples={collapsedSamples}
+                  list={this.filterList(history.nodes)}
+                  sampleInformation={sampleInformation}
+                  queue={queue}
+                  lookup={lookup}
+                  collapseSample={collapseSample}
+                />
             </div>
       </div>
     );
