@@ -15,6 +15,26 @@ export default class CurrentTree extends React.Component {
     this.runSample = this.runSample.bind(this);
     this.unmount = this.unMountSample.bind(this);
     this.showForm = this.props.showForm.bind(this, 'AddSample');
+    this.state = {
+      options: {
+        QueueStarted: [
+        { text: 'Stop', color: 'danger', action: this.props.stop, key: 1 },
+        { text: 'Pause', color: 'warning', action: this.props.pause, key: 2 },
+        ],
+        QueueStopped: [
+        { text: 'New Sample', color: 'primary', action: this.showForm, key: 1 },
+        { text: 'Unmount', color: 'danger', action: this.unmount, key: 2 },
+        { text: 'Run', color: 'success', action: this.runSample, key: 3 }
+        ],
+        QueuePaused: [
+        { text: 'Stop', color: 'danger', action: this.props.stop, key: 1 },
+        { text: 'Unpause', color: 'success', action: this.props.unpause, key: 2 }
+        ],
+        NoSampleMounted: [
+        { text: 'New Sample', color: 'primary', action: this.showForm, key: 1 },
+        ]
+      }
+    };
   }
 
   moveCard(dragIndex, hoverIndex) {
@@ -33,14 +53,34 @@ export default class CurrentTree extends React.Component {
     this.props.unmount(this.props.mounted);
   }
 
+  renderOptions(option, length) {
+    const width = 100 / length;
+    return (
+      <Button
+        bsStyle={option.color}
+        bsSize="sm"
+        style={{ width: `${width}%` }}
+        onClick={option.action}
+        key={option.key}
+      >
+        {option.text}
+      </Button>
+    );
+  }
+
   render() {
     const node = this.props.mounted;
     let sampleData = {};
     let sampleTasks = [];
+    let queueOptions = [];
 
     if (node) {
       sampleData = this.props.sampleInformation[this.props.lookup[node]];
       sampleTasks = this.props.queue[node];
+      queueOptions = this.state.options[this.props.queueStatus];
+    } else {
+      sampleData.sampleName = 'No Sample Mounted';
+      queueOptions = this.state.options.NoSampleMounted;
     }
 
     const bodyClass = cx('list-body', {
@@ -49,23 +89,8 @@ export default class CurrentTree extends React.Component {
     return (
       <div className="m-tree">
           <div className="list-head">
-              <span className="queue-root" onClick={this.collapse}>{(node ? sampleData.sampleName : 'No Sample Mounted')}</span>
-               <div className={this.props.queueStatus === 'QueueStopped' && node ? '' : 'hidden'}>
-                <Button bsStyle="primary" bsSize="sm" style={{ width: '40%' }} onClick={this.showForm}>New Sample</Button>
-                <Button bsStyle="danger" bsSize="sm" style={{ width: '30%' }} onClick={this.unmount}>Unmount</Button>
-                <Button bsStyle="success" bsSize="sm" style={{ width: '30%' }} onClick={this.runSample}>Run</Button>
-              </div>
-               <div className={this.props.queueStatus === 'QueueStarted' && node ? '' : 'hidden'}>
-                <Button bsStyle="danger" bsSize="sm" style={{ width: '50%' }} onClick={this.props.stop}>Stop</Button>
-                <Button bsStyle="warning" bsSize="sm" style={{ width: '50%' }} onClick={this.props.pause}>Pause</Button>
-              </div>
-               <div className={this.props.queueStatus === 'QueuePaused' && node ? '' : 'hidden'}>
-                <Button bsStyle="danger" bsSize="sm" style={{ width: '50%' }} onClick={this.props.stop}>Stop</Button>
-                <Button bsStyle="warning" bsSize="sm" style={{ width: '50%' }} onClick={this.props.unpause}>Unpause</Button>
-              </div>
-              <div className={!node ? '' : 'hidden'}>
-                <Button bsStyle="primary" bsSize="sm" style={{ width: '100%' }} onClick={this.showForm}>New Sample</Button>
-              </div>
+              <p className="queue-root" onClick={this.collapse}>{sampleData.sampleName}</p>
+              {queueOptions.map((option) => this.renderOptions(option, queueOptions.length))}
               <hr className="queue-divider" />
           </div>
           <div className={bodyClass}>
@@ -82,6 +107,9 @@ export default class CurrentTree extends React.Component {
                   sampleId={sampleData.id}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
+                  rootPath={this.props.rootPath}
+                  collapseNode={this.props.collapseNode}
+                  show={this.props.collapsedNodes[id]}
                 />
               );
             })}

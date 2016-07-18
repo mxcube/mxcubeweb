@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Button, Collapse } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource, DropTarget } from 'react-dnd';
 import cx from 'classnames';
@@ -86,32 +87,56 @@ export default class TaskItem extends Component {
 
   constructor(props) {
     super(props);
-    this.showForm = () => this.props.showForm(this.props.data.type, this.props.sampleId, this.props.data, this.props.data.parameters.point);
-    this.deleteTask = () => this.props.deleteTask(this.props.id);
-    this.onClick = this.onClick.bind(this);
+    const { data, sampleId, id } = this.props;
+    const { type, parameters } = data;
+    this.showForm = this.showForm.bind(this);
+    this.deleteTask = this.props.deleteTask.bind(this, id);
+    this.toggleChecked = this.props.toggleChecked.bind(this, id);
+    this.collapseNode = this.props.collapseNode.bind(this, id);
   }
 
-  onClick() {
-    this.props.toggleChecked(this.props.id);
+  showForm() {
+    const { data, sampleId } = this.props;
+    const { type, parameters } = data;
+    this.props.showForm(type, sampleId, data, parameters.point);
   }
 
   render() {
-    const { data, isDragging, connectDragSource, connectDropTarget } = this.props;
+    const { data, isDragging, connectDragSource, connectDropTarget, rootPath, show } = this.props;
     const opacity = isDragging ? 0 : 1;
-    let taskCSS = cx('node node-sample', {
-      passive: this.props.checked.indexOf(this.props.id) === -1,
+    let taskCSS = cx('task-head', {
       active: data.state === 1,
       success: data.state === 2,
       error: data.state === 3,
       warning: data.state === 4
     });
     return connectDragSource(connectDropTarget(
-      <div className={taskCSS} style={{ opacity }}>
-        <span className="node-name" onClick={this.onClick}>{data.parameters.point !== -1 ? 'P' + data.parameters.point + ' ' : ' '} {data.label}</span>
-         <div className="pull-right">
-             <i className="fa fa-cog task-controlls" onClick={this.showForm}></i>
-             <i className={data.state === 2 ? 'hidden' : 'fa fa-times task-controlls'} onClick={this.deleteTask}></i>
-           </div>
+      <div className="node node-sample" style={{ opacity }}>
+          <div className={taskCSS} onClick={this.collapseNode}>
+            <p className="node-name">
+              {`P${data.parameters.point} ${data.label}`}
+            </p>
+          </div>
+          <Collapse in={show}>
+          <div className="task-body">
+            <form>
+              <div className="form-group row">
+                <label className="col-sm-9">File path:</label>
+                <label className="col-sm-3">Prefix:</label>
+                  <div className="col-sm-9">
+                    <input type="text" className="form-control" readOnly value={`${rootPath}${data.parameters.path}`} />
+                  </div>
+                <div className="col-sm-3">
+                  <input type="text" className="form-control" readOnly value={data.parameters.prefix} />
+                </div>
+              </div>
+
+                <Button bsSize="sm" onClick={this.showForm}>Change</Button>
+                <Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>
+                <Button bsSize="sm" disabled={data.state !== 2}>Results</Button>
+            </form>
+          </div>
+          </Collapse>
       </div>
     ));
   }

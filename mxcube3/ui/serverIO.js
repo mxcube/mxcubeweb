@@ -7,7 +7,7 @@ import {
   setBeamPosition
 } from './actions/sampleview';
 import { setBeamlineAttrAction } from './actions/beamline';
-import { addTaskResultAction } from './actions/SamplesGrid';
+import { addTaskResultAction, addTaskAction } from './actions/SamplesGrid';
 import { setStatus } from './actions/queue';
 
 
@@ -47,6 +47,11 @@ export default class ServerIO {
 
     this.hwrSocket.on('Task', (record) => {
       this.dispatch(addTaskResultAction(record.Sample, record.QueueId, record.State));
+    });
+
+    this.hwrSocket.on('add_task', (record) => {
+      const { queueID, sampleID, taskinfo, parameters } = record;
+      this.dispatch(addTaskAction(queueID, sampleID, taskinfo, parameters));
     });
 
     this.hwrSocket.on('Queue', (record) => {

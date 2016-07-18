@@ -14,7 +14,7 @@ export function removeSample(queueID, sampleID) {
 
 export function clearAll() {
   return {
-    type: 'CLEAR_QUEUE'
+    type: 'CLEAR_ALL'
   };
 }
 

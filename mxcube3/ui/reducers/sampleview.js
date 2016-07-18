@@ -162,7 +162,8 @@ export default (state = initialState, action) => {
           pixelsPerMm: action.data.Camera.pixelsPerMm[0],
           apertureList: action.data.beamInfo.apertureList,
           currentAperture: action.data.beamInfo.currentAperture,
-          beamPosition: action.data.beamInfo.position
+          beamPosition: action.data.beamInfo.position,
+          points: action.data.points
         };
       }
     default:
