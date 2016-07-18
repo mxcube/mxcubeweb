@@ -16,20 +16,16 @@ export function showErrorPanel(show, message = '') {
   };
 }
 
-function checkStatus(response) {
+function parse(response) {
   if (response.status >= 200 && response.status < 300) {
-    return response;
+    return response.json();
   }
   const error = new Error(response.statusText);
   error.response = response;
   throw error;
 }
 
-function parseJSON(response) {
-  return response.json();
-}
-
-function catchError(error) {
+function notify(error) {
   console.error('REQUEST FAILED', error);
 }
 
@@ -95,13 +91,13 @@ export function getInitialStatus() {
     });
 
     const pchains = [
-      motors.then(checkStatus).then(parseJSON).then(json => { state.Motors = json; }).catch(catchError),
-      beamInfo.then(checkStatus).then(parseJSON).then(json => { state.beamInfo = json; }).catch(catchError),
-      sampleVideoInfo.then(checkStatus).then(parseJSON).then(json => { state.Camera = json; }).catch(catchError),
-      diffractometerInfo.then(checkStatus).then(parseJSON).then(json => { Object.assign(state, json); }).catch(catchError),
-      dataPath.then(checkStatus).then(parseJSON).then(path => { Object.assign(state, { rootPath: path }); }).catch(catchError),
-      dcParameters.then(checkStatus).then(parseJSON).then(json => { state.dcParameters = json; }).catch(catchError),
-      savedPoints.then(checkStatus).then(parseJSON).then(json => { state.points = json; }).catch(catchError)
+      motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
+      beamInfo.then(parse).then(json => { state.beamInfo = json; }).catch(notify),
+      sampleVideoInfo.then(parse).then(json => { state.Camera = json; }).catch(notify),
+      diffractometerInfo.then(parse).then(json => { Object.assign(state, json); }).catch(notify),
+      dataPath.then(parse).then(path => { state.rootPath = path; }).catch(notify),
+      dcParameters.then(parse).then(json => { state.dcParameters = json; }).catch(notify),
+      savedPoints.then(parse).then(json => { state.points = json; }).catch(notify)
     ];
 
     Promise.all(pchains).then(() => {
