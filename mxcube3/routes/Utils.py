@@ -73,7 +73,7 @@ def get_movable_state_and_position(item_name):
         hwobj = mxcube.diffractometer.getObjectByRole(item_role)
 
         if hwobj is None:
-            logging.getLogger("HWR").error('[UTILS.GET_MOVABLE_STATE_AND_POSITION] unknown role "%s"' % item_role)
+            logging.getLogger("HWR").error('[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role "%s"' % item_role)
         else:
             if hasattr(hwobj, "getCurrentPositionName"):
                 # a motor similar to zoom
