@@ -14,11 +14,6 @@ export default (state = initialState, action) => {
         }
         return Object.assign({}, state, action, { loggedIn: true });
       }
-    case 'SIGNOUT':
-      {
-        return Object.assign({}, state, initialState);
-      }
-
     case 'SET_LOGIN_INFO':
       {
         return Object.assign({}, state,

@@ -15,9 +15,10 @@ def connect():
     pass
 
 collect_signals = ['collectStarted', 'collectEnded', 'testSignal', 'warning']
-collectOscSignals = ['collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
+collect_osc_signals = ['collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
+beam_signals = ['beamPosChanged', 'beamInfoChanged']
 
-queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] #'centringAllowed',
+queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] # 'centringAllowed',
 microdiffSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted','centringAccepted','centringMoving',\
                     'centringFailed', 'centringSuccessful', 'progressMessage', 'centringSnapshots', 'warning', 'positionChanged', \
                     'phiMotorStateChanged', 'phiyMotorStateChanged', 'phizMotorStateChanged', 'sampxMotorStateChanged', \
@@ -161,9 +162,14 @@ def motor_event_callback(*args, **kwargs):
     sender = str(kwargs['sender'].__class__).split('.')[0]
 
     motors_info = dict()
+    # the centring motors are: ["phi", "focus", "phiz", "phiy", "zoom",
+    # "sampx", "sampy", "kappa", "kappa_phi"]
+    for name in mxcube.diffractometer.centring_motors_list:
+        motor_info = Utils.get_movable_state_and_position(name)
+        if motor_info[name]['position'] is not None:
+            motors_info.update(motor_info)
 
-    for name in ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom', 'BackLightSwitch', 'BackLight', 'FrontLightSwitch', 'FrontLight', 'Sampx', 'Sampy']:
-        motors_info.update(Utils.get_movable_state_and_position(name))
+    motors_info.update(Utils.get_light_state_and_intensity())
 
     motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
 
@@ -178,6 +184,7 @@ def motor_event_callback(*args, **kwargs):
            'CentredPositions': aux,
            'Data': args[0] if len(args) == 1 else args}
     # logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+
     try:
         socketio.emit('Motors', msg, namespace='/hwr')
     except Exception:
@@ -190,5 +197,33 @@ def motor_event_callback(*args, **kwargs):
                "logger": 'HWR',
                "stack_trace": ''}
         socketio.emit('log_record', msg, namespace='/logging')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+
+
+def beam_changed(*args, **kwargs):
+    ret = {}
+    signal = kwargs['signal']
+    beam_info = mxcube.beamline.getObjectByRole("beam_info")
+
+    if beam_info is None:
+        logging.getLogger('HWR').error("beamInfo is not defined")
+        return Response(status=409)
+
+    try:
+        beam_info_dict = beam_info.get_beam_info()
+    except Exception:
+        beam_info_dict = dict()
+
+    ret.update({'position': beam_info.get_beam_position(),
+                'shape': beam_info_dict.get("shape"),
+                'size_x': beam_info_dict.get("size_x"),
+                'size_y': beam_info_dict.get("size_y")
+                })
+
+    msg = {'Signal': signal, 'Message': signal, 'Data': ret}
+    # logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+    try:
+        socketio.emit('beam_changed', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))

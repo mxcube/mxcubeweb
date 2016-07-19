@@ -234,7 +234,8 @@ def execute_entry_with_id(node_id):
         :statuscode: 409: queue entry could not be executed
     """
     last_queue_node = mxcube.queue.last_queue_node
-    #  WARNING: serialize_queue_to_json() should only be used for sending to the client,
+    #  WARNING: serialize_queue_to_json() should only be used for sending
+    #  to the client,
     #  here on the back-end side we should just always use mxcube.queue !
     queue = serialize_queue_to_json()
     global queue_has_to_be_stopped
@@ -270,7 +271,7 @@ def execute_entry_with_id(node_id):
                         socketio.emit('Queue', msg, namespace='/hwr')
                         mxcube.queue.queue_hwobj.wait_for_pause_event()
                     mxcube.queue.last_queue_node.update({'id': elem['QueueId'],
-                                                       'sample': queue[node_id]['SampleId']})
+                                                         'sample': queue[node_id]['SampleId']})
                     # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                     mxcube.queue.queue_hwobj.execute_entry(childEntry)
                     childEntry.set_enabled(False)
@@ -290,15 +291,19 @@ def execute_entry_with_id(node_id):
         entry._view = Mock()  # associated text deps
         entry._set_background_color = Mock()  # widget color deps
         #  parent = int(node.get_parent()._node_id)
-        parent_node = node.get_parent()  # this is a TaskGroup, so it is not in the parsed queue
+        # this is a TaskGroup, so it is not in the parsed queue
+        parent_node = node.get_parent() 
         #  go a level up,
-        parent_node = parent_node.get_parent()  # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
+        # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
+        parent_node = parent_node.get_parent()  
         if isinstance(parent_node, qmo.TaskGroup):
             parent_node = parent_node.get_parent()
         parent = int(parent_node._node_id)
 
-        mxcube.queue.last_queue_node.update({'id': node_id, 'sample': queue[parent]['SampleId']})
-        #mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
+        mxcube.queue.last_queue_node.update({'id': node_id,
+                                             'sample': queue[parent]['SampleId']
+                                             })
+        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
         mxcube.queue.queue_hwobj.execute_entry(entry)
         entry.set_enabled(False)
 
@@ -361,7 +366,6 @@ def add_sample():
     node_id = sample_node._node_id
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
     logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' % (sample_id, node_id))
-    #  queue.update({node_id: {'SampleId': sample_id, 'QueueId': node_id, 'checked': 0, 'methods': []}})
     Utils.save_queue(session)
     return jsonify({'SampleId': sample_id, 'QueueId': node_id})
 
@@ -733,6 +737,47 @@ def update_method(sample_id, method_id):
     return resp
 
 
+@mxcube.route("/mxcube/api/v0.1/queue/dc", methods=['GET'])
+def get_default_dc_params():
+    """
+    returns the default values for an acquisition (data collection).
+    TODO: implement as_dict in the qmo.AcquisitionParameters
+    """
+    acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
+    resp = jsonify({
+        'first_image': acq_parameters.first_image,
+        'num_images': acq_parameters.num_images,
+        'osc_start': acq_parameters.osc_start,
+        'osc_range': acq_parameters.osc_range,
+        'kappa': acq_parameters.kappa,
+        'kappa_phi': acq_parameters.kappa_phi,
+        'overlap': acq_parameters.overlap,
+        'exp_time': acq_parameters.exp_time,
+        'num_passes': acq_parameters.num_passes,
+        'resolution': acq_parameters.resolution,
+        'energy': acq_parameters.energy,
+        'transmission': acq_parameters.transmission,
+        'shutterless': acq_parameters.shutterless,
+        'detector_mode': acq_parameters.detector_mode,
+        'inverse_beam': False,
+        'take_dark_current': True,
+        'skip_existing_images': False,
+        'take_snapshots': True
+        })
+    resp.status_code = 200
+    return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/char", methods=['GET'])
+def get_default_char_params():
+    """
+    returns the default values for a characterisation.
+    """
+    resp = jsonify(mxcube.beamline.get_default_characterisation_parameters().as_dict())
+    resp.status_code = 200
+    return resp
+
+
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
 def get_sample(id):
     """
@@ -769,7 +814,8 @@ def get_method(sample_id, method_id):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
-    # WARNING: serialize_queue_to_json() should only be used for sending to the client,
+    # WARNING: serialize_queue_to_json() should only be used
+    # for sending to the client,
     # here on the back-end side we should just always use mxcube.queue !
     queue = serialize_queue_to_json()
 

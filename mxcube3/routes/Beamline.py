@@ -7,6 +7,10 @@ from mxcube3 import app as mxcube
 
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
+def init_signals():
+    beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+    for sig in signals.beamSignals:
+        beamInfo.connect(beamInfo, sig, signals.beam_changed)
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():

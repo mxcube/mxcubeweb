@@ -12,7 +12,9 @@ export default class MXNavbar extends React.Component {
     const sampleGrid = (
       <OverlayTrigger
         placement="right"
-        overlay={(<Popover className="main-menu-tooltip">Sample Overview</Popover>)}
+        overlay={(
+          <Popover id="sample-overview" className="main-menu-tooltip">Sample Overview</Popover>
+        )}
       >
         <p
           className="main-menu-icon text-center"
@@ -34,7 +36,9 @@ export default class MXNavbar extends React.Component {
           {(process.env.NODE_ENV !== 'production' ? sampleGrid : '')}
           <OverlayTrigger
             placement="right"
-            overlay={(<Popover className="main-menu-tooltip">Data Collection</Popover>)}
+            overlay={
+              (<Popover id="data-collection" className="main-menu-tooltip">Data Collection</Popover>
+            )}
           >
             <p
               className="main-menu-icon text-center"
@@ -51,7 +55,9 @@ export default class MXNavbar extends React.Component {
           </OverlayTrigger>
           <OverlayTrigger
             placement="right"
-            overlay={(<Popover className="main-menu-tooltip">System log</Popover>)}
+            overlay={(
+              <Popover id="system-log" className="main-menu-tooltip">System log</Popover>
+            )}
           >
             <p
               className="main-menu-icon text-center"
@@ -64,7 +70,9 @@ export default class MXNavbar extends React.Component {
           </OverlayTrigger>
           <OverlayTrigger
             placement="right"
-            overlay={(<Popover className="main-menu-tooltip">Reset Session</Popover>)}
+            overlay={(
+              <Popover id="reset-session" className="main-menu-tooltip">Reset Session</Popover>
+            )}
           >
             <p
               className="main-menu-icon text-center pull-down"
@@ -81,7 +89,9 @@ export default class MXNavbar extends React.Component {
           </OverlayTrigger>
           <OverlayTrigger
             placement="right"
-            overlay={(<Popover className="main-menu-tooltip">Logout {proposal.title}</Popover>)}
+            overlay={(
+              <Popover id="logout" className="main-menu-tooltip">Logout {proposal.title}</Popover>
+            )}
           >
             <p
               className="main-menu-icon text-center main-menu-bottom-icon"

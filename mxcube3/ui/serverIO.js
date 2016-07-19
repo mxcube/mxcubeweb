@@ -1,8 +1,13 @@
 import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
-import { updatePointsPosition, saveMotorPositions, setCurrentPhase } from './actions/sampleview';
+import {
+  updatePointsPosition,
+  saveMotorPositions,
+  setCurrentPhase,
+  setBeamPosition
+} from './actions/sampleview';
 import { setBeamlineAttrAction } from './actions/beamline';
-import { addTaskResultAction } from './actions/SamplesGrid';
+import { addTaskResultAction, addTaskAction } from './actions/SamplesGrid';
 import { setStatus } from './actions/queue';
 
 
@@ -32,12 +37,21 @@ export default class ServerIO {
       }
     });
 
+    this.hwrSocket.on('beam_changed', (data) => {
+      this.dispatch(setBeamPosition(data));
+    });
+
     this.hwrSocket.on('beamline_value_change', (data) => {
       this.dispatch(setBeamlineAttrAction(data));
     });
 
     this.hwrSocket.on('Task', (record) => {
       this.dispatch(addTaskResultAction(record.Sample, record.QueueId, record.State));
+    });
+
+    this.hwrSocket.on('add_task', (record) => {
+      const { queueID, sampleID, taskinfo, parameters } = record;
+      this.dispatch(addTaskAction(queueID, sampleID, taskinfo, parameters));
     });
 
     this.hwrSocket.on('Queue', (record) => {

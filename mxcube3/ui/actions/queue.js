@@ -1,5 +1,4 @@
 import fetch from 'isomorphic-fetch';
-import { updateSampleListAction } from './SamplesGrid';
 
 export function addSample(sampleID, queueID) {
   return {
@@ -15,7 +14,7 @@ export function removeSample(queueID, sampleID) {
 
 export function clearAll() {
   return {
-    type: 'CLEAR_QUEUE'
+    type: 'CLEAR_ALL'
   };
 }
 

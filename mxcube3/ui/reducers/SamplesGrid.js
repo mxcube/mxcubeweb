@@ -81,7 +81,7 @@ function recalculateQueueOrder(keys, gridOrder, state) {
   const sortedOrder = Object.entries(gridOrder).sort((a, b) => a[1] > b[1]);
 
   let i = 0;
-  for (const [key, order] of sortedOrder) {
+  for (const [key] of sortedOrder) {
     if (keys.includes(key)) {
       sampleList[key].queueOrder = i;
       i++;
@@ -94,9 +94,6 @@ function recalculateQueueOrder(keys, gridOrder, state) {
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'SIGNOUT': {
-      return Object.assign({}, INITIAL_STATE);
-    }
     case 'UPDATE_SAMPLE_LIST': {
       return Object.assign({}, state, { sampleList: initSampleList(action.sampleList),
                                         order: initialGridOrder(action.sampleList) });
@@ -106,7 +103,7 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList,
                          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 },
-                         order: initialGridOrder(sampleList)};
+                         order: initialGridOrder(sampleList) };
     }
     case 'SET_SAMPLE_ORDER': {
       const reorderKeys = Object.keys(state.picked).map(key => (state.picked[key] ? key : ''));
@@ -263,8 +260,11 @@ export default (state = INITIAL_STATE, action) => {
     case 'QUEUE_STATE': {
       return state; // action.sampleGridState;
     }
+    case 'CLEAR_ALL': {
+      return { ...INITIAL_STATE, manualMount: { set: state.manualMount.set, id: 0 } };
+    }
     case 'SET_INITIAL_STATUS': {
-      return { ...state, manualMount: { set: !action.data.useSC, id: 0 } };
+      return { ...state, manualMount: { set: !action.data.useSC, id: state.manualMount.id } };
     }
     default: {
       return state;

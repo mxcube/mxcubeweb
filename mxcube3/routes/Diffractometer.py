@@ -105,11 +105,48 @@ def md_in_plate_mode():
 @mxcube.route("/mxcube/api/v0.1/diffractometer/movables/state", methods=['GET'])
 def get_movables_state():
     ret = {}
-
-    for movable in ['Phi', 'Focus', 'PhiZ', 'PhiY', 'Sampx', 'Sampy', 'Zoom']:
-        ret.update(Utils.get_movable_state_and_position(movable))
+    for movable in mxcube.diffractometer.centring_motors_list:
+        motor_info = Utils.get_movable_state_and_position(movable)
+        if motor_info[movable]['position'] is not None:
+            ret.update(motor_info)
 
     ret.update(Utils.get_light_state_and_intensity())
+
+    resp = jsonify(ret)
+    resp.status_code = 200
+    return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['PUT'])
+def set_aperture():
+    """
+    Move the aperture motor.
+        :request Content-type: application/json, new position {'diameter': 50}.
+            Note: level specified as integer (not 'Diameter 50')
+        :statuscode: 200: no error
+        :statuscode: 409: error
+    """
+    params = request.data
+    params = json.loads(params)
+    new_pos = params['diameter']
+    aperture_motor = mxcube.diffractometer.getObjectByRole('aperture')
+    logging.getLogger('HWR').info("Changing aperture diameter to: %s" % new_pos)
+    aperture_motor.moveToPosition(int(new_pos))
+
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['GET'])
+def get_aperture():
+    ret = {}
+
+    aperture = mxcube.diffractometer.getObjectByRole('aperture')
+    aperture_list = aperture.getPredefinedPositionsList()
+    current_aperture = aperture.getCurrentPositionName()
+
+    ret.update({'apertureList': aperture_list,
+                'currentAperture': current_aperture
+                })
 
     resp = jsonify(ret)
     resp.status_code = 200

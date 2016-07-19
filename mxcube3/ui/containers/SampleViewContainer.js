@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
+import UserLog from '../components/SampleView/UserLog';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -50,20 +51,27 @@ class SampleViewContainer extends Component {
             />
         </div>
         <div className="col-xs-8">
-            <SampleImage
-              sampleActions={this.props.sampleViewActions}
-              sampleViewState={this.props.sampleViewState}
-              imageHeight={height}
-              imageWidth={width}
-              pixelsPerMm={pixelsPerMm}
-              shapeList={points}
-              clickCentring={clickCentring}
-              contextMenuShow={show}
-              imageRatio={imageRatio}
-              currentAperture={currentAperture}
-              beamPosition={beamPosition}
-              clickCentringPoints={clickCentringPoints}
-            />
+            <div className="row">
+              <div className="col-xs-12">
+                <UserLog messages={this.props.logMessages} />
+              </div>
+              <div className="col-xs-12">
+                <SampleImage
+                  sampleActions={this.props.sampleViewActions}
+                  sampleViewState={this.props.sampleViewState}
+                  imageHeight={height}
+                  imageWidth={width}
+                  pixelsPerMm={pixelsPerMm}
+                  shapeList={points}
+                  clickCentring={clickCentring}
+                  contextMenuShow={show}
+                  imageRatio={imageRatio}
+                  currentAperture={currentAperture}
+                  beamPosition={beamPosition}
+                  clickCentringPoints={clickCentringPoints}
+                />
+              </div>
+            </div>
         </div>
         <div className="col-xs-3">
           <BeamlineSetupContainer />
@@ -81,7 +89,8 @@ function mapStateToProps(state) {
     sampleInformation: state.sampleGrid.sampleList,
     sampleViewState: state.sampleview,
     lookup: state.queue.lookup,
-    defaultParameters: state.taskForm.defaultParameters
+    defaultParameters: state.taskForm.defaultParameters,
+    logMessages: state.logger.logRecords
   };
 }
 

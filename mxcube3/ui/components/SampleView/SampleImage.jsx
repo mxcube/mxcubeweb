@@ -21,7 +21,8 @@ export default class SampleImage extends React.Component {
     this.canvas.on('mouse:down', (option) => this.leftClick(option));
 
     // Bind rigthclick to function manually with javascript
-    document.getElementById('insideWrapper').addEventListener('contextmenu', (e) => this.rightClick(e), false);
+    const imageOverlay = document.getElementById('insideWrapper');
+    imageOverlay.addEventListener('contextmenu', (e) => this.rightClick(e), false);
 
     this.setImageRatio();
 
@@ -46,13 +47,6 @@ export default class SampleImage extends React.Component {
     this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
   }
 
-  renderSampleView(nextProps) {
-    const { imageRatio, currentAperture, beamPosition, clickCentringPoints, shapeList } = nextProps;
-    this.drawCanvas(imageRatio);
-    this.drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints);
-    this.renderPoints(shapeList, imageRatio);
-  }
-
   drawCanvas(imageRatio) {
     // Getting the size of screen
     const w = this.props.imageWidth / imageRatio;
@@ -68,15 +62,21 @@ export default class SampleImage extends React.Component {
     this.canvas.clear();
 
     // Set size of the Image from MD2
-    document.getElementById('sample-img').style.height = h + 'px';
-    document.getElementById('sample-img').style.width = w + 'px';
-    document.getElementById('insideWrapper').style.height = h + 'px';
+    document.getElementById('sample-img').style.height = `${h}px`;
+    document.getElementById('sample-img').style.width = `${w}px`;
+    document.getElementById('insideWrapper').style.height = `${h}px`;
   }
 
   drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints) {
     const apertureDiameter = currentAperture * 0.001 * this.props.pixelsPerMm / imageRatio;
     const scaleLength = 0.05 * this.props.pixelsPerMm / imageRatio;
-    this.canvas.add(...makeBeam(beamPosition[0] / imageRatio, beamPosition[1] / imageRatio, apertureDiameter / 2));
+    this.canvas.add(
+      ...makeBeam(
+        beamPosition[0] / imageRatio,
+        beamPosition[1] / imageRatio,
+        apertureDiameter / 2
+      )
+    );
     this.canvas.add(...makeScale(this.canvas.height, scaleLength, 'green', '50 µm'));
     if (clickCentringPoints.length) {
       const point = clickCentringPoints[clickCentringPoints.length - 1];
@@ -100,25 +100,49 @@ export default class SampleImage extends React.Component {
   }
 
   leftClick(option) {
-    if (this.props.contextMenuShow) {
-      this.props.sampleActions.showContextMenu(false);
+    const { contextMenuShow, sampleActions, clickCentring, imageRatio } = this.props;
+    if (contextMenuShow) {
+      sampleActions.showContextMenu(false);
     }
-    if (this.props.clickCentring) {
-      this.props.sampleActions.sendCentringPoint(option.e.layerX * this.props.imageRatio, option.e.layerY * this.props.imageRatio);
+    if (clickCentring) {
+      sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     }
+  }
+
+  renderSampleView(nextProps) {
+    const { imageRatio, currentAperture, beamPosition, clickCentringPoints, shapeList } = nextProps;
+    this.drawCanvas(imageRatio);
+    this.drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints);
+    this.renderPoints(shapeList, imageRatio);
   }
 
   renderPoints(points, imageRatio) {
     for (const id in points) {
-      switch (points[id].type) {
-        case 'SAVED':
-          this.canvas.add(...makePoint(points[id].x / imageRatio, points[id].y / imageRatio, id, 'yellow', 'SAVED'));
-          break;
-        case 'TMP':
-          this.canvas.add(...makePoint(points[id].x / imageRatio, points[id].y / imageRatio, id, 'white', 'TMP'));
-          break;
-        default:
-          throw new Error('Server gave point with unknown type');
+      if ({}.hasOwnProperty.call(points, id)) {
+        switch (points[id].type) {
+          case 'SAVED':
+            this.canvas.add(
+              ...makePoint(points[id].x / imageRatio,
+                points[id].y / imageRatio, id,
+                'yellow',
+                'SAVED'
+              )
+            );
+            break;
+          case 'TMP':
+            this.canvas.add(
+              ...makePoint(
+                points[id].x / imageRatio,
+                points[id].y / imageRatio,
+                id,
+                'white',
+                'TMP'
+              )
+            );
+            break;
+          default:
+            throw new Error('Server gave point with unknown type');
+        }
       }
     }
   }
@@ -128,11 +152,20 @@ export default class SampleImage extends React.Component {
       <div>
         <div className="outsideWrapper" id="outsideWrapper">
             <div className="insideWrapper" id="insideWrapper">
-                <img id= "sample-img" className="img" src="/mxcube/api/v0.1/sampleview/camera/subscribe" alt="SampleView" />
+                <img
+                  id= "sample-img"
+                  className="img"
+                  src="/mxcube/api/v0.1/sampleview/camera/subscribe"
+                  alt="SampleView"
+                />
                 <canvas id="canvas" className="coveringCanvas" />
             </div>
         </div>
-        <SampleControls sampleActions={this.props.sampleActions} sampleViewState={this.props.sampleViewState} canvas={this.canvas} />
+        <SampleControls
+          sampleActions={this.props.sampleActions}
+          sampleViewState={this.props.sampleViewState}
+          canvas={this.canvas}
+        />
       </div>
     );
   }

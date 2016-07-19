@@ -13,8 +13,9 @@ export default class SampleControls extends React.Component {
     this.takeSnapShot = this.takeSnapShot.bind(this);
     this.setZoom = this.setZoom.bind(this);
     this.setApertureSize = this.setApertureSize.bind(this);
-    this.toogleFrontLight = this.toogleLight.bind(this, 'front');
-    this.toogleBackLight = this.toogleLight.bind(this, 'back');
+    this.toggleFrontLight = this.toggleLight.bind(this, 'FrontLight');
+    this.toggleBackLight = this.toggleLight.bind(this, 'BackLight');
+    this.toggleCentring = this.toggleCentring.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -24,15 +25,14 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const currentZoom = parseInt(this.props.sampleViewState.zoom);
-    if(option.target.name === 'zoomOut' && currentZoom > 1 ){
+    const currentZoom = this.props.sampleViewState.zoom;
+    if (option.target.name === 'zoomOut' && currentZoom > 1) {
       this.props.sampleActions.sendZoomPos(currentZoom - 1);
-    }else if(option.target.name === 'zoomSlider'){
+    } else if (option.target.name === 'zoomSlider') {
       this.props.sampleActions.sendZoomPos(option.target.value);
-    }else if(option.target.name === 'zoomIn' && currentZoom < 10){
+    } else if (option.target.name === 'zoomIn' && currentZoom < 10) {
       this.props.sampleActions.sendZoomPos(currentZoom + 1);
     }
-
   }
 
   setApertureSize(option) {
@@ -49,12 +49,22 @@ export default class SampleControls extends React.Component {
     this.props.canvas.renderAll();
   }
 
-  toogleLight(name) {
-    const lighStatus = this.props.sampleViewState.lightOn[name];
-    if (lighStatus) {
-      this.props.sampleActions.sendLightOff(name);
+  toggleCentring() {
+    const { sendStartClickCentring, sendAbortCentring } = this.props.sampleActions;
+    const { clickCentring } = this.props.sampleViewState;
+    if (clickCentring) {
+      sendAbortCentring();
     } else {
-      this.props.sampleActions.sendLightOn(name);
+      sendStartClickCentring();
+    }
+  }
+
+  toggleLight(name) {
+    const lighStatus = this.props.sampleViewState.motors[`${name}Switch`].Status;
+    if (lighStatus) {
+      this.props.sampleActions.sendLightOff(name.toLowerCase());
+    } else {
+      this.props.sampleActions.sendLightOn(name.toLowerCase());
     }
   }
 
@@ -117,7 +127,7 @@ export default class SampleControls extends React.Component {
             title="Start 3-click Centring"
             className="fa fa-2x fa-circle-o-notch sample-controll"
             bsStyle="link"
-            onClick={this.props.sampleActions.sendStartClickCentring}
+            onClick={this.toggleCentring}
             active={this.props.sampleViewState.clickCentring}
           />
 
@@ -169,20 +179,11 @@ export default class SampleControls extends React.Component {
             <Button
               type="button"
               data-toggle="tooltip"
-              title="Abort Centring"
-              className="fa fa-2x fa-times sample-controll"
-              bsStyle="link"
-              onClick={this.props.sampleActions.sendAbortCentring}
-            />
-
-            <Button
-              type="button"
-              data-toggle="tooltip"
               title="Backlight On/Off"
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
-              onClick={this.toogleBackLight}
-              active={this.props.sampleViewState.lightOn.back == 1}
+              onClick={this.toggleBackLight}
+              active={this.props.sampleViewState.motors.BackLightSwitch.Status === 1}
             />
             <MotorInput
               title="BackLight"
@@ -200,8 +201,8 @@ export default class SampleControls extends React.Component {
               title="Frontlight On/Off"
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
-              onClick={this.toogleFrontLight}
-              active={this.props.sampleViewState.lightOn.front == 1}
+              onClick={this.toggleFrontLight}
+              active={this.props.sampleViewState.motors.FrontLightSwitch.Status === 1}
             />
             <MotorInput
               title="FrontLight"

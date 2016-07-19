@@ -16,59 +16,90 @@ export function showErrorPanel(show, message = '') {
   };
 }
 
+function parse(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response.json();
+  }
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
+}
+
+function notify(error) {
+  console.error('REQUEST FAILED', error);
+}
+
 export function getInitialStatus() {
   return function (dispatch) {
-    let state = {};
+    const state = {};
 
-    let motors = fetch('mxcube/api/v0.1/diffractometer/movables/state', {
+    const motors = fetch('mxcube/api/v0.1/diffractometer/movables/state', {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
     });
-    let beamInfo = fetch('mxcube/api/v0.1/beam/info', {
+    const beamInfo = fetch('mxcube/api/v0.1/beam/info', {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
     });
-    let sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
+    const sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
     });
-    let diffractometerInfo = fetch('mxcube/api/v0.1/diffractometer/info', {
+    const diffractometerInfo = fetch('mxcube/api/v0.1/diffractometer/info', {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
     });
-    let dataPath = fetch('mxcube/api/v0.1/beamline/datapath', {
+    const dataPath = fetch('mxcube/api/v0.1/beamline/datapath', {
       method: 'GET',
       credentials: 'include',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    const dcParameters = fetch('mxcube/api/v0.1/queue/dc', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    const savedPoints = fetch('mxcube/api/v0.1/sampleview/centring', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
         'Content-type': 'application/json'
       }
     });
 
-    let pchains = [
-        motors.then(response => { return response.json() }).then(json => { state.Motors = json }),
-        beamInfo.then(response => { return response.json() }).then(json => { state.beamInfo = json }),
-        sampleVideoInfo.then(response => { return response.json() }).then(json => { state.Camera = json }),
-        diffractometerInfo.then(response => { return response.json() }).then(json => { Object.assign(state, json) }),
-        dataPath.then(response => { return response.json() }).then(path => { Object.assign(state, {rootPath: path} ) })
-    ]
-    
+    const pchains = [
+      motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
+      beamInfo.then(parse).then(json => { state.beamInfo = json; }).catch(notify),
+      sampleVideoInfo.then(parse).then(json => { state.Camera = json; }).catch(notify),
+      diffractometerInfo.then(parse).then(json => { Object.assign(state, json); }).catch(notify),
+      dataPath.then(parse).then(path => { state.rootPath = path; }).catch(notify),
+      dcParameters.then(parse).then(json => { state.dcParameters = json; }).catch(notify),
+      savedPoints.then(parse).then(json => { state.points = json; }).catch(notify)
+    ];
+
     Promise.all(pchains).then(() => {
       dispatch(setInitialStatus(state));
     });

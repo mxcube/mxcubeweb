@@ -46,7 +46,6 @@ export default class MotorInput extends React.Component {
   render() {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
-    
     let inputCSS = cx('form-control input-sm', {
       'input-bg-moving': this.props.state === 4 || this.props.state === 3,
       'input-bg-ready': this.props.state === 2,
@@ -81,7 +80,7 @@ export default class MotorInput extends React.Component {
                   </Button>
                   <PopInput
                     className="step-size"
-                    ref={motorName} name="Step size" pkey={`${motorName}Step`}
+                    ref={motorName} name="Step size" pkey={`${motorName.toLowerCase()}Step`}
                     data={data} onSave={this.props.saveStep} suffix={suffix}
                   />
                 </span>

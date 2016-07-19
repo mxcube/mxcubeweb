@@ -10,8 +10,8 @@ export const STATE = {
 
 
 /**
- *  Initial redux state for beamline attributes, object containing each beamline 
- *  attribute (name, attribute object). Each attribute object in turn have the 
+ *  Initial redux state for beamline attributes, object containing each beamline
+ *  attribute (name, attribute object). Each attribute object in turn have the
  *  follwoing properties:
  *
  *     name:   name of beamline attribute

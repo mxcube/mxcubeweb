@@ -1,7 +1,12 @@
+.motor-input-container{
+    padding-right: 0px;
+}
+
 .motor-name{
     font-size: 1.0em;
     margin-bottom: 0px;
     font-weight: bold;
+    line-height: 3;
 }
 
 .motor-value{
