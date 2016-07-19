@@ -7,7 +7,7 @@ import * as QueueActions from '../actions/queue';
 import * as SampleActions from '../actions/SamplesGrid';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
-import { DragDropContext } from 'react-dnd';
+import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 function mapStateToProps(state) {
@@ -38,19 +38,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 
-@DragDropContext(HTML5Backend)
+@dragDropContext(HTML5Backend)
 @connect(mapStateToProps, mapDispatchToProps)
 export default class SampleQueueContainer extends React.Component {
-
-
-  filterList(list) {
-    const listFiltered = list.filter((queueID) => {
-      const sampleData = this.props.sampleInformation[this.props.lookup[queueID]];
-      return (this.props.searchString === '' || sampleData.id.indexOf(this.props.searchString) > -1);
-    });
-    return (listFiltered);
-  }
-
 
   render() {
     const {
@@ -72,7 +62,6 @@ export default class SampleQueueContainer extends React.Component {
       sendUnpauseQueue,
       sendStopQueue,
       sendUnmountSample,
-      changeOrder,
       changeTaskOrder,
       collapseList,
       collapseSample
@@ -109,7 +98,7 @@ export default class SampleQueueContainer extends React.Component {
                   show={history.collapsed}
                   collapse={collapseList}
                   collapsedSamples={collapsedSamples}
-                  list={this.filterList(history.nodes)}
+                  list={history.nodes}
                   sampleInformation={sampleInformation}
                   queue={queue}
                   lookup={lookup}
