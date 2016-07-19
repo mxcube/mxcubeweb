@@ -106,8 +106,8 @@ export function getInitialStatus() {
       dataPath.then(parse).then(path => { state.rootPath = path; }).catch(notify),
       dcParameters.then(parse).then(json => { state.dcParameters = json; }).catch(notify),
       savedPoints.then(parse).then(json => { state.points = json; }).catch(notify),
-      sampleChangerContents.then(parse).then(json => { 
-          state.sampleChangerContents = json;
+      sampleChangerContents.then(parse).then(json => {
+        state.sampleChangerContents = json;
       }).catch(notify)
     ];
 

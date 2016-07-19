@@ -2,20 +2,20 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { sampleChangerSelect, loadSample, unloadSample, scan
+import { select, loadSample, unloadSample, scan
 } from '../actions/sample_changer';
 
 import SampleChanger from '../components/SampleChanger/SampleChanger';
 
 class SampleChangerContainer extends React.Component {
   render() {
-    return  (<SampleChanger
+    return (<SampleChanger
       select={this.props.select}
       load={this.props.loadSample}
       unload={this.props.unloadSample}
       scan={this.props.scan}
-      contents={this.props.contents}>
-    </SampleChanger>);
+      contents={this.props.contents}
+    />);
   }
 }
 
@@ -27,10 +27,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    select: (address) => dispatch(sampleChangerSelect(address)),
+    select: (address) => dispatch(select(address)),
     loadSample: (address) => dispatch(loadSample(address)),
     unloadSample: (address) => dispatch(unloadSample(address)),
-    scan: (container) => dispatch(sampleChangerScan(container))
+    scan: (container) => dispatch(scan(container))
   };
 }
 
