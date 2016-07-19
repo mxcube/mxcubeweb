@@ -18,22 +18,12 @@ const mxcubeReducer = combineReducers({
   logger,
   general,
   beamline,
-  form: formReducer.plugin({
-    // <------ 'characterisation' is name of form given to reduxForm()
-    characterisation: (state, action) => {
-      switch (action.type) {
-        case 'ADD_METHOD':
-          return undefined; // <--- blow away form data
-        default:
-          return state;
-      }
-    }
-  })
+  form: formReducer
 });
 
 const rootReducer = (state, action) => {
   if (action.type === 'SIGNOUT') {
-    state = undefined;
+    state = undefined; // eslint-disable-line no-param-reassign
   }
 
   return mxcubeReducer(state, action);
