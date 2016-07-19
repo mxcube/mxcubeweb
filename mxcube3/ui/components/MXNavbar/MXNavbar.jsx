@@ -113,6 +113,26 @@ export default class MXNavbar extends React.Component {
           <OverlayTrigger
             placement="right"
             overlay={(
+              <Popover id="show_sc" className="main-menu-tooltip">Sample Changer</Popover>
+            )}
+          >
+            <p
+              className="main-menu-icon text-center pull-down"
+              eventKey={1}
+              active={(this.props.location.pathname === '/')}
+              href="#/sample_changer"
+            >
+              <a
+                className="fa fa-2x fa-braille icon"
+                aria-hidden="true"
+                href="#/sample_changer"
+              >
+              </a>
+            </p>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="right"
+            overlay={(
               <Popover id="logout" className="main-menu-tooltip">Logout {proposal.title}</Popover>
             )}
           >

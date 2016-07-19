@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridContainer from './containers/SampleGridContainer';
+import SampleChangerContainer from './containers/SampleChangerContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
 import Main from './components/Main';
@@ -92,6 +93,7 @@ export default class App extends React.Component {
               <Route path="/" component={Main} onEnter={requireAuth}>
                <IndexRoute component={SampleGridContainer} onEnter={requireAuth} />
                <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
+               <Route path="sample_changer" component={SampleChangerContainer} onEnter={requireAuth} />
                <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
               </Route>
               <Route path="login" component={LoginContainer} />
