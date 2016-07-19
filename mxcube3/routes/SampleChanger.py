@@ -20,6 +20,48 @@ def get_samples_list():
             )
     return jsonify(samples)
 
+@mxcube.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
+def get_sc_contents():
+    def _getElementStatus(e):
+        if e.isLeaf():
+            if e.isLoaded():
+                return "Loaded"
+            if e.hasBeenLoaded():
+                return "Used"
+        if e.isPresent():
+            return "Present"
+        return ""
+
+    def _getElementID(e):
+        if e == mxcube.sample_changer:
+            if e.getToken() is not None:
+                return e.getToken()
+        else:
+            if e.getID() is not None:
+                return e.getID()
+        return ""
+
+    def _addElement(parent, element):
+        new_element = { "name": element.getAddress(),
+                        "status": _getElementStatus(element),
+                        "id":_getElementID(element),
+                        "selected": element.isSelected() }
+
+        parent.setdefault("children", []).append(new_element)
+
+        if not element.isLeaf():
+          for e in element.getComponents():
+            _addElement(new_element, e)
+
+    root_name = mxcube.sample_changer.getAddress()
+
+    contents = { "name": root_name }
+
+    for element in mxcube.sample_changer.getComponents():
+        _addElement(contents, element)
+
+    return jsonify(contents)
+
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/<sample_location>/mount", methods=['PUT'])
 def mountSample(sample_location):
