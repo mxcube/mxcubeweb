@@ -83,10 +83,11 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.collect = app.beamline.getObjectByRole("collect")
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
 	try:
-	    app.diffractometer.centring_motors_list
+	    if getattr(app.diffractometer, 'centring_motors_list') == None:
+	        app.diffractometer.centring_motors_list = app.diffractometer.getPositions().keys()
 	except AttributeError:
-            # centring_motors_list is the list of roles corresponding to diffractometer motors
-            app.diffractometer.centring_motors_list = app.diffractometer.getPositions().keys()
+	    # centring_motors_list is the list of roles corresponding to diffractometer motors
+	    logging.getlogger('HWR').error('Error getting diffractometer centring motors')
         app.db_connection = app.beamline.getObjectByRole("lims_client")
         app.empty_queue = jsonpickle.encode(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
