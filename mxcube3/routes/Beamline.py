@@ -1,6 +1,6 @@
 import json
 import logging
-
+import signals
 from flask import Response, jsonify, request
 
 from mxcube3 import app as mxcube
@@ -9,7 +9,7 @@ from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
 def init_signals():
     beamInfo = mxcube.beamline.getObjectByRole("beam_info")
-    for sig in signals.beamSignals:
+    for sig in signals.beam_signals:
         beamInfo.connect(beamInfo, sig, signals.beam_changed)
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])

@@ -169,7 +169,7 @@ def motor_event_callback(*args, **kwargs):
 
     aux = {}
     for pos in mxcube.diffractometer.savedCentredPos:
-            aux.update({p['posId']: pos})
+            aux.update({pos['posId']: pos})
 
     #  sending all motors position/status, and the current centred positions
     msg = {'Signal': signal,
