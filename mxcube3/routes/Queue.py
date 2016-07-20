@@ -16,6 +16,7 @@ import QueueManager
 #for mocking the view of the queue, easier than adding sth like if not view:
 from HardwareRepository.BaseHardwareObjects import Null as Mock
 import Utils
+import signals
 import types
 import queue_entry as qe
 from queue_entry import QueueEntryContainer
@@ -638,7 +639,7 @@ def add_data_collection(id):
 
     col_node.acquisitions[0].acquisition_parameters.set_from_dict(params)
     col_node.acquisitions[0].path_template.directory = os.path.join(
-        mxcube.session.get_base_image_directory(), params['path'])
+        mxcube.session.get_base_image_directory(), params.get('path', 'dummy_path'))
     col_node.acquisitions[0].path_template.run_number = params['run_number']
     col_node.acquisitions[0].path_template.base_prefix = params['prefix']
     if mxcube.queue.check_for_path_collisions(col_node.acquisitions[0].path_template):
@@ -691,11 +692,11 @@ def add_method(id):
     node_id = id  # params['QueueId']
 
     if method_type == 'Centring':
-        return addCentring(node_id)
+        return add_centring(node_id)
     elif method_type == 'Characterisation':
-        return addCharacterisation(node_id)
+        return add_characterisation(node_id)
     elif method_type == 'DataCollection':
-        return addDataCollection(node_id)
+        return add_data_collection(node_id)
     else:
         logging.getLogger('HWR').exception('[QUEUE] Method can not be added')
         return Response(status=409)
