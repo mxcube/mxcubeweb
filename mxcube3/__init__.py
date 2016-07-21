@@ -82,7 +82,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
-	if getattr(app.diffractometer, 'centring_motors_list') == None:
+
+	if getattr(app.diffractometer, 'centring_motors_list', None) is None:
 	    # centring_motors_list is the list of roles corresponding to diffractometer motors
 	    app.diffractometer.centring_motors_list = app.diffractometer.getPositions().keys()
         app.db_connection = app.beamline.getObjectByRole("lims_client")
