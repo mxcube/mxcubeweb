@@ -24,7 +24,7 @@ export default class SampleImage extends React.Component {
     const imageOverlay = document.getElementById('insideWrapper');
     imageOverlay.addEventListener('contextmenu', (e) => this.rightClick(e), false);
     // Bind mouse scroll up/down to function manually with javascript
-    imageOverlay.addEventListener('mousewheel', (e) => this.wheel(e), false);
+    imageOverlay.addEventListener('wheel', (e) => this.wheel(e), false);
 
     this.setImageRatio();
 
