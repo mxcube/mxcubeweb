@@ -25,7 +25,7 @@ export default class ContextMenu extends React.Component {
         { text: 'Delete Line', action: () => this.removeObject(), key: 2 }
         ],
         NONE: [
-          { text: 'Please mount a sample', action: undefined, key: 1 },
+          { text: 'Go To Position', action: () => this.goToPosition(), key: 1 },
         ]
       }
     };
@@ -72,6 +72,12 @@ export default class ContextMenu extends React.Component {
   goToPoint() {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendGoToPoint(this.props.shape.id);
+  }
+
+  goToPosition() {
+    const { x, y } = this.props;
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.sendGoToPosition(x, y);
   }
 
   removeObject() {

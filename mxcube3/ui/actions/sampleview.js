@@ -142,6 +142,24 @@ export function sendCentringPoint(x, y) {
   };
 }
 
+export function sendGoToPosition(x, y) {
+  return function () {
+    fetch('/mxcube/api/v0.1/sampleview/postion/click', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ clickPos: { x, y } })
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused move to position');
+      }
+    });
+  };
+}
+
 export function sendStartAutoCentring() {
   return function () {
     fetch('/mxcube/api/v0.1/sampleview/centring/startauto', {

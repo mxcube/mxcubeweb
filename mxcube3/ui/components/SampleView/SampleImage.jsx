@@ -97,6 +97,9 @@ export default class SampleImage extends React.Component {
         this.props.sampleActions.showContextMenu(true, obj, obj.left, obj.top);
       }
     });
+    if (!objectFound) {
+      this.props.sampleActions.showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
+    }
   }
 
   leftClick(option) {
