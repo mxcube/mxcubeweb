@@ -172,7 +172,7 @@ export default (state = initialState, action) => {
       return state;
     case 'CLEAR_ALL':
       {
-      return Object.assign({}, state, initialState);
+        return Object.assign({}, state, initialState);
       }
     case 'SHOW_RESTORE_DIALOG':
       {
