@@ -9,8 +9,9 @@ export default class MotorInput extends React.Component {
   constructor(props) {
     super(props);
     this.handleKey = this.handleKey.bind(this);
-    this.handleClick = this.handleClick.bind(this);
     this.stopMotor = this.stopMotor.bind(this, props.motorName);
+    this.stepIncrement = this.stepChange.bind(this, props.motorName, 1);
+    this.stepDecrement = this.stepChange.bind(this, props.motorName, -1);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -30,13 +31,13 @@ export default class MotorInput extends React.Component {
     }
   }
 
-  handleClick(e) {
-    const { value, decimalPoints, state } = this.props;
-    if (e.target.value !== value.toFixed(decimalPoints) && state === 2) {
-      this.props.save(e.target.name, e.target.valueAsNumber);
-    } else if (state === 4) {
-      this.refs.motorValue.value = value.toFixed(decimalPoints);
-    }
+  stepChange(name, operator) {
+    const { value, step } = this.props;
+    const newValue = value + step * operator;
+
+    this.refs.motorValue.value = newValue;
+    this.refs.motorValue.defaultValue = newValue;
+    this.props.save(name, newValue);
   }
 
   stopMotor(name) {
@@ -46,7 +47,7 @@ export default class MotorInput extends React.Component {
   render() {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
-    let inputCSS = cx('form-control input-sm', {
+    let inputCSS = cx('form-control rw-input', {
       'input-bg-moving': this.props.state === 4 || this.props.state === 3,
       'input-bg-ready': this.props.state === 2,
       'input-bg-fault': this.props.state <= 1,
@@ -57,35 +58,58 @@ export default class MotorInput extends React.Component {
 
     return (
           <form className="inline form-inline form-group" onSubmit={this.handleKey} noValidate>
-              <input
-                ref="motorValue"
-                className={inputCSS}
-                onKeyUp={this.handleKey}
-                onClick={this.handleClick}
-                type="number"
-                step={step}
-                defaultValue={valueCropped}
-                name={motorName}
-                disabled={this.props.state === 4 || this.props.state === 3 || this.props.state <= 1}
-              />
-              {this.props.saveStep ?
+
+              <div className="rw-widget rw-numberpicker">
+                <span className="rw-select">
+                  <button
+                    type="button"
+                    className="rw-btn"
+                    disabled={this.props.state !== 2}
+                    onClick={this.stepIncrement}
+                  >
+                    <i aria-hidden="true" className="rw-i rw-i-caret-up"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="rw-btn"
+                    disabled={this.props.state !== 2}
+                    onClick={this.stepDecrement}
+                  >
+                    <i aria-hidden="true" className="rw-i rw-i-caret-down"></i>
+                  </button>
+                </span>
+                <input
+                  ref="motorValue"
+                  className={inputCSS}
+                  onKeyUp={this.handleKey}
+                  type="number"
+                  step={step}
+                  defaultValue={valueCropped}
+                  name={motorName}
+                  disabled={this.props.state !== 2}
+                />
+              </div>
                 <span>
+                {this.props.saveStep && this.props.state === 4 ?
                   <Button
                     className="btn-sm motor-abort"
-                    bsStyle="default"
+                    bsStyle="danger"
                     disabled={this.props.state !== 4}
                     onClick={this.stopMotor}
                   >
                     <i className="glyphicon glyphicon-remove" />
                   </Button>
+                    : null
+                  }
+                  {this.props.saveStep ?
                   <PopInput
                     className="step-size"
                     ref={motorName} name="Step size" pkey={`${motorName.toLowerCase()}Step`}
                     data={data} onSave={this.props.saveStep} suffix={suffix}
                   />
+                  : null
+                  }
                 </span>
-                : null
-              }
 
           </form>
       );

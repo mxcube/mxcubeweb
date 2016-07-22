@@ -33,3 +33,148 @@
 }
 
 
+.mx-btn {
+    display: block;
+    height: 1.143em;
+    line-height: 1.143em;
+    border-width: 0;
+}
+
+.rw-widget{
+    width:100px !important;
+    display: inline-block;
+}
+.rw-widget input{
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.rw-combobox, .rw-datetimepicker, .rw-numberpicker, .rw-dropdownlist {
+    padding-right: 1.9em;
+}
+.rw-widget {
+    background-color: #fff;
+    border: #ccc 1px solid;
+    border-radius: 4px;
+}
+
+.rw-widget {
+    position: relative;
+}
+
+.rw-widget > .rw-select {
+    border-left: #ccc 1px solid;
+}
+.rw-select {
+    position: absolute;
+    width: 1.9em;
+    height: 100%;
+    right: 0;
+    top: 0;
+}
+
+.rw-multiselect, .rw-combobox input.rw-input, .rw-datetimepicker input.rw-input, .rw-numberpicker input.rw-input {
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+.rw-combobox > .rw-input, .rw-datetimepicker > .rw-input, .rw-numberpicker > .rw-input, .rw-dropdownlist > .rw-input {
+    width: 100%;
+    border: none;
+    outline: 0;
+}
+.rw-widget .rw-input {
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+}
+.rw-widget input {
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+.rw-input {
+    color: #555555;
+    height: 2.286em;
+    padding: 0.429em 0.857em;
+    background-color: #fff;
+}
+
+.rw-numberpicker .rw-btn {
+    display: block;
+    height: 1.143em;
+    line-height: 1.143em;
+    width: 100%;
+    border-width: 0;
+}
+
+.rw-select.rw-btn, .rw-select > .rw-btn {
+    vertical-align: middle;
+    outline: 0;
+}
+
+.rw-btn[disabled], .rw-state-disabled .rw-btn, .rw-state-readonly .rw-btn {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    pointer-events: none;
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    opacity: .65;
+}
+
+.rw-btn, .rw-dropdownlist {
+    cursor: pointer;
+}
+
+.rw-btn {
+    color: #333;
+    line-height: 2.286em;
+    display: inline-block;
+    margin: 0;
+    text-align: center;
+    vertical-align: middle;
+    background: none;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.rw-btn, .rw-input {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+}
+
+.rw-i {
+    display: inline-block;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1em;
+    font-variant: normal;
+    text-transform: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.rw-i-caret-up:before {
+    content: '\f0d8';
+}
+
+.rw-i-caret-down:before {
+    content: '\f0d7';
+}
