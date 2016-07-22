@@ -171,12 +171,9 @@ export default (state = initialState, action) => {
       }
       return state;
     case 'CLEAR_ALL':
-      return Object.assign({}, state,
-        {
-          current: { node: null, collapsed: false, running: false },
-          todo: { nodes: [], collapsed: false },
-          history: { nodes: [], collapsed: false }
-        });
+      {
+      return Object.assign({}, state, initialState);
+      }
     case 'SHOW_RESTORE_DIALOG':
       {
         return { ...state, showRestoreDialog: action.show, queueRestoreState: action.queueState };
