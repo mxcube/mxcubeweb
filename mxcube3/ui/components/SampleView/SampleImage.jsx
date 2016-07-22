@@ -23,6 +23,8 @@ export default class SampleImage extends React.Component {
     // Bind rigthclick to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
     imageOverlay.addEventListener('contextmenu', (e) => this.rightClick(e), false);
+    // Bind mouse scroll up/down to function manually with javascript
+    imageOverlay.addEventListener('mousewheel', (e) => this.wheel(e), false);
 
     this.setImageRatio();
 
@@ -86,6 +88,7 @@ export default class SampleImage extends React.Component {
 
   rightClick(e) {
     let objectFound = false;
+
     const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
     e.preventDefault();
     if (this.props.contextMenuShow) {
@@ -108,6 +111,32 @@ export default class SampleImage extends React.Component {
       sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     }
   }
+
+  wheel(e) {
+    const { sampleActions, sampleViewState } = this.props;
+    const { motors, motorSteps, zoom } = sampleViewState;
+    const { sendMotorPosition, sendZoomPos } = sampleActions;
+    if (e.ctrlKey) {
+      // then we rotate phi axis by the step size defined in its box
+      if (e.deltaY > 0) {
+        // zoom in
+        sendMotorPosition('Phi', motors.phi.position + parseInt(motorSteps.phiStep, 10));
+      } else if (e.deltaY < 0) {
+        // zoom out
+        sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
+      }
+    } else {
+      // in this case zooming
+      if (e.deltaY > 0 && zoom < 10) {
+        // zoom in
+        sendZoomPos(zoom + 1);
+      } else if (e.deltaY < 0 && zoom > 1) {
+        // zoom out
+        sendZoomPos(zoom - 1);
+      }
+    }
+  }
+
 
   renderSampleView(nextProps) {
     const { imageRatio, currentAperture, beamPosition, clickCentringPoints, shapeList } = nextProps;
