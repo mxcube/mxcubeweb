@@ -1,28 +1,24 @@
+import json
+import jsonpickle
+import logging
+import os
+import signals
+
 from flask import Response, jsonify, request, session
+
+import queue_model_objects_v1 as qmo
+import queue_entry as qe
+import QueueManager
+import Utils
 
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
-from .Utils import *
-import time
-import logging
-
-import gevent.event
-import os
-import sys
-import json
-import queue_model_objects_v1 as qmo
-import QueueManager
 #for mocking the view of the queue, easier than adding sth like if not view:
 from HardwareRepository.BaseHardwareObjects import Null as Mock
-import Utils
-import signals
-import types
-import queue_entry as qe
-from queue_entry import QueueEntryContainer
-import jsonpickle
+
+
 qm = QueueManager.QueueManager('Mxcube3')
-#qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
 
 def init_signals(queue):
