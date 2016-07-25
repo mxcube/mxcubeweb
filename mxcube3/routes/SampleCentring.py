@@ -601,8 +601,31 @@ def accept_centring():
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=['PUT'])
 def reject_centring():
-    """
-    Reject the centring position.
-    """
+    """Reject the centring position."""
     mxcube.diffractometer.rejectCentring()
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/moveto", methods=['PUT'])
+def pos_from_x_y():
+    """Go to given x, y."""
+    params = request.data
+    params = json.loads(params)
+    click_position = params['clickPos']
+    logging.getLogger('HWR').info("A point submitted, x: %s, y: %s"
+                                  % (click_position['x'],
+                                     click_position['y']))
+    pixels_per_mm_x, pixels_per_mm_y = mxcube.diffractometer.get_pixels_per_mm()
+    center_x = mxcube.diffractometer.image_width / 2
+    center_y = mxcube.diffractometer.image_height / 2
+    data = {"X": (int(click_position['x']) - center_x) / pixels_per_mm_x,
+            "Y": (int(click_position['y']) - center_y) / pixels_per_mm_y
+            }
+    # new positions:
+    mot_y = mxcube.diffractometer.getObjectByRole('phiz')
+    print "ALING Z go to pos:  ", mot_y.getPosition() + data['Y']
+    mot_x = mxcube.diffractometer.getObjectByRole('phiy')
+    print "ALING Y go to pos:  ", mot_x.getPosition() + data['X']
+    mot_y.moveRelative(data['Y'])
+    mot_x.moveRelative(data['X'])
     return Response(status=200)
