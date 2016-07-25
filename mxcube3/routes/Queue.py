@@ -230,7 +230,7 @@ def execute_entry_with_id(node_id):
         (any further error might still happen)
         :statuscode: 409: queue entry could not be executed
     """
-    last_queue_node = mxcube.queue.last_queue_node
+    # last_queue_node = mxcube.queue.last_queue_node
     #  WARNING: serialize_queue_to_json() should only be used for sending
     #  to the client,
     #  here on the back-end side we should just always use mxcube.queue !
@@ -715,9 +715,9 @@ def update_method(sample_id, method_id):
     """
     params = request.data
     params = json.loads(params)
-    sample_node = mxcube.queue.get_node(int(sample_id))
+#    sample_node = mxcube.queue.get_node(int(sample_id))
     method_node = mxcube.queue.get_node(int(method_id))
-    method_entry = mxcube.queue.queue_hwobj.get_entry_with_model(method_node)
+#    method_entry = mxcube.queue.queue_hwobj.get_entry_with_model(method_node)
     # TODO: update fields here, I would say that the entry does not need to be updated, only the model node
 
     if isinstance(method_node, qmo.DataCollection):
