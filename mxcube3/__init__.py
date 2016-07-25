@@ -100,4 +100,3 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     # TODO: synchronize web UI with server operation status
     gevent.spawn(complete_initialization, app)
 
-f getat
