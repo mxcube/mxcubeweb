@@ -270,8 +270,8 @@ def execute_entry_with_id(node_id):
                     mxcube.queue.last_queue_node.update({'id': elem['QueueId'],
                                                          'sample': queue[node_id]['SampleId']})
                     # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-                    mxcube.queue.queue_hwobj.execute_entry(childEntry)
-                    childEntry.set_enabled(False)
+                    mxcube.queue.queue_hwobj.execute_entry(child_entry)
+                    child_entry.set_enabled(False)
                 except Exception:
                     logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
     else:
