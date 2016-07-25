@@ -535,6 +535,7 @@ def add_centring(id):
         409 something bad happened. Plus:
        data ={ "CentringId": newId}
     '''
+    params = request.get_json()
     logging.getLogger('HWR').info('[QUEUE] centring add requested with data: ' + str(params))
 
     cent_node = qmo.SampleCentring()
