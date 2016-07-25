@@ -339,10 +339,14 @@ def add_sample():
     sample_node.lims_group_id = None
     basket_number = None
 
-    if mxcube.diffractometer.use_sc:    # use sample changer
-        basket_number, sample_number = sample_id.split(':')
-    else:
-        sample_number = sample_id
+    try:
+        if mxcube.diffractometer.use_sc:    # use sample changer
+            basket_number, sample_number = sample_id.split(':')
+        else:
+            sample_number = sample_id
+    except AttributeError as ex:
+        msg = '[QUEUE] sample could not be added, %s' % str(ex)
+        logging.getLogger('HWR').error(msg)
 
     sample_node.location = (basket_number, sample_number)
     sample_entry = qe.SampleQueueEntry()
