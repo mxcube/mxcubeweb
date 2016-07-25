@@ -401,7 +401,7 @@ def update_sample(sample_id):
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=['PUT'])
-def toggle_node(nide_id):
+def toggle_node(node_id):
     '''
     Toggle a sample or a method checked status
         :parameter id: node identifier, integer
