@@ -623,9 +623,7 @@ def pos_from_x_y():
             }
     # new positions:
     mot_y = mxcube.diffractometer.getObjectByRole('phiz')
-    print "ALING Z go to pos:  ", mot_y.getPosition() + data['Y']
     mot_x = mxcube.diffractometer.getObjectByRole('phiy')
-    print "ALING Y go to pos:  ", mot_x.getPosition() + data['X']
-    mot_y.moveRelative(data['Y'])
-    mot_x.moveRelative(data['X'])
+    mot_y.moveRelative(data['Y'])  # -1 md3
+    mot_x.moveRelative(-1*data['X'])  # -1 md2 and md3
     return Response(status=200)
