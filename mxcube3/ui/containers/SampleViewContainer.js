@@ -51,9 +51,9 @@ class SampleViewContainer extends Component {
               stop={sendStopMotor}
             />
         </div>
-        <div className={cinema ? "col-xs-9" : "col-xs-8"}>
+        <div className={cinema ? 'col-xs-9' : 'col-xs-8'}>
             <div className="row">
-              <div className={cinema ? "hidden" : "col-xs-12"}>
+              <div className={cinema ? 'hidden' : 'col-xs-12'}>
                 <UserLog messages={this.props.logMessages} />
               </div>
               <div className="col-xs-12">
@@ -75,7 +75,7 @@ class SampleViewContainer extends Component {
               </div>
             </div>
         </div>
-        <div className={cinema ? "col-xs-2" : "col-xs-3"}>
+        <div className={cinema ? 'col-xs-2' : 'col-xs-3'}>
           <BeamlineSetupContainer />
           <SampleQueueContainer />
         </div>
