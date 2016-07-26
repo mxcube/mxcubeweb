@@ -25,6 +25,8 @@ export default class SampleImage extends React.Component {
     imageOverlay.addEventListener('contextmenu', (e) => this.rightClick(e), false);
     // Bind mouse scroll up/down to function manually with javascript
     imageOverlay.addEventListener('wheel', (e) => this.wheel(e), false);
+    // Bind mouse double click to function manually with javascript
+    imageOverlay.addEventListener('dblclick', (e) => this.goToPosition(e), false);
 
     this.setImageRatio();
 
@@ -115,18 +117,35 @@ export default class SampleImage extends React.Component {
     }
   }
 
+  goToPosition(e) {
+    const { sampleActions, sampleViewState } = this.props;
+    const { imageRatio } = sampleViewState;
+    const { sendGoToPosition } = sampleActions;
+    sendGoToPosition(e.layerX * imageRatio, e.layerY * imageRatio);
+  }
+
   wheel(e) {
+    e.preventDefault();
+    e.stopPropagation();
     const { sampleActions, sampleViewState } = this.props;
     const { motors, motorSteps, zoom } = sampleViewState;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     if (e.ctrlKey) {
       // then we rotate phi axis by the step size defined in its box
-      if (e.deltaY > 0) {
+      if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
         sendMotorPosition('Phi', motors.phi.position + parseInt(motorSteps.phiStep, 10));
-      } else if (e.deltaY < 0) {
+      } else if (e.deltaX < 0 || e.deltaY < 0) {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
+      }
+    } else if (e.altKey) {
+      if (e.deltaY > 0) {
+        // Focus in
+        sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
+      } else if (e.deltaY < 0) {
+        // Focus out
+        sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
     } else {
       // in this case zooming

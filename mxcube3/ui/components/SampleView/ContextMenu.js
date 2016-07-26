@@ -75,9 +75,9 @@ export default class ContextMenu extends React.Component {
   }
 
   goToPosition() {
-    const { x, y } = this.props;
+    const { x, y, imageRatio } = this.props;
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendGoToPosition(x, y);
+    this.props.sampleActions.sendGoToPosition(x * imageRatio, y * imageRatio);
   }
 
   removeObject() {

@@ -144,7 +144,7 @@ export function sendCentringPoint(x, y) {
 
 export function sendGoToPosition(x, y) {
   return function () {
-    fetch('/mxcube/api/v0.1/sampleview/postion/click', {
+    fetch('/mxcube/api/v0.1/sampleview/moveto', {
       method: 'PUT',
       credentials: 'include',
       headers: {

@@ -55,6 +55,7 @@ class SampleViewContainer extends Component {
                   sampleId={sampleId}
                   samplesInformation={this.props.sampleInformation}
                   defaultParameters={this.props.defaultParameters}
+                  imageRatio={imageRatio}
                 />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
