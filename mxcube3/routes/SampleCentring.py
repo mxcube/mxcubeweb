@@ -435,7 +435,11 @@ def move_motor(motid, newpos):
         :statuscode: 409: error
     """
     motor_hwobj = mxcube.diffractometer.getObjectByRole(motid.lower())
-
+    limits = motor_hwobj.getLimits()
+    if not limits[0] <= float(newpos) <= limits[1]:
+        return 'position out of range', 406, {'Content-Type': 'application/json',
+                                              'msg': motid + ' position out of range, ' + str(limits)
+                                              }
     if newpos == "stop":
         motor_hwobj.stop()
         return Response(status=200)
