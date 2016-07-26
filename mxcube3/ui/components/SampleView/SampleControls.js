@@ -213,6 +213,15 @@ export default class SampleControls extends React.Component {
               decimalPoints="2"
               state={this.props.sampleViewState.motors.FrontLight.Status}
             />
+            <Button
+              type="button"
+              data-toggle="tooltip"
+              title="Cinema On/Off"
+              className="fa fa-2x fa-arrows-alt sample-controll pull-right"
+              bsStyle="link"
+              onClick={this.props.sampleActions.toggleCinema}
+              active={this.props.sampleViewState.cinema}
+            />
           </div>
 
         );

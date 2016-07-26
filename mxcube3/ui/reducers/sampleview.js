@@ -36,11 +36,16 @@ const initialState = {
   apertureList: [],
   currentAperture: 0,
   currentPhase: '',
-  beamPosition: [0, 0]
+  beamPosition: [0, 0],
+  cinema: false
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case 'TOOGLE_CINEMA':
+      {
+        return { ...state, cinema: !state.cinema };
+      }
     case 'SET_ZOOM':
       {
         return { ...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm };

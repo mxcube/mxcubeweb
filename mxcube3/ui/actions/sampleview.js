@@ -103,6 +103,12 @@ export function updatePointsPosition(points) {
   };
 }
 
+export function toggleCinema() {
+  return {
+    type: 'TOOGLE_CINEMA'
+  };
+}
+
 export function sendStartClickCentring() {
   return function (dispatch) {
     fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
