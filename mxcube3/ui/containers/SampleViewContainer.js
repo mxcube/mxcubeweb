@@ -26,7 +26,8 @@ class SampleViewContainer extends Component {
       currentAperture,
       beamPosition,
       motors,
-      motorSteps
+      motorSteps,
+      cinema
     } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
@@ -50,9 +51,9 @@ class SampleViewContainer extends Component {
               stop={sendStopMotor}
             />
         </div>
-        <div className="col-xs-8">
+        <div className={cinema ? 'col-xs-9' : 'col-xs-8'}>
             <div className="row">
-              <div className="col-xs-12">
+              <div className={cinema ? 'hidden' : 'col-xs-12'}>
                 <UserLog messages={this.props.logMessages} />
               </div>
               <div className="col-xs-12">
@@ -69,11 +70,12 @@ class SampleViewContainer extends Component {
                   currentAperture={currentAperture}
                   beamPosition={beamPosition}
                   clickCentringPoints={clickCentringPoints}
+                  cinema={cinema}
                 />
               </div>
             </div>
         </div>
-        <div className="col-xs-3">
+        <div className={cinema ? 'col-xs-2' : 'col-xs-3'}>
           <BeamlineSetupContainer />
           <SampleQueueContainer />
         </div>
