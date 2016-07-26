@@ -54,6 +54,10 @@ def unmountSample(sample):
             mxcube.diffractometer.set_phase("Transfer")
             return Response(status=200)
 
+        #Remove Centring points
+        mxcube.diffractometer.savedCentredPos = []
+        mxcube.diffractometer.savedCentredPosCount = 1
+
         # move to history
 
         #mxcube.sample_changer.load_sample
