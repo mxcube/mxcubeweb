@@ -33,7 +33,8 @@ export default class SampleImage extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.imageWidth !== this.props.imageWidth) {
+    const { imageWidth, cinema } = this.props;
+    if (nextProps.imageWidth !== imageWidth || nextProps.cinema !== cinema) {
       this.setImageRatio();
     } else {
       this.renderSampleView(nextProps);
