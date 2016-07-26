@@ -26,6 +26,7 @@ export default class MotorInput extends React.Component {
     e.stopPropagation();
     if ([13, 38, 40].includes(e.keyCode) && this.props.state === 2) {
       this.props.save(e.target.name, e.target.valueAsNumber);
+      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     } else if (this.props.state === 4) {
       this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
@@ -35,7 +36,7 @@ export default class MotorInput extends React.Component {
     const { value, step } = this.props;
     const newValue = value + step * operator;
 
-    this.refs.motorValue.value = newValue;
+    this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     this.refs.motorValue.defaultValue = newValue;
     this.props.save(name, newValue);
   }
