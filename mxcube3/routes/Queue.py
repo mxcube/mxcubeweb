@@ -1,28 +1,24 @@
+import json
+import jsonpickle
+import logging
+import os
+import signals
+
 from flask import Response, jsonify, request, session
+
+import queue_model_objects_v1 as qmo
+import queue_entry as qe
+import QueueManager
+import Utils
 
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
-from .Utils import *
-import time
-import logging
-
-import gevent.event
-import os
-import sys
-import json
-import queue_model_objects_v1 as qmo
-import QueueManager
 #for mocking the view of the queue, easier than adding sth like if not view:
 from HardwareRepository.BaseHardwareObjects import Null as Mock
-import Utils
-import signals
-import types
-import queue_entry as qe
-from queue_entry import QueueEntryContainer
-import jsonpickle
+
+
 qm = QueueManager.QueueManager('Mxcube3')
-#qm._QueueManager__execute_entry = types.MethodType(Utils.__execute_entry, qm)
 
 
 def init_signals(queue):
@@ -234,7 +230,7 @@ def execute_entry_with_id(node_id):
         (any further error might still happen)
         :statuscode: 409: queue entry could not be executed
     """
-    last_queue_node = mxcube.queue.last_queue_node
+    # last_queue_node = mxcube.queue.last_queue_node
     #  WARNING: serialize_queue_to_json() should only be used for sending
     #  to the client,
     #  here on the back-end side we should just always use mxcube.queue !
@@ -274,8 +270,8 @@ def execute_entry_with_id(node_id):
                     mxcube.queue.last_queue_node.update({'id': elem['QueueId'],
                                                          'sample': queue[node_id]['SampleId']})
                     # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-                    mxcube.queue.queue_hwobj.execute_entry(childEntry)
-                    childEntry.set_enabled(False)
+                    mxcube.queue.queue_hwobj.execute_entry(child_entry)
+                    child_entry.set_enabled(False)
                 except Exception:
                     logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
     else:
@@ -343,10 +339,14 @@ def add_sample():
     sample_node.lims_group_id = None
     basket_number = None
 
-    if mxcube.diffractometer.use_sc:    # use sample changer
-        basket_number, sample_number = sample_id.split(':')
-    else:
-        sample_number = sample_id
+    try:
+        if mxcube.diffractometer.use_sc:    # use sample changer
+            basket_number, sample_number = sample_id.split(':')
+        else:
+            sample_number = sample_id
+    except AttributeError as ex:
+        msg = '[QUEUE] sample could not be added, %s' % str(ex)
+        logging.getLogger('HWR').error(msg)
 
     sample_node.location = (basket_number, sample_number)
     sample_entry = qe.SampleQueueEntry()
@@ -405,7 +405,7 @@ def update_sample(sample_id):
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=['PUT'])
-def toggle_node(nide_id):
+def toggle_node(node_id):
     '''
     Toggle a sample or a method checked status
         :parameter id: node identifier, integer
@@ -535,6 +535,7 @@ def add_centring(id):
         409 something bad happened. Plus:
        data ={ "CentringId": newId}
     '''
+    params = request.get_json()
     logging.getLogger('HWR').info('[QUEUE] centring add requested with data: ' + str(params))
 
     cent_node = qmo.SampleCentring()
@@ -715,9 +716,9 @@ def update_method(sample_id, method_id):
     """
     params = request.data
     params = json.loads(params)
-    sample_node = mxcube.queue.get_node(int(sample_id))
+#    sample_node = mxcube.queue.get_node(int(sample_id))
     method_node = mxcube.queue.get_node(int(method_id))
-    method_entry = mxcube.queue.queue_hwobj.get_entry_with_model(method_node)
+#    method_entry = mxcube.queue.queue_hwobj.get_entry_with_model(method_node)
     # TODO: update fields here, I would say that the entry does not need to be updated, only the model node
 
     if isinstance(method_node, qmo.DataCollection):
