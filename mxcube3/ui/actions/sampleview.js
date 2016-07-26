@@ -275,7 +275,7 @@ export function sendStopMotor(motorName) {
 }
 
 export function sendMotorPosition(motorName, value) {
-  return function () {
+  return function (dispatch) {
     fetch(`/mxcube/api/v0.1/sampleview/${motorName}/${value}`, {
       method: 'PUT',
       credentials: 'include',
@@ -284,6 +284,10 @@ export function sendMotorPosition(motorName, value) {
         'Content-type': 'application/json'
       }
     }).then((response) => {
+      if (response.status === 406) {
+        dispatch(showErrorPanel(true, response.headers.get('msg')));
+        throw new Error('Server refused to move motors: out of limits');
+      }
       if (response.status >= 400) {
         throw new Error('Server refused to move motors');
       }
@@ -368,6 +372,26 @@ export function getSampleImageSize() {
   };
 }
 
+export function getMotorPosition(motor) {
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/sampleview/'+motor, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused to get motor position');
+      }
+      return response.json();
+    }).then((json) => {
+      dispatch(saveMotorPosition(motor, json[motor].position));
+    });
+  };
+}
+
 export function getMotorPositions() {
   return function (dispatch) {
     fetch('/mxcube/api/v0.1/diffractometer/movables/state', {
@@ -406,7 +430,6 @@ export function getPointsPosition() {
     });
   };
 }
-
 
 export function sendCurrentPhase(phase) {
   return function (dispatch) {
