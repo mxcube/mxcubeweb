@@ -131,7 +131,7 @@ export default class SampleImage extends React.Component {
     const { sampleActions, sampleViewState } = this.props;
     const { motors, motorSteps, zoom } = sampleViewState;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
-    if (e.ctrlKey) {
+    if (e.ctrlKey & motors.phi.Status === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -140,7 +140,7 @@ export default class SampleImage extends React.Component {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (e.altKey) {
+    } else if (e.altKey && motors.focus.Status === 2) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
@@ -148,7 +148,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else {
+    } else if(!e.ctrlKey && !e.altKey && motors.zoom.Status === 2){
       // in this case zooming
       if (e.deltaY > 0 && zoom < 10) {
         // zoom in
