@@ -223,7 +223,7 @@ export function sendDeletePoint(id) {
 }
 
 export function sendZoomPos(level) {
-  return function (dispatch) {
+  return function () {
     fetch('/mxcube/api/v0.1/sampleview/zoom', {
       method: 'PUT',
       credentials: 'include',
@@ -236,9 +236,6 @@ export function sendZoomPos(level) {
       if (response.status >= 400) {
         throw new Error('Server refused to zoom');
       }
-      return response.json();
-    }).then((json) => {
-      dispatch(setZoom(level, json.pixelsPerMm[0]));
     });
   };
 }
