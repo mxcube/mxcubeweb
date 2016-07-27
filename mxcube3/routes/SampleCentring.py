@@ -601,8 +601,24 @@ def accept_centring():
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=['PUT'])
 def reject_centring():
-    """
-    Reject the centring position.
-    """
+    """Reject the centring position."""
     mxcube.diffractometer.rejectCentring()
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/movetobeam", methods=['PUT'])
+def move_to_beam():
+    """Go to the beam position from the given (x, y) position."""
+    params = request.data
+    params = json.loads(params)
+    click_position = params['clickPos']
+    logging.getLogger('HWR').info("A point submitted, x: %s, y: %s"
+                                  % (click_position['x'],
+                                     click_position['y']))
+    if getattr(mxcube.diffractometer, 'moveToBeam') is None:
+        # v > 2.2, or perhaps start_move_to_beam?
+        mxcube.diffractometer.move_to_beam(click_position['x'], click_position['y'])
+    else:
+        # v <= 2.1
+        mxcube.diffractometer.moveToBeam(click_position['x'], click_position['y'])
     return Response(status=200)

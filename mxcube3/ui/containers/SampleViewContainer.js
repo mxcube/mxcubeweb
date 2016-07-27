@@ -34,14 +34,6 @@ class SampleViewContainer extends Component {
 
     return (
       <div className="row">
-        <ContextMenu
-          {...this.props.sampleViewState.contextMenu}
-          sampleActions={this.props.sampleViewActions}
-          showForm={this.props.showForm}
-          sampleId={sampleId}
-          samplesInformation={this.props.sampleInformation}
-          defaultParameters={this.props.defaultParameters}
-        />
         <div className="col-xs-1">
             <MotorControl
               save={sendMotorPosition}
@@ -57,6 +49,15 @@ class SampleViewContainer extends Component {
                 <UserLog messages={this.props.logMessages} />
               </div>
               <div className="col-xs-12">
+                <ContextMenu
+                  {...this.props.sampleViewState.contextMenu}
+                  sampleActions={this.props.sampleViewActions}
+                  showForm={this.props.showForm}
+                  sampleId={sampleId}
+                  samplesInformation={this.props.sampleInformation}
+                  defaultParameters={this.props.defaultParameters}
+                  imageRatio={imageRatio}
+                />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   sampleViewState={this.props.sampleViewState}

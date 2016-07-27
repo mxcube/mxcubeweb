@@ -25,7 +25,7 @@ export default class ContextMenu extends React.Component {
         { text: 'Delete Line', action: () => this.removeObject(), key: 2 }
         ],
         NONE: [
-          { text: 'Please mount a sample', action: undefined, key: 1 },
+          { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
         ]
       }
     };
@@ -59,7 +59,7 @@ export default class ContextMenu extends React.Component {
 
   showContextMenu(x, y) {
     document.getElementById('contextMenu').style.top = `${y}px`;
-    document.getElementById('contextMenu').style.left = `${x}px`;
+    document.getElementById('contextMenu').style.left = `${x + 15}px`;
     document.getElementById('contextMenu').style.display = 'block';
   }
 
@@ -72,6 +72,12 @@ export default class ContextMenu extends React.Component {
   goToPoint() {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendGoToPoint(this.props.shape.id);
+  }
+
+  goToBeam() {
+    const { x, y, imageRatio } = this.props;
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.sendGoToBeam(x * imageRatio, y * imageRatio);
   }
 
   removeObject() {
