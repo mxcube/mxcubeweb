@@ -26,7 +26,7 @@ export default class SampleImage extends React.Component {
     // Bind mouse scroll up/down to function manually with javascript
     imageOverlay.addEventListener('wheel', (e) => this.wheel(e), false);
     // Bind mouse double click to function manually with javascript
-    imageOverlay.addEventListener('dblclick', (e) => this.goToPosition(e), false);
+    imageOverlay.addEventListener('dblclick', (e) => this.goToBeam(e), false);
 
     this.setImageRatio();
 
@@ -117,11 +117,11 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  goToPosition(e) {
+  goToBeam(e) {
     const { sampleActions, sampleViewState } = this.props;
     const { imageRatio } = sampleViewState;
-    const { sendGoToPosition } = sampleActions;
-    sendGoToPosition(e.layerX * imageRatio, e.layerY * imageRatio);
+    const { sendGoToBeam } = sampleActions;
+    sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
   }
 
   wheel(e) {

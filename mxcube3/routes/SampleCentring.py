@@ -606,24 +606,19 @@ def reject_centring():
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/moveto", methods=['PUT'])
-def pos_from_x_y():
-    """Go to given x, y."""
+@mxcube.route("/mxcube/api/v0.1/sampleview/movetobeam", methods=['PUT'])
+def move_to_beam():
+    """Go to the beam position from the given (x, y) position."""
     params = request.data
     params = json.loads(params)
     click_position = params['clickPos']
     logging.getLogger('HWR').info("A point submitted, x: %s, y: %s"
                                   % (click_position['x'],
                                      click_position['y']))
-    pixels_per_mm_x, pixels_per_mm_y = mxcube.diffractometer.get_pixels_per_mm()
-    center_x = mxcube.diffractometer.image_width / 2
-    center_y = mxcube.diffractometer.image_height / 2
-    data = {"X": (int(click_position['x']) - center_x) / pixels_per_mm_x,
-            "Y": (int(click_position['y']) - center_y) / pixels_per_mm_y
-            }
-    # new positions:
-    mot_y = mxcube.diffractometer.getObjectByRole('phiz')
-    mot_x = mxcube.diffractometer.getObjectByRole('phiy')
-    mot_y.moveRelative(data['Y'])  # -1 md3
-    mot_x.moveRelative(-1*data['X'])  # -1 md2 and md3
+    if getattr(mxcube.diffractometer, 'moveToBeam') is None:
+        # v > 2.2, or perhaps start_move_to_beam?
+        mxcube.diffractometer.move_to_beam(click_position['x'], click_position['y'])
+    else:
+        # v <= 2.1
+        mxcube.diffractometer.moveToBeam(click_position['x'], click_position['y'])
     return Response(status=200)

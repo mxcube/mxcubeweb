@@ -142,9 +142,9 @@ export function sendCentringPoint(x, y) {
   };
 }
 
-export function sendGoToPosition(x, y) {
+export function sendGoToBeam(x, y) {
   return function () {
-    fetch('/mxcube/api/v0.1/sampleview/moveto', {
+    fetch('/mxcube/api/v0.1/sampleview/movetobeam', {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -154,7 +154,7 @@ export function sendGoToPosition(x, y) {
       body: JSON.stringify({ clickPos: { x, y } })
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused move to position');
+        throw new Error('Server refused move to beam');
       }
     });
   };

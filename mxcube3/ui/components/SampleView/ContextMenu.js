@@ -25,7 +25,7 @@ export default class ContextMenu extends React.Component {
         { text: 'Delete Line', action: () => this.removeObject(), key: 2 }
         ],
         NONE: [
-          { text: 'Go To Position', action: () => this.goToPosition(), key: 1 },
+          { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
         ]
       }
     };
@@ -74,10 +74,10 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.sendGoToPoint(this.props.shape.id);
   }
 
-  goToPosition() {
+  goToBeam() {
     const { x, y, imageRatio } = this.props;
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendGoToPosition(x * imageRatio, y * imageRatio);
+    this.props.sampleActions.sendGoToBeam(x * imageRatio, y * imageRatio);
   }
 
   removeObject() {
