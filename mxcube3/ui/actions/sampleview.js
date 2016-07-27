@@ -1,6 +1,12 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 
+export function setMotorMoving(name) {
+  return {
+    type: 'SET_MOTOR_MOVING', name
+  };
+}
+
 export function setBeamInfo(info) {
   return {
     type: 'SET_BEAM_INFO', info
@@ -223,7 +229,8 @@ export function sendDeletePoint(id) {
 }
 
 export function sendZoomPos(level) {
-  return function () {
+  return function (dispatch) {
+    dispatch(setMotorMoving('zoom'));
     fetch('/mxcube/api/v0.1/sampleview/zoom', {
       method: 'PUT',
       credentials: 'include',
@@ -297,6 +304,7 @@ export function sendStopMotor(motorName) {
 
 export function sendMotorPosition(motorName, value) {
   return function (dispatch) {
+    dispatch(setMotorMoving(motorName));
     fetch(`/mxcube/api/v0.1/sampleview/${motorName}/${value}`, {
       method: 'PUT',
       credentials: 'include',
