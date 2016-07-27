@@ -11,6 +11,11 @@ export default class SampleImage extends React.Component {
     super(props);
     this.setImageRatio = this.setImageRatio.bind(this);
     this.canvas = {};
+    this.state = {
+      phiReady: true,
+      focusReady: true,
+      zoomReady: true
+    };
   }
 
   componentDidMount() {
@@ -36,6 +41,12 @@ export default class SampleImage extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { imageWidth, cinema } = this.props;
+    const motors = nextProps.sampleViewState.motors;
+    this.setState({
+      phiReady: motors.phi.Status === 2,
+      focusReady: motors.focus.Status === 2,
+      zoomReady: motors.zoom.Status === 2
+    });
     if (nextProps.imageWidth !== imageWidth || nextProps.cinema !== cinema) {
       this.setImageRatio();
     } else {
@@ -131,29 +142,35 @@ export default class SampleImage extends React.Component {
     const { sampleActions, sampleViewState } = this.props;
     const { motors, motorSteps, zoom } = sampleViewState;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
-    if (e.ctrlKey & motors.phi.Status === 2) {
+    if (e.ctrlKey && this.state.phiReady) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
+        this.setState({ phiReady: false });
         sendMotorPosition('Phi', motors.phi.position + parseInt(motorSteps.phiStep, 10));
       } else if (e.deltaX < 0 || e.deltaY < 0) {
         // zoom out
+        this.setState({ phiReady: false });
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (e.altKey && motors.focus.Status === 2) {
+    } else if (e.altKey && this.state.focusReady) {
       if (e.deltaY > 0) {
         // Focus in
+        this.setState({ focusReady: false });
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
       } else if (e.deltaY < 0) {
         // Focus out
+        this.setState({ focusReady: false });
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (!e.ctrlKey && !e.altKey && motors.zoom.Status === 2) {
+    } else if (!e.ctrlKey && !e.altKey && this.state.zoomReady) {
       // in this case zooming
       if (e.deltaY > 0 && zoom < 10) {
+        this.setState({ zoomReady: false });
         // zoom in
         sendZoomPos(zoom + 1);
       } else if (e.deltaY < 0 && zoom > 1) {
+        this.setState({ zoomReady: false });
         // zoom out
         sendZoomPos(zoom - 1);
       }
