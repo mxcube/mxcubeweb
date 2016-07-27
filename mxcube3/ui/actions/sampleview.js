@@ -398,7 +398,7 @@ export function getSampleImageSize() {
 
 export function getMotorPosition(motor) {
   return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview/'+motor, {
+    fetch(`/mxcube/api/v0.1/sampleview/${motor}`, {
       method: 'GET',
       credentials: 'include',
       headers: {
