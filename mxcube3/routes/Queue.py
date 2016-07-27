@@ -22,6 +22,7 @@ qm = QueueManager.QueueManager('Mxcube3')
 
 
 def init_signals(queue):
+    """Initialize hwobj signals."""
     for signal in signals.collect_signals:
         mxcube.collect.connect(mxcube.collect, signal,
                                signals.task_event_callback)
@@ -40,6 +41,7 @@ def init_signals(queue):
 def queue_start():
     """
     Start execution of the queue.
+
         :statuscode: 200: no error
         :statuscode: 409: queue could not be started
     """
@@ -55,13 +57,22 @@ def queue_start():
 def queue_stop():
     """
     Stop execution of the queue.
+
         :statuscode: 200: no error
         :statuscode: 409: queue could not be stopped
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to stop')
     global queue_has_to_be_stopped
     queue_has_to_be_stopped = True
-    mxcube.queue.queue_hwobj.stop()
+
+    if mxcube.queue.queue_hwobj._root_task is not None:
+        # the whole queue has been started
+        mxcube.queue.queue_hwobj.stop()
+    else:
+        # the queue has not started but an entry, but check if there is an entry before
+        current_entry = mxcube.queue.queue_hwobj.get_current_entry()
+        if current_entry is not None:
+            current_entry.stop()
     logging.getLogger('HWR').info('[QUEUE] Queue stopped')
     return Response(status=200)
 
@@ -70,11 +81,22 @@ def queue_stop():
 def queue_abort():
     """
     Abort execution of the queue.
+
         :statuscode: 200: no error
         :statuscode: 409: queue could not be aborted
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to abort')
-    mxcube.queue.queue_hwobj.stop()
+    global queue_has_to_be_stopped
+    queue_has_to_be_stopped = True
+
+    if mxcube.queue.queue_hwobj._root_task is not None:
+        # the whole queue has been started
+        mxcube.queue.queue_hwobj.stop()
+    else:
+        # the queue has not started but an entry, but check if there is an entry before
+        current_entry = mxcube.queue.queue_hwobj.get_current_entry()
+        if current_entry is not None:
+            current_entry.stop()
     logging.getLogger('HWR').info('[QUEUE] Queue aborted')
     return Response(status=200)
 
