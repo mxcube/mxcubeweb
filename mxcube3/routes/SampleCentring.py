@@ -350,6 +350,11 @@ def move_zoom_motor():
     params = json.loads(params)
     new_pos = params['level']
     zoom_motor = mxcube.diffractometer.getObjectByRole('zoom')
+    if zoom_motor.getState() != 2:
+        return 'motor is already moving', 406, {'Content-Type': 'application/json',
+                                                'msg': 'zoom already moving'
+                                                }
+
     logging.getLogger('HWR').info("Changing zoom level to: %s %s"
                                   % (new_pos, zoom_levels[int(new_pos)]))
     zoom_motor.moveToPosition(zoom_levels[int(new_pos)])
@@ -439,8 +444,12 @@ def move_motor(motid, newpos):
         motor_hwobj.stop()
         return Response(status=200)
     else:
-	limits = motor_hwobj.getLimits()
-    	if not limits[0] <= float(newpos) <= limits[1]:
+        if motor_hwobj.getState() != 2:
+            return 'motor is already moving', 406, {'Content-Type': 'application/json',
+                                                    'msg': motid + ' already moving'
+                                                    }
+        limits = motor_hwobj.getLimits()
+        if not limits[0] <= float(newpos) <= limits[1]:
             return 'position out of range', 406, {'Content-Type': 'application/json',
                                                   'msg': motid + ' position out of range, ' + str(limits)
                                                   }
