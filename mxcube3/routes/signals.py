@@ -143,15 +143,15 @@ def task_event_callback(*args, **kwargs):  # , **kwargs):
         socketio.emit('Task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
-    try:
-        msg = {"message": sender + ':' + signal,
-               "severity": 'INFO',
-               "timestamp": time.asctime(),
-               "logger": 'HWR',
-               "stack_trace": ''}
-        socketio.emit('log_record', msg, namespace='/logging')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+    # try:
+    #     msg = {"message": sender + ':' + signal,
+    #            "severity": 'INFO',
+    #            "timestamp": time.asctime(),
+    #            "logger": 'HWR',
+    #            "stack_trace": ''}
+    #     socketio.emit('log_record', msg, namespace='/logging')
+    # except Exception:
+    #     logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
 def motor_event_callback(*args, **kwargs):
@@ -184,15 +184,15 @@ def motor_event_callback(*args, **kwargs):
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
 
-    try:
-        msg = {"message": sender + ':' + signal,
-               "severity": 'INFO',
-               "timestamp": time.asctime(),
-               "logger": 'HWR',
-               "stack_trace": ''}
-        socketio.emit('log_record', msg, namespace='/logging')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+    # try:
+    #     msg = {"message": sender + ':' + signal,
+    #            "severity": 'INFO',
+    #            "timestamp": time.asctime(),
+    #            "logger": 'HWR',
+    #            "stack_trace": ''}
+    #     socketio.emit('log_record', msg, namespace='/logging')
+    # except Exception:
+    #     logging.getLogger("HWR").error('error sending message: %s' + str(msg))
 
 
 def beam_changed(*args, **kwargs):
