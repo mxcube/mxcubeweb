@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { makeCross, makeBeam, makeScale, makePoint } from './shapes';
+import { makeCross, makeBeam, makeScale, makePoint, makeLine } from './shapes';
 import SampleControls from './SampleControls';
 import 'fabric';
 const fabric = window.fabric;
@@ -72,7 +72,7 @@ export default class SampleImage extends React.Component {
     document.getElementById('insideWrapper').style.height = `${h}px`;
   }
 
-  drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints) {
+  drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints, distancePoints) {
     const apertureDiameter = currentAperture * 0.001 * this.props.pixelsPerMm / imageRatio;
     const scaleLength = 0.05 * this.props.pixelsPerMm / imageRatio;
     this.canvas.add(
@@ -86,6 +86,19 @@ export default class SampleImage extends React.Component {
     if (clickCentringPoints.length) {
       const point = clickCentringPoints[clickCentringPoints.length - 1];
       this.canvas.add(...makeCross(point, imageRatio, this.canvas.width, this.canvas.height));
+    }
+    if (distancePoints.length === 2) {
+      const point1 = distancePoints[0];
+      const point2 = distancePoints[1];
+      this.canvas.add(
+        makeLine(
+          point1.x / imageRatio,
+          point1.y / imageRatio,
+          point2.x / imageRatio,
+          point2.y / imageRatio,
+          'red', 2
+        )
+      );
     }
   }
 
@@ -109,12 +122,14 @@ export default class SampleImage extends React.Component {
   }
 
   leftClick(option) {
-    const { contextMenuShow, sampleActions, clickCentring, imageRatio } = this.props;
-    if (contextMenuShow) {
+    const { sampleActions, sampleViewState } = this.props;
+    const { clickCentring, measureDistance, imageRatio, contextMenu } = sampleViewState;
+    if (contextMenu.show) {
       sampleActions.showContextMenu(false);
-    }
-    if (clickCentring) {
+    } else if (clickCentring) {
       sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
+    } else if (measureDistance) {
+      sampleActions.addDistancePoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     }
   }
 
@@ -162,9 +177,22 @@ export default class SampleImage extends React.Component {
 
 
   renderSampleView(nextProps) {
-    const { imageRatio, currentAperture, beamPosition, clickCentringPoints, shapeList } = nextProps;
+    const { sampleViewState, shapeList } = nextProps;
+    const {
+      imageRatio,
+      currentAperture,
+      beamPosition,
+      clickCentringPoints,
+      distancePoints
+    } = sampleViewState;
     this.drawCanvas(imageRatio);
-    this.drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints);
+    this.drawImageOverlay(
+      imageRatio,
+      currentAperture,
+      beamPosition,
+      clickCentringPoints,
+      distancePoints
+    );
     this.renderPoints(shapeList, imageRatio);
   }
 

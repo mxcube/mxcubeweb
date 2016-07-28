@@ -2,6 +2,8 @@ import { omit } from 'lodash/object';
 const initialState = {
   clickCentring: false,
   clickCentringPoints: [],
+  measureDistance: false,
+  distancePoints: [],
   zoom: 0,
   points: {},
   width: 659,
@@ -66,6 +68,22 @@ export default (state = initialState, action) => {
             {
               ...state,
               clickCentringPoints: [...state.clickCentringPoints,
+              { x: action.x, y: action.y }]
+            }
+        );
+      }
+    case 'MEASURE_DISTANCE':
+      {
+        return { ...state, measureDistance: action.mode, distancePoints: [] };
+      }
+    case 'ADD_DISTANCE_POINT':
+      {
+        return (
+          state.distancePoints.length === 2 ?
+            { ...state, measureDistance: false, distancePoints: [] } :
+            {
+              ...state,
+              distancePoints: [...state.distancePoints,
               { x: action.x, y: action.y }]
             }
         );
