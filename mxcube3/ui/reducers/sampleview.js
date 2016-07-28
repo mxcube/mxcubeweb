@@ -105,6 +105,18 @@ export default (state = initialState, action) => {
           pixelsPerMm: action.pixelsPerMm
         };
       }
+    case 'SET_MOTOR_MOVING':
+      {
+        return {
+          ...state,
+          motors: { ...state.motors,
+            [action.name.toLowerCase()]: {
+              ...state.motors[action.name.toLowerCase()],
+              Status: action.status
+            }
+          }
+        };
+      }
     case 'SAVE_MOTOR_POSITIONS':
       {
         return {
