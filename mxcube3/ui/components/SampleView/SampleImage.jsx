@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { makeCross, makeBeam, makeScale, makePoint, makeLine } from './shapes';
+import { makeCross, makeBeam, makeScale, makeDistanceLine, renderPoints } from './shapes';
 import SampleControls from './SampleControls';
 import 'fabric';
 const fabric = window.fabric;
@@ -35,8 +35,8 @@ export default class SampleImage extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { imageWidth, cinema } = this.props;
-    if (nextProps.imageWidth !== imageWidth || nextProps.cinema !== cinema) {
+    const { width, cinema } = this.props.sampleViewState;
+    if (nextProps.sampleViewState.width !== width || nextProps.sampleViewState.cinema !== cinema) {
       this.setImageRatio();
     } else {
       this.renderSampleView(nextProps);
@@ -54,8 +54,9 @@ export default class SampleImage extends React.Component {
 
   drawCanvas(imageRatio) {
     // Getting the size of screen
-    const w = this.props.imageWidth / imageRatio;
-    const h = this.props.imageHeight / imageRatio;
+    const { width, height } = this.props.sampleViewState;
+    const w = width / imageRatio;
+    const h = height / imageRatio;
     // Set the size of the original html Canvas
     const canvasWindow = document.getElementById('canvas');
     canvasWindow.width = w;
@@ -73,8 +74,9 @@ export default class SampleImage extends React.Component {
   }
 
   drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints, distancePoints) {
-    const apertureDiameter = currentAperture * 0.001 * this.props.pixelsPerMm / imageRatio;
-    const scaleLength = 0.05 * this.props.pixelsPerMm / imageRatio;
+    const { pixelsPerMm } = this.props.sampleViewState;
+    const apertureDiameter = currentAperture * 0.001 * pixelsPerMm / imageRatio;
+    const scaleLength = 0.05 * pixelsPerMm / imageRatio;
     this.canvas.add(
       ...makeBeam(
         beamPosition[0] / imageRatio,
@@ -90,15 +92,7 @@ export default class SampleImage extends React.Component {
     if (distancePoints.length === 2) {
       const point1 = distancePoints[0];
       const point2 = distancePoints[1];
-      this.canvas.add(
-        makeLine(
-          point1.x / imageRatio,
-          point1.y / imageRatio,
-          point2.x / imageRatio,
-          point2.y / imageRatio,
-          'red', 2
-        )
-      );
+      this.canvas.add(...makeDistanceLine(point1, point2, imageRatio, pixelsPerMm, 'red', 2));
     }
   }
 
@@ -177,14 +171,14 @@ export default class SampleImage extends React.Component {
 
 
   renderSampleView(nextProps) {
-    const { sampleViewState, shapeList } = nextProps;
     const {
       imageRatio,
       currentAperture,
       beamPosition,
       clickCentringPoints,
-      distancePoints
-    } = sampleViewState;
+      distancePoints,
+      points
+    } = nextProps.sampleViewState;
     this.drawCanvas(imageRatio);
     this.drawImageOverlay(
       imageRatio,
@@ -193,39 +187,9 @@ export default class SampleImage extends React.Component {
       clickCentringPoints,
       distancePoints
     );
-    this.renderPoints(shapeList, imageRatio);
+    this.canvas.add(...renderPoints(points, imageRatio));
   }
 
-  renderPoints(points, imageRatio) {
-    for (const id in points) {
-      if ({}.hasOwnProperty.call(points, id)) {
-        switch (points[id].type) {
-          case 'SAVED':
-            this.canvas.add(
-              ...makePoint(points[id].x / imageRatio,
-                points[id].y / imageRatio, id,
-                'yellow',
-                'SAVED'
-              )
-            );
-            break;
-          case 'TMP':
-            this.canvas.add(
-              ...makePoint(
-                points[id].x / imageRatio,
-                points[id].y / imageRatio,
-                id,
-                'white',
-                'TMP'
-              )
-            );
-            break;
-          default:
-            throw new Error('Server gave point with unknown type');
-        }
-      }
-    }
-  }
 
   render() {
     return (

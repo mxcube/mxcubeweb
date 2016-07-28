@@ -7,22 +7,22 @@ export default class ContextMenu extends React.Component {
     this.state = {
       options: {
         SAVED: [
-        { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 1 },
-        { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 2 },
-        { text: 'Go To Point', action: () => this.goToPoint(), key: 3 },
-        { text: 'Delete Point', action: () => this.removeObject(), key: 4 }
+          { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 1 },
+          { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 2 },
+          { text: 'Go To Point', action: () => this.goToPoint(), key: 3 },
+          { text: 'Delete Point', action: () => this.removeObject(), key: 4 }
         ],
         TMP: [
-        { text: 'Save Point', action: () => this.savePoint(), key: 1 },
-        { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
+          { text: 'Save Point', action: () => this.savePoint(), key: 1 },
+          { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
         ],
         GROUP: [
-        { text: 'Draw Line', action: undefined, key: 1 },
-        { text: 'Delete Selected (NA)', action: undefined, key: 2 }
+          { text: 'Draw Line', action: undefined, key: 1 },
+          { text: 'Delete Selected (NA)', action: undefined, key: 2 }
         ],
         LINE: [
-        { text: 'Add Helical Scan (NA)', action: undefined, key: 1 },
-        { text: 'Delete Line', action: () => this.removeObject(), key: 2 }
+          { text: 'Add Helical Scan (NA)', action: undefined, key: 1 },
+          { text: 'Delete Line', action: () => this.removeObject(), key: 2 }
         ],
         NONE: [
           { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
