@@ -92,7 +92,6 @@ def get_movable_state_and_position(item_name):
 def get_centring_motors_info():
     # the centring motors are: ["phi", "focus", "phiz", "phiy", "zoom", "sampx", "sampy", "kappa", "kappa_phi"]
     ret = dict()
-    print mxcube.diffractometer.centring_motors_list
     for name in mxcube.diffractometer.centring_motors_list:
         motor_info = get_movable_state_and_position(name)
         if motor_info and motor_info[name]['position'] is not None:
