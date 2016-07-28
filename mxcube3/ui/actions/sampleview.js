@@ -1,9 +1,9 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 
-export function setMotorMoving(name) {
+export function setMotorMoving(name, status) {
   return {
-    type: 'SET_MOTOR_MOVING', name
+    type: 'SET_MOTOR_MOVING', name, status
   };
 }
 
@@ -230,7 +230,7 @@ export function sendDeletePoint(id) {
 
 export function sendZoomPos(level) {
   return function (dispatch) {
-    dispatch(setMotorMoving('zoom'));
+    dispatch(setMotorMoving('zoom', 4));
     fetch('/mxcube/api/v0.1/sampleview/zoom', {
       method: 'PUT',
       credentials: 'include',
@@ -304,7 +304,7 @@ export function sendStopMotor(motorName) {
 
 export function sendMotorPosition(motorName, value) {
   return function (dispatch) {
-    dispatch(setMotorMoving(motorName));
+    dispatch(setMotorMoving(motorName, 4));
     fetch(`/mxcube/api/v0.1/sampleview/${motorName}/${value}`, {
       method: 'PUT',
       credentials: 'include',
@@ -315,6 +315,7 @@ export function sendMotorPosition(motorName, value) {
     }).then((response) => {
       if (response.status === 406) {
         dispatch(showErrorPanel(true, response.headers.get('msg')));
+        dispatch(setMotorMoving(motorName, 2));
         throw new Error('Server refused to move motors: out of limits');
       }
       if (response.status >= 400) {
