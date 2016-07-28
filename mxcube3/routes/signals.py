@@ -56,7 +56,6 @@ motor_signals = {
     'sampyMotorStateChanged':       'sampyMotorStateChanged',
     'zoomMotorStateChanged':        'zoomMotorStateChanged',
     'actuatorStateChanged':         'actuatorStateChanged',
-    'minidiffStateChanged':         'minidiffStateChanged',
     'minidiffPhaseChanged':         'minidiffPhaseChanged',
     'minidiffTransferModeChanged':  'minidiffTransferModeChanged',
     'minidiffSampleIsLoadedChanged': 'minidiffSampleIsLoadedChanged',
