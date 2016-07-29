@@ -82,8 +82,7 @@ export function makePoint(x, y, id, color, type) {
   ];
 }
 
-
-export function renderPoints(points, imageRatio) {
+export function makePoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
     if ({}.hasOwnProperty.call(points, id)) {
@@ -114,4 +113,28 @@ export function renderPoints(points, imageRatio) {
     }
   }
   return fabricPoints;
+}
+
+export function makeImageOverlay(iR, ppMm, cA, bP, cCP, dP, canvas) {
+  const imageOverlay = [];
+  const apertureDiameter = cA * 0.001 * ppMm / iR;
+  const scaleLength = 0.05 * ppMm / iR;
+  imageOverlay.push(
+    ...makeBeam(
+      bP[0] / iR,
+      bP[1] / iR,
+      apertureDiameter / 2
+      )
+    );
+  imageOverlay.push(...makeScale(canvas.height, scaleLength, 'green', '50 µm'));
+  if (cCP.length) {
+    const point = cCP[cCP.length - 1];
+    imageOverlay.push(...makeCross(point, iR, canvas.width, canvas.height));
+  }
+  if (dP.length === 2) {
+    const point1 = dP[0];
+    const point2 = dP[1];
+    imageOverlay.push(...makeDistanceLine(point1, point2, iR, ppMm, 'red', 2));
+  }
+  return imageOverlay;
 }

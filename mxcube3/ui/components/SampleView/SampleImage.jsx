@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { makeCross, makeBeam, makeScale, makeDistanceLine, renderPoints } from './shapes';
+import { makePoints, makeImageOverlay } from './shapes';
 import SampleControls from './SampleControls';
 import 'fabric';
 const fabric = window.fabric;
@@ -51,6 +51,12 @@ export default class SampleImage extends React.Component {
   setImageRatio() {
     this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
   }
+  goToBeam(e) {
+    const { sampleActions, sampleViewState } = this.props;
+    const { imageRatio } = sampleViewState;
+    const { sendGoToBeam } = sampleActions;
+    sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
+  }
 
   drawCanvas(imageRatio) {
     // Getting the size of screen
@@ -73,45 +79,23 @@ export default class SampleImage extends React.Component {
     document.getElementById('insideWrapper').style.height = `${h}px`;
   }
 
-  drawImageOverlay(imageRatio, currentAperture, beamPosition, clickCentringPoints, distancePoints) {
-    const { pixelsPerMm } = this.props.sampleViewState;
-    const apertureDiameter = currentAperture * 0.001 * pixelsPerMm / imageRatio;
-    const scaleLength = 0.05 * pixelsPerMm / imageRatio;
-    this.canvas.add(
-      ...makeBeam(
-        beamPosition[0] / imageRatio,
-        beamPosition[1] / imageRatio,
-        apertureDiameter / 2
-      )
-    );
-    this.canvas.add(...makeScale(this.canvas.height, scaleLength, 'green', '50 µm'));
-    if (clickCentringPoints.length) {
-      const point = clickCentringPoints[clickCentringPoints.length - 1];
-      this.canvas.add(...makeCross(point, imageRatio, this.canvas.width, this.canvas.height));
-    }
-    if (distancePoints.length === 2) {
-      const point1 = distancePoints[0];
-      const point2 = distancePoints[1];
-      this.canvas.add(...makeDistanceLine(point1, point2, imageRatio, pixelsPerMm, 'red', 2));
-    }
-  }
-
   rightClick(e) {
+    const { sampleActions, contextMenuShow } = this.props;
+    const { showContextMenu } = sampleActions;
     let objectFound = false;
-
     const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
     e.preventDefault();
-    if (this.props.contextMenuShow) {
-      this.props.sampleActions.showContextMenu(false);
+    if (contextMenuShow) {
+      showContextMenu(false);
     }
     this.canvas.forEachObject((obj) => {
       if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
         objectFound = true;
-        this.props.sampleActions.showContextMenu(true, obj, obj.left, obj.top);
+        showContextMenu(true, obj, obj.left, obj.top);
       }
     });
     if (!objectFound) {
-      this.props.sampleActions.showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
+      showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
     }
   }
 
@@ -125,13 +109,6 @@ export default class SampleImage extends React.Component {
     } else if (measureDistance) {
       sampleActions.addDistancePoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     }
-  }
-
-  goToBeam(e) {
-    const { sampleActions, sampleViewState } = this.props;
-    const { imageRatio } = sampleViewState;
-    const { sendGoToBeam } = sampleActions;
-    sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
   }
 
   wheel(e) {
@@ -177,17 +154,20 @@ export default class SampleImage extends React.Component {
       beamPosition,
       clickCentringPoints,
       distancePoints,
-      points
+      points,
+      pixelsPerMm
     } = nextProps.sampleViewState;
     this.drawCanvas(imageRatio);
-    this.drawImageOverlay(
+    this.canvas.add(...makeImageOverlay(
       imageRatio,
+      pixelsPerMm,
       currentAperture,
       beamPosition,
       clickCentringPoints,
-      distancePoints
-    );
-    this.canvas.add(...renderPoints(points, imageRatio));
+      distancePoints,
+      this.canvas
+    ));
+    this.canvas.add(...makePoints(points, imageRatio));
   }
 
 
