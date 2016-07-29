@@ -252,6 +252,10 @@ export function sendZoomPos(level) {
       },
       body: JSON.stringify({ level })
     }).then((response) => {
+      if (response.status === 406) {
+        dispatch(showErrorPanel(true, response.headers.get('msg')));
+        throw new Error('Server refused to zoom');
+      }
       if (response.status >= 400) {
         throw new Error('Server refused to zoom');
       }
