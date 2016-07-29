@@ -1,5 +1,3 @@
-import { omit } from 'lodash/object';
-
 
 /**
 *  Initial redux state for SampleGrid,
@@ -193,24 +191,6 @@ export default (state = INITIAL_STATE, action) => {
       const data = { manualMount: { ...state.manualMount, set: action.manual } };
       return Object.assign({}, state, data);
     }
-    case 'ADD_TASK': {
-      return Object.assign({}, state,
-             { sampleList: { ...state.sampleList,
-              [action.index]: { ...state.sampleList[action.index],
-                tasks: { ...state.sampleList[action.index].tasks, [action.queueID]:
-                {
-                  type: action.taskType,
-                  label: action.taskType.split(/(?=[A-Z])/).join(' '),
-                  sampleID: action.index,
-                  queueID: action.queueID,
-                  parentID: action.parentID,
-                  parameters: action.parameters,
-                  state: 0
-                }
-                }
-              }
-             } });
-    }
     case 'UPDATE_TASK': {
       return Object.assign({}, state,
              { sampleList: { ...state.sampleList,
@@ -222,15 +202,6 @@ export default (state = INITIAL_STATE, action) => {
                   queueID: action.queueID,
                   parameters: action.parameters
                 } }
-              }
-             } }
-          );
-    }
-    case 'REMOVE_TASK': {
-      return Object.assign({}, state,
-             { sampleList: { ...state.sampleList,
-              [action.index]: { ...state.sampleList[action.index],
-                tasks: omit(state.sampleList[action.index].tasks, [action.queueID])
               }
              } }
           );

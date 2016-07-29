@@ -8,9 +8,9 @@ import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 import { sendCurrentPhase } from '../actions/sampleview';
 
 import {
-  sendAddSampleTaskRequest,
-  sendUpdateSampleTaskRequest,
   sendAddSampleAndTaskRequest,
+  addTask,
+  sendUpdateSampleTaskRequest,
   addSample
 } from '../actions/SamplesGrid';
 
@@ -25,7 +25,7 @@ class TaskContainer extends React.Component {
           lookup={lookup}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
-          addSampleAndTask={this.props.addSampleAndTask}
+          addSampleAndTask={this.props.addTaskAction_}
           changeTask={this.props.changeTask}
           addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}
@@ -82,7 +82,7 @@ function mapDispatchToProps(dispatch) {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
     addSampleAndTask: bindActionCreators(sendAddSampleAndTaskRequest, dispatch),
-    addTask: bindActionCreators(sendAddSampleTaskRequest, dispatch),
+    addTask: bindActionCreators(addTask, dispatch),
     changeTask: bindActionCreators(sendUpdateSampleTaskRequest, dispatch),
     addSample: bindActionCreators(addSample, dispatch),
     sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)

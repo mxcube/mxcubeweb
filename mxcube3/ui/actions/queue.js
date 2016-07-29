@@ -80,17 +80,6 @@ export function toggleChecked(queueID) {
   };
 }
 
-// export function synchState(savedQueue) {
-//   if (Object.keys(savedQueue).length > 0) {
-//     savedQueue.current = {};
-//     savedQueue.todo = { nodes:[] };
-//     savedQueue.history = { nodes:[] };
-//     return showRestoreDialog(savedQueue);
-//   } else {
-//     return showRestoreDialog(savedQueue, false);
-//   }
-// }
-
 export function showRestoreDialog(queueState, show = true) {
   return {
     type: 'SHOW_RESTORE_DIALOG', queueState, show

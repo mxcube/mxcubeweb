@@ -76,11 +76,20 @@ export function sendSyncSamplesRequest(proposalId) {
 export function addTaskAction(sampleQueueID, sampleID, task, parameters) {
   return { type: 'ADD_TASK',
            taskType: task.Type,
-           index: sampleID,
+           sampleID,
            parentID: sampleQueueID,
            queueID: task.QueueId,
            parameters
          };
+}
+
+
+export function addTask(sampleID, parameters) {
+  const task = { Type: parameters.Type };
+
+  return function (dispatch) {
+    dispatch(addTaskAction(0, sampleID, task, parameters));
+  };
 }
 
 
@@ -133,12 +142,15 @@ export function updateTaskAction(queueID, sampleID, parameters) {
 }
 
 
-export function removeTaskAction(sampleQueueID, queueID, sampleID) {
-  return { type: 'REMOVE_TASK',
-           index: sampleID,
-           parentID: sampleQueueID,
-           queueID
-         };
+export function removeTaskAction(task) {
+  return { type: 'REMOVE_TASK', task };
+}
+
+
+export function removeTask(task) {
+  return function (dispatch) {
+    dispatch(removeTaskAction(task));
+  };
 }
 
 

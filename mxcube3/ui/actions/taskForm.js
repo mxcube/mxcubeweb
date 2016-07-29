@@ -1,10 +1,10 @@
 import { sendCurrentPhase } from './sampleview';
 
-export function showForm(formName, sampleQueueID = [], taskData = {}, pointQueueID = -1) {
+export function showForm(formName, sampleIDs = [], taskData = {}, pointQueueID = -1) {
   return {
     type: 'SHOW_FORM',
     name: formName,
-    sampleIDs: sampleQueueID,
+    sampleIDs,
     taskData,
     point_id: pointQueueID
   };
@@ -24,4 +24,3 @@ export function hideTaskParametersForm() {
     type: 'HIDE_FORM'
   };
 }
-
