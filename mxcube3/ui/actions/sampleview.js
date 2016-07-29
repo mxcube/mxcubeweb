@@ -55,6 +55,18 @@ export function setZoom(level, pixelsPerMm) {
   };
 }
 
+export function measureDistance(mode) {
+  return {
+    type: 'MEASURE_DISTANCE', mode
+  };
+}
+
+export function addDistancePoint(x, y) {
+  return {
+    type: 'ADD_DISTANCE_POINT', x, y
+  };
+}
+
 export function startClickCentring() {
   return {
     type: 'START_CLICK_CENTRING'

@@ -25,7 +25,8 @@ export default class ContextMenu extends React.Component {
         { text: 'Delete Line', action: () => this.removeObject(), key: 2 }
         ],
         NONE: [
-          { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
+        { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
+        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 }
         ]
       }
     };
@@ -83,6 +84,11 @@ export default class ContextMenu extends React.Component {
   removeObject() {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendDeletePoint(this.props.shape.id);
+  }
+
+  measureDistance() {
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.measureDistance(true);
   }
 
   hideContextMenu() {
