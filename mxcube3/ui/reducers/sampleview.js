@@ -39,6 +39,8 @@ const initialState = {
   currentAperture: 0,
   currentPhase: '',
   beamPosition: [0, 0],
+  beamShape: 'elipse',
+  beamSize: { x: 0, y: 0 },
   cinema: false
 };
 
@@ -150,10 +152,6 @@ export default (state = initialState, action) => {
           }
         };
       }
-    case 'SET_BEAM_POSITION':
-      {
-        return { ...state, beamPosition: action.position };
-      }
     case 'SET_IMAGE_RATIO':
       {
         return { ...state, imageRatio: state.width / action.clientWidth };
@@ -167,7 +165,8 @@ export default (state = initialState, action) => {
         return {
           ...state,
           beamPosition: action.info.position,
-          currentAperture: action.info.size_x * 1000
+          beamShape: action.info.shape,
+          beamSize: { x: action.info.size_x, y: action.info.size_y }
         };
       }
     case 'SET_CURRENT_PHASE':
@@ -198,6 +197,8 @@ export default (state = initialState, action) => {
           apertureList: action.data.beamInfo.apertureList,
           currentAperture: action.data.beamInfo.currentAperture,
           beamPosition: action.data.beamInfo.position,
+          beamShape: action.data.beamInfo.shape,
+          beamSize: { x: action.data.beamInfo.size_x, y: action.data.beamInfo.size_y },
           points: action.data.points
         };
       }
