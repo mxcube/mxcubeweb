@@ -1,6 +1,35 @@
 import 'fabric';
 const fabric = window.fabric;
 
+export function makeRectangle(posX, posY, sizeX, sizeY, color) {
+  return new fabric.Rect({
+    left: posX,
+    top: posY,
+    originX: 'center',
+    originY: 'center',
+    width: sizeX,
+    height: sizeY,
+    fill: '',
+    stroke: color,
+    strokeWidth: 3,
+  });
+}
+
+export function makeElipse(posX, posY, sizeX, sizeY, color) {
+  return new fabric.Ellipse({
+    left: posX,
+    top: posY,
+    originX: 'center',
+    originY: 'center',
+    rx: sizeX / 2,
+    ry: sizeY / 2,
+    angle: 0,
+    fill: '',
+    stroke: color,
+    strokeWidth: 3,
+  });
+}
+
 export function makeCircle(x, y, selectable, radius, color = 'red', id = 'no id', type = 'TMP') {
   return new fabric.Circle({
     radius,
@@ -57,11 +86,13 @@ export function makeCross(point, imageRatio, width, height) {
   ];
 }
 
-export function makeBeam(x, y, radius) {
+export function makeBeam(posX, posY, sizeX, sizeY, shape) {
   return [
-    makeLine(x - 20, y, x + 20, y, 'red', 1),
-    makeLine(x, y - 20, x, y + 20, 'red', 1),
-    makeCircle(x, y, false, radius, 'blue')
+    makeLine(posX - 20, posY, posX + 20, posY, 'red', 1),
+    makeLine(posX, posY - 20, posX, posY + 20, 'red', 1),
+    (shape === 'ellipse' ?
+      makeElipse(posX, posY, sizeX, sizeY, 'blue') :
+      makeRectangle(posX, posY, sizeX, sizeY, 'blue'))
   ];
 }
 
@@ -115,15 +146,16 @@ export function makePoints(points, imageRatio) {
   return fabricPoints;
 }
 
-export function makeImageOverlay(iR, ppMm, cA, bP, cCP, dP, canvas) {
+export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
   const imageOverlay = [];
-  const apertureDiameter = cA * 0.001 * ppMm / iR;
   const scaleLength = 0.05 * ppMm / iR;
   imageOverlay.push(
     ...makeBeam(
       bP[0] / iR,
       bP[1] / iR,
-      apertureDiameter / 2
+      bSi.x * ppMm / iR,
+      bSi.y * ppMm / iR,
+      bSh
       )
     );
   imageOverlay.push(...makeScale(canvas.height, scaleLength, 'green', '50 µm'));

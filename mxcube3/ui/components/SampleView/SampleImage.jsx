@@ -150,8 +150,9 @@ export default class SampleImage extends React.Component {
   renderSampleView(nextProps) {
     const {
       imageRatio,
-      currentAperture,
       beamPosition,
+      beamShape,
+      beamSize,
       clickCentringPoints,
       distancePoints,
       points,
@@ -161,8 +162,9 @@ export default class SampleImage extends React.Component {
     this.canvas.add(...makeImageOverlay(
       imageRatio,
       pixelsPerMm,
-      currentAperture,
       beamPosition,
+      beamShape,
+      beamSize,
       clickCentringPoints,
       distancePoints,
       this.canvas
