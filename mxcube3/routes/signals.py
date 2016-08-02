@@ -34,8 +34,6 @@ warnSignals = ['warning']
 error_signals = {}
 logging_signals = {}
 samplechanger_signals = {}
-queue_signals = {}
-beam_signals = {}
 moveables_signals = {}
 
 task_signals = {  # missing egyscan, xrf, etc...

@@ -33,8 +33,12 @@ def init_signals():
         else:
             pass
     for motor in mxcube.diffractometer.centring_motors_list:
-    	mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()), "positionChanged", signals.motor_event_callback)
-    	mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()), "stateChanged", signals.motor_event_callback)
+        mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
+                                      "positionChanged",
+                                      signals.motor_event_callback)
+        mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
+                                      "stateChanged",
+                                      signals.motor_event_callback)
     try:
         frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
         frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged',
@@ -85,7 +89,7 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     global SAMPLE_IMAGE
     for point in mxcube.diffractometer.savedCentredPos:
         pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(
-            point['motorPositions'])
+            point['motor_positions'])
         point.update({'x': pos_x, 'y': pos_y})
 
     # Assume that we are gettign a qimage if we are not getting a str,
@@ -324,7 +328,7 @@ def get_centring_positions():
     for pos in mxcube.diffractometer.savedCentredPos:
         aux.update({pos['posId']: pos})
         pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(
-            pos['motorPositions'])
+            pos['motor_positions'])
         aux[pos['posId']].update({'x': pos_x, 'y': pos_y})
     resp = jsonify(aux)
     resp.status_code = 200
@@ -578,7 +582,7 @@ def wait_for_centring_finishes(*args, **kwargs):
                 index = mxcube.diffractometer.savedCentredPos.index(pos)
                 data = {'name': pos['name'],
                         'posId': pos['posId'],
-                        'motorPositions': motor_positions,
+                        'motor_positions': motor_positions,
                         'selected': True,
                         'type': 'TMP',
                         'x': pos_x,
@@ -593,7 +597,7 @@ def wait_for_centring_finishes(*args, **kwargs):
         # pos1, pos2, ..., pos42
         data = {'name': centred_pos_id,
                 'posId': mxcube.diffractometer.savedCentredPosCount,
-                'motorPositions': motor_positions,
+                'motor_positions': motor_positions,
                 'selected': True,
                 'type': 'TMP',
                 'x': pos_x,
@@ -601,7 +605,7 @@ def wait_for_centring_finishes(*args, **kwargs):
                 }
         mxcube.diffractometer.savedCentredPosCount += 1
         mxcube.diffractometer.savedCentredPos.append(data)
-        mxcube.diffractometer.emit('minidiffStateChanged', (True,))
+        mxcube.diffractometer.emit('stateChanged', (True,))
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
