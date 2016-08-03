@@ -3,6 +3,7 @@ import React from 'react';
 import { makePoints, makeImageOverlay } from './shapes';
 import SampleControls from './SampleControls';
 import 'fabric';
+import io from 'socket.io-client';
 const fabric = window.fabric;
 
 export default class SampleImage extends React.Component {
@@ -11,9 +12,17 @@ export default class SampleImage extends React.Component {
     super(props);
     this.setImageRatio = this.setImageRatio.bind(this);
     this.canvas = {};
+    this.imgSocket = {};
   }
 
   componentDidMount() {
+    this.imgSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
+
+    this.imgSocket.on('Image', (data) => {
+      const img = document.getElementById('sample-img');
+      img.src = `data:image/jpeg;base64,${data}`;
+    });
+
     // Create fabric and set image background to sample
     this.canvas = new fabric.Canvas('canvas', { defaultCursor: 'crosshair' });
 
@@ -44,6 +53,7 @@ export default class SampleImage extends React.Component {
   }
 
   componentWillUnmount() {
+    this.imgSocket.disconnect();
     // Important to remove listener if component isn't active
     window.removeEventListener('resize', this.setImageRatio);
   }
@@ -181,7 +191,7 @@ export default class SampleImage extends React.Component {
                 <img
                   id= "sample-img"
                   className="img"
-                  src="/mxcube/api/v0.1/sampleview/camera/subscribe"
+                  src=""
                   alt="SampleView"
                 />
                 <canvas id="canvas" className="coveringCanvas" />

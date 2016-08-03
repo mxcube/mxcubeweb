@@ -1,8 +1,8 @@
 from flask import Response, jsonify, request
-
+import base64
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
-
+from mxcube3 import socketio
 import copy
 import logging
 import gevent.event
@@ -75,6 +75,10 @@ def init_signals():
                                   wait_for_centring_finishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
                                   wait_for_centring_finishes)
+    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
+    mxcube.diffractometer.camera.connect("imageReceived",
+                                     new_sample_video_frame_received)
+    mxcube.diffractometer.camera.streaming_greenlet = gevent.spawn(stream_video(mxcube.diffractometer.camera))
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
@@ -117,36 +121,9 @@ def stream_video(camera_hwobj):
     while True:
         try:
             camera_hwobj.new_frame.wait()
-            yield 'Content-type: image/jpg\n\n' + SAMPLE_IMAGE + "\n--!>"
+        socketio.emit('Image',base64.b64encode(SAMPLE_IMAGE), namespace='/hwr')
         except Exception:
             pass
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/camera/subscribe", methods=['GET'])
-def subscribe_to_camera():
-    """
-    Subscribe to the camera streaming
-        :response: image as html Content-type
-    """
-    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
-    mxcube.diffractometer.camera.connect("imageReceived",
-                                         new_sample_video_frame_received)
-    mxcube.diffractometer.camera.streaming_greenlet = stream_video(
-        mxcube.diffractometer.camera)
-    return Response(mxcube.diffractometer.camera.streaming_greenlet,
-                    mimetype='multipart/x-mixed-replace; boundary="!>"')
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
-def unsubscribe_to_camera():
-    """
-    SampleCentring: unsubscribe from the camera streaming
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    mxcube.diffractometer.camera.streaming_greenlet.kill()
-    return Response(status=200)
-
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/camera/save", methods=['PUT'])
 def snapshot():
