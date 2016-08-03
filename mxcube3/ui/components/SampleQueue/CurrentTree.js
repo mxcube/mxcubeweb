@@ -95,8 +95,8 @@ export default class CurrentTree extends React.Component {
           </div>
           <div className={bodyClass}>
             {sampleTasks.map((taskData, i) => {
-              return (
-                <TaskItem key={taskData.queuID}
+              const task =
+                (<TaskItem key={taskData.queuID}
                   index={i}
                   id={taskData.queueID}
                   data={taskData}
@@ -109,8 +109,8 @@ export default class CurrentTree extends React.Component {
                   rootPath={this.props.rootPath}
                   collapseNode={this.props.collapseNode}
                   show={this.props.collapsedNodes[taskData.queueID]}
-                />
-              );
+                />);
+              return task;
             })}
           </div>
       </div>
