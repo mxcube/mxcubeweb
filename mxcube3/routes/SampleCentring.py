@@ -121,7 +121,7 @@ def stream_video(camera_hwobj):
     while True:
         try:
             camera_hwobj.new_frame.wait()
-        socketio.emit('Image',base64.b64encode(SAMPLE_IMAGE), namespace='/hwr')
+            socketio.emit('Image',base64.b64encode(SAMPLE_IMAGE), namespace='/hwr')
         except Exception:
             pass
 
