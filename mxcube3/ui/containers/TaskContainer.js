@@ -35,7 +35,7 @@ class TaskContainer extends React.Component {
           lookup={lookup}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
-          addSampleAndTask={this.props.addTaskAction_}
+          addSampleAndTask={this.props.addSampleAndTask}
           changeTask={this.props.changeTask}
           addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}

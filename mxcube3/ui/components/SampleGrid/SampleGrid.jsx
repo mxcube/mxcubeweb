@@ -195,7 +195,7 @@ export default class SampleGrid extends React.Component {
     }
 
     newSampleOrder[key] = targetPos;
-    this.props.setSampleOrder(newSampleOrder);
+    this.props.setSampleOrder(newSampleOrder, this.props.picked);
   }
 
 
@@ -252,11 +252,12 @@ export default class SampleGrid extends React.Component {
     Object.keys(samplesList).forEach(key => {
       if (this.filter(key)) {
         const sample = samplesList[key];
+        const sampleID = this.props.queue.lookup_queueID[sample.id];
         const [acronym, name, tags] = [sample.proteinAcronym, sample.sampleName, []];
 
-        for (const id in sample.tasks) {
-          if (sample.tasks[id]) {
-            tags.push(sample.tasks[id]);
+        if (this.props.queue.queue[sampleID]) {
+          for (const task of this.props.queue.queue[sampleID]) {
+            tags.push(task);
           }
         }
 
@@ -265,7 +266,7 @@ export default class SampleGrid extends React.Component {
             ref={i}
             seqId={this.props.order[key]}
             itemKey={key}
-            sampleID={sample.id}
+            sampleID={sampleID}
             acronym={acronym}
             name={name}
             dm={sample.code}
