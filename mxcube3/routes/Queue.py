@@ -614,7 +614,7 @@ def add_characterisation(id):
     if params['point'] > 0:  # a point id has been added
         for cpos in mxcube.diffractometer.savedCentredPos:  # searching for the motor data associated with that cpos
             if cpos['posId'] == int(params['point']):
-                charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+                charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motor_positions'])
 
     node = mxcube.queue.get_node(int(id))  # this is a sampleNode
     # this is the corresponding sampleEntry
@@ -672,7 +672,7 @@ def add_data_collection(id):
         # searching for the motor data associated with that centred_position
         for cpos in mxcube.diffractometer.savedCentredPos:
             if cpos['posId'] == int(params['point']):
-                col_node.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motorPositions'])
+                col_node.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motor_positions'])
 
     col_entry.set_data_model(col_node)
     col_entry.set_enabled(True)
