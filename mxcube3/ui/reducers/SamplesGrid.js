@@ -1,16 +1,5 @@
-import { omit } from 'lodash/object';
-
-
 /**
 *  Initial redux state for SampleGrid,
-*
-*  sampleList:  Object consisting of sample objects, each sample object have
-*               the following peroperties:
-*
-*               code        Data Matrix/Barcode of sample
-*               id          Unique id for the sample
-*               location    Location of sample in sample changer
-*               queueOrder  Order of sample in queue
 *
 *  selected:   Object (key, selected), selected indicating if sample with key
 *              currently is selected
@@ -24,19 +13,21 @@ import { omit } from 'lodash/object';
 *  moving:     Object (key, moving), moving indicating if sample with key is
 *              currently beeing moved
 *
-*  manulMount: Sample with id is manually mounted if set is true
-*
 *  filterText: Current filter text
 */
-const INITIAL_STATE = { sampleList: {},
-                        selected: {},
+const INITIAL_STATE = { selected: {},
                         order: {},
                         picked: {},
                         moving: {},
-                        manualMount: { set: false, id: 0 },
                         filterText: '' };
 
-
+/**
+ * Calculates the inital grid display order from a set of samples
+ *
+ * @param {Object} sampleList - key, value (sample id, sample data object)
+ * @returns {Object} - key, value (sample id, order number (int))
+ *
+ */
 function initialGridOrder(sampleList) {
   const gridOrder = {};
 
@@ -51,19 +42,14 @@ function initialGridOrder(sampleList) {
 }
 
 
-function initSampleList(samples) {
-  const sampleList = Object.assign({}, samples);
-
-  for (const key in sampleList) {
-    if (key) {
-      sampleList[key].queueOrder = -1;
-    }
-  }
-
-  return sampleList;
-}
-
-
+/**
+ * Toggle picked state of keys
+ *
+ * @param {Array} keys - keys to toggle
+ * @param {Object} state - redux state object
+ * @returns {Object} - Object containing key, picked (boolean) pairs
+ *
+ */
 function togglePicked(keys, state) {
   const picked = Object.assign({}, state.picked);
 
@@ -76,46 +62,50 @@ function togglePicked(keys, state) {
 }
 
 
-function recalculateQueueOrder(keys, gridOrder, state) {
-  const sampleList = Object.assign({}, state.sampleList);
-  const sortedOrder = Object.entries(gridOrder).sort((a, b) => a[1] > b[1]);
+/**
+ * Gets the sampleOrder for the next sample to be appended to the sample grid
+ *
+ * @param {Object} order - Grid display order object containing (key, order) pairs
+ * @returns {int} - next order number
+ *
+ */
+function sampleOrder(order) {
+  let m = Math.max.apply(null, Object.values(order));
 
-  let i = 0;
-  for (const [key] of sortedOrder) {
-    if (keys.includes(key)) {
-      sampleList[key].queueOrder = i;
-      i++;
-    }
+  if (m === -Infinity) {
+    m = 0;
+  } else {
+    m++;
   }
 
-  return sampleList;
+  return m;
 }
 
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case 'UPDATE_SAMPLE_LIST': {
-      return Object.assign({}, state, { sampleList: initSampleList(action.sampleList),
-                                        order: initialGridOrder(action.sampleList) });
+    // Sets the list of samples (sampleList), clearing any existing list
+    // Sets only the initial display order of samples in grid for this reducer
+    case 'SET_SAMPLE_LIST': {
+      return Object.assign({}, state, { order: initialGridOrder(action.sampleList) });
     }
-    case 'ADD_SAMPLE_TO_GRID': {
-      const sampleList = { ...state.sampleList, [action.id]: action.data };
-
-      return { ...state, sampleList,
-                         manualMount: { ...state.manualMount, id: state.manualMount.id + 1 },
-                         order: initialGridOrder(sampleList) };
+    // Append one sample to the list of samples (sampleList),
+    // (used when samples are mounted manually)
+    case 'ADD_SAMPLE': {
+      const order = { ...state.order, [action.sampleID]: sampleOrder(state.order) };
+      return Object.assign({}, state, { order });
     }
+    // Set display order of samples in grid
     case 'SET_SAMPLE_ORDER': {
-      const reorderKeys = Object.keys(state.picked).map(key => (state.picked[key] ? key : ''));
-      const sampleList = recalculateQueueOrder(reorderKeys, action.order, state);
-
-      return Object.assign({}, state, { order: action.order, sampleList });
+      return Object.assign({}, state, { order: action.order });
     }
+    // Toggles a samples movable flag
     case 'TOGGLE_MOVABLE_SAMPLE': {
-      const movingItems = {};
-      movingItems[action.key] = (!state.moving[action.key]);
-      return Object.assign({}, state, { moving: movingItems });
+      const moving = {};
+      moving[action.key] = (!state.moving[action.key]);
+      return Object.assign({}, state, { moving });
     }
+    // Select a range of samples
     case 'SELECT_SAMPLES': {
       const selectedItems = {};
       const movingItems = {};
@@ -127,144 +117,36 @@ export default (state = INITIAL_STATE, action) => {
 
       return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
     }
-    case 'PICK_SELECTED_SAMPLES': {
+    // Flag a range of samples as picked (for collect)
+    case 'PICK_SAMPLES': {
       const keys = [];
 
       // Get keys of selected sample items
-      for (const key in state.selected) {
+      for (const key in action.keys) {
         if (state.selected[key]) {
           keys.push(key);
         }
       }
 
       const picked = togglePicked(keys, state);
-
-      // Filter out only the picked keys
-      const reorderKeys = Object.keys(picked).map(key => (picked[key] ? key : ''));
-      const sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
-
-      return Object.assign({}, state, { picked, sampleList });
+      return Object.assign({}, state, { picked });
     }
     case 'PICK_ALL_SAMPLES': {
       const picked = {};
       Object.keys(state.sampleList).forEach(key => (picked[key] = action.picked));
-
-      // Filter out only the picked keys
-      const reorderKeys = Object.keys(picked).map(key => (picked[key] ? key : ''));
-      const sampleList = recalculateQueueOrder(reorderKeys, state.order, state);
-
-      return Object.assign({}, state, { picked, sampleList });
+      return Object.assign({}, state, { picked });
     }
     case 'FILTER_SAMPLE_LIST': {
       return Object.assign({}, state, { filterText: action.filterText });
-    }
-    case 'SET_SAMPLES_INFO': {
-      const samplesList = {};
-
-      Object.keys(state.samplesList).forEach(key => {
-        const sample = state.samplesList[key];
-        let sampleInfo;
-        for (sampleInfo of action.sampleInfoList) {
-          if (sampleInfo.code) {
-            // find sample with data matrix code
-            if (sample.code === sampleInfo.code) {
-              samplesList[key] = Object.assign({}, sample, { sample_info: sampleInfo });
-              break;
-            }
-          } else {
-            // check with sample changer location
-            const containerLocation = sampleInfo.containerSampleChangerLocation;
-            const sampleLocation = sampleInfo.sampleLocation;
-            const limsLocation = `${containerLocation} : ${sampleLocation}`;
-
-            if (sample.location === limsLocation) {
-              samplesList[key] = Object.assign({}, sample, { sample_info: sampleInfo });
-              break;
-            }
-          }
-        }
-        if (samplesList[key] === undefined) {
-          samplesList[key] = Object.assign({}, sample, { sample_info: null });
-        }
-      });
-      return Object.assign({}, state, { sampleList: samplesList });
-    }
-    case 'SET_MANUAL_MOUNT': {
-      const data = { manualMount: { ...state.manualMount, set: action.manual } };
-      return Object.assign({}, state, data);
-    }
-    case 'ADD_TASK': {
-      return Object.assign({}, state,
-             { sampleList: { ...state.sampleList,
-              [action.index]: { ...state.sampleList[action.index],
-                tasks: { ...state.sampleList[action.index].tasks, [action.queueID]:
-                {
-                  type: action.taskType,
-                  label: action.taskType.split(/(?=[A-Z])/).join(' '),
-                  sampleID: action.index,
-                  queueID: action.queueID,
-                  parentID: action.parentID,
-                  parameters: action.parameters,
-                  state: 0
-                }
-                }
-              }
-             } });
-    }
-    case 'UPDATE_TASK': {
-      return Object.assign({}, state,
-             { sampleList: { ...state.sampleList,
-              [action.index]: { ...state.sampleList[action.index],
-                tasks: { ...state.sampleList[action.index].tasks, [action.queueID]:
-                {
-                  ...state.sampleList[action.index].tasks[action.queueID],
-                  type: action.parameters.Type,
-                  queueID: action.queueID,
-                  parameters: action.parameters
-                } }
-              }
-             } }
-          );
-    }
-    case 'REMOVE_TASK': {
-      return Object.assign({}, state,
-             { sampleList: { ...state.sampleList,
-              [action.index]: { ...state.sampleList[action.index],
-                tasks: omit(state.sampleList[action.index].tasks, [action.queueID])
-              }
-             } }
-          );
-    }
-    case 'REMOVE_SAMPLE': {
-      return Object.assign({}, state,
-             { sampleList: { ...state.sampleList,
-              [action.sampleID]: { ...state.sampleList[action.sampleID],
-                tasks: {}
-              }
-             } }
-          );
-    }
-    case 'ADD_TASK_RESULT': {
-      return Object.assign({}, state,
-             { sampleList: { ...state.sampleList,
-              [action.index]: { ...state.sampleList[action.index],
-                tasks: { ...state.sampleList[action.index].tasks, [action.queueID]:
-                {
-                  ...state.sampleList[action.index].tasks[action.queueID],
-                  state: action.state
-                } }
-              }
-             } }
-          );
     }
     case 'QUEUE_STATE': {
       return state; // action.sampleGridState;
     }
     case 'CLEAR_ALL': {
-      return { ...INITIAL_STATE, manualMount: { set: state.manualMount.set, id: 0 } };
+      return { ...INITIAL_STATE };
     }
     case 'SET_INITIAL_STATUS': {
-      return { ...state, manualMount: { set: !action.data.useSC, id: state.manualMount.id } };
+      return { ...state };
     }
     default: {
       return state;
