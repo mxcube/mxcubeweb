@@ -75,6 +75,9 @@ def init_signals():
                                   wait_for_centring_finishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
                                   wait_for_centring_finishes)
+    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
+    mxcube.diffractometer.camera.connect("imageReceived",
+                                         new_sample_video_frame_received)
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
@@ -128,12 +131,7 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
-    mxcube.diffractometer.camera.connect("imageReceived",
-                                         new_sample_video_frame_received)
-    mxcube.diffractometer.camera.streaming_greenlet = stream_video(
-        mxcube.diffractometer.camera)
-    return Response(mxcube.diffractometer.camera.streaming_greenlet,
+    return Response(stream_video(mxcube.diffractometer.camera),
                     mimetype='multipart/x-mixed-replace; boundary="!>"')
 
 
