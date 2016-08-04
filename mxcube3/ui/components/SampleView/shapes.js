@@ -12,6 +12,8 @@ export function makeRectangle(posX, posY, sizeX, sizeY, color) {
     fill: '',
     stroke: color,
     strokeWidth: 3,
+    selectable: false,
+    hoverCursor: 'crosshair'
   });
 }
 
@@ -27,6 +29,8 @@ export function makeElipse(posX, posY, sizeX, sizeY, color) {
     fill: '',
     stroke: color,
     strokeWidth: 3,
+    selectable: false,
+    hoverCursor: 'crosshair'
   });
 }
 
@@ -44,9 +48,11 @@ export function makeCircle(x, y, selectable, radius, color = 'red', id = 'no id'
     lockScalingFlip: true,
     lockScalingX: true,
     lockScalingY: true,
+    hoverCursor: 'pointer',
     type,
     originX: 'center',
     originY: 'center',
+    hasRotatingPoint: false,
     id
   });
 }
@@ -56,7 +62,8 @@ export function makeLine(x1, y1, x2, y2, color, width) {
     fill: color,
     stroke: color,
     strokeWidth: width,
-    selectable: false
+    selectable: false,
+    hoverCursor: 'crosshair'
   });
 }
 
@@ -67,7 +74,8 @@ export function makeText(x, y, fontSize, color, text) {
     stroke: color,
     left: x,
     top: y,
-    selectable: false
+    selectable: false,
+    hoverCursor: 'crosshair'
   });
 }
 
