@@ -8,7 +8,7 @@ export function setSampleListAction(sampleList) {
 }
 
 
-export function sendGetSampleListRequest() {
+export function sendGetSampleList() {
   return function (dispatch) {
     dispatch(setLoading(true));
     fetch('mxcube/api/v0.1/sample_changer/samples_list', { credentials: 'include' })
@@ -56,7 +56,7 @@ export function setManualMountAction(manual) {
 }
 
 
-export function sendManualMountRequest(manual) {
+export function sendManualMount(manual) {
   return function (dispatch) {
     return fetch('mxcube/api/v0.1/diffractometer/usesc', {
       method: 'PUT',
@@ -161,17 +161,6 @@ export function toggleChecked(queueID) {
     type: 'TOGGLE_CHECKED', queueID
   };
 }
-
-// export function synchState(savedQueue) {
-//   if (Object.keys(savedQueue).length > 0) {
-//     savedQueue.current = {};
-//     savedQueue.todo = { nodes:[] };
-//     savedQueue.history = { nodes:[] };
-//     return showRestoreDialog(savedQueue);
-//   } else {
-//     return showRestoreDialog(savedQueue, false);
-//   }
-// }
 
 export function showRestoreDialog(queueState, show = true) {
   return {
@@ -344,7 +333,7 @@ export function addTaskAction(sampleQueueID, sampleID, task, parameters) {
 }
 
 
-export function sendAddSampleTaskRequest(queueID, sampleID, parameters, runNow) {
+export function sendAddSampleTask(queueID, sampleID, parameters, runNow) {
   return function (dispatch) {
     fetch(`mxcube/api/v0.1/queue/${queueID}`, {
       method: 'POST',
@@ -369,11 +358,11 @@ export function sendAddSampleTaskRequest(queueID, sampleID, parameters, runNow) 
 }
 
 
-export function sendAddSampleAndTaskRequest(sampleID, parameters) {
+export function sendAddSampleAndTask(sampleID, parameters) {
   return function (dispatch) {
     dispatch(sendAddSample(sampleID)).then(
       queueID => {
-        dispatch(sendAddSampleTaskRequest(queueID, sampleID, parameters));
+        dispatch(sendAddSampleTask(queueID, sampleID, parameters));
       });
   };
 }
@@ -388,7 +377,7 @@ export function updateTaskAction(queueID, sampleID, parameters) {
 }
 
 
-export function sendUpdateSampleTaskRequest(taskQueueID, sampleQueueID, sampleID, params, runNow) {
+export function sendUpdateSampleTask(taskQueueID, sampleQueueID, sampleID, params, runNow) {
   return function (dispatch) {
     fetch(`mxcube/api/v0.1/queue/${sampleQueueID}/${taskQueueID}`, {
       method: 'PUT',

@@ -24,9 +24,9 @@ import {
 } from '../actions/SamplesGrid';
 
 import {
-  sendGetSampleListRequest,
-  sendSyncSamplesRequest,
-  sendManualMountRequest,
+  sendGetSampleList,
+  sendSyncSamples,
+  sendManualMount,
   setSampleOrderAction,
   sendAddSample,
   sendDeleteSampleTask,
@@ -269,15 +269,15 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    getSamples: () => dispatch(sendGetSampleListRequest()),
+    getSamples: () => dispatch(sendGetSampleList()),
     setSampleOrderAction: (order, picked) => dispatch(setSampleOrderAction(order, picked)),
     toggleSelected: (index) => dispatch(toggleSelectedAction(index)),
     selectAll: () => dispatch(pickAllAction(true)),
     unselectAll: () => dispatch(pickAllAction(false)),
     filter: (filterText) => dispatch(filterAction(filterText)),
-    syncSamples: (proposalId) => dispatch(sendSyncSamplesRequest(proposalId)),
+    syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
     addSampleToQueue: (id) => dispatch(sendAddSample(id)),
-    setManualMount: (manual) => dispatch(sendManualMountRequest(manual)),
+    setManualMount: (manual) => dispatch(sendManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(sendDeleteSampleTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),

@@ -20,7 +20,7 @@ export function setSamplesInfoAction(sampleInfoList) {
 }
 
 
-export function sendSyncSamplesRequest(proposalId) {
+export function sendSyncSamples(proposalId) {
   return function (dispatch) {
     fetch(`mxcube/api/v0.1/samples/${proposalId}`, { credentials: 'include' })
             .then(response => response.json())

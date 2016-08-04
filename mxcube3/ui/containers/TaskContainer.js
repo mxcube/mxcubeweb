@@ -9,9 +9,9 @@ import { sendCurrentPhase } from '../actions/sampleview';
 
 
 import {
-  sendAddSampleAndTaskRequest,
-  sendAddSampleTaskRequest,
-  sendUpdateSampleTaskRequest,
+  sendAddSampleAndTask,
+  sendAddSampleTask,
+  sendUpdateSampleTask,
   sendAddSample
 } from '../actions/queue';
 
@@ -91,9 +91,9 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-    addSampleAndTask: bindActionCreators(sendAddSampleAndTaskRequest, dispatch),
-    addTask: bindActionCreators(sendAddSampleTaskRequest, dispatch),
-    changeTask: bindActionCreators(sendUpdateSampleTaskRequest, dispatch),
+    addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
+    addTask: bindActionCreators(sendAddSampleTask, dispatch),
+    changeTask: bindActionCreators(sendUpdateSampleTask, dispatch),
     addSample: bindActionCreators(sendAddSample, dispatch),
     sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
   };

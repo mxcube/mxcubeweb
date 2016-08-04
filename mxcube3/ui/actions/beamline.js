@@ -124,7 +124,7 @@ export function busyStateAction(name) {
 }
 
 
-export function getAllAttributesRequest() {
+export function sendGetAllAttributes() {
   const url = 'mxcube/api/v0.1/beamline';
 
   return (dispatch) => {
@@ -145,7 +145,7 @@ export function getAllAttributesRequest() {
 }
 
 
-export function setAttributeRequest(name, value) {
+export function sendSetAttribute(name, value) {
   const url = `mxcube/api/v0.1/beamline/${name}`;
 
   return (dispatch) => {
@@ -168,7 +168,7 @@ export function setAttributeRequest(name, value) {
 }
 
 
-export function abortCurrentAction(name) {
+export function sendAbortCurrentAction(name) {
   return () => {
     fetch(`mxcube/api/v0.1/beamline/${name}/abort`, {
       method: 'GET',
