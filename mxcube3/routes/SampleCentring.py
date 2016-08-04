@@ -589,7 +589,7 @@ def wait_for_centring_finishes(*args, **kwargs):
                         'y': pos_y
                         }
                 mxcube.diffractometer.savedCentredPos[index] = data
-                mxcube.diffractometer.emit('minidiffStateChanged', (True,))
+                mxcube.diffractometer.emit('stateChanged', (True,))
                 return
 
         # if no temp point found, let's create the first one
