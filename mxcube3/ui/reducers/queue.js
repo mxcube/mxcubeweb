@@ -201,6 +201,18 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { queue: { ...state.queue, [queueID]: tasks },
                                         checked: without(state.checked, action.queueID) });
     }
+    case 'UPDATE_TASK': {
+      const queueID = state.lookup_queueID[action.sampleID];
+      const taskIndex = state.queue[queueID].indexOf(action.taskData);
+      let tasks = Array.from(state.queue[queueID]);
+
+      tasks[taskIndex] = { ...action.taskData,
+                           type: action.parameters.Type,
+                           queueID: action.queueID,
+                           parameters: action.parameters };
+
+      return Object.assign({}, state,{ queue: { ...state.queue, [queueID]: tasks } });
+    }
     // Run Mount, this will add the mounted sample to history
     case 'MOUNT_SAMPLE':
       return Object.assign({}, state,

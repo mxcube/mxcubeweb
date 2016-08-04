@@ -368,18 +368,18 @@ export function sendAddSampleAndTask(sampleID, parameters) {
 }
 
 
-export function updateTaskAction(queueID, sampleID, parameters) {
+export function updateTaskAction(taskData, sampleID, parameters) {
   return { type: 'UPDATE_TASK',
-           index: sampleID,
-           queueID,
+           sampleID,
+           taskData,
            parameters
          };
 }
 
 
-export function sendUpdateSampleTask(taskQueueID, sampleQueueID, sampleID, params, runNow) {
+export function sendUpdateSampleTask(taskData, sampleID, sampleQueueID, params, runNow) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/queue/${sampleQueueID}/${taskQueueID}`, {
+    fetch(`mxcube/api/v0.1/queue/${sampleQueueID}/${taskData.queueID}`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -394,9 +394,9 @@ export function sendUpdateSampleTask(taskQueueID, sampleQueueID, sampleID, param
       return response.json();
     }).then(() => {
       if (runNow) {
-        dispatch(sendRunSample(taskQueueID));
+        dispatch(sendRunSample(taskData.queueID));
       }
-      dispatch(updateTaskAction(taskQueueID, sampleID, params));
+      dispatch(updateTaskAction(taskData, sampleID, params));
     });
   };
 }
