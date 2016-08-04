@@ -1,7 +1,111 @@
-import { INITIAL_STATE,
+import { STATE,
          BL_ATTR_SET,
          BL_ATTR_GET_ALL,
          BL_ATTR_SET_STATE } from '../actions/beamline';
+
+/**
+ *  Initial redux state for beamline attributes, object containing each beamline
+ *  attribute (name, attribute object). Each attribute object in turn have the
+ *  follwoing properties:
+ *
+ *     name:   name of beamline attribute
+ *     value:  attributes current value
+ *     state:  attributes current state, see STATE for more information
+ *     msg:    arbitray message describing current state
+ */
+export const INITIAL_STATE = {
+  energy: {
+    limits: [
+      0,
+      1000,
+      0.1
+    ],
+    name: 'energy',
+    value: '0',
+    state: STATE.IDLE,
+    msg: ''
+  },
+  resolution: {
+    limits: [
+      0,
+      1000,
+      0.1
+    ],
+    name: 'resolution',
+    value: '0',
+    state: STATE.IDLE,
+    msg: ''
+  },
+  transmission: {
+    limits: [
+      0,
+      1000,
+      0.1
+    ],
+    name: 'transmission',
+    value: '0',
+    state: STATE.IDLE,
+    msg: ''
+  },
+  fast_shutter: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'fast_shutter',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  safety_shutter: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'safety_shutter',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  beamstop: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'beamstop',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  capillary: {
+    limits: [
+      0,
+      1,
+      1
+    ],
+    name: 'capillary',
+    value: 'undefined',
+    state: 'undefined',
+    msg: 'UNKNOWN'
+  },
+  motors: {
+    focus: { position: 0, Status: 0 },
+    phi: { position: 0, Status: 0 },
+    phiy: { position: 0, Status: 0 },
+    phiz: { position: 0, Status: 0 },
+    sampx: { position: 0, Status: 0 },
+    sampy: { position: 0, Status: 0 },
+    BackLight: { position: 0, Status: 0 },
+    FrontLight: { position: 0, Status: 0 },
+    BackLightSwitch: { position: 0, Status: 0 },
+    FrontLightSwitch: { position: 0, Status: 0 },
+    kappa: { position: 0, Status: 0 },
+    kappa_phi: { position: 0, Status: 0 }
+  },
+};
 
 
 export default (state = INITIAL_STATE, action) => {
@@ -24,7 +128,20 @@ export default (state = INITIAL_STATE, action) => {
       data[action.data.name].state = action.data.state;
 
       return data;
-
+    case 'SET_MOTOR_MOVING':
+      return { ...state, motors: { ...state.motors, [action.name.toLowerCase()]:
+                                   { ...state.motors[action.name.toLowerCase()],
+                                     Status: action.status
+                                   }
+      } };
+    case 'SAVE_MOTOR_POSITIONS':
+      return { ...state,
+               motors: { ...state.motors, ...action.data },
+      };
+    case 'SAVE_MOTOR_POSITION':
+      return { ...state, motors: { ...state.motors, [action.name]: { position: action.value } } };
+    case 'SET_INITIAL_STATUS':
+      return { ...state, motors: { ...state.motors, ...action.data.Motors } };
     default:
       return state;
   }
