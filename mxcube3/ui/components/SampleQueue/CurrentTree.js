@@ -96,7 +96,7 @@ export default class CurrentTree extends React.Component {
           <div className={bodyClass}>
             {sampleTasks.map((taskData, i) => {
               const task =
-                (<TaskItem key={taskData.queuID}
+                (<TaskItem key={taskData.queueID}
                   index={i}
                   id={taskData.queueID}
                   data={taskData}
