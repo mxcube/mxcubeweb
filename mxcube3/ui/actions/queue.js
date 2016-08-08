@@ -429,9 +429,9 @@ export function sendDeleteSampleTask(task, queueID) {
 
 
 export function addTaskResultAction(sampleID, taskQueueID, state) {
-  return { type: 'ADD_TASK_RESLT',
-           index: sampleID,
-           queueID: taskQueueID,
+  return { type: 'ADD_TASK_RESULT',
+           sampleID,
+           taskQueueID,
            state
   };
 }

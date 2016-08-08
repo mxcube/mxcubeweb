@@ -125,16 +125,18 @@ export default (state = initialState, action) => {
     }
 
     case 'ADD_TASK_RESULT': {
-      return Object.assign({}, state,
-        { sampleList: { ...state.sampleList,
-          [action.index]: { ...state.sampleList[action.index],
-            tasks: { ...state.sampleList[action.index].tasks, [action.queueID]:
-            { ...state.sampleList[action.index].tasks[action.queueID],
-             state: action.state
-            } }
-          }
-        } }
-      );
+      const queueID = state.lookup_queueID[action.sampleID];
+      const tasks = Array.from(state.queue[queueID]);
+
+      // Find element with the right queueID (action.queueID) and update state
+      // to action.state
+      for (const task of tasks) {
+        if (task.queueID === action.taskQueueID) {
+          task.state = action.state;
+        }
+      }
+
+      return Object.assign({}, state, { queue: { ...state.queue, [queueID]: tasks } });
     }
     case 'SET_MANUAL_MOUNT': {
       const data = { manualMount: { ...state.manualMount, set: action.manual } };
