@@ -10,16 +10,13 @@ export default class SampleTaskButtons extends React.Component {
 
 
   handleSubmit(formName) {
-    const sampleIds = [];
+    const parameters = { parameters:
+                         { ...this.props.defaultParameters[formName.toLowerCase()] }
+                       };
 
-    for (const sampleId in this.props.selected) {
-      if (this.props.selected[sampleId]) {
-        sampleIds.push(sampleId);
-      }
-    }
-
-    this.props.showForm(formName, sampleIds, this.props.defaultParameters);
+    this.props.showForm(formName, Object.keys(this.props.selected), parameters);
   }
+
 
   render() {
     return (

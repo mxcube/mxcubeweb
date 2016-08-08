@@ -41,8 +41,8 @@ export default class CurrentTree extends React.Component {
     this.props.changeOrder(this.props.mounted, dragIndex, hoverIndex);
   }
 
-  deleteTask(taskId) {
-    this.props.deleteTask(this.props.mounted, taskId, this.props.lookup[this.props.mounted]);
+  deleteTask(taskData) {
+    this.props.deleteTask(taskData, taskData.queueID);
   }
 
   runSample() {
@@ -94,12 +94,11 @@ export default class CurrentTree extends React.Component {
               <hr className="queue-divider" />
           </div>
           <div className={bodyClass}>
-            {sampleTasks.map((id, i) => {
-              let taskData = sampleData.tasks[id];
-              return (
-                <TaskItem key={id}
+            {sampleTasks.map((taskData, i) => {
+              const task =
+                (<TaskItem key={taskData.queueID}
                   index={i}
-                  id={id}
+                  id={taskData.queueID}
                   data={taskData}
                   moveCard={this.moveCard}
                   deleteTask={this.deleteTask}
@@ -109,9 +108,9 @@ export default class CurrentTree extends React.Component {
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
                   collapseNode={this.props.collapseNode}
-                  show={this.props.collapsedNodes[id]}
-                />
-              );
+                  show={this.props.collapsedNodes[taskData.queueID]}
+                />);
+              return task;
             })}
           </div>
       </div>

@@ -7,14 +7,24 @@ import AddSample from '../components/Tasks/AddSample';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 import { sendCurrentPhase } from '../actions/sampleview';
 
+
 import {
-  sendAddSampleTaskRequest,
-  sendUpdateSampleTaskRequest,
-  sendAddSampleAndTaskRequest,
-  addSample
-} from '../actions/SamplesGrid';
+  sendAddSampleAndTask,
+  sendAddSampleTask,
+  sendUpdateSampleTask,
+  sendAddSample
+} from '../actions/queue';
+
 
 class TaskContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.addSample = this.addSample.bind(this);
+  }
+
+  addSample(sampleID, parameters) {
+    this.props.addSample(sampleID, parameters);
+  }
 
   render() {
     const lookup = this.props.lookup_queueID;
@@ -51,7 +61,7 @@ class TaskContainer extends React.Component {
         <AddSample
           hide={this.props.hideTaskParametersForm}
           show={this.props.showForm === 'AddSample'}
-          add={this.props.addSample}
+          add={this.addSample}
           id={this.props.manualMountID}
           phase={this.props.currentPhase}
           setPhase={this.props.sendCurrentPhase}
@@ -70,7 +80,7 @@ function mapStateToProps(state) {
     sampleIds: state.taskForm.sampleIds,
     pointId: state.taskForm.pointId,
     defaultParameters: state.taskForm.defaultParameters,
-    manualMountID: state.sampleGrid.manualMount.id,
+    manualMountID: state.queue.manualMount.id,
     currentPhase: state.sampleview.currentPhase,
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath
@@ -81,10 +91,10 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-    addSampleAndTask: bindActionCreators(sendAddSampleAndTaskRequest, dispatch),
-    addTask: bindActionCreators(sendAddSampleTaskRequest, dispatch),
-    changeTask: bindActionCreators(sendUpdateSampleTaskRequest, dispatch),
-    addSample: bindActionCreators(addSample, dispatch),
+    addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
+    addTask: bindActionCreators(sendAddSampleTask, dispatch),
+    changeTask: bindActionCreators(sendUpdateSampleTask, dispatch),
+    addSample: bindActionCreators(sendAddSample, dispatch),
     sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
   };
 }

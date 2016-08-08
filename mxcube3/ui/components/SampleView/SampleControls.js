@@ -60,7 +60,7 @@ export default class SampleControls extends React.Component {
   }
 
   toggleLight(name) {
-    const lighStatus = this.props.sampleViewState.motors[`${name}Switch`].Status;
+    const lighStatus = this.props.beamline.motors[`${name}Switch`].Status;
     if (lighStatus) {
       this.props.sampleActions.sendLightOff(name.toLowerCase());
     } else {
@@ -69,6 +69,7 @@ export default class SampleControls extends React.Component {
   }
 
   render() {
+    const motors = this.props.beamline.motors;
     return (
         <div className="sample-controlls sample-controlls-bottom text-center">
           <OverlayTrigger trigger="click" placement="top" rootClose overlay={
@@ -183,16 +184,16 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toggleBackLight}
-              active={this.props.sampleViewState.motors.BackLightSwitch.Status === 1}
+              active={motors.BackLightSwitch.Status === 1}
             />
             <MotorInput
               title="BackLight"
               save={this.props.sampleActions.sendMotorPosition}
-              value={this.props.sampleViewState.motors.BackLight.position}
+              value={motors.BackLight.position}
               motorName="BackLight"
               step="0.1"
               decimalPoints="2"
-              state={this.props.sampleViewState.motors.BackLight.Status}
+              state={motors.BackLight.Status}
             />
 
             <Button
@@ -202,16 +203,16 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-lightbulb-o sample-controll"
               bsStyle="link"
               onClick={this.toggleFrontLight}
-              active={this.props.sampleViewState.motors.FrontLightSwitch.Status === 1}
+              active={motors.FrontLightSwitch.Status === 1}
             />
             <MotorInput
               title="FrontLight"
               save={this.props.sampleActions.sendMotorPosition}
-              value={this.props.sampleViewState.motors.FrontLight.position}
+              value={motors.FrontLight.position}
               motorName="FrontLight"
               step="0.1"
               decimalPoints="2"
-              state={this.props.sampleViewState.motors.FrontLight.Status}
+              state={motors.FrontLight.Status}
             />
             <Button
               type="button"

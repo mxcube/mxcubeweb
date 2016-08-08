@@ -9,97 +9,6 @@ export const STATE = {
 };
 
 
-/**
- *  Initial redux state for beamline attributes, object containing each beamline
- *  attribute (name, attribute object). Each attribute object in turn have the
- *  follwoing properties:
- *
- *     name:   name of beamline attribute
- *     value:  attributes current value
- *     state:  attributes current state, see STATE for more information
- *     msg:    arbitray message describing current state
- */
-export const INITIAL_STATE = {
-  energy: {
-    limits: [
-      0,
-      1000,
-      0.1
-    ],
-    name: 'energy',
-    value: '0',
-    state: STATE.IDLE,
-    msg: ''
-  },
-  resolution: {
-    limits: [
-      0,
-      1000,
-      0.1
-    ],
-    name: 'resolution',
-    value: '0',
-    state: STATE.IDLE,
-    msg: ''
-  },
-  transmission: {
-    limits: [
-      0,
-      1000,
-      0.1
-    ],
-    name: 'transmission',
-    value: '0',
-    state: STATE.IDLE,
-    msg: ''
-  },
-  fast_shutter: {
-    limits: [
-      0,
-      1,
-      1
-    ],
-    name: 'fast_shutter',
-    value: 'undefined',
-    state: 'undefined',
-    msg: 'UNKNOWN'
-  },
-  safety_shutter: {
-    limits: [
-      0,
-      1,
-      1
-    ],
-    name: 'safety_shutter',
-    value: 'undefined',
-    state: 'undefined',
-    msg: 'UNKNOWN'
-  },
-  beamstop: {
-    limits: [
-      0,
-      1,
-      1
-    ],
-    name: 'beamstop',
-    value: 'undefined',
-    state: 'undefined',
-    msg: 'UNKNOWN'
-  },
-  capillary: {
-    limits: [
-      0,
-      1,
-      1
-    ],
-    name: 'capillary',
-    value: 'undefined',
-    state: 'undefined',
-    msg: 'UNKNOWN'
-  }
-};
-
-
 // Action types
 export const BL_ATTR_SET = 'BL_ATTR_SET';
 export const BL_ATTR_GET_ALL = 'BL_ATTR_GET_ALL';
@@ -124,7 +33,7 @@ export function busyStateAction(name) {
 }
 
 
-export function getAllAttributesRequest() {
+export function sendGetAllAttributes() {
   const url = 'mxcube/api/v0.1/beamline';
 
   return (dispatch) => {
@@ -145,7 +54,7 @@ export function getAllAttributesRequest() {
 }
 
 
-export function setAttributeRequest(name, value) {
+export function sendSetAttribute(name, value) {
   const url = `mxcube/api/v0.1/beamline/${name}`;
 
   return (dispatch) => {
@@ -168,7 +77,7 @@ export function setAttributeRequest(name, value) {
 }
 
 
-export function abortCurrentAction(name) {
+export function sendAbortCurrentAction(name) {
   return () => {
     fetch(`mxcube/api/v0.1/beamline/${name}/abort`, {
       method: 'GET',

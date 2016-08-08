@@ -48,8 +48,8 @@ class DataCollection extends React.Component {
       }
     } else {
       const { lookup, taskData, sampleIds } = this.props;
-      const sampleId = lookup[sampleIds];
-      this.props.changeTask(taskData.queueID, sampleId, sampleIds, parameters, runNow);
+      const sampleQueueId = lookup[sampleIds];
+      this.props.changeTask(taskData, sampleIds, sampleQueueId, parameters, runNow);
     }
 
     this.props.hide();
