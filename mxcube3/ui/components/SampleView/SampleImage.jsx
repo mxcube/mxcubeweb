@@ -115,8 +115,9 @@ export default class SampleImage extends React.Component {
     e.preventDefault();
     e.stopPropagation();
     const { sampleActions, sampleViewState } = this.props;
-    const { motors, motorSteps, zoom } = sampleViewState;
+    const { motorSteps, zoom } = sampleViewState;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
+    const motors = this.props.beamline.motors;
     if (e.ctrlKey && motors.phi.Status === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
@@ -190,6 +191,7 @@ export default class SampleImage extends React.Component {
         <SampleControls
           sampleActions={this.props.sampleActions}
           sampleViewState={this.props.sampleViewState}
+          beamline={this.props.beamline}
           canvas={this.canvas}
         />
       </div>

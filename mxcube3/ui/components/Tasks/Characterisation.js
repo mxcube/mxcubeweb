@@ -50,7 +50,7 @@ class Characterisation extends React.Component {
     } else {
       const { lookup, taskData, sampleIds } = this.props;
       const sampleQueueID = lookup[sampleIds];
-      this.props.changeTask(taskData.queueID, sampleQueueID, sampleIds, parameters, runNow);
+      this.props.changeTask(taskData, sampleIds, sampleQueueID, parameters, runNow);
     }
 
     this.props.hide();

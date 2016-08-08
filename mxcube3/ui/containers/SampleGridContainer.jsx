@@ -15,21 +15,24 @@ import {
 } from 'react-bootstrap';
 
 import {
-  sendGetSampleListRequest,
   toggleSelectedAction,
   pickAllAction,
   filterAction,
-  sendSyncSamplesRequest,
-  sendManualMountRequest,
-  sendDeleteSampleTask,
   toggleMovableAction,
-  setSampleOrderAction,
   selectAction,
-  pickSelectedAction
+  pickSamplesAction
 } from '../actions/SamplesGrid';
 
+import {
+  sendGetSampleList,
+  sendSyncSamples,
+  sendManualMount,
+  setSampleOrderAction,
+  sendAddSample,
+  sendDeleteSampleTask,
+} from '../actions/queue';
 
-import { sendAddSample } from '../actions/queue';
+
 import { showTaskForm } from '../actions/taskForm';
 import SampleTaskButtons from '../components/SampleGrid/TaskButtons';
 
@@ -43,24 +46,13 @@ class SampleGridContainer extends React.Component {
   constructor(props) {
     super(props);
     this.syncSamples = this.syncSamples.bind(this);
-    this.addSamples = this.addSamples.bind(this);
+
     this.showAddSample = props.showTaskParametersForm.bind(this, 'AddSample');
     this.manualMount = this.manualMount.bind(this);
     this.filterSampleGrid = this.filterSampleGrid.bind(this);
     this.filterSampleGridClear = this.filterSampleGridClear.bind(this);
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
-  }
-
-
-  addSamples() {
-    // Loop through all samples, check which was selected and add to the queue.
-    Object.keys(this.props.samplesList).forEach(key => {
-      if (this.props.selected[key]) {
-        this.props.addSampleToQueue(key);
-      }
-    });
-
-    this.props.unselectAll();
+    this.pickSelectedSamples = this.pickSelectedSamples.bind(this);
   }
 
 
@@ -133,6 +125,13 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  pickSelectedSamples() {
+    const keys = Object.assign({}, this.props.selected, this.props.picked);
+    this.props.pickSamplesAction(this.props.selected);
+    this.props.setSampleOrderAction(this.props.order, keys);
+  }
+
+
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
@@ -189,7 +188,7 @@ class SampleGridContainer extends React.Component {
                   All
                   </Button>
                   <Button
-                    onClick={this.props.pickSelected}
+                    onClick={this.pickSelectedSamples}
                     disabled={this.props.manualMount}
                   >
                     Selected
@@ -245,7 +244,7 @@ class SampleGridContainer extends React.Component {
               gridWidth={gridWidth}
               picked={this.props.picked}
               select={this.props.select}
-              pickSelected={this.props.pickSelected}
+              pickSelected={this.pickSelectedSamples}
             />
           </div>
         </div>
@@ -259,9 +258,9 @@ function mapStateToProps(state) {
     queue: state.queue,
     selected: state.sampleGrid.selected,
     moving: state.sampleGrid.moving,
-    sampleList: state.sampleGrid.sampleList,
+    sampleList: state.queue.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
-    manualMount: state.sampleGrid.manualMount.set,
+    manualMount: state.queue.manualMount.set,
     filterText: state.sampleGrid.filterText,
     order: state.sampleGrid.order,
     picked: state.sampleGrid.picked
@@ -270,22 +269,20 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    getSamples: () => dispatch(sendGetSampleListRequest()),
-    setSampleOrderAction: (order, key, pos) => dispatch(setSampleOrderAction(order, key, pos)),
+    getSamples: () => dispatch(sendGetSampleList()),
+    setSampleOrderAction: (order, picked) => dispatch(setSampleOrderAction(order, picked)),
     toggleSelected: (index) => dispatch(toggleSelectedAction(index)),
     selectAll: () => dispatch(pickAllAction(true)),
     unselectAll: () => dispatch(pickAllAction(false)),
     filter: (filterText) => dispatch(filterAction(filterText)),
-    syncSamples: (proposalId) => dispatch(sendSyncSamplesRequest(proposalId)),
+    syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
     addSampleToQueue: (id) => dispatch(sendAddSample(id)),
-    setManualMount: (manual) => dispatch(sendManualMountRequest(manual)),
+    setManualMount: (manual) => dispatch(sendManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
-    deleteTask: (parentId, queueId, sampleId) => {
-      dispatch(sendDeleteSampleTask(parentId, queueId, sampleId));
-    },
+    deleteTask: bindActionCreators(sendDeleteSampleTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     select: (keys) => dispatch(selectAction(keys)),
-    pickSelected: () => dispatch(pickSelectedAction())
+    pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys))
   };
 }
 

@@ -14,7 +14,7 @@ import SampleQueueContainer from './SampleQueueContainer';
 class SampleViewContainer extends Component {
 
   render() {
-    const { imageRatio, motors, motorSteps, cinema } = this.props.sampleViewState;
+    const { imageRatio, motorSteps, cinema } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.lookup[this.props.current.node];
 
@@ -24,7 +24,7 @@ class SampleViewContainer extends Component {
             <MotorControl
               save={sendMotorPosition}
               saveStep={setStepSize}
-              motors={motors}
+              motors={this.props.beamline.motors}
               steps={motorSteps}
               stop={sendStopMotor}
             />
@@ -47,6 +47,7 @@ class SampleViewContainer extends Component {
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   sampleViewState={this.props.sampleViewState}
+                  beamline={this.props.beamline}
                 />
               </div>
             </div>
@@ -64,8 +65,9 @@ class SampleViewContainer extends Component {
 function mapStateToProps(state) {
   return {
     current: state.queue.current,
-    sampleInformation: state.sampleGrid.sampleList,
+    sampleInformation: state.queue.sampleList,
     sampleViewState: state.sampleview,
+    beamline: state.beamline,
     lookup: state.queue.lookup,
     defaultParameters: state.taskForm.defaultParameters,
     logMessages: state.logger.logRecords

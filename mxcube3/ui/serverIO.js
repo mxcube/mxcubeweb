@@ -7,8 +7,7 @@ import {
   setBeamInfo
 } from './actions/sampleview';
 import { setBeamlineAttrAction } from './actions/beamline';
-import { addTaskResultAction, addTaskAction } from './actions/SamplesGrid';
-import { setStatus } from './actions/queue';
+import { setStatus, addTaskResultAction, addTaskAction } from './actions/queue';
 
 
 export default class ServerIO {
