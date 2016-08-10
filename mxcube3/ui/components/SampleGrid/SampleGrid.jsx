@@ -299,9 +299,3 @@ export default class SampleGrid extends React.Component {
     );
   }
 }
-
-
-SampleGrid.propTypes = {
-  filterText: React.PropTypes.string,
-  toggleActiveItem: React.PropTypes.func.isRequired
-};

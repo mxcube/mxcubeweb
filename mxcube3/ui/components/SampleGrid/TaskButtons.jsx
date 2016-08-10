@@ -23,6 +23,7 @@ export default class SampleTaskButtons extends React.Component {
       <DropdownButton
         bsStyle="primary"
         title="Pipeline Mode"
+        id="pipeline-mode-dropdown"
       >
         <MenuItem eventKey="1">
           <Button className="btn-primary" onClick={this.showCharacterisationForm}>
