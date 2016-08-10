@@ -46,7 +46,8 @@ export default class CurrentTree extends React.Component {
   }
 
   runSample() {
-    this.props.run(this.props.mounted);
+    this.props.setQueueAndRun(this.props.mounted, this.props.queue);
+    //this.props.run(this.props.mounted);
   }
 
   unMountSample() {

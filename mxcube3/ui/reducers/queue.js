@@ -80,6 +80,9 @@ function recalculateQueueOrder(keys, gridOrder, state) {
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case 'SET_QUEUE': {
+      return Object.assign({}, state, { queue: action.queue });
+    }
     case 'SET_SAMPLE_LIST': {
       return Object.assign({}, state, { sampleList: initSampleList(action.sampleList) });
     }

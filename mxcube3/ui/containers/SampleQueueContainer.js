@@ -52,6 +52,8 @@ export default class SampleQueueContainer extends React.Component {
     const {
       sendToggleCheckBox,
       sendRunSample,
+      sendSetQueue,
+      setQueueAndRun,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
@@ -78,6 +80,8 @@ export default class SampleQueueContainer extends React.Component {
                   checked={checked}
                   deleteTask={deleteSampleTask}
                   run={sendRunSample}
+                  setQueue={sendSetQueue}
+                  setQueueAndRun={setQueueAndRun}
                   pause={sendPauseQueue}
                   unpause={sendUnpauseQueue}
                   stop={sendStopQueue}

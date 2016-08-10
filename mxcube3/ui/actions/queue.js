@@ -3,6 +3,40 @@ import { setLoading, showErrorPanel } from './general';
 import { showTaskForm } from './taskForm';
 
 
+export function setQueueAction(queue) {
+  return { type: 'SET_QUEUE', queue };
+}
+
+
+export function setQueueAndRun(sampleID, queue) {
+  return function (dispatch) {
+    dispatch(sendSetQueue(queue)).then(() => dispatch(sendRunSample(sampleID)));
+  }
+}
+
+
+export function sendSetQueue(queue) {
+  return function (dispatch) {
+    return fetch('mxcube/api/v0.1/queue', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(queue)
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Could not set queue');
+      }
+      return response.json();
+    }).then((json) => {
+      dispatch(setQueueAction(json));
+    });
+  };
+}
+
+
 export function setSampleListAction(sampleList) {
   return { type: 'SET_SAMPLE_LIST', sampleList };
 }
@@ -368,7 +402,7 @@ export function deleteSampleTask(task) {
 
 
 export function addTaskResultAction(sampleID, taskQueueID, state) {
-  return { type: 'ADD_TASK_RESLT',
+  return { type: 'ADD_TASK_RESULT',
            sampleID,
            taskQueueID,
            state
