@@ -21,7 +21,6 @@ function mapStateToProps(state) {
     checked: state.queue.checked,
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
-    collapsedSamples: state.queue.collapsedSample,
     rootPath: state.queue.rootPath
   };
 }
@@ -46,7 +45,6 @@ export default class SampleQueueContainer extends React.Component {
       current,
       sampleInformation,
       queue,
-      collapsedSamples,
       showForm,
       queueStatus,
       rootPath
@@ -61,6 +59,7 @@ export default class SampleQueueContainer extends React.Component {
       changeTaskOrder,
       collapseList,
       collapseSample,
+      collapseTask,
       deleteSampleTask
     } = this.props.queueActions;
 
@@ -86,13 +85,11 @@ export default class SampleQueueContainer extends React.Component {
                   unmount={sendUnmountSample}
                   queueStatus={queueStatus}
                   rootPath={rootPath}
-                  collapseNode={collapseSample}
-                  collapsedNodes={collapsedSamples}
+                  collapseTask={collapseTask}
                 />
                 <HistoryTree
                   show={history.collapsed}
                   collapse={collapseList}
-                  collapsedSamples={collapsedSamples}
                   list={history.nodes}
                   sampleInformation={sampleInformation}
                   queue={queue}

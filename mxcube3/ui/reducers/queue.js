@@ -24,7 +24,6 @@ const initialState = {
   todo: { nodes: [], collapsed: false },
   history: { nodes: [], collapsed: false },
   checked: [],
-  collapsedSample: {},
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,

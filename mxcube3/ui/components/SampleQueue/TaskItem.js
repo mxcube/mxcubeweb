@@ -109,9 +109,10 @@ export default class TaskItem extends Component {
       error: data.state === 3,
       warning: data.state === 4
     });
+
     return connectDragSource(connectDropTarget(
       <div className="node node-sample" style={{ opacity }}>
-          <div className={taskCSS} onClick={this.collapseNode}>
+          <div className={taskCSS} onClick={this.collapseTask}>
             <p className="node-name">
               {`P${data.parameters.point} ${data.label}`}
             </p>

@@ -120,6 +120,12 @@ export function collapseSample(queueID) {
   };
 }
 
+export function collapseTask(sampleID, taskIndex) {
+  return {
+    type: 'COLLAPSE_TASK', sampleID, taskIndex
+  };
+}
+
 export function setState(queueState) {
   return {
     type: 'QUEUE_STATE', queueState
