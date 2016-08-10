@@ -19,7 +19,6 @@ function mapStateToProps(state) {
     queue: state.queue.queue,
     sampleInformation: state.queue.sampleList,
     checked: state.queue.checked,
-    lookup: state.queue.lookup,
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
     collapsedSamples: state.queue.collapsedSample,
@@ -43,7 +42,6 @@ export default class SampleQueueContainer extends React.Component {
   render() {
     const {
       checked,
-      lookup,
       history,
       current,
       sampleInformation,
@@ -63,7 +61,7 @@ export default class SampleQueueContainer extends React.Component {
       changeTaskOrder,
       collapseList,
       collapseSample,
-      sendDeleteSampleTask
+      deleteSampleTask
     } = this.props.queueActions;
 
     return (
@@ -77,10 +75,9 @@ export default class SampleQueueContainer extends React.Component {
                   mounted={current.node}
                   sampleInformation={sampleInformation}
                   queue={queue}
-                  lookup={lookup}
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
-                  deleteTask={sendDeleteSampleTask}
+                  deleteTask={deleteSampleTask}
                   run={sendRunSample}
                   pause={sendPauseQueue}
                   unpause={sendUnpauseQueue}
@@ -99,7 +96,6 @@ export default class SampleQueueContainer extends React.Component {
                   list={history.nodes}
                   sampleInformation={sampleInformation}
                   queue={queue}
-                  lookup={lookup}
                   collapseSample={collapseSample}
                 />
             </div>

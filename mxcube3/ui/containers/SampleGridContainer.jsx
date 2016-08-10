@@ -28,10 +28,8 @@ import {
   sendSyncSamples,
   sendManualMount,
   setSampleOrderAction,
-  sendAddSample,
-  sendDeleteSampleTask,
+  deleteSampleTask,
 } from '../actions/queue';
-
 
 import { showTaskForm } from '../actions/taskForm';
 import SampleTaskButtons from '../components/SampleGrid/TaskButtons';
@@ -276,10 +274,9 @@ function mapDispatchToProps(dispatch) {
     unselectAll: () => dispatch(pickAllAction(false)),
     filter: (filterText) => dispatch(filterAction(filterText)),
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
-    addSampleToQueue: (id) => dispatch(sendAddSample(id)),
     setManualMount: (manual) => dispatch(sendManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
-    deleteTask: bindActionCreators(sendDeleteSampleTask, dispatch),
+    deleteTask: bindActionCreators(deleteSampleTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     select: (keys) => dispatch(selectAction(keys)),
     pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys))
