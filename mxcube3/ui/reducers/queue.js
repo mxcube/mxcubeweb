@@ -30,7 +30,7 @@ const initialState = {
   showRestoreDialog: false,
   queueRestoreState: {},
   sampleList: {},
-  manualMount: { set: false, id: 0 }
+  manualMount: { set: false, id: 1 },
 };
 
 
@@ -91,6 +91,7 @@ export default (state = initialState, action) => {
       const sampleList = { ...state.sampleList, [action.sampleID]: sampleData };
 
       return Object.assign({}, state, { sampleList });
+    }
     case 'SET_SAMPLE_ORDER': {
       const reorderKeys = Object.keys(action.keys).map(key => (action.keys[key] ? key : ''));
       const sampleList = recalculateQueueOrder(reorderKeys, action.order, state);
@@ -153,6 +154,7 @@ export default (state = initialState, action) => {
         {
           todo: { ...state.todo, nodes: state.todo.nodes.concat(action.sampleID) },
           queue: { ...state.queue, [action.sampleID]: [] },
+          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
       );
     }
@@ -298,7 +300,7 @@ export default (state = initialState, action) => {
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state, { ...initialState,
-                                          manualMount: { set: state.manualMount.set, id: 0 } });
+                                          manualMount: { set: state.manualMount.set, id: 1 } });
       }
     case 'SHOW_RESTORE_DIALOG':
       {
@@ -311,7 +313,7 @@ export default (state = initialState, action) => {
     case 'SET_INITIAL_STATUS':
       {
         return { ...state, rootPath: action.data.rootPath,
-                           manualMount: { set: state.manualMount.set, id: 0 } };
+                           manualMount: { set: state.manualMount.set, id: 1 } };
       }
     default:
       return state;
