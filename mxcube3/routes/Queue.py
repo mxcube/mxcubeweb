@@ -135,7 +135,7 @@ def queue_unpause():
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
+@mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT', 'GET'])
 def queue_clear():
     """
     Clear the queue.
