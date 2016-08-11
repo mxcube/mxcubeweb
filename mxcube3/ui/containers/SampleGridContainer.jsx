@@ -135,7 +135,7 @@ class SampleGridContainer extends React.Component {
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
-      <DropdownButton>
+      <DropdownButton title="" id="filter-drop-down">
         <MenuItem onClick={this.filterSampleGridClear}>
           Clear
         </MenuItem>
@@ -147,7 +147,7 @@ class SampleGridContainer extends React.Component {
 
     return (
       <StickyContainer>
-        <div style={{ 'margin-bottom': '20px' }} className="row row-centered">
+        <div style={{ marginBottom: '20px' }} className="row row-centered">
           <div className="col-centered" >
             <ButtonToolbar>
               <SplitButton
@@ -173,7 +173,7 @@ class SampleGridContainer extends React.Component {
         </div>
         <Sticky
           className="samples-grid-header"
-          style={{ width: gridWidth, 'margin-bottom': '5px' }}
+          style={{ width: gridWidth, marginBottom: '5px' }}
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
@@ -200,7 +200,7 @@ class SampleGridContainer extends React.Component {
                     None
                   </Button>
                 </ButtonGroup>
-                <span style={{ 'margin-left': '5em' }}>Filter: </span>
+                <span style={{ marginLeft: '5em' }}>Filter: </span>
                 <Input
                   type="text"
                   ref="filterInput"
