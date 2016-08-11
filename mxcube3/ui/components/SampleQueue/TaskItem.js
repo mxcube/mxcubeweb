@@ -90,8 +90,8 @@ export default class TaskItem extends Component {
     const { id, data } = this.props;
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.props.deleteTask.bind(this, data);
-    this.toggleChecked = this.props.toggleChecked.bind(this, id);
-    this.collapseNode = this.props.collapseNode.bind(this, id);
+    this.toggleChecked = this.props.toggleChecked.bind(this, data.sampleID);
+    this.collapseTask = this.props.collapseTask.bind(this, data.sampleID, id);
   }
 
   showForm() {
@@ -109,9 +109,10 @@ export default class TaskItem extends Component {
       error: data.state === 3,
       warning: data.state === 4
     });
+
     return connectDragSource(connectDropTarget(
       <div className="node node-sample" style={{ opacity }}>
-          <div className={taskCSS} onClick={this.collapseNode}>
+          <div className={taskCSS} onClick={this.collapseTask}>
             <p className="node-name">
               {`P${data.parameters.point} ${data.label}`}
             </p>

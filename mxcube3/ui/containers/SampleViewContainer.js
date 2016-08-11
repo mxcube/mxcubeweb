@@ -16,7 +16,7 @@ class SampleViewContainer extends Component {
   render() {
     const { imageRatio, motorSteps, cinema } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
-    const sampleId = this.props.lookup[this.props.current.node];
+    const sampleId = this.props.current.node;
 
     return (
       <div className="row">
@@ -68,7 +68,6 @@ function mapStateToProps(state) {
     sampleInformation: state.queue.sampleList,
     sampleViewState: state.sampleview,
     beamline: state.beamline,
-    lookup: state.queue.lookup,
     defaultParameters: state.taskForm.defaultParameters,
     logMessages: state.logger.logRecords
   };

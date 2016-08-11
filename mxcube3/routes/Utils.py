@@ -1,9 +1,68 @@
-from mxcube3 import app as mxcube
-from flask import Response, session
-from functools import wraps
 import logging
-import jsonpickle
+import cPickle as pickle
 import redis
+import json
+
+import queue_model_objects_v1 as qmo
+
+from mock import Mock
+from flask import jsonify
+from mxcube3 import app as mxcube
+
+
+class PickableMock(Mock):
+    def __reduce__(self):
+        return (Mock, ())
+
+
+def queue_to_dict(node):
+    return reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+
+
+def queue_to_json(node, debug=False):
+    res = reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+    return json.dumps(res, sort_keys=True, indent=4)
+
+
+def queue_to_json_response(node):
+    res = reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+    return jsonify(res)
+
+
+def _handle_dc(sample_id, node):
+    parameters = node.as_dict()
+    parameters["point"] = node.get_point_index()
+    sample_id = node.get_parent().get_parent().loc_str
+    
+    parameters.pop('sample')
+    parameters.pop('acquisitions')
+    parameters.pop('acq_parameters')
+    parameters.pop('centred_position')
+    
+    res = {"label": "Data Collection",
+           "Type": "DataCollection",
+           "parameters": parameters,
+           "state": 0,
+           "sampleID": sample_id,
+           "queueID": node._node_id}
+
+    return res
+
+def queue_to_json_rec(node):
+    result = []
+
+    for node in node.get_children():
+        if isinstance(node, qmo.Sample):
+            result.append({node.loc_str: queue_to_json_rec(node)})
+        elif isinstance(node, qmo.DataCollection):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_dc(sample_id, node))
+        elif isinstance(node, qmo.Characterisation):
+            pass
+        else:
+            result.extend(queue_to_json_rec(node))
+
+    return result
 
 
 def _proposal_id(session):
@@ -16,13 +75,13 @@ def _proposal_id(session):
 def save_queue(session, redis=redis.Redis()):
     proposal_id = _proposal_id(session)
     if proposal_id is not None:
-        redis.set("mxcube:queue:%d" % proposal_id, jsonpickle.encode(mxcube.queue))
+        redis.set("mxcube:queue:%d" % proposal_id, pickle.dumps(mxcube.queue))
 
 
 def new_queue(serialized_queue=None):
     if not serialized_queue:
         serialized_queue = mxcube.empty_queue
-    queue = jsonpickle.decode(serialized_queue)
+    queue = pickle.loads(serialized_queue)
     import Queue
     Queue.init_signals(queue)
     return queue
