@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
-import UserLog from '../components/SampleView/UserLog';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -31,9 +30,6 @@ class SampleViewContainer extends Component {
         </div>
         <div className={cinema ? 'col-xs-9' : 'col-xs-8'}>
             <div className="row">
-              <div className={cinema ? 'hidden' : 'col-xs-12'}>
-                <UserLog messages={this.props.logMessages} />
-              </div>
               <div className="col-xs-12">
                 <ContextMenu
                   {...this.props.sampleViewState.contextMenu}
