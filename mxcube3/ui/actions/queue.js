@@ -471,7 +471,7 @@ export function deleteTask(task) {
 
 
 export function addTaskResultAction(sampleID, taskQueueID, state) {
-  return { type: 'ADD_TASK_RESLT',
+  return { type: 'ADD_TASK_RESULT',
            sampleID,
            taskQueueID,
            state
