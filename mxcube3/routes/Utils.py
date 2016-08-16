@@ -33,12 +33,12 @@ def _handle_dc(sample_id, node):
     parameters = node.as_dict()
     parameters["point"] = node.get_point_index()
     sample_id = node.get_parent().get_parent().loc_str
-    
+
     parameters.pop('sample')
     parameters.pop('acquisitions')
     parameters.pop('acq_parameters')
     parameters.pop('centred_position')
-    
+ 
     res = {"label": "Data Collection",
            "Type": "DataCollection",
            "parameters": parameters,
@@ -47,6 +47,25 @@ def _handle_dc(sample_id, node):
            "queueID": node._node_id}
 
     return res
+
+
+def _handle_char(sample_id, node):
+    parameters = node.as_dict()
+    parameters["point"] = node.get_point_index()
+    sample_id = node.get_parent().get_parent().loc_str
+
+    import pdb
+    pdb.set_trace()
+
+    res = {"label": "Data Collection",
+           "Type": "DataCollection",
+           "parameters": parameters,
+           "state": 0,
+           "sampleID": sample_id,
+           "queueID": node._node_id}
+
+    return res
+
 
 def queue_to_json_rec(node):
     result = []
@@ -58,7 +77,8 @@ def queue_to_json_rec(node):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_dc(sample_id, node))
         elif isinstance(node, qmo.Characterisation):
-            pass
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_char(sample_id, node))
         else:
             result.extend(queue_to_json_rec(node))
 

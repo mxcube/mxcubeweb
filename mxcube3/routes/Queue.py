@@ -342,6 +342,8 @@ def queue_set():
         for task in task_list:
             if task["parameters"]["Type"] == "DataCollection":
                 add_data_collection(sample_entry, task["parameters"])
+            elif task["parameters"]["Type"] == "Characterisation":
+                add_characterisation(sample_entry, task["parameters"])
 
     print(Utils.queue_to_json(mxcube.queue.get_model_root()))
     return Utils.queue_to_json_response(mxcube.queue.get_model_root())
@@ -378,9 +380,7 @@ def add_sample(sample_loc):
     return sample_entry
 
 
-def add_data_collection(sample_entry, params):
-    """
-    """
+def _create_dc(params):
     dc_model = qmo.DataCollection()
     dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
     acq = dc_model.acquisitions[0]
@@ -411,6 +411,14 @@ def add_data_collection(sample_entry, params):
 
     dc_entry.set_enabled(True)
     dc_model.set_enabled(True)
+
+    return dc_entry, dc_model
+
+
+def add_data_collection(sample_entry, params):
+    """
+    """
+    dc_entry, dc_model = _create_dc(params)
 
     group_model = qmo.TaskGroup()
     group_model.set_enabled(True)
@@ -614,39 +622,23 @@ def add_centring(id):
     return resp
 
 
-def add_characterisation(id):
-    '''
-    Add a characterisation method to the sample with id: <id>, integer.
-    Args: id, current id of the sample where add the method
-            id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok,
-        409 something bad happened. Plus:
-       data ={ "CharacId": newId}    '''
-    # no data received yet
-    params = request.get_json()
+def add_characterisation(sample_entry, params):
+    """
+    """
+    refdc_entry, refdc_model = _create_dc(params)
+    char_params = qmo.CharacterisationParameters.set_from_dict(params)
 
-    charac_node = qmo.Characterisation()
-    charac_entry = qe.CharacterisationGroupQueueEntry()
-    charac_entry._view = Mock()
-    charac_entry._set_background_color = Mock()
-    charac_entry.set_data_model(charac_node)
-    charac_entry.set_queue_controller(qm)
-    # char has two taskgroup levels so that the diff plan keeps under the same grandparent
-    task_node1 = qmo.TaskGroup()
-    task_node2 = qmo.TaskGroup()
-    task1_entry = qe.TaskGroupQueueEntry()
-    task2_entry = qe.TaskGroupQueueEntry()
-    task1_entry.set_data_model(task_node1)
-    task2_entry.set_data_model(task_node2)
+    charac_model = qmo.Characterisation(refdc_entry, char_params)
+    charac_entry = qe.CharacterisationGroupQueueEntry(Mock(), charac_model)
 
-    charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
-    for k, v in params.items():
-        if hasattr(charac_node.characterisation_parameters, k):
-            setattr(charac_node.characterisation_parameters, k, v)
-    if params['point'] > 0:  # a point id has been added
-        for cpos in mxcube.diffractometer.savedCentredPos:  # searching for the motor data associated with that cpos
-            if cpos['posId'] == int(params['point']):
-                charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motor_positions'])
+    # A characterisation has two TaskGroups one for the reference collection
+    # and one for the resulting diffraction plans.
+    ref_group = qmo.TaskGroup()
+    res_group = qmo.TaskGroup()
+    ref_entry = qe.TaskGroupQueueEntry()
+    res_entry = qe.TaskGroupQueueEntry()
+    ref_entry.set_data_model(task_node1)
+    res_entry.set_data_model(task_node2)
 
     node = mxcube.queue.get_node(int(id))  # this is a sampleNode
     # this is the corresponding sampleEntry
