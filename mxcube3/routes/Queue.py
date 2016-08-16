@@ -14,7 +14,6 @@ import Utils
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
-from Utils import PickableMock
 from HardwareRepository.BaseHardwareObjects import Null as Mock
 
 qm = QueueManager.QueueManager('Mxcube3')
@@ -348,9 +347,9 @@ def add_sample():
     :statuscode: 409 sample could not be added, possibly because it already
                      exist in the queue
                        
-    :example request: POST http://host:port/mxcube/api/v0.1/queue
-                      Content-Type: application/json
-                      {"SampleId": "1:07"}
+    :example: POST http://host:port/mxcube/api/v0.1/queue
+              Content-Type: application/json
+              {"SampleId": "1:07"}
     """
     params = request.data
     params = json.loads(params)
@@ -382,7 +381,10 @@ def add_sample():
         msg = '[QUEUE] sample could not be added, %s' % str(ex)
         logging.getLogger('HWR').error(msg)  
 
-    sample_entry = qe.SampleQueueEntry(PickableMock(), sample_model)
+    sample_entry = qe.SampleQueueEntry(False, sample_model)
+    sample_entry._view = Mock()
+    sample_entry._set_background_color = Mock()
+    
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
 
