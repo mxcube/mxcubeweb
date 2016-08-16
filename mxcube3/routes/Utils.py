@@ -1,9 +1,14 @@
-from mxcube3 import app as mxcube
-from flask import Response, session
-from functools import wraps
 import logging
 import jsonpickle
 import redis
+
+from mock import Mock
+from mxcube3 import app as mxcube
+
+
+class PickableMock(Mock):
+    def __reduce__(self):
+        return (Mock, ())
 
 
 def _proposal_id(session):

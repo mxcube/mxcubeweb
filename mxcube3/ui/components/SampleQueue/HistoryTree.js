@@ -20,14 +20,14 @@ export default class HistoryTree extends React.Component {
                     <hr className="queue-divider" />
                 </div>
                 <div className={bodyClass}>
-                    {this.props.list.map((id, i) => {
-                      let sampleData = this.props.sampleInformation[this.props.lookup[id]];
+                    {this.props.list.map((sampleId, i) => {
+                      let sampleData = this.props.sampleInformation[sampleId];
                       return (
                         <HistorySampleItem
                           data={sampleData}
-                          show={this.props.collapsedSamples[id]}
+                          show={sampleData.collapsed}
                           collapseSample={this.props.collapseSample}
-                          queue={this.props.queue} id={id} key={i}
+                          queue={this.props.queue} id={sampleId} key={i}
                         />
                       );
                     })}

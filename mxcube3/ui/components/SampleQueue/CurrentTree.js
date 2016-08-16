@@ -69,14 +69,14 @@ export default class CurrentTree extends React.Component {
   }
 
   render() {
-    const node = this.props.mounted;
+    const sampleId = this.props.mounted;
     let sampleData = {};
     let sampleTasks = [];
     let queueOptions = [];
 
-    if (node) {
-      sampleData = this.props.sampleInformation[this.props.lookup[node]];
-      sampleTasks = this.props.queue[node];
+    if (sampleId) {
+      sampleData = this.props.sampleInformation[sampleId];
+      sampleTasks = this.props.queue[sampleId];
       queueOptions = this.state.options[this.props.queueStatus];
     } else {
       sampleData.sampleName = 'No Sample Mounted';
@@ -84,8 +84,9 @@ export default class CurrentTree extends React.Component {
     }
 
     const bodyClass = cx('list-body', {
-      hidden: (this.props.show || !node)
+      hidden: (this.props.show || !sampleId)
     });
+
     return (
       <div className="m-tree">
           <div className="list-head">
@@ -95,10 +96,11 @@ export default class CurrentTree extends React.Component {
           </div>
           <div className={bodyClass}>
             {sampleTasks.map((taskData, i) => {
+              const key = this.props.queue[taskData.sampleID].indexOf(taskData);
               const task =
-                (<TaskItem key={taskData.queueID}
+                (<TaskItem key={key}
                   index={i}
-                  id={taskData.queueID}
+                  id={key}
                   data={taskData}
                   moveCard={this.moveCard}
                   deleteTask={this.deleteTask}
@@ -107,8 +109,8 @@ export default class CurrentTree extends React.Component {
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
-                  collapseNode={this.props.collapseNode}
-                  show={this.props.collapsedNodes[taskData.queueID]}
+                  collapseTask={this.props.collapseTask}
+                  show={taskData.collapsed}
                 />);
               return task;
             })}
