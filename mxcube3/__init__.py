@@ -7,7 +7,7 @@ from optparse import OptionParser
 import os
 import sys
 import logging
-import jsonpickle
+import cPickle as pickle
 import gevent
 import traceback
 
@@ -90,7 +90,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 	    # centring_motors_list is the list of roles corresponding to diffractometer motors
 	    app.diffractometer.centring_motors_list = app.diffractometer.getPositions().keys()
         app.db_connection = app.beamline.getObjectByRole("lims_client")
-        app.empty_queue = jsonpickle.encode(hwr.getHardwareObject(cmdline_options.queue_model))
+        app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         try:
             routes.SampleCentring.init_signals()

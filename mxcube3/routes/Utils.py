@@ -1,5 +1,5 @@
 import logging
-import jsonpickle
+import cPickle as pickle
 import redis
 
 from mock import Mock
@@ -21,13 +21,13 @@ def _proposal_id(session):
 def save_queue(session, redis=redis.Redis()):
     proposal_id = _proposal_id(session)
     if proposal_id is not None:
-        redis.set("mxcube:queue:%d" % proposal_id, jsonpickle.encode(mxcube.queue))
+        redis.set("mxcube:queue:%d" % proposal_id, pickle.dumps(mxcube.queue))
 
 
 def new_queue(serialized_queue=None):
     if not serialized_queue:
         serialized_queue = mxcube.empty_queue
-    queue = jsonpickle.decode(serialized_queue)
+    queue = pickle.loads(serialized_queue)
     import Queue
     Queue.init_signals(queue)
     return queue
