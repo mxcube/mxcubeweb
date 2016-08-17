@@ -1,5 +1,5 @@
 import { omit } from 'lodash/object';
-import { without, xor } from 'lodash/array';
+import { without } from 'lodash/array';
 import update from 'react/lib/update';
 
 
@@ -23,8 +23,6 @@ const initialState = {
   current: { node: null, collapsed: false, running: false },
   todo: { nodes: [], collapsed: false },
   history: { nodes: [], collapsed: false },
-  checked: [],
-  collapsedSample: {},
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
@@ -150,10 +148,14 @@ export default (state = initialState, action) => {
 
     // Adding sample to queue
     case 'ADD_SAMPLE': {
+      const sampleList = { ...state.sampleList };
+      sampleList[action.sampleID].queueID = action.queueID;
+
       return Object.assign({}, state,
         {
           todo: { ...state.todo, nodes: state.todo.nodes.concat(action.sampleID) },
           queue: { ...state.queue, [action.sampleID]: [] },
+          sampleList,
           manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
       );
@@ -180,7 +182,7 @@ export default (state = initialState, action) => {
       tasks = tasks.concat([{ type: action.parameters.Type,
                               label: action.parameters.Type.split(/(?=[A-Z])/).join(' '),
                               sampleID: action.sampleID,
-                              queueID: undefined,
+                              queueID: action.queueID,
                               parameters: action.parameters,
                               state: 0,
                               collapsed: false,
@@ -234,15 +236,13 @@ export default (state = initialState, action) => {
       );
         // Run Sample
     case 'RUN_SAMPLE':
-      return Object.assign({}, state,
-        {
-          current: { ...state.current, running: true }
-        }
-                        );
+      return Object.assign({}, state, { current: { ...state.current, running: true } });
+    case 'TOGGLE_CHECKED': {
+      const queue = Object.assign({}, state.queue);
+      queue[action.sampleID][action.taskIndex].checked ^= true;
 
-    case 'TOGGLE_CHECKED':
-      return Object.assign({}, state, { checked: xor(state.checked, [action.queueID]) });
-
+      return { ...state, queue };
+    }
      // Collapse list
     case 'COLLAPSE_LIST':
       return {

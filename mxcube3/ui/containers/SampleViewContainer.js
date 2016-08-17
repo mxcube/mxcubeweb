@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
+import UserLog from '../components/SampleView/UserLog';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -15,7 +16,7 @@ class SampleViewContainer extends Component {
   render() {
     const { imageRatio, motorSteps, cinema } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
-    const sampleId = this.props.lookup[this.props.current.node];
+    const sampleId = this.props.current.node;
 
     return (
       <div className="row">
@@ -30,6 +31,9 @@ class SampleViewContainer extends Component {
         </div>
         <div className={cinema ? 'col-xs-9' : 'col-xs-8'}>
             <div className="row">
+              <div className={cinema ? 'hidden' : 'col-xs-12'}>
+                <UserLog messages={this.props.logMessages} />
+              </div>
               <div className="col-xs-12">
                 <ContextMenu
                   {...this.props.sampleViewState.contextMenu}
@@ -64,8 +68,8 @@ function mapStateToProps(state) {
     sampleInformation: state.queue.sampleList,
     sampleViewState: state.sampleview,
     beamline: state.beamline,
-    lookup: state.queue.lookup,
-    defaultParameters: state.taskForm.defaultParameters
+    defaultParameters: state.taskForm.defaultParameters,
+    logMessages: state.logger.logRecords
   };
 }
 
