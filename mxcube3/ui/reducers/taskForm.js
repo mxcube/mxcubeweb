@@ -24,16 +24,13 @@ export default (state = initialState, action) => {
       }
     case 'ADD_TASK':
       {
-        return {
-          ...state,
-          defaultParameters: {
-            ...state.defaultParameters,
-            [action.taskType.toLowerCase()]: {
-              ...action.parameters,
-              run_number: state.defaultParameters[action.taskType.toLowerCase()].run_number + 1
-            }
-          }
-        };
+        return { ...state, defaultParameters:
+                 { ...state.defaultParameters, [action.parameters.Type.toLowerCase()]: {
+                   ...action.parameters, run_number:
+                   state.defaultParameters[action.parameters.Type.toLowerCase()].run_number + 1
+                 }
+               }
+             };
       }
     case 'UPDATE_TASK':
       {

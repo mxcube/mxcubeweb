@@ -14,9 +14,7 @@ import Utils
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
-#for mocking the view of the queue, easier than adding sth like if not view:
 from HardwareRepository.BaseHardwareObjects import Null as Mock
-
 
 qm = QueueManager.QueueManager('Mxcube3')
 
@@ -135,7 +133,7 @@ def queue_unpause():
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
+@mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT', 'GET'])
 def queue_clear():
     """
     Clear the queue.
@@ -336,61 +334,65 @@ def execute_entry_with_id(node_id):
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def add_sample():
-    '''
-    Add a sample to the queue.
-        :request Content-Type: application/json, {"SampleId": sampleId},
-        where sampleId is sample location (eg '1:01')
-        :response Content-Type: application/json, {"QueueId": node_id,
-            "SampleId": sampleId}, where sampleId is the same as the
-            caller id (eg '1:01') and node_id an integer which is used
-            for refering to this element from now onwards.
-        :statuscode: 200: no error
-        :statuscode: 409: sample could not be added, possibly because
-            it already exist in the queue
-        :example request:   * POST http://host:port/mxcube/api/v0.1/queue
-                            * Content-Type: application/json
-                            * {"SampleId": "1:07"}
-    '''
+    """
+    Adds a sample to the queue.
+
+    :request: application/json, {"SampleId": sampleId}, where sampleId is
+              sampleId, often a location (eg '1:01')
+                           
+    :response: application/json, {"QueueId": node_id, "SampleId": sampleId},
+               where sampleId is the sampleId
+
+    :statuscode: 200 no error
+    :statuscode: 409 sample could not be added, possibly because it already
+                     exist in the queue
+                       
+    :example: POST http://host:port/mxcube/api/v0.1/queue
+              Content-Type: application/json
+              {"SampleId": "1:07"}
+    """
     params = request.data
     params = json.loads(params)
-    sample_id = params['SampleId']
+    sample_loc = params['sampleId']
 
-    sample_node = qmo.Sample()
-    sample_node.loc_str = sample_id
-    sample_node.lims_id = None
-    sample_node.lims_group_id = None
-    basket_number = None
+    sample_model = qmo.Sample()
+    sample_model.loc_str = sample_loc
 
+    # Is the sample with location sample_loc already in the queue,
+    # in that case, send error response
+    for sampleId, sample in serialize_queue_to_json().iteritems():
+        if sampleId == sample_loc:
+            msg = "[QUEUE] sample could not be added, already in the queue"
+            logging.getLogger('HWR').error(msg)
+
+            return Response(status=409)
+        
     try:
-        if mxcube.diffractometer.use_sc:    # use sample changer
-            basket_number, sample_number = sample_id.split(':')
+        # Are we using the sample changer or is a sample put on the pin
+        # manually
+        if mxcube.diffractometer.use_sc:
+            basket_number, sample_number = sample_loc.split(':')
         else:
-            sample_number = sample_id
+            basket_number, sample_number = (None, sample_loc)
+
+        sample_model.location = (basket_number, sample_number)
+
     except AttributeError as ex:
         msg = '[QUEUE] sample could not be added, %s' % str(ex)
-        logging.getLogger('HWR').error(msg)
+        logging.getLogger('HWR').error(msg)  
 
-    sample_node.location = (basket_number, sample_number)
-    sample_entry = qe.SampleQueueEntry()
-    sample_entry.set_data_model(sample_node)
-    sample_entry.set_queue_controller(qm)
+    sample_entry = qe.SampleQueueEntry(False, sample_model)
     sample_entry._view = Mock()
     sample_entry._set_background_color = Mock()
-
-    # WARNING: serialize_queue_to_json() should only be used for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
-    for i in queue:
-        if queue[i]['SampleId'] == sample_id:
-            logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
-            return Response(status=409)
-
-    mxcube.queue.add_child(mxcube.queue._selected_model, sample_node)
-    node_id = sample_node._node_id
+    
+    mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
-    logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' % (sample_id, node_id))
+
+    msg = "[QUEUE] sample %s added with queue id %s"
+    logging.getLogger('HWR').info(msg % (sample_loc, sample_model._node_id))
+
     Utils.save_queue(session)
-    return jsonify({'SampleId': sample_id, 'QueueId': node_id})
+    return jsonify({'SampleId': sample_loc, 'QueueId': sample_model._node_id})
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
