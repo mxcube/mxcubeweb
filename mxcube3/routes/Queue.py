@@ -1,5 +1,4 @@
 import json
-import jsonpickle
 import logging
 import os
 import signals
@@ -378,9 +377,7 @@ def add_sample():
         msg = '[QUEUE] sample could not be added, %s' % str(ex)
         logging.getLogger('HWR').error(msg)  
 
-    sample_entry = qe.SampleQueueEntry(False, sample_model)
-    sample_entry._view = Mock()
-    sample_entry._set_background_color = Mock()
+    sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
     
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
@@ -585,115 +582,129 @@ def add_centring(id):
     return resp
 
 
-def add_characterisation(id):
-    '''
-    Add a characterisation method to the sample with id: <id>, integer.
-    Args: id, current id of the sample where add the method
-            id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok,
-        409 something bad happened. Plus:
-       data ={ "CharacId": newId}    '''
-    # no data received yet
-    params = request.get_json()
 
-    charac_node = qmo.Characterisation()
-    charac_entry = qe.CharacterisationGroupQueueEntry()
-    charac_entry._view = Mock()
-    charac_entry._set_background_color = Mock()
-    charac_entry.set_data_model(charac_node)
-    charac_entry.set_queue_controller(qm)
-    # char has two taskgroup levels so that the diff plan keeps under the same grandparent
-    task_node1 = qmo.TaskGroup()
-    task_node2 = qmo.TaskGroup()
-    task1_entry = qe.TaskGroupQueueEntry()
-    task2_entry = qe.TaskGroupQueueEntry()
-    task1_entry.set_data_model(task_node1)
-    task2_entry.set_data_model(task_node2)
+def _create_dc(params):
+    """
+    Creates a data collection model and its corresponding queue entry from
+    a dict with collection parameters.
 
-    charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
-    for k, v in params.items():
-        if hasattr(charac_node.characterisation_parameters, k):
-            setattr(charac_node.characterisation_parameters, k, v)
-    if params['point'] > 0:  # a point id has been added
-        for cpos in mxcube.diffractometer.savedCentredPos:  # searching for the motor data associated with that cpos
+    :param dict params: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    dc_model = qmo.DataCollection()
+    dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
+    acq = dc_model.acquisitions[0]
+
+    acq.acquisition_parameters.set_from_dict(params)
+    acq.path_template.set_from_dict(params)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('path', 'dummy_path'))
+
+    acq.path_template.directory = full_path
+                                               
+
+    if mxcube.queue.check_for_path_collisions(acq.path_template):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        logging.getLogger('HWR').exception(msg)
+        raise Exception(msg)
+
+    # If there is a centered position associated with this data collection, get
+    # the necessary data for the position and pass it to the collection.
+    if int(params["point"]) > 0:
+        for cpos in mxcube.diffractometer.savedCentredPos:
             if cpos['posId'] == int(params['point']):
-                charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motor_positions'])
+                _cpos = qmo.CentredPosition(cpos['motor_positions'])
+                _cpos.index = int(params['point'])
+                acq.acquisition_parameters.centred_position = _cpos
 
-    node = mxcube.queue.get_node(int(id))  # this is a sampleNode
-    # this is the corresponding sampleEntry
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+    dc_entry.set_enabled(True)
+    dc_model.set_enabled(True)
 
-    task1_id = mxcube.queue.add_child_at_id(int(id), task_node1)
-    entry.enqueue(task1_entry)
+    return dc_model, dc_entry
 
-    task2_id = mxcube.queue.add_child_at_id(task1_id, task_node2)
-    task1_entry.enqueue(task2_entry)
-    # add_child does not return id!
-    new_node = mxcube.queue.add_child_at_id(task2_id, charac_node)
-    task2_entry.enqueue(charac_entry)
-    charac_entry.set_enabled(True)
-    charac_node.set_enabled(True)
-    logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
+
+def _get_entry(id):
+    """
+    Retrieves the model and the queue entry for the model node with id <id>
+
+    :param int id: Node id of node to retrieve
+    :returns: The tuple model, entry
+    :rtype: Tuple
+    """
+    model = mxcube.queue.get_node(int(id))
+    entry = mxcube.queue.queue_hwobj.get_entry_with_model(model)
+    return model, entry
+
+
+def add_characterisation(id):
+    """
+    Adds a data characterisation task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs 
+
+    :returns: http response object, with http status code 200 or
+              409 if something bad happened. data ={ "CharacId": newId}
+    """
+    params = request.get_json()
+    sample_model, sample_entry = _get_entry(int(id))
+
+    refdc_model, refdc_entry = _create_dc(params)
+    char_params = qmo.CharacterisationParameters().set_from_dict(params)
+
+    char_model = qmo.Characterisation(refdc_model, char_params)
+    char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
+
+    # A characterisation has two TaskGroups one for the characterisation itself
+    # and its reference collection and one for the resulting diffraction plans.
+    # But we only create a reference group if there is a result !
+    refgroup_model = qmo.TaskGroup()
+
+    mxcube.queue.add_child(sample_model, refgroup_model)
+    mxcube.queue.add_child(refgroup_model, char_model)
+    
+    refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
+    refgroup_entry.set_enabled(True)
+    sample_entry.enqueue(refgroup_entry)
+    refgroup_entry.enqueue(char_entry)
 
     Utils.save_queue(session)
 
-    resp = jsonify({'QueueId': new_node, 'Type': 'Characterisation'})
+    resp = jsonify({'QueueId':char_model._node_id , 'Type': 'Characterisation'})
     resp.status_code = 200
     return resp
 
 
 def add_data_collection(id):
-    '''
-    Add a data collection method to the sample with id: <id>, integer.
-    Args: id, current id of the sample where add the method
-        id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok,
-        409 something bad happened. Plus:
-       data ={ "ColId": newId}    '''
-    # no data received yet
+    """
+    Adds a data collection task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs 
+
+    :returns: http response object, with http status code 200 or
+              409 if something bad happened. data ={ "ColId": newId}
+    """
     params = request.get_json()
+    sample_model, sample_entry = _get_entry(int(id))
+    dc_model, dc_entry = _create_dc(params)
 
-    col_node = qmo.DataCollection()
-    col_entry = qe.DataCollectionQueueEntry()
-    col_entry._view = Mock()
-    col_entry.set_queue_controller(qm)
-    col_entry._set_background_color = Mock()
+    group_model = qmo.TaskGroup()
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, dc_model)
+    
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(dc_entry)
 
-    task_node1 = qmo.TaskGroup()
-    task1_entry = qe.TaskGroupQueueEntry()
-    task1_entry.set_data_model(task_node1)
-
-    col_node.acquisitions[0].acquisition_parameters.set_from_dict(params)
-    col_node.acquisitions[0].path_template.directory = os.path.join(
-        mxcube.session.get_base_image_directory(), params.get('path', 'dummy_path'))
-    col_node.acquisitions[0].path_template.run_number = params['run_number']
-    col_node.acquisitions[0].path_template.base_prefix = params['prefix']
-    if mxcube.queue.check_for_path_collisions(col_node.acquisitions[0].path_template):
-        logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample: Data Collision')
-        return Response(status=409)
-    if params['point'] > 0:  # a point id has been added
-        # searching for the motor data associated with that centred_position
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos['posId'] == int(params['point']):
-                col_node.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motor_positions'])
-
-    col_entry.set_data_model(col_node)
-    col_entry.set_enabled(True)
-    col_node.set_enabled(True)
-    node = mxcube.queue.get_node(int(id))
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-
-    task1_id = mxcube.queue.add_child_at_id(int(id), task_node1)
-    entry.enqueue(task1_entry)
-    # add_child does not return id!
-    new_node = mxcube.queue.add_child_at_id(task1_id, col_node)
-    task1_entry.enqueue(col_entry)
-
-    Utils.save_queue(session)
-
-    logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
-    resp = jsonify({'QueueId': new_node, 'Type': 'DataCollection'})
+    msg = '[QUEUE] datacollection added to sample %s' % sample_model.loc_str
+    logging.getLogger('HWR').info(msg)
+    resp = jsonify({'QueueId': dc_model._node_id, 'Type': 'DataCollection'})
     resp.status_code = 200
+    
     return resp
 
 
@@ -712,20 +723,25 @@ def add_method(id):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
+    response = Response(status=409)
     params = request.data
     params = json.loads(params)
     method_type = params['Type']
     node_id = id  # params['QueueId']
 
     if method_type == 'Centring':
-        return add_centring(node_id)
+        response = add_centring(node_id)
     elif method_type == 'Characterisation':
-        return add_characterisation(node_id)
+        response = add_characterisation(node_id)
     elif method_type == 'DataCollection':
-        return add_data_collection(node_id)
+        response = add_data_collection(node_id)
     else:
         logging.getLogger('HWR').exception('[QUEUE] Method can not be added')
         return Response(status=409)
+
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
+
+    return response
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>/<method_id>", methods=['PUT'])
@@ -739,28 +755,25 @@ def update_method(sample_id, method_id):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
-    params = request.data
-    params = json.loads(params)
-#    sample_node = mxcube.queue.get_node(int(sample_id))
-    method_node = mxcube.queue.get_node(int(method_id))
-#    method_entry = mxcube.queue.queue_hwobj.get_entry_with_model(method_node)
-    # TODO: update fields here, I would say that the entry does not need to be updated, only the model node
+    params = request.get_json()
+    node = mxcube.queue.get_node(int(method_id))
 
-    if isinstance(method_node, qmo.DataCollection):
-        method_node.acquisitions[0].acquisition_parameters.set_from_dict(params)
-    elif isinstance(method_node, qmo.Characterisation):
-        method_node.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        for k, v in params.items():
-            if hasattr(method_node.characterisation_parameters, k):
-                setattr(method_node.characterisation_parameters, k, v)
-    elif isinstance(method_node, qmo.SampleCentring):
-        pass
+    if isinstance(node, qmo.DataCollection):
+        node.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        node.acquisitions[0].path_template.set_from_dict(params)
+    elif isinstance(node, qmo.Characterisation):
+        node.characterisation_parameters.set_from_dict(params)
+        ref_acq = node.reference_image_collection.acquisitions[0]
+        ref_acq.acquisition_parameters.set_from_dict(params)
+        ref_acq.path_template.set_from_dict(params)
 
     Utils.save_queue(session)
 
     logging.getLogger('HWR').info('[QUEUE] method updated')
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
     resp = jsonify({'QueueId': method_id})
     resp.status_code = 200
+
     return resp
 
 
