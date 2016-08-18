@@ -29,7 +29,6 @@ def init_signals(queue):
                            signals.collect_oscillation_failed)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
-    queue.last_queue_node = {'id': 0, 'sample': '0:0'}
 
 # ##----QUEUE ACTIONS----##
 
@@ -242,87 +241,30 @@ def queue_load_state():
 @mxcube.route("/mxcube/api/v0.1/queue/<int:node_id>/execute", methods=['PUT'])
 def execute_entry_with_id(node_id):
     """
-    Execute the given queue entry
-        :parameter node_id: entry identifier, integer. It can be a sample or
-         a task within a sample
-        :statuscode: 200: no error, the given entry was sent to execution
-        (any further error might still happen)
-        :statuscode: 409: queue entry could not be executed
+    Execute the entry with the node id <node_id>
+    :param int node_id: QueueModel node id
+
+    :statuscode: 200, no error
+                 409, queue entry could not be executed
     """
-    queue = Utils.queue_to_dict()
-
-    global queue_has_to_be_stopped
-    queue_has_to_be_stopped = False
-    node = mxcube.queue.get_node(node_id)
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-
+    node, entry = _get_entry(node_id)
+        
     msg = {'Signal': 'QueueStarted',
            'Message': 'Queue execution started',
            'State': 1}
+
     socketio.emit('Queue', msg, namespace='/hwr')
 
+
+    mxcube.queue.queue_hwobj._is_stopped = False
+    mxcube.queue.queue_hwobj._set_in_queue_flag()
     mxcube.queue.queue_hwobj.set_pause(False)
-    if isinstance(entry, qe.SampleQueueEntry):
-        logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' % node_id)
-        #  this is a sample entry, thus, go through its checked children and execute those
-        for elem in queue[node_id]:
-            if queue_has_to_be_stopped:
-                break
-        for elem in queue[node_id]:
-            if int(elem['checked']) == 1:
-                logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' % elem['QueueId'])
-                child_node = mxcube.queue.get_node(elem['QueueId'])
-                child_entry = mxcube.queue.queue_hwobj.get_entry_with_model(child_node)
-                child_entry._view = Mock()  # associated text deps
-                child_entry._set_background_color = Mock()  # widget color deps
-                try:
-                    if mxcube.queue.queue_hwobj.is_paused():
-                        logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-                        msg = {'Signal': 'QueuePaused',
-                               'Message': 'Queue execution paused',
-                               'State': 1}  # 1: started
-                        socketio.emit('Queue', msg, namespace='/hwr')
-                        mxcube.queue.queue_hwobj.wait_for_pause_event()
-                    mxcube.queue.last_queue_node.update({'id': elem['QueueId'],
-                                                         'sample': node_id})
-                    # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-                    mxcube.queue.queue_hwobj.execute_entry(child_entry)
-                    child_entry.set_enabled(False)
-                except Exception:
-                    logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
-    else:
-        #  not a sample so execute directly
-        logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' % node_id)
-        if mxcube.queue.queue_hwobj.is_paused():
-            logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-            msg = {'Signal': 'QueuePaused',
-                   'Message': 'Queue execution paused',
-                   'State': 1}
-            socketio.emit('Queue', msg, namespace='/hwr')
-            mxcube.queue.queue_hwobj.wait_for_pause_event()
-
-        entry._view = Mock()  # associated text deps
-        entry._set_background_color = Mock()  # widget color deps
-        #  parent = int(node.get_parent()._node_id)
-        # this is a TaskGroup, so it is not in the parsed queue
-        parent_node = node.get_parent() 
-        #  go a level up,
-        # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
-        parent_node = parent_node.get_parent()  
-        if isinstance(parent_node, qmo.TaskGroup):
-            parent_node = parent_node.get_parent()
-        parent = int(parent_node._node_id)
-
-        mxcube.queue.last_queue_node.update({'id': node_id,
-                                             'sample': queue[parent]['SampleId']
-                                             })
-        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-        mxcube.queue.queue_hwobj.execute_entry(entry)
-        entry.set_enabled(False)
+    mxcube.queue.queue_hwobj.execute_entry(entry)
 
     msg = {'Signal': 'QueueStopped',
            'Message': 'Queue execution stopped',
            'State': 1}
+
     socketio.emit('Queue', msg, namespace='/hwr')
 
     return Response(status=200)
@@ -352,7 +294,8 @@ def add_sample():
     sample_loc = params['sampleId']
 
     sample_model = qmo.Sample()
-    sample_model.loc_str = sample_loc
+    sample_model.loc_str = str(sample_loc)
+    sample_model.free_pin_mode = (not mxcube.diffractometer.use_sc)
 
     # Is the sample with location sample_loc already in the queue,
     # in that case, send error response
@@ -378,6 +321,7 @@ def add_sample():
         logging.getLogger('HWR').error(msg)  
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
+    sample_entry.set_enabled(True)
     
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
