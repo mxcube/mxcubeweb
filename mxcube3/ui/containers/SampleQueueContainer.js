@@ -9,6 +9,7 @@ import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
+
 function mapStateToProps(state) {
   return {
     searchString: state.queue.searchString,
@@ -19,13 +20,13 @@ function mapStateToProps(state) {
     queue: state.queue.queue,
     sampleInformation: state.queue.sampleList,
     checked: state.queue.checked,
-    lookup: state.queue.lookup,
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
-    collapsedSamples: state.queue.collapsedSample,
-    rootPath: state.queue.rootPath
+    rootPath: state.queue.rootPath,
+    displayData: state.queue.displayData
   };
 }
+
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -43,31 +44,31 @@ export default class SampleQueueContainer extends React.Component {
   render() {
     const {
       checked,
-      lookup,
       history,
       current,
       sampleInformation,
       queue,
-      collapsedSamples,
       showForm,
       queueStatus,
-      rootPath
+      rootPath,
+      displayData
     } = this.props;
     const {
       sendToggleCheckBox,
       sendRunSample,
       sendPauseQueue,
+      setQueueAndRun,
       sendUnpauseQueue,
       sendStopQueue,
       sendUnmountSample,
       changeTaskOrder,
       collapseList,
+      collapseTask,
       collapseSample,
-      sendDeleteSampleTask
+      deleteTask
     } = this.props.queueActions;
 
     return (
-
       <div>
             <div className="queue-body">
                 <CurrentTree
@@ -77,11 +78,11 @@ export default class SampleQueueContainer extends React.Component {
                   mounted={current.node}
                   sampleInformation={sampleInformation}
                   queue={queue}
-                  lookup={lookup}
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
-                  deleteTask={sendDeleteSampleTask}
+                  deleteTask={deleteTask}
                   run={sendRunSample}
+                  setQueueAndRun={setQueueAndRun}
                   pause={sendPauseQueue}
                   unpause={sendUnpauseQueue}
                   stop={sendStopQueue}
@@ -89,18 +90,17 @@ export default class SampleQueueContainer extends React.Component {
                   unmount={sendUnmountSample}
                   queueStatus={queueStatus}
                   rootPath={rootPath}
-                  collapseNode={collapseSample}
-                  collapsedNodes={collapsedSamples}
+                  collapseTask={collapseTask}
+                  displayData={displayData}
                 />
                 <HistoryTree
                   show={history.collapsed}
                   collapse={collapseList}
-                  collapsedSamples={collapsedSamples}
                   list={history.nodes}
                   sampleInformation={sampleInformation}
                   queue={queue}
-                  lookup={lookup}
                   collapseSample={collapseSample}
+                  displayData={displayData}
                 />
             </div>
       </div>

@@ -1,9 +1,180 @@
-from mxcube3 import app as mxcube
-from flask import Response, session
-from functools import wraps
 import logging
-import jsonpickle
+import cPickle as pickle
 import redis
+import json
+
+import queue_model_objects_v1 as qmo
+
+from mock import Mock
+from flask import jsonify
+from mxcube3 import app as mxcube
+
+
+class PickableMock(Mock):
+    def __reduce__(self):
+        return (Mock, ())
+
+
+def node_index(node):
+    sample, index = None, None
+
+    # RootNode nothing to return
+    if isinstance(node, qmo.RootNode):
+        sample, idx = None, None
+    # For samples simply return the sampleID
+    elif isinstance(node, qmo.Sample):
+        sample = node.loc_str
+    # TaskGroup just return the sampleID
+    elif isinstance(node, qmo.TaskGroup):
+        sample_loc, idx = node.get_parent().loc_str, None
+    # All other TaskNodes are considered "leaf tasks", only return if they have
+    # a parent (Which is not the case for reference collections, which are
+    # orphans)
+    elif node.get_parent():
+        sample_model = node.get_parent().get_parent()
+        sample = sample_model.loc_str
+        task_groups = sample_model.get_children();
+        group_list = [group.get_children() for group in task_groups]
+        tlist = [task for task_list in group_list for task in task_list]
+        index = tlist.index(node)
+
+    return {'sample': sample, 'idx': index}
+
+
+def queue_to_dict(node=None):
+    """
+    Returns the dictionary representation of the queue
+
+    :param TaskNode node: Node to get representation for, queue root used if
+                          nothing is passed.
+
+    :returns: dictionary on the form:
+              { sampleID_1: [task1, ... taskn]
+                .
+                .
+                .
+                sampleID_n: [task1, ... taskn] }
+
+             where the contents of task is a dictionary, the content depends on
+             the TaskNode type (DataCollection, Chracterisation, Sample). The
+             task dict can be directly used with the set_from_dict methods of
+             the corresponding node.
+    """
+    if not node:
+        node = mxcube.queue.get_model_root()
+
+    return reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+
+
+def queue_to_json(node=None):
+    """
+    Returns the json representation of the queue
+
+    :param TaskNode node: Node to get representation for, queue root used if
+                          nothing is passed.
+
+    :returns: json str on the form:
+              { sampleID_1: [task1, ... taskn]
+                .
+                .
+                .
+                sampleID_n: [task1, ... taskn] }
+
+             where the contents of task is a dictionary, the content depends on
+             the TaskNode type (Datacollection, Chracterisation, Sample). The
+             task dict can be directly used with the set_from_dict methods of
+             the corresponding node.
+    """
+    if not node:
+        node = mxcube.queue.get_model_root()
+    
+    res = reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+    return json.dumps(res, sort_keys=True, indent=4)
+
+
+def queue_to_json_response(node=None):
+    """
+    Returns the http json response object with the json representation of the
+    queue as data.
+
+    :param TaskNode node: Node to get representation for, queue root used if
+                          nothing is passed.
+
+    :returns: Flask Response object
+    """   
+    if not node:
+        node = mxcube.queue.get_model_root()
+    
+    res = reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+    return jsonify(res)
+
+
+def _handle_dc(sample_id, node):
+    parameters = node.as_dict()
+    parameters["point"] = node.get_point_index()
+
+    parameters.pop('sample')
+    parameters.pop('acquisitions')
+    parameters.pop('acq_parameters')
+    parameters.pop('centred_position')
+ 
+    res = {"label": "Data Collection",
+           "type": "DataCollection",
+           "parameters": parameters,
+           "checked": node.is_enabled(),
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "_queueID": node._node_id}
+
+    return res
+
+
+def _handle_char(sample_id, node):
+    parameters = node.characterisation_parameters.as_dict()
+    parameters["point"] = node.get_point_index()
+    refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
+    parameters.update(refp)
+
+    res = {"label": "Characterisation",
+           "type": "Characterisation",
+           "parameters": parameters,
+           "checked": node.is_enabled(),
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "_queueID": node._node_id}
+
+    return res
+
+
+def queue_to_json_rec(node):
+    """
+    Parses node recursively and builds a representation of the queue based on
+    python dictionaries.
+
+    :param TaskNode node: The node to parse
+    :returns: A list on the form:
+              [ {sampleID_1: [task1, ... taskn]},
+                .
+                . 
+                {sampleID_N: [task1, ... taskn]} ]
+    """
+    result = []
+
+    for node in node.get_children():
+        if isinstance(node, qmo.Sample):
+            result.append({node.loc_str: {'sampleID': node.loc_str,
+                                          'queueID': node._node_id,
+                                          'tasks': queue_to_json_rec(node)}})
+        elif isinstance(node, qmo.Characterisation):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_char(sample_id, node))
+        elif isinstance(node, qmo.DataCollection):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_dc(sample_id, node))
+        else:
+            result.extend(queue_to_json_rec(node))
+
+    return result
 
 
 def _proposal_id(session):
@@ -16,13 +187,13 @@ def _proposal_id(session):
 def save_queue(session, redis=redis.Redis()):
     proposal_id = _proposal_id(session)
     if proposal_id is not None:
-        redis.set("mxcube:queue:%d" % proposal_id, jsonpickle.encode(mxcube.queue))
+        redis.set("mxcube:queue:%d" % proposal_id, pickle.dumps(mxcube.queue))
 
 
 def new_queue(serialized_queue=None):
     if not serialized_queue:
         serialized_queue = mxcube.empty_queue
-    queue = jsonpickle.decode(serialized_queue)
+    queue = pickle.loads(serialized_queue)
     import Queue
     Queue.init_signals(queue)
     return queue

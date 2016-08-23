@@ -9,10 +9,12 @@ import { sendCurrentPhase } from '../actions/sampleview';
 
 
 import {
-  sendAddSampleAndTask,
-  sendAddSampleTask,
-  sendUpdateSampleTask,
-  sendAddSample
+  addSampleAndTask,
+  addTask,
+  updateTask,
+  addSample,
+  appendSampleList,
+  setQueueAndRun,
 } from '../actions/queue';
 
 
@@ -23,16 +25,15 @@ class TaskContainer extends React.Component {
   }
 
   addSample(sampleID, parameters) {
+    this.props.appendSampleList(sampleID, parameters);
     this.props.addSample(sampleID, parameters);
   }
 
   render() {
-    const lookup = this.props.lookup_queueID;
     return (
       <div className="col-xs-12">
         <Characterisation
           pointId={this.props.pointId}
-          lookup={lookup}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
           addSampleAndTask={this.props.addSampleAndTask}
@@ -42,11 +43,13 @@ class TaskContainer extends React.Component {
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'Characterisation'}
           rootPath={this.props.path}
+          queue={this.props.queue}
+          sampleList={this.props.sampleList}
+          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <DataCollection
           pointId={this.props.pointId}
-          lookup={lookup}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
           addSampleAndTask={this.props.addSampleAndTask}
@@ -56,6 +59,9 @@ class TaskContainer extends React.Component {
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'DataCollection'}
           rootPath={this.props.path}
+          queue={this.props.queue}
+          sampleList={this.props.sampleList}
+          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <AddSample
@@ -74,8 +80,9 @@ class TaskContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    queue: state.queue.queue,
+    sampleList: state.queue.sampleList,
     showForm: state.taskForm.showForm,
-    lookup_queueID: state.queue.lookup_queueID,
     taskData: state.taskForm.taskData,
     sampleIds: state.taskForm.sampleIds,
     pointId: state.taskForm.pointId,
@@ -91,10 +98,12 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-    addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
-    addTask: bindActionCreators(sendAddSampleTask, dispatch),
-    changeTask: bindActionCreators(sendUpdateSampleTask, dispatch),
-    addSample: bindActionCreators(sendAddSample, dispatch),
+    addSampleAndTask: bindActionCreators(addSampleAndTask, dispatch),
+    addTask: bindActionCreators(addTask, dispatch),
+    setQueueAndRun: bindActionCreators(setQueueAndRun, dispatch),
+    appendSampleList: bindActionCreators(appendSampleList, dispatch),
+    changeTask: bindActionCreators(updateTask, dispatch),
+    addSample: bindActionCreators(addSample, dispatch),
     sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
   };
 }

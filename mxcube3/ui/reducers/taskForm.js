@@ -24,16 +24,13 @@ export default (state = initialState, action) => {
       }
     case 'ADD_TASK':
       {
-        return {
-          ...state,
-          defaultParameters: {
-            ...state.defaultParameters,
-            [action.taskType.toLowerCase()]: {
-              ...action.parameters,
-              run_number: state.defaultParameters[action.taskType.toLowerCase()].run_number + 1
-            }
-          }
-        };
+        return { ...state, defaultParameters:
+                 { ...state.defaultParameters, [action.parameters.type.toLowerCase()]: {
+                   ...action.parameters, run_number:
+                   state.defaultParameters[action.parameters.type.toLowerCase()].run_number + 1
+                 }
+               }
+             };
       }
     case 'UPDATE_TASK':
       {
@@ -41,7 +38,7 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             ...state.defaultParameters,
-            [action.parameters.Type.toLowerCase()]: {
+            [action.parameters.type.toLowerCase()]: {
               ...action.parameters
             }
           }
@@ -66,10 +63,9 @@ export default (state = initialState, action) => {
         return {
           ...state,
           defaultParameters: {
-            datacollection: {
-              ...action.data.dcParameters,
-              ...state.defaultParameters.datacollection
-            }
+            datacollection: { ...action.data.dcParameters,
+                              ...state.defaultParameters.datacollection },
+            characterisation: { ...state.defaultParameters.characterisation, run_number: 1 }
           }
         };
       }
