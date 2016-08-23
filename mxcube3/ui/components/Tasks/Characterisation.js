@@ -15,7 +15,7 @@ class Characterisation extends React.Component {
   handleSubmit(runNow) {
     const parameters = {
       ...this.props.values,
-      Type: 'Characterisation',
+      type: 'Characterisation',
       point: this.props.pointId
     };
 
@@ -28,7 +28,7 @@ class Characterisation extends React.Component {
       'strategy_complexity',
       'prefix',
       'path',
-      'Type',
+      'type',
       'point'
     ];
 
@@ -41,15 +41,14 @@ class Characterisation extends React.Component {
     if (this.props.sampleIds.constructor === Array) {
       for (const sampleId of this.props.sampleIds) {
         if (this.props.queue[sampleId]) {
-          const queueId = this.props.sampleList[sampleId].queueID;
-          this.props.addTask(sampleId, queueId, parameters, runNow);
+          this.props.addTask(sampleId, parameters, this.props.queue, runNow);
         } else {// the sample is not in queue yet
-          this.props.addSampleAndTask(sampleId, parameters);
+          this.props.addSampleAndTask(sampleId, parameters, this.props.queue, runNow);
         }
       }
     } else {
       const { taskData, sampleIds } = this.props;
-      this.props.changeTask(taskData, sampleIds, parameters, runNow);
+      this.props.changeTask(taskData, sampleIds, parameters, this.props.queue, runNow);
     }
 
     this.props.hide();

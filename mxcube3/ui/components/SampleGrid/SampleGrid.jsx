@@ -255,7 +255,7 @@ export default class SampleGrid extends React.Component {
         const [acronym, name, tags] = [sample.proteinAcronym, sample.sampleName, []];
 
         if (this.props.queue.queue[sample.id]) {
-          for (const task of this.props.queue.queue[sample.id]) {
+          for (const task of this.props.queue.queue[sample.id].tasks) {
             tags.push(task);
           }
         }

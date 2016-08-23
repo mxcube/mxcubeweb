@@ -3,16 +3,14 @@ import logging
 import os
 import signals
 
-from flask import Response, jsonify, request, session
-
 import queue_model_objects_v1 as qmo
 import queue_entry as qe
 import QueueManager
 import Utils
 
+from flask import Response, jsonify, request, session
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
-
 from Utils import PickableMock as Mock
 
 qm = QueueManager.QueueManager('Mxcube3')
@@ -29,8 +27,6 @@ def init_signals(queue):
                            signals.collect_oscillation_failed)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
-
-# ##----QUEUE ACTIONS----##
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
@@ -238,15 +234,20 @@ def queue_load_state():
         return resp
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/<int:node_id>/execute", methods=['PUT'])
-def execute_entry_with_id(node_id):
+@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=['PUT'])
+def execute_entry_with_id(sid, tindex):
     """
-    Execute the entry with the node id <node_id>
-    :param int node_id: QueueModel node id
+    Execute the entry with the client id <client_id>
+    :param int client_id: Identifier of client item to execute
 
     :statuscode: 200, no error
                  409, queue entry could not be executed
     """
+    if tindex in ['undefined', 'None', 'null']:
+        node_id = Utils.queue_to_dict()[sid]["queueID"]
+    else:
+        node_id = Utils.queue_to_dict()[sid]["tasks"][int(tindex)]["queueID"]
+
     node, entry = _get_entry(node_id)
         
     msg = {'Signal': 'QueueStarted',
@@ -254,7 +255,6 @@ def execute_entry_with_id(node_id):
            'State': 1}
 
     socketio.emit('Queue', msg, namespace='/hwr')
-
 
     mxcube.queue.queue_hwobj._is_stopped = False
     mxcube.queue.queue_hwobj._set_in_queue_flag()
@@ -271,36 +271,38 @@ def execute_entry_with_id(node_id):
 
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
-def add_sample():
+def queue_set():
+    queue = request.get_json()
+    mxcube.queue = Utils.new_queue()
+
+    for (sample_id, sample_data) in queue.iteritems():
+        sample_node_id = add_sample(sample_id)
+
+        for task in sample_data['tasks']:
+            if task["type"] == "DataCollection":
+                add_data_collection(sample_node_id, task)
+            elif task["type"] == "Characterisation":
+                add_characterisation(sample_node_id, task)
+
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
+    return Utils.queue_to_json_response()
+
+
+def add_sample(sample_id):
     """
-    Adds a sample to the queue.
+    Adds a sample with sample id <sample_id> the queue.
 
-    :request: application/json, {"SampleId": sampleId}, where sampleId is
-              sampleId, often a location (eg '1:01')
-                           
-    :response: application/json, {"QueueId": node_id, "SampleId": sampleId},
-               where sampleId is the sampleId
-
-    :statuscode: 200 no error
-    :statuscode: 409 sample could not be added, possibly because it already
-                     exist in the queue
-                       
-    :example: POST http://host:port/mxcube/api/v0.1/queue
-              Content-Type: application/json
-              {"SampleId": "1:07"}
+    :param str sample_id: Sample id (often sample changer location)
+    :returns: SampleQueueEntry
     """
-    params = request.data
-    params = json.loads(params)
-    sample_loc = params['sampleId']
-
     sample_model = qmo.Sample()
-    sample_model.loc_str = str(sample_loc)
+    sample_model.loc_str = str(sample_id)
     sample_model.free_pin_mode = (not mxcube.diffractometer.use_sc)
 
-    # Is the sample with location sample_loc already in the queue,
+    # Is the sample with location sample_id already in the queue,
     # in that case, send error response
-    for sampleId, tasks in Utils.queue_to_dict().iteritems():
-        if sampleId == sample_loc:
+    for sampleId, sampleData in Utils.queue_to_dict().iteritems():
+        if sampleId == sample_id:
             msg = "[QUEUE] sample could not be added, already in the queue"
             logging.getLogger('HWR').error(msg)
 
@@ -310,9 +312,9 @@ def add_sample():
         # Are we using the sample changer or is a sample put on the pin
         # manually
         if mxcube.diffractometer.use_sc:
-            basket_number, sample_number = sample_loc.split(':')
+            basket_number, sample_number = sample_id.split(':')
         else:
-            basket_number, sample_number = (None, sample_loc)
+            basket_number, sample_number = (None, sample_id)
 
         sample_model.location = (basket_number, sample_number)
 
@@ -326,11 +328,128 @@ def add_sample():
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
 
-    msg = "[QUEUE] sample %s added with queue id %s"
-    logging.getLogger('HWR').info(msg % (sample_loc, sample_model._node_id))
+    return sample_model._node_id
 
-    Utils.save_queue(session)
-    return jsonify({'SampleId': sample_loc, 'QueueId': sample_model._node_id})
+
+def _create_dc(task):
+    """
+    Creates a data collection model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    dc_model = qmo.DataCollection()
+    dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
+    acq = dc_model.acquisitions[0]
+    params = task['parameters']
+
+    acq.acquisition_parameters.set_from_dict(params)
+    acq.path_template.set_from_dict(params)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('path', 'dummy_path'))
+
+    acq.path_template.directory = full_path
+                                               
+
+    if mxcube.queue.check_for_path_collisions(acq.path_template):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        logging.getLogger('HWR').exception(msg)
+        raise Exception(msg)
+
+    # If there is a centered position associated with this data collection, get
+    # the necessary data for the position and pass it to the collection.
+    if int(params["point"]) > 0:
+        for cpos in mxcube.diffractometer.savedCentredPos:
+            if cpos['posId'] == int(params['point']):
+                _cpos = qmo.CentredPosition(cpos['motor_positions'])
+                _cpos.index = int(params['point'])
+                acq.acquisition_parameters.centred_position = _cpos
+
+    dc_entry.set_enabled(task['checked'])
+    dc_model.set_enabled(task['checked'])
+
+    return dc_model, dc_entry
+
+
+def _get_entry(id):
+    """
+    Retrieves the model and the queue entry for the model node with id <id>
+
+    :param int id: Node id of node to retrieve
+    :returns: The tuple model, entry
+    :rtype: Tuple
+    """
+    model = mxcube.queue.get_node(int(id))
+    entry = mxcube.queue.queue_hwobj.get_entry_with_model(model)
+    return model, entry
+
+
+def add_characterisation(node_id, task):
+    """
+    Adds a data characterisation task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: Task data (parameters)
+
+    :returns: The queue id of the Data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = _get_entry(node_id)
+    params = task['parameters']
+
+    refdc_model, refdc_entry = _create_dc(task)
+    char_params = qmo.CharacterisationParameters().set_from_dict(params)
+
+    char_model = qmo.Characterisation(refdc_model, char_params)
+    char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
+
+    # A characterisation has two TaskGroups one for the characterisation itself
+    # and its reference collection and one for the resulting diffraction plans.
+    # But we only create a reference group if there is a result !   
+    refgroup_model = qmo.TaskGroup()
+
+    mxcube.queue.add_child(sample_model, refgroup_model)
+    mxcube.queue.add_child(refgroup_model, char_model)
+    
+    refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
+    refgroup_entry.set_enabled(True)
+    sample_entry.enqueue(refgroup_entry)
+    refgroup_entry.enqueue(char_entry)
+
+    return char_model._node_id
+
+
+def add_data_collection(node_id, task):
+    """
+    Adds a data collection task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = _get_entry(node_id)
+    dc_model, dc_entry = _create_dc(task)
+    group_model = qmo.TaskGroup()
+
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, dc_model)
+    
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(dc_entry)
+
+    msg = '[QUEUE] datacollection added to sample %s' % sample_model.loc_str
+    logging.getLogger('HWR').info(msg)
+
+    return dc_model._node_id
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
@@ -390,7 +509,7 @@ def toggle_node(node_id):
 
         new_state = entry.is_enabled()
         for elem in queue[node_id]:
-            child_node = mxcube.queue.get_node(elem['QueueId'])
+            child_node = mxcube.queue.get_node(elem['queueID'])
             child_entry = mxcube.queue.queue_hwobj.get_entry_with_model(child_node)
             if new_state:
                 child_entry.set_enabled(True)
@@ -414,7 +533,7 @@ def toggle_node(node_id):
         checked = 0
 
         for i in queue[parent]:
-            if i['QueueId'] != node_id and i['checked'] == 1:  # at least one brother is enabled, no need to change parent
+            if i['queueID'] != node_id and i['checked'] == 1:  # at least one brother is enabled, no need to change parent
                 checked = 1
                 break
         if entry.is_enabled():
@@ -427,7 +546,7 @@ def toggle_node(node_id):
 
         new_state = entry.is_enabled()
         for met in queue[parent]:
-            if int(met.get('QueueId')) == node_id:
+            if int(met.get('queueID')) == node_id:
                 if new_state == 0 and checked == 0:
                     parent_entry.set_enabled(False)
                     parent_node.set_enabled(False)
@@ -526,132 +645,6 @@ def add_centring(id):
     return resp
 
 
-
-def _create_dc(params):
-    """
-    Creates a data collection model and its corresponding queue entry from
-    a dict with collection parameters.
-
-    :param dict params: Collection parameters
-    :returns: The tuple (model, entry)
-    :rtype: Tuple
-    """
-    dc_model = qmo.DataCollection()
-    dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
-    acq = dc_model.acquisitions[0]
-
-    acq.acquisition_parameters.set_from_dict(params)
-    acq.path_template.set_from_dict(params)
-
-    full_path = os.path.join(mxcube.session.get_base_image_directory(),
-                             params.get('path', 'dummy_path'))
-
-    acq.path_template.directory = full_path
-                                               
-
-    if mxcube.queue.check_for_path_collisions(acq.path_template):
-        msg = "[QUEUE] data collection could not be added to sample: "
-        msg += "path collision"
-        logging.getLogger('HWR').exception(msg)
-        raise Exception(msg)
-
-    # If there is a centered position associated with this data collection, get
-    # the necessary data for the position and pass it to the collection.
-    if int(params["point"]) > 0:
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos['posId'] == int(params['point']):
-                _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                _cpos.index = int(params['point'])
-                acq.acquisition_parameters.centred_position = _cpos
-
-    dc_entry.set_enabled(True)
-    dc_model.set_enabled(True)
-
-    return dc_model, dc_entry
-
-
-def _get_entry(id):
-    """
-    Retrieves the model and the queue entry for the model node with id <id>
-
-    :param int id: Node id of node to retrieve
-    :returns: The tuple model, entry
-    :rtype: Tuple
-    """
-    model = mxcube.queue.get_node(int(id))
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(model)
-    return model, entry
-
-
-def add_characterisation(id):
-    """
-    Adds a data characterisation task to the sample with id: <id>
-
-    :param int id: id of the sample to which the task belongs 
-
-    :returns: http response object, with http status code 200 or
-              409 if something bad happened. data ={ "CharacId": newId}
-    """
-    params = request.get_json()
-    sample_model, sample_entry = _get_entry(int(id))
-
-    refdc_model, refdc_entry = _create_dc(params)
-    char_params = qmo.CharacterisationParameters().set_from_dict(params)
-
-    char_model = qmo.Characterisation(refdc_model, char_params)
-    char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
-
-    # A characterisation has two TaskGroups one for the characterisation itself
-    # and its reference collection and one for the resulting diffraction plans.
-    # But we only create a reference group if there is a result !
-    refgroup_model = qmo.TaskGroup()
-
-    mxcube.queue.add_child(sample_model, refgroup_model)
-    mxcube.queue.add_child(refgroup_model, char_model)
-    
-    refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
-    refgroup_entry.set_enabled(True)
-    sample_entry.enqueue(refgroup_entry)
-    refgroup_entry.enqueue(char_entry)
-
-    Utils.save_queue(session)
-
-    resp = jsonify({'QueueId':char_model._node_id , 'Type': 'Characterisation'})
-    resp.status_code = 200
-    return resp
-
-
-def add_data_collection(id):
-    """
-    Adds a data collection task to the sample with id: <id>
-
-    :param int id: id of the sample to which the task belongs 
-
-    :returns: http response object, with http status code 200 or
-              409 if something bad happened. data ={ "ColId": newId}
-    """
-    params = request.get_json()
-    sample_model, sample_entry = _get_entry(int(id))
-    dc_model, dc_entry = _create_dc(params)
-
-    group_model = qmo.TaskGroup()
-    group_model.set_enabled(True)
-    mxcube.queue.add_child(sample_model, group_model)
-    mxcube.queue.add_child(group_model, dc_model)
-    
-    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-    group_entry.set_enabled(True)
-    sample_entry.enqueue(group_entry)
-    group_entry.enqueue(dc_entry)
-
-    msg = '[QUEUE] datacollection added to sample %s' % sample_model.loc_str
-    logging.getLogger('HWR').info(msg)
-    resp = jsonify({'QueueId': dc_model._node_id, 'Type': 'DataCollection'})
-    resp.status_code = 200
-    
-    return resp
-
-
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['POST'])
 def add_method(id):
     """
@@ -670,7 +663,7 @@ def add_method(id):
     response = Response(status=409)
     params = request.data
     params = json.loads(params)
-    method_type = params['Type']
+    method_type = params['type']
     node_id = id  # params['QueueId']
 
     if method_type == 'Centring':
@@ -804,8 +797,8 @@ def get_method(sample_id, method_id):
         return Response(status=409)
     else:
         # Find task with queue id method_id
-        for task in sample:
-            if task['QueueId'] == int(method_id):
+        for task in sample.tasks:
+            if task['queueID'] == int(method_id):
                 resp = jsonify(task)
                 resp.status_code = 200
                 return resp

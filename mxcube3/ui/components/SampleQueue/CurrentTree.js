@@ -46,11 +46,11 @@ export default class CurrentTree extends React.Component {
   }
 
   runSample() {
-    this.props.run(this.props.mounted);
+    this.props.setQueueAndRun(this.props.mounted, undefined, this.props.queue);
   }
 
   unMountSample() {
-    this.props.unmount(this.props.mounted);
+    this.props.unmount(this.props.queue[this.props.mounted].queueID);
   }
 
   renderOptions(option, length) {
@@ -76,7 +76,7 @@ export default class CurrentTree extends React.Component {
 
     if (sampleId) {
       sampleData = this.props.sampleInformation[sampleId];
-      sampleTasks = this.props.queue[sampleId];
+      sampleTasks = this.props.queue[sampleId].tasks;
       queueOptions = this.state.options[this.props.queueStatus];
     } else {
       sampleData.sampleName = 'No Sample Mounted';
@@ -96,7 +96,7 @@ export default class CurrentTree extends React.Component {
           </div>
           <div className={bodyClass}>
             {sampleTasks.map((taskData, i) => {
-              const key = this.props.queue[taskData.sampleID].indexOf(taskData);
+              const key = this.props.queue[taskData.sampleID].tasks.indexOf(taskData);
               const task =
                 (<TaskItem key={key}
                   index={i}
@@ -110,7 +110,8 @@ export default class CurrentTree extends React.Component {
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
                   collapseTask={this.props.collapseTask}
-                  show={taskData.collapsed}
+                  show={this.props.displayData[taskData.sampleID].tasks[key].collapsed}
+                  state={this.props.displayData[taskData.sampleID].tasks[key].state}
                 />);
               return task;
             })}

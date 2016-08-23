@@ -25,9 +25,12 @@ export default class HistoryTree extends React.Component {
                       return (
                         <HistorySampleItem
                           data={sampleData}
-                          show={sampleData.collapsed}
+                          show={this.props.displayData[sampleData.sampleID].collapsed}
+                          state={this.props.displayData[sampleData.sampleID].state}
                           collapseSample={this.props.collapseSample}
-                          queue={this.props.queue} id={sampleId} key={i}
+                          queue={this.props.queue}
+                          id={sampleId}
+                          key={i}
                         />
                       );
                     })}

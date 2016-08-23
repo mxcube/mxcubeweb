@@ -42,7 +42,7 @@ def exception_handler(e):
 app.register_error_handler(Exception, exception_handler)
 sess = Session()
 sess.init_app(app)
-app.debug = True
+app.debug = False
 # this line important for socketio msg, otherwise no msg is sent...
 socketio.init_app(app)
 
@@ -78,7 +78,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     app.log_handler = custom_log_handler
 
     ###Importing all REST-routes
-    import routes.Main, routes.Login, routes.Beamline, routes.Collection, routes.Mockups, routes.SampleCentring, routes.SampleChanger, routes.Diffractometer
+    from routes import (Main, Login, Beamline, Collection, Mockups,
+                        SampleCentring, SampleChanger, Diffractometer, Utils)
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
@@ -86,15 +87,17 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.collect = app.beamline.getObjectByRole("collect")
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
 
-	if getattr(app.diffractometer, 'centring_motors_list', None) is None:
-	    # centring_motors_list is the list of roles corresponding to diffractometer motors
-	    app.diffractometer.centring_motors_list = app.diffractometer.getPositions().keys()
+        if getattr(app.diffractometer, 'centring_motors_list', None) is None:
+            # centring_motors_list is the list of roles corresponding to diffractometer motors
+            app.diffractometer.centring_motors_list = app.diffractometer.getPositions().keys()
+
         app.db_connection = app.beamline.getObjectByRole("lims_client")
         app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
+
         try:
-            routes.SampleCentring.init_signals()
-            routes.Beamline.init_signals()
+            SampleCentring.init_signals()
+            Beamline.init_signals()
         except Exception:
             sys.excepthook(*sys.exc_info())
 
