@@ -15,7 +15,7 @@ class Characterisation extends React.Component {
   handleSubmit(runNow) {
     const parameters = {
       ...this.props.values,
-      Type: 'Characterisation',
+      type: 'Characterisation',
       point: this.props.pointId
     };
 
@@ -28,7 +28,7 @@ class Characterisation extends React.Component {
       'strategy_complexity',
       'prefix',
       'path',
-      'Type',
+      'type',
       'point'
     ];
 

@@ -183,8 +183,8 @@ export default (state = initialState, action) => {
       // Create a copy of the tasks (array) for a sample with given queueID,
       // or an empty array if no tasks exists for sampleID
       let tasks = Array.from(state.queue[action.sampleID].tasks || []);
-      tasks = tasks.concat([{ type: action.parameters.Type,
-                              label: action.parameters.Type.split(/(?=[A-Z])/).join(' '),
+      tasks = tasks.concat([{ type: action.parameters.type,
+                              label: action.parameters.type.split(/(?=[A-Z])/).join(' '),
                               sampleID: action.sampleID,
                               queueID: action.queueID,
                               parameters: action.parameters,
@@ -213,7 +213,7 @@ export default (state = initialState, action) => {
       const queue = { ...state.queue };
 
       tasks[taskIndex] = { ...action.taskData,
-                           type: action.parameters.Type,
+                           type: action.parameters.type,
                            parameters: action.parameters };
 
       queue[action.sampleID].tasks = tasks;

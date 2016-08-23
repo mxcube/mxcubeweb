@@ -14,7 +14,7 @@ class DataCollection extends React.Component {
   handleSubmit(runNow) {
     const parameters = {
       ...this.props.values,
-      Type: 'DataCollection',
+      type: 'DataCollection',
       point: this.props.pointId
     };
 
@@ -27,7 +27,7 @@ class DataCollection extends React.Component {
       'space_group',
       'prefix',
       'path',
-      'Type',
+      'type',
       'point'
     ];
 
