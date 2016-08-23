@@ -40,17 +40,16 @@ class Characterisation extends React.Component {
 
     if (this.props.sampleIds.constructor === Array) {
       for (const sampleId of this.props.sampleIds) {
-        const queueId = this.props.lookup[sampleId];
-        if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters, runNow);
+        if (this.props.queue[sampleId]) {
+          const queueId = this.props.queue[sampleId].queueID;
+          this.props.addTask(sampleId, queueId, parameters, runNow);
         } else {// the sample is not in queue yet
           this.props.addSampleAndTask(sampleId, parameters);
         }
       }
     } else {
-      const { lookup, taskData, sampleIds } = this.props;
-      const sampleQueueID = lookup[sampleIds];
-      this.props.changeTask(taskData, sampleIds, sampleQueueID, parameters, runNow);
+      const { taskData, sampleIds } = this.props;
+      this.props.changeTask(taskData, sampleIds, parameters, runNow);
     }
 
     this.props.hide();
@@ -375,7 +374,7 @@ class Characterisation extends React.Component {
               Run Now
             </button>
             <button type="button" className="btn btn-primary" onClick={this.addToQueue}>
-              {this.props.taskData.queueID ? 'Change' : 'Add to Queue'}
+              {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
             </button>
         </Modal.Footer>
       </Modal>

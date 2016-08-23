@@ -1,5 +1,4 @@
 import json
-import jsonpickle
 import logging
 import os
 import signals
@@ -14,9 +13,7 @@ import Utils
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
-#for mocking the view of the queue, easier than adding sth like if not view:
-from HardwareRepository.BaseHardwareObjects import Null as Mock
-
+from Utils import PickableMock as Mock
 
 qm = QueueManager.QueueManager('Mxcube3')
 
@@ -32,7 +29,6 @@ def init_signals(queue):
                            signals.collect_oscillation_failed)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
-    queue.last_queue_node = {'id': 0, 'sample': '0:0'}
 
 # ##----QUEUE ACTIONS----##
 
@@ -135,7 +131,7 @@ def queue_unpause():
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT'])
+@mxcube.route("/mxcube/api/v0.1/queue/clear", methods=['PUT', 'GET'])
 def queue_clear():
     """
     Clear the queue.
@@ -177,7 +173,7 @@ def queue_get():
                             }
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting data')
-    resp = jsonify(serialize_queue_to_json())
+    resp = Utils.queue_to_json_response()
     resp.status_code = 200
     return resp
 
@@ -231,7 +227,7 @@ def queue_load_state():
 
     if mxcube.queue.queue_hwobj._queue_entry_list:
         logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored')
-        resp = jsonify({'queueState': serialize_queue_to_json(),
+        resp = jsonify({'queueState': Utils.queue_to_dict(),
                         'sampleList': samples})
         resp.status_code = 200
         return resp
@@ -245,90 +241,30 @@ def queue_load_state():
 @mxcube.route("/mxcube/api/v0.1/queue/<int:node_id>/execute", methods=['PUT'])
 def execute_entry_with_id(node_id):
     """
-    Execute the given queue entry
-        :parameter node_id: entry identifier, integer. It can be a sample or
-         a task within a sample
-        :statuscode: 200: no error, the given entry was sent to execution
-        (any further error might still happen)
-        :statuscode: 409: queue entry could not be executed
-    """
-    # last_queue_node = mxcube.queue.last_queue_node
-    #  WARNING: serialize_queue_to_json() should only be used for sending
-    #  to the client,
-    #  here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
-    global queue_has_to_be_stopped
-    queue_has_to_be_stopped = False
-    node = mxcube.queue.get_node(node_id)
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+    Execute the entry with the node id <node_id>
+    :param int node_id: QueueModel node id
 
+    :statuscode: 200, no error
+                 409, queue entry could not be executed
+    """
+    node, entry = _get_entry(node_id)
+        
     msg = {'Signal': 'QueueStarted',
            'Message': 'Queue execution started',
            'State': 1}
+
     socketio.emit('Queue', msg, namespace='/hwr')
 
+
+    mxcube.queue.queue_hwobj._is_stopped = False
+    mxcube.queue.queue_hwobj._set_in_queue_flag()
     mxcube.queue.queue_hwobj.set_pause(False)
-    if isinstance(entry, qe.SampleQueueEntry):
-        logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' % node_id)
-        #  this is a sample entry, thus, go through its checked children and execute those
-        for elem in queue[node_id]['methods']:
-            if queue_has_to_be_stopped:
-                break
-        for elem in queue[node_id]['methods']:
-            if int(elem['checked']) == 1:
-                logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' % elem['QueueId'])
-                child_node = mxcube.queue.get_node(elem['QueueId'])
-                child_entry = mxcube.queue.queue_hwobj.get_entry_with_model(child_node)
-                child_entry._view = Mock()  # associated text deps
-                child_entry._set_background_color = Mock()  # widget color deps
-                try:
-                    if mxcube.queue.queue_hwobj.is_paused():
-                        logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-                        msg = {'Signal': 'QueuePaused',
-                               'Message': 'Queue execution paused',
-                               'State': 1}  # 1: started
-                        socketio.emit('Queue', msg, namespace='/hwr')
-                        mxcube.queue.queue_hwobj.wait_for_pause_event()
-                    mxcube.queue.last_queue_node.update({'id': elem['QueueId'],
-                                                         'sample': queue[node_id]['SampleId']})
-                    # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-                    mxcube.queue.queue_hwobj.execute_entry(child_entry)
-                    child_entry.set_enabled(False)
-                except Exception:
-                    logging.getLogger('HWR').exception('[QUEUE] Queue error executing child entry with id: %s' % elem['QueueId'])
-    else:
-        #  not a sample so execute directly
-        logging.getLogger('HWR').info('[QUEUE] Queue executing entry with id: %s' % node_id)
-        if mxcube.queue.queue_hwobj.is_paused():
-            logging.getLogger('HWR').info('[QUEUE] Cannot execute, queue is paused. Waiting for unpause')
-            msg = {'Signal': 'QueuePaused',
-                   'Message': 'Queue execution paused',
-                   'State': 1}
-            socketio.emit('Queue', msg, namespace='/hwr')
-            mxcube.queue.queue_hwobj.wait_for_pause_event()
-
-        entry._view = Mock()  # associated text deps
-        entry._set_background_color = Mock()  # widget color deps
-        #  parent = int(node.get_parent()._node_id)
-        # this is a TaskGroup, so it is not in the parsed queue
-        parent_node = node.get_parent() 
-        #  go a level up,
-        # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
-        parent_node = parent_node.get_parent()  
-        if isinstance(parent_node, qmo.TaskGroup):
-            parent_node = parent_node.get_parent()
-        parent = int(parent_node._node_id)
-
-        mxcube.queue.last_queue_node.update({'id': node_id,
-                                             'sample': queue[parent]['SampleId']
-                                             })
-        # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
-        mxcube.queue.queue_hwobj.execute_entry(entry)
-        entry.set_enabled(False)
+    mxcube.queue.queue_hwobj.execute_entry(entry)
 
     msg = {'Signal': 'QueueStopped',
            'Message': 'Queue execution stopped',
            'State': 1}
+
     socketio.emit('Queue', msg, namespace='/hwr')
 
     return Response(status=200)
@@ -336,61 +272,65 @@ def execute_entry_with_id(node_id):
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def add_sample():
-    '''
-    Add a sample to the queue.
-        :request Content-Type: application/json, {"SampleId": sampleId},
-        where sampleId is sample location (eg '1:01')
-        :response Content-Type: application/json, {"QueueId": node_id,
-            "SampleId": sampleId}, where sampleId is the same as the
-            caller id (eg '1:01') and node_id an integer which is used
-            for refering to this element from now onwards.
-        :statuscode: 200: no error
-        :statuscode: 409: sample could not be added, possibly because
-            it already exist in the queue
-        :example request:   * POST http://host:port/mxcube/api/v0.1/queue
-                            * Content-Type: application/json
-                            * {"SampleId": "1:07"}
-    '''
+    """
+    Adds a sample to the queue.
+
+    :request: application/json, {"SampleId": sampleId}, where sampleId is
+              sampleId, often a location (eg '1:01')
+                           
+    :response: application/json, {"QueueId": node_id, "SampleId": sampleId},
+               where sampleId is the sampleId
+
+    :statuscode: 200 no error
+    :statuscode: 409 sample could not be added, possibly because it already
+                     exist in the queue
+                       
+    :example: POST http://host:port/mxcube/api/v0.1/queue
+              Content-Type: application/json
+              {"SampleId": "1:07"}
+    """
     params = request.data
     params = json.loads(params)
-    sample_id = params['SampleId']
+    sample_loc = params['sampleId']
 
-    sample_node = qmo.Sample()
-    sample_node.loc_str = sample_id
-    sample_node.lims_id = None
-    sample_node.lims_group_id = None
-    basket_number = None
+    sample_model = qmo.Sample()
+    sample_model.loc_str = str(sample_loc)
+    sample_model.free_pin_mode = (not mxcube.diffractometer.use_sc)
 
+    # Is the sample with location sample_loc already in the queue,
+    # in that case, send error response
+    for sampleId, sampleData in Utils.queue_to_dict().iteritems():
+        if sampleId == sample_loc:
+            msg = "[QUEUE] sample could not be added, already in the queue"
+            logging.getLogger('HWR').error(msg)
+
+            return Response(status=409)
+        
     try:
-        if mxcube.diffractometer.use_sc:    # use sample changer
-            basket_number, sample_number = sample_id.split(':')
+        # Are we using the sample changer or is a sample put on the pin
+        # manually
+        if mxcube.diffractometer.use_sc:
+            basket_number, sample_number = sample_loc.split(':')
         else:
-            sample_number = sample_id
+            basket_number, sample_number = (None, sample_loc)
+
+        sample_model.location = (basket_number, sample_number)
+
     except AttributeError as ex:
         msg = '[QUEUE] sample could not be added, %s' % str(ex)
-        logging.getLogger('HWR').error(msg)
+        logging.getLogger('HWR').error(msg)  
 
-    sample_node.location = (basket_number, sample_number)
-    sample_entry = qe.SampleQueueEntry()
-    sample_entry.set_data_model(sample_node)
-    sample_entry.set_queue_controller(qm)
-    sample_entry._view = Mock()
-    sample_entry._set_background_color = Mock()
-
-    # WARNING: serialize_queue_to_json() should only be used for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
-    for i in queue:
-        if queue[i]['SampleId'] == sample_id:
-            logging.getLogger('HWR').error('[QUEUE] sample could not be added, already in the queue')
-            return Response(status=409)
-
-    mxcube.queue.add_child(mxcube.queue._selected_model, sample_node)
-    node_id = sample_node._node_id
+    sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
+    sample_entry.set_enabled(True)
+    
+    mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
-    logging.getLogger('HWR').info('[QUEUE] sample "%s" added with queue id "%s"' % (sample_id, node_id))
+
+    msg = "[QUEUE] sample %s added with queue id %s"
+    logging.getLogger('HWR').info(msg % (sample_loc, sample_model._node_id))
+
     Utils.save_queue(session)
-    return jsonify({'SampleId': sample_id, 'QueueId': node_id})
+    return jsonify({'SampleId': sample_loc, 'QueueId': sample_model._node_id})
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
@@ -437,23 +377,20 @@ def toggle_node(node_id):
     node_id = int(node_id)  # params['QueueId']
     node = mxcube.queue.get_node(node_id)
     entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-    # WARNING: serialize_queue_to_json() should only be used for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
+    queue = Utils.queue_to_dict()
 
     if isinstance(entry, qe.SampleQueueEntry):
         # this is a sample entry, thus, go through its checked children and toggle those
         if entry.is_enabled():
             entry.set_enabled(False)
             node.set_enabled(False)
-
         else:
             entry.set_enabled(True)
             node.set_enabled(True)
 
         new_state = entry.is_enabled()
-        for elem in queue[node_id]['methods']:
-            child_node = mxcube.queue.get_node(elem['QueueId'])
+        for elem in queue[node_id]:
+            child_node = mxcube.queue.get_node(elem['queueID'])
             child_entry = mxcube.queue.queue_hwobj.get_entry_with_model(child_node)
             if new_state:
                 child_entry.set_enabled(True)
@@ -476,8 +413,8 @@ def toggle_node(node_id):
         # check if the brother&sisters are enabled (and enable the parent)
         checked = 0
 
-        for i in queue[parent]['methods']:
-            if i['QueueId'] != node_id and i['checked'] == 1:  # at least one brother is enabled, no need to change parent
+        for i in queue[parent]:
+            if i['queueID'] != node_id and i['checked'] == 1:  # at least one brother is enabled, no need to change parent
                 checked = 1
                 break
         if entry.is_enabled():
@@ -489,27 +426,31 @@ def toggle_node(node_id):
             node.set_enabled(True)
 
         new_state = entry.is_enabled()
-        for met in queue[parent]['methods']:
-            if int(met.get('QueueId')) == node_id:
+        for met in queue[parent]:
+            if int(met.get('queueID')) == node_id:
                 if new_state == 0 and checked == 0:
                     parent_entry.set_enabled(False)
                     parent_node.set_enabled(False)
                 elif new_state == 1 and checked == 0:
                     parent_entry.set_enabled(True)
                     parent_node.set_enabled(True)
+
     return Response(status=200)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<node_id>", methods=['DELETE'])
 def delete_sample_or_method(node_id):
     """
-    Remove a sample or a method from the queue, if a sample is removes all of its children task will also be removed.
+    Remove a sample or a method from the queue, if a sample is removes all of
+    its children task will also be removed.
+
         :parameter node_id: node identifier
         :statuscode: 200: no error
         :statuscode: 409: node could not be deleted
     """
     node_to_remove = mxcube.queue.get_node(int(node_id))
     parent = node_to_remove.get_parent()
+    
     mxcube.queue.del_child(parent, node_to_remove)
     entry_to_remove = mxcube.queue.queue_hwobj.get_entry_with_model(node_to_remove)
     if parent._node_id > 0:  # we are removing a method
@@ -518,10 +459,12 @@ def delete_sample_or_method(node_id):
         parent = parent._node_id
         node_to_remove = node_to_remove._node_id
     else:
-        # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
+        # we are removing a sample, the parent of a sample is 'rootnode',
+        # which is not a Model
         mxcube.queue.queue_hwobj.dequeue(entry_to_remove)
 
     Utils.save_queue(session)
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
 
     return Response(status=200)
 
@@ -543,6 +486,7 @@ def delete_method(sample_id, method_id):
     parent_entry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
     parent_entry.dequeue(entry_to_remove)
     Utils.save_queue(session)
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
 
     return Response(status=200)
 
@@ -582,115 +526,129 @@ def add_centring(id):
     return resp
 
 
-def add_characterisation(id):
-    '''
-    Add a characterisation method to the sample with id: <id>, integer.
-    Args: id, current id of the sample where add the method
-            id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok,
-        409 something bad happened. Plus:
-       data ={ "CharacId": newId}    '''
-    # no data received yet
-    params = request.get_json()
 
-    charac_node = qmo.Characterisation()
-    charac_entry = qe.CharacterisationGroupQueueEntry()
-    charac_entry._view = Mock()
-    charac_entry._set_background_color = Mock()
-    charac_entry.set_data_model(charac_node)
-    charac_entry.set_queue_controller(qm)
-    # char has two taskgroup levels so that the diff plan keeps under the same grandparent
-    task_node1 = qmo.TaskGroup()
-    task_node2 = qmo.TaskGroup()
-    task1_entry = qe.TaskGroupQueueEntry()
-    task2_entry = qe.TaskGroupQueueEntry()
-    task1_entry.set_data_model(task_node1)
-    task2_entry.set_data_model(task_node2)
+def _create_dc(params):
+    """
+    Creates a data collection model and its corresponding queue entry from
+    a dict with collection parameters.
 
-    charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
-    for k, v in params.items():
-        if hasattr(charac_node.characterisation_parameters, k):
-            setattr(charac_node.characterisation_parameters, k, v)
-    if params['point'] > 0:  # a point id has been added
-        for cpos in mxcube.diffractometer.savedCentredPos:  # searching for the motor data associated with that cpos
+    :param dict params: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    dc_model = qmo.DataCollection()
+    dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
+    acq = dc_model.acquisitions[0]
+
+    acq.acquisition_parameters.set_from_dict(params)
+    acq.path_template.set_from_dict(params)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('path', 'dummy_path'))
+
+    acq.path_template.directory = full_path
+                                               
+
+    if mxcube.queue.check_for_path_collisions(acq.path_template):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        logging.getLogger('HWR').exception(msg)
+        raise Exception(msg)
+
+    # If there is a centered position associated with this data collection, get
+    # the necessary data for the position and pass it to the collection.
+    if int(params["point"]) > 0:
+        for cpos in mxcube.diffractometer.savedCentredPos:
             if cpos['posId'] == int(params['point']):
-                charac_node.reference_image_collection.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motor_positions'])
+                _cpos = qmo.CentredPosition(cpos['motor_positions'])
+                _cpos.index = int(params['point'])
+                acq.acquisition_parameters.centred_position = _cpos
 
-    node = mxcube.queue.get_node(int(id))  # this is a sampleNode
-    # this is the corresponding sampleEntry
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
+    dc_entry.set_enabled(True)
+    dc_model.set_enabled(True)
 
-    task1_id = mxcube.queue.add_child_at_id(int(id), task_node1)
-    entry.enqueue(task1_entry)
+    return dc_model, dc_entry
 
-    task2_id = mxcube.queue.add_child_at_id(task1_id, task_node2)
-    task1_entry.enqueue(task2_entry)
-    # add_child does not return id!
-    new_node = mxcube.queue.add_child_at_id(task2_id, charac_node)
-    task2_entry.enqueue(charac_entry)
-    charac_entry.set_enabled(True)
-    charac_node.set_enabled(True)
-    logging.getLogger('HWR').info('[QUEUE] characterisation added to sample')
+
+def _get_entry(id):
+    """
+    Retrieves the model and the queue entry for the model node with id <id>
+
+    :param int id: Node id of node to retrieve
+    :returns: The tuple model, entry
+    :rtype: Tuple
+    """
+    model = mxcube.queue.get_node(int(id))
+    entry = mxcube.queue.queue_hwobj.get_entry_with_model(model)
+    return model, entry
+
+
+def add_characterisation(id):
+    """
+    Adds a data characterisation task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs 
+
+    :returns: http response object, with http status code 200 or
+              409 if something bad happened. data ={ "CharacId": newId}
+    """
+    params = request.get_json()
+    sample_model, sample_entry = _get_entry(int(id))
+
+    refdc_model, refdc_entry = _create_dc(params)
+    char_params = qmo.CharacterisationParameters().set_from_dict(params)
+
+    char_model = qmo.Characterisation(refdc_model, char_params)
+    char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
+
+    # A characterisation has two TaskGroups one for the characterisation itself
+    # and its reference collection and one for the resulting diffraction plans.
+    # But we only create a reference group if there is a result !
+    refgroup_model = qmo.TaskGroup()
+
+    mxcube.queue.add_child(sample_model, refgroup_model)
+    mxcube.queue.add_child(refgroup_model, char_model)
+    
+    refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
+    refgroup_entry.set_enabled(True)
+    sample_entry.enqueue(refgroup_entry)
+    refgroup_entry.enqueue(char_entry)
 
     Utils.save_queue(session)
 
-    resp = jsonify({'QueueId': new_node, 'Type': 'Characterisation'})
+    resp = jsonify({'QueueId':char_model._node_id , 'Type': 'Characterisation'})
     resp.status_code = 200
     return resp
 
 
 def add_data_collection(id):
-    '''
-    Add a data collection method to the sample with id: <id>, integer.
-    Args: id, current id of the sample where add the method
-        id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok,
-        409 something bad happened. Plus:
-       data ={ "ColId": newId}    '''
-    # no data received yet
+    """
+    Adds a data collection task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs 
+
+    :returns: http response object, with http status code 200 or
+              409 if something bad happened. data ={ "ColId": newId}
+    """
     params = request.get_json()
+    sample_model, sample_entry = _get_entry(int(id))
+    dc_model, dc_entry = _create_dc(params)
 
-    col_node = qmo.DataCollection()
-    col_entry = qe.DataCollectionQueueEntry()
-    col_entry._view = Mock()
-    col_entry.set_queue_controller(qm)
-    col_entry._set_background_color = Mock()
+    group_model = qmo.TaskGroup()
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, dc_model)
+    
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(dc_entry)
 
-    task_node1 = qmo.TaskGroup()
-    task1_entry = qe.TaskGroupQueueEntry()
-    task1_entry.set_data_model(task_node1)
-
-    col_node.acquisitions[0].acquisition_parameters.set_from_dict(params)
-    col_node.acquisitions[0].path_template.directory = os.path.join(
-        mxcube.session.get_base_image_directory(), params.get('path', 'dummy_path'))
-    col_node.acquisitions[0].path_template.run_number = params['run_number']
-    col_node.acquisitions[0].path_template.base_prefix = params['prefix']
-    if mxcube.queue.check_for_path_collisions(col_node.acquisitions[0].path_template):
-        logging.getLogger('HWR').exception('[QUEUE] datacollection could not be added to sample: Data Collision')
-        return Response(status=409)
-    if params['point'] > 0:  # a point id has been added
-        # searching for the motor data associated with that centred_position
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos['posId'] == int(params['point']):
-                col_node.acquisitions[0].acquisition_parameters.centred_position = qmo.CentredPosition(cpos['motor_positions'])
-
-    col_entry.set_data_model(col_node)
-    col_entry.set_enabled(True)
-    col_node.set_enabled(True)
-    node = mxcube.queue.get_node(int(id))
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-
-    task1_id = mxcube.queue.add_child_at_id(int(id), task_node1)
-    entry.enqueue(task1_entry)
-    # add_child does not return id!
-    new_node = mxcube.queue.add_child_at_id(task1_id, col_node)
-    task1_entry.enqueue(col_entry)
-
-    Utils.save_queue(session)
-
-    logging.getLogger('HWR').info('[QUEUE] datacollection added to sample')
-    resp = jsonify({'QueueId': new_node, 'Type': 'DataCollection'})
+    msg = '[QUEUE] datacollection added to sample %s' % sample_model.loc_str
+    logging.getLogger('HWR').info(msg)
+    resp = jsonify({'QueueId': dc_model._node_id, 'Type': 'DataCollection'})
     resp.status_code = 200
+    
     return resp
 
 
@@ -709,20 +667,25 @@ def add_method(id):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
+    response = Response(status=409)
     params = request.data
     params = json.loads(params)
     method_type = params['Type']
     node_id = id  # params['QueueId']
 
     if method_type == 'Centring':
-        return add_centring(node_id)
+        response = add_centring(node_id)
     elif method_type == 'Characterisation':
-        return add_characterisation(node_id)
+        response = add_characterisation(node_id)
     elif method_type == 'DataCollection':
-        return add_data_collection(node_id)
+        response = add_data_collection(node_id)
     else:
         logging.getLogger('HWR').exception('[QUEUE] Method can not be added')
         return Response(status=409)
+
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
+
+    return response
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>/<method_id>", methods=['PUT'])
@@ -736,28 +699,25 @@ def update_method(sample_id, method_id):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
-    params = request.data
-    params = json.loads(params)
-#    sample_node = mxcube.queue.get_node(int(sample_id))
-    method_node = mxcube.queue.get_node(int(method_id))
-#    method_entry = mxcube.queue.queue_hwobj.get_entry_with_model(method_node)
-    # TODO: update fields here, I would say that the entry does not need to be updated, only the model node
+    params = request.get_json()
+    node = mxcube.queue.get_node(int(method_id))
 
-    if isinstance(method_node, qmo.DataCollection):
-        method_node.acquisitions[0].acquisition_parameters.set_from_dict(params)
-    elif isinstance(method_node, qmo.Characterisation):
-        method_node.reference_image_collection.acquisitions[0].acquisition_parameters.set_from_dict(params)
-        for k, v in params.items():
-            if hasattr(method_node.characterisation_parameters, k):
-                setattr(method_node.characterisation_parameters, k, v)
-    elif isinstance(method_node, qmo.SampleCentring):
-        pass
+    if isinstance(node, qmo.DataCollection):
+        node.acquisitions[0].acquisition_parameters.set_from_dict(params)
+        node.acquisitions[0].path_template.set_from_dict(params)
+    elif isinstance(node, qmo.Characterisation):
+        node.characterisation_parameters.set_from_dict(params)
+        ref_acq = node.reference_image_collection.acquisitions[0]
+        ref_acq.acquisition_parameters.set_from_dict(params)
+        ref_acq.path_template.set_from_dict(params)
 
     Utils.save_queue(session)
 
     logging.getLogger('HWR').info('[QUEUE] method updated')
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
     resp = jsonify({'QueueId': method_id})
     resp.status_code = 200
+
     return resp
 
 
@@ -813,15 +773,13 @@ def get_sample(id):
         :statuscode: 200: no error
         :statuscode: 409: sample could not be retrieved
     """
-    # WARNING: serialize_queue_to_json() should only be used for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
+    sample =  Utils.queue_to_dict().get(int(id), None)
 
-    if not queue[int(id)]:
+    if not sample:
         logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
         return Response(status=409)
     else:
-        resp = jsonify(queue[int(id)])
+        resp = jsonify(sample)
         resp.status_code = 200
         return resp
 
@@ -838,85 +796,31 @@ def get_method(sample_id, method_id):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
-    # WARNING: serialize_queue_to_json() should only be used
-    # for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
+    sample =  Utils.queue_to_dict().get(int(id), None)
 
-    if not queue[int(sample_id)]:
-        logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
+    if not sample:
+        msg = "[QUEUE] sample info could not be retrieved"
+        logging.getLogger('HWR').error(msg)
         return Response(status=409)
     else:
-        methods = queue[int(sample_id)]['methods']
-        # find the required one
-        for met in methods:
-            if met['QueueId'] == int(method_id):
-                resp = jsonify(met)
+        # Find task with queue id method_id
+        for task in sample.tasks:
+            if task['queueID'] == int(method_id):
+                resp = jsonify(task)
                 resp.status_code = 200
                 return resp
-    logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved, it does not exits for the given sample')
+
+    msg = "[QUEUE] method info could not be retrieved, it does not exits for"
+    msg += " the given sample"
+
+    logging.getLogger('HWR').exception(msg)
     return Response(status=409)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/json", methods=["GET"])
 def serialize():
     try:
-        return Response(response=jsonpickle.encode(mxcube.queue), status=200,
-                        mimetype="application/json")
+        return Utils.queue_to_json_response()
     except Exception:
         logging.getLogger("HWR").exception("[QUEUE] cannot serialize")
         return Response(status=409)
-
-
-def serialize_queue_to_json():
-    """
-      {
-      "1": {
-        "QueueId": 1,
-        "SampleId": "1:01",
-        "checked": 0,
-        "methods": []
-          }
-       }
-    """
-    jsonobj = jsonpickle.encode(mxcube.queue)
-    queue_entry_list = json.loads(jsonobj)['py/state']['_HardwareObjectNode__objects'][0][0]['py/state']['_queue_entry_list']
-
-    try:
-        parent = queue_entry_list[0]['py/state']['_data_model']['_parent']
-        # is it always the first entry?
-    except Exception:
-        return {}  # empty queue
-    i = 1
-    for entry in queue_entry_list[1:]:
-        if entry['py/state']['_data_model'].has_key('_node_id'):
-            pass
-        else:
-            entry['py/state']['_data_model'] = parent['_children'][i]
-        i += 1
-    # now we can iterate since the queue_entry_list has all the data models
-
-    aux = {}
-    for sampEntry in queue_entry_list:
-        data_model = sampEntry['py/state']['_data_model']
-        aux[data_model['_node_id']] = {"QueueId": data_model['_node_id'],
-                                       "SampleId": data_model['loc_str'],
-                                       "checked": data_model['_enabled'],
-                                       "methods": []}
-
-        children = data_model['_children']
-        for child in children:
-            if child['py/object'].split('.')[1] == 'TaskGroup':
-                # keep going down
-                for grandChild in child['_children']:
-                    if grandChild['py/object'].split('.')[1] == 'TaskGroup':
-                        # keep going down one more time for the Char
-                        for grandGrandChild in grandChild['_children']:
-                            if grandGrandChild['py/object'].split('.')[1] == 'Characterisation':
-                                aux[data_model['_node_id']]['methods'].append({'QueueId': grandGrandChild['_node_id'], 'Type': 'Characterisation', 'Params': grandGrandChild['characterisation_parameters'], 'AcquisitionParams': grandGrandChild['reference_image_collection']['acquisitions'][0]['acquisition_parameters'], 'checked': data_model['_enabled'], 'executed': grandChild['_executed'], 'html_report': ''})  # grandGrandChild['characterisation_parameters']
-                    elif grandChild['py/object'].split('.')[1] == 'DataCollection':
-                        aux[data_model['_node_id']]['methods'].append({'QueueId': grandChild['_node_id'], 'Type': 'DataCollection', 'Params': {}, 'checked': data_model['_enabled'], 'executed': grandChild['_executed'], 'Params': grandChild['acquisitions'][0]['acquisition_parameters']})
-                    # acq limited for now to only one element of the array, so
-                    # a DataCollection entry only has a single Acquisition ,
-                    # done like this to simplify devel... just belean!
-    return aux

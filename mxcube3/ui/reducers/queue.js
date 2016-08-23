@@ -1,5 +1,5 @@
 import { omit } from 'lodash/object';
-import { without, xor } from 'lodash/array';
+import { without } from 'lodash/array';
 import update from 'react/lib/update';
 
 
@@ -23,16 +23,12 @@ const initialState = {
   current: { node: null, collapsed: false, running: false },
   todo: { nodes: [], collapsed: false },
   history: { nodes: [], collapsed: false },
-  checked: [],
-  lookup: {},
-  lookup_queueID: {},
-  collapsedSample: {},
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
   queueRestoreState: {},
   sampleList: {},
-  manualMount: { set: false, id: 0 }
+  manualMount: { set: false, id: 1 },
 };
 
 
@@ -86,6 +82,12 @@ export default (state = initialState, action) => {
     case 'SET_SAMPLE_LIST': {
       return Object.assign({}, state, { sampleList: initSampleList(action.sampleList) });
     }
+    case 'APPEND_TO_SAMPLE_LIST': {
+      const sampleData = action.sampleData || {};
+      const sampleList = { ...state.sampleList, [action.sampleID]: sampleData };
+
+      return Object.assign({}, state, { sampleList });
+    }
     case 'SET_SAMPLE_ORDER': {
       const reorderKeys = Object.keys(action.keys).map(key => (action.keys[key] ? key : ''));
       const sampleList = recalculateQueueOrder(reorderKeys, action.order, state);
@@ -125,8 +127,8 @@ export default (state = initialState, action) => {
     }
 
     case 'ADD_TASK_RESULT': {
-      const queueID = state.lookup_queueID[action.sampleID];
-      const tasks = Array.from(state.queue[queueID]);
+      const tasks = Array.from(state.queue[action.sampleID].tasks);
+      const queue = { ...state.queue };
 
       // Find element with the right queueID (action.queueID) and update state
       // to action.state
@@ -136,7 +138,9 @@ export default (state = initialState, action) => {
         }
       }
 
-      return Object.assign({}, state, { queue: { ...state.queue, [queueID]: tasks } });
+      queue[action.sampleID].tasks = tasks;
+
+      return Object.assign({}, state, { queue });
     }
     case 'SET_MANUAL_MOUNT': {
       const data = { manualMount: { ...state.manualMount, set: action.manual } };
@@ -145,17 +149,18 @@ export default (state = initialState, action) => {
 
     // Adding sample to queue
     case 'ADD_SAMPLE': {
-      const sampleList = { ...state.sampleList, [action.sampleID]: action.sampleData || {} };
+      const sampleList = { ...state.sampleList };
 
       return Object.assign({}, state,
         {
-          todo: { ...state.todo, nodes: state.todo.nodes.concat(action.queueID) },
-          queue: { ...state.queue, [action.queueID]: [] },
-          lookup: { ...state.lookup, [action.queueID]: action.sampleID },
-          lookup_queueID: { ...state.lookup_queueID, [action.sampleID]: action.queueID },
-          collapsedSample: { ...state.collapsedSample, [action.queueID]: true },
-          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 },
-          sampleList
+          todo: { ...state.todo, nodes: state.todo.nodes.concat(action.sampleID) },
+          queue: { ...state.queue, [action.sampleID]: { sampleID: action.sampleID,
+                                                        queueID: action.queueID,
+                                                        checked: true,
+                                                        collapsed: false,
+                                                        tasks: [] } },
+          sampleList,
+          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
       );
     }
@@ -169,63 +174,61 @@ export default (state = initialState, action) => {
         // Removing sample from queue
     case 'REMOVE_SAMPLE':
       return Object.assign({}, state,
-        { todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
-          queue: omit(state.queue, action.queueID),
-          lookup: omit(state.lookup, action.queueID),
-          collapsedSample: omit(state.collapsedSample, action.queueID),
-          lookup_queueID: omit(state.lookup_queueID, action.index)
+        { todo: { ...state.todo, nodes: without(state.todo.nodes, action.sampleID) },
+          queue: omit(state.queue, action.sampleID),
         });
 
         // Adding the new task to the queue
     case 'ADD_TASK': {
-      const queueID = state.lookup_queueID[action.sampleID];
-
       // Create a copy of the tasks (array) for a sample with given queueID,
       // or an empty array if no tasks exists for sampleID
-      let tasks = Array.from(state.queue[queueID] || []);
-      tasks = tasks.concat([{ type: action.taskType,
-                              label: action.taskType.split(/(?=[A-Z])/).join(' '),
+      let tasks = Array.from(state.queue[action.sampleID].tasks || []);
+      tasks = tasks.concat([{ type: action.parameters.Type,
+                              label: action.parameters.Type.split(/(?=[A-Z])/).join(' '),
                               sampleID: action.sampleID,
                               queueID: action.queueID,
-                              parentID: action.parentID,
                               parameters: action.parameters,
-                              state: 0
+                              state: 0,
+                              collapsed: false,
+                              checked: false
       }]);
 
-      const queue = { ...state.queue, [queueID]: tasks };
-      return Object.assign({}, state, { queue, checked: state.checked.concat(0) });
+      const queue = { ...state.queue };
+      queue[action.sampleID].tasks = tasks;
+
+      return Object.assign({}, state, { queue });
     }
     // Removing the task from the queue
     case 'REMOVE_TASK': {
-      const queueID = state.lookup_queueID[action.task.sampleID];
-      const tasks = without(state.queue[queueID], action.task);
+      const sampleID = action.task.sampleID;
+      const queue = { ...state.queue };
 
-      return Object.assign({}, state, { queue: { ...state.queue, [queueID]: tasks },
-                                        checked: without(state.checked, action.queueID) });
+      queue[sampleID].tasks = without(state.queue[sampleID].tasks, action.task);
+
+      return Object.assign({}, state, { queue });
     }
     case 'UPDATE_TASK': {
-      const queueID = state.lookup_queueID[action.sampleID];
-      const taskIndex = state.queue[queueID].indexOf(action.taskData);
-      const tasks = Array.from(state.queue[queueID]);
+      const taskIndex = state.queue[action.sampleID].tasks.indexOf(action.taskData);
+      const tasks = Array.from(state.queue[action.sampleID].tasks);
+      const queue = { ...state.queue };
 
       tasks[taskIndex] = { ...action.taskData,
                            type: action.parameters.Type,
                            parameters: action.parameters };
 
-      return Object.assign({}, state, { queue: { ...state.queue, [queueID]: tasks } });
+      queue[action.sampleID].tasks = tasks;
+
+      return Object.assign({}, state, { queue });
     }
     // Run Mount, this will add the mounted sample to history
     case 'MOUNT_SAMPLE':
       return Object.assign({}, state,
         {
-          current: { ...state.current, node: action.queueID, running: false },
-          todo: { ...state.todo, nodes: without(state.todo.nodes, action.queueID) },
-          history: {
-            ...state.history,
-            nodes: (
-              state.current.node ?
-              state.history.nodes.concat(state.current.node) : state.history.nodes
-            )
+          current: { ...state.current, node: action.sampleID, running: false },
+          todo: { ...state.todo, nodes: without(state.todo.nodes, action.sampleID) },
+          history: { ...state.history,
+                     nodes: (state.current.node ?
+                             state.history.nodes.concat(state.current.node) : state.history.nodes)
           }
         }
       );
@@ -245,20 +248,14 @@ export default (state = initialState, action) => {
       );
         // Run Sample
     case 'RUN_SAMPLE':
-      return Object.assign({}, state,
-        {
-          current: { ...state.current, running: true }
-        }
-                        );
+      return Object.assign({}, state, { current: { ...state.current, running: true } });
+    case 'TOGGLE_CHECKED': {
+      const queue = Object.assign({}, state.queue);
+      queue[action.sampleID][action.taskIndex].checked ^= true;
 
-    case 'TOGGLE_CHECKED':
-      return Object.assign({}, state,
-        {
-          checked: xor(state.checked, [action.queueID])
-        }
-                        );
-
-        // Collapse list
+      return { ...state, queue };
+    }
+     // Collapse list
     case 'COLLAPSE_LIST':
       return {
         ...state,
@@ -266,17 +263,20 @@ export default (state = initialState, action) => {
         collapsed: !state[action.list_name].collapsed
         }
       };
-    // Collapse list
-    case 'COLLAPSE_SAMPLE':
-      return {
-        ...state,
-        collapsedSample: {
-          ...state.collapsedSample,
-          [action.queueID]: !state.collapsedSample[action.queueID]
-        }
-      };
+    // Toggle sample collapse flag
+    case 'COLLAPSE_SAMPLE': {
+      const queue = Object.assign({}, state.queue);
+      queue[action.sampleID].collapsed = !queue[action.sampleID].collapsed;
+      return { ...state, queue };
+    }
+    // Toggle task collapse flag
+    case 'COLLAPSE_TASK': {
+      const queue = Object.assign({}, state.queue);
+      queue[action.sampleID].tasks[action.taskIndex].collapsed ^= true;
 
-        // Change order of samples in queue on drag and drop
+      return { ...state, queue };
+    }
+    // Change order of samples in queue on drag and drop
     case 'CHANGE_QUEUE_ORDER':
 
       return {
@@ -289,21 +289,16 @@ export default (state = initialState, action) => {
                       ] }) }
       };
 
-        // Change order of samples in queue on drag and drop
-    case 'CHANGE_METHOD_ORDER':
+    // Change order of samples in queue on drag and drop
+    case 'CHANGE_METHOD_ORDER': {
+      const queue = Object.assign({}, state.queue);
 
-      return {
-        ...state,
-        queue: { ...state.queue,
-                [action.sampleId]: update(state.queue[action.sampleId], {
-                  $splice: [
-                    [action.oldIndex, 1],
-                    [action.newIndex, 0, state.queue[action.sampleId][action.oldIndex]]
-                  ]
-                })
-              }
-      };
+      queue[action.sampleId].tasks = update(state.queue[action.sampleId].tasks,
+        { $splice: [[action.oldIndex, 1], [action.newIndex, 0,
+                                           state.queue[action.sampleId].tasks[action.oldIndex]]] });
 
+      return { ...state, queue };
+    }
     case 'redux-form/CHANGE':
       if (action.form === 'search-sample') {
         return Object.assign({}, state, { searchString: action.value });
@@ -312,7 +307,7 @@ export default (state = initialState, action) => {
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state, { ...initialState,
-                                          manualMount: { set: state.manualMount.set, id: 0 } });
+                                          manualMount: { set: state.manualMount.set, id: 1 } });
       }
     case 'SHOW_RESTORE_DIALOG':
       {
@@ -325,7 +320,7 @@ export default (state = initialState, action) => {
     case 'SET_INITIAL_STATUS':
       {
         return { ...state, rootPath: action.data.rootPath,
-                           manualMount: { set: state.manualMount.set, id: 0 } };
+                           manualMount: { set: state.manualMount.set, id: 1 } };
       }
     default:
       return state;

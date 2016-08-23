@@ -39,17 +39,16 @@ class DataCollection extends React.Component {
 
     if (this.props.sampleIds.constructor === Array) {
       for (const sampleId of this.props.sampleIds) {
-        const queueId = this.props.lookup[sampleId];
-        if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters, runNow);
+        if (this.props.queue[sampleId]) {
+          const queueId = this.props.queue[sampleId].queueID;
+          this.props.addTask(sampleId, queueId, parameters, runNow);
         } else {
           this.props.addSampleAndTask(sampleId, parameters);
         }
       }
     } else {
-      const { lookup, taskData, sampleIds } = this.props;
-      const sampleQueueId = lookup[sampleIds];
-      this.props.changeTask(taskData, sampleIds, sampleQueueId, parameters, runNow);
+      const { taskData, sampleIds } = this.props;
+      this.props.changeTask(taskData, sampleIds, parameters, runNow);
     }
 
     this.props.hide();
@@ -355,7 +354,7 @@ class DataCollection extends React.Component {
               Run Now
             </Button>
             <Button bsStyle="primary" onClick={this.addToQueue}>
-              {this.props.taskData.queueID ? 'Change' : 'Add to Queue'}
+              {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
             </Button>
           </Modal.Footer>
       </Modal>
