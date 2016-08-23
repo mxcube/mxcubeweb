@@ -3,16 +3,14 @@ import logging
 import os
 import signals
 
-from flask import Response, jsonify, request, session
-
 import queue_model_objects_v1 as qmo
 import queue_entry as qe
 import QueueManager
 import Utils
 
+from flask import Response, jsonify, request, session
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
-
 from Utils import PickableMock as Mock
 
 qm = QueueManager.QueueManager('Mxcube3')
@@ -29,8 +27,6 @@ def init_signals(queue):
                            signals.collect_oscillation_failed)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
-
-# ##----QUEUE ACTIONS----##
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
@@ -238,15 +234,20 @@ def queue_load_state():
         return resp
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/<int:node_id>/execute", methods=['PUT'])
-def execute_entry_with_id(node_id):
+@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=['PUT'])
+def execute_entry_with_id(sid, tindex):
     """
-    Execute the entry with the node id <node_id>
-    :param int node_id: QueueModel node id
+    Execute the entry with the client id <client_id>
+    :param int client_id: Identifier of client item to execute
 
     :statuscode: 200, no error
                  409, queue entry could not be executed
     """
+    if tindex in ['undefined', 'None', 'null']:
+        node_id = Utils.queue_to_dict()[sid]["queueID"]
+    else:
+        node_id = Utils.queue_to_dict()[sid]["tasks"][int(tindex)]["queueID"]
+
     node, entry = _get_entry(node_id)
         
     msg = {'Signal': 'QueueStarted',
@@ -254,7 +255,6 @@ def execute_entry_with_id(node_id):
            'State': 1}
 
     socketio.emit('Queue', msg, namespace='/hwr')
-
 
     mxcube.queue.queue_hwobj._is_stopped = False
     mxcube.queue.queue_hwobj._set_in_queue_flag()
@@ -330,6 +330,7 @@ def add_sample(sample_id):
 
     return sample_model._node_id
 
+
 def _create_dc(params):
     """
     Creates a data collection model and its corresponding queue entry from
@@ -392,8 +393,8 @@ def add_characterisation(node_id, params):
 
     :param int id: id of the sample to which the task belongs 
 
-    :returns: http response object, with http status code 200 or
-              409 if something bad happened. data ={ "CharacId": newId}
+    :returns: The queue id of the Data collection
+    :rtype: int
     """
     sample_model, sample_entry = _get_entry(node_id)
 
@@ -405,7 +406,7 @@ def add_characterisation(node_id, params):
 
     # A characterisation has two TaskGroups one for the characterisation itself
     # and its reference collection and one for the resulting diffraction plans.
-    # But we only create a reference group if there is a result !
+    # But we only create a reference group if there is a result !   
     refgroup_model = qmo.TaskGroup()
 
     mxcube.queue.add_child(sample_model, refgroup_model)
@@ -416,7 +417,7 @@ def add_characterisation(node_id, params):
     sample_entry.enqueue(refgroup_entry)
     refgroup_entry.enqueue(char_entry)
 
-    return char_entry
+    return char_model._node_id
 
 
 def add_data_collection(node_id, params):
@@ -425,13 +426,13 @@ def add_data_collection(node_id, params):
 
     :param int id: id of the sample to which the task belongs 
 
-    :returns: http response object, with http status code 200 or
-              409 if something bad happened. data ={ "ColId": newId}
+    :returns: The queue id of the data collection
+    :rtype: int
     """
     sample_model, sample_entry = _get_entry(node_id)
     dc_model, dc_entry = _create_dc(params)
-
     group_model = qmo.TaskGroup()
+
     group_model.set_enabled(True)
     mxcube.queue.add_child(sample_model, group_model)
     mxcube.queue.add_child(group_model, dc_model)
@@ -444,7 +445,7 @@ def add_data_collection(node_id, params):
     msg = '[QUEUE] datacollection added to sample %s' % sample_model.loc_str
     logging.getLogger('HWR').info(msg)
 
-    return dc_entry
+    return dc_model._node_id
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])

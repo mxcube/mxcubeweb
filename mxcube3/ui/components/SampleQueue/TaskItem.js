@@ -105,13 +105,21 @@ export default class TaskItem extends Component {
   }
 
   render() {
-    const { data, isDragging, connectDragSource, connectDropTarget, rootPath, show } = this.props;
+    const { state,
+            data,
+            isDragging,
+            connectDragSource,
+            connectDropTarget,
+            rootPath,
+            show } = this.props;
+
     const opacity = isDragging ? 0 : 1;
+
     let taskCSS = cx('task-head', {
-      active: data.state === 1,
-      success: data.state === 2,
-      error: data.state === 3,
-      warning: data.state === 4
+      active: state === 1,
+      success: state === 2,
+      error: state === 3,
+      warning: state === 4
     });
 
     return connectDragSource(connectDropTarget(
@@ -147,7 +155,7 @@ export default class TaskItem extends Component {
 
                 <Button bsSize="sm" onClick={this.showForm}>Change</Button>
                 <Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>
-                <Button bsSize="sm" disabled={data.state !== 2}>Results</Button>
+                <Button bsSize="sm" disabled={state !== 2}>Results</Button>
             </form>
           </div>
           </Collapse>

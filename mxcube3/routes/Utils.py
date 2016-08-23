@@ -15,6 +15,32 @@ class PickableMock(Mock):
         return (Mock, ())
 
 
+def node_index(node):
+    sample, index = None, None
+
+    # RootNode nothing to return
+    if isinstance(node, qmo.RootNode):
+        sample, idx = None, None
+    # For samples simply return the sampleID
+    elif isinstance(node, qmo.Sample):
+        sample = node.loc_str
+    # TaskGroup just return the sampleID
+    elif isinstance(node, qmo.TaskGroup):
+        sample_loc, idx = node.get_parent().loc_str, None
+    # All other TaskNodes are considered "leaf tasks", only return if they have
+    # a parent (Which is not the case for reference collections, which are
+    # orphans)
+    elif node.get_parent():
+        sample_model = node.get_parent().get_parent()
+        sample = sample_model.loc_str
+        task_groups = sample_model.get_children();
+        group_list = [group.get_children() for group in task_groups]
+        tlist = [task for task_list in group_list for task in task_list]
+        index = tlist.index(node)
+
+    return {'sample': sample, 'idx': index}
+
+
 def queue_to_dict(node=None):
     """
     Returns the dictionary representation of the queue
@@ -96,9 +122,9 @@ def _handle_dc(sample_id, node):
            "type": "DataCollection",
            "parameters": parameters,
            "checked": node.is_enabled(),
-           "state": 0,
            "sampleID": sample_id,
-           "queueID": node._node_id}
+           "taskIndex": node_index(node)['idx'],
+           "_queueID": node._node_id}
 
     return res
 
@@ -113,9 +139,9 @@ def _handle_char(sample_id, node):
            "type": "Characterisation",
            "parameters": parameters,
            "checked": node.is_enabled(),
-           "state": 0,
            "sampleID": sample_id,
-           "queueID": node._node_id}
+           "taskIndex": node_index(node)['idx'],
+           "_queueID": node._node_id}
 
     return res
 
@@ -139,12 +165,12 @@ def queue_to_json_rec(node):
             result.append({node.loc_str: {'sampleID': node.loc_str,
                                           'queueID': node._node_id,
                                           'tasks': queue_to_json_rec(node)}})
-        elif isinstance(node, qmo.DataCollection):
-            sample_id = node.get_parent().get_parent().loc_str
-            result.append(_handle_dc(sample_id, node))
         elif isinstance(node, qmo.Characterisation):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_char(sample_id, node))
+        elif isinstance(node, qmo.DataCollection):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_dc(sample_id, node))
         else:
             result.extend(queue_to_json_rec(node))
 

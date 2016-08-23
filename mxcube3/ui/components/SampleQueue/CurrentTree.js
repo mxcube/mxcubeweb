@@ -46,7 +46,7 @@ export default class CurrentTree extends React.Component {
   }
 
   runSample() {
-    this.props.setQueueAndRun(this.props.mounted, this.props.queue);
+    this.props.setQueueAndRun(this.props.mounted, undefined, this.props.queue);
   }
 
   unMountSample() {
@@ -110,7 +110,8 @@ export default class CurrentTree extends React.Component {
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
                   collapseTask={this.props.collapseTask}
-                  show={taskData.collapsed}
+                  show={this.props.displayData[taskData.sampleID].tasks[key].collapsed}
+                  state={this.props.displayData[taskData.sampleID].tasks[key].state}
                 />);
               return task;
             })}
