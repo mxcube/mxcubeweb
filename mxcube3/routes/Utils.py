@@ -115,7 +115,7 @@ def _handle_char(sample_id, node):
            "checked": node.is_enabled(),
            "state": 0,
            "sampleID": sample_id,
-           "QueueID": node._node_id}
+           "queueID": node._node_id}
 
     return res
 
@@ -136,7 +136,9 @@ def queue_to_json_rec(node):
 
     for node in node.get_children():
         if isinstance(node, qmo.Sample):
-            result.append({node.loc_str: queue_to_json_rec(node)})
+            result.append({node.loc_str: {'sampleID': node.loc_str,
+                                          'queueID': node._node_id,
+                                          'tasks': queue_to_json_rec(node)}})
         elif isinstance(node, qmo.DataCollection):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_dc(sample_id, node))
@@ -147,14 +149,6 @@ def queue_to_json_rec(node):
             result.extend(queue_to_json_rec(node))
 
     return result
-
-from mock import Mock
-from mxcube3 import app as mxcube
-
-
-class PickableMock(Mock):
-    def __reduce__(self):
-        return (Mock, ())
 
 
 def _proposal_id(session):

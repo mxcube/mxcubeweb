@@ -46,12 +46,11 @@ export default class CurrentTree extends React.Component {
   }
 
   runSample() {
-    const queueID = this.props.sampleInformation[this.props.mounted].queueID;
-    this.props.run(queueID);
+    this.props.run(this.props.queue[this.props.mounted].queueID);
   }
 
   unMountSample() {
-    this.props.unmount(this.props.mounted);
+    this.props.unmount(this.props.queue[this.props.mounted].queueID);
   }
 
   renderOptions(option, length) {
@@ -77,7 +76,7 @@ export default class CurrentTree extends React.Component {
 
     if (sampleId) {
       sampleData = this.props.sampleInformation[sampleId];
-      sampleTasks = this.props.queue[sampleId];
+      sampleTasks = this.props.queue[sampleId].tasks;
       queueOptions = this.state.options[this.props.queueStatus];
     } else {
       sampleData.sampleName = 'No Sample Mounted';
@@ -97,7 +96,7 @@ export default class CurrentTree extends React.Component {
           </div>
           <div className={bodyClass}>
             {sampleTasks.map((taskData, i) => {
-              const key = this.props.queue[taskData.sampleID].indexOf(taskData);
+              const key = this.props.queue[taskData.sampleID].tasks.indexOf(taskData);
               const task =
                 (<TaskItem key={key}
                   index={i}

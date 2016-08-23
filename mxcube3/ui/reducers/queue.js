@@ -84,8 +84,6 @@ export default (state = initialState, action) => {
     }
     case 'APPEND_TO_SAMPLE_LIST': {
       const sampleData = action.sampleData || {};
-      Object.assign(sampleData, { collapsed: false, checked: false });
-
       const sampleList = { ...state.sampleList, [action.sampleID]: sampleData };
 
       return Object.assign({}, state, { sampleList });
@@ -129,7 +127,8 @@ export default (state = initialState, action) => {
     }
 
     case 'ADD_TASK_RESULT': {
-      const tasks = Array.from(state.queue[action.sampleID]);
+      const tasks = Array.from(state.queue[action.sampleID].tasks);
+      const queue = { ...state.queue };
 
       // Find element with the right queueID (action.queueID) and update state
       // to action.state
@@ -139,7 +138,9 @@ export default (state = initialState, action) => {
         }
       }
 
-      return Object.assign({}, state, { queue: { ...state.queue, [action.sampleID]: tasks } });
+      queue[action.sampleID].tasks = tasks;
+
+      return Object.assign({}, state, { queue });
     }
     case 'SET_MANUAL_MOUNT': {
       const data = { manualMount: { ...state.manualMount, set: action.manual } };
@@ -149,12 +150,15 @@ export default (state = initialState, action) => {
     // Adding sample to queue
     case 'ADD_SAMPLE': {
       const sampleList = { ...state.sampleList };
-      sampleList[action.sampleID].queueID = action.queueID;
 
       return Object.assign({}, state,
         {
           todo: { ...state.todo, nodes: state.todo.nodes.concat(action.sampleID) },
-          queue: { ...state.queue, [action.sampleID]: [] },
+          queue: { ...state.queue, [action.sampleID]: { sampleID: action.sampleID,
+                                                        queueID: action.queueID,
+                                                        checked: true,
+                                                        collapsed: false,
+                                                        tasks: [] } },
           sampleList,
           manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
@@ -178,7 +182,7 @@ export default (state = initialState, action) => {
     case 'ADD_TASK': {
       // Create a copy of the tasks (array) for a sample with given queueID,
       // or an empty array if no tasks exists for sampleID
-      let tasks = Array.from(state.queue[action.sampleID] || []);
+      let tasks = Array.from(state.queue[action.sampleID].tasks || []);
       tasks = tasks.concat([{ type: action.parameters.Type,
                               label: action.parameters.Type.split(/(?=[A-Z])/).join(' '),
                               sampleID: action.sampleID,
@@ -189,24 +193,32 @@ export default (state = initialState, action) => {
                               checked: false
       }]);
 
-      const queue = { ...state.queue, [action.sampleID]: tasks };
+      const queue = { ...state.queue };
+      queue[action.sampleID].tasks = tasks;
+
       return Object.assign({}, state, { queue });
     }
     // Removing the task from the queue
     case 'REMOVE_TASK': {
       const sampleID = action.task.sampleID;
-      const tasks = without(state.queue[sampleID], action.task);
-      return Object.assign({}, state, { queue: { ...state.queue, [sampleID]: tasks } });
+      const queue = { ...state.queue };
+
+      queue[sampleID].tasks = without(state.queue[sampleID].tasks, action.task);
+
+      return Object.assign({}, state, { queue });
     }
     case 'UPDATE_TASK': {
-      const taskIndex = state.queue[action.sampleID].indexOf(action.taskData);
-      const tasks = Array.from(state.queue[action.sampleID]);
+      const taskIndex = state.queue[action.sampleID].tasks.indexOf(action.taskData);
+      const tasks = Array.from(state.queue[action.sampleID].tasks);
+      const queue = { ...state.queue };
 
       tasks[taskIndex] = { ...action.taskData,
                            type: action.parameters.Type,
                            parameters: action.parameters };
 
-      return Object.assign({}, state, { queue: { ...state.queue, [action.sampleID]: tasks } });
+      queue[action.sampleID].tasks = tasks;
+
+      return Object.assign({}, state, { queue });
     }
     // Run Mount, this will add the mounted sample to history
     case 'MOUNT_SAMPLE':
@@ -253,14 +265,14 @@ export default (state = initialState, action) => {
       };
     // Toggle sample collapse flag
     case 'COLLAPSE_SAMPLE': {
-      const sampleList = Object.assign({}, state.sampleList);
-      sampleList[action.sampleID].collapsed = !sampleList[action.sampleID].collapsed;
-      return { ...state, sampleList };
+      const queue = Object.assign({}, state.queue);
+      queue[action.sampleID].collapsed = !queue[action.sampleID].collapsed;
+      return { ...state, queue };
     }
     // Toggle task collapse flag
     case 'COLLAPSE_TASK': {
       const queue = Object.assign({}, state.queue);
-      queue[action.sampleID][action.taskIndex].collapsed ^= true;
+      queue[action.sampleID].tasks[action.taskIndex].collapsed ^= true;
 
       return { ...state, queue };
     }
@@ -277,21 +289,16 @@ export default (state = initialState, action) => {
                       ] }) }
       };
 
-        // Change order of samples in queue on drag and drop
-    case 'CHANGE_METHOD_ORDER':
+    // Change order of samples in queue on drag and drop
+    case 'CHANGE_METHOD_ORDER': {
+      const queue = Object.assign({}, state.queue);
 
-      return {
-        ...state,
-        queue: { ...state.queue,
-                [action.sampleId]: update(state.queue[action.sampleId], {
-                  $splice: [
-                    [action.oldIndex, 1],
-                    [action.newIndex, 0, state.queue[action.sampleId][action.oldIndex]]
-                  ]
-                })
-              }
-      };
+      queue[action.sampleId].tasks = update(state.queue[action.sampleId].tasks,
+        { $splice: [[action.oldIndex, 1], [action.newIndex, 0,
+                                           state.queue[action.sampleId].tasks[action.oldIndex]]] });
 
+      return { ...state, queue };
+    }
     case 'redux-form/CHANGE':
       if (action.form === 'search-sample') {
         return Object.assign({}, state, { searchString: action.value });

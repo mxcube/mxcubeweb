@@ -299,7 +299,7 @@ def add_sample():
 
     # Is the sample with location sample_loc already in the queue,
     # in that case, send error response
-    for sampleId, tasks in Utils.queue_to_dict().iteritems():
+    for sampleId, sampleData in Utils.queue_to_dict().iteritems():
         if sampleId == sample_loc:
             msg = "[QUEUE] sample could not be added, already in the queue"
             logging.getLogger('HWR').error(msg)
@@ -390,7 +390,7 @@ def toggle_node(node_id):
 
         new_state = entry.is_enabled()
         for elem in queue[node_id]:
-            child_node = mxcube.queue.get_node(elem['QueueId'])
+            child_node = mxcube.queue.get_node(elem['queueID'])
             child_entry = mxcube.queue.queue_hwobj.get_entry_with_model(child_node)
             if new_state:
                 child_entry.set_enabled(True)
@@ -414,7 +414,7 @@ def toggle_node(node_id):
         checked = 0
 
         for i in queue[parent]:
-            if i['QueueId'] != node_id and i['checked'] == 1:  # at least one brother is enabled, no need to change parent
+            if i['queueID'] != node_id and i['checked'] == 1:  # at least one brother is enabled, no need to change parent
                 checked = 1
                 break
         if entry.is_enabled():
@@ -427,7 +427,7 @@ def toggle_node(node_id):
 
         new_state = entry.is_enabled()
         for met in queue[parent]:
-            if int(met.get('QueueId')) == node_id:
+            if int(met.get('queueID')) == node_id:
                 if new_state == 0 and checked == 0:
                     parent_entry.set_enabled(False)
                     parent_node.set_enabled(False)
@@ -804,8 +804,8 @@ def get_method(sample_id, method_id):
         return Response(status=409)
     else:
         # Find task with queue id method_id
-        for task in sample:
-            if task['QueueId'] == int(method_id):
+        for task in sample.tasks:
+            if task['queueID'] == int(method_id):
                 resp = jsonify(task)
                 resp.status_code = 200
                 return resp

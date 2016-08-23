@@ -41,7 +41,7 @@ class Characterisation extends React.Component {
     if (this.props.sampleIds.constructor === Array) {
       for (const sampleId of this.props.sampleIds) {
         if (this.props.queue[sampleId]) {
-          const queueId = this.props.sampleList[sampleId].queueID;
+          const queueId = this.props.queue[sampleId].queueID;
           this.props.addTask(sampleId, queueId, parameters, runNow);
         } else {// the sample is not in queue yet
           this.props.addSampleAndTask(sampleId, parameters);
