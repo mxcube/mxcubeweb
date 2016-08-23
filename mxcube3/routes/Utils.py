@@ -93,12 +93,12 @@ def _handle_dc(sample_id, node):
     parameters.pop('centred_position')
  
     res = {"label": "Data Collection",
-           "Type": "DataCollection",
+           "type": "DataCollection",
            "parameters": parameters,
            "checked": node.is_enabled(),
            "state": 0,
            "sampleID": sample_id,
-           "QueueId": node._node_id}
+           "queueID": node._node_id}
 
     return res
 
@@ -110,7 +110,7 @@ def _handle_char(sample_id, node):
     parameters.update(refp)
 
     res = {"label": "Characterisation",
-           "Type": "Characterisation",
+           "type": "Characterisation",
            "parameters": parameters,
            "checked": node.is_enabled(),
            "state": 0,

@@ -9,11 +9,12 @@ import { sendCurrentPhase } from '../actions/sampleview';
 
 
 import {
-  sendAddSampleAndTask,
-  sendAddTask,
-  sendUpdateTask,
-  sendAddSample,
+  addSampleAndTask,
+  addTask,
+  updateTask,
+  addSample,
   appendSampleList,
+  setQueueAndRun,
 } from '../actions/queue';
 
 
@@ -44,6 +45,7 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
           queue={this.props.queue}
           sampleList={this.props.sampleList}
+          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <DataCollection
@@ -59,6 +61,7 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
           queue={this.props.queue}
           sampleList={this.props.sampleList}
+          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <AddSample
@@ -95,11 +98,12 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-    addSampleAndTask: bindActionCreators(sendAddSampleAndTask, dispatch),
-    addTask: bindActionCreators(sendAddTask, dispatch),
+    addSampleAndTask: bindActionCreators(addSampleAndTask, dispatch),
+    addTask: bindActionCreators(addTask, dispatch),
+    setQueueAndRun: bindActionCreators(setQueueAndRun, dispatch),
     appendSampleList: bindActionCreators(appendSampleList, dispatch),
-    changeTask: bindActionCreators(sendUpdateTask, dispatch),
-    addSample: bindActionCreators(sendAddSample, dispatch),
+    changeTask: bindActionCreators(updateTask, dispatch),
+    addSample: bindActionCreators(addSample, dispatch),
     sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
   };
 }

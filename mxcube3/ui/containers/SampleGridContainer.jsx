@@ -28,7 +28,7 @@ import {
   sendSyncSamples,
   sendManualMount,
   setSampleOrderAction,
-  sendDeleteTask,
+  deleteTask,
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
@@ -276,7 +276,7 @@ function mapDispatchToProps(dispatch) {
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
     setManualMount: (manual) => dispatch(sendManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
-    deleteTask: bindActionCreators(sendDeleteTask, dispatch),
+    deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     select: (keys) => dispatch(selectAction(keys)),
     pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys))

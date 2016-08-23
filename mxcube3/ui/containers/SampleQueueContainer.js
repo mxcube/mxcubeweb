@@ -53,6 +53,7 @@ export default class SampleQueueContainer extends React.Component {
       sendToggleCheckBox,
       sendRunSample,
       sendPauseQueue,
+      setQueueAndRun,
       sendUnpauseQueue,
       sendStopQueue,
       sendUnmountSample,
@@ -60,11 +61,10 @@ export default class SampleQueueContainer extends React.Component {
       collapseList,
       collapseSample,
       collapseTask,
-      sendDeleteTask
+      deleteTask
     } = this.props.queueActions;
 
     return (
-
       <div>
             <div className="queue-body">
                 <CurrentTree
@@ -76,8 +76,9 @@ export default class SampleQueueContainer extends React.Component {
                   queue={queue}
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
-                  deleteTask={sendDeleteTask}
+                  deleteTask={deleteTask}
                   run={sendRunSample}
+                  setQueueAndRun={setQueueAndRun}
                   pause={sendPauseQueue}
                   unpause={sendUnpauseQueue}
                   stop={sendStopQueue}

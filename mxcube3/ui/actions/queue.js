@@ -244,6 +244,34 @@ export function sendStopQueue() {
 }
 
 
+export function setQueueAction(queue) {
+  return { type: 'SET_QUEUE', queue };
+}
+
+
+export function sendSetQueue(queue) {
+  return function (dispatch) {
+    return fetch('mxcube/api/v0.1/queue', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(queue)
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Could not set queue');
+      }
+      return response.json();
+    }).then((json) => {
+      dispatch(setQueueAction(json));
+      return json;
+    });
+  };
+}
+
+
 export function sendMountSample(sampleID) {
   return function (dispatch) {
     fetch(`mxcube/api/v0.1/sample_changer/${sampleID}/mount`, {
@@ -275,29 +303,6 @@ export function addSample(sampleId, sampleData, queueID) {
 }
 
 
-export function sendAddSample(sampleId, sampleData) {
-  return function (dispatch) {
-    return fetch('mxcube/api/v0.1/queue', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({ sampleId })
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to add sample to queue');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(addSample(sampleId, sampleData, json.QueueId));
-      return json.QueueId; // dispatch(sendState());
-    });
-  };
-}
-
-
 export function appendSampleList(sampleID, sampleData) {
   return function (dispatch) {
     dispatch(appendSampleListAction(sampleID, sampleData));
@@ -311,7 +316,8 @@ export function deleteSample(sampleID) {
   };
 }
 
-export function sendRunSample(queueID) {
+
+export function sendRunSample(sampleID, queueID) {
   return function (dispatch) {
     fetch(`mxcube/api/v0.1/queue/${queueID}/execute`, {
       method: 'PUT',
@@ -324,8 +330,28 @@ export function sendRunSample(queueID) {
       if (response.status >= 400) {
         throw new Error('Server refused to run sample');
       } else {
-        dispatch(runSample(queueID));
+        dispatch(runSample(sampleID));
       }
+    });
+  };
+}
+
+
+export function setQueueAndRun(sampleID, queue) {
+  return function (dispatch) {
+    dispatch(sendSetQueue(queue)).then((json) => {
+      const queueID = json[sampleID].queueID;
+      dispatch(sendRunSample(sampleID, queueID));
+    });
+  };
+}
+
+
+export function setQueueAndRunTask(sampleID, taskIndex, queue) {
+  return function (dispatch) {
+    dispatch(sendSetQueue(queue)).then((json) => {
+      const queueID = json[sampleID].tasks[taskIndex].queueID;
+      dispatch(sendRunSample(sampleID, queueID));
     });
   };
 }
@@ -340,54 +366,27 @@ export function addTaskAction(sampleID, parameters, queueID) {
 }
 
 
-export function addTask(sampleID, parameters, runNow) {
+export function addTask(sampleID, parameters, queue, runNow) {
   return function (dispatch) {
-    if (runNow) {
-      dispatch(sendRunSample(sampleID));
-    }
-
     dispatch(addTaskAction(sampleID, parameters));
+
+    if (runNow) {
+      const taskIndex = queue[sampleID].tasks.length - 1;
+      dispatch(setQueueAndRunTask(sampleID, taskIndex, queue));
+    }
   };
 }
 
 
-export function sendAddTask(sampleID, queueID, parameters, runNow) {
-  return function (dispatch) {
-    fetch(`mxcube/api/v0.1/queue/${queueID}`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(parameters)
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Could not add sample task, server refused');
-      }
-      return response.json();
-    }).then((json) => {
-      if (runNow) {
-        dispatch(sendRunSample(json.QueueId));
-      }
-      dispatch(addTaskAction(sampleID, parameters, json.QueueId));
-    });
-  };
-}
-
-
-export function sendAddSampleAndTask(sampleID, parameters) {
-  return function (dispatch) {
-    dispatch(sendAddSample(sampleID)).
-      then((queueID) => { dispatch(sendAddTask(sampleID, queueID, parameters)); });
-  };
-}
-
-
-export function addSampleAndTask(sampleID, parameters) {
+export function addSampleAndTask(sampleID, parameters, queue, runNow) {
   return function (dispatch) {
     dispatch(addSample(sampleID));
     dispatch(addTask(sampleID, parameters));
+
+    if (runNow) {
+      const taskIndex = queue[sampleID].tasks.length - 1;
+      dispatch(setQueueAndRunTask(sampleID, taskIndex, queue));
+    }
   };
 }
 
@@ -401,65 +400,20 @@ export function updateTaskAction(taskData, sampleID, parameters) {
 }
 
 
-export function sendUpdateTask(taskData, sampleID, params, runNow) {
+export function updateTask(taskData, sampleID, params, queue, runNow) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/queue/${sampleID}/${taskData.queueID}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(params)
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Could not change sample task, server refused');
-      }
-      return response.json();
-    }).then(() => {
-      if (runNow) {
-        dispatch(sendRunSample(taskData.queueID));
-      }
-      dispatch(updateTaskAction(taskData, sampleID, params));
-    });
-  };
-}
-
-
-export function updateTask(taskData, sampleID, params, runNow) {
-  return function (dispatch) {
-    if (runNow) {
-      dispatch(sendRunSample(taskData.queueID));
-    }
-
     dispatch(updateTaskAction(taskData, sampleID, params));
+
+    if (runNow) {
+      const taskIndex = queue[sampleID].indexOf(taskData);
+      dispatch(setQueueAndRunTask(sampleID, taskIndex, queue));
+    }
   };
 }
 
 
 export function removeTaskAction(task) {
   return { type: 'REMOVE_TASK', task };
-}
-
-
-export function sendDeleteTask(task) {
-  return function (dispatch) {
-    fetch(`mxcube/api/v0.1/queue/${task.queueID}`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to remove sample');
-      } else {
-        dispatch(removeTaskAction(task));
-      }
-    });
-  };
 }
 
 
