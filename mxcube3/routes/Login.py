@@ -77,7 +77,7 @@ def loginInfo():
                       "beamline_name": mxcube.session.beamline_name,
                       "loginType": mxcube.db_connection.loginType.title(),
                       "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {}),
-                      "queue": Queue.serialize_queue_to_json()
+                      "queue": Utils.queue_to_dict()
                     }
                   )
 

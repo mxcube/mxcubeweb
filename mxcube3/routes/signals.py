@@ -1,12 +1,21 @@
 import logging
-import json
-import inspect
-import time
+
+import queue_model_objects_v1 as qmo
 
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
 
+
+def last_queue_node():
+    node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
+
+    if isinstance(node, qmo.Sample):
+        sample_loc = node.loc_str
+    else:
+        sample_loc = node.get_parent().get_parent().loc_str
+
+    return {'id': node._node_id, 'sample': sample_loc}
 
 @socketio.on('connect', namespace='/hwr')
 def connect():
@@ -82,11 +91,10 @@ def get_signal_result(signal):
 
 
 def collect_oscillation_started(*args):
-    last_queue_node = mxcube.queue.last_queue_node
     msg = {'Signal': 'collectOscillationStarted',
            'Message': task_signals['collectOscillationStarted'],
-           'QueueId': last_queue_node['id'],
-           'Sample': last_queue_node['sample'],
+           'QueueId': last_queue_node()['id'],
+           'Sample': last_queue_node()['sample'],
            'State': get_signal_result('collectOscillationStarted')}
 
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
@@ -97,11 +105,10 @@ def collect_oscillation_started(*args):
 
 
 def collect_oscillation_failed(*args):
-    last_queue_node = mxcube.queue.last_queue_node
     msg = {'Signal': 'collectOscillationFailed',
            'Message': task_signals['collectOscillationFailed'],
-           'QueueId': last_queue_node['id'],
-           'Sample': last_queue_node['sample'],
+           'QueueId': last_queue_node()['id'],
+           'Sample': last_queue_node()['sample'],
            'State': get_signal_result('collectOscillationFailed')}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
     try:
@@ -111,11 +118,10 @@ def collect_oscillation_failed(*args):
 
 
 def collect_oscillation_finished(*args):
-    last_queue_node = mxcube.queue.last_queue_node
     msg = {'Signal': 'collectOscillationFinished',
            'Message': task_signals['collectOscillationFinished'],
-           'QueueId': last_queue_node['id'],
-           'Sample': last_queue_node['sample'],
+           'QueueId': last_queue_node()['id'],
+           'Sample': last_queue_node()['sample'],
            'State': get_signal_result('collectOscillationFinished')}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -130,11 +136,10 @@ def task_event_callback(*args, **kwargs):  # , **kwargs):
     # logging.getLogger("HWR").debug(args)
     signal = kwargs['signal']
     sender = str(kwargs['sender'].__class__).split('.')[0]
-    last_queue_node = mxcube.queue.last_queue_node
     msg = {'Signal': kwargs['signal'],
            'Message': task_signals[kwargs['signal']],
-           'QueueId': last_queue_node['id'],
-           'Sample': last_queue_node['sample'],
+           'QueueId': last_queue_node()['id'],
+           'Sample': last_queue_node()['sample'],
            'State': get_signal_result(kwargs['signal'])}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
