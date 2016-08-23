@@ -14,7 +14,7 @@ import Utils
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
-from HardwareRepository.BaseHardwareObjects import Null as Mock
+from Utils import PickableMock as Mock
 
 qm = QueueManager.QueueManager('Mxcube3')
 
@@ -175,7 +175,7 @@ def queue_get():
                             }
     """
     logging.getLogger('HWR').info('[QUEUE] Queue getting data')
-    resp = jsonify(serialize_queue_to_json())
+    resp = Utils.queue_to_json_response()
     resp.status_code = 200
     return resp
 
@@ -229,7 +229,7 @@ def queue_load_state():
 
     if mxcube.queue.queue_hwobj._queue_entry_list:
         logging.getLogger('HWR').info('[QUEUE] Looks like a queue was stored')
-        resp = jsonify({'queueState': serialize_queue_to_json(),
+        resp = jsonify({'queueState': Utils.queue_to_dict(),
                         'sampleList': samples})
         resp.status_code = 200
         return resp
@@ -250,11 +250,8 @@ def execute_entry_with_id(node_id):
         (any further error might still happen)
         :statuscode: 409: queue entry could not be executed
     """
-    # last_queue_node = mxcube.queue.last_queue_node
-    #  WARNING: serialize_queue_to_json() should only be used for sending
-    #  to the client,
-    #  here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
+    queue = Utils.queue_to_dict()
+
     global queue_has_to_be_stopped
     queue_has_to_be_stopped = False
     node = mxcube.queue.get_node(node_id)
@@ -269,10 +266,10 @@ def execute_entry_with_id(node_id):
     if isinstance(entry, qe.SampleQueueEntry):
         logging.getLogger('HWR').info('[QUEUE] Queue going to execute sample entry with id: %s' % node_id)
         #  this is a sample entry, thus, go through its checked children and execute those
-        for elem in queue[node_id]['methods']:
+        for elem in queue[node_id]:
             if queue_has_to_be_stopped:
                 break
-        for elem in queue[node_id]['methods']:
+        for elem in queue[node_id]:
             if int(elem['checked']) == 1:
                 logging.getLogger('HWR').info('[QUEUE] Queue executing children entry with id: %s' % elem['QueueId'])
                 child_node = mxcube.queue.get_node(elem['QueueId'])
@@ -288,7 +285,7 @@ def execute_entry_with_id(node_id):
                         socketio.emit('Queue', msg, namespace='/hwr')
                         mxcube.queue.queue_hwobj.wait_for_pause_event()
                     mxcube.queue.last_queue_node.update({'id': elem['QueueId'],
-                                                         'sample': queue[node_id]['SampleId']})
+                                                         'sample': node_id})
                     # mxcube.queue.queue_hwobj.execute_entry = types.MethodType(Utils.my_execute_entry, mxcube.queue.queue_hwobj)
                     mxcube.queue.queue_hwobj.execute_entry(child_entry)
                     child_entry.set_enabled(False)
@@ -360,7 +357,7 @@ def add_sample():
 
     # Is the sample with location sample_loc already in the queue,
     # in that case, send error response
-    for sampleId, sample in serialize_queue_to_json().iteritems():
+    for sampleId, tasks in Utils.queue_to_dict().iteritems():
         if sampleId == sample_loc:
             msg = "[QUEUE] sample could not be added, already in the queue"
             logging.getLogger('HWR').error(msg)
@@ -439,22 +436,19 @@ def toggle_node(node_id):
     node_id = int(node_id)  # params['QueueId']
     node = mxcube.queue.get_node(node_id)
     entry = mxcube.queue.queue_hwobj.get_entry_with_model(node)
-    # WARNING: serialize_queue_to_json() should only be used for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
+    queue = Utils.queue_to_dict()
 
     if isinstance(entry, qe.SampleQueueEntry):
         # this is a sample entry, thus, go through its checked children and toggle those
         if entry.is_enabled():
             entry.set_enabled(False)
             node.set_enabled(False)
-
         else:
             entry.set_enabled(True)
             node.set_enabled(True)
 
         new_state = entry.is_enabled()
-        for elem in queue[node_id]['methods']:
+        for elem in queue[node_id]:
             child_node = mxcube.queue.get_node(elem['QueueId'])
             child_entry = mxcube.queue.queue_hwobj.get_entry_with_model(child_node)
             if new_state:
@@ -478,7 +472,7 @@ def toggle_node(node_id):
         # check if the brother&sisters are enabled (and enable the parent)
         checked = 0
 
-        for i in queue[parent]['methods']:
+        for i in queue[parent]:
             if i['QueueId'] != node_id and i['checked'] == 1:  # at least one brother is enabled, no need to change parent
                 checked = 1
                 break
@@ -491,7 +485,7 @@ def toggle_node(node_id):
             node.set_enabled(True)
 
         new_state = entry.is_enabled()
-        for met in queue[parent]['methods']:
+        for met in queue[parent]:
             if int(met.get('QueueId')) == node_id:
                 if new_state == 0 and checked == 0:
                     parent_entry.set_enabled(False)
@@ -499,19 +493,23 @@ def toggle_node(node_id):
                 elif new_state == 1 and checked == 0:
                     parent_entry.set_enabled(True)
                     parent_node.set_enabled(True)
+
     return Response(status=200)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<node_id>", methods=['DELETE'])
 def delete_sample_or_method(node_id):
     """
-    Remove a sample or a method from the queue, if a sample is removes all of its children task will also be removed.
+    Remove a sample or a method from the queue, if a sample is removes all of
+    its children task will also be removed.
+
         :parameter node_id: node identifier
         :statuscode: 200: no error
         :statuscode: 409: node could not be deleted
     """
     node_to_remove = mxcube.queue.get_node(int(node_id))
     parent = node_to_remove.get_parent()
+    
     mxcube.queue.del_child(parent, node_to_remove)
     entry_to_remove = mxcube.queue.queue_hwobj.get_entry_with_model(node_to_remove)
     if parent._node_id > 0:  # we are removing a method
@@ -520,10 +518,12 @@ def delete_sample_or_method(node_id):
         parent = parent._node_id
         node_to_remove = node_to_remove._node_id
     else:
-        # we are removing a sample, the parent of a sample is 'rootnode', which is not a Model
+        # we are removing a sample, the parent of a sample is 'rootnode',
+        # which is not a Model
         mxcube.queue.queue_hwobj.dequeue(entry_to_remove)
 
     Utils.save_queue(session)
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
 
     return Response(status=200)
 
@@ -545,6 +545,7 @@ def delete_method(sample_id, method_id):
     parent_entry = mxcube.queue.queue_hwobj.get_entry_with_model(parent)
     parent_entry.dequeue(entry_to_remove)
     Utils.save_queue(session)
+    logging.getLogger('HWR').info('[QUEUE] %s ' % Utils.queue_to_json())
 
     return Response(status=200)
 
@@ -815,15 +816,13 @@ def get_sample(id):
         :statuscode: 200: no error
         :statuscode: 409: sample could not be retrieved
     """
-    # WARNING: serialize_queue_to_json() should only be used for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
+    sample =  Utils.queue_to_dict().get(int(id), None)
 
-    if not queue[int(id)]:
+    if not sample:
         logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
         return Response(status=409)
     else:
-        resp = jsonify(queue[int(id)])
+        resp = jsonify(sample)
         resp.status_code = 200
         return resp
 
@@ -840,31 +839,31 @@ def get_method(sample_id, method_id):
         :statuscode: 200: no error
         :statuscode: 409: task could not be added to the sample
     """
-    # WARNING: serialize_queue_to_json() should only be used
-    # for sending to the client,
-    # here on the back-end side we should just always use mxcube.queue !
-    queue = serialize_queue_to_json()
+    sample =  Utils.queue_to_dict().get(int(id), None)
 
-    if not queue[int(sample_id)]:
-        logging.getLogger('HWR').error('[QUEUE] sample info could not be retrieved')
+    if not sample:
+        msg = "[QUEUE] sample info could not be retrieved"
+        logging.getLogger('HWR').error(msg)
         return Response(status=409)
     else:
-        methods = queue[int(sample_id)]['methods']
-        # find the required one
-        for met in methods:
-            if met['QueueId'] == int(method_id):
-                resp = jsonify(met)
+        # Find task with queue id method_id
+        for task in sample:
+            if task['QueueId'] == int(method_id):
+                resp = jsonify(task)
                 resp.status_code = 200
                 return resp
-    logging.getLogger('HWR').exception('[QUEUE] method info could not be retrieved, it does not exits for the given sample')
+
+    msg = "[QUEUE] method info could not be retrieved, it does not exits for"
+    msg += " the given sample"
+
+    logging.getLogger('HWR').exception(msg)
     return Response(status=409)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/json", methods=["GET"])
 def serialize():
     try:
-        return Response(response=jsonpickle.encode(mxcube.queue), status=200,
-                        mimetype="application/json")
+        return Utils.queue_to_json_response()
     except Exception:
         logging.getLogger("HWR").exception("[QUEUE] cannot serialize")
         return Response(status=409)
