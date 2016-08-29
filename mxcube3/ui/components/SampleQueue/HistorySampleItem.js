@@ -6,7 +6,7 @@ import './app.less';
 export default class HistorySampleItem extends React.Component {
   constructor(props) {
     super(props);
-    this.collapseSample = props.collapseSample.bind(this, props.data.clientID);
+    this.collapseSample = props.collapseSample.bind(this, props.id);
   }
 
 
