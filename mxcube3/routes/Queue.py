@@ -1,3 +1,4 @@
+import time
 import json
 import logging
 import signals
@@ -32,6 +33,8 @@ def init_signals(queue):
     queue.queue_hwobj.connect("queue_execution_finished",
                               signals.queue_execution_finished)
 
+    queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
+
 
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
 def queue_start():
@@ -44,8 +47,11 @@ def queue_start():
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
 
-    mxcube.queue.queue_hwobj.set_pause(False)
-    mxcube.queue.queue_hwobj.execute()
+    try:
+        mxcube.queue.queue_hwobj.set_pause(False)
+        mxcube.queue.queue_hwobj.execute()
+    except Exception as ex:
+        signals.queue_execution_failed(ex)
     
     logging.getLogger('HWR').info('[QUEUE] Queue started')
     return Response(status=200)
