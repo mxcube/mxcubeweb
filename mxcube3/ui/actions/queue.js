@@ -215,16 +215,16 @@ export function runSample(queueID) {
 }
 
 
-export function mountSample(sampleID) {
+export function setCurrentSample(sampleID) {
   return {
-    type: 'MOUNT_SAMPLE', sampleID
+    type: 'SET_CURRENT_SAMPLE', sampleID
   };
 }
 
 
-export function unmountSample(queueID) {
+export function clearCurrentSample() {
   return {
-    type: 'UNMOUNT_SAMPLE', queueID
+    type: 'CLEAR_CURRENT_SAMPLE'
   };
 }
 
@@ -354,7 +354,7 @@ export function sendMountSample(sampleID) {
       if (response.status >= 400) {
         throw new Error('Server refused to mount sample');
       } else {
-        dispatch(mountSample(sampleID));
+        dispatch(setCurrentSample(sampleID));
       }
     });
   };
@@ -534,7 +534,7 @@ export function sendUnmountSample(queueID) {
       if (response.status >= 400) {
         throw new Error('Server refused to unmount sample');
       } else {
-        dispatch(unmountSample(queueID));
+        dispatch(clearCurrentSample());
       }
     });
   };

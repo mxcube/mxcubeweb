@@ -216,7 +216,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { queue });
     }
     // Run Mount, this will add the mounted sample to history
-    case 'MOUNT_SAMPLE':
+    case 'SET_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { ...state.current, node: action.sampleID, running: false },
@@ -227,8 +227,7 @@ export default (state = initialState, action) => {
           }
         }
       );
-        //  UNMount, this will remove the sample from current and add it to history
-    case 'UNMOUNT_SAMPLE':
+    case 'CLEAR_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { node: null, collapsed: false, running: false },

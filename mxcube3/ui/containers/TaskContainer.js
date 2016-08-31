@@ -15,6 +15,7 @@ import {
   addSample,
   appendSampleList,
   setQueueAndRun,
+  setCurrentSample
 } from '../actions/queue';
 
 
@@ -105,6 +106,7 @@ function mapDispatchToProps(dispatch) {
     changeTask: bindActionCreators(updateTask, dispatch),
     addSample: bindActionCreators(addSample, dispatch),
     sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
+    setCurrentSample: bindActionCreators(setCurrentSample, dispatch)
   };
 }
 
