@@ -160,6 +160,23 @@ export function sendCentringPoint(x, y) {
   };
 }
 
+export function sendAcceptCentring() {
+  return function () {
+    fetch('/mxcube/api/v0.1/sampleview/centring/accept', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Centring not accepted');
+      }
+    });
+  };
+}
+
 export function sendGoToBeam(x, y) {
   return function () {
     fetch('/mxcube/api/v0.1/sampleview/movetobeam', {

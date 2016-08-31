@@ -41,10 +41,6 @@ samplechanger_signals = {}
 moveables_signals = {}
 
 task_signals = {  # missing egyscan, xrf, etc...
-    'collectStarted':               'Data collecion has started',
-    'collectOscillationStarted':    'Data collecion oscillation has started',
-    'collectOscillationFailed':     'Data collecion oscillacion has failed',
-    'collectOscillationFinished':   'Data collecion oscillacion has finished',
     'collectStarted':               'Data collection has started',
     'collectOscillationStarted':    'Data collection oscillation has started',
     'collectOscillationFailed':     'Data collection oscillacion has failed',
@@ -88,6 +84,31 @@ def get_signal_result(signal):
     return result
 
 
+def sc_state_changed(new_state, old_state):
+    print("SC STATE CHANGED %s" % new_state)
+    
+    if new_state == 3:
+        msg = {'signal': 'wait',
+               'title': 'Loading sample',
+               'message': 'Please wait while loading sample',
+               'show': True,
+               'blocking': True}
+
+        socketio.emit('dialog', msg, namespace='/hwr')
+        
+    elif new_state in [1, 2]:
+        msg = {'signal': 'wait',
+               'title': '',
+               'message': '',
+               'show': False }
+    
+        socketio.emit('dialog', msg, namespace='/hwr')
+
+
+def centring_started(method, *args):
+    print("Please center sample")
+
+
 def queue_execution_started(entry):
     msg = {'Signal': 'QueueStarted',
            'Message': 'Queue execution started',
@@ -108,6 +129,8 @@ def queue_execution_finished(entry):
            'State': 1}
 
     socketio.emit('queue', msg, namespace='/hwr')
+
+
 def collect_oscillation_started(*args):
     msg = {'Signal': 'collectOscillationStarted',
            'Message': task_signals['collectOscillationStarted'],

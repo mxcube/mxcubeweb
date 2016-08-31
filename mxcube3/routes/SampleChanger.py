@@ -1,7 +1,16 @@
 import logging
 
+import signals
+
 from flask import Response, jsonify
 from mxcube3 import app as mxcube
+
+
+def init_signals():
+    """Initialize hwobj signals."""
+    mxcube.sample_changer.connect('stateChanged', signals.sc_state_changed)
+
+
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
 def get_samples_list():
     samples_list = mxcube.sample_changer.getSampleList()
