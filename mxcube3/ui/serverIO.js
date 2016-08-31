@@ -14,9 +14,39 @@ export default class ServerIO {
 
   constructor(dispatch) {
     this.dispatch = dispatch;
+
+    this.hwrSocket = null;
+    this.loggingSocket = null;
+    this.uiStateSocket = null;
+
+    this.uiStorage = {
+      setItem: (key, value) => {
+        this.uiStateSocket.emit('ui_state_set', [key, value]);
+      },
+      getItem: (key, cb) => {
+        this.uiStateSocket.emit('ui_state_get', key, (value) => { cb(false, value); });
+      },
+      removeItem: (key) => {
+        this.uiStateSocket.emit('ui_state_rm', key);
+      },
+      getAllKeys: (cb) => {
+        this.uiStateSocket.emit('ui_state_getkeys', null, (value) => { cb(false, value); });
+      }
+    };
+  }
+
+  reconnect() {
+    if (this.uiStateSocket === null) {
+      this.listen();
+    } else {
+      this.uiStateSocket = io.connect(`http://${document.domain}:${location.port}/ui_state`, {forceNew: true});
+      // Doesn't work, unfortunately: this.uiStateSocket.io.reconnect(); 
+    }
   }
 
   listen() {
+    this.uiStateSocket = io.connect(`http://${document.domain}:${location.port}/ui_state`, {forceNew: true});
+
     this.hwrSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
 
     this.loggingSocket = io.connect(`http://${document.domain}:${location.port}/logging`);

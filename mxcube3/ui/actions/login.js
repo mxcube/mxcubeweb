@@ -29,25 +29,10 @@ export function getLoginInfo() {
       credentials: 'include'
     }).then(response => response.json())
           .then(loginInfo => {
-            let storedProposal = '';
-            try {
-              const storedLogin = localStorage.getItem('reduxPersist:login');
-              storedProposal = JSON.parse(storedLogin).data.Proposal.number;
-            } catch (e) {
-              // ignore any exception
-            }
-
             dispatch(setLoginInfo(loginInfo));
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
               dispatch(getInitialStatus());
-              // check if proposal number is the same as the one stored
-              // in local session storage, otherwise we need to do a manual
-              // synchronisation
-              if (loginInfo.loginRes.Proposal.number !== storedProposal) {
-                  // this action has been commented... not sure what to do
-                  // dispatch(synchState(loginInfo.queue));
-              }
             }
           }, () => {
             throw new Error('Server connection problem (getLoginInfo)');
@@ -70,6 +55,11 @@ export function doLogin(proposal, password) {
       credentials: 'include',
       body: JSON.stringify({ proposal, password })
     }).then(() => {
+      // this is to force flask-socketio to be in sync
+      // with the session, since it happens in the
+      // 'connect' event
+      window.serverIO.reconnect();
+
       dispatch(showErrorPanel(false));
       dispatch(setLoading(false));
       dispatch(getLoginInfo());

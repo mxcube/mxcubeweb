@@ -36,17 +36,41 @@ function requireAuth(nextState, replace) {
 }
 
 
+class ServerStorage {
+  constructor(serverIO) {
+    this.serverIO = serverIO;
+  }
+
+  setItem(key, value) {
+    this.serverIO.uiStorage.setItem(key, value);
+  }
+
+  getItem(key, cb) {
+    this.serverIO.uiStorage.getItem(key, cb);
+  }
+
+  removeItem(key) {
+    this.serverIO.uiStorage.removeItem(key);
+  }
+
+  getAllKeys(cb) {
+    this.serverIO.uiStorage.getAllKeys(cb);
+  }
+}
+
+
 export default class App extends React.Component {
   state = {
     initialized: false
   }
 
   componentWillMount() {
-    this.serverIO = new ServerIO(store.dispatch);
-    this.serverIO.listen();
+    window.serverIO.reconnect();
 
     const persistor = persistStore(store,
-      { blacklist: ['beamline', 'form', 'login', 'sampleview', 'general', 'logger'] }, () => {
+      { blacklist: ['beamline', 'form', 'login', 'sampleview', 'general', 'logger'],
+        storage: new ServerStorage(window.serverIO) }, // this.serverIO) },
+      () => {
         store.dispatch(getLoginInfo());
         this.setState({ initialized: true });
       }
@@ -65,11 +89,13 @@ export default class App extends React.Component {
                <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
                <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
               </Route>
-              <Route path="/login" component={LoginContainer} />
+              <Route path="login" component={LoginContainer} />
             </Router>
           </Provider>);
   }
 }
+
+window.serverIO = new ServerIO(store.dispatch);
 
 ReactDOM.render(
   <App />,
