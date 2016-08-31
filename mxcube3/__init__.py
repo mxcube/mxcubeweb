@@ -100,6 +100,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
         try:
             SampleCentring.init_signals()
+            SampleChanger.init_signals()
             Beamline.init_signals()
         except Exception:
             sys.excepthook(*sys.exc_info())
