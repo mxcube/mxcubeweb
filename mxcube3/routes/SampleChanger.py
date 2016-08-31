@@ -40,10 +40,11 @@ def mountSample(sample):
     # beamline.mount_sample(location)
    
     try:
+        pass
         # We are not using the sample changer to mount the sample, set
         # centering phase directly
-        if not mxcube.diffractometer.use_sc:
-            mxcube.diffractometer.set_phase("Centring")
+        #if not mxcube.diffractometer.use_sc:
+        #    mxcube.diffractometer.set_phase("Centring")
 
         mxcube.sample_changer.load(sample, False)
 

@@ -5,7 +5,6 @@ import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
 import AddSample from '../components/Tasks/AddSample';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
-import { sendCurrentPhase } from '../actions/sampleview';
 
 
 import {
@@ -70,8 +69,6 @@ class TaskContainer extends React.Component {
           show={this.props.showForm === 'AddSample'}
           add={this.addSample}
           id={this.props.manualMountID}
-          phase={this.props.currentPhase}
-          setPhase={this.props.sendCurrentPhase}
         />
       </div>
     );
@@ -89,7 +86,6 @@ function mapStateToProps(state) {
     pointId: state.taskForm.pointId,
     defaultParameters: state.taskForm.defaultParameters,
     manualMountID: state.queue.manualMount.id,
-    currentPhase: state.sampleview.currentPhase,
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath
   };
@@ -105,7 +101,6 @@ function mapDispatchToProps(dispatch) {
     appendSampleList: bindActionCreators(appendSampleList, dispatch),
     changeTask: bindActionCreators(updateTask, dispatch),
     addSample: bindActionCreators(addSample, dispatch),
-    sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
     setCurrentSample: bindActionCreators(setCurrentSample, dispatch)
   };
 }
