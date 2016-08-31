@@ -409,7 +409,7 @@ export function sendRunSample(sampleID, taskIndex) {
 export function setQueueAndRun(sampleID, taskIndex, queue) {
   return function (dispatch) {
     dispatch(sendSetQueue(queue)).then(() => {
-      dispatch(sendRunSample(sampleID, taskIndex));
+      dispatch(sendRunQueue());
     });
   };
 }
@@ -516,8 +516,8 @@ export function updateTask(sampleID, taskIndex, params, queue, runNow) {
 }
 
 
-export function addTaskResultAction(sampleID, taskIndex, state) {
-  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state };
+export function addTaskResultAction(sampleID, taskIndex, state, progress) {
+  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress };
 }
 
 

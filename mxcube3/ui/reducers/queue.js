@@ -132,11 +132,15 @@ export default (state = initialState, action) => {
     case 'ADD_TASK_RESULT': {
       const displayData = Object.assign({}, state.displayData);
       const queue = Object.assign({}, state.queue);
+      const current = Object.assign({}, state.current);
 
       displayData[action.sampleID].tasks[action.taskIndex].state = action.state;
+      displayData[action.sampleID].tasks[action.taskIndex].progress = action.progress;
       queue[action.sampleID].tasks[action.taskIndex].checked = false;
 
-      return Object.assign({}, state, { displayData, queue });
+      current.node = action.sampleID;
+
+      return Object.assign({}, state, { displayData, queue, current });
     }
     case 'SET_MANUAL_MOUNT': {
       const data = { manualMount: { ...state.manualMount, set: action.manual } };

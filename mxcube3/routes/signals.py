@@ -45,9 +45,13 @@ task_signals = {  # missing egyscan, xrf, etc...
     'collectOscillationStarted':    'Data collecion oscillation has started',
     'collectOscillationFailed':     'Data collecion oscillacion has failed',
     'collectOscillationFinished':   'Data collecion oscillacion has finished',
-    'collectEnded':                 'Data collecion has finished',
+    'collectStarted':               'Data collection has started',
+    'collectOscillationStarted':    'Data collection oscillation has started',
+    'collectOscillationFailed':     'Data collection oscillacion has failed',
+    'collectOscillationFinished':   'Data collection oscillacion has finished',
+    'collectEnded':                 'Data collection has finished',
     'warning':                      'Data collection finished with a warning',
-    'collect_finished':             'Data collecion has finished'
+    'collect_finished':             'Data collection has finished'
 }
 
 motor_signals = {
@@ -84,12 +88,33 @@ def get_signal_result(signal):
     return result
 
 
+def queue_execution_started(entry):
+    msg = {'Signal': 'QueueStarted',
+           'Message': 'Queue execution started',
+           'State': 1}
+
+    socketio.emit('queue', msg, namespace='/hwr')
+
+
+def queue_execution_finished(entry):
+
+    if mxcube.diffractometer.use_sc:
+        signal = 'QueueStopped'
+    else:
+        signal = 'QueueStoppedManual'
+    
+    msg = {'Signal': signal,
+           'Message': 'Queue execution stopped',
+           'State': 1}
+
+    socketio.emit('queue', msg, namespace='/hwr')
 def collect_oscillation_started(*args):
     msg = {'Signal': 'collectOscillationStarted',
            'Message': task_signals['collectOscillationStarted'],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result('collectOscillationStarted')}
+           'state': get_signal_result('collectOscillationStarted'),
+           'progress': 50}
 
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -103,7 +128,8 @@ def collect_oscillation_failed(*args):
            'Message': task_signals['collectOscillationFailed'],
            'taskIndex' : last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result('collectOscillationFailed')}
+           'state': get_signal_result('collectOscillationFailed'),
+           'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
     try:
         socketio.emit('task', msg, namespace='/hwr')
@@ -118,8 +144,8 @@ def collect_oscillation_finished(*args):
            'Message': task_signals['collectOscillationFinished'],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result('collectOscillationFinished')}
-
+           'state': get_signal_result('collectOscillationFinished'),
+           'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
         socketio.emit('task', msg, namespace='/hwr')
@@ -135,7 +161,8 @@ def task_event_callback(*args, **kwargs):  # , **kwargs):
            'Message': task_signals[kwargs['signal']],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result(kwargs['signal'])}
+           'state': get_signal_result(kwargs['signal']),
+           'progress': 75}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
         socketio.emit('task', msg, namespace='/hwr')
