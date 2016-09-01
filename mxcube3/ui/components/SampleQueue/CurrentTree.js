@@ -10,7 +10,6 @@ export default class CurrentTree extends React.Component {
   constructor(props) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
     this.collapse = props.collapse.bind(this, 'current');
     this.runSample = this.runSample.bind(this);
     this.unmount = this.unMountSample.bind(this);
@@ -39,10 +38,6 @@ export default class CurrentTree extends React.Component {
 
   moveCard(dragIndex, hoverIndex) {
     this.props.changeOrder(this.props.mounted, dragIndex, hoverIndex);
-  }
-
-  deleteTask(taskData) {
-    this.props.deleteTask(taskData, taskData.queueID);
   }
 
   runSample() {
@@ -103,7 +98,7 @@ export default class CurrentTree extends React.Component {
                   id={key}
                   data={taskData}
                   moveCard={this.moveCard}
-                  deleteTask={this.deleteTask}
+                  deleteTask={this.props.deleteTask}
                   showForm={this.props.showForm}
                   sampleId={sampleData.id}
                   checked={this.props.checked}

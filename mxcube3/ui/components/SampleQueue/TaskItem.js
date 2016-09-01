@@ -95,7 +95,7 @@ export default class TaskItem extends Component {
   }
 
   deleteTask() {
-    this.props.deleteTask(this.props.sampleId, this.props.key);
+    this.props.deleteTask(this.props.sampleId, this.props.id);
   }
 
   showForm() {

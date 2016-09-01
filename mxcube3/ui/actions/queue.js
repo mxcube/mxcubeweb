@@ -426,9 +426,9 @@ export function removeTaskAction(sampleID, taskIndex) {
 }
 
 
-export function deleteTask(task) {
+export function deleteTask(sampleID, taskIndex) {
   return function (dispatch) {
-    dispatch(removeTaskAction(task));
+    dispatch(removeTaskAction(sampleID, taskIndex));
   };
 }
 
