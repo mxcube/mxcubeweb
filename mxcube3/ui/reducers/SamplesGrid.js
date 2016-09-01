@@ -119,17 +119,11 @@ export default (state = INITIAL_STATE, action) => {
     }
     // Flag a range of samples as picked (for collect)
     case 'PICK_SAMPLES': {
-      const keys = [];
-
-      // Get keys of selected sample items
-      for (const key in action.keys) {
-        if (state.selected[key]) {
-          keys.push(key);
-        }
-      }
-
-      const picked = togglePicked(keys, state);
+      const picked = togglePicked(Object.keys(action.keys), state);
       return Object.assign({}, state, { picked });
+    }
+    case 'CLEAR_PICKED': {
+      return Object.assign({}, state, { picked: {} });
     }
     case 'PICK_ALL_SAMPLES': {
       const picked = {};

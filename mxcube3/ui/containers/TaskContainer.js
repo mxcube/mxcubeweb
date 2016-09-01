@@ -17,6 +17,12 @@ import {
   setCurrentSample
 } from '../actions/queue';
 
+import {
+  selectAction,
+  pickSamplesAction,
+  clearPickedAction,
+} from '../actions/SamplesGrid';
+
 
 class TaskContainer extends React.Component {
   constructor(props) {
@@ -24,9 +30,13 @@ class TaskContainer extends React.Component {
     this.addSample = this.addSample.bind(this);
   }
 
-  addSample(parameters) {
-    this.props.appendSampleList(parameters);
-    this.props.addSample(parameters);
+  addSample(sampleID, parameters) {
+    this.props.appendSampleList(sampleID, parameters);
+    this.props.addSample(sampleID);
+    this.props.setCurrentSample(sampleID);
+    this.props.selectSamples([sampleID]);
+    this.props.clearPicked();
+    this.props.pickSamples({ [sampleID]: true });
   }
 
   render() {
@@ -101,7 +111,10 @@ function mapDispatchToProps(dispatch) {
     appendSampleList: bindActionCreators(appendSampleList, dispatch),
     changeTask: bindActionCreators(updateTask, dispatch),
     addSample: bindActionCreators(addSample, dispatch),
-    setCurrentSample: bindActionCreators(setCurrentSample, dispatch)
+    setCurrentSample: bindActionCreators(setCurrentSample, dispatch),
+    selectSamples: bindActionCreators(selectAction, dispatch),
+    pickSamples: bindActionCreators(pickSamplesAction, dispatch),
+    clearPicked: bindActionCreators(clearPickedAction, dispatch)
   };
 }
 

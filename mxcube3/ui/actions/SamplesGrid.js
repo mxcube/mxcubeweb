@@ -5,6 +5,11 @@ export function pickAllAction(picked) {
 }
 
 
+export function clearPickedAction(picked) {
+  return { type: 'CLEAR_PICKED', picked };
+}
+
+
 export function selectAction(indices) {
   return { type: 'SELECT_SAMPLES', indices };
 }
