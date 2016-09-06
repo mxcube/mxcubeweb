@@ -29,7 +29,6 @@ import {
   sendManualMount,
   setSampleOrderAction,
   deleteTask,
-  addSample
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
@@ -52,7 +51,14 @@ class SampleGridContainer extends React.Component {
     this.filterSampleGridClear = this.filterSampleGridClear.bind(this);
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
     this.pickSelectedSamples = this.pickSelectedSamples.bind(this);
-    this.addSamples = this.addSamples.bind(this);
+    this.pickAllSamples = this.pickAllSamples.bind(this);
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.picked !== this.props.picked) {
+      this.props.setSampleOrderAction(nextProps.order, nextProps.picked);
+    }
   }
 
 
@@ -84,6 +90,7 @@ class SampleGridContainer extends React.Component {
     this.filterSampleGrid();
   }
 
+
   filterSampleGridPicked() {
     this.refs.filterInput.getInputDOMNode().value = 'is:picked';
     this.filterSampleGrid();
@@ -102,12 +109,6 @@ class SampleGridContainer extends React.Component {
 
   numSamples() {
     return Object.keys(this.props.sampleList).length;
-  }
-
-  addSamples() {
-    Object.keys(this.props.picked).map((sampleID) => {
-      this.props.addSample(this.props.sampleList[sampleID]);
-    });
   }
 
 
@@ -132,9 +133,18 @@ class SampleGridContainer extends React.Component {
 
 
   pickSelectedSamples() {
-    const keys = Object.assign({}, this.props.selected, this.props.picked);
     this.props.pickSamplesAction(this.props.selected);
-    this.props.setSampleOrderAction(this.props.order, keys);
+  }
+
+
+  pickAllSamples() {
+    const keys = {};
+    Object.keys(this.props.sampleList).reduce((o, v) => {
+      keys[v] = true;
+      return o;
+    }, {});
+
+    this.props.pickSamplesAction(keys);
   }
 
 
@@ -188,7 +198,7 @@ class SampleGridContainer extends React.Component {
                 <span>Pick for collect: </span>
                 <ButtonGroup>
                   <Button
-                    onClick={this.props.selectAll}
+                    onClick={this.pickAllSamples}
                     disabled={this.props.manualMount}
                   >
                   All
@@ -224,9 +234,8 @@ class SampleGridContainer extends React.Component {
                />
                <Button
                  className="btn btn-success pull-right"
+                 href="#/datacollection"
                  disabled={this.isCollectDisabled()}
-                 href="/#datacollection"
-                 onClick={this.addSamples}
                >
                  Collect {this.numSamplesPicked()}/{this.numSamples()}
                  <Glyphicon glyph="chevron-right" />
@@ -288,8 +297,7 @@ function mapDispatchToProps(dispatch) {
     deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     select: (keys) => dispatch(selectAction(keys)),
-    pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys)),
-    addSample: (sampleData) => dispatch(addSample(sampleData))
+    pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys))
   };
 }
 

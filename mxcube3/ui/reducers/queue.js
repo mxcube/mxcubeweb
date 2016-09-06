@@ -70,6 +70,8 @@ function recalculateQueueOrder(keys, gridOrder, state) {
     if (keys.includes(key)) {
       sampleList[key].queueOrder = i;
       i++;
+    } else {
+      sampleList[key].queueOrder = -1;
     }
   }
 
