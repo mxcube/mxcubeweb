@@ -82,18 +82,56 @@ export function sendManualMount(manual) {
 }
 
 
+export function sendAddQueueItem(items) {
+  return fetch('mxcube/api/v0.1/queue', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(items)
+  });
+}
+
+
+export function sendUpdateQueueItem(sid, tindex, data) {
+  return fetch(`mxcube/api/v0.1/queue/${sid}/${tindex}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+}
+
+
+export function sendDeleteQueueItem(sid, tindex) {
+  return fetch(`mxcube/api/v0.1/queue/${sid}/${tindex}`, {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    }
+  });
+}
+
+
 export function setSampleOrderAction(newSampleOrder, keys) {
   return { type: 'SET_SAMPLE_ORDER', order: newSampleOrder, keys };
 }
 
 
-export function addSampleAction(sampleID, sampleData) {
-  return { type: 'ADD_SAMPLE', sampleID, sampleData };
+export function addSampleAction(sampleData) {
+  return { type: 'ADD_SAMPLE', sampleData };
 }
 
 
-export function appendSampleListAction(sampleID, sampleData) {
-  return { type: 'APPEND_TO_SAMPLE_LIST', sampleID, sampleData };
+export function appendSampleListAction(sampleData) {
+  return { type: 'APPEND_TO_SAMPLE_LIST', sampleData };
 }
 
 
@@ -136,16 +174,36 @@ export function setState(queueState) {
 }
 
 
-export function changeOrder(listName, oldIndex, newIndex) {
+export function changeTaskOrderAction(sampleId, oldIndex, newIndex) {
   return {
-    type: 'CHANGE_QUEUE_ORDER', listName, oldIndex, newIndex
+    type: 'CHANGE_METHOD_ORDER', sampleId, oldIndex, newIndex
   };
 }
 
 
-export function changeTaskOrder(sampleId, oldIndex, newIndex) {
-  return {
-    type: 'CHANGE_METHOD_ORDER', sampleId, oldIndex, newIndex
+export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
+  return fetch(`mxcube/api/v0.1/queue/${sampleID}/${oldIndex}/${newIndex}/swap`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body:''
+  });
+}
+
+
+export function changeTaskOrder(sampleID, oldIndex, newIndex) {
+  return function (dispatch) {
+    dispatch(changeTaskOrderAction(sampleID, oldIndex, newIndex));
+
+    sendChangeTaskOrder(sampleID, oldIndex, newIndex).then((response) => {
+      if (response.status >= 400) {
+        dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
+        throw new Error('Could not change order');
+      }
+    });
   };
 }
 
@@ -303,13 +361,16 @@ export function sendMountSample(sampleID) {
 }
 
 
-export function addSample(sampleID, sampleData) {
+export function addSample(sampleData) {
   return function (dispatch) {
-    dispatch(addSampleAction(sampleID, sampleData));
+    const data = { ...sampleData, checked: true, tasks: [] };
+
+    sendAddQueueItem([data]);
+    dispatch(addSampleAction(data));
 
     // Its perhaps possible to not even sendMountSample at this point,
     // does it even make sense ?
-    dispatch(sendMountSample(sampleID));
+    dispatch(sendMountSample(sampleData.sampleID));
   };
 }
 
@@ -323,6 +384,7 @@ export function appendSampleList(sampleID, sampleData) {
 
 export function deleteSample(sampleID) {
   return function (dispatch) {
+    sendDeleteQueueItem(sampleID, undefined);
     dispatch(removeSampleAction(sampleID));
   };
 }
@@ -366,61 +428,6 @@ export function setQueueAndRunTask(sampleID, taskIndex, queue) {
 }
 
 
-export function addTaskAction(sampleID, parameters, queueID) {
-  return { type: 'ADD_TASK',
-           sampleID,
-           queueID,
-           parameters
-  };
-}
-
-
-export function addTask(sampleID, parameters, queue, runNow) {
-  return function (dispatch) {
-    dispatch(addTaskAction(sampleID, parameters));
-
-    if (runNow) {
-      const taskIndex = queue[sampleID].tasks.length - 1;
-      dispatch(setQueueAndRunTask(sampleID, taskIndex, queue));
-    }
-  };
-}
-
-
-export function addSampleAndTask(sampleID, parameters, queue, runNow) {
-  return function (dispatch) {
-    dispatch(addSample(sampleID));
-    dispatch(addTask(sampleID, parameters));
-
-    if (runNow) {
-      const taskIndex = queue[sampleID].tasks.length - 1;
-      dispatch(setQueueAndRunTask(sampleID, taskIndex, queue));
-    }
-  };
-}
-
-
-export function updateTaskAction(taskData, sampleID, parameters) {
-  return { type: 'UPDATE_TASK',
-           sampleID,
-           taskData,
-           parameters
-         };
-}
-
-
-export function updateTask(taskData, sampleID, params, queue, runNow) {
-  return function (dispatch) {
-    dispatch(updateTaskAction(taskData, sampleID, params));
-
-    if (runNow) {
-      const taskIndex = queue.indexOf(taskData);
-      dispatch(setQueueAndRunTask(sampleID, taskIndex, queue));
-    }
-  };
-}
-
-
 export function removeTaskAction(sampleID, taskIndex) {
   return { type: 'REMOVE_TASK', sampleID, taskIndex };
 }
@@ -428,7 +435,87 @@ export function removeTaskAction(sampleID, taskIndex) {
 
 export function deleteTask(sampleID, taskIndex) {
   return function (dispatch) {
+    sendDeleteQueueItem(sampleID, taskIndex);
     dispatch(removeTaskAction(sampleID, taskIndex));
+  };
+}
+
+
+export function addTaskAction(task) {
+  return { type: 'ADD_TASK', task };
+}
+
+
+export function addTask(sampleID, parameters, queue, runNow) {
+  return function (dispatch) {
+    const task = { type: parameters.type,
+                   label: parameters.type.split(/(?=[A-Z])/).join(' '),
+                   sampleID,
+                   parameters,
+                   checked: true };
+
+    dispatch(addTaskAction(task));
+    const taskIndex = queue[sampleID].tasks.length - 1;
+
+    sendAddQueueItem([task]).then((response) => {
+      if (response.status >= 400) {
+        dispatch(removeTaskAction(sampleID, taskIndex));
+        throw new Error('The task could not be added to the server');
+      } else {
+        if (runNow) {
+          dispatch(sendRunSample(sampleID, taskIndex));
+        }
+      }
+    });
+  };
+}
+
+
+export function addSampleAndTask(sampleID, parameters, sampleData, queue, runNow) {
+  return function (dispatch) {
+    const data = { ...sampleData,
+                   checked: true,
+                   tasks: [{ type: parameters.type,
+                             label: parameters.type.split(/(?=[A-Z])/).join(' '),
+                             sampleID,
+                             parameters,
+                             checked: true }] };
+
+    dispatch(addSampleAction(data));
+
+    sendAddQueueItem([data]).then((response) => {
+      if (response.status >= 400) {
+        dispatch(removeTaskAction(sampleID, 0));
+        throw new Error('The sample could not be added to the server');
+      } else {
+        if (runNow) {
+          dispatch(sendRunSample(sampleID, 0));
+        }
+      }
+    });
+  };
+}
+
+
+export function updateTaskAction(sampleID, taskIndex, taskData) {
+  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
+}
+
+
+export function updateTask(sampleID, taskIndex, params, queue, runNow) {
+  return function (dispatch) {
+    const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
+    updateTaskAction(sampleID, taskIndex, taskData);
+
+    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('The task could not be modified on the server');
+      } else {
+        if (runNow) {
+          dispatch(sendRunSample(sampleID, taskIndex));
+        }
+      }
+    });
   };
 }
 

@@ -3,11 +3,12 @@ import logging
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
+from mxcube3.routes import qutils
 
 
 def last_queue_node():
     node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
-    return Utils.node_index(node)
+    return qutils.node_index(node)
 
 
 @socketio.on('connect', namespace='/hwr')
@@ -110,12 +111,15 @@ def collect_oscillation_failed(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_finished(*args):
+def collect_oscillation_finished(*args):   
+    qutils.enable_entry(last_queue_node()['queue_id'], False)
+    
     msg = {'Signal': 'collectOscillationFinished',
            'Message': task_signals['collectOscillationFinished'],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
            'state': get_signal_result('collectOscillationFinished')}
+
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
         socketio.emit('task', msg, namespace='/hwr')

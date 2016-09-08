@@ -18,7 +18,8 @@ class AddSample extends React.Component {
 
 
   handleSubmit() {
-    this.props.add(this.props.id, { ...this.props.values, location: 'Manual', id: this.props.id });
+    this.props.add({ ...this.props.values, type: 'Sample',
+                     location: 'Manual', sampleID: this.props.id });
     this.props.hide();
   }
 

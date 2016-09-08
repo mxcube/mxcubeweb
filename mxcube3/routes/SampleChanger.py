@@ -11,10 +11,10 @@ def get_samples_list():
         samples.update(
             {s.getAddress():
                 {
-                    "id": s.getAddress(),
-                    "location": ":".join(map(str, s.getCoords())),
-                    "code": sample_dm,
-                    "methods": {}
+                 "sampleID": s.getAddress(),
+                 "location": ":".join(map(str, s.getCoords())),
+                 "code": sample_dm,
+                 "type": "Sample"
                 }
              }
             )

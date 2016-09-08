@@ -91,7 +91,7 @@ export default (state = INITIAL_STATE, action) => {
     }
     // Append one sample to the list of samples (sampleList),
     case 'APPEND_TO_SAMPLE_LIST': {
-      const order = { ...state.order, [action.sampleID]: sampleOrder(state.order) };
+      const order = { ...state.order, [action.sampleData.sampleID]: sampleOrder(state.order) };
 
       return Object.assign({}, state, { order });
     }

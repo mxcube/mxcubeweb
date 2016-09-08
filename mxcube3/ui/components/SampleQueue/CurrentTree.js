@@ -41,7 +41,7 @@ export default class CurrentTree extends React.Component {
   }
 
   runSample() {
-    this.props.setQueueAndRun(this.props.mounted, undefined, this.props.queue);
+    this.props.run(this.props.mounted, undefined);
   }
 
   unMountSample() {
@@ -100,7 +100,7 @@ export default class CurrentTree extends React.Component {
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   showForm={this.props.showForm}
-                  sampleId={sampleData.id}
+                  sampleId={sampleData.sampleID}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}

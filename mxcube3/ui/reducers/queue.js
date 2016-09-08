@@ -86,8 +86,8 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { sampleList: initSampleList(action.sampleList) });
     }
     case 'APPEND_TO_SAMPLE_LIST': {
-      const sampleData = action.sampleData || {};
-      const sampleList = { ...state.sampleList, [action.sampleID]: sampleData };
+      const sampleData = action.sampleData;
+      const sampleList = { ...state.sampleList, [sampleData.sampleID]: sampleData };
 
       return Object.assign({}, state, { sampleList });
     }
@@ -146,15 +146,14 @@ export default (state = initialState, action) => {
     // Adding sample to queue
     case 'ADD_SAMPLE': {
       const sampleList = { ...state.sampleList };
+      const sampleID = action.sampleData.sampleID;
 
       return Object.assign({}, state,
         {
-          displayData: { ...state.displayData, [action.sampleID]: { collpased: false,
-                                                                    tasks: [] } },
-          todo: { ...state.todo, nodes: state.todo.nodes.concat(action.sampleID) },
-          queue: { ...state.queue, [action.sampleID]: { sampleID: action.sampleID,
-                                                        checked: true,
-                                                        tasks: [] } },
+          displayData: { ...state.displayData, [sampleID]: { collpased: false,
+                                                             tasks: [] } },
+          todo: { ...state.todo, nodes: state.todo.nodes.concat(sampleID) },
+          queue: { ...state.queue, [sampleID]: action.sampleData },
           sampleList,
           manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
@@ -177,22 +176,19 @@ export default (state = initialState, action) => {
 
         // Adding the new task to the queue
     case 'ADD_TASK': {
+      const sampleID = action.task.sampleID;
+
       // Create a copy of the tasks (array) for a sample with given sampleID,
       // or an empty array if no tasks exists for sampleID
-      let tasks = Array.from(state.queue[action.sampleID].tasks || []);
+      let tasks = Array.from(state.queue[sampleID].tasks || []);
 
-      tasks = tasks.concat([{ type: action.parameters.type,
-                              label: action.parameters.type.split(/(?=[A-Z])/).join(' '),
-                              sampleID: action.sampleID,
-                              parameters: action.parameters,
-                              checked: true,
-      }]);
+      tasks = tasks.concat([action.task]);
 
       const queue = { ...state.queue };
-      queue[action.sampleID].tasks = tasks;
+      queue[sampleID].tasks = tasks;
 
       const displayData = { ...state.displayData };
-      displayData[action.sampleID].tasks.push({ collapsed: false, state: 0 });
+      displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
 
       return Object.assign({}, state, { displayData, queue });
     }
@@ -207,14 +203,10 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { displayData, queue });
     }
     case 'UPDATE_TASK': {
-      const taskIndex = state.queue[action.sampleID].tasks.indexOf(action.taskData);
       const tasks = Array.from(state.queue[action.sampleID].tasks);
       const queue = { ...state.queue };
 
-      tasks[taskIndex] = { ...action.taskData,
-                           type: action.parameters.type,
-                           parameters: action.parameters };
-
+      tasks[action.taskIndex] = action.taskData;
       queue[action.sampleID].tasks = tasks;
 
       return Object.assign({}, state, { queue });

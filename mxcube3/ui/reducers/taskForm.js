@@ -25,9 +25,9 @@ export default (state = initialState, action) => {
     case 'ADD_TASK':
       {
         return { ...state, defaultParameters:
-                 { ...state.defaultParameters, [action.parameters.type.toLowerCase()]: {
-                   ...action.parameters, run_number:
-                   state.defaultParameters[action.parameters.type.toLowerCase()].run_number + 1
+                 { ...state.defaultParameters, [action.task.type.toLowerCase()]: {
+                   ...action.task.parameters, run_number:
+                   state.defaultParameters[action.task.type.toLowerCase()].run_number + 1
                  }
                }
              };
@@ -38,8 +38,8 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             ...state.defaultParameters,
-            [action.parameters.type.toLowerCase()]: {
-              ...action.parameters
+            [action.taskData.type.toLowerCase()]: {
+              ...action.taskData.parameters
             }
           }
         };

@@ -1,6 +1,6 @@
 from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
-from mxcube3.routes import Queue, Utils
+from mxcube3.routes import Queue, Utils, qutils
 import logging
 import os
 import types
@@ -70,7 +70,9 @@ def loginInfo():
         loginInfo["loginRes"] = mxcube.db_connection.login(loginInfo["loginID"], loginInfo["password"])
         session['loginInfo'] = loginInfo
   
-    mxcube.queue = Utils.get_queue(session) 
+    mxcube.queue = qutils.get_queue(session)
+    logging.getLogger('HWR').info('Loaded queue')
+    logging.getLogger('HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
  
     return jsonify(
                     { "synchrotron_name": mxcube.session.synchrotron_name,

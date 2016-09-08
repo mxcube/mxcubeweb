@@ -24,9 +24,9 @@ class TaskContainer extends React.Component {
     this.addSample = this.addSample.bind(this);
   }
 
-  addSample(sampleID, parameters) {
-    this.props.appendSampleList(sampleID, parameters);
-    this.props.addSample(sampleID, parameters);
+  addSample(parameters) {
+    this.props.appendSampleList(parameters);
+    this.props.addSample(parameters);
   }
 
   render() {
