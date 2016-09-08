@@ -65,16 +65,17 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
     # installs logging handler to send messages to clients
     import logging_handler
-    #root_logger = logging.getLogger()
-    #root_logger.setLevel(logging.DEBUG)
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+    custom_log_handler = logging_handler.MX3LoggingHandler()
+    custom_log_handler.setLevel(logging.DEBUG)
+    root_logger.addHandler(custom_log_handler)
     hwr_logger = logging.getLogger("HWR")
     user_logger = logging.getLogger("user_level_log")
     queue_logger = logging.getLogger("queue_exec")
-    custom_log_handler = logging_handler.MX3LoggingHandler()
-    custom_log_handler.setLevel(logging.DEBUG)
-    hwr_logger.addHandler(custom_log_handler)
-    user_logger.addHandler(custom_log_handler)
-    queue_logger.addHandler(custom_log_handler)
+#    hwr_logger.addHandler(custom_log_handler)
+#    user_logger.addHandler(custom_log_handler)
+#    queue_logger.addHandler(custom_log_handler)
     app.log_handler = custom_log_handler
 
     ###Importing all REST-routes
