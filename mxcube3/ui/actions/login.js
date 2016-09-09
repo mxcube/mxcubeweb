@@ -19,7 +19,6 @@ export function setLoginInfo(loginInfo) {
 
 export function getLoginInfo() {
   return function (dispatch) {
-    dispatch(getInitialStatus());
     fetch('mxcube/api/v0.1/login_info', {
       method: 'GET',
       headers: {
