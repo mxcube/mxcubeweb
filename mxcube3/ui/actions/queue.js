@@ -188,8 +188,7 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
     headers: {
       Accept: 'application/json',
       'Content-type': 'application/json'
-    },
-    body: ''
+    }
   });
 }
 
@@ -371,9 +370,9 @@ export function addSample(sampleData) {
 }
 
 
-export function appendSampleList(sampleID, sampleData) {
+export function appendSampleList(sampleData) {
   return function (dispatch) {
-    dispatch(appendSampleListAction(sampleID, sampleData));
+    dispatch(appendSampleListAction(sampleData));
   };
 }
 
@@ -501,7 +500,7 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 export function updateTask(sampleID, taskIndex, params, queue, runNow) {
   return function (dispatch) {
     const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
-    dispatch(updateTaskAction(sampleID, taskIndex, taskData));
+    updateTaskAction(sampleID, taskIndex, taskData);
 
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
