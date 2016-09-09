@@ -90,9 +90,9 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, { order: initialGridOrder(action.sampleList) });
     }
     // Append one sample to the list of samples (sampleList),
-    // (used when samples are mounted manually)
-    case 'ADD_SAMPLE': {
-      const order = { ...state.order, [action.sampleID]: sampleOrder(state.order) };
+    case 'APPEND_TO_SAMPLE_LIST': {
+      const order = { ...state.order, [action.sampleData.sampleID]: sampleOrder(state.order) };
+
       return Object.assign({}, state, { order });
     }
     // Set display order of samples in grid

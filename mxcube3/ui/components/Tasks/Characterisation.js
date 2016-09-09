@@ -15,7 +15,7 @@ class Characterisation extends React.Component {
   handleSubmit(runNow) {
     const parameters = {
       ...this.props.values,
-      Type: 'Characterisation',
+      type: 'Characterisation',
       point: this.props.pointId
     };
 
@@ -28,7 +28,7 @@ class Characterisation extends React.Component {
       'strategy_complexity',
       'prefix',
       'path',
-      'Type',
+      'type',
       'point'
     ];
 
@@ -40,17 +40,17 @@ class Characterisation extends React.Component {
 
     if (this.props.sampleIds.constructor === Array) {
       for (const sampleId of this.props.sampleIds) {
-        const queueId = this.props.lookup[sampleId];
-        if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters, runNow);
-        } else {// the sample is not in queue yet
-          this.props.addSampleAndTask(sampleId, parameters);
+        if (this.props.queue[sampleId]) {
+          this.props.addTask(sampleId, parameters, this.props.queue, runNow);
+        } else {
+          const sampleData = this.props.sampleList[sampleId];
+          this.props.addSampleAndTask(sampleId, parameters, sampleData, this.props.queue, runNow);
         }
       }
     } else {
-      const { lookup, taskData, sampleIds } = this.props;
-      const sampleQueueID = lookup[sampleIds];
-      this.props.changeTask(taskData, sampleIds, sampleQueueID, parameters, runNow);
+      const { taskData, sampleIds } = this.props;
+      const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
+      this.props.changeTask(sampleIds, taskIndex, parameters, this.props.queue, runNow);
     }
 
     this.props.hide();
@@ -375,7 +375,7 @@ class Characterisation extends React.Component {
               Run Now
             </button>
             <button type="button" className="btn btn-primary" onClick={this.addToQueue}>
-              {this.props.taskData.queueID ? 'Change' : 'Add to Queue'}
+              {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
             </button>
         </Modal.Footer>
       </Modal>

@@ -31,12 +31,12 @@ export default class TodoTree extends React.Component {
                     <hr className="queue-divider" />
                 </div>
                 <div className={bodyClass}>
-                {this.props.list.map((id, i) => {
-                  const sampleData = this.props.sampleInformation[this.props.lookup[id]];
+                {this.props.list.map((sampleId, i) => {
+                  const sampleData = this.props.sampleInformation[id];
                   return (
-                        <SampleItem key={id}
+                        <SampleItem key={sampleId}
                           index={i}
-                          id={id}
+                          id={sampleId}
                           text={`Vial ${sampleData.id}`}
                           moveCard={this.moveCard}
                           deleteSample={this.props.deleteSample}

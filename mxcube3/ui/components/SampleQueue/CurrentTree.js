@@ -10,7 +10,6 @@ export default class CurrentTree extends React.Component {
   constructor(props) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
     this.collapse = props.collapse.bind(this, 'current');
     this.runSample = this.runSample.bind(this);
     this.unmount = this.unMountSample.bind(this);
@@ -41,16 +40,12 @@ export default class CurrentTree extends React.Component {
     this.props.changeOrder(this.props.mounted, dragIndex, hoverIndex);
   }
 
-  deleteTask(taskData) {
-    this.props.deleteTask(taskData, taskData.queueID);
-  }
-
   runSample() {
-    this.props.run(this.props.mounted);
+    this.props.run(this.props.mounted, undefined);
   }
 
   unMountSample() {
-    this.props.unmount(this.props.mounted);
+    this.props.unmount(this.props.queue[this.props.mounted].queueID);
   }
 
   renderOptions(option, length) {
@@ -69,14 +64,14 @@ export default class CurrentTree extends React.Component {
   }
 
   render() {
-    const node = this.props.mounted;
+    const sampleId = this.props.mounted;
     let sampleData = {};
     let sampleTasks = [];
     let queueOptions = [];
 
-    if (node) {
-      sampleData = this.props.sampleInformation[this.props.lookup[node]];
-      sampleTasks = this.props.queue[node];
+    if (sampleId) {
+      sampleData = this.props.sampleInformation[sampleId];
+      sampleTasks = this.props.queue[sampleId].tasks;
       queueOptions = this.state.options[this.props.queueStatus];
     } else {
       sampleData.sampleName = 'No Sample Mounted';
@@ -84,8 +79,9 @@ export default class CurrentTree extends React.Component {
     }
 
     const bodyClass = cx('list-body', {
-      hidden: (this.props.show || !node)
+      hidden: (this.props.show || !sampleId)
     });
+
     return (
       <div className="m-tree">
           <div className="list-head">
@@ -95,20 +91,22 @@ export default class CurrentTree extends React.Component {
           </div>
           <div className={bodyClass}>
             {sampleTasks.map((taskData, i) => {
+              const key = this.props.queue[taskData.sampleID].tasks.indexOf(taskData);
               const task =
-                (<TaskItem key={taskData.queueID}
+                (<TaskItem key={key}
                   index={i}
-                  id={taskData.queueID}
+                  id={key}
                   data={taskData}
                   moveCard={this.moveCard}
-                  deleteTask={this.deleteTask}
+                  deleteTask={this.props.deleteTask}
                   showForm={this.props.showForm}
-                  sampleId={sampleData.id}
+                  sampleId={sampleData.sampleID}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
-                  collapseNode={this.props.collapseNode}
-                  show={this.props.collapsedNodes[taskData.queueID]}
+                  collapseTask={this.props.collapseTask}
+                  show={this.props.displayData[taskData.sampleID].tasks[key].collapsed}
+                  state={this.props.displayData[taskData.sampleID].tasks[key].state}
                 />);
               return task;
             })}

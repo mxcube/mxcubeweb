@@ -32,5 +32,6 @@ class MX3LoggingHandler(logging.Handler):
                  }
 
     def emit(self, record):
-        record_dict = self._record_to_json(record)
-        socketio.emit('log_record', record_dict, namespace='/logging')
+        if record.name != "geventwebsocket.handler":
+            record_dict = self._record_to_json(record)        
+            socketio.emit('log_record', record_dict, namespace='/logging')

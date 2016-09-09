@@ -1,9 +1,5 @@
-from mxcube3 import app as mxcube
-from flask import Response, session
-from functools import wraps
 import logging
-import jsonpickle
-import redis
+from mxcube3 import app as mxcube
 
 
 def _proposal_id(session):
@@ -11,31 +7,6 @@ def _proposal_id(session):
         return int(session["loginInfo"]["loginRes"]["Proposal"]["number"])
     except (KeyError, TypeError, ValueError):
         return None
-
-
-def save_queue(session, redis=redis.Redis()):
-    proposal_id = _proposal_id(session)
-    if proposal_id is not None:
-        redis.set("mxcube:queue:%d" % proposal_id, jsonpickle.encode(mxcube.queue))
-
-
-def new_queue(serialized_queue=None):
-    if not serialized_queue:
-        serialized_queue = mxcube.empty_queue
-    queue = jsonpickle.decode(serialized_queue)
-    import Queue
-    Queue.init_signals(queue)
-    return queue
-
-
-def get_queue(session, redis=redis.Redis()):
-    proposal_id = _proposal_id(session)
-    if proposal_id is not None:
-        serialized_queue = redis.get("mxcube:queue:%d" % proposal_id)
-    else:
-        serialized_queue = None
-
-    return new_queue(serialized_queue)
 
 
 def get_light_state_and_intensity():

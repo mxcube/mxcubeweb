@@ -89,9 +89,13 @@ export default class TaskItem extends Component {
     super(props);
     const { id, data } = this.props;
     this.showForm = this.showForm.bind(this);
-    this.deleteTask = this.props.deleteTask.bind(this, data);
-    this.toggleChecked = this.props.toggleChecked.bind(this, id);
-    this.collapseNode = this.props.collapseNode.bind(this, id);
+    this.deleteTask = this.deleteTask.bind(this);
+    this.toggleChecked = this.props.toggleChecked.bind(this, data, id);
+    this.collapseTask = this.props.collapseTask.bind(this, data.sampleID, id);
+  }
+
+  deleteTask() {
+    this.props.deleteTask(this.props.sampleId, this.props.id);
   }
 
   showForm() {
@@ -101,17 +105,26 @@ export default class TaskItem extends Component {
   }
 
   render() {
-    const { data, isDragging, connectDragSource, connectDropTarget, rootPath, show } = this.props;
+    const { state,
+            data,
+            isDragging,
+            connectDragSource,
+            connectDropTarget,
+            rootPath,
+            show } = this.props;
+
     const opacity = isDragging ? 0 : 1;
+
     let taskCSS = cx('task-head', {
-      active: data.state === 1,
-      success: data.state === 2,
-      error: data.state === 3,
-      warning: data.state === 4
+      active: state === 1,
+      success: state === 2,
+      error: state === 3,
+      warning: state === 4
     });
+
     return connectDragSource(connectDropTarget(
       <div className="node node-sample" style={{ opacity }}>
-          <div className={taskCSS} onClick={this.collapseNode}>
+          <div className={taskCSS} onClick={this.collapseTask}>
             <p className="node-name">
               {`P${data.parameters.point} ${data.label}`}
             </p>
@@ -142,7 +155,7 @@ export default class TaskItem extends Component {
 
                 <Button bsSize="sm" onClick={this.showForm}>Change</Button>
                 <Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>
-                <Button bsSize="sm" disabled={data.state !== 2}>Results</Button>
+                <Button bsSize="sm" disabled={state !== 2}>Results</Button>
             </form>
           </div>
           </Collapse>

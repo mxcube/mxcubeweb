@@ -14,7 +14,7 @@ class DataCollection extends React.Component {
   handleSubmit(runNow) {
     const parameters = {
       ...this.props.values,
-      Type: 'DataCollection',
+      type: 'DataCollection',
       point: this.props.pointId
     };
 
@@ -27,7 +27,7 @@ class DataCollection extends React.Component {
       'space_group',
       'prefix',
       'path',
-      'Type',
+      'type',
       'point'
     ];
 
@@ -39,17 +39,17 @@ class DataCollection extends React.Component {
 
     if (this.props.sampleIds.constructor === Array) {
       for (const sampleId of this.props.sampleIds) {
-        const queueId = this.props.lookup[sampleId];
-        if (queueId) {
-          this.props.addTask(queueId, sampleId, parameters, runNow);
+        if (this.props.queue[sampleId]) {
+          this.props.addTask(sampleId, parameters, this.props.queue, runNow);
         } else {
-          this.props.addSampleAndTask(sampleId, parameters);
+          const sampleData = this.props.sampleList[sampleId];
+          this.props.addSampleAndTask(sampleId, parameters, sampleData, this.props.queue, runNow);
         }
       }
     } else {
-      const { lookup, taskData, sampleIds } = this.props;
-      const sampleQueueId = lookup[sampleIds];
-      this.props.changeTask(taskData, sampleIds, sampleQueueId, parameters, runNow);
+      const { taskData, sampleIds } = this.props;
+      const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
+      this.props.changeTask(sampleIds, taskIndex, parameters, this.props.queue, runNow);
     }
 
     this.props.hide();
@@ -355,7 +355,7 @@ class DataCollection extends React.Component {
               Run Now
             </Button>
             <Button bsStyle="primary" onClick={this.addToQueue}>
-              {this.props.taskData.queueID ? 'Change' : 'Add to Queue'}
+              {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
             </Button>
           </Modal.Footer>
       </Modal>

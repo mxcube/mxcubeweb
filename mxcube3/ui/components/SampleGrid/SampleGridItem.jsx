@@ -266,7 +266,7 @@ export class SampleGridItem extends React.Component {
 
                 let deleteTask = (e) => {
                   e.stopPropagation();
-                  return this.props.deleteTask(tag, tag.queueID);
+                  return this.props.deleteTask(this.props.sampleID, i);
                 };
 
                 content = (

@@ -44,8 +44,8 @@ export default class ServerIO {
       this.dispatch(setBeamlineAttrAction(data));
     });
 
-    this.hwrSocket.on('Task', (record) => {
-      this.dispatch(addTaskResultAction(record.Sample, record.QueueId, record.State));
+    this.hwrSocket.on('task', (record) => {
+      this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state));
     });
 
     this.hwrSocket.on('add_task', (record) => {
