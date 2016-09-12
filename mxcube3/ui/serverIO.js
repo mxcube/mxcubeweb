@@ -35,17 +35,8 @@ export default class ServerIO {
     };
   }
 
-  reconnect() {
-    if (this.uiStateSocket === null) {
-      this.listen();
-    } else {
-      this.uiStateSocket = io.connect(`http://${document.domain}:${location.port}/ui_state`, {forceNew: true});
-      // Doesn't work, unfortunately: this.uiStateSocket.io.reconnect(); 
-    }
-  }
-
   listen() {
-    this.uiStateSocket = io.connect(`http://${document.domain}:${location.port}/ui_state`, {forceNew: true});
+    this.uiStateSocket = io.connect(`http://${document.domain}:${location.port}/ui_state`);
 
     this.hwrSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
 

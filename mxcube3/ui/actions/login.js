@@ -54,11 +54,6 @@ export function doLogin(proposal, password) {
       credentials: 'include',
       body: JSON.stringify({ proposal, password })
     }).then(() => {
-      // this is to force flask-socketio to be in sync
-      // with the session, since it happens in the
-      // 'connect' event
-      window.serverIO.reconnect();
-
       dispatch(showErrorPanel(false));
       dispatch(setLoading(false));
       dispatch(getLoginInfo());

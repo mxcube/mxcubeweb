@@ -64,12 +64,18 @@ export default class App extends React.Component {
     initialized: false
   }
 
+  constructor(props) {
+    super(props);
+
+    this.serverIO = new ServerIO(store.dispatch);
+  }
+
   componentWillMount() {
-    window.serverIO.reconnect();
+    this.serverIO.listen();
 
     const persistor = persistStore(store,
       { blacklist: ['beamline', 'form', 'login', 'sampleview', 'general', 'logger'],
-        storage: new ServerStorage(window.serverIO) }, // this.serverIO) },
+        storage: new ServerStorage(this.serverIO) }, 
       () => {
         store.dispatch(getLoginInfo());
         this.setState({ initialized: true });
@@ -95,7 +101,6 @@ export default class App extends React.Component {
   }
 }
 
-window.serverIO = new ServerIO(store.dispatch);
 
 ReactDOM.render(
   <App />,
