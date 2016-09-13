@@ -91,7 +91,7 @@ export default class CurrentTree extends React.Component {
           </div>
           <div className={bodyClass}>
             {sampleTasks.map((taskData, i) => {
-              const key = this.props.queue[taskData.sampleID].tasks.indexOf(taskData);
+              const key = taskData.type + taskData.parameters.run_number;
               const task =
                 (<TaskItem key={key}
                   index={i}
@@ -105,8 +105,8 @@ export default class CurrentTree extends React.Component {
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
                   collapseTask={this.props.collapseTask}
-                  show={this.props.displayData[taskData.sampleID].tasks[key].collapsed}
-                  state={this.props.displayData[taskData.sampleID].tasks[key].state}
+                  show={this.props.displayData[taskData.sampleID].tasks[i].collapsed}
+                  state={this.props.displayData[taskData.sampleID].tasks[i].state}
                 />);
               return task;
             })}

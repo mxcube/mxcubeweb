@@ -284,12 +284,22 @@ export default (state = initialState, action) => {
     // Change order of samples in queue on drag and drop
     case 'CHANGE_METHOD_ORDER': {
       const queue = Object.assign({}, state.queue);
+      const displayData = Object.assign({}, state.displayData);
 
       queue[action.sampleId].tasks = update(state.queue[action.sampleId].tasks,
-        { $splice: [[action.oldIndex, 1], [action.newIndex, 0,
-                                           state.queue[action.sampleId].tasks[action.oldIndex]]] });
+        {
+          $splice: [[action.oldIndex, 1],
+          [action.newIndex, 0,
+          state.queue[action.sampleId].tasks[action.oldIndex]]]
+        });
+      displayData[action.sampleId].tasks = update(state.displayData[action.sampleId].tasks,
+        {
+          $splice: [[action.oldIndex, 1],
+          [action.newIndex, 0,
+          state.displayData[action.sampleId].tasks[action.oldIndex]]]
+        });
 
-      return { ...state, queue };
+      return { ...state, queue, displayData };
     }
     case 'redux-form/CHANGE':
       if (action.form === 'search-sample') {
