@@ -79,7 +79,7 @@ export default class TaskItem extends Component {
   static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
     isDragging: PropTypes.bool.isRequired,
     moveCard: PropTypes.func.isRequired
@@ -87,11 +87,18 @@ export default class TaskItem extends Component {
 
   constructor(props) {
     super(props);
-    const { index, data } = this.props;
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
-    this.toggleChecked = this.props.toggleChecked.bind(this, data, index);
-    this.collapseTask = this.props.collapseTask.bind(this, data.sampleID, index);
+    this.toggleChecked = this.toggleChecked.bind(this);
+    this.collapseTask = this.collapseTask.bind(this);
+  }
+
+  toggleChecked() {
+    this.props.toggleChecked(this.props.sampleId, this.props.index);
+  }
+
+  collapseTask() {
+    this.props.collapseTask(this.props.sampleId, this.props.index);
   }
 
   deleteTask() {
