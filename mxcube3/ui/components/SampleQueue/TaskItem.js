@@ -87,15 +87,15 @@ export default class TaskItem extends Component {
 
   constructor(props) {
     super(props);
-    const { id, data } = this.props;
+    const { index, data } = this.props;
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
-    this.toggleChecked = this.props.toggleChecked.bind(this, data, id);
-    this.collapseTask = this.props.collapseTask.bind(this, data.sampleID, id);
+    this.toggleChecked = this.props.toggleChecked.bind(this, data, index);
+    this.collapseTask = this.props.collapseTask.bind(this, data.sampleID, index);
   }
 
   deleteTask() {
-    this.props.deleteTask(this.props.sampleId, this.props.id);
+    this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
   showForm() {
