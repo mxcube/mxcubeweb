@@ -335,7 +335,7 @@ def set_dc_params(model, entry, task_data):
     """
     Helper method that sets the data collection parameters for a DataCollection.
 
-    :param DataCollectionQueueModel: The mode to set parameters of
+    :param DataCollectionQueueModel: The model to set parameters of
     :param DataCollectionQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
     """
