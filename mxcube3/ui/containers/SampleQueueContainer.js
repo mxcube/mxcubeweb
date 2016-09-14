@@ -57,6 +57,7 @@ export default class SampleQueueContainer extends React.Component {
     const {
       sendToggleCheckBox,
       sendRunSample,
+      sendRunQueue,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
@@ -65,7 +66,8 @@ export default class SampleQueueContainer extends React.Component {
       collapseList,
       collapseTask,
       collapseSample,
-      deleteTask
+      deleteTask,
+      mountSample
     } = this.props.queueActions;
 
     return (
@@ -76,6 +78,8 @@ export default class SampleQueueContainer extends React.Component {
                   todoLength={todo.nodes.length}
                   currentNode={current.node}
                   queueStatus={queueStatus}
+                  runQueue={sendRunQueue}
+                  stopQueue={sendStopQueue}
                 />
                 <CurrentTree
                   changeOrder={changeTaskOrder}
@@ -102,10 +106,11 @@ export default class SampleQueueContainer extends React.Component {
                   show={todo.collapsed}
                   collapse={collapseList}
                   list={todo.nodes}
-                  sampleInformation={sampleInformation}
+                  sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}
                   displayData={displayData}
+                  mount={mountSample}
                 />
             </div>
       </div>

@@ -370,7 +370,7 @@ export function addSample(sampleData) {
 
     // Its perhaps possible to not even sendMountSample at this point,
     // does it even make sense ?
-    dispatch(sendMountSample(sampleData.sampleID));
+    //dispatch(sendMountSample(sampleData.sampleID));
   };
 }
 

@@ -2,6 +2,8 @@ import React from 'react';
 import 'bootstrap-webpack';
 import './app.less';
 import cx from 'classnames';
+import { Button } from 'react-bootstrap';
+
 
 export default class TodoTree extends React.Component {
   constructor(props) {
@@ -21,12 +23,20 @@ export default class TodoTree extends React.Component {
                 </div>
                 <div className={bodyClass}>
                 {this.props.list.map((sampleId, id) => {
-                  const sampleData = this.props.sampleInformation[id];
+                  const sampleData = this.props.sampleInformation[sampleId];
                   return (
-                    <div className="node node-sample">
+                    <div className="node node-sample node-todo">
                       <div className="task-head">
                         <p className="node-name">
-                          {sampleData.sampleName}
+                          {`Sample ${sampleData.sampleName}`}
+                          <Button
+                            className="pull-right"
+                            bsSize="xs"
+                            key={id}
+                            onClick={() => this.props.mount(sampleData.sampleName)}
+                          >
+                            Mount
+                          </Button>
                         </p>
                       </div>
                     </div>
