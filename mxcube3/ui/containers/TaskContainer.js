@@ -55,7 +55,6 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
           queue={this.props.queue}
           sampleList={this.props.sampleList}
-          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <DataCollection
@@ -71,7 +70,6 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
           queue={this.props.queue}
           sampleList={this.props.sampleList}
-          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <AddSample
