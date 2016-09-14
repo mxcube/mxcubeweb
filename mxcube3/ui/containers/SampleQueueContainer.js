@@ -69,13 +69,16 @@ export default class SampleQueueContainer extends React.Component {
     } = this.props.queueActions;
     const totalSamples = history.nodes.length + todo.nodes.length + 1;
     const progress = (100 / totalSamples) * history.nodes.length;
+    const currentNode = current.node ? 0 : 1;
     return (
       <div>
             <div className="queue-body">
 
                 <div className="m-tree">
                   <div className="list-head">
-                    <label>Total Progress {`${history.nodes.length}/${totalSamples} `}:</label>
+                    <label>
+                      Total Progress {`${history.nodes.length}/${totalSamples - currentNode} `}:
+                    </label>
                      <ProgressBar active now={progress} />
                   </div>
                 </div>

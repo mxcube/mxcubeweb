@@ -13,7 +13,6 @@ export default class TodoTree extends React.Component {
     const bodyClass = cx('list-body', {
       hidden: this.props.show
     });
-    console.log(this.props.list);
     return (
             <div className="m-tree">
                 <div className="list-head">
