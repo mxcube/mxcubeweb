@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
 import { showTaskForm } from './taskForm';
-
+import { pickSamplesAction } from './SamplesGrid';
 
 export function setSampleListAction(sampleList) {
   return { type: 'SET_SAMPLE_LIST', sampleList };
@@ -450,11 +450,13 @@ export function addTask(sampleID, parameters, queue, runNow) {
                    checked: true };
 
     dispatch(addTaskAction(task));
+    dispatch(pickSamplesAction({ [sampleID]: true }));
     const taskIndex = queue[sampleID].tasks.length - 1;
 
     sendAddQueueItem([task]).then((response) => {
       if (response.status >= 400) {
         dispatch(removeTaskAction(sampleID, taskIndex));
+        dispatch(pickSamplesAction({ [sampleID]: false }));
         throw new Error('The task could not be added to the server');
       } else {
         if (runNow) {
@@ -477,10 +479,12 @@ export function addSampleAndTask(sampleID, parameters, sampleData, queue, runNow
                              checked: true }] };
 
     dispatch(addSampleAction(data));
+    dispatch(pickSamplesAction({ [sampleID]: true }));
 
     sendAddQueueItem([data]).then((response) => {
       if (response.status >= 400) {
         dispatch(removeTaskAction(sampleID, 0));
+        dispatch(pickSamplesAction({ [sampleID]: false }));
         throw new Error('The sample could not be added to the server');
       } else {
         if (runNow) {

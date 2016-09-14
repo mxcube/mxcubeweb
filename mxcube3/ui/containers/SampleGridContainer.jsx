@@ -15,12 +15,12 @@ import {
 } from 'react-bootstrap';
 
 import {
-  toggleSelectedAction,
   pickAllAction,
   filterAction,
   toggleMovableAction,
   selectAction,
-  pickSamplesAction
+  pickSamplesAction,
+  togglePickedSamplesAction
 } from '../actions/SamplesGrid';
 
 import {
@@ -133,7 +133,7 @@ class SampleGridContainer extends React.Component {
 
 
   pickSelectedSamples() {
-    this.props.pickSamplesAction(this.props.selected);
+    this.props.togglePickedSamples(this.props.selected);
   }
 
 
@@ -250,7 +250,6 @@ class SampleGridContainer extends React.Component {
               order={this.props.order}
               setSampleOrder={this.props.setSampleOrderAction}
               selected={this.props.selected}
-              toggleSelected={this.props.toggleSelected}
               filterText={this.props.filterText}
               queue={this.props.queue}
               showTaskParametersForm={this.props.showTaskParametersForm}
@@ -287,7 +286,6 @@ function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleList()),
     setSampleOrderAction: (order, picked) => dispatch(setSampleOrderAction(order, picked)),
-    toggleSelected: (index) => dispatch(toggleSelectedAction(index)),
     selectAll: () => dispatch(pickAllAction(true)),
     unselectAll: () => dispatch(pickAllAction(false)),
     filter: (filterText) => dispatch(filterAction(filterText)),
@@ -297,7 +295,8 @@ function mapDispatchToProps(dispatch) {
     deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     select: (keys) => dispatch(selectAction(keys)),
-    pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys))
+    pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys)),
+    togglePickedSamples: (keys) => dispatch(togglePickedSamplesAction(keys))
   };
 }
 
