@@ -16,7 +16,7 @@ export default class TodoTree extends React.Component {
     return (
             <div className="m-tree">
                 <div className="list-head">
-                    <span className="queue-root" onClick={this.collapse}>Upcoming: </span>
+                    <span className="queue-root" onClick={this.collapse}>Upcoming Samples</span>
                     <hr className="queue-divider" />
                 </div>
                 <div className={bodyClass}>

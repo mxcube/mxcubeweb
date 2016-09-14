@@ -12,14 +12,12 @@ export default class QueueControl extends React.Component {
       options: {
         QueueStarted: [
         { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
-        { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
         ],
         QueueStopped: [
         { text: 'Run Queue', class: 'btn-success', action: this.showForm, key: 1 },
         ],
         QueuePaused: [
-        { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
-        { text: 'Unpause', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
+        { text: 'Run Queue', class: 'btn-success', action: this.showForm, key: 1 },
         ]
       }
     };
@@ -49,11 +47,15 @@ export default class QueueControl extends React.Component {
     return (
       <div className="m-tree">
         <div className="list-head">
+           <div className="left">
           {queueOptions.map((option) => this.renderOptions(option))}
-          <p className="queue-root">
+          <span className="queue-root">
             Total Progress {`${historyLength}/${totalSamples - current} `}:
-          </p>
+          </span>
+          </div>
+          <div className="right">
            <ProgressBar active now={progress} />
+          </div>
         </div>
       </div>
     );

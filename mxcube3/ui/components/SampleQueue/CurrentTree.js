@@ -83,7 +83,7 @@ export default class CurrentTree extends React.Component {
       <div className="m-tree">
           <div className="list-head">
               {queueOptions.map((option) => this.renderOptions(option))}
-              <p className="queue-root" onClick={this.collapse}>Current: {sampleData.sampleName}</p>
+              <p className="queue-root" onClick={this.collapse}>Current Sample: {sampleData.sampleName}</p>
               <hr className="queue-divider" />
           </div>
           <div className={bodyClass}>
