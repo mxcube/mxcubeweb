@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, Collapse, ProgressBar } from 'react-bootstrap';
+import { Button, Collapse } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
 import cx from 'classnames';
@@ -79,7 +79,7 @@ export default class TaskItem extends Component {
   static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     connectDropTarget: PropTypes.func.isRequired,
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
     isDragging: PropTypes.bool.isRequired,
     moveCard: PropTypes.func.isRequired
@@ -87,15 +87,22 @@ export default class TaskItem extends Component {
 
   constructor(props) {
     super(props);
-    const { id, data } = this.props;
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
-    this.toggleChecked = this.props.toggleChecked.bind(this, data, id);
-    this.collapseTask = this.props.collapseTask.bind(this, data.sampleID, id);
+    this.toggleChecked = this.toggleChecked.bind(this);
+    this.collapseTask = this.collapseTask.bind(this);
+  }
+
+  toggleChecked() {
+    this.props.toggleChecked(this.props.sampleId, this.props.index);
+  }
+
+  collapseTask() {
+    this.props.collapseTask(this.props.sampleId, this.props.index);
   }
 
   deleteTask() {
-    this.props.deleteTask(this.props.sampleId, this.props.id);
+    this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
   showForm() {
@@ -104,25 +111,15 @@ export default class TaskItem extends Component {
     this.props.showForm(type, sampleId, data, parameters.point);
   }
 
-  showTask(state) {
-    let result = this.props.show;
-
-    if (state === 1) {
-      result = true;
-    }
-
-    return result;
-  }
-
   render() {
     const { state,
             data,
-            progress,
             isDragging,
             connectDragSource,
             connectDropTarget,
-            rootPath } = this.props;
-
+            rootPath,
+            show } = this.props;
+    const parameters = data.parameters;
     const opacity = isDragging ? 0 : 1;
 
     let taskCSS = cx('task-head', {
@@ -131,7 +128,6 @@ export default class TaskItem extends Component {
       error: state === 3,
       warning: state === 4
     });
-
     return connectDragSource(connectDropTarget(
       <div className="node node-sample" style={{ opacity }}>
           <div className={taskCSS} onClick={this.collapseTask}>
@@ -139,7 +135,7 @@ export default class TaskItem extends Component {
               {`P${data.parameters.point} ${data.label}`}
             </p>
           </div>
-          <Collapse in={this.showTask(state)}>
+          <Collapse in={Boolean(show)}>
           <div className="task-body">
             <form>
               <div className="form-group row">
@@ -162,8 +158,17 @@ export default class TaskItem extends Component {
                   />
                 </div>
               </div>
-                <ProgressBar now={progress} />
-                <Button bsSize="sm" onClick={this.showForm}>Edit</Button>
+              <div className="task-information">
+                <label>Parameters summary:&nbsp;</label>
+                <span onClick={this.showForm}>
+                  osc: {parameters.osc_range},
+                  exp.time: {`${parameters.exp_time * 1000} ms`},
+                  num.images: {parameters.num_images},
+                  resolution: {parameters.resolution},
+                  Transmission: {`${parameters.transmission}%`}
+                </span>
+              </div>
+                <Button bsSize="sm" onClick={this.showForm}>Change</Button>
                 <Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>
                 <Button bsSize="sm" disabled={state !== 2}>Results</Button>
             </form>
