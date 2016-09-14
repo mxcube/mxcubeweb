@@ -2,13 +2,13 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
-import HistoryTree from '../components/SampleQueue/HistoryTree';
+import TodoTree from '../components/SampleQueue/TodoTree';
 import * as QueueActions from '../actions/queue';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-
+import { ProgressBar } from 'react-bootstrap';
 
 function mapStateToProps(state) {
   return {
@@ -44,8 +44,9 @@ export default class SampleQueueContainer extends React.Component {
   render() {
     const {
       checked,
-      history,
+      todo,
       current,
+      history,
       sampleInformation,
       queue,
       showForm,
@@ -66,10 +67,19 @@ export default class SampleQueueContainer extends React.Component {
       collapseSample,
       deleteTask
     } = this.props.queueActions;
-
+    const totalSamples = history.nodes.length + todo.nodes.length + 1;
+    const progress = (100 / totalSamples) * history.nodes.length;
     return (
       <div>
             <div className="queue-body">
+
+                <div className="m-tree">
+                  <div className="list-head">
+                    <label>Total Progress {`${history.nodes.length}/${totalSamples} `}:</label>
+                     <ProgressBar active now={progress} />
+                  </div>
+                </div>
+
                 <CurrentTree
                   changeOrder={changeTaskOrder}
                   show={current.collapsed}
@@ -91,10 +101,10 @@ export default class SampleQueueContainer extends React.Component {
                   collapseTask={collapseTask}
                   displayData={displayData}
                 />
-                <HistoryTree
-                  show={history.collapsed}
+                <TodoTree
+                  show={todo.collapsed}
                   collapse={collapseList}
-                  list={history.nodes}
+                  list={todo.nodes}
                   sampleInformation={sampleInformation}
                   queue={queue}
                   collapseSample={collapseSample}
