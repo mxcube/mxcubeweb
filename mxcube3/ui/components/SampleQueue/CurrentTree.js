@@ -17,20 +17,19 @@ export default class CurrentTree extends React.Component {
     this.state = {
       options: {
         QueueStarted: [
-        { text: 'Stop', color: 'danger', action: this.props.stop, key: 1 },
-        { text: 'Pause', color: 'warning', action: this.props.pause, key: 2 },
+        { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
+        { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
         ],
         QueueStopped: [
-        { text: 'New Sample', color: 'primary', action: this.showForm, key: 1 },
-        { text: 'Unmount', color: 'danger', action: this.unmount, key: 2 },
-        { text: 'Run', color: 'success', action: this.runSample, key: 3 }
+        { text: 'Run Sample', class: 'btn-success', action: this.runSample, key: 1 },
+        { text: 'Next Sample', class: 'btn-primary pull-right', action: this.showForm, key: 2 }
         ],
         QueuePaused: [
-        { text: 'Stop', color: 'danger', action: this.props.stop, key: 1 },
-        { text: 'Unpause', color: 'success', action: this.props.unpause, key: 2 }
+        { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
+        { text: 'Unpause', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
         ],
         NoSampleMounted: [
-        { text: 'New Sample', color: 'primary', action: this.showForm, key: 1 },
+        { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
         ]
       }
     };
@@ -48,13 +47,11 @@ export default class CurrentTree extends React.Component {
     this.props.unmount(this.props.queue[this.props.mounted].queueID);
   }
 
-  renderOptions(option, length) {
-    const width = 100 / length;
+  renderOptions(option) {
     return (
       <Button
-        bsStyle={option.color}
+        className={option.class}
         bsSize="sm"
-        style={{ width: `${width}%` }}
         onClick={option.action}
         key={option.key}
       >
@@ -85,8 +82,8 @@ export default class CurrentTree extends React.Component {
     return (
       <div className="m-tree">
           <div className="list-head">
+              {queueOptions.map((option) => this.renderOptions(option))}
               <p className="queue-root" onClick={this.collapse}>Current: {sampleData.sampleName}</p>
-              {queueOptions.map((option) => this.renderOptions(option, queueOptions.length))}
               <hr className="queue-divider" />
           </div>
           <div className={bodyClass}>

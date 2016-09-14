@@ -3,12 +3,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import TodoTree from '../components/SampleQueue/TodoTree';
+import QueueControl from '../components/SampleQueue/QueueControl';
 import * as QueueActions from '../actions/queue';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { ProgressBar } from 'react-bootstrap';
 
 function mapStateToProps(state) {
   return {
@@ -67,22 +67,16 @@ export default class SampleQueueContainer extends React.Component {
       collapseSample,
       deleteTask
     } = this.props.queueActions;
-    const totalSamples = history.nodes.length + todo.nodes.length + 1;
-    const progress = (100 / totalSamples) * history.nodes.length;
-    const currentNode = current.node ? 0 : 1;
+
     return (
       <div>
             <div className="queue-body">
-
-                <div className="m-tree">
-                  <div className="list-head">
-                    <label>
-                      Total Progress {`${history.nodes.length}/${totalSamples - currentNode} `}:
-                    </label>
-                     <ProgressBar active now={progress} />
-                  </div>
-                </div>
-
+                <QueueControl
+                  historyLength={history.nodes.length}
+                  todoLength={todo.nodes.length}
+                  currentNode={current.node}
+                  queueStatus={queueStatus}
+                />
                 <CurrentTree
                   changeOrder={changeTaskOrder}
                   show={current.collapsed}
