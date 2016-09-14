@@ -44,3 +44,8 @@ export function toggleMovableAction(key) {
 export function pickSamplesAction(keys) {
   return { type: 'PICK_SAMPLES', keys };
 }
+
+
+export function togglePickedSamplesAction(keys) {
+  return { type: 'TOGGLE_PICKED_SAMPLES', keys };
+}
