@@ -119,7 +119,7 @@ export default class TaskItem extends Component {
             connectDropTarget,
             rootPath,
             show } = this.props;
-
+    const parameters = data.parameters;
     const opacity = isDragging ? 0 : 1;
 
     let taskCSS = cx('task-head', {
@@ -128,7 +128,6 @@ export default class TaskItem extends Component {
       error: state === 3,
       warning: state === 4
     });
-
     return connectDragSource(connectDropTarget(
       <div className="node node-sample" style={{ opacity }}>
           <div className={taskCSS} onClick={this.collapseTask}>
@@ -136,7 +135,7 @@ export default class TaskItem extends Component {
               {`P${data.parameters.point} ${data.label}`}
             </p>
           </div>
-          <Collapse in={show}>
+          <Collapse in={Boolean(show)}>
           <div className="task-body">
             <form>
               <div className="form-group row">
@@ -159,7 +158,16 @@ export default class TaskItem extends Component {
                   />
                 </div>
               </div>
-
+              <div className="task-information">
+                <label>Parameters summary:&nbsp;</label>
+                <span onClick={this.showForm}>
+                  osc: {parameters.osc_range},
+                  exp.time: {`${parameters.exp_time * 1000} ms`},
+                  num.images: {parameters.num_images},
+                  resolution: {parameters.resolution},
+                  Transmission: {`${parameters.transmission}%`}
+                </span>
+              </div>
                 <Button bsSize="sm" onClick={this.showForm}>Change</Button>
                 <Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>
                 <Button bsSize="sm" disabled={state !== 2}>Results</Button>
