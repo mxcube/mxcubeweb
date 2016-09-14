@@ -193,7 +193,7 @@ class SampleGridContainer extends React.Component {
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div className="col-xs-6">
+            <div className="col-xs-8">
               <div className="form-inline">
                 <span>Pick for collect: </span>
                 <ButtonGroup>
@@ -224,14 +224,21 @@ class SampleGridContainer extends React.Component {
                   buttonAfter={innerSearchIcon}
                   onChange={this.filterSampleGrid}
                 />
+                <span style={{ marginLeft: '5em' }} >Sample size: </span>
+                <ButtonGroup>
+                  <Button>S</Button>
+                  <Button>M</Button>
+                  <Button>L</Button>
+                </ButtonGroup>
+                <span style={{ marginLeft: '5em' }} ></span>
+                <SampleTaskButtons
+                  defaultParameters={this.props.defaultParameters}
+                  showForm={this.props.showTaskParametersForm}
+                  selected={this.props.selected}
+                />
               </div>
              </div>
              <div className="col-xs-2 pull-right">
-               <SampleTaskButtons
-                 defaultParameters={this.props.defaultParameters}
-                 showForm={this.props.showTaskParametersForm}
-                 selected={this.props.selected}
-               />
                <Button
                  className="btn btn-success pull-right"
                  href="#/datacollection"

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Glyphicon, DropdownButton, MenuItem } from 'react-bootstrap';
+import { Glyphicon, DropdownButton, MenuItem } from 'react-bootstrap';
 
 export default class SampleTaskButtons extends React.Component {
   constructor(props) {
@@ -21,19 +21,15 @@ export default class SampleTaskButtons extends React.Component {
   render() {
     return (
       <DropdownButton
-        bsStyle="primary"
-        title="Pipeline Mode"
+        bsStyle="default"
+        title={<span><Glyphicon glyph="plus" /> Add tasks </span>}
         id="pipeline-mode-dropdown"
       >
-        <MenuItem eventKey="1">
-          <Button className="btn-primary" onClick={this.showCharacterisationForm}>
-            <Glyphicon glyph="plus" /> Characterisation
-          </Button>
+      <MenuItem eventKey="1" onClick={this.showCharacterisationForm}>
+          Characterisation
         </MenuItem>
-        <MenuItem eventKey="2">
-          <Button className="btn-primary" onClick={this.showDataCollectionForm}>
-            <Glyphicon glyph="plus" /> Data collection
-          </Button>
+        <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
+          Data collection
         </MenuItem>
       </DropdownButton>
     );
