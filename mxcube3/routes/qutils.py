@@ -483,6 +483,7 @@ def new_queue(serialized_queue=None):
     queue = pickle.loads(serialized_queue)
     import Queue
     Queue.init_signals(queue)
+
     return queue
 
 
@@ -494,3 +495,38 @@ def get_queue(session, redis=redis.Redis()):
         serialized_queue = None
 
     return new_queue(serialized_queue)
+
+
+def add_diffraction_plan(parent, child):
+    """
+    Listen to the addition of elements to the queue ('child_added')
+    and if it is a diff plan create the appropiate queue entry and
+    emit a s
+    ocketio signal.
+    This is to overcome the fact that the Characterisation entry only
+    creates the model of the diff plan.
+    """
+    if isinstance(child, qmo.DataCollection):
+        parent_model, parent_entry = get_entry(parent._node_id)
+        # the parent
+
+        if parent_model.get_name().split('-')[0][:-1] == 'Diffraction plan':
+            # name example string 'Diffraction plan - 3'
+            # then we do know that we need to add the entry here
+            # Create a new entry for the new child, in this case a data collection
+            dc_entry = qe.DataCollectionQueueEntry(PMock(), child)
+            # Add the entry to the newly created task group, brother to the characterisation
+            parent_entry.enqueue(dc_entry)
+            enable_entry(child._node_id, True)
+
+            # Tell client that we added a new entry for the diffraction plan
+            params = child.as_dict()
+            msg = {'sampleID': parent.get_parent()._node_id,
+                   'task': {
+                        'params': params,
+                        'Type': 'DataCollection'
+                            }
+                   }
+            # log.info("Diffraction plan added to the queue: %s" % str(msg))
+
+            socketio.emit('add_task', msg, namespace='/hwr')

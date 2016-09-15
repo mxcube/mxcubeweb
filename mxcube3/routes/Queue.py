@@ -26,6 +26,7 @@ def init_signals(queue):
                            signals.collect_oscillation_failed)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
+    queue.connect(queue, 'child_added', qutils.add_diffraction_plan)
 
     queue.queue_hwobj.connect("queue_execute_started",
                               signals.queue_execution_started)
