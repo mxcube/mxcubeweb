@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialStatus } from './general';
 import { sendClearQueue } from './queue';
+import { setMaster } from './remoteAccess';
 
 export function afterLogin(data) {
   if (data.status.code === 'error') {
@@ -28,6 +29,7 @@ export function getLoginInfo() {
       credentials: 'include'
     }).then(response => response.json())
           .then(loginInfo => {
+            dispatch(setMaster(loginInfo.master));
             dispatch(setLoginInfo(loginInfo));
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
