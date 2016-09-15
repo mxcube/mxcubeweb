@@ -8,6 +8,9 @@ from mxcube3.routes import qutils
 
 def last_queue_node():
     node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
+    if 'refdc' in node.get_name():  # link to the corresponding char
+        parent = node.get_parent()  # same parent as char
+        node = parent._children[0]  # but the rfdc children not here @#@#!!!
     return qutils.node_index(node)
 
 

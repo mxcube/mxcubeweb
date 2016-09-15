@@ -409,6 +409,7 @@ def add_characterisation(node_id, task):
     params = task['parameters']
 
     refdc_model, refdc_entry = _create_dc(task)
+    refdc_model.set_name('refdc')
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
     char_model = qmo.Characterisation(refdc_model, char_params)
