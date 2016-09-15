@@ -189,7 +189,7 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
       Accept: 'application/json',
       'Content-type': 'application/json'
     },
-    body:''
+    body: ''
   });
 }
 
