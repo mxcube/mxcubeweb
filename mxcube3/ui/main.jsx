@@ -42,7 +42,9 @@ class ServerStorage {
   }
 
   setItem(key, value) {
-    this.serverIO.uiStorage.setItem(key, value);
+    if (store.getState().remoteAccess.master) {
+      this.serverIO.uiStorage.setItem(key, value);
+    }
   }
 
   getItem(key, cb) {
@@ -60,19 +62,14 @@ class ServerStorage {
 
 
 export default class App extends React.Component {
-  state = {
-    initialized: false
-  }
-
   constructor(props) {
     super(props);
 
+    this.state = { initialized: false };
     this.serverIO = new ServerIO(store.dispatch);
   }
 
   componentWillMount() {
-    this.serverIO.listen();
-
     const persistor = persistStore(store,
       { blacklist: ['beamline', 'form', 'login', 'sampleview', 'general', 'logger'],
         storage: new ServerStorage(this.serverIO) }, 
@@ -81,6 +78,8 @@ export default class App extends React.Component {
         this.setState({ initialized: true });
       }
     );
+
+    this.serverIO.listen(persistor);
 
     crosstabSync(persistor);
   }
