@@ -511,7 +511,7 @@ def add_diffraction_plan(parent, child):
         parent_model, parent_entry = get_entry(parent._node_id)
         # the parent
 
-        if parent_model.get_name().split('-')[0][:-1] == 'Diffraction plan':
+        if 'Diffraction plan' in parent_model.get_name():
             # name example string 'Diffraction plan - 3'
             # then we do know that we need to add the entry here
             # Create a new entry for the new child, in this case a data collection
