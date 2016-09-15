@@ -77,12 +77,12 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 #    queue_logger.addHandler(custom_log_handler)
     app.log_handler = custom_log_handler
 
-    ### Install server-side UI state storage
-    import state_storage
-
-    ###Importing all REST-routes
+    ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups,
                         SampleCentring, SampleChanger, Diffractometer, Utils)
+
+    ### Install server-side UI state storage
+    import state_storage
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
