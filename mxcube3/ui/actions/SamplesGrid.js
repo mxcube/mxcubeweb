@@ -1,9 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-export function pickAllAction(picked) {
-  return { type: 'PICK_ALL_SAMPLES', picked };
-}
-
 
 export function clearPickedAction(picked) {
   return { type: 'CLEAR_PICKED', picked };
@@ -12,6 +8,11 @@ export function clearPickedAction(picked) {
 
 export function selectAction(indices) {
   return { type: 'SELECT_SAMPLES', indices };
+}
+
+
+export function toggleSelectedAction(sampleID) {
+  return { type: 'TOGGLE_SELECTED_SAMPLE', sampleID };
 }
 
 

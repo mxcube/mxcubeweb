@@ -9,6 +9,7 @@ export default class SampleGrid extends React.Component {
 
   constructor(props) {
     super(props);
+    this._doReorder = false;
     this._selectStartSeqId = -1;
     this.filter = this.filter.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
@@ -47,11 +48,25 @@ export default class SampleGrid extends React.Component {
   }
 
 
+  shouldComponentUpdate(nextProps, nextState) {
+    this._doReorder = false;
+
+    if (this.props.order !== nextProps.order) {
+      this._doReorder = true;
+    }
+
+    return true;
+  }
+
+
   componentDidUpdate() {
     if (this.isotope) {
       this.isotope.reloadItems();
       this.isotope.layout();
-      this.isotope.arrange({ sortBy: 'seqId' });
+     
+      if (this._doReorder) {
+        this.isotope.arrange({ sortBy: 'seqId' });
+      }
     }
   }
 
@@ -273,7 +288,7 @@ export default class SampleGrid extends React.Component {
             location={sample.location}
             queueOrder={sample.queueOrder}
             tags={tags}
-            selected={this.props.selected[key]}
+            selected={this.props.selected}
             deleteTask={this.props.deleteTask}
             showTaskParametersForm={this.props.showTaskParametersForm}
             toggleMovable={this.props.toggleMovable}
@@ -282,8 +297,10 @@ export default class SampleGrid extends React.Component {
             moveItem={this.moveItem}
             canMove={this.canMove}
             pickSelected={this.props.pickSelected}
+            pickSamples={this.props.pickSamples}
             dragStartSelection={this.dragStartSelection}
             dragSelectItem={this.dragSelectItem}
+            toggleSelectedSample={this.props.toggleSelectedSample}
           />
         );
 

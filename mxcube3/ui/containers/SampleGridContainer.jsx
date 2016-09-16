@@ -15,10 +15,10 @@ import {
 } from 'react-bootstrap';
 
 import {
-  pickAllAction,
   filterAction,
   toggleMovableAction,
   selectAction,
+  toggleSelectedAction,
   pickSamplesAction,
   togglePickedSamplesAction
 } from '../actions/SamplesGrid';
@@ -52,6 +52,7 @@ class SampleGridContainer extends React.Component {
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
     this.pickSelectedSamples = this.pickSelectedSamples.bind(this);
     this.pickAllSamples = this.pickAllSamples.bind(this);
+    this.unPickAllSamples = this.unPickAllSamples.bind(this);
   }
 
 
@@ -148,6 +149,17 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  unPickAllSamples() {
+    const keys = {};
+    Object.keys(this.props.sampleList).reduce((o, v) => {
+      keys[v] = false;
+      return o;
+    }, {});
+
+    this.props.pickSamplesAction(keys);
+  }
+
+
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
@@ -210,7 +222,7 @@ class SampleGridContainer extends React.Component {
                     Selected
                   </Button>
                   <Button
-                    onClick={this.props.unselectAll}
+                    onClick={this.unPickAllSamples}
                     disabled={this.props.manualMount}
                   >
                     None
@@ -267,6 +279,8 @@ class SampleGridContainer extends React.Component {
               picked={this.props.picked}
               select={this.props.select}
               pickSelected={this.pickSelectedSamples}
+              pickSamples={this.props.pickSamplesAction}
+              toggleSelectedSample={this.props.toggleSelectedSample}
             />
           </div>
         </div>
@@ -293,8 +307,6 @@ function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleList()),
     setSampleOrderAction: (order, picked) => dispatch(setSampleOrderAction(order, picked)),
-    selectAll: () => dispatch(pickAllAction(true)),
-    unselectAll: () => dispatch(pickAllAction(false)),
     filter: (filterText) => dispatch(filterAction(filterText)),
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
     setManualMount: (manual) => dispatch(sendManualMount(manual)),
@@ -303,7 +315,8 @@ function mapDispatchToProps(dispatch) {
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     select: (keys) => dispatch(selectAction(keys)),
     pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys)),
-    togglePickedSamples: (keys) => dispatch(togglePickedSamplesAction(keys))
+    togglePickedSamples: (keys) => dispatch(togglePickedSamplesAction(keys)),
+    toggleSelectedSample: (keys) => dispatch(toggleSelectedAction(keys))
   };
 }
 

@@ -117,22 +117,32 @@ export default (state = INITIAL_STATE, action) => {
 
       return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
     }
+    case 'TOGGLE_SELECTED_SAMPLE': {
+      const selected = Object.assign({}, state.selected);
+      selected[action.sampleID] = (!state.selected[action.sampleID]);
+      return Object.assign({}, state, { selected });
+    }
     // Flag a range of samples as picked (for collect)
     case 'PICK_SAMPLES': {
       const picked = Object.assign({}, state.picked, action.keys);
       return Object.assign({}, state, { picked });
     }
     case 'TOGGLE_PICKED_SAMPLES': {
-      const picked = togglePicked(Object.keys(action.keys), state);
+      const keys = [];
+
+      Object.keys(state.selected).map((value) => {
+        if (state.selected[value]) {
+          keys.push(value);
+        }
+
+        return value;
+      });
+
+      const picked = togglePicked(keys, state);
       return Object.assign({}, state, { picked });
     }
     case 'CLEAR_PICKED': {
       return Object.assign({}, state, { picked: {} });
-    }
-    case 'PICK_ALL_SAMPLES': {
-      const picked = {};
-      Object.keys(state.sampleList).forEach(key => (picked[key] = action.picked));
-      return Object.assign({}, state, { picked });
     }
     case 'FILTER_SAMPLE_LIST': {
       return Object.assign({}, state, { filterText: action.filterText });
