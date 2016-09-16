@@ -367,10 +367,6 @@ export function addSample(sampleData) {
 
     sendAddQueueItem([data]);
     dispatch(addSampleAction(data));
-
-    // Its perhaps possible to not even sendMountSample at this point,
-    // does it even make sense ?
-    dispatch(sendMountSample(sampleData.sampleID));
   };
 }
 

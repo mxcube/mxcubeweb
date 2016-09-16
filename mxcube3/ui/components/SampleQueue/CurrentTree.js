@@ -13,27 +13,35 @@ export default class CurrentTree extends React.Component {
     this.collapse = props.collapse.bind(this, 'current');
     this.runSample = this.runSample.bind(this);
     this.unmount = this.unMountSample.bind(this);
+    this.nextSample = this.nextSample.bind(this);
     this.showForm = this.props.showForm.bind(this, 'AddSample');
     this.state = {
       options: {
         QueueStarted: [
-        { text: 'Stop', color: 'danger', action: this.props.stop, key: 1 },
-        { text: 'Pause', color: 'warning', action: this.props.pause, key: 2 },
+        { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
+        { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
         ],
         QueueStopped: [
-        { text: 'New Sample', color: 'primary', action: this.showForm, key: 1 },
-        { text: 'Unmount', color: 'danger', action: this.unmount, key: 2 },
-        { text: 'Run', color: 'success', action: this.runSample, key: 3 }
+        { text: 'Run Sample', class: 'btn-success', action: this.runSample, key: 1 },
+        { text: 'Next Sample', class: 'btn-primary pull-right', action: this.nextSample, key: 2 }
         ],
         QueuePaused: [
-        { text: 'Stop', color: 'danger', action: this.props.stop, key: 1 },
-        { text: 'Unpause', color: 'success', action: this.props.unpause, key: 2 }
+        { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
+        { text: 'Unpause', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
         ],
         NoSampleMounted: [
-        { text: 'New Sample', color: 'primary', action: this.showForm, key: 1 },
+        { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
         ]
       }
     };
+  }
+
+  nextSample() {
+    if (this.props.manualMount.set) {
+      this.showForm();
+    } else if (this.props.todoList[0]) {
+      this.props.mount(this.props.todoList[0]);
+    }
   }
 
   moveCard(dragIndex, hoverIndex) {
@@ -48,13 +56,11 @@ export default class CurrentTree extends React.Component {
     this.props.unmount(this.props.queue[this.props.mounted].queueID);
   }
 
-  renderOptions(option, length) {
-    const width = 100 / length;
+  renderOptions(option) {
     return (
       <Button
-        bsStyle={option.color}
+        className={option.class}
         bsSize="sm"
-        style={{ width: `${width}%` }}
         onClick={option.action}
         key={option.key}
       >
@@ -73,20 +79,24 @@ export default class CurrentTree extends React.Component {
       sampleData = this.props.sampleInformation[sampleId];
       sampleTasks = this.props.queue[sampleId].tasks;
       queueOptions = this.state.options[this.props.queueStatus];
-    } else {
+    } else if (this.props.manualMount.set) {
       sampleData.sampleName = 'No Sample Mounted';
       queueOptions = this.state.options.NoSampleMounted;
+    } else {
+      sampleData.sampleName = 'Go To SampleGrid';
+      queueOptions = [];
     }
 
     const bodyClass = cx('list-body', {
       hidden: (this.props.show || !sampleId)
     });
-
     return (
       <div className="m-tree">
           <div className="list-head">
-              <p className="queue-root" onClick={this.collapse}>Current: {sampleData.sampleName}</p>
-              {queueOptions.map((option) => this.renderOptions(option, queueOptions.length))}
+              {queueOptions.map((option) => this.renderOptions(option))}
+              <p className="queue-root" onClick={this.collapse}>
+                Current Sample: {sampleData.sampleID}
+              </p>
               <hr className="queue-divider" />
           </div>
           <div className={bodyClass}>

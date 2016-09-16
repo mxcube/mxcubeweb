@@ -3,12 +3,12 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import TodoTree from '../components/SampleQueue/TodoTree';
+import QueueControl from '../components/SampleQueue/QueueControl';
 import * as QueueActions from '../actions/queue';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { ProgressBar } from 'react-bootstrap';
 
 function mapStateToProps(state) {
   return {
@@ -23,7 +23,8 @@ function mapStateToProps(state) {
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
-    displayData: state.queue.displayData
+    displayData: state.queue.displayData,
+    manualMount: state.queue.manualMount
   };
 }
 
@@ -52,11 +53,13 @@ export default class SampleQueueContainer extends React.Component {
       showForm,
       queueStatus,
       rootPath,
-      displayData
+      displayData,
+      manualMount
     } = this.props;
     const {
       sendToggleCheckBox,
       sendRunSample,
+      sendRunQueue,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
@@ -65,24 +68,21 @@ export default class SampleQueueContainer extends React.Component {
       collapseList,
       collapseTask,
       collapseSample,
-      deleteTask
+      deleteTask,
+      mountSample
     } = this.props.queueActions;
-    const totalSamples = history.nodes.length + todo.nodes.length + 1;
-    const progress = (100 / totalSamples) * history.nodes.length;
-    const currentNode = current.node ? 0 : 1;
+
     return (
       <div>
-            <div className="queue-body">
-
-                <div className="m-tree">
-                  <div className="list-head">
-                    <label>
-                      Total Progress {`${history.nodes.length}/${totalSamples - currentNode} `}:
-                    </label>
-                     <ProgressBar active now={progress} />
-                  </div>
-                </div>
-
+                <QueueControl
+                  historyLength={history.nodes.length}
+                  todoLength={todo.nodes.length}
+                  currentNode={current.node}
+                  queueStatus={queueStatus}
+                  runQueue={sendRunQueue}
+                  stopQueue={sendStopQueue}
+                />
+              <div className="queue-body">
                 <CurrentTree
                   changeOrder={changeTaskOrder}
                   show={current.collapsed}
@@ -103,15 +103,19 @@ export default class SampleQueueContainer extends React.Component {
                   rootPath={rootPath}
                   collapseTask={collapseTask}
                   displayData={displayData}
+                  manualMount={manualMount}
+                  mount={mountSample}
+                  todoList={todo.nodes}
                 />
                 <TodoTree
                   show={todo.collapsed}
                   collapse={collapseList}
                   list={todo.nodes}
-                  sampleInformation={sampleInformation}
+                  sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}
                   displayData={displayData}
+                  mount={mountSample}
                 />
             </div>
       </div>
