@@ -27,6 +27,9 @@ export class SampleGridItem extends React.Component {
   }
 
 
+  componentDidMount() {
+    this.refs.sampleItem.addEventListener('contextmenu', (e) => this.contextMenu(e), false);
+  }
 
 
   onMouseDown(e) {
@@ -54,6 +57,11 @@ export class SampleGridItem extends React.Component {
     }
   }
 
+
+  contextMenu(e) {
+    // this.props.showSampleGridContextMenu();
+    console.log(e);
+  }
 
 
   toggleMovable(e) {
