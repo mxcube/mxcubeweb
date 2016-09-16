@@ -105,9 +105,8 @@ class SampleGridContainer extends React.Component {
   }
 
   addSamples() {
-    console.log(this.props.picked);
     Object.keys(this.props.picked).map((sampleID) => {
-      this.props.addSample({type: 'Sample', location: sampleID, sampleID: sampleID, sampleName: sampleID, proteinAcronym: sampleID});
+      this.props.addSample(this.props.sampleList[sampleID]);
     });
   }
 

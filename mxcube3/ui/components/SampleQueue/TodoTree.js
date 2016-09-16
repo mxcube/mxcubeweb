@@ -25,15 +25,14 @@ export default class TodoTree extends React.Component {
                 {this.props.list.map((sampleId, id) => {
                   const sampleData = this.props.sampleInformation[sampleId];
                   return (
-                    <div className="node node-sample node-todo">
+                    <div key={id} className="node node-sample node-todo">
                       <div className="task-head">
                         <p className="node-name">
-                          {`Sample ${sampleData.sampleName}`}
+                          {`Sample ${sampleData.sampleID}`}
                           <Button
                             className="pull-right"
                             bsSize="xs"
-                            key={id}
-                            onClick={() => this.props.mount(sampleData.sampleName)}
+                            onClick={() => this.props.mount(sampleData.sampleID)}
                           >
                             Mount
                           </Button>

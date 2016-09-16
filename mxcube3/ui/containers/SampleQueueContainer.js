@@ -23,7 +23,8 @@ function mapStateToProps(state) {
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
-    displayData: state.queue.displayData
+    displayData: state.queue.displayData,
+    manualMount: state.queue.manualMount
   };
 }
 
@@ -52,7 +53,8 @@ export default class SampleQueueContainer extends React.Component {
       showForm,
       queueStatus,
       rootPath,
-      displayData
+      displayData,
+      manualMount
     } = this.props;
     const {
       sendToggleCheckBox,
@@ -72,7 +74,6 @@ export default class SampleQueueContainer extends React.Component {
 
     return (
       <div>
-            <div className="queue-body">
                 <QueueControl
                   historyLength={history.nodes.length}
                   todoLength={todo.nodes.length}
@@ -81,6 +82,7 @@ export default class SampleQueueContainer extends React.Component {
                   runQueue={sendRunQueue}
                   stopQueue={sendStopQueue}
                 />
+              <div className="queue-body">
                 <CurrentTree
                   changeOrder={changeTaskOrder}
                   show={current.collapsed}
@@ -101,6 +103,9 @@ export default class SampleQueueContainer extends React.Component {
                   rootPath={rootPath}
                   collapseTask={collapseTask}
                   displayData={displayData}
+                  manualMount={manualMount}
+                  mount={mountSample}
+                  todoList={todo.nodes}
                 />
                 <TodoTree
                   show={todo.collapsed}
