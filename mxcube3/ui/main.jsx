@@ -36,21 +36,50 @@ function requireAuth(nextState, replace) {
 }
 
 
+class ServerStorage {
+  constructor(serverIO) {
+    this.serverIO = serverIO;
+  }
+
+  setItem(key, value) {
+    if (store.getState().remoteAccess.master) {
+      this.serverIO.uiStorage.setItem(key, value);
+    }
+  }
+
+  getItem(key, cb) {
+    this.serverIO.uiStorage.getItem(key, cb);
+  }
+
+  removeItem(key) {
+    this.serverIO.uiStorage.removeItem(key);
+  }
+
+  getAllKeys(cb) {
+    this.serverIO.uiStorage.getAllKeys(cb);
+  }
+}
+
+
 export default class App extends React.Component {
-  state = {
-    initialized: false
+  constructor(props) {
+    super(props);
+
+    this.state = { initialized: false };
+    this.serverIO = new ServerIO(store.dispatch);
   }
 
   componentWillMount() {
-    this.serverIO = new ServerIO(store.dispatch);
-    this.serverIO.listen();
-
     const persistor = persistStore(store,
-      { blacklist: ['beamline', 'form', 'login', 'sampleview', 'general', 'logger'] }, () => {
-        store.dispatch(getLoginInfo());
-        this.setState({ initialized: true });
-      }
+           { blacklist: ['remoteAccess', 'beamline', 'form', 'login', 'general', 'logger'],
+             storage: new ServerStorage(this.serverIO) },
+             () => {
+               store.dispatch(getLoginInfo());
+               this.setState({ initialized: true });
+             }
     );
+
+    this.serverIO.listen(persistor);
 
     crosstabSync(persistor);
   }
@@ -65,11 +94,12 @@ export default class App extends React.Component {
                <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
                <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
               </Route>
-              <Route path="/login" component={LoginContainer} />
+              <Route path="login" component={LoginContainer} />
             </Router>
           </Provider>);
   }
 }
+
 
 ReactDOM.render(
   <App />,

@@ -9,6 +9,9 @@ export default class MXNavbar extends React.Component {
   render() {
     const proposal = this.props.userInfo.Proposal;
     const propInfo = (this.props.loggedIn ? `${proposal.title} - ${proposal.code}` : '');
+    const raMaster = (this.props.remoteAccessMaster ? 'User in control' : 'Observer mode');
+    const raStyle = (this.props.remoteAccessMaster ? { color: 'white' } : {});
+
     const sampleGrid = (
       <OverlayTrigger
         placement="right"
@@ -17,7 +20,7 @@ export default class MXNavbar extends React.Component {
         )}
       >
         <p
-          className="main-menu-icon text-center"
+          className="text-center"
           eventKey={1}
           active={(this.props.location.pathname === '/')}
         >
@@ -33,6 +36,7 @@ export default class MXNavbar extends React.Component {
         <div className="main-menu text-center">
           <img src={logo} className="main-menu-logo" role="presentation" />
           <hr className="main-menu-breaker" />
+          <div className="main-menu-icons">
           {(process.env.NODE_ENV !== 'production' ? sampleGrid : '')}
           <OverlayTrigger
             placement="right"
@@ -41,7 +45,7 @@ export default class MXNavbar extends React.Component {
             )}
           >
             <p
-              className="main-menu-icon text-center"
+              className="text-center"
               eventKey={1}
               active={(this.props.location.pathname === '/')}
             >
@@ -60,7 +64,7 @@ export default class MXNavbar extends React.Component {
             )}
           >
             <p
-              className="main-menu-icon text-center"
+              className="text-center"
               eventKey={1}
               active={(this.props.location.pathname === '/')}
               href="#/"
@@ -75,7 +79,7 @@ export default class MXNavbar extends React.Component {
             )}
           >
             <p
-              className="main-menu-icon text-center pull-down"
+              className="text-center"
               eventKey={1}
               active={(this.props.location.pathname === '/')}
               href="#/"
@@ -87,6 +91,25 @@ export default class MXNavbar extends React.Component {
               />
             </p>
           </OverlayTrigger>
+          <div className="main-menu-bottom">
+          <OverlayTrigger
+            placement="right"
+            overlay={(
+              <Popover id="ra_master" className="main-menu-tooltip">{raMaster}</Popover>
+            )}
+          >
+            <p
+              className="text-center"
+              style={ raStyle }
+              eventKey={1}
+            >
+              <i
+                className="fa fa-2x fa-universal-access icon"
+                aria-hidden="true"
+              >
+              </i>
+            </p>
+          </OverlayTrigger>
           <OverlayTrigger
             placement="right"
             overlay={(
@@ -94,7 +117,7 @@ export default class MXNavbar extends React.Component {
             )}
           >
             <p
-              className="main-menu-icon text-center main-menu-bottom-icon"
+              className="text-center"
               eventKey={1}
               active={(this.props.location.pathname === '/')}
               href="#/"
@@ -108,7 +131,9 @@ export default class MXNavbar extends React.Component {
               </a>
             </p>
           </OverlayTrigger>
-        </div>
+         </div>
+         </div>
+       </div>
        </div>
     );
   }
