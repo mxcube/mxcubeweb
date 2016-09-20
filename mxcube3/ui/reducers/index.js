@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import login from './login';
 import queue from './queue';
 import sampleGrid from './SamplesGrid';
-import sampleChanger from './sample_changer';
+import sampleChanger from './sampleChanger';
 import taskForm from './taskForm';
 import sampleview from './sampleview';
 import general from './general';

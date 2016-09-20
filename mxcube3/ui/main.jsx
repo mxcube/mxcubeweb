@@ -72,7 +72,8 @@ export default class App extends React.Component {
 
   componentWillMount() {
     const persistor = persistStore(store,
-           { blacklist: ['remoteAccess', 'beamline', 'form', 'login', 'general', 'logger'],
+           { blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+                         'form', 'login', 'general', 'logger'],
              storage: new ServerStorage(this.serverIO) },
              () => {
                store.dispatch(getLoginInfo());
@@ -93,7 +94,7 @@ export default class App extends React.Component {
               <Route path="/" component={Main} onEnter={requireAuth}>
                <IndexRoute component={SampleGridContainer} onEnter={requireAuth} />
                <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
-               <Route path="sample_changer" component={SampleChangerContainer} onEnter={requireAuth} />
+               <Route path="sampleChanger" component={SampleChangerContainer} onEnter={requireAuth} />
                <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
               </Route>
               <Route path="login" component={LoginContainer} />

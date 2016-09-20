@@ -1,6 +1,7 @@
 from flask import session, request, Response, jsonify
 from mxcube3 import app as mxcube
 import logging
+import time
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
 def get_samples_list():
@@ -62,6 +63,26 @@ def get_sc_contents():
 
     return jsonify(contents)
 
+@mxcube.route("/mxcube/api/v0.1/sample_changer/select/<loc>", methods=['GET'])
+def select_location(loc):
+    mxcube.sample_changer.select(loc)
+    return get_sc_contents()
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/scan/<loc>", methods=['GET'])
+def scan_location(loc):
+    # do a recursive scan
+    mxcube.sample_changer.scan(loc, True)
+    return get_sc_contents()
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
+def mount_sample(loc):
+    mxcube.sample_changer.load(loc)
+    return get_sc_contents()
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
+def unmount_sample(loc):
+    mxcube.sample_changer.unload(loc)
+    return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/<sample_location>/mount", methods=['PUT'])
 def mountSample(sample_location):
