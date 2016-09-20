@@ -94,9 +94,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { sampleList });
     }
     case 'SET_SAMPLE_ORDER': {
-      const reorderKeys = Object.keys(action.keys).map(key => (action.keys[key] ? key : ''));
-      const sampleList = recalculateQueueOrder(reorderKeys, action.order, state);
-
+      const sampleList = recalculateQueueOrder(Object.keys(state.queue), action.order, state);
       return Object.assign({}, state, { sampleList });
     }
     case 'SET_SAMPLES_INFO': {
@@ -148,7 +146,9 @@ export default (state = initialState, action) => {
       const data = { manualMount: { ...state.manualMount, set: action.manual } };
       return Object.assign({}, state, data);
     }
-
+    case 'CLEAR_QUEUE': {
+      return Object.assign({}, state, { queue: {} });
+    }
     // Adding sample to queue
     case 'ADD_SAMPLE': {
       const sampleList = { ...state.sampleList };

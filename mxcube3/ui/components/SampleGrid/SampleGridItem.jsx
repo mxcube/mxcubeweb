@@ -3,7 +3,6 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
-
 import './SampleGrid.css';
 
 
@@ -59,8 +58,7 @@ export class SampleGridItem extends React.Component {
 
 
   contextMenu(e) {
-    // this.props.showSampleGridContextMenu();
-    console.log(e);
+    e.preventDefault();
   }
 
 

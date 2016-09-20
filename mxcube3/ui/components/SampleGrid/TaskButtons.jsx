@@ -1,5 +1,5 @@
 import React from 'react';
-import { Glyphicon, DropdownButton, MenuItem } from 'react-bootstrap';
+import { Glyphicon, DropdownButton, MenuItem, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 export default class SampleTaskButtons extends React.Component {
   constructor(props) {
@@ -14,24 +14,40 @@ export default class SampleTaskButtons extends React.Component {
                          { ...this.props.defaultParameters[formName.toLowerCase()] }
                        };
 
-    this.props.showForm(formName, Object.keys(this.props.selected), parameters);
+    const selected = []
+    
+    for (let sampleID in this.props.selected) {
+      if (this.props.selected[sampleID]){
+          selected.push(sampleID);
+      }
+    }
+
+    this.props.showForm(formName, selected, parameters);
   }
 
 
   render() {
     return (
-      <DropdownButton
-        bsStyle="default"
-        title={<span><Glyphicon glyph="plus" /> Add tasks </span>}
-        id="pipeline-mode-dropdown"
+      <OverlayTrigger
+          placement="top"
+          overlay={(<Tooltip>Add Tasks</Tooltip>)}
       >
-      <MenuItem eventKey="1" onClick={this.showCharacterisationForm}>
-          Characterisation
-        </MenuItem>
-        <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
-          Data collection
-        </MenuItem>
-      </DropdownButton>
+        <DropdownButton
+          bsStyle="default"
+          title={<span><Glyphicon glyph="plus" /></span>}
+          id="pipeline-mode-dropdown"
+        >
+          <MenuItem eventKey="1" onClick={this.props.addSelectedSamples}>
+            Sample
+          </MenuItem>        
+          <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
+            Data collection
+          </MenuItem>
+          <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
+            Characterisation
+          </MenuItem>
+        </DropdownButton>
+      </OverlayTrigger>
     );
   }
 }

@@ -17,8 +17,8 @@
 */
 const INITIAL_STATE = { selected: {},
                         order: {},
-                        picked: {},
                         moving: {},
+                        contextMenu: {},
                         filterText: '' };
 
 /**
@@ -39,26 +39,6 @@ function initialGridOrder(sampleList) {
   }
 
   return gridOrder;
-}
-
-
-/**
- * Toggle picked state of keys
- *
- * @param {Array} keys - keys to toggle
- * @param {Object} state - redux state object
- * @returns {Object} - Object containing key, picked (boolean) pairs
- *
- */
-function togglePicked(keys, state) {
-  const picked = Object.assign({}, state.picked);
-
-  // Toggle pick state for each key
-  for (const key of keys) {
-    picked[key] = !picked[key];
-  }
-
-  return picked;
 }
 
 
@@ -122,27 +102,10 @@ export default (state = INITIAL_STATE, action) => {
       selected[action.sampleID] = (!state.selected[action.sampleID]);
       return Object.assign({}, state, { selected });
     }
-    // Flag a range of samples as picked (for collect)
-    case 'PICK_SAMPLES': {
-      const picked = Object.assign({}, state.picked, action.keys);
-      return Object.assign({}, state, { picked });
-    }
-    case 'TOGGLE_PICKED_SAMPLES': {
-      const keys = [];
-
-      Object.keys(state.selected).map((value) => {
-        if (state.selected[value]) {
-          keys.push(value);
-        }
-
-        return value;
-      });
-
-      const picked = togglePicked(keys, state);
-      return Object.assign({}, state, { picked });
-    }
-    case 'CLEAR_PICKED': {
-      return Object.assign({}, state, { picked: {} });
+    case 'SAMPLE_GRID_CONTEXT_MENU': {
+      return Object.assign({}, state, { contextMenu: { x: action.x,
+                                                       y: action.y,
+                                                       show: action.show } });
     }
     case 'FILTER_SAMPLE_LIST': {
       return Object.assign({}, state, { filterText: action.filterText });
