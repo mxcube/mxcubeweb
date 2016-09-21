@@ -6,6 +6,7 @@ const initialState = {
   distancePoints: [],
   zoom: 0,
   points: {},
+  lines: [],
   width: 659,
   height: 493,
   motorSteps: {
@@ -20,7 +21,6 @@ const initialState = {
   },
   pixelsPerMm: 0,
   imageRatio: 0,
-  contextMenu: { show: false, shape: { type: 'NONE' }, x: 0, y: 0 },
   apertureList: [],
   currentAperture: 0,
   currentPhase: '',
@@ -60,6 +60,10 @@ export default (state = initialState, action) => {
             }
         );
       }
+    case 'ADD_LINE':
+      {
+        return { ...state, lines: [...state.lines, { p1: action.p1, p2: action.p2 }] };
+      }
     case 'MEASURE_DISTANCE':
       {
         return { ...state, measureDistance: action.mode, distancePoints: [] };
@@ -80,6 +84,12 @@ export default (state = initialState, action) => {
       {
         return { ...state, points: { ...state.points, [action.point.posId]: action.point } };
       }
+    case 'DELETE_LINE':
+      {
+        return { ...state,
+          lines: [...state.lines.slice(0, action.id), ...state.lines.slice(action.id + 1)]
+        };
+      }
     case 'DELETE_POINT':
       {
         return { ...state, points: omit(state.points, action.id) };
@@ -96,17 +106,6 @@ export default (state = initialState, action) => {
     case 'UPDATE_POINTS_POSITION':
       {
         return { ...state, points: action.points };
-      }
-    case 'SHOW_CONTEXT_MENU':
-      {
-        return {
-          ...state,
-          contextMenu: {
-            show: action.show,
-            shape: action.shape,
-            x: action.x, y: action.y
-          }
-        };
       }
     case 'SET_IMAGE_RATIO':
       {
@@ -131,11 +130,11 @@ export default (state = initialState, action) => {
       }
     case 'MOUNT_SAMPLE':
       {
-        return { ...state, points: {} };
+        return { ...state, points: {}, lines: [] };
       }
     case 'UNMOUNT_SAMPLE':
       {
-        return { ...state, points: {} };
+        return { ...state, points: {}, lines: [] };
       }
     case 'SET_STEP_SIZE':
       {
@@ -147,6 +146,13 @@ export default (state = initialState, action) => {
                  zoom: action.data.zoom.position,
                  pixelsPerMm: action.data.pixelsPerMm[0]
                };
+      }
+    case 'CLEAR_ALL':
+      {
+        return Object.assign({},
+          state,
+          { lines: [], points: {}, distancePoints: [], clickCentringPoints: [] }
+        );
       }
     case 'SET_INITIAL_STATUS':
       {
@@ -161,7 +167,8 @@ export default (state = initialState, action) => {
           beamPosition: action.data.beamInfo.position,
           beamShape: action.data.beamInfo.shape,
           beamSize: { x: action.data.beamInfo.size_x, y: action.data.beamInfo.size_y },
-          points: action.data.points
+          points: action.data.points,
+          lines: []
         };
       }
     default:

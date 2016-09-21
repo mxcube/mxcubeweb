@@ -369,6 +369,23 @@ def set_dc_params(model, entry, task_data):
                 _cpos.index = int(params['point'])
                 acq.acquisition_parameters.centred_position = _cpos
 
+    if params["helical"]:
+        model.experiment_type = qmo.EXPERIMENT_TYPE.HELICAL
+        if int(params["p1"]) > 0:
+            for cpos in mxcube.diffractometer.savedCentredPos:
+                if cpos['posId'] == int(params['point']):
+                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
+                    _cpos.index = int(params['point'])
+                    acq.acquisition_parameters.centred_position = _cpos
+        if int(params["p2"]) > 0:
+            acq2 = model.acquisitions[1]
+            for cpos in mxcube.diffractometer.savedCentredPos:
+                if cpos['posId'] == int(params['point']):
+                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
+                    _cpos.index = int(params['point'])
+                    acq2.acquisition_parameters.centred_position = _cpos
+
+
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
 

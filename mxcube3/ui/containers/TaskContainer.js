@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
+import Helical from '../components/Tasks/Helical';
 import AddSample from '../components/Tasks/AddSample';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
@@ -69,6 +70,23 @@ class TaskContainer extends React.Component {
           sampleList={this.props.sampleList}
         />
 
+        <Helical
+          pointId={this.props.pointId}
+          sampleIds={this.props.sampleIds}
+          taskData={this.props.taskData}
+          addSampleAndTask={this.props.addSampleAndTask}
+          changeTask={this.props.changeTask}
+          addTask={this.props.addTask}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          show={this.props.showForm === 'Helical'}
+          rootPath={this.props.path}
+          queue={this.props.queue}
+          sampleList={this.props.sampleList}
+          setQueueAndRun={this.props.setQueueAndRun}
+          lines={this.props.lines}
+        />
+
         <AddSample
           hide={this.props.hideTaskParametersForm}
           show={this.props.showForm === 'AddSample'}
@@ -89,10 +107,10 @@ function mapStateToProps(state) {
     taskData: state.taskForm.taskData,
     sampleIds: state.taskForm.sampleIds,
     pointId: state.taskForm.pointId,
-    defaultParameters: state.taskForm.defaultParameters,
     manualMountID: state.queue.manualMount.id,
     apertureList: state.sampleview.apertureList,
-    path: state.queue.rootPath
+    path: state.queue.rootPath,
+    lines: state.sampleview.lines
   };
 }
 

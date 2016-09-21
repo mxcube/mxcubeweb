@@ -31,7 +31,6 @@ export default class TodoTree extends React.Component {
     });
 
     const list = this.filter(this.props.list, this.state.searchWord);
-
     return (
             <div className="m-tree">
                 <div className="list-head">

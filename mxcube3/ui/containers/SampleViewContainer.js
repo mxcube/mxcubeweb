@@ -32,7 +32,7 @@ class SampleViewContainer extends Component {
             <div className="row">
               <div className="col-xs-12">
                 <ContextMenu
-                  {...this.props.sampleViewState.contextMenu}
+                  {...this.props.contextMenu}
                   sampleActions={this.props.sampleViewActions}
                   showForm={this.props.showForm}
                   sampleId={sampleId}
@@ -42,8 +42,9 @@ class SampleViewContainer extends Component {
                 />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
-                  sampleViewState={this.props.sampleViewState}
+                  {...this.props.sampleViewState}
                   beamline={this.props.beamline}
+                  contextMenuVisible={this.props.contextMenu.show}
                 />
               </div>
             </div>
@@ -63,9 +64,9 @@ function mapStateToProps(state) {
     current: state.queue.current,
     sampleInformation: state.queue.sampleList,
     sampleViewState: state.sampleview,
+    contextMenu: state.contextMenu,
     beamline: state.beamline,
-    defaultParameters: state.taskForm.defaultParameters,
-    logMessages: state.logger.logRecords
+    defaultParameters: state.taskForm.defaultParameters
   };
 }
 

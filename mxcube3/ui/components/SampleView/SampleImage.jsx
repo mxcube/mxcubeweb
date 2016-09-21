@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { makePoints, makeImageOverlay } from './shapes';
+import { makePoints, makeLines, makeImageOverlay } from './shapes';
 import SampleControls from './SampleControls';
 import 'fabric';
 const fabric = window.fabric;
@@ -35,12 +35,11 @@ export default class SampleImage extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { width, cinema } = this.props.sampleViewState;
-    if (nextProps.sampleViewState.width !== width || nextProps.sampleViewState.cinema !== cinema) {
+    const { width, cinema } = this.props;
+    if (nextProps.width !== width || nextProps.cinema !== cinema) {
       this.setImageRatio();
-    } else {
-      this.renderSampleView(nextProps);
     }
+    this.renderSampleView(nextProps);
   }
 
   componentWillUnmount() {
@@ -52,22 +51,20 @@ export default class SampleImage extends React.Component {
     this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
   }
   goToBeam(e) {
-    const { sampleActions, sampleViewState } = this.props;
-    const { imageRatio } = sampleViewState;
+    const { sampleActions, imageRatio } = this.props;
     const { sendGoToBeam } = sampleActions;
     sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
   }
 
   drawCanvas(imageRatio) {
     // Getting the size of screen
-    const { width, height } = this.props.sampleViewState;
+    const { width, height } = this.props;
     const w = width / imageRatio;
     const h = height / imageRatio;
     // Set the size of the original html Canvas
     const canvasWindow = document.getElementById('canvas');
     canvasWindow.width = w;
     canvasWindow.height = h;
-
     // Set the size of the created FabricJS Canvas
     this.canvas.setDimensions({ width: w, height: h });
     this.canvas.renderAll();
@@ -79,32 +76,42 @@ export default class SampleImage extends React.Component {
     document.getElementById('insideWrapper').style.height = `${h}px`;
   }
 
+
   rightClick(e) {
-    const { sampleActions, contextMenuShow } = this.props;
+    const group = this.canvas.getActiveGroup();
+    const { sampleActions } = this.props;
     const { showContextMenu } = sampleActions;
     let objectFound = false;
     const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
     e.preventDefault();
-    if (contextMenuShow) {
-      showContextMenu(false);
-    }
+
     this.canvas.forEachObject((obj) => {
       if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
         objectFound = true;
+        this.canvas.setActiveObject(obj);
         showContextMenu(true, obj, obj.left, obj.top);
       }
     });
-    if (!objectFound) {
+
+    if (group && group.containsPoint(clickPoint) && group.getObjects().length === 2) {
+      const points = group.getObjects();
+
+      showContextMenu(true, {
+        type: 'GROUP',
+        p1: points[0].id,
+        p2: points[1].id },
+        e.offsetX, e.offsetY);
+    } else if (!objectFound) {
       showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
     }
   }
 
   leftClick(option) {
-    const { sampleActions, sampleViewState } = this.props;
-    const { clickCentring, measureDistance, imageRatio, contextMenu } = sampleViewState;
-    if (contextMenu.show) {
+    const { sampleActions, clickCentring, measureDistance, imageRatio, contextMenuVisible } = this.props;
+    if (contextMenuVisible) {
       sampleActions.showContextMenu(false);
-    } else if (clickCentring) {
+    }
+    if (clickCentring) {
       sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     } else if (measureDistance) {
       sampleActions.addDistancePoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
@@ -114,8 +121,7 @@ export default class SampleImage extends React.Component {
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
-    const { sampleActions, sampleViewState } = this.props;
-    const { motorSteps, zoom } = sampleViewState;
+    const { sampleActions, motorSteps, zoom } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     const motors = this.props.beamline.motors;
     if (e.ctrlKey && motors.phi.Status === 2) {
@@ -147,8 +153,9 @@ export default class SampleImage extends React.Component {
     }
   }
 
-
   renderSampleView(nextProps) {
+    const group = this.canvas.getActiveGroup();
+    const selection = this.canvas.getActiveObject();
     const {
       imageRatio,
       beamPosition,
@@ -157,8 +164,9 @@ export default class SampleImage extends React.Component {
       clickCentringPoints,
       distancePoints,
       points,
+      lines,
       pixelsPerMm
-    } = nextProps.sampleViewState;
+    } = nextProps;
     this.drawCanvas(imageRatio);
     this.canvas.add(...makeImageOverlay(
       imageRatio,
@@ -170,7 +178,35 @@ export default class SampleImage extends React.Component {
       distancePoints,
       this.canvas
     ));
-    this.canvas.add(...makePoints(points, imageRatio));
+    const fabricSelectables = [
+      ...makePoints(points, imageRatio),
+      ...makeLines(lines, points, imageRatio)
+    ];
+    this.canvas.add(...fabricSelectables);
+    if (group && nextProps.contextMenuVisible) {
+      const groupIDs = group.getObjects().map((shape) => shape.id);
+      const selectedShapes = [];
+      fabricSelectables.forEach((shape) => {
+        if (groupIDs.includes(shape.id)) {
+          shape.active = true;
+          selectedShapes.push(shape);
+        }
+      });
+      this.canvas.setActiveGroup(
+        new fabric.Group(
+          selectedShapes,
+          {
+            originX: 'center',
+            originY: 'center'
+          })
+      );
+    } else if (selection) {
+      fabricSelectables.forEach((shape) => {
+        if (shape.id === selection.id) {
+          this.canvas.setActiveObject(shape);
+        }
+      });
+    }
   }
 
 
@@ -189,9 +225,7 @@ export default class SampleImage extends React.Component {
             </div>
         </div>
         <SampleControls
-          sampleActions={this.props.sampleActions}
-          sampleViewState={this.props.sampleViewState}
-          beamline={this.props.beamline}
+          {...this.props}
           canvas={this.canvas}
         />
       </div>
