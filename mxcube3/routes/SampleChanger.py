@@ -1,6 +1,15 @@
-from flask import session, request, Response, jsonify
-from mxcube3 import app as mxcube
 import logging
+
+import signals
+
+from flask import Response, jsonify
+from mxcube3 import app as mxcube
+
+
+def init_signals():
+    """Initialize hwobj signals."""
+    mxcube.sample_changer.connect('stateChanged', signals.sc_state_changed)
+
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
 def get_samples_list():
@@ -14,30 +23,30 @@ def get_samples_list():
                  "sampleID": s.getAddress(),
                  "location": ":".join(map(str, s.getCoords())),
                  "code": sample_dm,
-                 "type": "Sample"
+                 "type": "Sample",
+                 "sampleName": "XTAL01",
+                 "proteinAcronym": "TRYP"
                 }
              }
             )
     return jsonify(samples)
 
 
-@mxcube.route("/mxcube/api/v0.1/sample_changer/<sample_location>/mount", methods=['PUT'])
-def mountSample(sample_location):
+@mxcube.route("/mxcube/api/v0.1/sample_changer/<sample>/mount", methods=['PUT'])
+def mountSample(sample):
     # Most of this code should be moved to diffractometer or more general
     # beamline object. The route should probably not know details about if
     # the diffractometer has phase ... We should just need to do
     # beamline.mount_sample(location)
    
     try:
+        pass
         # We are not using the sample changer to mount the sample, set
         # centering phase directly
-        if not mxcube.diffractometer.use_sc:
-            mxcube.diffractometer.set_phase("Centring")
+        #if not mxcube.diffractometer.use_sc:
+        #    mxcube.diffractometer.set_phase("Centring")
 
-        # Make the necessary call to load sample on location sample_location
-        # The underlying sample changer object should handle mounting from
-        # string repr
-        # mxcube.sample_changer.load_sample(sample_location)
+        mxcube.sample_changer.load(sample, False)
 
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
@@ -47,7 +56,7 @@ def mountSample(sample_location):
         mxcube.diffractometer.savedCentredPos = []
         mxcube.diffractometer.savedCentredPosCount = 1
 
-        logging.getLogger('HWR').info('[SC] mounted %s' % sample_location)
+        logging.getLogger('HWR').info('[SC] mounted %s' % sample)
 
         return Response(status=200)
 
@@ -55,23 +64,19 @@ def mountSample(sample_location):
 @mxcube.route("/mxcube/api/v0.1/sample_changer/<sample>/unmount", methods=['PUT'])
 def unmountSample(sample):
     try:
-        sampleNode = mxcube.queue.get_node(int(sample))
-        sampleLocation = sampleNode.location
-
         use_sc = mxcube.diffractometer.use_sc
-        if use_sc is False: # manual, not using sample_changer
+
+        if not use_sc: 
             mxcube.diffractometer.set_phase("Transfer")
             return Response(status=200)
+
+        mxcube.sample_changer.unload(sample, False)
 
         #Remove Centring points
         mxcube.diffractometer.savedCentredPos = []
         mxcube.diffractometer.savedCentredPosCount = 1
 
-        # move to history
-
-        #mxcube.sample_changer.load_sample
-        #TODO: figure out how to identify the sample for the sc, selectsample&loadsamplae&etc
-        logging.getLogger('HWR').info('[SC] %s sample mounted, location: %s' % (sample, sampleLocation))
+        logging.getLogger('HWR').info('[SC] %s un-mounted %s' % sample)
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')

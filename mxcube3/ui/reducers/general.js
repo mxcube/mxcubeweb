@@ -11,7 +11,12 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_LOADING':
       {
-        return { ...state, loading: action.loading };
+        return { ...state,
+                 loading: action.loading,
+                 title: action.title,
+                 message: action.message,
+                 blocking: action.blocking
+               };
       }
     case 'SHOW_ERROR_PANEL':
       {

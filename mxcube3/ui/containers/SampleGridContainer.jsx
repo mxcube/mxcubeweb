@@ -11,16 +11,17 @@ import {
   SplitButton,
   DropdownButton,
   MenuItem,
-  ButtonGroup
+  ButtonGroup,
+  OverlayTrigger,
+  Tooltip
 } from 'react-bootstrap';
 
 import {
-  toggleSelectedAction,
-  pickAllAction,
   filterAction,
   toggleMovableAction,
   selectAction,
-  pickSamplesAction
+  toggleSelectedAction,
+  showSampleGridContextMenu
 } from '../actions/SamplesGrid';
 
 import {
@@ -29,12 +30,12 @@ import {
   sendManualMount,
   setSampleOrderAction,
   deleteTask,
+  deleteSample,
+  sendClearQueue,
   addSample
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
-import SampleTaskButtons from '../components/SampleGrid/TaskButtons';
-
 import SampleGrid from '../components/SampleGrid/SampleGrid';
 import { SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 import '../components/SampleGrid/SampleGrid.css';
@@ -46,13 +47,65 @@ class SampleGridContainer extends React.Component {
     super(props);
     this.syncSamples = this.syncSamples.bind(this);
 
-    this.showAddSample = props.showTaskParametersForm.bind(this, 'AddSample');
     this.manualMount = this.manualMount.bind(this);
     this.filterSampleGrid = this.filterSampleGrid.bind(this);
     this.filterSampleGridClear = this.filterSampleGridClear.bind(this);
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
-    this.pickSelectedSamples = this.pickSelectedSamples.bind(this);
-    this.addSamples = this.addSamples.bind(this);
+    this.addSelectedSamples = this.addSelectedSamples.bind(this);
+    this.toggleAddDeleteSelectedSamples = this.toggleAddDeleteSelectedSamples.bind(this);
+    this.addAllSamples = this.addAllSamples.bind(this);
+    this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
+    this.removeAllSamples = this.removeAllSamples.bind(this);
+    this.selectAllSamples = this.selectAllSamples.bind(this);
+    this.showAddSampleForm = this.props.showTaskParametersForm.bind(this, 'AddSample');
+    this.showCharacterisationForm = this.handleSubmit.bind(this, 'Characterisation');
+    this.showDataCollectionForm = this.handleSubmit.bind(this, 'DataCollection');
+    this.onClick = this.onClick.bind(this);
+  }
+
+
+  componentDidMount() {
+    document.addEventListener('click', this.onClick, false);
+  }
+
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.queue.queue !== this.props.queue.queue) {
+      this.props.setSampleOrderAction(nextProps.order);
+    }
+  }
+
+
+  onClick(e) {
+    let res = true;
+
+    if (e.target.className === 'samples-grid-item-tasks' && e.button === 2) {
+      document.getElementById('contextMenu').style.top = `${e.clientY - 2}px`;
+      document.getElementById('contextMenu').style.left = `${e.clientX - 65}px`;
+      document.getElementById('contextMenu').style.display = 'block';
+      res = false;
+    } else {
+      document.getElementById('contextMenu').style.display = 'none';
+    }
+
+    return res;
+  }
+
+
+  handleSubmit(formName) {
+    const parameters = { parameters:
+                         { ...this.props.defaultParameters[formName.toLowerCase()] }
+                       };
+
+    const selected = [];
+
+    for (const sampleID in this.props.selected) {
+      if (this.props.selected[sampleID]) {
+        selected.push(sampleID);
+      }
+    }
+
+    this.props.showTaskParametersForm(formName, selected, parameters);
   }
 
 
@@ -84,6 +137,7 @@ class SampleGridContainer extends React.Component {
     this.filterSampleGrid();
   }
 
+
   filterSampleGridPicked() {
     this.refs.filterInput.getInputDOMNode().value = 'is:picked';
     this.filterSampleGrid();
@@ -91,7 +145,7 @@ class SampleGridContainer extends React.Component {
 
 
   numSamplesPicked() {
-    return Object.values(this.props.picked).filter(value => value === true).length;
+    return Object.keys(this.props.queue.queue).length;
   }
 
 
@@ -102,12 +156,6 @@ class SampleGridContainer extends React.Component {
 
   numSamples() {
     return Object.keys(this.props.sampleList).length;
-  }
-
-  addSamples() {
-    Object.keys(this.props.picked).map((sampleID) => {
-      this.props.addSample(this.props.sampleList[sampleID]);
-    });
   }
 
 
@@ -131,10 +179,51 @@ class SampleGridContainer extends React.Component {
   }
 
 
-  pickSelectedSamples() {
-    const keys = Object.assign({}, this.props.selected, this.props.picked);
-    this.props.pickSamplesAction(this.props.selected);
-    this.props.setSampleOrderAction(this.props.order, keys);
+  selectAllSamples() {
+    this.props.selectSamples(Object.keys(this.props.sampleList));
+  }
+
+
+  toggleAddDeleteSelectedSamples() {
+    for (const sampleID in this.props.selected) {
+      if (this.props.queue.queue[sampleID]) {
+        this.props.deleteSample(sampleID);
+      } else {
+        this.props.addSample(this.props.sampleList[sampleID]);
+      }
+    }
+  }
+
+
+  addAllSamples() {
+    for (const sampleID of Object.keys(this.props.selected)) {
+      if (this.props.queue.queue[sampleID]) {
+        this.props.addSample(sampleID);
+      }
+    }
+  }
+
+
+  addSelectedSamples() {
+    for (const sampleID of Object.keys(this.props.selected)) {
+      this.props.addSample(this.props.sampleList[sampleID]);
+    }
+  }
+
+
+  removeSelectedSamples() {
+    for (const sampleID of Object.keys(this.props.selected)) {
+      if (this.props.queue.queue[sampleID]) {
+        this.props.deleteSample(sampleID);
+      }
+    }
+  }
+
+
+  removeAllSamples() {
+    for (const sampleID of Object.keys(this.props.queue.queue)) {
+      this.props.deleteSample(sampleID);
+    }
   }
 
 
@@ -153,13 +242,30 @@ class SampleGridContainer extends React.Component {
 
     return (
       <StickyContainer>
+        <ul id="contextMenu" style={{ display: 'none' }} className="dropdown-menu" role="menu">
+          <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>
+          <MenuItem eventKey="1" onClick={this.addSelectedSamples}>
+            Sample
+          </MenuItem>
+          <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
+            Data collection
+          </MenuItem>
+          <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
+            Characterisation
+          </MenuItem>
+          <MenuItem divider />
+          <MenuItem header><span><Glyphicon glyph="minus" /> Remove </span></MenuItem>
+          <MenuItem eventKey="1" onClick={this.removeSelectedSamples}>
+            Remove tasks
+          </MenuItem>
+        </ul>
         <div style={{ marginBottom: '20px' }} className="row row-centered">
           <div className="col-centered" >
             <ButtonToolbar>
               <SplitButton
                 bsStyle="primary"
                 title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
-                onClick={this.props.manualMount ? this.showAddSample : this.props.getSamples}
+                onClick={this.props.manualMount ? this.showAddSampleForm : this.props.getSamples}
                 onSelect={this.manualMount}
                 id="split-button-sample-changer-selection"
               >
@@ -183,29 +289,67 @@ class SampleGridContainer extends React.Component {
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div className="col-xs-6">
+            <div className="col-xs-9">
               <div className="form-inline">
-                <span>Pick for collect: </span>
-                <ButtonGroup>
-                  <Button
-                    onClick={this.props.selectAll}
-                    disabled={this.props.manualMount}
+                <OverlayTrigger
+                  placement="top"
+                  overlay={(<Tooltip>Select samples</Tooltip>)}
+                >
+                  <DropdownButton
+                    bsStyle="default"
+                    title={<span><Glyphicon glyph="unchecked" /></span>}
+                    id="pipeline-mode-dropdown"
                   >
-                  All
-                  </Button>
-                  <Button
-                    onClick={this.pickSelectedSamples}
-                    disabled={this.props.manualMount}
+                    <MenuItem eventKey="1" onClick={this.selectAllSamples}>
+                      All
+                    </MenuItem>
+                    <MenuItem eventKey="1" onClick={this.selectAllSamples}>
+                      None
+                    </MenuItem>
+                    <MenuItem eventKey="1" onClick={this.selectAllSamples}>
+                      Un-collected
+                    </MenuItem>
+                  </DropdownButton>
+                </OverlayTrigger>
+                <span style={{ marginLeft: '1em' }} ></span>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={(<Tooltip>Add Tasks</Tooltip>)}
+                >
+                  <DropdownButton
+                    bsStyle="default"
+                    title={<span><Glyphicon glyph="plus" /></span>}
+                    id="pipeline-mode-dropdown"
                   >
-                    Selected
-                  </Button>
-                  <Button
-                    onClick={this.props.unselectAll}
-                    disabled={this.props.manualMount}
+                    <MenuItem eventKey="1" onClick={this.addSelectedSamples}>
+                      Sample
+                    </MenuItem>
+                    <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
+                      Data collection
+                    </MenuItem>
+                    <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
+                      Characterisation
+                    </MenuItem>
+                  </DropdownButton>
+                </OverlayTrigger>
+                <span style={{ marginLeft: '1em' }} ></span>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={(<Tooltip>Remove Tasks</Tooltip>)}
+                >
+                  <DropdownButton
+                    bsStyle="default"
+                    title={<span><Glyphicon glyph="minus" /></span>}
+                    id="pipeline-mode-dropdown"
                   >
-                    None
-                  </Button>
-                </ButtonGroup>
+                    <MenuItem eventKey="1" onClick={this.removeAllSamples}>
+                      All
+                    </MenuItem>
+                    <MenuItem eventKey="2" onClick={this.removeSelectedSamples}>
+                      Selected
+                    </MenuItem>
+                  </DropdownButton>
+                </OverlayTrigger>
                 <span style={{ marginLeft: '5em' }}>Filter: </span>
                 <Input
                   type="text"
@@ -214,19 +358,20 @@ class SampleGridContainer extends React.Component {
                   buttonAfter={innerSearchIcon}
                   onChange={this.filterSampleGrid}
                 />
+                <span style={{ marginLeft: '5em' }} >Grid size: </span>
+                <ButtonGroup>
+                  <Button>S</Button>
+                  <Button>M</Button>
+                  <Button>L</Button>
+                </ButtonGroup>
+                <span style={{ marginLeft: '5em' }} ></span>
               </div>
              </div>
              <div className="col-xs-2 pull-right">
-               <SampleTaskButtons
-                 defaultParameters={this.props.defaultParameters}
-                 showForm={this.props.showTaskParametersForm}
-                 selected={this.props.selected}
-               />
                <Button
                  className="btn btn-success pull-right"
+                 href="#/datacollection"
                  disabled={this.isCollectDisabled()}
-                 href="/#datacollection"
-                 onClick={this.addSamples}
                >
                  Collect {this.numSamplesPicked()}/{this.numSamples()}
                  <Glyphicon glyph="chevron-right" />
@@ -241,7 +386,6 @@ class SampleGridContainer extends React.Component {
               order={this.props.order}
               setSampleOrder={this.props.setSampleOrderAction}
               selected={this.props.selected}
-              toggleSelected={this.props.toggleSelected}
               filterText={this.props.filterText}
               queue={this.props.queue}
               showTaskParametersForm={this.props.showTaskParametersForm}
@@ -249,9 +393,10 @@ class SampleGridContainer extends React.Component {
               toggleMovable={this.props.toggleMovableAction}
               moving={this.props.moving}
               gridWidth={gridWidth}
-              picked={this.props.picked}
-              select={this.props.select}
-              pickSelected={this.pickSelectedSamples}
+              select={this.props.selectSamples}
+              pickSelected={this.toggleAddDeleteSelectedSamples}
+              toggleSelectedSample={this.props.toggleSelectedSample}
+              showSampleGridContextMenu={this.props.showSampleGridContextMenu}
             />
           </div>
         </div>
@@ -270,26 +415,26 @@ function mapStateToProps(state) {
     manualMount: state.queue.manualMount.set,
     filterText: state.sampleGrid.filterText,
     order: state.sampleGrid.order,
-    picked: state.sampleGrid.picked
+    sampleGridContextMenu: state.sampleGrid.contextMenu
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleList()),
-    setSampleOrderAction: (order, picked) => dispatch(setSampleOrderAction(order, picked)),
-    toggleSelected: (index) => dispatch(toggleSelectedAction(index)),
-    selectAll: () => dispatch(pickAllAction(true)),
-    unselectAll: () => dispatch(pickAllAction(false)),
+    setSampleOrderAction: (order) => dispatch(setSampleOrderAction(order)),
     filter: (filterText) => dispatch(filterAction(filterText)),
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
     setManualMount: (manual) => dispatch(sendManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
-    select: (keys) => dispatch(selectAction(keys)),
-    pickSamplesAction: (keys) => dispatch(pickSamplesAction(keys)),
-    addSample: (sampleData) => dispatch(addSample(sampleData))
+    selectSamples: (keys) => dispatch(selectAction(keys)),
+    toggleSelectedSample: (keys) => dispatch(toggleSelectedAction(keys)),
+    deleteSample: (sampleID) => dispatch(deleteSample(sampleID)),
+    sendClearQueue: () => dispatch(sendClearQueue()),
+    addSample: (sampleData) => dispatch(addSample(sampleData)),
+    showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
   };
 }
 

@@ -17,7 +17,7 @@ def connect():
     # to the server, but we don't need to do anything more
     pass
 
-collect_signals = ['collectStarted', 'collectEnded', 'testSignal', 'warning']
+collect_signals = ['collectStarted', 'testSignal', 'warning']
 collect_osc_signals = ['collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
 beam_signals = ['beamPosChanged', 'beamInfoChanged']
 
@@ -41,13 +41,13 @@ samplechanger_signals = {}
 moveables_signals = {}
 
 task_signals = {  # missing egyscan, xrf, etc...
-    'collectStarted':               'Data collecion has started',
-    'collectOscillationStarted':    'Data collecion oscillation has started',
-    'collectOscillationFailed':     'Data collecion oscillacion has failed',
-    'collectOscillationFinished':   'Data collecion oscillacion has finished',
-    'collectEnded':                 'Data collecion has finished',
+    'collectStarted':               'Data collection has started',
+    'collectOscillationStarted':    'Data collection oscillation has started',
+    'collectOscillationFailed':     'Data collection oscillacion has failed',
+    'collectOscillationFinished':   'Data collection oscillacion has finished',
+    'collectEnded':                 'Data collection has finished',
     'warning':                      'Data collection finished with a warning',
-    'collect_finished':             'Data collecion has finished'
+    'collect_finished':             'Data collection has finished'
 }
 
 motor_signals = {
@@ -81,7 +81,72 @@ def get_signal_result(signal):
     for sig in warnSignals:
         if sig in signal:
             result = 4
+
     return result
+
+
+def get_signal_progress(signal):
+    result = 0
+    for sig in progressSignals:
+        if sig in signal:
+            result = 50
+    for sig in okSignals:
+        if sig in signal:
+            result = 100
+    for sig in failedSignals:
+        if sig in signal:
+            result = 100
+    for sig in warnSignals:
+        if sig in signal:
+            result = 100
+    return result
+
+
+def sc_state_changed(new_state, old_state):
+    if new_state == 3:
+        msg = {'signal': 'wait',
+               'title': 'Loading sample',
+               'message': 'Please wait while loading sample',
+               'show': True,
+               'blocking': True}
+
+        socketio.emit('dialog', msg, namespace='/hwr')
+        
+    elif new_state in [1, 2]:
+        msg = {'signal': 'wait',
+               'title': '',
+               'message': '',
+               'show': False }
+    
+        socketio.emit('dialog', msg, namespace='/hwr')
+
+
+def centring_started(method, *args):
+    print("Please center sample")
+
+
+def queue_execution_started(entry):
+    msg = {'Signal': 'QueueStarted',
+           'Message': 'Queue execution started',
+           'State': 1}
+
+    socketio.emit('queue', msg, namespace='/hwr')
+
+
+def queue_execution_finished(entry):
+    msg = {'Signal': 'QueueStopped',
+           'Message': 'Queue execution stopped',
+           'State': 1}
+
+    socketio.emit('queue', msg, namespace='/hwr')
+
+
+def queue_execution_failed(entry):    
+    msg = {'Signal': 'QueueStopped',
+           'Message': 'Queue execution stopped',
+           'State': 2}
+
+    socketio.emit('queue', msg, namespace='/hwr')
 
 
 def collect_oscillation_started(*args):
@@ -89,7 +154,8 @@ def collect_oscillation_started(*args):
            'Message': task_signals['collectOscillationStarted'],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result('collectOscillationStarted')}
+           'state': get_signal_result('collectOscillationStarted'),
+           'progress': 0}
 
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -103,7 +169,8 @@ def collect_oscillation_failed(*args):
            'Message': task_signals['collectOscillationFailed'],
            'taskIndex' : last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result('collectOscillationFailed')}
+           'state': get_signal_result('collectOscillationFailed'),
+           'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
     try:
         socketio.emit('task', msg, namespace='/hwr')
@@ -118,8 +185,8 @@ def collect_oscillation_finished(*args):
            'Message': task_signals['collectOscillationFinished'],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result('collectOscillationFinished')}
-
+           'state': 2,
+           'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
         socketio.emit('task', msg, namespace='/hwr')
@@ -127,15 +194,33 @@ def collect_oscillation_finished(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def task_event_callback(*args, **kwargs):  # , **kwargs):
-    # logging.getLogger('HWR').debug('[TASK CALLBACK]')
-    # logging.getLogger("HWR").debug(kwargs)
-    # logging.getLogger("HWR").debug(args)
+def collect_ended(owner, success, message):
+    state = 2 if success else 3
+
+    msg = {'Signal': 'collectOscillationFinished',
+           'Message': message,
+           'taskIndex': last_queue_node()['idx'] ,
+           'sample': last_queue_node()['sample'],
+           'state': state,
+           'progress': 100}
+    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+    try:
+        socketio.emit('task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+
+
+def task_event_callback(*args, **kwargs):
+    logging.getLogger('HWR').debug('[TASK CALLBACK]')
+    logging.getLogger("HWR").debug(kwargs)
+    logging.getLogger("HWR").debug(args)
+
     msg = {'Signal': kwargs['signal'],
            'Message': task_signals[kwargs['signal']],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'state': get_signal_result(kwargs['signal'])}
+           'state': get_signal_result(kwargs['signal']),
+           'progress': get_signal_progress(kwargs['signal'])}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
         socketio.emit('task', msg, namespace='/hwr')

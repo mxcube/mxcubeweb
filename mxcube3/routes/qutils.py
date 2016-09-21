@@ -24,7 +24,7 @@ def node_index(node):
     Get the position (index) in the queue, sample and node id of node <node>.
 
     :returns: dictionary on the form:
-              {'sample': sample,'idx': index, 'queue_id': node_id}
+              {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
     sample, index = None, None
 

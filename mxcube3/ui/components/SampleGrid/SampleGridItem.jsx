@@ -3,7 +3,6 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
-
 import './SampleGrid.css';
 
 
@@ -27,9 +26,26 @@ export class SampleGridItem extends React.Component {
   }
 
 
+  componentDidMount() {
+    this.refs.sampleItem.addEventListener('contextmenu', (e) => this.contextMenu(e), false);
+  }
+
+
   onMouseDown(e) {
-    if (e.nativeEvent.buttons === 1) {
-      this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+    if (e.target.className === 'samples-grid-item-button') {
+      if (this.props.selected[this.props.itemKey]) {
+        return;
+      }
+    }
+
+    if (e.ctrlKey) {
+      this.props.toggleSelectedSample(this.props.itemKey);
+    } else if (e.shiftKey) {
+      this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
+    } else {
+      if (e.nativeEvent.buttons === 1) {
+        this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+      }
     }
   }
 
@@ -38,6 +54,11 @@ export class SampleGridItem extends React.Component {
     if (e.nativeEvent.buttons === 1) {
       this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
     }
+  }
+
+
+  contextMenu(e) {
+    e.preventDefault();
   }
 
 
@@ -54,6 +75,7 @@ export class SampleGridItem extends React.Component {
 
 
   showItemControls() {
+    const itemKey = this.props.itemKey;
     let iconClassName = 'glyphicon glyphicon-unchecked';
 
     if (this.props.picked) {
@@ -110,7 +132,7 @@ export class SampleGridItem extends React.Component {
       </div>
     );
 
-    if (this.props.selected && !this.props.canMove().every(value => value === false)) {
+    if (this.props.selected[itemKey] && !this.props.canMove().every(value => value === false)) {
       content = (
         <div className="samples-item-controls-container">
           {pickButton}
@@ -221,8 +243,9 @@ export class SampleGridItem extends React.Component {
 
 
   render() {
+    const itemKey = this.props.itemKey;
     let classes = classNames('samples-grid-item',
-      { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
+      { 'samples-grid-item-selected': this.props.selected[itemKey] && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
         'samples-grid-item-to-be-collected': this.props.picked });
 
@@ -231,6 +254,7 @@ export class SampleGridItem extends React.Component {
 
     return (
       <div
+        ref="sampleItem"
         className={classes}
         draggable="true"
         onMouseDown={this.onMouseDown}
