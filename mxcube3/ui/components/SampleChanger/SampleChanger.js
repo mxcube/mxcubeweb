@@ -102,7 +102,7 @@ export class SampleChangerTreeItem extends React.Component {
     super(props);
     this.itemClicked = this.itemClicked.bind(this);
     this.state = { allow_control: false };
-  
+
     this.loadSample = this.loadSample.bind(this);
     this.unloadSample = this.unloadSample.bind(this);
   }
@@ -122,10 +122,12 @@ export class SampleChangerTreeItem extends React.Component {
   render() {
     let scControl = '';
     if (this.state.allow_control) {
-      scControl = (<ButtonToolbar>
-                <Button bsStyle="primary" bsSize="xsmall" onClick={this.loadSample}>Load sample</Button>
-                <Button bsStyle="primary" bsSize="xsmall" onClick={this.unloadSample}>Unload here</Button>
-            </ButtonToolbar>);
+      scControl = (
+        <ButtonToolbar>
+          <Button bsStyle="primary" bsSize="xsmall" onClick={this.loadSample}>Load sample</Button>
+          <Button bsStyle="primary" bsSize="xsmall" onClick={this.unloadSample}>Unload here</Button>
+        </ButtonToolbar>
+      );
     }
     const dm = (<span><i>{this.props.dm}</i></span>);
 
