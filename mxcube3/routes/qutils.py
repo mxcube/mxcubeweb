@@ -12,6 +12,7 @@ import queue_entry as qe
 from flask import jsonify
 from mock import Mock
 from mxcube3 import app as mxcube
+from mxcube3 import socketio
 
 
 class PMock(Mock):
@@ -46,7 +47,11 @@ def node_index(node):
         task_groups = sample_model.get_children();
         group_list = [group.get_children() for group in task_groups]
         tlist = [task for task_list in group_list for task in task_list]
-        index = tlist.index(node)
+        # there is probably a better fix...
+        try:
+            index = tlist.index(node)
+        except Exception:
+            print 'node not in list: ', node
 
     return {'sample': sample, 'idx': index, 'queue_id': node._node_id}
 
@@ -344,11 +349,16 @@ def set_dc_params(model, entry, task_data):
 
     acq.acquisition_parameters.set_from_dict(params)
     acq.path_template.set_from_dict(params)
+    acq.path_template.base_prefix = params['prefix']
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
                              params.get('path', 'dummy_path'))
 
     acq.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('path', 'dummy_path'))
+    acq.path_template.process_directory = process_path
 
     # If there is a centered position associated with this data collection, get
     # the necessary data for the position and pass it to the collection.
@@ -516,18 +526,17 @@ def add_diffraction_plan(parent, child):
             # then we do know that we need to add the entry here
             # Create a new entry for the new child, in this case a data collection
             dc_entry = qe.DataCollectionQueueEntry(PMock(), child)
+            dcg_entry = qe.TaskGroupQueueEntry(PMock(), parent)
+
+            sample = parent.get_parent()  # mxcube.queue.get_model_root()
+            sample_model, sample_entry = get_entry(sample._node_id)
+            # TODO: check if the parent entry exits in case multiple diff plans
+            sample_entry.enqueue(dcg_entry)
+            enable_entry(parent._node_id, False)
+
             # Add the entry to the newly created task group, brother to the characterisation
-            parent_entry.enqueue(dc_entry)
-            enable_entry(child._node_id, True)
-
-            # Tell client that we added a new entry for the diffraction plan
-            params = child.as_dict()
-            msg = {'sampleID': parent.get_parent()._node_id,
-                   'task': {
-                        'params': params,
-                        'Type': 'DataCollection'
-                            }
-                   }
-            # log.info("Diffraction plan added to the queue: %s" % str(msg))
-
+            dcg_entry.enqueue(dc_entry)
+            enable_entry(child._node_id, False)
+            msg = _handle_dc(sample._node_id, child)
+            # TODO: add saved centring pos id, centred_position is removed in _handle_dc
             socketio.emit('add_task', msg, namespace='/hwr')
