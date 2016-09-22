@@ -158,6 +158,11 @@ class SampleGridContainer extends React.Component {
     return Object.keys(this.props.sampleList).length;
   }
 
+  addSamples() {
+    Object.keys(this.props.picked).forEach((sampleID) => {
+      this.props.addSample(this.props.sampleList[sampleID]);
+    });
+  }
 
   calcGridWidth() {
     // We know that the side menu is fixed width 65px and that the padding from

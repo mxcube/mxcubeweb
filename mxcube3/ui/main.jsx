@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridContainer from './containers/SampleGridContainer';
+import SampleChangerContainer from './containers/SampleChangerContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
 import Main from './components/Main';
@@ -71,7 +72,8 @@ export default class App extends React.Component {
 
   componentWillMount() {
     const persistor = persistStore(store,
-           { blacklist: ['remoteAccess', 'beamline', 'form', 'login', 'general', 'logger'],
+           { blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+                         'form', 'login', 'general', 'logger'],
              storage: new ServerStorage(this.serverIO) },
              () => {
                store.dispatch(getLoginInfo());
@@ -90,9 +92,10 @@ export default class App extends React.Component {
     return (<Provider store={store}>
             <Router>
               <Route path="/" component={Main} onEnter={requireAuth}>
-               <IndexRoute component={SampleGridContainer} onEnter={requireAuth} />
-               <Route path="datacollection" component={SampleViewContainer} onEnter={requireAuth} />
-               <Route path="logging" component={LoggerContainer} onEnter={requireAuth} />
+               <IndexRoute component={SampleGridContainer} />
+               <Route path="datacollection" component={SampleViewContainer} />
+               <Route path="sampleChanger" component={SampleChangerContainer} />
+               <Route path="logging" component={LoggerContainer} />
               </Route>
               <Route path="login" component={LoginContainer} />
             </Router>

@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import login from './login';
 import queue from './queue';
 import sampleGrid from './SamplesGrid';
+import sampleChanger from './sampleChanger';
 import taskForm from './taskForm';
 import sampleview from './sampleview';
 import general from './general';
@@ -14,6 +15,7 @@ const mxcubeReducer = combineReducers({
   login,
   queue,
   sampleGrid,
+  sampleChanger,
   taskForm,
   sampleview,
   logger,

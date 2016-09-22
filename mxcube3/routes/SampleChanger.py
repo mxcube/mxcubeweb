@@ -1,4 +1,5 @@
 import logging
+import time
 
 import signals
 
@@ -31,6 +32,68 @@ def get_samples_list():
             )
     return jsonify(samples)
 
+@mxcube.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
+def get_sc_contents():
+    def _getElementStatus(e):
+        if e.isLeaf():
+            if e.isLoaded():
+                return "Loaded"
+            if e.hasBeenLoaded():
+                return "Used"
+        if e.isPresent():
+            return "Present"
+        return ""
+
+    def _getElementID(e):
+        if e == mxcube.sample_changer:
+            if e.getToken() is not None:
+                return e.getToken()
+        else:
+            if e.getID() is not None:
+                return e.getID()
+        return ""
+
+    def _addElement(parent, element):
+        new_element = { "name": element.getAddress(),
+                        "status": _getElementStatus(element),
+                        "id":_getElementID(element),
+                        "selected": element.isSelected() }
+
+        parent.setdefault("children", []).append(new_element)
+
+        if not element.isLeaf():
+          for e in element.getComponents():
+            _addElement(new_element, e)
+
+    root_name = mxcube.sample_changer.getAddress()
+
+    contents = { "name": root_name }
+
+    for element in mxcube.sample_changer.getComponents():
+        _addElement(contents, element)
+
+    return jsonify(contents)
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/select/<loc>", methods=['GET'])
+def select_location(loc):
+    mxcube.sample_changer.select(loc)
+    return get_sc_contents()
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/scan/<loc>", methods=['GET'])
+def scan_location(loc):
+    # do a recursive scan
+    mxcube.sample_changer.scan(loc, True)
+    return get_sc_contents()
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
+def mount_sample(loc):
+    mxcube.sample_changer.load(loc)
+    return get_sc_contents()
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
+def unmount_sample(loc):
+    mxcube.sample_changer.unload(loc)
+    return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/<sample>/mount", methods=['PUT'])
 def mountSample(sample):
