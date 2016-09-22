@@ -70,6 +70,8 @@ function recalculateQueueOrder(keys, gridOrder, state) {
     if (keys.includes(key)) {
       sampleList[key].queueOrder = i;
       i++;
+    } else {
+      sampleList[key].queueOrder = -1;
     }
   }
 
@@ -92,9 +94,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { sampleList });
     }
     case 'SET_SAMPLE_ORDER': {
-      const reorderKeys = Object.keys(action.keys).map(key => (action.keys[key] ? key : ''));
-      const sampleList = recalculateQueueOrder(reorderKeys, action.order, state);
-
+      const sampleList = recalculateQueueOrder(Object.keys(state.queue), action.order, state);
       return Object.assign({}, state, { sampleList });
     }
     case 'SET_SAMPLES_INFO': {
@@ -132,17 +132,23 @@ export default (state = initialState, action) => {
     case 'ADD_TASK_RESULT': {
       const displayData = Object.assign({}, state.displayData);
       const queue = Object.assign({}, state.queue);
+      const current = Object.assign({}, state.current);
 
       displayData[action.sampleID].tasks[action.taskIndex].state = action.state;
+      displayData[action.sampleID].tasks[action.taskIndex].progress = action.progress;
       queue[action.sampleID].tasks[action.taskIndex].checked = false;
 
-      return Object.assign({}, state, { displayData, queue });
+      current.node = action.sampleID;
+
+      return Object.assign({}, state, { displayData, queue, current });
     }
     case 'SET_MANUAL_MOUNT': {
       const data = { manualMount: { ...state.manualMount, set: action.manual } };
       return Object.assign({}, state, data);
     }
-
+    case 'CLEAR_QUEUE': {
+      return Object.assign({}, state, { queue: {} });
+    }
     // Adding sample to queue
     case 'ADD_SAMPLE': {
       const sampleList = { ...state.sampleList };
@@ -212,7 +218,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { queue });
     }
     // Run Mount, this will add the mounted sample to history
-    case 'MOUNT_SAMPLE':
+    case 'SET_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { ...state.current, node: action.sampleID, running: false },
@@ -223,8 +229,7 @@ export default (state = initialState, action) => {
           }
         }
       );
-        //  UNMount, this will remove the sample from current and add it to history
-    case 'UNMOUNT_SAMPLE':
+    case 'CLEAR_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { node: null, collapsed: false, running: false },

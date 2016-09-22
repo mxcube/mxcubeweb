@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
 import { showTaskForm } from './taskForm';
 
-
 export function setSampleListAction(sampleList) {
   return { type: 'SET_SAMPLE_LIST', sampleList };
 }
@@ -120,8 +119,8 @@ export function sendDeleteQueueItem(sid, tindex) {
 }
 
 
-export function setSampleOrderAction(newSampleOrder, keys) {
-  return { type: 'SET_SAMPLE_ORDER', order: newSampleOrder, keys };
+export function setSampleOrderAction(newSampleOrder) {
+  return { type: 'SET_SAMPLE_ORDER', order: newSampleOrder };
 }
 
 
@@ -188,8 +187,7 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
     headers: {
       Accept: 'application/json',
       'Content-type': 'application/json'
-    },
-    body: ''
+    }
   });
 }
 
@@ -215,16 +213,16 @@ export function runSample(queueID) {
 }
 
 
-export function mountSample(sampleID) {
+export function setCurrentSample(sampleID) {
   return {
-    type: 'MOUNT_SAMPLE', sampleID
+    type: 'SET_CURRENT_SAMPLE', sampleID
   };
 }
 
 
-export function unmountSample(queueID) {
+export function clearCurrentSample() {
   return {
-    type: 'UNMOUNT_SAMPLE', queueID
+    type: 'CLEAR_CURRENT_SAMPLE'
   };
 }
 
@@ -354,7 +352,7 @@ export function sendMountSample(sampleID) {
       if (response.status >= 400) {
         throw new Error('Server refused to mount sample');
       } else {
-        dispatch(mountSample(sampleID));
+        dispatch(setCurrentSample(sampleID));
       }
     });
   };
@@ -371,9 +369,9 @@ export function addSample(sampleData) {
 }
 
 
-export function appendSampleList(sampleID, sampleData) {
+export function appendSampleList(sampleData) {
   return function (dispatch) {
-    dispatch(appendSampleListAction(sampleID, sampleData));
+    dispatch(appendSampleListAction(sampleData));
   };
 }
 
@@ -409,7 +407,7 @@ export function sendRunSample(sampleID, taskIndex) {
 export function setQueueAndRun(sampleID, taskIndex, queue) {
   return function (dispatch) {
     dispatch(sendSetQueue(queue)).then(() => {
-      dispatch(sendRunSample(sampleID, taskIndex));
+      dispatch(sendRunQueue());
     });
   };
 }
@@ -501,7 +499,7 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 export function updateTask(sampleID, taskIndex, params, queue, runNow) {
   return function (dispatch) {
     const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
-    dispatch(updateTaskAction(sampleID, taskIndex, taskData));
+    updateTaskAction(sampleID, taskIndex, taskData);
 
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
@@ -516,8 +514,8 @@ export function updateTask(sampleID, taskIndex, params, queue, runNow) {
 }
 
 
-export function addTaskResultAction(sampleID, taskIndex, state) {
-  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state };
+export function addTaskResultAction(sampleID, taskIndex, state, progress) {
+  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress };
 }
 
 
@@ -534,7 +532,7 @@ export function sendUnmountSample(queueID) {
       if (response.status >= 400) {
         throw new Error('Server refused to unmount sample');
       } else {
-        dispatch(unmountSample(queueID));
+        dispatch(clearCurrentSample());
       }
     });
   };
@@ -558,4 +556,8 @@ export function sendToggleCheckBox(data, index) {
       }
     });
   };
+}
+
+export function clearQueue() {
+  return { type: 'CLEAR_QUEUE' };
 }

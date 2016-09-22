@@ -68,6 +68,7 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.stopClickCentring();
     this.props.sampleActions.sendSavePoint(this.props.shape.id);
+    this.props.sampleActions.sendAcceptCentring();
   }
 
   goToPoint() {
