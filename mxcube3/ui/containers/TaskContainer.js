@@ -5,7 +5,6 @@ import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
 import AddSample from '../components/Tasks/AddSample';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
-import { sendCurrentPhase } from '../actions/sampleview';
 
 
 import {
@@ -13,9 +12,15 @@ import {
   addTask,
   updateTask,
   addSample,
+  clearQueue,
   appendSampleList,
   setQueueAndRun,
+  setCurrentSample
 } from '../actions/queue';
+
+import {
+  selectAction,
+} from '../actions/SamplesGrid';
 
 
 class TaskContainer extends React.Component {
@@ -24,9 +29,11 @@ class TaskContainer extends React.Component {
     this.addSample = this.addSample.bind(this);
   }
 
-  addSample(parameters) {
-    this.props.appendSampleList(parameters);
-    this.props.addSample(parameters);
+  addSample(sampleData) {
+    this.props.clearQueue();
+    this.props.appendSampleList(sampleData);
+    this.props.addSample(sampleData);
+    this.props.setCurrentSample(sampleData.sampleID);
   }
 
   render() {
@@ -45,7 +52,6 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
           queue={this.props.queue}
           sampleList={this.props.sampleList}
-          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <DataCollection
@@ -61,7 +67,6 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
           queue={this.props.queue}
           sampleList={this.props.sampleList}
-          setQueueAndRun={this.props.setQueueAndRun}
         />
 
         <AddSample
@@ -69,8 +74,6 @@ class TaskContainer extends React.Component {
           show={this.props.showForm === 'AddSample'}
           add={this.addSample}
           id={this.props.manualMountID}
-          phase={this.props.currentPhase}
-          setPhase={this.props.sendCurrentPhase}
         />
       </div>
     );
@@ -88,7 +91,6 @@ function mapStateToProps(state) {
     pointId: state.taskForm.pointId,
     defaultParameters: state.taskForm.defaultParameters,
     manualMountID: state.queue.manualMount.id,
-    currentPhase: state.sampleview.currentPhase,
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath
   };
@@ -104,7 +106,9 @@ function mapDispatchToProps(dispatch) {
     appendSampleList: bindActionCreators(appendSampleList, dispatch),
     changeTask: bindActionCreators(updateTask, dispatch),
     addSample: bindActionCreators(addSample, dispatch),
-    sendCurrentPhase: bindActionCreators(sendCurrentPhase, dispatch)
+    setCurrentSample: bindActionCreators(setCurrentSample, dispatch),
+    selectSamples: bindActionCreators(selectAction, dispatch),
+    clearQueue: bindActionCreators(clearQueue, dispatch)
   };
 }
 

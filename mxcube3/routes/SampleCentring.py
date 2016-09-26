@@ -81,6 +81,9 @@ def init_signals():
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
+    mxcube.diffractometer.connect("centringStarted", signals.centring_started)
+    
+
 ############
 
 
@@ -537,6 +540,7 @@ def click():
         :statuscode: 409: error
     """
     global CLICK_COUNT
+    
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)
@@ -564,46 +568,41 @@ def wait_for_centring_finishes(*args, **kwargs):
     Executed when a centring is finished. It updates the temporary
     centred point.
     """
-    if mxcube.diffractometer.centringStatus["valid"]:
-        try:
-            mxcube.diffractometer.accept_centring()
-        except AttributeError:
-            mxcube.diffractometer.acceptCentring()
-        motor_positions = mxcube.diffractometer.centringStatus["motors"]
-        motor_positions.pop('zoom')
-        motor_positions.pop('beam_y', None)
-        motor_positions.pop('beam_x', None)
-        pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
-        # only store one temp point so override if any
-        for pos in mxcube.diffractometer.savedCentredPos:
-            if pos['type'] == 'TMP':
-                index = mxcube.diffractometer.savedCentredPos.index(pos)
-                data = {'name': pos['name'],
-                        'posId': pos['posId'],
-                        'motor_positions': motor_positions,
-                        'selected': True,
-                        'type': 'TMP',
-                        'x': pos_x,
-                        'y': pos_y
-                        }
-                mxcube.diffractometer.savedCentredPos[index] = data
-                mxcube.diffractometer.emit('stateChanged', (True,))
-                return
+    motor_positions = mxcube.diffractometer.centringStatus["motors"]
+    motor_positions.pop('zoom')
+    motor_positions.pop('beam_y', None)
+    motor_positions.pop('beam_x', None)
+    pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
+    # only store one temp point so override if any
+    for pos in mxcube.diffractometer.savedCentredPos:
+        if pos['type'] == 'TMP':
+            index = mxcube.diffractometer.savedCentredPos.index(pos)
+            data = {'name': pos['name'],
+                    'posId': pos['posId'],
+                    'motor_positions': motor_positions,
+                    'selected': True,
+                    'type': 'TMP',
+                    'x': pos_x,
+                    'y': pos_y
+                    }
+            mxcube.diffractometer.savedCentredPos[index] = data
+            mxcube.diffractometer.emit('stateChanged', (True,))
+            return
 
-        # if no temp point found, let's create the first one
-        centred_pos_id = 'pos' + str(mxcube.diffractometer.savedCentredPosCount)
-        # pos1, pos2, ..., pos42
-        data = {'name': centred_pos_id,
-                'posId': mxcube.diffractometer.savedCentredPosCount,
-                'motor_positions': motor_positions,
-                'selected': True,
-                'type': 'TMP',
-                'x': pos_x,
-                'y': pos_y
-                }
-        mxcube.diffractometer.savedCentredPosCount += 1
-        mxcube.diffractometer.savedCentredPos.append(data)
-        mxcube.diffractometer.emit('stateChanged', (True,))
+    # if no temp point found, let's create the first one
+    centred_pos_id = 'pos' + str(mxcube.diffractometer.savedCentredPosCount)
+    # pos1, pos2, ..., pos42
+    data = {'name': centred_pos_id,
+            'posId': mxcube.diffractometer.savedCentredPosCount,
+            'motor_positions': motor_positions,
+            'selected': True,
+            'type': 'TMP',
+            'x': pos_x,
+            'y': pos_y
+            }
+    mxcube.diffractometer.savedCentredPosCount += 1
+    mxcube.diffractometer.savedCentredPos.append(data)
+    mxcube.diffractometer.emit('stateChanged', (True,))
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])

@@ -8,6 +8,7 @@ import {
 } from './actions/sampleview';
 import { setBeamlineAttrAction } from './actions/beamline';
 import { setStatus, addTaskResultAction, addTaskAction } from './actions/queue';
+import { setLoading } from './actions/general';
 
 
 export default class ServerIO {
@@ -70,7 +71,8 @@ export default class ServerIO {
     });
 
     this.hwrSocket.on('task', (record) => {
-      this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state));
+      this.dispatch(addTaskResultAction(record.sample, record.taskIndex,
+                                        record.state, record.progress));
     });
 
     this.hwrSocket.on('add_task', (record) => {
@@ -78,8 +80,17 @@ export default class ServerIO {
       this.dispatch(addTaskAction(queueID, sampleID, taskinfo, parameters));
     });
 
-    this.hwrSocket.on('Queue', (record) => {
+    this.hwrSocket.on('queue', (record) => {
       this.dispatch(setStatus(record.Signal));
+    });
+
+    this.hwrSocket.on('dialog', (record) => {
+      switch (record.signal) {
+        case 'wait':
+          this.dispatch(setLoading(record.show, record.title, record.message, record.blocking));
+          break;
+        default:
+      }
     });
   }
 }

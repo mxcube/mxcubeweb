@@ -4,15 +4,21 @@ export function setInitialStatus(data) {
   return { type: 'SET_INITIAL_STATUS', data };
 }
 
-export function setLoading(loading) {
+export function setLoading(loading, title = '', message = '', blocking = false) {
   return {
-    type: 'SET_LOADING', loading
+    type: 'SET_LOADING', loading, title, message, blocking
   };
 }
 
 export function showErrorPanel(show, message = '') {
   return {
     type: 'SHOW_ERROR_PANEL', show, message
+  };
+}
+
+export function showDialog(show, title = '', message = '') {
+  return {
+    type: 'SHOW_DIALOG', show, title, message
   };
 }
 
