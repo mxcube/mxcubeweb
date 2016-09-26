@@ -3,7 +3,6 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
-
 import './SampleGrid.css';
 
 
@@ -27,17 +26,51 @@ export class SampleGridItem extends React.Component {
   }
 
 
+  componentDidMount() {
+    this.refs.sampleItem.addEventListener('contextmenu', (e) => this.contextMenu(e), false);
+  }
+
+
   onMouseDown(e) {
-    if (e.nativeEvent.buttons === 1) {
-      this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+    if (e.target.className === 'samples-grid-item-button') {
+      if (this.props.selected[this.props.itemKey]) {
+        return;
+      }
+    }
+
+    // If the ctrl key pressesd then toggle selection and add to preivous
+    // selection.
+    if (e.ctrlKey) {
+      this.props.toggleSelectedSample(this.props.itemKey);
+
+    // If shift key is pressed select range from first selected item to this
+    // (currently clicked item)
+    } else if (e.shiftKey) {
+      this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
+    } else {
+      // On left click just select the clicked item, on left click only
+      // select if the item is not already selected. This makes selection
+      // feature work nicely with the context menu.
+      if (e.nativeEvent.buttons === 1) {
+        this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+      } else if (e.nativeEvent.button === 2) {
+        if (!this.props.selected[this.props.itemKey]) {
+          this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+        }
+      }
     }
   }
 
 
   onMouseEnter(e) {
-    if (e.nativeEvent.buttons === 1) {
+    if (e.nativeEvent.buttons === 1 || e.nativeEvent.button === 2) {
       this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
     }
+  }
+
+
+  contextMenu(e) {
+    e.preventDefault();
   }
 
 
@@ -54,6 +87,7 @@ export class SampleGridItem extends React.Component {
 
 
   showItemControls() {
+    const itemKey = this.props.itemKey;
     let iconClassName = 'glyphicon glyphicon-unchecked';
 
     if (this.props.picked) {
@@ -110,7 +144,7 @@ export class SampleGridItem extends React.Component {
       </div>
     );
 
-    if (this.props.selected && !this.props.canMove().every(value => value === false)) {
+    if (this.props.selected[itemKey] && !this.props.canMove().every(value => value === false)) {
       content = (
         <div className="samples-item-controls-container">
           {pickButton}
@@ -221,8 +255,9 @@ export class SampleGridItem extends React.Component {
 
 
   render() {
+    const itemKey = this.props.itemKey;
     let classes = classNames('samples-grid-item',
-      { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
+      { 'samples-grid-item-selected': this.props.selected[itemKey] && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
         'samples-grid-item-to-be-collected': this.props.picked });
 
@@ -231,6 +266,7 @@ export class SampleGridItem extends React.Component {
 
     return (
       <div
+        ref="sampleItem"
         className={classes}
         draggable="true"
         onMouseDown={this.onMouseDown}
