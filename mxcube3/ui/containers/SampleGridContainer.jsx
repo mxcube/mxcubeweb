@@ -113,7 +113,7 @@ class SampleGridContainer extends React.Component {
     let proposalId;
 
     try {
-      proposalId = this.props.loginData.session.proposalId;
+      proposalId = this.props.loginData.Proposal.proposalId;
     } catch (e) {
       return;
     }

@@ -72,14 +72,11 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     hwr_logger = logging.getLogger("HWR")
     user_logger = logging.getLogger("user_level_log")
     queue_logger = logging.getLogger("queue_exec")
-#    hwr_logger.addHandler(custom_log_handler)
-#    user_logger.addHandler(custom_log_handler)
-#    queue_logger.addHandler(custom_log_handler)
     app.log_handler = custom_log_handler
 
     ### Importing all REST-routes
-    from routes import (Main, Login, Beamline, Collection, Mockups,
-                        SampleCentring, SampleChanger, Diffractometer, Utils)
+    from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
+                        SampleCentring, SampleChanger, Diffractometer, lims)
 
     ### Install server-side UI state storage
     import state_storage

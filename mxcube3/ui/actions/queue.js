@@ -81,6 +81,22 @@ export function sendManualMount(manual) {
 }
 
 
+export function setSamplesInfoAction(sampleInfoList) {
+  return { type: 'SET_SAMPLES_INFO', sampleInfoList };
+}
+
+
+export function sendSyncSamples(proposalId) {
+  return function (dispatch) {
+    fetch(`mxcube/api/v0.1/lims/samples/${proposalId}`, { credentials: 'include' })
+            .then(response => response.json())
+            .then(json => {
+              dispatch(setSamplesInfoAction(json.samples_info));
+            });
+  };
+}
+
+
 export function sendAddQueueItem(items) {
   return fetch('mxcube/api/v0.1/queue', {
     method: 'POST',
