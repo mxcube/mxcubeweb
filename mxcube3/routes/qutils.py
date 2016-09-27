@@ -352,12 +352,12 @@ def set_dc_params(model, entry, task_data):
     acq.path_template.base_prefix = params['prefix']
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
-                             params.get('path', 'dummy_path'))
+                             params.get('path', ''))
 
     acq.path_template.directory = full_path
 
     process_path = os.path.join(mxcube.session.get_base_process_directory(),
-                                params.get('path', 'dummy_path'))
+                                params.get('path', ''))
     acq.path_template.process_directory = process_path
 
     # If there is a centered position associated with this data collection, get
