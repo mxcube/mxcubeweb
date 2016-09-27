@@ -37,7 +37,7 @@ export default class MXNavbar extends React.Component {
           <img src={logo} className="main-menu-logo" role="presentation" />
           <hr className="main-menu-breaker" />
           <div className="main-menu-icons">
-          {(process.env.NODE_ENV !== 'production' ? sampleGrid : '')}
+          {(process.env.NODE_ENV !== '' ? sampleGrid : '')}
           <OverlayTrigger
             placement="right"
             overlay={

@@ -2,21 +2,6 @@ import { omit } from 'lodash/object';
 import { without } from 'lodash/array';
 import update from 'react/lib/update';
 
-/**
-*  Initial redux state for queue,
-*
-*  sampleList:  Object consisting of sample objects, each sample object have
-*               the following peroperties:
-*
-*               code        Data Matrix/Barcode of sample
-*               id          Unique id for the sample
-*               location    Location of sample in sample changer
-*               queueOrder  Order of sample in queue
-*
-*  manulMount: Sample with id is manually mounted if set is true
-*
-*/
-
 const initialState = {
   queue: {},
   current: { node: null, collapsed: false, running: false },
@@ -153,11 +138,21 @@ export default (state = initialState, action) => {
     case 'ADD_SAMPLE': {
       const sampleList = { ...state.sampleList };
       const sampleID = action.sampleData.sampleID;
+      const displayData = { ...state.displayData };
+
+      // Init display data for the sample
+      displayData[sampleID] = { collpased: false, tasks: [] };
+
+      // If the sample have tasks attached to it, add the corresponding
+      // display data for those tasks.
+      action.sampleData.tasks.map((task) => {
+        displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
+        return task;
+      });
 
       return Object.assign({}, state,
         {
-          displayData: { ...state.displayData, [sampleID]: { collpased: false,
-                                                             tasks: [] } },
+          displayData,
           todo: { ...state.todo, nodes: state.todo.nodes.concat(sampleID) },
           queue: { ...state.queue, [sampleID]: action.sampleData },
           sampleList,

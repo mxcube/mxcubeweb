@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip, Popover } from 'react-bootstrap';
 import classNames from 'classnames';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
@@ -23,6 +23,11 @@ export class SampleGridItem extends React.Component {
     this.moveItemLeft = this.moveItemLeft.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.sampleInformation = this.sampleInformation.bind(this);
+    this.taskTagName = this.taskTagName.bind(this);
+    this.taskSummary = this.taskSummary.bind(this);
+    this.taskTitle = this.taskTitle.bind(this);
+    this.taskStateClass = this.taskStateClass.bind(this);
   }
 
 
@@ -38,20 +43,32 @@ export class SampleGridItem extends React.Component {
       }
     }
 
+    // If the ctrl key pressesd then toggle selection and add to preivous
+    // selection.
     if (e.ctrlKey) {
       this.props.toggleSelectedSample(this.props.itemKey);
+
+    // If shift key is pressed select range from first selected item to this
+    // (currently clicked item)
     } else if (e.shiftKey) {
       this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
     } else {
+      // On left click just select the clicked item, on left click only
+      // select if the item is not already selected. This makes selection
+      // feature work nicely with the context menu.
       if (e.nativeEvent.buttons === 1) {
         this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+      } else if (e.nativeEvent.button === 2) {
+        if (!this.props.selected[this.props.itemKey]) {
+          this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+        }
       }
     }
   }
 
 
   onMouseEnter(e) {
-    if (e.nativeEvent.buttons === 1) {
+    if (e.nativeEvent.buttons === 1 || e.nativeEvent.button === 2) {
       this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
     }
   }
@@ -242,6 +259,89 @@ export class SampleGridItem extends React.Component {
   }
 
 
+  sampleInformation() {
+    return (
+      <div>
+        Data matrix: <span className="dm">{this.props.dm}</span>
+        <br />
+        Sample changer location: <span>{this.props.location}</span>
+      </div>
+    );
+  }
+
+
+  taskTagName(type) {
+    let res = 'DC';
+
+    if (type === 'DataCollection') {
+      res = 'DC';
+    } else if (type === 'Characterisation') {
+      res = 'C';
+    }
+
+    return res;
+  }
+
+
+  taskSummary(task) {
+    let filePath = `${this.props.rootPath}/${task.parameters.path}/${task.parameters.prefix}`;
+    filePath += `_${task.parameters.run_number}_xxxx.cbf`;
+    return (
+      <div>
+        <div className="row">
+          <span style={{ 'padding-bottom': '0.5em' }} className="col-sm-12">
+            <b>Path: {filePath}</b>
+          </span>
+          <span className="col-sm-3">Oscillation range:</span>
+          <span className="col-sm-3">{task.parameters.osc_range}</span>
+          <span className="col-sm-3">First image</span>
+          <span className="col-sm-3">{task.parameters.first_image}</span>
+
+          <span className="col-sm-3">Oscillation start:</span>
+          <span className="col-sm-3">{task.parameters.osc_start}</span>
+          <span className="col-sm-3">Number of images</span>
+          <span className="col-sm-3">{task.parameters.num_images}</span>
+
+          <span className="col-sm-3">Exposure time:</span>
+          <span className="col-sm-3">{task.parameters.exp_time}</span>
+          <span className="col-sm-3">Transmission</span>
+          <span className="col-sm-3">{task.parameters.transmission}</span>
+
+          <span className="col-sm-3">Energy:</span>
+          <span className="col-sm-3">{`${task.parameters.energy} (KeV)`}</span>
+          <span className="col-sm-3">Resolution</span>
+          <span className="col-sm-3">{`${task.parameters.resolution} (Å)`}</span>
+        </div>
+      </div>
+   );
+  }
+
+
+  taskTitle(task, i) {
+    const point = task.parameters.point !== -1 ? ` at P-${task.parameters.point}` : '';
+    let taskStatus = 'To be collected';
+
+    if (this.props.displayData.tasks[i].state === 1) {
+      taskStatus = 'In progress';
+    } else if (this.props.displayData.tasks[i].state === 2) {
+      taskStatus = 'Collected';
+    }
+
+    return `${task.label}${point} (${taskStatus})`;
+  }
+
+  taskStateClass(task, i) {
+    let cls = 'btn-primary';
+
+    if (this.props.displayData.tasks[i].state === 1) {
+      cls = 'btn-warning';
+    } else if (this.props.displayData.tasks[i].state === 2) {
+      cls = 'btn-success';
+    }
+
+    return cls;
+  }
+
   render() {
     const itemKey = this.props.itemKey;
     let classes = classNames('samples-grid-item',
@@ -251,6 +351,8 @@ export class SampleGridItem extends React.Component {
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
                                        { 'label-success': this.props.loadable });
+
+    const sampleName = this.props.name + (this.props.acronym ? ` ( ${this.props.acronym} )` : '');
 
     return (
       <div
@@ -264,14 +366,18 @@ export class SampleGridItem extends React.Component {
         {this.showItemControls()}
         <span className={scLocationClasses}>{this.props.location}</span>
         <br />
-        <a href="#" ref="pacronym" className="protein-acronym" data-type="text"
-          data-pk="1" data-url="/post" data-title="Enter protein acronym"
+        <OverlayTrigger
+          placement="top"
+          overlay={(<Popover title={(<b>{sampleName}</b>)}>{this.sampleInformation()}</Popover>)}
         >
-          {this.props.name + (this.props.acronym ? ` ( ${this.props.acronym} )` : '')}
-        </a>
+          <a href="#" ref="pacronym" className="protein-acronym" data-type="text"
+            data-pk="1" data-url="/post" data-title="Enter protein acronym"
+          >
+            {sampleName}
+          </a>
+        </OverlayTrigger>
         <br />
         {this.showSeqId()}
-        <span className="dm">{this.props.dm}</span>
         <br />
         <div className="samples-grid-item-tasks">
           {
@@ -294,10 +400,26 @@ export class SampleGridItem extends React.Component {
                 };
 
                 content = (
-                  <span key={i} className="btn-primary label" style={style} onClick={showForm}>
-                    {`${tag.label} `}
-                    <i className="fa fa-times" onClick={deleteTask} />
-                  </span>
+                  <OverlayTrigger
+                    placement="top"
+                    overlay={(
+                      <Popover
+                        style={{ 'min-width': '700px !important', 'padding-bottom': '1em' }}
+                        title={(<b>{this.taskTitle(tag, i)}</b>)}
+                      >
+                         {this.taskSummary(tag)}
+                      </Popover>) }
+                  >
+                   <span
+                     key={i}
+                     className={`${this.taskStateClass(tag, i)} label`}
+                     style={style}
+                     onClick={showForm}
+                   >
+                      {this.taskTagName(tag.type)}
+                      <i className="fa fa-times" onClick={deleteTask} />
+                   </span>
+                  </OverlayTrigger>
                 );
               }
 

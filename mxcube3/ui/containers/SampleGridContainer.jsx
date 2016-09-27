@@ -79,7 +79,7 @@ class SampleGridContainer extends React.Component {
   onClick(e) {
     let res = true;
 
-    if (e.target.className === 'samples-grid-item-tasks' && e.button === 2) {
+    if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
       document.getElementById('contextMenu').style.top = `${e.clientY - 2}px`;
       document.getElementById('contextMenu').style.left = `${e.clientX - 65}px`;
       document.getElementById('contextMenu').style.display = 'block';
