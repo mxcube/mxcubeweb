@@ -424,7 +424,7 @@ def add_characterisation(node_id, task):
 
     char_model = qmo.Characterisation(refdc_model, char_params)
     char_entry = qe.CharacterisationGroupQueueEntry(PMock(), char_model)
-
+    char_entry.queue_model_object = mxcube.queue
     # Set the characterisation and reference collection parameters 
     set_char_params(char_model, char_entry, task)
 
