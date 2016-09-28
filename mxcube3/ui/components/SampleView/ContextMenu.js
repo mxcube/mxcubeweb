@@ -20,7 +20,6 @@ export default class ContextMenu extends React.Component {
         { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
         ],
         LINE: [
-        { text: 'Add Helical Scan', action: () => this.showModal('Helical'), key: 1 },
         { text: 'Delete Line', action: () => this.removeLine(), key: 2 }
         ],
         NONE: [

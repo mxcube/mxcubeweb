@@ -57,11 +57,11 @@ export function makeCircle(x, y, selectable, radius, color = 'red', id = 'no id'
   });
 }
 
-export function makeLine(x1, y1, x2, y2, color, width, selectable = false, id = 'no id', hoverCursor = 'crosshair') {
+export function makeLine(x1, y1, x2, y2, col, wid, select = false, id = '', hover = 'crosshair') {
   return new fabric.Line([x1, y1, x2, y2], {
-    fill: color,
-    stroke: color,
-    strokeWidth: width,
+    fill: col,
+    stroke: col,
+    strokeWidth: wid,
     originX: 'center',
     originY: 'center',
     lockMovementX: true,
@@ -71,8 +71,8 @@ export function makeLine(x1, y1, x2, y2, color, width, selectable = false, id = 
     lockScalingY: true,
     hasRotatingPoint: false,
     type: 'LINE',
-    selectable,
-    hoverCursor,
+    selectable: select,
+    hoverCursor: hover,
     id
   });
 }

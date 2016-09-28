@@ -100,9 +100,9 @@ export default class SampleImage extends React.Component {
         type: 'GROUP',
         id: {
           p1: points[0].id,
-          p2: points[1].id 
-          }
-        },
+          p2: points[1].id
+        }
+      },
         e.offsetX, e.offsetY);
     } else if (!objectFound) {
       showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
@@ -110,7 +110,13 @@ export default class SampleImage extends React.Component {
   }
 
   leftClick(option) {
-    const { sampleActions, clickCentring, measureDistance, imageRatio, contextMenuVisible } = this.props;
+    const {
+      sampleActions,
+      clickCentring,
+      measureDistance,
+      imageRatio,
+      contextMenuVisible
+    } = this.props;
     if (contextMenuVisible) {
       sampleActions.showContextMenu(false);
     }
@@ -191,7 +197,6 @@ export default class SampleImage extends React.Component {
       const selectedShapes = [];
       fabricSelectables.forEach((shape) => {
         if (groupIDs.includes(shape.id)) {
-          shape.active = true;
           selectedShapes.push(shape);
         }
       });

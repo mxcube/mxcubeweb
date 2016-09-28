@@ -16,6 +16,7 @@ class Characterisation extends React.Component {
     const parameters = {
       ...this.props.values,
       type: 'Characterisation',
+      label: 'Characterisation',
       point: this.props.pointId,
       typePrefix: 'P',
     };
@@ -31,7 +32,8 @@ class Characterisation extends React.Component {
       'path',
       'type',
       'point',
-      'typePrefix'
+      'typePrefix',
+      'label'
     ];
 
     for (const key in parameters) {
