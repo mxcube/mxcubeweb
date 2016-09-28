@@ -8,6 +8,7 @@ import Utils
 
 import queue_model_objects_v1 as qmo
 import queue_entry as qe
+import queue_model_enumerables_v1 as qme
 
 from flask import jsonify
 from mock import Mock
@@ -23,7 +24,6 @@ class PMock(Mock):
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
-
     :returns: dictionary on the form:
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
@@ -59,17 +59,14 @@ def node_index(node):
 def queue_to_dict(node=None):
     """
     Returns the dictionary representation of the queue
-
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
-
     :returns: dictionary on the form:
               { sampleID_1: [task1, ... taskn]
                 .
                 .
                 .
                 sampleID_n: [task1, ... taskn] }
-
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (DataCollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
@@ -84,17 +81,14 @@ def queue_to_dict(node=None):
 def queue_to_json(node=None):
     """
     Returns the json representation of the queue
-
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
-
     :returns: json str on the form:
               { sampleID_1: [task1, ... taskn]
                 .
                 .
                 .
                 sampleID_n: [task1, ... taskn] }
-
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (Datacollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
@@ -111,10 +105,8 @@ def queue_to_json_response(node=None):
     """
     Returns the http json response object with the json representation of the
     queue as data.
-
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
-
     :returns: Flask Response object
     """   
     if not node:
@@ -165,7 +157,6 @@ def queue_to_json_rec(node):
     """
     Parses node recursively and builds a representation of the queue based on
     python dictionaries.
-
     :param TaskNode node: The node to parse
     :returns: A list on the form:
               [ {sampleID_1: [task1, ... taskn]},
@@ -195,7 +186,6 @@ def queue_to_json_rec(node):
 def get_entry(id):
     """
     Retrieves the model and the queue entry for the model node with id <id>
-
     :param int id: Node id of node to retrieve
     :returns: The tuple model, entry
     :rtype: Tuple
@@ -220,7 +210,6 @@ def enable_entry(id, flag):
     Helper function that sets the enabled flag to <flag> for the entry
     that has a model with node id <id>. Sets enabled flag on both entry and
     model.
-
     :param int id: Node id 
     :param bool flag: True for enabled False for disabled
     """
@@ -233,7 +222,6 @@ def swap_task_entry(sid, ti1, ti2):
     """
     Swaps order of two queue entries in the queue, with the same sample <sid>
     as parent
-
     :param str sid: Sample id
     :param int ti1: Position of task1 (old position)
     :param int ti2: Position of task2 (new position)
@@ -261,14 +249,11 @@ def queue_add_item(item_list):
     already in the queue  and tasks are appended to the end of an
     (already existing) sample. A task is ignored if the sample is not already
     in the queue.
-
     The items in item_list are dictionaries with the following structure:
-
     { "type": "Sample | DataCollection | Characterisation",
       "sampleID": sid
       ... task or sample specific data
     }
-
     Each item (dictionary) describes either a sample or a task.
     """
     current_queue = queue_to_dict()
@@ -298,7 +283,6 @@ def queue_add_item(item_list):
 def add_sample(sample_id):
     """
     Adds a sample with sample id <sample_id> the queue.
-
     :param str sample_id: Sample id (often sample changer location)
     :returns: SampleQueueEntry
     """
@@ -339,14 +323,12 @@ def add_sample(sample_id):
 def set_dc_params(model, entry, task_data):
     """
     Helper method that sets the data collection parameters for a DataCollection.
-
     :param DataCollectionQueueModel: The model to set parameters of
     :param DataCollectionQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
     """
     acq = model.acquisitions[0]
     params = task_data['parameters']
-
     acq.acquisition_parameters.set_from_dict(params)
     acq.path_template.set_from_dict(params)
     acq.path_template.base_prefix = params['prefix']
@@ -355,6 +337,11 @@ def set_dc_params(model, entry, task_data):
                              params.get('path', ''))
 
     acq.path_template.directory = full_path
+    acq.path_template.base_prefix = params['prefix']
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                             params.get('path', 'dummy_path'))
+    acq.path_template.process_directory = process_path
 
     process_path = os.path.join(mxcube.session.get_base_process_directory(),
                                 params.get('path', ''))
@@ -370,21 +357,21 @@ def set_dc_params(model, entry, task_data):
                 acq.acquisition_parameters.centred_position = _cpos
 
     if params["helical"]:
-        model.experiment_type = qmo.EXPERIMENT_TYPE.HELICAL
+        model.experiment_type = qme.EXPERIMENT_TYPE.HELICAL
         if int(params["p1"]) > 0:
             for cpos in mxcube.diffractometer.savedCentredPos:
-                if cpos['posId'] == int(params['point']):
+                if cpos['posId'] == int(params['p1']):
                     _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                    _cpos.index = int(params['point'])
+                    _cpos.index = int(params['p1'])
                     acq.acquisition_parameters.centred_position = _cpos
         if int(params["p2"]) > 0:
-            acq2 = model.acquisitions[1]
+            acq2 = qmo.Acquisition()
             for cpos in mxcube.diffractometer.savedCentredPos:
-                if cpos['posId'] == int(params['point']):
+                if cpos['posId'] == int(params['p2']):
                     _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                    _cpos.index = int(params['point'])
+                    _cpos.index = int(params['p2'])
                     acq2.acquisition_parameters.centred_position = _cpos
-
+            model.acquisitions.append(acq2)
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -394,7 +381,6 @@ def set_char_params(model, entry, task_data):
     """
     Helper method that sets the characterisation parameters for a
     Characterisation.
-
     :param CharacterisationQueueModel: The mode to set parameters of
     :param CharacterisationQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
@@ -411,7 +397,6 @@ def _create_dc(task):
     """
     Creates a data collection model and its corresponding queue entry from
     a dict with collection parameters.
-
     :param dict task: Collection parameters
     :returns: The tuple (model, entry)
     :rtype: Tuple
@@ -425,10 +410,8 @@ def _create_dc(task):
 def add_characterisation(node_id, task):
     """
     Adds a data characterisation task to the sample with id: <id>
-
     :param int id: id of the sample to which the task belongs
     :param dict task: Task data (parameters)
-
     :returns: The queue id of the Data collection
     :rtype: int
     """
@@ -467,10 +450,8 @@ def add_characterisation(node_id, task):
 def add_data_collection(node_id, task):
     """
     Adds a data collection task to the sample with id: <id>
-
     :param int id: id of the sample to which the task belongs
     :param dict task: task data
-
     :returns: The queue id of the data collection
     :rtype: int
     """
