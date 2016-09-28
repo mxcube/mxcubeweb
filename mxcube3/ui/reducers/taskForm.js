@@ -6,7 +6,8 @@ const initialState = {
   path: '',
   defaultParameters: {
     datacollection: {},
-    characterisation: {}
+    characterisation: {},
+    helical: {}
   }
 };
 
@@ -50,7 +51,8 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             datacollection: { ...state.defaultParameters.datacollection, run_number: 1 },
-            characterisation: { ...state.defaultParameters.characterisation, run_number: 1 }
+            characterisation: { ...state.defaultParameters.characterisation, run_number: 1 },
+            helical: { ...state.defaultParameters.helical, run_number: 1 }
           }
         };
       }
@@ -65,7 +67,13 @@ export default (state = initialState, action) => {
           defaultParameters: {
             datacollection: { ...action.data.dcParameters,
                               ...state.defaultParameters.datacollection },
-            characterisation: { ...state.defaultParameters.characterisation, run_number: 1 }
+            characterisation: { ...action.data.dcParameters,
+              ...state.defaultParameters.characterisation, run_number: 1 },
+            helical: {
+              ...action.data.dcParameters,
+              ...state.defaultParameters.helical,
+              run_number: 1
+            }
           }
         };
       }

@@ -34,7 +34,7 @@ def ui_state_update(key_val):
     key, val = key_val
     print 'ui state SET', key
     UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
-    print ' '*10,json.loads(val)
+    #print ' '*10,json.loads(val)
 
     emit("state_update", json.dumps(UI_STATE), namespace="/ui_state", room="raSlaves")
 

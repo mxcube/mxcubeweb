@@ -443,7 +443,7 @@ export function addTaskAction(task) {
 export function addTask(sampleID, parameters, queue, runNow) {
   return function (dispatch) {
     const task = { type: parameters.type,
-                   label: parameters.type.split(/(?=[A-Z])/).join(' '),
+                   label: parameters.label,
                    sampleID,
                    parameters,
                    checked: true };

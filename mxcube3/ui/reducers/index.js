@@ -8,6 +8,7 @@ import sampleview from './sampleview';
 import general from './general';
 import beamline from './beamline';
 import logger from './logger';
+import contextMenu from './contextMenu';
 import remoteAccess from './remoteAccess';
 import { reducer as formReducer } from 'redux-form';
 
@@ -22,6 +23,7 @@ const mxcubeReducer = combineReducers({
   general,
   beamline,
   remoteAccess,
+  contextMenu,
   form: formReducer
 });
 

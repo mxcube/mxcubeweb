@@ -19,13 +19,13 @@ export default class SampleControls extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.sampleViewState.zoom !== this.props.sampleViewState.zoom) {
-      this.refs.zoomSlider.value = nextProps.sampleViewState.zoom;
+    if (nextProps.zoom !== this.props.zoom) {
+      this.refs.zoomSlider.value = nextProps.zoom;
     }
   }
 
   setZoom(option) {
-    const currentZoom = this.props.sampleViewState.zoom;
+    const currentZoom = this.props.zoom;
     if (option.target.name === 'zoomOut' && currentZoom > 1) {
       this.props.sampleActions.sendZoomPos(currentZoom - 1);
     } else if (option.target.name === 'zoomSlider') {
@@ -51,7 +51,7 @@ export default class SampleControls extends React.Component {
 
   toggleCentring() {
     const { sendStartClickCentring, sendAbortCentring } = this.props.sampleActions;
-    const { clickCentring } = this.props.sampleViewState;
+    const { clickCentring } = this.props;
     if (clickCentring) {
       sendAbortCentring();
     } else {
@@ -79,10 +79,10 @@ export default class SampleControls extends React.Component {
                   <form>
                     <select
                       className="form-control"
-                      defaultValue={this.props.sampleViewState.currentAperture}
+                      defaultValue={this.props.currentAperture}
                       onChange={this.setApertureSize}
                     >
-                      {this.props.sampleViewState.apertureList.map((val, i) =>
+                      {this.props.apertureList.map((val, i) =>
                         (<option key={i} value={val}>{val}</option>)
                       )}
                     </select>
@@ -129,7 +129,7 @@ export default class SampleControls extends React.Component {
             className="fa fa-2x fa-circle-o-notch sample-controll"
             bsStyle="link"
             onClick={this.toggleCentring}
-            active={this.props.sampleViewState.clickCentring}
+            active={this.props.clickCentring}
           />
 
           <Button
@@ -148,7 +148,7 @@ export default class SampleControls extends React.Component {
             id="zoom-control"
             min="1" max="10"
             step="1"
-            defaultValue={this.props.sampleViewState.zoom}
+            defaultValue={this.props.zoom}
             onMouseUp={this.setZoom}
             list="volsettings"
             ref="zoomSlider"
@@ -221,7 +221,7 @@ export default class SampleControls extends React.Component {
               className="fa fa-2x fa-arrows-alt sample-controll pull-right"
               bsStyle="link"
               onClick={this.props.sampleActions.toggleCinema}
-              active={this.props.sampleViewState.cinema}
+              active={this.props.cinema}
             />
           </div>
 

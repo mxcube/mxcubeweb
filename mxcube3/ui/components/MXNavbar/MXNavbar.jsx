@@ -12,23 +12,6 @@ export default class MXNavbar extends React.Component {
     const raMaster = (this.props.remoteAccessMaster ? 'User in control' : 'Observer mode');
     const raStyle = (this.props.remoteAccessMaster ? { color: 'white' } : {});
 
-    const sampleGrid = (
-      <OverlayTrigger
-        placement="right"
-        overlay={(
-          <Popover id="sample-overview" className="main-menu-tooltip">Sample Overview</Popover>
-        )}
-      >
-        <p
-          className="text-center"
-          eventKey={1}
-          active={(this.props.location.pathname === '/')}
-        >
-          <a className="fa fa-2x fa-th-large icon" aria-hidden="true" href="#/"></a>
-        </p>
-      </OverlayTrigger>
-    );
-
     document.title = `MxCuBE-3 ${propInfo}`;
 
     return (
@@ -37,7 +20,20 @@ export default class MXNavbar extends React.Component {
           <img src={logo} className="main-menu-logo" role="presentation" />
           <hr className="main-menu-breaker" />
           <div className="main-menu-icons">
-          {(process.env.NODE_ENV !== '' ? sampleGrid : '')}
+          <OverlayTrigger
+            placement="right"
+            overlay={(
+              <Popover id="sample-overview" className="main-menu-tooltip">Sample Overview</Popover>
+            )}
+          >
+            <p
+              className="text-center"
+              eventKey={1}
+              active={(this.props.location.pathname === '/')}
+            >
+              <a className="fa fa-2x fa-th-large icon" aria-hidden="true" href="#/"></a>
+            </p>
+          </OverlayTrigger>
           <OverlayTrigger
             placement="right"
             overlay={
