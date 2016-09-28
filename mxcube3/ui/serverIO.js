@@ -76,8 +76,7 @@ export default class ServerIO {
     });
 
     this.hwrSocket.on('add_task', (record) => {
-      const { queueID, sampleID, taskinfo, parameters } = record;
-      this.dispatch(addTaskAction(queueID, sampleID, taskinfo, parameters));
+      this.dispatch(addTaskAction(record));
     });
 
     this.hwrSocket.on('queue', (record) => {
