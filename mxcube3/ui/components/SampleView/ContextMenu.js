@@ -17,8 +17,7 @@ export default class ContextMenu extends React.Component {
         { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
         ],
         GROUP: [
-        { text: 'Draw Line', action: () => this.createLine(), key: 1 },
-        { text: 'Delete Selected (NA)', action: undefined, key: 2 }
+        { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
         ],
         LINE: [
         { text: 'Add Helical Scan', action: () => this.showModal('Helical'), key: 1 },
@@ -95,7 +94,8 @@ export default class ContextMenu extends React.Component {
   createLine() {
     const { shape } = this.props;
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.addLine(shape.p1, shape.p2);
+    this.props.sampleActions.addLine(shape.id.p1, shape.id.p2);
+    this.showModal('Helical');
   }
 
   removeLine() {

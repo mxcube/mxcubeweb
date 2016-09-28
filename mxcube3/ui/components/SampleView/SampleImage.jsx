@@ -98,8 +98,11 @@ export default class SampleImage extends React.Component {
 
       showContextMenu(true, {
         type: 'GROUP',
-        p1: points[0].id,
-        p2: points[1].id },
+        id: {
+          p1: points[0].id,
+          p2: points[1].id 
+          }
+        },
         e.offsetX, e.offsetY);
     } else if (!objectFound) {
       showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);

@@ -17,9 +17,9 @@ class Helical extends React.Component {
       type: 'DataCollection',
       typePrefix: 'L',
       helical: true,
-      point: this.props.pointId,
-      p1: this.props.lines[this.props.pointId].p1,
-      p2: this.props.lines[this.props.pointId].p2
+      point: this.props.lines.length,
+      p1: this.props.pointId.p1,
+      p2: this.props.pointId.p2
     };
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
