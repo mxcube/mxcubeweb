@@ -63,12 +63,14 @@ def queue_to_dict(node=None):
 
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
+
     :returns: dictionary on the form:
               { sampleID_1: [task1, ... taskn]
                 .
                 .
                 .
                 sampleID_n: [task1, ... taskn] }
+
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (DataCollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
@@ -86,12 +88,14 @@ def queue_to_json(node=None):
 
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
+
     :returns: json str on the form:
               { sampleID_1: [task1, ... taskn]
                 .
                 .
                 .
                 sampleID_n: [task1, ... taskn] }
+
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (Datacollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
@@ -111,6 +115,7 @@ def queue_to_json_response(node=None):
 
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
+
     :returns: Flask Response object
     """   
     if not node:
@@ -264,6 +269,7 @@ def queue_add_item(item_list):
       "sampleID": sid
       ... task or sample specific data
     }
+
     Each item (dictionary) describes either a sample or a task.
     """
     current_queue = queue_to_dict()
@@ -341,6 +347,7 @@ def set_dc_params(model, entry, task_data):
     """
     acq = model.acquisitions[0]
     params = task_data['parameters']
+
     acq.acquisition_parameters.set_from_dict(params)
     acq.path_template.set_from_dict(params)
     acq.path_template.base_prefix = params['prefix']
@@ -427,6 +434,7 @@ def add_characterisation(node_id, task):
 
     :param int id: id of the sample to which the task belongs
     :param dict task: Task data (parameters)
+
     :returns: The queue id of the Data collection
     :rtype: int
     """
@@ -468,6 +476,7 @@ def add_data_collection(node_id, task):
 
     :param int id: id of the sample to which the task belongs
     :param dict task: task data
+
     :returns: The queue id of the data collection
     :rtype: int
     """
