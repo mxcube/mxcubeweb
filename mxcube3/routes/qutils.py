@@ -24,6 +24,7 @@ class PMock(Mock):
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
+
     :returns: dictionary on the form:
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
@@ -59,6 +60,7 @@ def node_index(node):
 def queue_to_dict(node=None):
     """
     Returns the dictionary representation of the queue
+
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
     :returns: dictionary on the form:
@@ -81,6 +83,7 @@ def queue_to_dict(node=None):
 def queue_to_json(node=None):
     """
     Returns the json representation of the queue
+
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
     :returns: json str on the form:
@@ -105,6 +108,7 @@ def queue_to_json_response(node=None):
     """
     Returns the http json response object with the json representation of the
     queue as data.
+
     :param TaskNode node: Node to get representation for, queue root used if
                           nothing is passed.
     :returns: Flask Response object
@@ -157,6 +161,7 @@ def queue_to_json_rec(node):
     """
     Parses node recursively and builds a representation of the queue based on
     python dictionaries.
+
     :param TaskNode node: The node to parse
     :returns: A list on the form:
               [ {sampleID_1: [task1, ... taskn]},
@@ -186,6 +191,7 @@ def queue_to_json_rec(node):
 def get_entry(id):
     """
     Retrieves the model and the queue entry for the model node with id <id>
+
     :param int id: Node id of node to retrieve
     :returns: The tuple model, entry
     :rtype: Tuple
@@ -210,6 +216,7 @@ def enable_entry(id, flag):
     Helper function that sets the enabled flag to <flag> for the entry
     that has a model with node id <id>. Sets enabled flag on both entry and
     model.
+
     :param int id: Node id 
     :param bool flag: True for enabled False for disabled
     """
@@ -222,6 +229,7 @@ def swap_task_entry(sid, ti1, ti2):
     """
     Swaps order of two queue entries in the queue, with the same sample <sid>
     as parent
+
     :param str sid: Sample id
     :param int ti1: Position of task1 (old position)
     :param int ti2: Position of task2 (new position)
@@ -249,7 +257,9 @@ def queue_add_item(item_list):
     already in the queue  and tasks are appended to the end of an
     (already existing) sample. A task is ignored if the sample is not already
     in the queue.
+
     The items in item_list are dictionaries with the following structure:
+
     { "type": "Sample | DataCollection | Characterisation",
       "sampleID": sid
       ... task or sample specific data
@@ -283,6 +293,7 @@ def queue_add_item(item_list):
 def add_sample(sample_id):
     """
     Adds a sample with sample id <sample_id> the queue.
+
     :param str sample_id: Sample id (often sample changer location)
     :returns: SampleQueueEntry
     """
@@ -323,6 +334,7 @@ def add_sample(sample_id):
 def set_dc_params(model, entry, task_data):
     """
     Helper method that sets the data collection parameters for a DataCollection.
+
     :param DataCollectionQueueModel: The model to set parameters of
     :param DataCollectionQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
@@ -381,6 +393,7 @@ def set_char_params(model, entry, task_data):
     """
     Helper method that sets the characterisation parameters for a
     Characterisation.
+
     :param CharacterisationQueueModel: The mode to set parameters of
     :param CharacterisationQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
@@ -397,6 +410,7 @@ def _create_dc(task):
     """
     Creates a data collection model and its corresponding queue entry from
     a dict with collection parameters.
+
     :param dict task: Collection parameters
     :returns: The tuple (model, entry)
     :rtype: Tuple
@@ -410,6 +424,7 @@ def _create_dc(task):
 def add_characterisation(node_id, task):
     """
     Adds a data characterisation task to the sample with id: <id>
+
     :param int id: id of the sample to which the task belongs
     :param dict task: Task data (parameters)
     :returns: The queue id of the Data collection
@@ -450,6 +465,7 @@ def add_characterisation(node_id, task):
 def add_data_collection(node_id, task):
     """
     Adds a data collection task to the sample with id: <id>
+
     :param int id: id of the sample to which the task belongs
     :param dict task: task data
     :returns: The queue id of the data collection
