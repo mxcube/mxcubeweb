@@ -447,7 +447,7 @@ def add_characterisation(node_id, task):
 
     char_model = qmo.Characterisation(refdc_model, char_params)
     char_entry = qe.CharacterisationGroupQueueEntry(PMock(), char_model)
-    char_entry.queue_model_object = mxcube.queue
+    char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters 
     set_char_params(char_model, char_entry, task)
 
@@ -551,15 +551,21 @@ def add_diffraction_plan(parent, child):
             dc_entry = qe.DataCollectionQueueEntry(PMock(), child)
             dcg_entry = qe.TaskGroupQueueEntry(PMock(), parent)
 
+            parent.set_enabled(True)
+            dcg_entry.set_enabled(True)
+
+            child.set_enabled(True)
+            dc_entry.set_enabled(True)
+
             sample = parent.get_parent()  # mxcube.queue.get_model_root()
             sample_model, sample_entry = get_entry(sample._node_id)
             # TODO: check if the parent entry exits in case multiple diff plans
             sample_entry.enqueue(dcg_entry)
-            enable_entry(parent._node_id, False)
 
             # Add the entry to the newly created task group, brother to the characterisation
             dcg_entry.enqueue(dc_entry)
-            enable_entry(child._node_id, False)
+
             msg = _handle_dc(sample._node_id, child)
+            msg['parameters']['typePrefix'] = 'P'
             # TODO: add saved centring pos id, centred_position is removed in _handle_dc
             socketio.emit('add_task', msg, namespace='/hwr')
