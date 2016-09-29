@@ -259,12 +259,66 @@ export class SampleGridItem extends React.Component {
   }
 
 
+  sampleDisplayName() {
+    let name = this.props.sampleData.sampleName;
+
+    if (this.props.sampleData.proteinAcronym) {
+      name += ` - ${this.props.sampleData.proteinAcronym}`;
+    }
+
+    return name;
+  }
+
+
+  sampleLink() {
+    res = this.sampleDisplayName();
+  
+    if (this.props.sampleData.limsID) {
+      
+    }
+
+    return res
+  }
+
   sampleInformation() {
+    const sampleData = this.props.sampleData;
+    const limsData = (
+      <div>
+        <div className="row">
+          <span className="col-sm-6">Space group:</span>
+          <span className="col-sm-6">{sampleData.crystalSpaceGroup}</span>
+        </div>
+        <div className="row">
+          <span style={{ 'padding-top': '0.5em' }} className="col-sm-12">
+            <b>Crystal orientation</b>
+          </span>
+          <span className="col-sm-1">A:</span>
+          <span className="col-sm-2">{sampleData.cellA}</span>
+          <span className="col-sm-1">B:</span>
+          <span className="col-sm-2">{sampleData.cellB}</span>
+          <span className="col-sm-1">C:</span>
+          <span className="col-sm-2">{sampleData.cellC}</span>
+        </div>
+        <div className="row">
+          <span className="col-sm-1">&alpha;:</span>
+          <span className="col-sm-2">{sampleData.cellAlpha}</span>
+          <span className="col-sm-1">&beta;:</span>
+          <span className="col-sm-2">{sampleData.cellBeta}</span>
+          <span className="col-sm-1">&gamma;:</span>
+          <span className="col-sm-2">{sampleData.cellGamma}</span>
+        </div>
+      </div>)
+
+
     return (
       <div>
-        Data matrix: <span className="dm">{this.props.dm}</span>
-        <br />
-        Sample changer location: <span>{this.props.location}</span>
+        <div className="row">
+          <span className="col-sm-6">Location:</span>
+          <span className="col-sm-6">{sampleData.location}</span>
+          <span className="col-sm-6">Data matrix:</span>
+          <span className="col-sm-6">{sampleData.code}</span>
+        </div>
+        { sampleData.limsID ? limsData : '' }
       </div>
     );
   }
@@ -342,6 +396,21 @@ export class SampleGridItem extends React.Component {
     return cls;
   }
 
+  popoverPosition() {
+    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    let result = 'top';
+
+    if (this.refs.sampleItem) {
+      if(parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2) ) {
+        result = 'bottom';
+      } else {
+        result = 'top'
+      }
+    }
+
+    return result;
+  }
+
   render() {
     const itemKey = this.props.itemKey;
     let classes = classNames('samples-grid-item',
@@ -351,8 +420,6 @@ export class SampleGridItem extends React.Component {
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
                                        { 'label-success': this.props.loadable });
-
-    const sampleName = this.props.name + (this.props.acronym ? ` ( ${this.props.acronym} )` : '');
 
     return (
       <div
@@ -367,13 +434,16 @@ export class SampleGridItem extends React.Component {
         <span className={scLocationClasses}>{this.props.location}</span>
         <br />
         <OverlayTrigger
-          placement="top"
-          overlay={(<Popover title={(<b>{sampleName}</b>)}>{this.sampleInformation()}</Popover>)}
+          placement={this.popoverPosition()}
+          overlay={(
+          <Popover 
+            title={(<b>{this.sampleDisplayName()}</b>)}>{this.sampleInformation()}
+          </Popover>)}
         >
           <a href="#" ref="pacronym" className="protein-acronym" data-type="text"
             data-pk="1" data-url="/post" data-title="Enter protein acronym"
           >
-            {sampleName}
+            {this.sampleDisplayName()}
           </a>
         </OverlayTrigger>
         <br />
@@ -401,7 +471,7 @@ export class SampleGridItem extends React.Component {
 
                 content = (
                   <OverlayTrigger
-                    placement="top"
+                    placement={this.popoverPosition()}
                     overlay={(
                       <Popover
                         style={{ 'min-width': '700px !important', 'padding-bottom': '1em' }}
