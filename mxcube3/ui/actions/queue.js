@@ -499,7 +499,7 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 export function updateTask(sampleID, taskIndex, params, queue, runNow) {
   return function (dispatch) {
     const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
-    updateTaskAction(sampleID, taskIndex, taskData);
+    dispatch(updateTaskAction(sampleID, taskIndex, taskData));
 
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
