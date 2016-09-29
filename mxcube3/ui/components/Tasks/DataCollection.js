@@ -32,7 +32,8 @@ class DataCollection extends React.Component {
       'type',
       'point',
       'typePrefix',
-      'label'
+      'label',
+      'helical'
     ];
 
     for (const key in parameters) {
