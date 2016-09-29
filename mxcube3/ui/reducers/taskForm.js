@@ -66,7 +66,7 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             datacollection: { ...action.data.dcParameters,
-                              ...state.defaultParameters.datacollection },
+                              ...state.defaultParameters.datacollection, run_number: 1 },
             characterisation: { ...action.data.dcParameters,
               ...state.defaultParameters.characterisation, run_number: 1 },
             helical: {

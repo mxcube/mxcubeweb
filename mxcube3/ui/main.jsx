@@ -73,7 +73,7 @@ export default class App extends React.Component {
   componentWillMount() {
     const persistor = persistStore(store,
            { blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-                         'form', 'login', 'general', 'logger'],
+                         'form', 'login', 'general', 'logger', 'points'],
              storage: new ServerStorage(this.serverIO) },
              () => {
                store.dispatch(getLoginInfo());

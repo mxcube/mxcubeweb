@@ -60,7 +60,7 @@ export default class SampleControls extends React.Component {
   }
 
   toggleLight(name) {
-    const lighStatus = this.props.beamline.motors[`${name}Switch`].Status;
+    const lighStatus = this.props.motors[`${name}Switch`].Status;
     if (lighStatus) {
       this.props.sampleActions.sendLightOff(name.toLowerCase());
     } else {
@@ -69,7 +69,7 @@ export default class SampleControls extends React.Component {
   }
 
   render() {
-    const motors = this.props.beamline.motors;
+    const motors = this.props.motors;
     return (
         <div className="sample-controlls sample-controlls-bottom text-center">
           <OverlayTrigger trigger="click" placement="top" rootClose overlay={
