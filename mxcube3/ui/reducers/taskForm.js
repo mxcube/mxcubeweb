@@ -39,7 +39,7 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             ...state.defaultParameters,
-            [action.taskData.type.toLowerCase()]: {
+            [action.taskData.parameters.type.toLowerCase()]: {
               ...action.taskData.parameters
             }
           }
@@ -66,7 +66,7 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             datacollection: { ...action.data.dcParameters,
-                              ...state.defaultParameters.datacollection },
+                              ...state.defaultParameters.datacollection, run_number: 1 },
             characterisation: { ...action.data.dcParameters,
               ...state.defaultParameters.characterisation, run_number: 1 },
             helical: {

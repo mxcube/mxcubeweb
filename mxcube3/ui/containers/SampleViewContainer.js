@@ -43,8 +43,9 @@ class SampleViewContainer extends Component {
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   {...this.props.sampleViewState}
-                  beamline={this.props.beamline}
+                  {...this.props.beamline}
                   contextMenuVisible={this.props.contextMenu.show}
+                  points={this.props.points.points}
                 />
               </div>
             </div>
@@ -66,7 +67,8 @@ function mapStateToProps(state) {
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     beamline: state.beamline,
-    defaultParameters: state.taskForm.defaultParameters
+    defaultParameters: state.taskForm.defaultParameters,
+    points: state.points
   };
 }
 

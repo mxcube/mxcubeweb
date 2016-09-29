@@ -10,6 +10,7 @@ import beamline from './beamline';
 import logger from './logger';
 import contextMenu from './contextMenu';
 import remoteAccess from './remoteAccess';
+import points from './points';
 import { reducer as formReducer } from 'redux-form';
 
 const mxcubeReducer = combineReducers({
@@ -24,6 +25,7 @@ const mxcubeReducer = combineReducers({
   beamline,
   remoteAccess,
   contextMenu,
+  points,
   form: formReducer
 });
 
