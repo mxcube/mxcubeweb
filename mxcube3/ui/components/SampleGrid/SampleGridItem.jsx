@@ -290,7 +290,7 @@ export class SampleGridItem extends React.Component {
         </div>
         <div className="row">
           <span style={{ 'padding-top': '0.5em' }} className="col-sm-12">
-            <b>Crystal orientation</b>
+            <b>Crystal unit cell:</b>
           </span>
           <span className="col-sm-1">A:</span>
           <span className="col-sm-2">{sampleData.cellA}</span>
@@ -347,24 +347,24 @@ export class SampleGridItem extends React.Component {
             <b>Path: {filePath}</b>
           </span>
           <span className="col-sm-3">Oscillation range:</span>
-          <span className="col-sm-3">{task.parameters.osc_range}</span>
+          <span className="col-sm-3">{task.parameters.osc_range}&deg;</span>
           <span className="col-sm-3">First image</span>
           <span className="col-sm-3">{task.parameters.first_image}</span>
 
           <span className="col-sm-3">Oscillation start:</span>
-          <span className="col-sm-3">{task.parameters.osc_start}</span>
+          <span className="col-sm-3">{task.parameters.osc_start}&deg;</span>
           <span className="col-sm-3">Number of images</span>
           <span className="col-sm-3">{task.parameters.num_images}</span>
 
           <span className="col-sm-3">Exposure time:</span>
-          <span className="col-sm-3">{task.parameters.exp_time}</span>
+          <span className="col-sm-3">{`${task.parameters.exp_time}s`}</span>
           <span className="col-sm-3">Transmission</span>
-          <span className="col-sm-3">{task.parameters.transmission}</span>
+          <span className="col-sm-3">{`${task.parameters.transmission} %`}</span>
 
           <span className="col-sm-3">Energy:</span>
-          <span className="col-sm-3">{`${task.parameters.energy} (KeV)`}</span>
+          <span className="col-sm-3">{`${task.parameters.energy} KeV`}</span>
           <span className="col-sm-3">Resolution</span>
-          <span className="col-sm-3">{`${task.parameters.resolution} (Å)`}</span>
+          <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
         </div>
       </div>
    );
@@ -421,6 +421,8 @@ export class SampleGridItem extends React.Component {
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
                                        { 'label-success': this.props.loadable });
 
+    const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
+
     return (
       <div
         ref="sampleItem"
@@ -431,8 +433,8 @@ export class SampleGridItem extends React.Component {
       >
         {this.showMoveArrows()}
         {this.showItemControls()}
-        <span className={scLocationClasses}>{this.props.location}</span>
-        <br />
+        <div className={scLocationClasses}>{this.props.location}</div>
+        <div style={{ display: 'block', clear: 'both'}}>
         <OverlayTrigger
           placement={this.popoverPosition()}
           overlay={(
@@ -440,13 +442,13 @@ export class SampleGridItem extends React.Component {
             title={(<b>{this.sampleDisplayName()}</b>)}>{this.sampleInformation()}
           </Popover>)}
         >
-          <a href="#" ref="pacronym" className="protein-acronym" data-type="text"
+          <a href={limsLink} ref="pacronym" className="protein-acronym" data-type="text"
             data-pk="1" data-url="/post" data-title="Enter protein acronym"
           >
             {this.sampleDisplayName()}
           </a>
         </OverlayTrigger>
-        <br />
+        </div>
         {this.showSeqId()}
         <br />
         <div className="samples-grid-item-tasks">
