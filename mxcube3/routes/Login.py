@@ -4,27 +4,11 @@ import types
 from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
 from mxcube3.routes import qutils
+from mxcube3.routes import limsutils
 
 
 LOGGED_IN_USER = None
 MASTER = None
-
-
-def convert_to_dict(ispyb_object):
-    d = {}
-    if type(ispyb_object) == types.DictType:
-        d.update(ispyb_object)
-    else:
-        for key in ispyb_object.__keylist__:
-            val = getattr(ispyb_object, key)
-            if type(val) == types.InstanceType:
-                val = convert_to_dict(val)
-            elif type(val) == types.ListType:
-                val = [convert_to_dict(x) if type(x) == types.InstanceType else x for x in val]
-            elif type(val) == types.DictType:
-                val = dict([(k, convert_to_dict(x) if type(x) == types.InstanceType else x) for k, x in val.iteritems()])
-            d[key] = val
-    return d
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -111,7 +95,7 @@ def loginInfo():
                     { "synchrotron_name": mxcube.session.synchrotron_name,
                       "beamline_name": mxcube.session.beamline_name,
                       "loginType": mxcube.db_connection.loginType.title(),
-                      "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {}),
+                      "loginRes": limsutils.convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {}),
                       "queue": qutils.queue_to_dict(),
                       "master": MASTER == session.sid
                     }
