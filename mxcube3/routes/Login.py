@@ -32,6 +32,7 @@ def login():
     password = content['password']
 
     loginRes = mxcube.db_connection.login(loginID, password)
+    mxcube.db_connection.authenticate(loginID, password)
    
     if loginRes['status']['code'] == 'ok':
         session['loginInfo'] = { 'loginID': loginID, 'password': password, 'loginRes': loginRes }
