@@ -354,13 +354,7 @@ def set_dc_params(model, entry, task_data):
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
                              params.get('path', ''))
-
     acq.path_template.directory = full_path
-    acq.path_template.base_prefix = params['prefix']
-
-    process_path = os.path.join(mxcube.session.get_base_process_directory(),
-                             params.get('path', 'dummy_path'))
-    acq.path_template.process_directory = process_path
 
     process_path = os.path.join(mxcube.session.get_base_process_directory(),
                                 params.get('path', ''))
