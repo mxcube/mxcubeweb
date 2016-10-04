@@ -40,7 +40,8 @@ export default (state = initialState, action) => {
           defaultParameters: {
             ...state.defaultParameters,
             [action.taskData.parameters.type.toLowerCase()]: {
-              ...action.taskData.parameters
+              ...action.taskData.parameters, run_number:
+             state.defaultParameters[action.taskData.parameters.type.toLowerCase()].run_number
             }
           }
         };
