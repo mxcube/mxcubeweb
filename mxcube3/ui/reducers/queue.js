@@ -1,6 +1,7 @@
 import { omit } from 'lodash/object';
 import { without } from 'lodash/array';
 import update from 'react/lib/update';
+import clone from 'clone';
 
 const initialState = {
   queue: {},
@@ -18,17 +19,6 @@ const initialState = {
 
 
 /**
- * Returns a deep copy of obj
- *
- * @param obj - Object, Array or other primitive to deepcopy
- *
- */
-function deepCopy(obj) {
-  return JSON.parse(JSON.stringify(obj));
-}
-
-
-/**
  * Initalizes the list of samples
  *
  * @param {Object} samples - sampleList object (key, sample data) pairs
@@ -36,7 +26,7 @@ function deepCopy(obj) {
  *
  */
 function initSampleList(samples) {
-  const sampleList = deepCopy(samples);
+  const sampleList = clone(samples);
 
   for (const key in sampleList) {
     if (key) {
@@ -58,7 +48,7 @@ function initSampleList(samples) {
  *
  */
 function recalculateQueueOrder(keys, gridOrder, state) {
-  const sampleList = deepCopy(state.sampleList);
+  const sampleList = clone(state.sampleList);
   const sortedOrder = Object.entries(gridOrder).sort((a, b) => a[1] > b[1]);
 
   let i = 0;
@@ -85,7 +75,7 @@ export default (state = initialState, action) => {
     }
     case 'APPEND_TO_SAMPLE_LIST': {
       const sampleData = action.sampleData;
-      const sampleList = deepCopy(state.sampleList);
+      const sampleList = clone(state.sampleList);
       sampleList[sampleData.sampleID] = sampleData;
 
       return Object.assign({}, state, { sampleList });
@@ -127,9 +117,9 @@ export default (state = initialState, action) => {
     }
 
     case 'ADD_TASK_RESULT': {
-      const displayData = deepCopy(state.displayData);
-      const queue = deepCopy(state.queue);
-      const current = deepCopy(state.current);
+      const displayData = clone(state.displayData);
+      const queue = clone(state.queue);
+      const current = clone(state.current);
 
       displayData[action.sampleID].tasks[action.taskIndex].state = action.state;
       displayData[action.sampleID].tasks[action.taskIndex].progress = action.progress;
@@ -148,9 +138,9 @@ export default (state = initialState, action) => {
     }
     // Adding sample to queue
     case 'ADD_SAMPLE': {
-      const sampleList = deepCopy(state.sampleList);
+      const sampleList = clone(state.sampleList);
       const sampleID = action.sampleData.sampleID;
-      const displayData = deepCopy(state.displayData);
+      const displayData = clone(state.displayData);
 
       // Init display data for the sample
       displayData[sampleID] = { collpased: false, tasks: [] };
@@ -193,21 +183,21 @@ export default (state = initialState, action) => {
 
       // Create a copy of the tasks (array) for a sample with given sampleID,
       // or an empty array if no tasks exists for sampleID
-      let tasks = deepCopy(state.queue[sampleID].tasks);
+      let tasks = clone(state.queue[sampleID].tasks);
       tasks = tasks.concat([action.task]);
 
-      const queue = deepCopy(state.queue);
+      const queue = clone(state.queue);
       queue[sampleID].tasks = tasks;
 
-      const displayData = deepCopy(state.displayData);
+      const displayData = clone(state.displayData);
       displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
 
       return Object.assign({}, state, { displayData, queue });
     }
     // Removing the task from the queue
     case 'REMOVE_TASK': {
-      const queue = deepCopy(state.queue);
-      const displayData = deepCopy(state.displayData);
+      const queue = clone(state.queue);
+      const displayData = clone(state.displayData);
 
       queue[action.sampleID].tasks.splice(action.taskIndex, 1);
       displayData[action.sampleID].tasks.splice(action.taskIndex, 1);
@@ -215,8 +205,8 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { displayData, queue });
     }
     case 'UPDATE_TASK': {
-      const tasks = deepCopy(state.queue[action.sampleID].tasks);
-      const queue = deepCopy(state.queue);
+      const tasks = clone(state.queue[action.sampleID].tasks);
+      const queue = clone(state.queue);
 
       tasks[action.taskIndex] = action.taskData;
       queue[action.sampleID].tasks = tasks;

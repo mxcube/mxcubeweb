@@ -22,6 +22,7 @@
     "bootstrap": "3.3.5",
     "bootstrap-webpack": "0.0.5",
     "classnames": "^2.2.0",
+    "clone": "^2.0.0",
     "css-loader": "0.23.1",
     "font-awesome": "^4.4.0",
     "font-awesome-webpack": "0.0.4",
