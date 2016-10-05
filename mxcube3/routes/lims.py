@@ -7,13 +7,12 @@ from . import limsutils
 def proposal_samples(proposal_id):
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
-
     lims_samples = mxcube.db_connection.get_samples(proposal_id, None)
     samples_info_list = [limsutils.convert_to_dict(x) for x in lims_samples]
 
     for sample_info in samples_info_list:
         sample_info["limsID"] = sample_info.pop("sampleId")
-        sample_info["limsLink"] = mxcube.db_connection.exi_sample_link()
+        sample_info["limsLink"] = mxcube.rest_lims.sample_link()
         
         try:
             basket = int(sample_info["containerSampleChangerLocation"])
@@ -26,5 +25,3 @@ def proposal_samples(proposal_id):
                 sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
 
     return jsonify({"samples_info": samples_info_list})
-
-

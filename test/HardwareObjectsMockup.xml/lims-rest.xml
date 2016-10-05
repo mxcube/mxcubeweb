@@ -1,0 +1,32 @@
+<object class="ISPyBRestClient">
+  <restRoot>
+    https://wwws.esrf.fr/ispyb/ispyb-ws/rest/
+  </restRoot>
+  <site>
+   ESRF
+  </site>
+  <api_url>
+    https://wwws.esrf.fr/ispyb/ispyb-ws/rest/
+  </api_url>
+  <exi_root>
+   https://exi.esrf.fr/mx/
+  </exi_root>
+  <restUserName>ispybws1</restUserName>
+  <restPass>I$pybws1</restPass>
+  <object role="session" href="/session"/>
+
+  <proposals>
+    <proposal>
+      <code>ifx</code>
+      <ispyb>fx</ispyb>
+      <gui>fx</gui>
+    </proposal>
+  </proposals>
+
+  <inhouse>
+    <proposal>
+      <code>opid</code>
+      <number>30</number>
+    </proposal>
+  </inhouse>
+</object>
