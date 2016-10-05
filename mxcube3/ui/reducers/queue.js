@@ -36,7 +36,7 @@ function deepCopy(obj) {
  *
  */
 function initSampleList(samples) {
-  const sampleList = Object.assign({}, samples);
+  const sampleList = deepCopy(samples);
 
   for (const key in sampleList) {
     if (key) {
@@ -58,7 +58,7 @@ function initSampleList(samples) {
  *
  */
 function recalculateQueueOrder(keys, gridOrder, state) {
-  const sampleList = Object.assign({}, state.sampleList);
+  const sampleList = deepCopy(state.sampleList);
   const sortedOrder = Object.entries(gridOrder).sort((a, b) => a[1] > b[1]);
 
   let i = 0;
@@ -85,7 +85,8 @@ export default (state = initialState, action) => {
     }
     case 'APPEND_TO_SAMPLE_LIST': {
       const sampleData = action.sampleData;
-      const sampleList = { ...state.sampleList, [sampleData.sampleID]: sampleData };
+      const sampleList = deepCopy(state.sampleList);
+      sampleList[sampleData.sampleID] = sampleData;
 
       return Object.assign({}, state, { sampleList });
     }
