@@ -18,6 +18,17 @@ const initialState = {
 
 
 /**
+ * Returns a deep copy of obj
+ *
+ * @param obj - Object, Array or other primitive to deepcopy
+ *
+ */
+function deepCopy(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+
+/**
  * Initalizes the list of samples
  *
  * @param {Object} samples - sampleList object (key, sample data) pairs
@@ -181,7 +192,7 @@ export default (state = initialState, action) => {
 
       // Create a copy of the tasks (array) for a sample with given sampleID,
       // or an empty array if no tasks exists for sampleID
-      let tasks = Array.from(state.queue[sampleID].tasks || []);
+      let tasks = deepCopy(state.queue[sampleID].tasks || []);
 
       tasks = tasks.concat([action.task]);
 
@@ -204,7 +215,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { displayData, queue });
     }
     case 'UPDATE_TASK': {
-      const tasks = Array.from(state.queue[action.sampleID].tasks);
+      const tasks = deepCopy(state.queue[action.sampleID].tasks);
       const queue = { ...state.queue };
 
       tasks[action.taskIndex] = action.taskData;
