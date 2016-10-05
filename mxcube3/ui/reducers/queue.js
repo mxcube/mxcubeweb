@@ -126,9 +126,9 @@ export default (state = initialState, action) => {
     }
 
     case 'ADD_TASK_RESULT': {
-      const displayData = Object.assign({}, state.displayData);
-      const queue = Object.assign({}, state.queue);
-      const current = Object.assign({}, state.current);
+      const displayData = deepCopy(state.displayData);
+      const queue = deepCopy(state.queue);
+      const current = deepCopy(state.current);
 
       displayData[action.sampleID].tasks[action.taskIndex].state = action.state;
       displayData[action.sampleID].tasks[action.taskIndex].progress = action.progress;
@@ -147,9 +147,9 @@ export default (state = initialState, action) => {
     }
     // Adding sample to queue
     case 'ADD_SAMPLE': {
-      const sampleList = { ...state.sampleList };
+      const sampleList = deepCopy(state.sampleList);
       const sampleID = action.sampleData.sampleID;
-      const displayData = { ...state.displayData };
+      const displayData = deepCopy(state.displayData);
 
       // Init display data for the sample
       displayData[sampleID] = { collpased: false, tasks: [] };
@@ -192,22 +192,21 @@ export default (state = initialState, action) => {
 
       // Create a copy of the tasks (array) for a sample with given sampleID,
       // or an empty array if no tasks exists for sampleID
-      let tasks = deepCopy(state.queue[sampleID].tasks || []);
-
+      let tasks = deepCopy(state.queue[sampleID].tasks);
       tasks = tasks.concat([action.task]);
 
-      const queue = { ...state.queue };
+      const queue = deepCopy(state.queue);
       queue[sampleID].tasks = tasks;
 
-      const displayData = { ...state.displayData };
+      const displayData = deepCopy(state.displayData);
       displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
 
       return Object.assign({}, state, { displayData, queue });
     }
     // Removing the task from the queue
     case 'REMOVE_TASK': {
-      const queue = { ...state.queue };
-      const displayData = { ...state.displayData };
+      const queue = deepCopy(state.queue);
+      const displayData = deepCopy(state.displayData);
 
       queue[action.sampleID].tasks.splice(action.taskIndex, 1);
       displayData[action.sampleID].tasks.splice(action.taskIndex, 1);
@@ -216,7 +215,7 @@ export default (state = initialState, action) => {
     }
     case 'UPDATE_TASK': {
       const tasks = deepCopy(state.queue[action.sampleID].tasks);
-      const queue = { ...state.queue };
+      const queue = deepCopy(state.queue);
 
       tasks[action.taskIndex] = action.taskData;
       queue[action.sampleID].tasks = tasks;
