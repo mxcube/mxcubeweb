@@ -16,7 +16,10 @@ class Characterisation extends React.Component {
     const parameters = {
       ...this.props.values,
       type: 'Characterisation',
-      point: this.props.pointId
+      label: 'Characterisation',
+      point: this.props.pointId,
+      typePrefix: 'P',
+      helical: false
     };
 
     const stringFields = [
@@ -29,7 +32,10 @@ class Characterisation extends React.Component {
       'prefix',
       'path',
       'type',
-      'point'
+      'point',
+      'typePrefix',
+      'label',
+      'helical'
     ];
 
     for (const key in parameters) {

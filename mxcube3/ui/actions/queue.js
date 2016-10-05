@@ -443,7 +443,7 @@ export function addTaskAction(task) {
 export function addTask(sampleID, parameters, queue, runNow) {
   return function (dispatch) {
     const task = { type: parameters.type,
-                   label: parameters.type.split(/(?=[A-Z])/).join(' '),
+                   label: parameters.label,
                    sampleID,
                    parameters,
                    checked: true };
@@ -499,7 +499,7 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 export function updateTask(sampleID, taskIndex, params, queue, runNow) {
   return function (dispatch) {
     const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
-    updateTaskAction(sampleID, taskIndex, taskData);
+    dispatch(updateTaskAction(sampleID, taskIndex, taskData));
 
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
