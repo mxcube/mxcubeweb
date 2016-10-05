@@ -270,16 +270,6 @@ export class SampleGridItem extends React.Component {
   }
 
 
-  sampleLink() {
-    res = this.sampleDisplayName();
-  
-    if (this.props.sampleData.limsID) {
-      
-    }
-
-    return res
-  }
-
   sampleInformation() {
     const sampleData = this.props.sampleData;
     const limsData = (
@@ -307,7 +297,7 @@ export class SampleGridItem extends React.Component {
           <span className="col-sm-1">&gamma;:</span>
           <span className="col-sm-2">{sampleData.cellGamma}</span>
         </div>
-      </div>)
+      </div>);
 
 
     return (
@@ -401,10 +391,10 @@ export class SampleGridItem extends React.Component {
     let result = 'top';
 
     if (this.refs.sampleItem) {
-      if(parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2) ) {
+      if (parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
         result = 'bottom';
       } else {
-        result = 'top'
+        result = 'top';
       }
     }
 
@@ -434,13 +424,13 @@ export class SampleGridItem extends React.Component {
         {this.showMoveArrows()}
         {this.showItemControls()}
         <div className={scLocationClasses}>{this.props.location}</div>
-        <div style={{ display: 'block', clear: 'both'}}>
+        <div style={{ display: 'block', clear: 'both' }}>
         <OverlayTrigger
           placement={this.popoverPosition()}
           overlay={(
-          <Popover 
-            title={(<b>{this.sampleDisplayName()}</b>)}>{this.sampleInformation()}
-          </Popover>)}
+            <Popover title={(<b>{this.sampleDisplayName()}</b>)}>
+              {this.sampleInformation()}
+            </Popover>)}
         >
           <a href={limsLink} ref="pacronym" className="protein-acronym" data-type="text"
             data-pk="1" data-url="/post" data-title="Enter protein acronym"

@@ -158,6 +158,7 @@ export default (state = initialState, action) => {
     }
     // Adding sample to queue
     case 'ADD_SAMPLE': {
+      const sampleList = { ...state.sampleList };
       const sampleID = action.sampleData.sampleID;
       const displayData = { ...state.displayData };
       displayData[sampleID] = { collapsed: false, state: 0, tasks: [] };
