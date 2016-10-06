@@ -91,7 +91,7 @@ export default (state = INITIAL_STATE, action) => {
       const movingItems = {};
 
       for (const key of action.indices) {
-        selectedItems[key] = true;
+        selectedItems[key] = action.selected;
         movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
       }
 

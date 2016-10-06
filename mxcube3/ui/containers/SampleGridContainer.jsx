@@ -57,6 +57,7 @@ class SampleGridContainer extends React.Component {
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeAllSamples = this.removeAllSamples.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
+    this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
     this.showAddSampleForm = this.props.showTaskParametersForm.bind(this, 'AddSample');
     this.showCharacterisationForm = this.handleSubmit.bind(this, 'Characterisation');
     this.showDataCollectionForm = this.handleSubmit.bind(this, 'DataCollection');
@@ -189,6 +190,11 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  clearSelectedSamples() {
+    this.props.selectSamples(Object.keys(this.props.sampleList), false);
+  }
+
+
   toggleAddDeleteSelectedSamples() {
     for (const sampleID in this.props.selected) {
       if (this.props.queue.queue[sampleID]) {
@@ -248,10 +254,11 @@ class SampleGridContainer extends React.Component {
     return (
       <StickyContainer>
         <ul id="contextMenu" style={{ display: 'none' }} className="dropdown-menu" role="menu">
-          <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>
           <MenuItem eventKey="1" onClick={this.addSelectedSamples}>
-            Sample
+            <span><Glyphicon glyph="unchecked" /> Pick Sample </span>
           </MenuItem>
+          <MenuItem divider />
+          <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>          
           <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
             Data collection
           </MenuItem>
@@ -294,27 +301,21 @@ class SampleGridContainer extends React.Component {
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div className="col-xs-9">
+            <div style={{paddingLeft: '0px'}} className="col-xs-9">
               <div className="form-inline">
+                <span >Select: </span>
                 <OverlayTrigger
                   placement="top"
                   overlay={(<Tooltip>Select samples</Tooltip>)}
                 >
-                  <DropdownButton
-                    bsStyle="default"
-                    title={<span><Glyphicon glyph="unchecked" /></span>}
-                    id="pipeline-mode-dropdown"
-                  >
-                    <MenuItem eventKey="1" onClick={this.selectAllSamples}>
+                  <ButtonGroup>
+                    <Button eventKey="1" onClick={this.selectAllSamples}>
                       All
-                    </MenuItem>
-                    <MenuItem eventKey="1" onClick={this.selectAllSamples}>
+                    </Button>
+                    <Button eventKey="1" onClick={this.clearSelectedSamples}>
                       None
-                    </MenuItem>
-                    <MenuItem eventKey="1" onClick={this.selectAllSamples}>
-                      Un-collected
-                    </MenuItem>
-                  </DropdownButton>
+                    </Button>
+                  </ButtonGroup>
                 </OverlayTrigger>
                 <span style={{ marginLeft: '1em' }} ></span>
                 <OverlayTrigger
@@ -434,7 +435,7 @@ function mapDispatchToProps(dispatch) {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
-    selectSamples: (keys) => dispatch(selectAction(keys)),
+    selectSamples: (keys, selected) => dispatch(selectAction(keys, selected)),
     toggleSelectedSample: (keys) => dispatch(toggleSelectedAction(keys)),
     deleteSample: (sampleID) => dispatch(deleteSample(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
