@@ -1,6 +1,27 @@
-<object class="ISPyBClient2Mockup">
+<object class="ISPyBClient2">
+  <ws_root>
+    http://ispybvalid.esrf.fr:8080/ispyb/ispyb-ws/ispybWS/
+    <!-- http://160.103.210.1:8080/ispyb-ejb3/ispybWS/
+    http://160.103.210.124:8080/ispyb-ws/ispybWS/ -->
+  </ws_root>
+  <ws_username></ws_username>
+  <ws_password></ws_password>
   <object role="session" href="/session"/>
   <object role="ldapServer" href="/ldapconnection"/>
-  <loginType>user</loginType>
-  <authServerType>ldap</authServerType>
+  <beamline_name>ID30A-3</beamline_name>
+
+  <proposals>
+    <proposal>
+      <code>ifx</code>
+      <ispyb>fx</ispyb>
+      <gui>fx</gui>
+    </proposal>
+  </proposals>
+
+  <inhouse>
+    <proposal>
+      <code>opid</code>
+      <number>30</number>
+    </proposal>
+  </inhouse>
 </object>
