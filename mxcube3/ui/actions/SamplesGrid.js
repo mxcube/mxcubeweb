@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
 
-export function selectAction(indices, selected=true) {
+export function selectAction(indices, selected = true) {
   return { type: 'SELECT_SAMPLES', indices, selected };
 }
 

@@ -258,7 +258,7 @@ class SampleGridContainer extends React.Component {
             <span><Glyphicon glyph="unchecked" /> Pick Sample </span>
           </MenuItem>
           <MenuItem divider />
-          <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>          
+          <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>
           <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
             Data collection
           </MenuItem>
@@ -301,7 +301,7 @@ class SampleGridContainer extends React.Component {
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div style={{paddingLeft: '0px'}} className="col-xs-9">
+            <div style={{ paddingLeft: '0px' }} className="col-xs-9">
               <div className="form-inline">
                 <span >Select: </span>
                 <OverlayTrigger
