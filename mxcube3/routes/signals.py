@@ -167,11 +167,12 @@ def collect_oscillation_started(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_failed(*args):
+def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params):
     msg = {'Signal': 'collectOscillationFailed',
            'Message': task_signals['collectOscillationFailed'],
            'taskIndex' : last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
+           'taskLimsID': lims_id,
            'state': get_signal_result('collectOscillationFailed'),
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
@@ -181,13 +182,14 @@ def collect_oscillation_failed(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_finished(*args):   
+def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     qutils.enable_entry(last_queue_node()['queue_id'], False)
     
     msg = {'Signal': 'collectOscillationFinished',
            'Message': task_signals['collectOscillationFinished'],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
+           'taskLimsID': lims_id,
            'state': 2,
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))

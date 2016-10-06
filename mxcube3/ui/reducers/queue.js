@@ -123,6 +123,7 @@ export default (state = initialState, action) => {
             {
               ...state.queue[action.sampleID].tasks[action.taskIndex],
               checked: false,
+              limsID: action.limsID
             },
             ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)
           ]
