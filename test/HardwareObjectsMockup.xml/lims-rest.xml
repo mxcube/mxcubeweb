@@ -11,8 +11,8 @@
   <exi_root>
    https://exi.esrf.fr/mx/
   </exi_root>
-  <restUserName>ispybws1</restUserName>
-  <restPass>I$pybws1</restPass>
+  <restUserName></restUserName>
+  <restPass></restPass>
   <object role="session" href="/session"/>
 
   <proposals>
