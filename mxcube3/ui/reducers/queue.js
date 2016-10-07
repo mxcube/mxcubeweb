@@ -25,11 +25,11 @@ const initialState = {
  *
  */
 function initSampleList(samples) {
-  const sampleList = Object.assign({}, samples);
+  const sampleList = {};
 
-  for (const key in sampleList) {
+  for (const key in samples) {
     if (key) {
-      sampleList[key].queueOrder = -1;
+      sampleList[key] = { ...samples[key], queueOrder: -1 };
     }
   }
 
@@ -47,22 +47,21 @@ function initSampleList(samples) {
  *
  */
 function recalculateQueueOrder(keys, gridOrder, state) {
-  const sampleList = Object.assign({}, state.sampleList);
+  const sampleList = { ...state.sampleList };
   const sortedOrder = Object.entries(gridOrder).sort((a, b) => a[1] > b[1]);
 
   let i = 0;
   for (const [key] of sortedOrder) {
     if (keys.includes(key)) {
-      sampleList[key].queueOrder = i;
+      sampleList[key] = { ...state.sampleList[key], queueOrder: i };
       i++;
     } else {
-      sampleList[key].queueOrder = -1;
+      sampleList[key] = { ...state.sampleList[key], queueOrder: -1 };
     }
   }
 
   return sampleList;
 }
-
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -74,7 +73,8 @@ export default (state = initialState, action) => {
     }
     case 'APPEND_TO_SAMPLE_LIST': {
       const sampleData = action.sampleData;
-      const sampleList = { ...state.sampleList, [sampleData.sampleID]: sampleData };
+      const sampleList = { ...state.sampleList };
+      sampleList[sampleData.sampleID] = sampleData;
 
       return Object.assign({}, state, { sampleList });
     }
@@ -115,15 +115,38 @@ export default (state = initialState, action) => {
     }
 
     case 'ADD_TASK_RESULT': {
-      const displayData = Object.assign({}, state.displayData);
-      const queue = Object.assign({}, state.queue);
-      const current = Object.assign({}, state.current);
+      const queue = {
+        ...state.queue,
+        [action.sampleID]: {
+          ...state.queue[action.sampleID],
+          tasks: [
+            ...state.queue[action.sampleID].tasks.slice(0, action.taskIndex),
+            {
+              ...state.queue[action.sampleID].tasks[action.taskIndex],
+              checked: false,
+            },
+            ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)
+          ]
+        }
+      };
 
-      displayData[action.sampleID].tasks[action.taskIndex].state = action.state;
-      displayData[action.sampleID].tasks[action.taskIndex].progress = action.progress;
-      queue[action.sampleID].tasks[action.taskIndex].checked = false;
+      const displayData = {
+        ...state.displayData,
+        [action.sampleID]: {
+          ...state.displayData[action.sampleID],
+          tasks: [
+            ...state.displayData[action.sampleID].tasks.slice(0, action.taskIndex),
+            {
+              ...state.displayData[action.sampleID].tasks[action.taskIndex],
+              state: action.state,
+              progress: action.progress
+            },
+            ...state.displayData[action.sampleID].tasks.slice(action.taskIndex + 1)
+          ]
+        }
+      };
 
-      current.node = action.sampleID;
+      const current = { ...state.current, node: action.sampleID };
 
       return Object.assign({}, state, { displayData, queue, current });
     }
@@ -136,15 +159,12 @@ export default (state = initialState, action) => {
     }
     // Adding sample to queue
     case 'ADD_SAMPLE': {
-      const sampleList = { ...state.sampleList };
       const sampleID = action.sampleData.sampleID;
       const displayData = { ...state.displayData };
+      displayData[sampleID] = { collapsed: false, state: 0, tasks: [] };
 
-      // Init display data for the sample
-      displayData[sampleID] = { collpased: false, tasks: [] };
-
-      // If the sample have tasks attached to it, add the corresponding
-      // display data for those tasks.
+      // Not creating a copy here since we know that the reference
+      // displayData[sampleID] did not exist before
       action.sampleData.tasks.map((task) => {
         displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
         return task;
@@ -155,7 +175,6 @@ export default (state = initialState, action) => {
           displayData,
           todo: { ...state.todo, nodes: state.todo.nodes.concat(sampleID) },
           queue: { ...state.queue, [sampleID]: action.sampleData },
-          sampleList,
           manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
       );
@@ -179,36 +198,59 @@ export default (state = initialState, action) => {
     case 'ADD_TASK': {
       const sampleID = action.task.sampleID;
 
-      // Create a copy of the tasks (array) for a sample with given sampleID,
-      // or an empty array if no tasks exists for sampleID
-      let tasks = Array.from(state.queue[sampleID].tasks || []);
+      const queue = {
+        ...state.queue,
+        [sampleID]: {
+          ...state.queue[sampleID],
+          tasks: [...state.queue[sampleID].tasks, action.task]
+        }
+      };
 
-      tasks = tasks.concat([action.task]);
-
-      const queue = { ...state.queue };
-      queue[sampleID].tasks = tasks;
-
-      const displayData = { ...state.displayData };
-      displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
+      const displayData = {
+        ...state.displayData,
+        [sampleID]: {
+          ...state.displayData[sampleID],
+          tasks: [...state.displayData[sampleID].tasks, { collapsed: false, state: 0 }]
+        }
+      };
 
       return Object.assign({}, state, { displayData, queue });
     }
     // Removing the task from the queue
     case 'REMOVE_TASK': {
-      const queue = { ...state.queue };
-      const displayData = { ...state.displayData };
+      const queue = {
+        ...state.queue,
+        [action.sampleID]: {
+          ...state.queue[action.sampleID],
+          tasks: [...state.queue[action.sampleID].tasks.slice(0, action.taskIndex),
+                  ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)]
+        }
+      };
 
-      queue[action.sampleID].tasks.splice(action.taskIndex, 1);
-      displayData[action.sampleID].tasks.splice(action.taskIndex, 1);
+      const displayData = {
+        ...state.displayData,
+        [action.sampleID]: {
+          ...state.displayData[action.sampleID],
+          tasks: [...state.displayData[action.sampleID].tasks.slice(0, action.taskIndex),
+                  ...state.displayData[action.sampleID].tasks.slice(action.taskIndex + 1)]
+        }
+      };
 
       return Object.assign({}, state, { displayData, queue });
     }
     case 'UPDATE_TASK': {
-      const tasks = Array.from(state.queue[action.sampleID].tasks);
-      const queue = { ...state.queue };
-
-      tasks[action.taskIndex] = action.taskData;
-      queue[action.sampleID].tasks = tasks;
+      const queue = {
+        ...state.queue,
+        [action.sampleID]: {
+          ...state.queue[action.sampleID],
+          tasks:
+          [
+            ...state.queue[action.sampleID].tasks.slice(0, action.taskIndex),
+            action.taskData,
+            ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)
+          ]
+        }
+      };
 
       return Object.assign({}, state, { queue });
     }
