@@ -1,5 +1,4 @@
 import logging
-import types
 
 from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
@@ -30,8 +29,8 @@ def login():
         return make_response({ "code": "", "msg": "Another user is already logged in" }, 409)
 
     password = content['password']
-
     loginRes = mxcube.db_connection.login(loginID, password)
+    mxcube.db_connection.get_todays_session(loginRes)
     mxcube.rest_lims.authenticate(loginID, password)
    
     if loginRes['status']['code'] == 'ok':
@@ -71,7 +70,7 @@ def loginInfo():
     Retrieve session/login info
      :response Content-Type: application/json, {"synchrotron_name": synchrotron_name, "beamline_name": beamline_name,
                     "loginType": loginType, "loginRes": {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal, 'session': todays_session, "local_contact": local_contact, "person": someone, "laboratory": a_laboratory']} }
-    """
+    """     
     global LOGGED_IN_USER
     global MASTER
     loginInfo = session.get("loginInfo")
