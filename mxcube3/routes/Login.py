@@ -29,10 +29,9 @@ def login():
         return make_response({ "code": "", "msg": "Another user is already logged in" }, 409)
 
     password = content['password']
-    loginRes = mxcube.db_connection.login(loginID, password)
-    mxcube.db_connection.get_todays_session(loginRes)
-    mxcube.rest_lims.authenticate(loginID, password)
-   
+
+    loginRes = limsutils.lims_login(loginID, password)
+ 
     if loginRes['status']['code'] == 'ok':
         session['loginInfo'] = { 'loginID': loginID, 'password': password, 'loginRes': loginRes }
         LOGGED_IN_USER = loginID
@@ -81,7 +80,7 @@ def loginInfo():
             return make_response("", 409)
 
         # auto log in
-        loginInfo["loginRes"] = mxcube.db_connection.login(loginID, loginInfo["password"])
+        loginInfo["loginRes"] = limsutils.lims_login(loginID, loginInfo["password"])
         LOGGED_IN_USER = loginID
         if not MASTER:
             MASTER = session.sid
