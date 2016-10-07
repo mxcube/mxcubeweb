@@ -6,6 +6,7 @@ from optparse import OptionParser
 import os
 import sys
 import logging
+from logging import StreamHandler, NullHandler
 import cPickle as pickle
 import gevent
 import traceback
@@ -36,7 +37,7 @@ app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
 app.config['SECRET_KEY'] = "nosecretfornow"
 def exception_handler(e):
     err_msg = "Uncaught exception while calling %s" % request.path
-    logging.exception(err_msg)
+    logging.getLogger("exceptions").exception(err_msg)
     return err_msg+": "+traceback.format_exc(), 409
 app.register_error_handler(Exception, exception_handler)
 sess = Session()
@@ -66,13 +67,18 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     import logging_handler
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
+    root_logger.addHandler(NullHandler())
     custom_log_handler = logging_handler.MX3LoggingHandler()
     custom_log_handler.setLevel(logging.DEBUG)
-    root_logger.addHandler(custom_log_handler)
+    exception_logger = logging.getLogger("exceptions")
+    exception_logger.addHandler(StreamHandler(sys.stdout))
+    exception_logger.addHandler(custom_log_handler)
     hwr_logger = logging.getLogger("HWR")
+    hwr_logger.addHandler(custom_log_handler)
     user_logger = logging.getLogger("user_level_log")
+    user_logger.addHandler(custom_log_handler)
     queue_logger = logging.getLogger("queue_exec")
-    app.log_handler = custom_log_handler
+    queue_logger.addHandler(custom_log_handler)
 
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
