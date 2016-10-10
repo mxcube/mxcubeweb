@@ -58,61 +58,65 @@ export default class MotorInput extends React.Component {
     let data = { state: 'IMMEDIATE', value: step };
 
     return (
+        <div className="motor-input-container">
+          <p className="motor-name">{this.props.label}</p>
           <form className="inline form-inline form-group" onSubmit={this.handleKey} noValidate>
-
-              <div className="rw-widget rw-numberpicker">
-                <span className="rw-select">
-                  <button
-                    type="button"
-                    className="rw-btn"
-                    disabled={this.props.state !== 2}
-                    onClick={this.stepIncrement}
-                  >
-                    <i aria-hidden="true" className="rw-i rw-i-caret-up"></i>
-                  </button>
-                  <button
-                    type="button"
-                    className="rw-btn"
-                    disabled={this.props.state !== 2}
-                    onClick={this.stepDecrement}
-                  >
-                    <i aria-hidden="true" className="rw-i rw-i-caret-down"></i>
-                  </button>
-                </span>
-                <input
-                  ref="motorValue"
-                  className={inputCSS}
-                  onKeyUp={this.handleKey}
-                  type="number"
-                  step={step}
-                  defaultValue={valueCropped}
-                  name={motorName}
+            <div className="rw-widget rw-numberpicker">
+              <span className="rw-select">
+                <button
+                  type="button"
+                  className="rw-btn"
                   disabled={this.props.state !== 2}
-                />
-              </div>
-                <span>
-                {this.props.saveStep && this.props.state === 4 ?
-                  <Button
-                    className="btn-sm motor-abort"
-                    bsStyle="danger"
-                    disabled={this.props.state !== 4}
-                    onClick={this.stopMotor}
-                  >
-                    <i className="glyphicon glyphicon-remove" />
-                  </Button>
-                    : null
-                  }
-                  {this.props.saveStep ?
-                  <PopInput
-                    className="step-size"
-                    ref={motorName} name="Step size" pkey={`${motorName.toLowerCase()}Step`}
-                    data={data} onSave={this.props.saveStep} suffix={suffix}
-                  />
-                  : null
-                  }
-                </span>
+                  onClick={this.stepIncrement}
+                >
+                  <i aria-hidden="true" className="rw-i rw-i-caret-up"></i>
+                </button>
+                <button
+                  type="button"
+                  className="rw-btn"
+                  disabled={this.props.state !== 2}
+                  onClick={this.stepDecrement}
+                >
+                  <i aria-hidden="true" className="rw-i rw-i-caret-down"></i>
+                </button>
+              </span>
+              <input
+                ref="motorValue"
+                className={inputCSS}
+                onKeyUp={this.handleKey}
+                type="number"
+                step={step}
+                defaultValue={valueCropped}
+                name={motorName}
+                disabled={this.props.state !== 2}
+              />
+            </div>
+            <span>
+              {this.props.saveStep ?
+              <PopInput
+                className="step-size"
+                ref={motorName} name="Step size" pkey={`${motorName.toLowerCase()}Step`}
+                data={data} onSave={this.props.saveStep} suffix={suffix}
+              />
+              : null
+              }
+            </span>
+            <span>
+              {this.props.state === 4 ?
+                <Button
+                  className="btn-xs motor-abort"
+                  bsStyle="danger"
+                  disabled={this.props.state !== 4}
+                  onClick={this.stopMotor}
+                >
+                  <i className="glyphicon glyphicon-remove" />
+                </Button>
+                : null
+               }
+             </span>
 
           </form>
+        </div>
       );
   }
 }

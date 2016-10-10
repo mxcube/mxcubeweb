@@ -19,7 +19,9 @@ class SampleViewContainer extends Component {
 
     return (
       <div className="row">
-        <div className="col-xs-1">
+        <div className="col-xs-1"
+          style={{ 'margin-top': '0em', 'padding-right': '5px', 'padding-left': '1.5em' }}
+        >
             <MotorControl
               save={sendMotorPosition}
               saveStep={setStepSize}
