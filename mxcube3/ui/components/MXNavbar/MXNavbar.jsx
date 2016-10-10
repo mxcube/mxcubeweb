@@ -12,23 +12,6 @@ export default class MXNavbar extends React.Component {
     const raMaster = (this.props.remoteAccessMaster ? 'User in control' : 'Observer mode');
     const raStyle = (this.props.remoteAccessMaster ? { color: 'white' } : {});
 
-    const sampleGrid = (
-      <OverlayTrigger
-        placement="right"
-        overlay={(
-          <Popover id="sample-overview" className="main-menu-tooltip">Sample Overview</Popover>
-        )}
-      >
-        <p
-          className="text-center"
-          eventKey={1}
-          active={(this.props.location.pathname === '/')}
-        >
-          <a className="fa fa-2x fa-th-large icon" aria-hidden="true" href="#/"></a>
-        </p>
-      </OverlayTrigger>
-    );
-
     document.title = `MxCuBE-3 ${propInfo}`;
 
     return (
@@ -37,7 +20,20 @@ export default class MXNavbar extends React.Component {
           <img src={logo} className="main-menu-logo" role="presentation" />
           <hr className="main-menu-breaker" />
           <div className="main-menu-icons">
-          {(process.env.NODE_ENV !== 'production' ? sampleGrid : '')}
+          <OverlayTrigger
+            placement="right"
+            overlay={(
+              <Popover id="sample-overview" className="main-menu-tooltip">Sample Overview</Popover>
+            )}
+          >
+            <p
+              className="text-center"
+              eventKey={1}
+              active={(this.props.location.pathname === '/')}
+            >
+              <a className="fa fa-2x fa-th-large icon" aria-hidden="true" href="#/"></a>
+            </p>
+          </OverlayTrigger>
           <OverlayTrigger
             placement="right"
             overlay={
@@ -89,6 +85,26 @@ export default class MXNavbar extends React.Component {
                 aria-hidden="true"
                 onClick={this.props.reset}
               />
+            </p>
+          </OverlayTrigger>
+          <OverlayTrigger
+            placement="right"
+            overlay={(
+              <Popover id="show_sc" className="main-menu-tooltip">Sample Changer</Popover>
+            )}
+          >
+            <p
+              className="main-menu-icon text-center pull-down"
+              eventKey={1}
+              active={(this.props.location.pathname === '/')}
+              href="#/sampleChanger"
+            >
+              <a
+                className="fa fa-2x fa-braille icon"
+                aria-hidden="true"
+                href="#/sampleChanger"
+              >
+              </a>
             </p>
           </OverlayTrigger>
           <div className="main-menu-bottom">

@@ -132,7 +132,7 @@ export default class TaskItem extends Component {
       <div className="node node-sample" style={{ opacity }}>
           <div className={taskCSS} onClick={this.collapseTask}>
             <p className="node-name">
-              {`P${data.parameters.point} ${data.label}`}
+              {`${data.parameters.typePrefix}${data.parameters.point} ${data.label}`}
             </p>
           </div>
           <Collapse in={Boolean(show)}>

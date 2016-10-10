@@ -79,6 +79,13 @@ export function addCentringPoint(x, y) {
   };
 }
 
+
+export function addLine(p1, p2) {
+  return {
+    type: 'ADD_LINE', p1, p2
+  };
+}
+
 export function savePoint(point) {
   return {
     type: 'SAVE_POINT', point
@@ -88,6 +95,12 @@ export function savePoint(point) {
 export function deletePoint(id) {
   return {
     type: 'DELETE_POINT', id
+  };
+}
+
+export function deleteLine(id) {
+  return {
+    type: 'DELETE_LINE', id
   };
 }
 
@@ -156,6 +169,23 @@ export function sendCentringPoint(x, y) {
       }
     }).then(() => {
       dispatch(addCentringPoint(x, y));
+    });
+  };
+}
+
+export function sendAcceptCentring() {
+  return function () {
+    fetch('/mxcube/api/v0.1/sampleview/centring/accept', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Centring not accepted');
+      }
     });
   };
 }

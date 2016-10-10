@@ -1,3 +1,4 @@
+import time
 import json
 import logging
 import signals
@@ -25,6 +26,15 @@ def init_signals(queue):
                            signals.collect_oscillation_failed)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
+    queue.connect(queue, 'child_added', qutils.add_diffraction_plan)
+
+    queue.queue_hwobj.connect("queue_execute_started",
+                              signals.queue_execution_started)
+
+    queue.queue_hwobj.connect("queue_execution_finished",
+                              signals.queue_execution_finished)
+
+    queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
@@ -36,8 +46,15 @@ def queue_start():
               200: On success
               409: Queue could not be started
     """
-    mxcube.queue.queue_hwobj.disable(False)
-    mxcube.queue.queue_hwobj.execute()
+    logging.getLogger('HWR').info('[QUEUE] Queue going to start')
+
+    try:
+        mxcube.queue.queue_hwobj.set_pause(False)
+        mxcube.queue.queue_hwobj.execute()
+    except Exception as ex:
+        signals.queue_execution_failed(ex)
+    
+    logging.getLogger('HWR').info('[QUEUE] Queue started')
     return Response(status=200)
 
 
@@ -80,7 +97,7 @@ def queue_pause():
     msg = {'Signal': 'QueuePaused',
            'Message': 'Queue execution paused',
            'State': 1}
-    socketio.emit('Queue', msg, namespace='/hwr')
+    socketio.emit('queue', msg, namespace='/hwr')
     logging.getLogger('HWR').info('[QUEUE] Paused')
     return Response(status=200)
 
@@ -98,7 +115,7 @@ def queue_unpause():
     msg = {'Signal': 'QueueStarted',
            'Message': 'Queue execution started',
            'State': 1}
-    socketio.emit('Queue', msg, namespace='/hwr')
+    socketio.emit('queue', msg, namespace='/hwr')
     return Response(status=200)
 
 
@@ -151,25 +168,17 @@ def execute_entry_with_id(sid, tindex):
         node_id = qutils.queue_to_dict()[sid]["tasks"][int(tindex)]["queueID"]
 
     node, entry = qutils.get_entry(node_id)
-        
-    msg = {'Signal': 'QueueStarted',
-           'Message': 'Queue execution started',
-           'State': 1}
 
-    socketio.emit('Queue', msg, namespace='/hwr')
+    signals.queue_execution_started(None)
 
     mxcube.queue.queue_hwobj._is_stopped = False
     mxcube.queue.queue_hwobj._set_in_queue_flag()
     mxcube.queue.queue_hwobj.set_pause(False)
     mxcube.queue.queue_hwobj.execute_entry(entry)
 
-    msg = {'Signal': 'QueueStopped',
-           'Message': 'Queue execution stopped',
-           'State': 1}
+    signals.queue_execution_finished(None)
 
-    socketio.emit('Queue', msg, namespace='/hwr')
-
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
 
     return Response(status=200)
 
@@ -177,7 +186,7 @@ def execute_entry_with_id(sid, tindex):
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
      qutils.queue_add_item(request.get_json())
-     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+     #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
      qutils.save_queue(session)
      return Response(status=200)
 
@@ -222,7 +231,7 @@ def queue_delete_item(sid, tindex):
 
     qutils.delete_entry(entry)
 
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     qutils.save_queue(session)
     return Response(status=200)
 
@@ -230,7 +239,7 @@ def queue_delete_item(sid, tindex):
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/swap", methods=['POST'])
 def queue_swap_task_item(sid, ti1, ti2):
     qutils.swap_task_entry(sid, int(ti1), int(ti2))
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     qutils.save_queue(session)
     return Response(status=200) 
    

@@ -12,7 +12,6 @@ class AddSample extends React.Component {
 
 
   handleCancel() {
-    this.props.setPhase('Centring');
     this.props.hide();
   }
 
@@ -26,7 +25,6 @@ class AddSample extends React.Component {
 
   render() {
     const { fields: { sampleName, proteinAcronym } } = this.props;
-    const phase = this.props.phase;
     return (
       <Modal show={this.props.show} onHide={this.handleCancel}>
         <Modal.Header closeButton>
@@ -47,10 +45,8 @@ class AddSample extends React.Component {
           </form>
         </Modal.Body>
         <Modal.Footer>
-          <p className="pull-left">Current Phase: <b>{this.props.phase}</b></p>
           <button
             className="btn btn-primary"
-            disabled={phase !== 'Transfer'}
             type="button"
             onClick={this.handleSubmit}
           >

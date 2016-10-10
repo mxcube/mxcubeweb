@@ -8,10 +8,12 @@ import Utils
 
 import queue_model_objects_v1 as qmo
 import queue_entry as qe
+import queue_model_enumerables_v1 as qme
 
 from flask import jsonify
 from mock import Mock
 from mxcube3 import app as mxcube
+from mxcube3 import socketio
 
 
 class PMock(Mock):
@@ -24,7 +26,7 @@ def node_index(node):
     Get the position (index) in the queue, sample and node id of node <node>.
 
     :returns: dictionary on the form:
-              {'sample': sample,'idx': index, 'queue_id': node_id}
+              {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
     sample, index = None, None
 
@@ -46,7 +48,11 @@ def node_index(node):
         task_groups = sample_model.get_children();
         group_list = [group.get_children() for group in task_groups]
         tlist = [task for task_list in group_list for task in task_list]
-        index = tlist.index(node)
+        # there is probably a better fix...
+        try:
+            index = tlist.index(node)
+        except Exception:
+            print 'node not in list: ', node
 
     return {'sample': sample, 'idx': index, 'queue_id': node._node_id}
 
@@ -344,11 +350,15 @@ def set_dc_params(model, entry, task_data):
 
     acq.acquisition_parameters.set_from_dict(params)
     acq.path_template.set_from_dict(params)
+    acq.path_template.base_prefix = params['prefix']
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
-                             params.get('path', 'dummy_path'))
-
+                             params.get('path', ''))
     acq.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('path', ''))
+    acq.path_template.process_directory = process_path
 
     # If there is a centered position associated with this data collection, get
     # the necessary data for the position and pass it to the collection.
@@ -358,6 +368,23 @@ def set_dc_params(model, entry, task_data):
                 _cpos = qmo.CentredPosition(cpos['motor_positions'])
                 _cpos.index = int(params['point'])
                 acq.acquisition_parameters.centred_position = _cpos
+
+    if params["helical"]:
+        model.experiment_type = qme.EXPERIMENT_TYPE.HELICAL
+        if int(params["p1"]) > 0:
+            for cpos in mxcube.diffractometer.savedCentredPos:
+                if cpos['posId'] == int(params['p1']):
+                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
+                    _cpos.index = int(params['p1'])
+                    acq.acquisition_parameters.centred_position = _cpos
+        if int(params["p2"]) > 0:
+            acq2 = qmo.Acquisition()
+            for cpos in mxcube.diffractometer.savedCentredPos:
+                if cpos['posId'] == int(params['p2']):
+                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
+                    _cpos.index = int(params['p2'])
+                    acq2.acquisition_parameters.centred_position = _cpos
+            model.acquisitions.append(acq2)
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -409,11 +436,12 @@ def add_characterisation(node_id, task):
     params = task['parameters']
 
     refdc_model, refdc_entry = _create_dc(task)
+    refdc_model.set_name('refdc')
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
     char_model = qmo.Characterisation(refdc_model, char_params)
     char_entry = qe.CharacterisationGroupQueueEntry(PMock(), char_model)
-
+    char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters 
     set_char_params(char_model, char_entry, task)
 
@@ -483,6 +511,7 @@ def new_queue(serialized_queue=None):
     queue = pickle.loads(serialized_queue)
     import Queue
     Queue.init_signals(queue)
+
     return queue
 
 
@@ -494,3 +523,43 @@ def get_queue(session, redis=redis.Redis()):
         serialized_queue = None
 
     return new_queue(serialized_queue)
+
+
+def add_diffraction_plan(parent, child):
+    """
+    Listen to the addition of elements to the queue ('child_added')
+    and if it is a diff plan create the appropiate queue entry and
+    emit a s
+    ocketio signal.
+    This is to overcome the fact that the Characterisation entry only
+    creates the model of the diff plan.
+    """
+    if isinstance(child, qmo.DataCollection):
+        parent_model, parent_entry = get_entry(parent._node_id)
+        # the parent
+
+        if 'Diffraction plan' in parent_model.get_name():
+            # name example string 'Diffraction plan - 3'
+            # then we do know that we need to add the entry here
+            # Create a new entry for the new child, in this case a data collection
+            dc_entry = qe.DataCollectionQueueEntry(PMock(), child)
+            dcg_entry = qe.TaskGroupQueueEntry(PMock(), parent)
+
+            parent.set_enabled(True)
+            dcg_entry.set_enabled(True)
+
+            child.set_enabled(True)
+            dc_entry.set_enabled(True)
+
+            sample = parent.get_parent()  # mxcube.queue.get_model_root()
+            sample_model, sample_entry = get_entry(sample._node_id)
+            # TODO: check if the parent entry exits in case multiple diff plans
+            sample_entry.enqueue(dcg_entry)
+
+            # Add the entry to the newly created task group, brother to the characterisation
+            dcg_entry.enqueue(dc_entry)
+
+            msg = _handle_dc(sample._node_id, child)
+            msg['parameters']['typePrefix'] = 'P'
+            # TODO: add saved centring pos id, centred_position is removed in _handle_dc
+            socketio.emit('add_task', msg, namespace='/hwr')

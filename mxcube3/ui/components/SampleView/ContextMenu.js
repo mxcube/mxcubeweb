@@ -17,12 +17,10 @@ export default class ContextMenu extends React.Component {
         { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
         ],
         GROUP: [
-        { text: 'Draw Line', action: undefined, key: 1 },
-        { text: 'Delete Selected (NA)', action: undefined, key: 2 }
+        { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
         ],
         LINE: [
-        { text: 'Add Helical Scan (NA)', action: undefined, key: 1 },
-        { text: 'Delete Line', action: () => this.removeObject(), key: 2 }
+        { text: 'Delete Line', action: () => this.removeLine(), key: 2 }
         ],
         NONE: [
         { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
@@ -68,6 +66,7 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.stopClickCentring();
     this.props.sampleActions.sendSavePoint(this.props.shape.id);
+    this.props.sampleActions.sendAcceptCentring();
   }
 
   goToPoint() {
@@ -91,6 +90,17 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.measureDistance(true);
   }
 
+  createLine() {
+    const { shape } = this.props;
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.addLine(shape.id.p1, shape.id.p2);
+    this.showModal('Helical');
+  }
+
+  removeLine() {
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.deleteLine(this.props.shape.id);
+  }
   hideContextMenu() {
     document.getElementById('contextMenu').style.display = 'none';
   }

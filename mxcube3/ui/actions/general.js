@@ -4,15 +4,21 @@ export function setInitialStatus(data) {
   return { type: 'SET_INITIAL_STATUS', data };
 }
 
-export function setLoading(loading) {
+export function setLoading(loading, title = '', message = '', blocking = false) {
   return {
-    type: 'SET_LOADING', loading
+    type: 'SET_LOADING', loading, title, message, blocking
   };
 }
 
 export function showErrorPanel(show, message = '') {
   return {
     type: 'SHOW_ERROR_PANEL', show, message
+  };
+}
+
+export function showDialog(show, title = '', message = '') {
+  return {
+    type: 'SHOW_DIALOG', show, title, message
   };
 }
 
@@ -89,6 +95,14 @@ export function getInitialStatus() {
         'Content-type': 'application/json'
       }
     });
+    const sampleChangerContents = fetch('mxcube/api/v0.1/sample_changer/contents', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
 
     const pchains = [
       motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
@@ -97,7 +111,10 @@ export function getInitialStatus() {
       diffractometerInfo.then(parse).then(json => { Object.assign(state, json); }).catch(notify),
       dataPath.then(parse).then(path => { state.rootPath = path; }).catch(notify),
       dcParameters.then(parse).then(json => { state.dcParameters = json; }).catch(notify),
-      savedPoints.then(parse).then(json => { state.points = json; }).catch(notify)
+      savedPoints.then(parse).then(json => { state.points = json; }).catch(notify),
+      sampleChangerContents.then(parse).then(json => {
+        state.sampleChangerContents = json;
+      }).catch(notify)
     ];
 
     Promise.all(pchains).then(() => {

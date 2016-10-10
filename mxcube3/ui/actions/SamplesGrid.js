@@ -1,12 +1,13 @@
 import fetch from 'isomorphic-fetch';
 
-export function pickAllAction(picked) {
-  return { type: 'PICK_ALL_SAMPLES', picked };
-}
-
 
 export function selectAction(indices) {
   return { type: 'SELECT_SAMPLES', indices };
+}
+
+
+export function toggleSelectedAction(sampleID) {
+  return { type: 'TOGGLE_SELECTED_SAMPLE', sampleID };
 }
 
 
@@ -36,6 +37,6 @@ export function toggleMovableAction(key) {
 }
 
 
-export function pickSamplesAction(keys) {
-  return { type: 'PICK_SAMPLES', keys };
+export function showSampleGridContextMenu(x, y, show) {
+  return { type: 'SAMPLE_GRID_CONTEXT_MENU', x, y, show };
 }

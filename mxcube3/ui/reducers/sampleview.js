@@ -1,11 +1,9 @@
-import { omit } from 'lodash/object';
 const initialState = {
   clickCentring: false,
   clickCentringPoints: [],
   measureDistance: false,
   distancePoints: [],
-  zoom: 0,
-  points: {},
+  lines: [],
   width: 659,
   height: 493,
   motorSteps: {
@@ -18,9 +16,7 @@ const initialState = {
     kappaStep: 0.1,
     kappaphiStep: 0.1
   },
-  pixelsPerMm: 0,
   imageRatio: 0,
-  contextMenu: { show: false, shape: { type: 'NONE' }, x: 0, y: 0 },
   apertureList: [],
   currentAperture: 0,
   currentPhase: '',
@@ -60,6 +56,10 @@ export default (state = initialState, action) => {
             }
         );
       }
+    case 'ADD_LINE':
+      {
+        return { ...state, lines: [...state.lines, { p1: action.p1, p2: action.p2 }] };
+      }
     case 'MEASURE_DISTANCE':
       {
         return { ...state, measureDistance: action.mode, distancePoints: [] };
@@ -76,13 +76,11 @@ export default (state = initialState, action) => {
             }
         );
       }
-    case 'SAVE_POINT':
+    case 'DELETE_LINE':
       {
-        return { ...state, points: { ...state.points, [action.point.posId]: action.point } };
-      }
-    case 'DELETE_POINT':
-      {
-        return { ...state, points: omit(state.points, action.id) };
+        return { ...state,
+          lines: [...state.lines.slice(0, action.id), ...state.lines.slice(action.id + 1)]
+        };
       }
     case 'SAVE_IMAGE_SIZE':
       {
@@ -91,21 +89,6 @@ export default (state = initialState, action) => {
           width: action.width,
           height: action.height,
           pixelsPerMm: action.pixelsPerMm
-        };
-      }
-    case 'UPDATE_POINTS_POSITION':
-      {
-        return { ...state, points: action.points };
-      }
-    case 'SHOW_CONTEXT_MENU':
-      {
-        return {
-          ...state,
-          contextMenu: {
-            show: action.show,
-            shape: action.shape,
-            x: action.x, y: action.y
-          }
         };
       }
     case 'SET_IMAGE_RATIO':
@@ -129,39 +112,29 @@ export default (state = initialState, action) => {
       {
         return { ...state, currentPhase: action.phase };
       }
-    case 'MOUNT_SAMPLE':
-      {
-        return { ...state, points: {} };
-      }
-    case 'UNMOUNT_SAMPLE':
-      {
-        return { ...state, points: {} };
-      }
     case 'SET_STEP_SIZE':
       {
         return { ...state, motorSteps: { ...state.motorSteps, [action.name]: action.value } };
       }
-    case 'SAVE_MOTOR_POSITIONS':
+    case 'CLEAR_ALL':
       {
-        return { ...state,
-                 zoom: action.data.zoom.position,
-                 pixelsPerMm: action.data.pixelsPerMm[0]
-               };
+        return Object.assign({},
+          state,
+          { lines: [], distancePoints: [], clickCentringPoints: [] }
+        );
       }
     case 'SET_INITIAL_STATUS':
       {
         return {
           ...state,
-          zoom: action.data.Motors.zoom.position,
           width: action.data.Camera.imageWidth,
           height: action.data.Camera.imageHeight,
-          pixelsPerMm: action.data.Camera.pixelsPerMm[0],
           apertureList: action.data.beamInfo.apertureList,
           currentAperture: action.data.beamInfo.currentAperture,
           beamPosition: action.data.beamInfo.position,
           beamShape: action.data.beamInfo.shape,
           beamSize: { x: action.data.beamInfo.size_x, y: action.data.beamInfo.size_y },
-          points: action.data.points
+          lines: []
         };
       }
     default:

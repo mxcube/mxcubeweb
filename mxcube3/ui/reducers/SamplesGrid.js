@@ -17,8 +17,8 @@
 */
 const INITIAL_STATE = { selected: {},
                         order: {},
-                        picked: {},
                         moving: {},
+                        contextMenu: {},
                         filterText: '' };
 
 /**
@@ -39,26 +39,6 @@ function initialGridOrder(sampleList) {
   }
 
   return gridOrder;
-}
-
-
-/**
- * Toggle picked state of keys
- *
- * @param {Array} keys - keys to toggle
- * @param {Object} state - redux state object
- * @returns {Object} - Object containing key, picked (boolean) pairs
- *
- */
-function togglePicked(keys, state) {
-  const picked = Object.assign({}, state.picked);
-
-  // Toggle pick state for each key
-  for (const key of keys) {
-    picked[key] = !picked[key];
-  }
-
-  return picked;
 }
 
 
@@ -117,24 +97,15 @@ export default (state = INITIAL_STATE, action) => {
 
       return Object.assign({}, state, { selected: selectedItems, moving: movingItems });
     }
-    // Flag a range of samples as picked (for collect)
-    case 'PICK_SAMPLES': {
-      const keys = [];
-
-      // Get keys of selected sample items
-      for (const key in action.keys) {
-        if (state.selected[key]) {
-          keys.push(key);
-        }
-      }
-
-      const picked = togglePicked(keys, state);
-      return Object.assign({}, state, { picked });
+    case 'TOGGLE_SELECTED_SAMPLE': {
+      const selected = Object.assign({}, state.selected);
+      selected[action.sampleID] = (!state.selected[action.sampleID]);
+      return Object.assign({}, state, { selected });
     }
-    case 'PICK_ALL_SAMPLES': {
-      const picked = {};
-      Object.keys(state.sampleList).forEach(key => (picked[key] = action.picked));
-      return Object.assign({}, state, { picked });
+    case 'SAMPLE_GRID_CONTEXT_MENU': {
+      return Object.assign({}, state, { contextMenu: { x: action.x,
+                                                       y: action.y,
+                                                       show: action.show } });
     }
     case 'FILTER_SAMPLE_LIST': {
       return Object.assign({}, state, { filterText: action.filterText });

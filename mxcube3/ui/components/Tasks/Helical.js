@@ -3,7 +3,7 @@ import { reduxForm } from 'redux-form';
 import { Modal, Button } from 'react-bootstrap';
 /* eslint camelcase: 0 */
 
-class DataCollection extends React.Component {
+class Helical extends React.Component {
 
   constructor(props) {
     super(props);
@@ -15,10 +15,12 @@ class DataCollection extends React.Component {
     const parameters = {
       ...this.props.values,
       type: 'DataCollection',
-      label: 'Data Collection',
-      helical: false,
-      point: this.props.pointId,
-      typePrefix: 'P',
+      label: 'Helical',
+      typePrefix: 'L',
+      helical: true,
+      point: this.props.lines.length - 1,
+      p1: this.props.pointId.p1,
+      p2: this.props.pointId.p2
     };
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
@@ -98,7 +100,7 @@ class DataCollection extends React.Component {
     return (
       <Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>Standard Data Collection</Modal.Title>
+          <Modal.Title>Helical</Modal.Title>
         </Modal.Header>
         <Modal.Body>
 
@@ -368,8 +370,8 @@ class DataCollection extends React.Component {
   }
 }
 
-DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'datacollection',                           // a unique name for this form
+Helical = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
+  form: 'helical',                           // a unique name for this form
   fields: [
     'num_images',
     'first_image',
@@ -397,6 +399,6 @@ state => ({ // mapStateToProps
     ...state.taskForm.taskData.parameters,
     beam_size: state.sampleview.currentAperture
   } // will pull state into form's initialValues
-}))(DataCollection);
+}))(Helical);
 
-export default DataCollection;
+export default Helical;
