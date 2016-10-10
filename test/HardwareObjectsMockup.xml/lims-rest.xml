@@ -1,0 +1,30 @@
+<object class="ISPyBRestClient">
+  <restRoot>
+    https://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest/
+  </restRoot>
+  <site>
+   ESRF
+  </site>
+  <exi_root>
+   https://exi.esrf.fr/mx/
+  </exi_root>
+  <restUserName></restUserName>
+  <restPass></restPass>
+
+  <object role="session" href="/session"/>
+
+  <proposals>
+    <proposal>
+      <code>ifx</code>
+      <ispyb>fx</ispyb>
+      <gui>fx</gui>
+    </proposal>
+  </proposals>
+
+  <inhouse>
+    <proposal>
+      <code>opid</code>
+      <number>30</number>
+    </proposal>
+  </inhouse>
+</object>

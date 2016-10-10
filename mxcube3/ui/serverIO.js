@@ -71,8 +71,8 @@ export default class ServerIO {
     });
 
     this.hwrSocket.on('task', (record) => {
-      this.dispatch(addTaskResultAction(record.sample, record.taskIndex,
-                                        record.state, record.progress));
+      this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state,
+                                        record.progress, record.taskLimsID));
     });
 
     this.hwrSocket.on('add_task', (record) => {

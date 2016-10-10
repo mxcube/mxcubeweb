@@ -1,28 +1,13 @@
+import logging
+
 from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
-from mxcube3.routes import Queue, Utils, qutils
-import logging
-import os
-import types
+from mxcube3.routes import qutils
+from mxcube3.routes import limsutils
+
 
 LOGGED_IN_USER = None
 MASTER = None
-
-def convert_to_dict(ispyb_object):
-    d = {}
-    if type(ispyb_object) == types.DictType:
-        d.update(ispyb_object)
-    else:
-        for key in ispyb_object.__keylist__:
-            val = getattr(ispyb_object, key)
-            if type(val) == types.InstanceType:
-                val = convert_to_dict(val)
-            elif type(val) == types.ListType:
-                val = [convert_to_dict(x) if type(x) == types.InstanceType else x for x in val]
-            elif type(val) == types.DictType:
-                val = dict([(k, convert_to_dict(x) if type(x) == types.InstanceType else x) for k, x in val.iteritems()])
-            d[key] = val
-    return d
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -45,8 +30,8 @@ def login():
 
     password = content['password']
 
-    loginRes = mxcube.db_connection.login(loginID, password)
-   
+    loginRes = limsutils.lims_login(loginID, password)
+ 
     if loginRes['status']['code'] == 'ok':
         session['loginInfo'] = { 'loginID': loginID, 'password': password, 'loginRes': loginRes }
         LOGGED_IN_USER = loginID
@@ -60,6 +45,7 @@ def login():
 #        "laboratory": prop['Laboratory']}
 
     return make_response(loginRes['status']['code'], 200)
+
 
 @mxcube.route("/mxcube/api/v0.1/signout")
 def signout():
@@ -76,13 +62,14 @@ def signout():
     session.clear()
     return make_response("", 200)
 
+
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
 def loginInfo():
     """
     Retrieve session/login info
      :response Content-Type: application/json, {"synchrotron_name": synchrotron_name, "beamline_name": beamline_name,
                     "loginType": loginType, "loginRes": {'status':{ "code": "ok", "msg": msg }, 'Proposal': proposal, 'session': todays_session, "local_contact": local_contact, "person": someone, "laboratory": a_laboratory']} }
-    """
+    """     
     global LOGGED_IN_USER
     global MASTER
     loginInfo = session.get("loginInfo")
@@ -93,7 +80,7 @@ def loginInfo():
             return make_response("", 409)
 
         # auto log in
-        loginInfo["loginRes"] = mxcube.db_connection.login(loginID, loginInfo["password"])
+        loginInfo["loginRes"] = limsutils.lims_login(loginID, loginInfo["password"])
         LOGGED_IN_USER = loginID
         if not MASTER:
             MASTER = session.sid
@@ -107,27 +94,8 @@ def loginInfo():
                     { "synchrotron_name": mxcube.session.synchrotron_name,
                       "beamline_name": mxcube.session.beamline_name,
                       "loginType": mxcube.db_connection.loginType.title(),
-                      "loginRes": convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {}),
+                      "loginRes": limsutils.convert_to_dict(loginInfo["loginRes"] if loginInfo is not None else {}),
                       "queue": qutils.queue_to_dict(),
                       "master": MASTER == session.sid
                     }
                   )
-
-
-@mxcube.route("/mxcube/api/v0.1/samples/<proposal_id>")
-def proposal_samples(proposal_id):
-    # session_id is not used, so we can pass None as second argument to 'db_connection.get_samples'
-    samples_info_list = [convert_to_dict(x) for x in mxcube.db_connection.get_samples(proposal_id, None)]
-
-    for sample_info in samples_info_list:
-        try:
-            basket = int(sample_info["containerSampleChangerLocation"])
-        except (TypeError, ValueError):
-            continue
-        else:
-            if mxcube.sample_changer.__class__.__TYPE__ == 'Robodiff':
-                cell = int(round((basket+0.5)/3.0))
-                puck = basket-3*(cell-1)
-                sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
-
-    return jsonify({"samples_info": samples_info_list})
