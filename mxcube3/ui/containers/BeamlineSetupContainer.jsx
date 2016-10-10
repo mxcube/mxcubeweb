@@ -41,105 +41,93 @@ class BeamlineSetupContainer extends React.Component {
     return (
         <div className="beamline-setup-container">
           <div className="beamline-setup-content">
-            <table>
-              <tbody>
-                <tr>
-                  <td>
-                    <PopInput
-                      ref="transmission"
-                      name="Transmission"
-                      pkey="transmission"
-                      suffix="%"
-                      data={this.props.data.transmission}
-                      onSave={this.onSaveHandler}
-                      onCancel={this.onCancelHandler}
-                    />
-                  </td>
-                  <td>
-                    <PopInput
-                      ref="resolution"
-                      name="Resolution"
-                      pkey="resolution"
-                      placement="left"
-                      suffix="&Aring;"
-                      data={this.props.data.resolution}
-                      onSave={this.onSaveHandler}
-                      onCancel={this.onCancelHandler}
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <PopInput
-                      ref="energy"
-                      name="Energy"
-                      pkey="energy"
-                      suffix="keV"
-                      data={this.props.data.energy}
-                      onSave={this.onSaveHandler}
-                      onCancel={this.onCancelHandler}
-                    />
-                  </td>
-                  <td>
-                    <PopInput
-                      ref="dtox"
-                      name="Detector Distance"
-                      pkey="dtox"
-                      suffix="mm"
-                      data={this.props.data.dtox}
-                      onSave={this.onSaveHandler}
-                      onCancel={this.onCancelHandler}
-                    />
-                  </td>
-                  <td>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <InOutSwitch
-                      onText="Open"
-                      offText="Close"
-                      labelText="Fast Shutter"
-                      pkey="fast_shutter"
-                      data={this.props.data.fast_shutter}
-                      onSave={this.onSaveHandler}
-                    />
-                  </td>
-                  <td>
-                    <InOutSwitch
-                      onText="Open"
-                      offText="Close"
-                      labelText="Safety Shutter"
-                      pkey="safety_shutter"
-                      data={this.props.data.safety_shutter}
-                      onSave={this.onSaveHandler}
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <InOutSwitch
-                      onText="In"
-                      offText="Out"
-                      labelText="Beamstop"
-                      pkey="beamstop"
-                      data={this.props.data.beamstop}
-                      onSave={this.onSaveHandler}
-                    />
-                  </td>
-                  <td>
-                    <InOutSwitch
-                      onText="In"
-                      offText="Out"
-                      labelText="Capillary"
-                      pkey="capillary"
-                      data={this.props.data.capillary}
-                      onSave={this.onSaveHandler}
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="row" style={{ 'margin-bottom': '1em' }}>
+              <div className="col-sm-6">
+                <div className="col-sm-3" style={{ 'padding-left': '0px' }}>
+                <InOutSwitch
+                  onText="Open"
+                  offText="Close"
+                  labelText="Fast Shutter"
+                  pkey="fast_shutter"
+                  data={this.props.data.fast_shutter}
+                  onSave={this.onSaveHandler}
+                />
+              </div>
+              <div className="col-sm-3">
+                <InOutSwitch
+                  onText="Open"
+                  offText="Close"
+                  labelText="Safety Shutter"
+                  pkey="safety_shutter"
+                  data={this.props.data.safety_shutter}
+                  onSave={this.onSaveHandler}
+                />
+              </div>
+              <div className="col-sm-3">
+                <InOutSwitch
+                  onText="In"
+                  offText="Out"
+                  labelText="Beamstop"
+                  pkey="beamstop"
+                  data={this.props.data.beamstop}
+                  onSave={this.onSaveHandler}
+                />
+              </div>
+              <div className="col-sm-3">
+                <InOutSwitch
+                  onText="In"
+                  offText="Out"
+                  labelText="Capillary"
+                  pkey="capillary"
+                  data={this.props.data.capillary}
+                  onSave={this.onSaveHandler}
+                />
+              </div>
+              </div>
+              <div className="col-sm-6">
+              <div className="col-sm-6" style={{ 'padding-top': '1em' }}>
+                <PopInput
+                  ref="energy"
+                  name="Energy"
+                  pkey="energy"
+                  suffix="keV"
+                  data={this.props.data.energy}
+                  onSave={this.onSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+                <PopInput
+                  ref="resolution"
+                  name="Resolution"
+                  pkey="resolution"
+                  placement="left"
+                  suffix="&Aring;"
+                  data={this.props.data.resolution}
+                  onSave={this.onSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+              </div>
+              <div className="col-sm-6" style={{ 'padding-top': '1em' }}>
+                <PopInput
+                  ref="transmission"
+                  name="Transmission"
+                  pkey="transmission"
+                  suffix="%"
+                  data={this.props.data.transmission}
+                  onSave={this.onSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+                <PopInput
+                  ref="dtox"
+                  name="Detector Distance"
+                  pkey="dtox"
+                  suffix="mm"
+                  data={this.props.data.dtox}
+                  onSave={this.onSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+              </div>
+              </div>
+            </div>
           </div>
         </div>
     );

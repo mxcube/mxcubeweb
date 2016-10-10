@@ -2,6 +2,7 @@
   display: inline-block;
   min-width: 90px;
   margin-right: 1rem;
+  font-weight: bold;
 }
 
 .popinput-input-value{

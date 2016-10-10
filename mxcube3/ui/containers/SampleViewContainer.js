@@ -40,6 +40,7 @@ class SampleViewContainer extends Component {
                   defaultParameters={this.props.defaultParameters}
                   imageRatio={imageRatio}
                 />
+                <BeamlineSetupContainer />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   sampleViewState={this.props.sampleViewState}
@@ -49,7 +50,6 @@ class SampleViewContainer extends Component {
             </div>
         </div>
         <div className={cinema ? 'col-xs-2' : 'col-xs-3'}>
-          <BeamlineSetupContainer />
           <SampleQueueContainer />
         </div>
       </div>
