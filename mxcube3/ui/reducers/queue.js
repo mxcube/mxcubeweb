@@ -83,35 +83,34 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { sampleList });
     }
     case 'SET_SAMPLES_INFO': {
-      const samplesList = {};
-
-      Object.keys(state.samplesList).forEach(key => {
-        const sample = state.samplesList[key];
+      const sampleList = {};
+      Object.keys(state.sampleList).forEach(key => {
+        const sample = state.sampleList[key];
         let sampleInfo;
         for (sampleInfo of action.sampleInfoList) {
           if (sampleInfo.code) {
             // find sample with data matrix code
             if (sample.code === sampleInfo.code) {
-              samplesList[key] = Object.assign({}, sample, { sample_info: sampleInfo });
+              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
               break;
             }
           } else {
             // check with sample changer location
             const containerLocation = sampleInfo.containerSampleChangerLocation;
             const sampleLocation = sampleInfo.sampleLocation;
-            const limsLocation = `${containerLocation} : ${sampleLocation}`;
+            const limsLocation = `${containerLocation}:${sampleLocation}`;
 
             if (sample.location === limsLocation) {
-              samplesList[key] = Object.assign({}, sample, { sample_info: sampleInfo });
+              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
               break;
             }
           }
         }
-        if (samplesList[key] === undefined) {
-          samplesList[key] = Object.assign({}, sample, { sample_info: null });
+        if (sampleList[key] === undefined) {
+          sampleList[key] = Object.assign({}, sample, { });
         }
       });
-      return Object.assign({}, state, { sampleList: samplesList });
+      return Object.assign({}, state, { sampleList });
     }
 
     case 'ADD_TASK_RESULT': {
@@ -124,6 +123,7 @@ export default (state = initialState, action) => {
             {
               ...state.queue[action.sampleID].tasks[action.taskIndex],
               checked: false,
+              limsID: action.limsID
             },
             ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)
           ]

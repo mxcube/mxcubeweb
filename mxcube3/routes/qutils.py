@@ -281,7 +281,7 @@ def queue_add_item(item_list):
         # node id for the sample of the new task and append it to the sample
         sample_id = str(item["sampleID"])
         if item_t == "Sample":
-            sample_node_id = add_sample(sample_id)
+            sample_node_id = add_sample(sample_id, item)
             tasks = item["tasks"]
 
             if tasks:
@@ -296,37 +296,30 @@ def queue_add_item(item_list):
             add_characterisation(sample_node_id, item)
 
 
-def add_sample(sample_id):
+def add_sample(sample_id, item):
     """
     Adds a sample with sample id <sample_id> the queue.
 
     :param str sample_id: Sample id (often sample changer location)
     :returns: SampleQueueEntry
     """
-    sample_model = qmo.Sample()
-    sample_model.loc_str = str(sample_id)
-    sample_model.free_pin_mode = (not mxcube.diffractometer.use_sc)
-
     # Is the sample with location sample_id already in the queue,
     # in that case, send error response
     for sampleId, sampleData in queue_to_dict().iteritems():
         if sampleId == sample_id:
             msg = "[QUEUE] sample could not be added, already in the queue"
             raise Exception(msg)
-        
-    try:
-        # Are we using the sample changer or is a sample put on the pin
-        # manually
-        if mxcube.diffractometer.use_sc:
-            basket_number, sample_number = sample_id.split(':')
-        else:
-            basket_number, sample_number = (None, sample_id)
 
-        sample_model.location = (basket_number, sample_number)
+    sample_model = qmo.Sample()
 
-    except AttributeError as ex:
-        msg = '[QUEUE] sample could not be added, %s' % str(ex)
-        raise Exception(msg)
+    # We should really use sample_id instead of loc_str
+    sample_model.loc_str = sample_id
+    sample_model.free_pin_mode = item['location'] == 'Manual' 
+
+    if sample_model.free_pin_mode:
+        sample_model.location = (None, sample_id)
+    else:
+        sample_model.location = item['location'].split(':')
 
     sample_entry = qe.SampleQueueEntry(PMock(), sample_model)
     sample_entry.set_enabled(True)
@@ -347,8 +340,13 @@ def set_dc_params(model, entry, task_data):
     """
     acq = model.acquisitions[0]
     params = task_data['parameters']
-
     acq.acquisition_parameters.set_from_dict(params)
+
+    # Snapshots are disabled for the time being ;
+    # snapshosts require a communication from server to client,
+    # to get the jpegs with overlays
+    acq.acquisition_parameters.take_snapshots = False
+
     acq.path_template.set_from_dict(params)
     acq.path_template.base_prefix = params['prefix']
 
