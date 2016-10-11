@@ -35,14 +35,14 @@ export default (state = initialState, action) => {
     }
     case 'SET_SAMPLE_ORDER': {
       const sortedOrder = Object.entries(action.order).sort((a, b) => a[1] > b[1]);
-      const sampleOrder = [...state.sampleOrder];     
+      const sampleOrder = [...state.sampleOrder];
       let i = 0;
 
       // Use the grid order to generate the order of the samples in the queue
       // iterate over the sorted grid order, updating only those indexes that
       // have changed
       for (const [key] of sortedOrder) {
-        if (Object.keys(state.queue).includes(key)) {          
+        if (Object.keys(state.queue).includes(key)) {
           if (sampleOrder[i] !== key) {
             sampleOrder[i] = key;
           }
@@ -186,7 +186,7 @@ export default (state = initialState, action) => {
         }
       };
 
-      const sampleOrder = [ ...state.order, sampleID];
+      const sampleOrder = [...state.order, sampleID];
 
       return Object.assign({}, state, { displayData, queue, sampleOrder });
     }
@@ -210,7 +210,7 @@ export default (state = initialState, action) => {
         }
       };
 
-      const sampleOrder = without(state.order, sampleID);
+      const sampleOrder = without(state.order, action.sampleID);
 
       return Object.assign({}, state, { displayData, queue, sampleOrder });
     }
