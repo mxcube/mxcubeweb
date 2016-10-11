@@ -54,7 +54,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     # this is to allow Hardware Objects to do
     # 'from HardwareRepository import ...'
     sys.path.insert(0, os.path.dirname(__file__))
-    from HardwareRepository import HardwareRepository as hwr
+    from HardwareRepository import HardwareRepository as hwr, removeLoggingHandlers
+    removeLoggingHandlers()
     hwr.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
 
     hwr_directory = cmdline_options.hwr_directory
