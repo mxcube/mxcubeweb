@@ -185,7 +185,7 @@ export default (state = initialState, action) => {
         }
       };
 
-      const sampleOrder = [...state.order, sampleID];
+      const sampleOrder = [...state.sampleOrder, sampleID];
 
       return Object.assign({}, state, { displayData, queue, sampleOrder });
     }
