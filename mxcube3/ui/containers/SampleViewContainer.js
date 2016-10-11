@@ -19,7 +19,9 @@ class SampleViewContainer extends Component {
 
     return (
       <div className="row">
-        <div className="col-xs-1">
+        <div className="col-xs-1"
+          style={{ 'margin-top': '0em', 'padding-right': '5px', 'padding-left': '1.5em' }}
+        >
             <MotorControl
               save={sendMotorPosition}
               saveStep={setStepSize}
@@ -40,6 +42,7 @@ class SampleViewContainer extends Component {
                   defaultParameters={this.props.defaultParameters}
                   imageRatio={imageRatio}
                 />
+                <BeamlineSetupContainer />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   {...this.props.sampleViewState}
@@ -51,7 +54,6 @@ class SampleViewContainer extends Component {
             </div>
         </div>
         <div className={cinema ? 'col-xs-2' : 'col-xs-3'}>
-          <BeamlineSetupContainer />
           <SampleQueueContainer />
         </div>
       </div>
