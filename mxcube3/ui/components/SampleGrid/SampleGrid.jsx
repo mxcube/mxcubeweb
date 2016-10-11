@@ -284,7 +284,7 @@ export default class SampleGrid extends React.Component {
             dm={sample.code}
             loadable={false}
             location={sample.location}
-            queueOrder={sample.queueOrder}
+            queueOrder={this.props.queue.sampleOrder.indexOf(sample.sampleID)}
             tags={tags}
             selected={this.props.selected}
             deleteTask={this.props.deleteTask}
