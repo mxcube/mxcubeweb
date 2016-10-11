@@ -7,6 +7,7 @@ import os
 import sys
 import logging
 from logging import StreamHandler, NullHandler
+from logging.handlers import TimedRotatingFileHandler
 import cPickle as pickle
 import gevent
 import traceback
@@ -53,15 +54,19 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     # this is to allow Hardware Objects to do
     # 'from HardwareRepository import ...'
     sys.path.insert(0, os.path.dirname(__file__))
-    from HardwareRepository import HardwareRepository as hwr, setLogFile
+    from HardwareRepository import HardwareRepository as hwr
     hwr.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
 
     hwr_directory = cmdline_options.hwr_directory
     hwr = hwr.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
     hwr.connect()
+
+    log_formatter = logging.Formatter('%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s')
     log_file = cmdline_options.log_file
     if log_file:
-        setLogFile(log_file)
+        log_file_handler = TimedRotatingFileHandler(log_file, when='midnight', backupCount=1)
+        os.chmod(log_file, 0o666)
+        log_file_handler.setFormatter(log_formatter)
 
     # installs logging handler to send messages to clients
     import logging_handler
@@ -69,16 +74,19 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(NullHandler())
     custom_log_handler = logging_handler.MX3LoggingHandler()
-    custom_log_handler.setLevel(logging.DEBUG)
+    custom_log_handler.setLevel(logging.INFO)
+    custom_log_handler.setFormatter(log_formatter)
     exception_logger = logging.getLogger("exceptions")
-    exception_logger.addHandler(StreamHandler(sys.stdout))
-    exception_logger.addHandler(custom_log_handler)
     hwr_logger = logging.getLogger("HWR")
-    hwr_logger.addHandler(custom_log_handler)
     user_logger = logging.getLogger("user_level_log")
-    user_logger.addHandler(custom_log_handler)
     queue_logger = logging.getLogger("queue_exec")
-    queue_logger.addHandler(custom_log_handler)
+    stdout_log_handler = StreamHandler(sys.stdout)
+    stdout_log_handler.setFormatter(log_formatter)
+    for logger in (exception_logger, hwr_logger, user_logger, queue_logger):
+      logger.addHandler(custom_log_handler)
+      logger.addHandler(stdout_log_handler)
+      if log_file:
+          logger.addHandler(log_file_handler)
 
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
