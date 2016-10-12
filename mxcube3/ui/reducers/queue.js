@@ -89,7 +89,8 @@ export default (state = initialState, action) => {
             {
               ...state.queue[action.sampleID].tasks[action.taskIndex],
               checked: false,
-              limsID: action.limsID
+              limsID: action.limsID,
+              state: action.state
             },
             ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)
           ]
@@ -104,7 +105,6 @@ export default (state = initialState, action) => {
             ...state.displayData[action.sampleID].tasks.slice(0, action.taskIndex),
             {
               ...state.displayData[action.sampleID].tasks[action.taskIndex],
-              state: action.state,
               progress: action.progress
             },
             ...state.displayData[action.sampleID].tasks.slice(action.taskIndex + 1)
@@ -126,13 +126,13 @@ export default (state = initialState, action) => {
     // Adding sample to queue
     case 'ADD_SAMPLE': {
       const sampleID = action.sampleData.sampleID;
-      const displayData = { ...state.displayData,
-                            [sampleID]: { collapsed: false, state: 0, tasks: [] } };
+      const displayData = { ...state.displayData, [sampleID]: { collapsed: false, tasks: [] } };
 
       // Not creating a copy here since we know that the reference
       // displayData[sampleID] did not exist before
       for (const task of action.sampleData.tasks) {
-        displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
+        displayData[sampleID].tasks.push({ collapsed: false });
+        task.state = 0;
 
         if (task.parameters.prefix === '') {
           task.parameters.prefix = state.sampleList[sampleID].defaultPrefix;
@@ -143,7 +143,7 @@ export default (state = initialState, action) => {
         {
           displayData,
           todo: { ...state.todo, nodes: state.todo.nodes.concat(sampleID) },
-          queue: { ...state.queue, [sampleID]: action.sampleData },
+          queue: { ...state.queue, [sampleID]: { ...action.sampleData, state: 0 } },
           sampleOrder: [...state.sampleOrder, sampleID],
           manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
@@ -178,7 +178,7 @@ export default (state = initialState, action) => {
         ...state.queue,
         [sampleID]: {
           ...state.queue[sampleID],
-          tasks: [...state.queue[sampleID].tasks, task]
+          tasks: [...state.queue[sampleID].tasks, { ...task, state: 0 }]
         }
       };
 
@@ -186,7 +186,7 @@ export default (state = initialState, action) => {
         ...state.displayData,
         [sampleID]: {
           ...state.displayData[sampleID],
-          tasks: [...state.displayData[sampleID].tasks, { collapsed: false, state: 0 }]
+          tasks: [...state.displayData[sampleID].tasks, { collapsed: false }]
         }
       };
 
