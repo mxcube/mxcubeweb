@@ -94,8 +94,15 @@ class SampleGridContainer extends React.Component {
 
 
   handleSubmit(formName) {
+    let prefix = '';
+
+    if (Object.keys(this.props.selected).length === 1) {
+      prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
+    }
+
     const parameters = { parameters:
-                         { ...this.props.defaultParameters[formName.toLowerCase()] }
+                         { ...this.props.defaultParameters[formName.toLowerCase()],
+                           prefix }
                        };
 
     const selected = [];

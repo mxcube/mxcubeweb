@@ -11,7 +11,8 @@ export default class SampleTaskButtons extends React.Component {
 
   handleSubmit(formName) {
     const parameters = { parameters:
-                         { ...this.props.defaultParameters[formName.toLowerCase()] }
+                         { ...this.props.defaultParameters[formName.toLowerCase()],
+                           prefix: node.defaultPrefix }
                        };
 
     const selected = []
