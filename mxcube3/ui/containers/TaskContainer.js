@@ -34,6 +34,7 @@ class TaskContainer extends React.Component {
     this.props.clearQueue();
     this.props.appendSampleList(sampleData);
     this.props.addSample(sampleData);
+    this.props.selectSamples([sampleData.sampleID], true);
     this.props.setCurrentSample(sampleData.sampleID);
   }
 
