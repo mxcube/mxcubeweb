@@ -1,7 +1,5 @@
 import logging
-import time
 
-import queue_model_objects_v1 as qmo
 import signals
 
 from flask import Response, jsonify
@@ -23,10 +21,11 @@ def get_samples_list():
         sample_dm = s.getID() or ""
         sample_data = {"sampleID": s.getAddress(),
                        "location": ":".join(map(str, s.getCoords())),
+                       "sampleName": "Sample %s" % s.getAddress(),
                        "code": sample_dm,
                        "type": "Sample"}
 
-        sample_data["defaultPrefix"] = limsutils.get_default_prefix()
+        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
         samples.update({s.getAddress(): sample_data})
 
     return jsonify(samples)

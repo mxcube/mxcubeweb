@@ -1,28 +1,29 @@
 # -*- coding: utf-8 -*-
 import types
+import queue_model_objects_v1 as qmo
+
 from mxcube3 import app as mxcube
 
 
 def lims_login(loginID, password):
-    loginRes = mxcube.db_connection.login(loginID, password)
-
-    limsSession = mxcube.db_connection.get_todays_session(loginRes)
+    login_res = mxcube.db_connection.login(loginID, password)
+    lims_session = mxcube.db_connection.get_todays_session(login_res)
  
-    mxcube.session.session_id = limsSession['session']['sessionId']
-    mxcube.session.proposal_code = loginRes['Proposal']['code']
-    mxcube.session.proposal_number = loginRes['Proposal']['number']
+    mxcube.session.session_id = lims_session['session']['sessionId']
+    mxcube.session.proposal_code = login_res['Proposal']['code']
+    mxcube.session.proposal_number = login_res['Proposal']['number']
 
     mxcube.rest_lims.authenticate(loginID, password)
 
-    return loginRes
+    return login_res
 
 
 def get_default_prefix(sample_data, generic_name):
     sample = qmo.Sample()
-    sample.code = sample_data.code
-    sample.name = sample_data.sampleName
-    sample.location = sample_data.split(':')
-    sample.crystals[0].protein_acronym = sample_data.proteinAcronym
+    sample.code = sample_data.get("code", "")
+    sample.name = sample_data.get("sampleName", "")
+    sample.location = sample_data.get("location", "").split(':')
+    sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
     
     return mxcube.session.get_default_prefix(sample, generic_name)
 

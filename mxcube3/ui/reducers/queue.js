@@ -131,10 +131,13 @@ export default (state = initialState, action) => {
 
       // Not creating a copy here since we know that the reference
       // displayData[sampleID] did not exist before
-      action.sampleData.tasks.map((task) => {
+      for (const task of action.sampleData.tasks) {
         displayData[sampleID].tasks.push({ collapsed: false, state: 0 });
-        return task;
-      });
+
+        if (task.parameters.prefix === '') {
+          task.parameters.prefix = state.sampleList[sampleID].defaultPrefix;
+        }
+      }
 
       return Object.assign({}, state,
         {
@@ -165,12 +168,17 @@ export default (state = initialState, action) => {
         // Adding the new task to the queue
     case 'ADD_TASK': {
       const sampleID = action.task.sampleID;
+      const task = action.task;
+
+      if (task.parameters.prefix === '') {
+        task.parameters.prefix = state.sampleList[sampleID].defaultPrefix;
+      }
 
       const queue = {
         ...state.queue,
         [sampleID]: {
           ...state.queue[sampleID],
-          tasks: [...state.queue[sampleID].tasks, action.task]
+          tasks: [...state.queue[sampleID].tasks, task]
         }
       };
 
