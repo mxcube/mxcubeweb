@@ -17,6 +17,16 @@ def lims_login(loginID, password):
     return loginRes
 
 
+def get_default_prefix(sample_data, generic_name):
+    sample = qmo.Sample()
+    sample.code = sample_data.code
+    sample.name = sample_data.sampleName
+    sample.location = sample_data.split(':')
+    sample.crystals[0].protein_acronym = sample_data.proteinAcronym
+    
+    return mxcube.session.get_default_prefix(sample, generic_name)
+
+
 def convert_to_dict(ispyb_object):
     d = {}
     

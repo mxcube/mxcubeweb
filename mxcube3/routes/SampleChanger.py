@@ -1,10 +1,12 @@
 import logging
 import time
 
+import queue_model_objects_v1 as qmo
 import signals
 
 from flask import Response, jsonify
 from mxcube3 import app as mxcube
+from . import limsutils
 
 
 def init_signals():
@@ -16,20 +18,17 @@ def init_signals():
 def get_samples_list():
     samples_list = mxcube.sample_changer.getSampleList()
     samples = {}
+
     for s in samples_list:
         sample_dm = s.getID() or ""
-        samples.update(
-            {s.getAddress():
-                {
-                 "sampleID": s.getAddress(),
-                 "location": ":".join(map(str, s.getCoords())),
-                 "code": sample_dm,
-                 "type": "Sample",
-                 "sampleName": "XTAL01",
-                 "proteinAcronym": "TRYP"
-                }
-             }
-            )
+        sample_data = {"sampleID": s.getAddress(),
+                       "location": ":".join(map(str, s.getCoords())),
+                       "code": sample_dm,
+                       "type": "Sample"}
+
+        sample_data["defaultPrefix"] = limsutils.get_default_prefix()
+        samples.update({s.getAddress(): sample_data})
+
     return jsonify(samples)
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
