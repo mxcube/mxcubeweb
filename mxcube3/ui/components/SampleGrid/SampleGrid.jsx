@@ -49,9 +49,9 @@ export default class SampleGrid extends React.Component {
 
 
   shouldComponentUpdate(nextProps) {
-    this._doReorder = false;
-
-    if (this.props.order !== nextProps.order || this.props.sampleList !== nextProps.sampleList) {
+    if (this.props.order !== nextProps.order ||
+        this.props.sampleList !== nextProps.sampleList ||
+        this._doReorder) {
       this._doReorder = true;
     }
 
@@ -64,6 +64,7 @@ export default class SampleGrid extends React.Component {
       this.isotope.reloadItems();
       this.isotope.layout();
       this.isotope.arrange({ sortBy: 'seqId' });
+      this._doReorder = false;
     }
   }
 
