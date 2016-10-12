@@ -27,10 +27,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { sampleList: action.sampleList });
     }
     case 'APPEND_TO_SAMPLE_LIST': {
-      const sampleData = action.sampleData;
-      const sampleList = { ...state.sampleList };
-      sampleList[sampleData.sampleID] = sampleData;
-
+      const sampleList = { ...state.sampleList, [action.sampleData.sampleID]: action.sampleData };
       return Object.assign({}, state, { sampleList });
     }
     case 'SET_SAMPLE_ORDER': {
@@ -130,8 +127,8 @@ export default (state = initialState, action) => {
     // Adding sample to queue
     case 'ADD_SAMPLE': {
       const sampleID = action.sampleData.sampleID;
-      const displayData = { ...state.displayData };
-      displayData[sampleID] = { collapsed: false, state: 0, tasks: [] };
+      const displayData = { ...state.displayData,
+                            [sampleID]: { collapsed: false, state: 0, tasks: [] } };
 
       // Not creating a copy here since we know that the reference
       // displayData[sampleID] did not exist before
