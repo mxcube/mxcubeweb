@@ -277,6 +277,7 @@ export default class SampleGrid extends React.Component {
             ref={i}
             seqId={this.props.order[key]}
             itemKey={key}
+            sampleData={this.props.queue.sampleList[sample.sampleID]}
             sampleID={sample.sampleID}
             acronym={acronym}
             name={name}

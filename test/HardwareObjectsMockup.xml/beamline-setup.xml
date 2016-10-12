@@ -15,6 +15,7 @@
   <object href="/energy-mockup" role="energy"/>
   <object href="/beam-info" role="beam_info"/>
   <object href="/lims" role="lims_client"/>
+  <object href="/lims-rest" role="lims_rest_client"/>
   <object href="/sc-mockup" role="sample_changer"/>
   <object href="/session" role="session"/>
 

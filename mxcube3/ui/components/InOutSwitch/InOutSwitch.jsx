@@ -1,6 +1,6 @@
 import React from 'react';
 import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import './style.css';
 
@@ -47,11 +47,20 @@ export default class InOutSwitch extends React.Component {
 
     return (
       <div>
-        <div className="">
+        <div className="inout-label">
           {this.props.labelText}
         </div>
+        <OverlayTrigger
+          placement="bottom"
+          overlay={(<Popover>
+                      {this.props.labelText} is:
+                      <div className={`inout-switch-msg ${msgBgStyle}`}>
+                        {this.props.data.msg}
+                      </div>
+                    </Popover>)}
+        >
         <ButtonGroup>
-          <div className={`inout-switch-msg ${msgBgStyle}`}>{this.props.data.msg}</div>
+
           <Button
             className=""
             bsStyle={inButtonStyle}
@@ -71,6 +80,7 @@ export default class InOutSwitch extends React.Component {
             {this.props.offText}
           </Button>
         </ButtonGroup>
+        </OverlayTrigger>
       </div>
     );
   }

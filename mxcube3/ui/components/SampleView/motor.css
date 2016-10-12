@@ -1,12 +1,13 @@
 .motor-input-container{
     padding-right: 0px;
+    margin-bottom: 1em;
 }
 
 .motor-name{
     font-size: 1.0em;
     margin-bottom: 0px;
     font-weight: bold;
-    line-height: 3;
+    display: inline;
 }
 
 .motor-value{
@@ -17,10 +18,14 @@
     cursor:pointer;
 }
 
+.motor-input-sm{ 
+    width: '100px !important';
+}
+
 .motor-group{
     padding-top: 20px;
     padding-left: 20px;
-    padding-right: 20px;
+    padding-right: 0px;
     padding-bottom: 0px;
 }
 
@@ -28,8 +33,16 @@
     margin: 15px !important;
 }
 
+.motor-abort{
+    float:right;
+}
+
 .motor-step{
     font-size: 0.7em;
+}
+
+.step-size{ 
+    display:inline;
 }
 
 
@@ -41,9 +54,8 @@
 }
 
 .rw-widget{
-    width:100px !important;
-    display: inline-block;
 }
+
 .rw-widget input{
     border-bottom-right-radius: 0px;
     border-top-right-radius: 0px;

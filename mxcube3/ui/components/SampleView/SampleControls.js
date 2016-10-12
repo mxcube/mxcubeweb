@@ -176,7 +176,6 @@ export default class SampleControls extends React.Component {
               onClick={this.setZoom}
               name="zoomIn"
             />
-
             <Button
               type="button"
               data-toggle="tooltip"
@@ -186,16 +185,18 @@ export default class SampleControls extends React.Component {
               onClick={this.toggleBackLight}
               active={motors.BackLightSwitch.Status === 1}
             />
-            <MotorInput
-              title="BackLight"
-              save={this.props.sampleActions.sendMotorPosition}
-              value={motors.BackLight.position}
-              motorName="BackLight"
-              step="0.1"
-              decimalPoints="2"
-              state={motors.BackLight.Status}
-            />
-
+            <div style={{ display: 'inline-block', width: '100px !important' }}>
+              <MotorInput
+                className="motor-input-sm"
+                title="BackLight"
+                save={this.props.sampleActions.sendMotorPosition}
+                value={motors.BackLight.position}
+                motorName="BackLight"
+                step="0.1"
+                decimalPoints="2"
+                state={motors.BackLight.Status}
+              />
+            </div>
             <Button
               type="button"
               data-toggle="tooltip"
@@ -205,15 +206,17 @@ export default class SampleControls extends React.Component {
               onClick={this.toggleFrontLight}
               active={motors.FrontLightSwitch.Status === 1}
             />
-            <MotorInput
-              title="FrontLight"
-              save={this.props.sampleActions.sendMotorPosition}
-              value={motors.FrontLight.position}
-              motorName="FrontLight"
-              step="0.1"
-              decimalPoints="2"
-              state={motors.FrontLight.Status}
-            />
+            <div style={{ display: 'inline-block', width: '100px !important' }}>
+              <MotorInput
+                title="FrontLight"
+                save={this.props.sampleActions.sendMotorPosition}
+                value={motors.FrontLight.position}
+                motorName="FrontLight"
+                step="0.1"
+                decimalPoints="2"
+                state={motors.FrontLight.Status}
+              />
+            </div>
             <Button
               type="button"
               data-toggle="tooltip"
