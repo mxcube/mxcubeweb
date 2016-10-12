@@ -20,7 +20,7 @@ class AddSample extends React.Component {
     let prefix = this.props.values.sampleName ? this.props.values.sampleName : 'noname';
 
     if (this.props.values.proteinAcronym && this.props.values.sampleName) {
-      prefix += `-${prefix}`;
+      prefix += `-${this.props.values.proteinAcronym}`;
     }
 
     this.props.add({ ...this.props.values, type: 'Sample', defaultPrefix: prefix,
