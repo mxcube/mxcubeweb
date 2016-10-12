@@ -62,6 +62,7 @@ class SampleGridContainer extends React.Component {
     this.showCharacterisationForm = this.handleSubmit.bind(this, 'Characterisation');
     this.showDataCollectionForm = this.handleSubmit.bind(this, 'DataCollection');
     this.onClick = this.onClick.bind(this);
+    this.collectButton = this.collectButton.bind(this);
   }
 
 
@@ -246,6 +247,28 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  collectButton() {
+    let button = (
+      <Button
+        className="btn btn-success pull-right"
+        href="#/datacollection"
+        disabled={this.isCollectDisabled()}
+      >
+        Collect {this.numSamplesPicked()}/{this.numSamples()}
+        <Glyphicon glyph="chevron-right" />
+      </Button>);
+
+    if (this.props.queue.queueStatus === 'QueueRunning') {
+      button = (
+        <Button className="btn btn-danger pull-right" >
+          <b> Stop queue </b>
+        </Button>);
+    }
+
+    return button;
+  }
+
+
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
@@ -309,7 +332,7 @@ class SampleGridContainer extends React.Component {
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div style={{ paddingLeft: '0px' }} className="col-xs-9">
+            <div style={{ paddingLeft: '0px' }} className="col-xs-5">
               <div className="form-inline">
                 <span >Select: </span>
                 <OverlayTrigger
@@ -372,24 +395,10 @@ class SampleGridContainer extends React.Component {
                   buttonAfter={innerSearchIcon}
                   onChange={this.filterSampleGrid}
                 />
-                <span style={{ marginLeft: '5em' }} >Grid size: </span>
-                <ButtonGroup>
-                  <Button>S</Button>
-                  <Button>M</Button>
-                  <Button>L</Button>
-                </ButtonGroup>
-                <span style={{ marginLeft: '5em' }} ></span>
               </div>
              </div>
              <div className="col-xs-2 pull-right">
-               <Button
-                 className="btn btn-success pull-right"
-                 href="#/datacollection"
-                 disabled={this.isCollectDisabled()}
-               >
-                 Collect {this.numSamplesPicked()}/{this.numSamples()}
-                 <Glyphicon glyph="chevron-right" />
-               </Button>
+               {this.collectButton()}
              </div>
           </div>
         </Sticky>
