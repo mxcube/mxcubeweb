@@ -7,9 +7,7 @@ from mxcube3 import app as mxcube
 
 def lims_login(loginID, password):
     login_res = mxcube.db_connection.login(loginID, password)
-    lims_session = mxcube.db_connection.get_todays_session(login_res)
- 
-    mxcube.session.session_id = lims_session['session']['sessionId']
+    mxcube.session.session_id = login_res['session']['session']['sessionId']
     mxcube.session.proposal_code = login_res['Proposal']['code']
     mxcube.session.proposal_number = login_res['Proposal']['number']
 

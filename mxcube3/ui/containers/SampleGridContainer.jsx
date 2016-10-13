@@ -102,15 +102,16 @@ class SampleGridContainer extends React.Component {
 
   handleSubmit(formName) {
     let prefix = '';
+    let path = '';
 
     if (Object.keys(this.props.selected).length === 1) {
       prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
+      path = this.props.sampleList[Object.keys(this.props.selected)[0]].sampleName;
     }
 
-    const parameters = { parameters:
-                         { ...this.props.defaultParameters[formName.toLowerCase()],
-                           prefix, path: prefix }
-                       };
+    const parameters = { parameters: {
+      ...this.props.defaultParameters[formName.toLowerCase()],
+      prefix, path } };
 
     const selected = [];
 
@@ -304,6 +305,7 @@ class SampleGridContainer extends React.Component {
 
     return content;
   }
+
 
   render() {
     const gridWidth = this.calcGridWidth();
