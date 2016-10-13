@@ -317,20 +317,28 @@ class SampleGridContainer extends React.Component {
             <div className="row">
               <div className="col-xs-12">
                 <div className="col-xs-6">
-                  <span><Input type="radio" name="picked" value="picked"/> <b>Picked</b></span>
+                  <span>
+                    <Input type="radio" name="picked" value="picked" /> <b>Picked</b>
+                  </span>
                 </div>
                 <div className="col-xs-6">
-                  <span><Input type="radio" name="picked" value="notPicked"/> <b>Not Picked</b></span>
+                  <span>
+                    <Input type="radio" name="picked" value="notPicked" /> <b>Not Picked</b>
+                  </span>
                 </div>
               </div>
             </div>
             <div className="row">
               <div className="col-xs-12">
                 <div className="col-xs-6">
-                  <span><Input type="radio" name="collected" value="picked"/> <b>Collected</b></span>
+                  <span>
+                    <Input type="radio" name="collected" value="picked" /> <b>Collected</b>
+                  </span>
                 </div>
                 <div className="col-xs-6">
-                  <span><Input type="radio" name="collected" value="notPicked"/> <b>Not Collected</b></span>
+                  <span>
+                    <Input type="radio" name="collected" value="notPicked" /> <b>Not Collected</b>
+                  </span>
                 </div>
               </div>
             </div>

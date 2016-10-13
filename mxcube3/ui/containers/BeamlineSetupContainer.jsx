@@ -85,7 +85,7 @@ class BeamlineSetupContainer extends React.Component {
               </div>
             </div>
             <div className="col-sm-6">
-              <div style={{ paddingTop: '1em', 'marginLeft': '4em', display: 'inline-block' }}>
+              <div style={{ paddingTop: '1em', marginLeft: '4em', display: 'inline-block' }}>
                 <PopInput
                   ref="energy"
                   name="Energy"
@@ -106,7 +106,7 @@ class BeamlineSetupContainer extends React.Component {
                   onCancel={this.onCancelHandler}
                 />
               </div>
-              <div style={{ paddingTop: '1em', 'marginLeft': '4em', display: 'inline-block' }}>
+              <div style={{ paddingTop: '1em', marginLeft: '4em', display: 'inline-block' }}>
                 <PopInput
                   ref="transmission"
                   name="Transmission"

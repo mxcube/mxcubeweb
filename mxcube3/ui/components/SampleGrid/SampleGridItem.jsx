@@ -406,8 +406,6 @@ export class SampleGridItem extends React.Component {
   handleClick(task) {
     if (task.state === 0) {
       this.props.showTaskParametersForm(task.type, task.sampleID, task);
-    } else if (task.state === 2) {
-      console.log("RESULTS");
     }
   }
 
