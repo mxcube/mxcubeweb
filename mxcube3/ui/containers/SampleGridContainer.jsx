@@ -13,7 +13,7 @@ import {
   MenuItem,
   ButtonGroup,
   OverlayTrigger,
-  Tooltip
+  Tooltip,
 } from 'react-bootstrap';
 
 import {
@@ -109,7 +109,7 @@ class SampleGridContainer extends React.Component {
 
     const parameters = { parameters:
                          { ...this.props.defaultParameters[formName.toLowerCase()],
-                           prefix }
+                           prefix, path: prefix }
                        };
 
     const selected = [];
@@ -305,17 +305,45 @@ class SampleGridContainer extends React.Component {
     return content;
   }
 
-
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
-      <DropdownButton title="" id="filter-drop-down">
-        <MenuItem onClick={this.filterSampleGridClear}>
-          Clear
-        </MenuItem>
-        <MenuItem onClick={this.filterSampleGridPicked}>
-          Picked
-        </MenuItem>
+      <DropdownButton bstyle="default" id="filter-drop-down">
+        <div style={{ padding: '1em', width: '300px' }}>
+          <b>Filter:</b>
+          <form style={{ marginTop: '1em' }}>
+            <div className="row">
+              <div className="col-xs-12">
+                <div className="col-xs-6">
+                  <span><Input type="radio" name="picked" value="picked"/> <b>Picked</b></span>
+                </div>
+                <div className="col-xs-6">
+                  <span><Input type="radio" name="picked" value="notPicked"/> <b>Not Picked</b></span>
+                </div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-xs-12">
+                <div className="col-xs-6">
+                  <span><Input type="radio" name="collected" value="picked"/> <b>Collected</b></span>
+                </div>
+                <div className="col-xs-6">
+                  <span><Input type="radio" name="collected" value="notPicked"/> <b>Not Collected</b></span>
+                </div>
+              </div>
+            </div>
+            <div className="pull-right" style={{ paddingTop: '1em', paddingBottom: '1em' }}>
+              <ButtonGroup>
+                <Button eventKey="1">
+                  Clear
+                </Button>
+                <Button eventKey="2">
+                  Apply
+                </Button>
+              </ButtonGroup>
+            </div>
+          </form>
+        </div>
       </DropdownButton>
     );
 
