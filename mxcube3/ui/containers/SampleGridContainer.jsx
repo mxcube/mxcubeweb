@@ -40,6 +40,9 @@ import SampleGrid from '../components/SampleGrid/SampleGrid';
 import { SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 import '../components/SampleGrid/SampleGrid.css';
 
+const QUEUE_STOPPED = 'QueueStopped';
+const QUEUE_RUNNING = 'QueueStarted';
+
 
 class SampleGridContainer extends React.Component {
 
@@ -62,6 +65,8 @@ class SampleGridContainer extends React.Component {
     this.showCharacterisationForm = this.handleSubmit.bind(this, 'Characterisation');
     this.showDataCollectionForm = this.handleSubmit.bind(this, 'DataCollection');
     this.onClick = this.onClick.bind(this);
+    this.collectButton = this.collectButton.bind(this);
+    this.headerContent = this.headerContent.bind(this);
   }
 
 
@@ -80,7 +85,9 @@ class SampleGridContainer extends React.Component {
   onClick(e) {
     let res = true;
 
-    if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
+    if (this.props.queue.queueStatus === QUEUE_RUNNING) {
+      document.getElementById('contextMenu').style.display = 'none';
+    } else if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
       document.getElementById('contextMenu').style.top = `${e.clientY - 2}px`;
       document.getElementById('contextMenu').style.left = `${e.clientX - 65}px`;
       document.getElementById('contextMenu').style.display = 'block';
@@ -247,6 +254,59 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  collectButton() {
+    let button = (
+      <Button
+        className="btn btn-success pull-right"
+        href="#/datacollection"
+        disabled={this.isCollectDisabled()}
+      >
+        Collect {this.numSamplesPicked()}/{this.numSamples()}
+        <Glyphicon glyph="chevron-right" />
+      </Button>);
+
+    if (this.props.queue.queueStatus === QUEUE_RUNNING) {
+      button = (
+        <Button className="btn btn-danger pull-right" >
+          <b> Stop queue </b>
+        </Button>);
+    }
+
+    return button;
+  }
+
+
+  headerContent() {
+    let content = '';
+
+    if (this.props.queue.queueStatus === QUEUE_STOPPED) {
+      content = (
+        <ButtonToolbar>
+          <SplitButton
+            bsStyle="primary"
+            title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
+            onClick={this.props.manualMount ? this.showAddSampleForm : this.props.getSamples}
+            onSelect={this.manualMount}
+            id="split-button-sample-changer-selection"
+          >
+            <MenuItem eventKey="1">
+              {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
+            </MenuItem>
+          </SplitButton>
+          <Button
+            className="btn-primary"
+            disabled={this.props.manualMount}
+            onClick={this.syncSamples}
+          >
+            <Glyphicon glyph="refresh" /> Sync. ISPyB
+          </Button>
+        </ButtonToolbar>);
+    }
+
+    return content;
+  }
+
+
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
@@ -282,26 +342,7 @@ class SampleGridContainer extends React.Component {
         </ul>
         <div style={{ marginBottom: '20px' }} className="row row-centered">
           <div className="col-centered" >
-            <ButtonToolbar>
-              <SplitButton
-                bsStyle="primary"
-                title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
-                onClick={this.props.manualMount ? this.showAddSampleForm : this.props.getSamples}
-                onSelect={this.manualMount}
-                id="split-button-sample-changer-selection"
-              >
-                <MenuItem eventKey="1">
-                  {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
-                </MenuItem>
-              </SplitButton>
-              <Button
-                className="btn-primary"
-                disabled={this.props.manualMount}
-                onClick={this.syncSamples}
-              >
-                <Glyphicon glyph="refresh" /> Sync. ISPyB
-              </Button>
-            </ButtonToolbar>
+            {this.headerContent()}
           </div>
         </div>
         <Sticky
@@ -310,7 +351,7 @@ class SampleGridContainer extends React.Component {
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div style={{ paddingLeft: '0px' }} className="col-xs-9">
+            <div style={{ paddingLeft: '0px' }} className="col-xs-5">
               <div className="form-inline">
                 <span >Select: </span>
                 <OverlayTrigger
@@ -332,6 +373,7 @@ class SampleGridContainer extends React.Component {
                   overlay={(<Tooltip>Add Tasks</Tooltip>)}
                 >
                   <DropdownButton
+                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                     bsStyle="default"
                     title={<span><Glyphicon glyph="plus" /></span>}
                     id="pipeline-mode-dropdown"
@@ -353,6 +395,7 @@ class SampleGridContainer extends React.Component {
                   overlay={(<Tooltip>Remove Tasks</Tooltip>)}
                 >
                   <DropdownButton
+                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                     bsStyle="default"
                     title={<span><Glyphicon glyph="minus" /></span>}
                     id="pipeline-mode-dropdown"
@@ -373,24 +416,10 @@ class SampleGridContainer extends React.Component {
                   buttonAfter={innerSearchIcon}
                   onChange={this.filterSampleGrid}
                 />
-                <span style={{ marginLeft: '5em' }} >Grid size: </span>
-                <ButtonGroup>
-                  <Button>S</Button>
-                  <Button>M</Button>
-                  <Button>L</Button>
-                </ButtonGroup>
-                <span style={{ marginLeft: '5em' }} ></span>
               </div>
              </div>
              <div className="col-xs-2 pull-right">
-               <Button
-                 className="btn btn-success pull-right"
-                 href="#/datacollection"
-                 disabled={this.isCollectDisabled()}
-               >
-                 Collect {this.numSamplesPicked()}/{this.numSamples()}
-                 <Glyphicon glyph="chevron-right" />
-               </Button>
+               {this.collectButton()}
              </div>
           </div>
         </Sticky>

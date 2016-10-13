@@ -273,6 +273,9 @@ export default class SampleGrid extends React.Component {
           }
         }
 
+        const deleteTaskFun = this.props.queue.queueStatus === 'QueueStopped' ?
+                              this.props.deleteTask : '';
+
         sampleGrid.push(
           <SampleGridItem
             ref={i}
@@ -288,7 +291,7 @@ export default class SampleGrid extends React.Component {
             queueOrder={this.props.queue.sampleOrder.indexOf(sample.sampleID)}
             tags={tags}
             selected={this.props.selected}
-            deleteTask={this.props.deleteTask}
+            deleteTask={deleteTaskFun}
             showTaskParametersForm={this.props.showTaskParametersForm}
             toggleMovable={this.props.toggleMovable}
             picked={this.props.queue.queue[sample.sampleID]}
