@@ -4,16 +4,17 @@ import update from 'react/lib/update';
 
 const initialState = {
   queue: {},
-  current: { node: null, collapsed: false, running: false },
-  todo: { nodes: [], collapsed: false },
-  history: { nodes: [], collapsed: false },
+  current: { node: null, running: false },
+  todo: { nodes: [] },
+  history: { nodes: [] },
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
   queueRestoreState: {},
   sampleList: {},
   manualMount: { set: false, id: 1 },
-  displayData: {}
+  displayData: {},
+  visibleList: 'current'
 };
 
 
@@ -288,13 +289,11 @@ export default (state = initialState, action) => {
 
       return { ...state, queue };
     }
-     // Collapse list
-    case 'COLLAPSE_LIST':
+     // show list
+    case 'SHOW_LIST':
       return {
         ...state,
-        [action.list_name]: { ...state[action.list_name],
-        collapsed: !state[action.list_name].collapsed
-        }
+        visibleList: action.list_name
       };
     // Toggle sample collapse flag
     case 'COLLAPSE_SAMPLE': {

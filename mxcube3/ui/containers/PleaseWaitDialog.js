@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { Modal, ProgressBar, Button } from 'react-bootstrap';
 import { setLoading } from '../actions/general';
 
-export default class PleaseWaitDialog extends React.Component {
+export class PleaseWaitDialog extends React.Component {
 
   getTitle() {
     return this.props.title || 'Please wait';
