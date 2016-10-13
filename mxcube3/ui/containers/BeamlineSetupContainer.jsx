@@ -43,7 +43,7 @@ class BeamlineSetupContainer extends React.Component {
           <div className="beamline-setup-content">
             <div className="row" style={{ 'margin-bottom': '1em' }}>
               <div className="col-sm-6">
-                <div style={{ 'padding-left': '0px', display: 'inline-block' }}>
+                <div style={{ paddingLeft: '0px', display: 'inline-block' }}>
                 <InOutSwitch
                   onText="Open"
                   offText="Close"
@@ -53,7 +53,7 @@ class BeamlineSetupContainer extends React.Component {
                   onSave={this.onSaveHandler}
                 />
               </div>
-              <div style={{ 'margin-left': '4em', display: 'inline-block' }}>
+              <div style={{ marginLeft: '4em', display: 'inline-block' }}>
                 <InOutSwitch
                   onText="Open"
                   offText="Close"
@@ -63,7 +63,7 @@ class BeamlineSetupContainer extends React.Component {
                   onSave={this.onSaveHandler}
                 />
               </div>
-              <div style={{ 'margin-left': '4em', display: 'inline-block' }}>
+              <div style={{ marginLeft: '4em', display: 'inline-block' }}>
                 <InOutSwitch
                   onText="In"
                   offText="Out"
@@ -73,7 +73,7 @@ class BeamlineSetupContainer extends React.Component {
                   onSave={this.onSaveHandler}
                 />
               </div>
-              <div style={{ 'margin-left': '4em', display: 'inline-block' }}>
+              <div style={{ marginLeft: '4em', display: 'inline-block' }}>
                 <InOutSwitch
                   onText="In"
                   offText="Out"
@@ -85,7 +85,7 @@ class BeamlineSetupContainer extends React.Component {
               </div>
             </div>
             <div className="col-sm-6">
-              <div style={{ 'padding-top': '1em', 'margin-left': '4em', display: 'inline-block' }}>
+              <div style={{ paddingTop: '1em', 'marginLeft': '4em', display: 'inline-block' }}>
                 <PopInput
                   ref="energy"
                   name="Energy"
@@ -106,7 +106,7 @@ class BeamlineSetupContainer extends React.Component {
                   onCancel={this.onCancelHandler}
                 />
               </div>
-              <div style={{ 'padding-top': '1em', 'margin-left': '4em', display: 'inline-block' }}>
+              <div style={{ paddingTop: '1em', 'marginLeft': '4em', display: 'inline-block' }}>
                 <PopInput
                   ref="transmission"
                   name="Transmission"
