@@ -21,7 +21,7 @@ def get_samples_list():
         sample_dm = s.getID() or ""
         sample_data = {"sampleID": s.getAddress(),
                        "location": ":".join(map(str, s.getCoords())),
-                       "sampleName": "Sample %s" % s.getAddress(),
+                       "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
                        "code": sample_dm,
                        "type": "Sample"}
 
