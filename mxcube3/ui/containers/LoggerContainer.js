@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setLogPage } from '../actions/logger';
 
-export default class LoggerContainer extends React.Component {
+export class LoggerContainer extends React.Component {
 
   constructor(props) {
     super(props);
