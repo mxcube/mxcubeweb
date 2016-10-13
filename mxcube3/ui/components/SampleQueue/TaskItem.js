@@ -146,7 +146,6 @@ export default class TaskItem extends Component {
                       type="text"
                       className="form-control"
                       value={`${rootPath}${data.parameters.path}`}
-                      readOnly
                     />
                   </div>
                 <div className="col-sm-3">
@@ -154,13 +153,12 @@ export default class TaskItem extends Component {
                     type="text"
                     className="form-control"
                     value={data.parameters.prefix}
-                    readOnly
                   />
                 </div>
               </div>
               <div className="task-information">
                 <label>Parameters summary:&nbsp;</label>
-                <span onClick={this.showForm}>
+                <span className="task-parameters" onClick={this.showForm}>
                   osc: {parameters.osc_range},
                   exp.time: {`${parameters.exp_time * 1000} ms`},
                   num.images: {parameters.num_images},
