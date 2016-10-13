@@ -10,7 +10,6 @@ export default class CurrentTree extends React.Component {
   constructor(props) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
-    this.collapse = props.collapse.bind(this, 'current');
     this.runSample = this.runSample.bind(this);
     this.unmount = this.unMountSample.bind(this);
     this.nextSample = this.nextSample.bind(this);
@@ -87,19 +86,19 @@ export default class CurrentTree extends React.Component {
       queueOptions = [];
     }
 
-    const bodyClass = cx('list-body', {
-      hidden: (this.props.show || !sampleId)
+    const bodyClass = cx('', {
+      hidden: (!this.props.show)
     });
     return (
-      <div className="m-tree">
+      <div className={bodyClass}>
           <div className="list-head">
               {queueOptions.map((option) => this.renderOptions(option))}
               <p className="queue-root" onClick={this.collapse}>
-                Current Sample: {sampleData.sampleID}
+                { sampleId ? `Sample: ${sampleData.sampleID}` : 'No Sample Mounted'}
               </p>
               <hr className="queue-divider" />
           </div>
-          <div className={bodyClass}>
+          <div className="list-body">
             {sampleTasks.map((taskData, i) => {
               const key = taskData.type + taskData.parameters.run_number;
               const task =

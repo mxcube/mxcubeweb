@@ -7,7 +7,6 @@ import { Button } from 'react-bootstrap';
 export default class TodoTree extends React.Component {
   constructor(props) {
     super(props);
-    this.collapse = this.props.collapse.bind(this, 'todo');
     this.setSearchWord = this.setSearchWord.bind(this);
     this.state = {
       searchWord: ''
@@ -26,13 +25,13 @@ export default class TodoTree extends React.Component {
   }
 
   render() {
-    const bodyClass = cx('list-body todo-body', {
-      hidden: this.props.show
+    const bodyClass = cx('', {
+      hidden: !this.props.show
     });
 
     const list = this.filter(this.props.list, this.state.searchWord);
     return (
-            <div className="m-tree">
+            <div className={bodyClass}>
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>Upcoming Samples</span>
                     <hr className="queue-divider" />
@@ -43,11 +42,11 @@ export default class TodoTree extends React.Component {
                       onChange={this.setSearchWord}
                     />
                 </div>
-                <div className={bodyClass}>
+                <div className="list-body todo-body">
                 {list.map((sampleId, id) => {
                   const sampleData = this.props.sampleInformation[sampleId];
                   return (
-                    <div key={id} className="node node-sample node-todo">
+                    <div key={id} className="node node-sample">
                       <div className="task-head">
                         <p className="node-name">
                           {`Sample ${sampleData.sampleID}`}
