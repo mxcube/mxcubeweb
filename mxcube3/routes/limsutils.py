@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import types
+import logging
+
 import queue_model_objects_v1 as qmo
 
 from mxcube3 import app as mxcube
@@ -7,11 +9,18 @@ from mxcube3 import app as mxcube
 
 def lims_login(loginID, password):
     login_res = mxcube.db_connection.login(loginID, password)
-    mxcube.session.session_id = login_res['session']['session']['sessionId']
-    mxcube.session.proposal_code = login_res['Proposal']['code']
-    mxcube.session.proposal_number = login_res['Proposal']['number']
 
-    mxcube.rest_lims.authenticate(loginID, password)
+    try:
+        mxcube.session.session_id = login_res['session']['session']['sessionId']
+        mxcube.session.proposal_code = login_res['Proposal']['code']
+        mxcube.session.proposal_number = login_res['Proposal']['number']
+    except:
+        logging.getLogger('HWR').info('[LIMS] Could not get LIMS session')
+
+    try:
+        mxcube.rest_lims.authenticate(loginID, password)
+    except:
+        logging.getLogger('HWR').info('[LIMS-REST] Could not authenticate')
 
     return login_res
 
