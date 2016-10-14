@@ -9,7 +9,7 @@ export function setSampleListAction(sampleList) {
 
 export function sendGetSampleList() {
   return function (dispatch) {
-    dispatch(setLoading(true));
+    dispatch(setLoading(true, 'Please wait', 'Retrieving sample changer contents', true));
     fetch('mxcube/api/v0.1/sample_changer/samples_list', { credentials: 'include' })
                         .then(response => response.json())
                         .then(json => {
