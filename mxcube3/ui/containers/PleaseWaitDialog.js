@@ -6,6 +6,12 @@ import { setLoading } from '../actions/general';
 
 export class PleaseWaitDialog extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.getHideFun = this.getHideFun.bind(this);
+    this.abort = this.abort.bind(this);
+  }
+
   getTitle() {
     return this.props.title || 'Please wait';
   }
@@ -14,7 +20,7 @@ export class PleaseWaitDialog extends React.Component {
     return this.props.message || '';
   }
 
-  hide() {
+  getHideFun() {
     let fun = this.props.setLoadingFalse;
 
     if (this.props.blocking) {
@@ -22,6 +28,16 @@ export class PleaseWaitDialog extends React.Component {
     }
 
     return fun;
+  }
+
+  abort() {
+    if (this.props.abortFun) {
+      this.props.abortFun();
+    }
+
+    if (this.refs.modal) {
+      this.refs.modal.getHideFun()();
+    }
   }
 
   renderHeader() {
@@ -45,13 +61,14 @@ export class PleaseWaitDialog extends React.Component {
   renderFooter() {
     let footer = (
       <Modal.Footer>
+	<Button onClick={this.getHideFun()}>OK</Button>
       </Modal.Footer>
     );
 
     if (this.props.blocking) {
       footer = (
         <Modal.Footer>
-          <Button>Abort</Button>
+          <Button onClick={this.abort}>Abort</Button>
         </Modal.Footer>
       );
     }
@@ -59,15 +76,33 @@ export class PleaseWaitDialog extends React.Component {
     return footer;
   }
 
-  render() {
-    return (
-      <Modal animation={false} show={this.props.loading} onHide={this.hide}>
-        {this.renderHeader()}
-        <Modal.Body closeButton>
+  renderContent() {
+    let content = (
+      <div>
+        <p>
+          {this.getMessage()}
+        </p>
+      </div>);
+
+    if (this.props.blocking) {
+      content = (
+        <div>
           <p>
             {this.getMessage()}
           </p>
           <ProgressBar active now={100} />
+	</div>);
+    }
+
+    return content;
+  }
+
+  render() {
+    return (
+      <Modal ref="modal" animation={false} show={this.props.loading} onHide={this.getHideFun}>
+        {this.renderHeader()}
+        <Modal.Body closeButton>
+          {this.renderContent()}
         </Modal.Body>
         {this.renderFooter()}
       </Modal>
