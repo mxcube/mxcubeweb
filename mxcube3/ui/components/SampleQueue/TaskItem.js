@@ -91,6 +91,9 @@ export default class TaskItem extends Component {
     this.deleteTask = this.deleteTask.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
     this.collapseTask = this.collapseTask.bind(this);
+    this.state = {
+      overInput: false
+    };
   }
 
   toggleChecked() {
@@ -128,7 +131,8 @@ export default class TaskItem extends Component {
       error: state === 3,
       warning: state === 4
     });
-    return connectDragSource(connectDropTarget(
+
+    const element = (
       <div className="node node-sample" style={{ opacity }}>
           <div className={taskCSS} onClick={this.collapseTask}>
             <p className="node-name">
@@ -144,23 +148,25 @@ export default class TaskItem extends Component {
                   <div className="col-sm-9">
                     <input
                       type="text"
+                      onMouseEnter={() => this.setState({ overInput: true }) }
+                      onMouseLeave={() => this.setState({ overInput: false }) }
                       className="form-control"
                       value={`${rootPath}${data.parameters.path}`}
-                      readOnly
                     />
                   </div>
                 <div className="col-sm-3">
                   <input
                     type="text"
+                    onMouseEnter={() => this.setState({ overInput: true }) }
+                    onMouseLeave={() => this.setState({ overInput: false }) }
                     className="form-control"
                     value={data.parameters.prefix}
-                    readOnly
                   />
                 </div>
               </div>
               <div className="task-information">
                 <label>Parameters summary:&nbsp;</label>
-                <span onClick={this.showForm}>
+                <span className="task-parameters" onClick={this.showForm}>
                   osc: {parameters.osc_range},
                   exp.time: {`${parameters.exp_time * 1000} ms`},
                   num.images: {parameters.num_images},
@@ -175,6 +181,10 @@ export default class TaskItem extends Component {
           </div>
           </Collapse>
       </div>
-    ));
+      );
+    if (this.state.overInput) {
+      return element;
+    }
+    return connectDragSource(connectDropTarget(element));
   }
 }

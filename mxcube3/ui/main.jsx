@@ -67,7 +67,7 @@ export default class App extends React.Component {
     super(props);
 
     this.state = { initialized: false };
-    this.serverIO = new ServerIO(store.dispatch);
+    this.serverIO = new ServerIO(store);
   }
 
   componentWillMount() {

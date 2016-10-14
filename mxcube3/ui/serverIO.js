@@ -7,14 +7,15 @@ import {
   setBeamInfo
 } from './actions/sampleview';
 import { setBeamlineAttrAction } from './actions/beamline';
-import { setStatus, addTaskResultAction, addTaskAction } from './actions/queue';
+import { setStatus, addTaskResultAction, addTaskAction, collapseTask } from './actions/queue';
 import { setLoading } from './actions/general';
 
 
 export default class ServerIO {
 
-  constructor(dispatch) {
-    this.dispatch = dispatch;
+  constructor(store) {
+    this.store = store;
+    this.dispatch = store.dispatch;
 
     this.hwrSocket = null;
     this.loggingSocket = null;
@@ -71,6 +72,14 @@ export default class ServerIO {
     });
 
     this.hwrSocket.on('task', (record) => {
+      const sampleDisplayData = this.store.getState().queue.displayData[record.sample];
+      const taskCollapsed = sampleDisplayData.tasks[record.taskIndex].collapsed;
+
+      if (record.state === 1 && !taskCollapsed) {
+        this.dispatch(collapseTask(record.sample, record.taskIndex));
+      } else if (record.state === 2 && taskCollapsed) {
+        this.dispatch(collapseTask(record.sample, record.taskIndex));
+      }
       this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state,
                                         record.progress, record.taskLimsID));
     });
