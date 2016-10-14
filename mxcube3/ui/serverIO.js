@@ -5,10 +5,15 @@ import {
   saveMotorPositions,
   saveMotorPosition,
   setCurrentPhase,
-  setBeamInfo
+  setBeamInfo,
+  startClickCentring,
 } from './actions/sampleview';
 import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
-import { setStatus, addTaskResultAction, addTaskAction, collapseTask } from './actions/queue';
+import { setStatus,
+         addTaskResultAction,
+         addTaskAction,
+         collapseTask, 
+         setCurrentSample } from './actions/queue';
 import { setLoading } from './actions/general';
 
 class ServerIO {
@@ -117,13 +122,18 @@ class ServerIO {
       this.dispatch(setStatus(record.Signal));
     });
 
-    this.hwrSocket.on('dialog', (record) => {
-      switch (record.signal) {
-        case 'wait':
-          this.dispatch(setLoading(record.show, record.title, record.message, record.blocking));
-          break;
-        default:
-      }
+    this.hwrSocket.on('sc', (record) => {
+      this.dispatch(setLoading(record.signal === 'loadingSample',
+                               'Loading sample',
+                               record.message, true));
+      this.dispatch(setCurrentSample(record.location));
+    });
+
+    this.hwrSocket.on('sample_centring', (record) => {
+      this.dispatch(setLoading(record.signal === 'SampleCentringRequest',
+                              'Center sample',
+                               record.message, false));
+      this.dispatch(startClickCentring());
     });
   }
 }

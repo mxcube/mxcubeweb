@@ -104,27 +104,40 @@ def get_signal_progress(signal):
     return result
 
 
-def sc_state_changed(new_state, old_state):
-    if new_state == 3:
-        msg = {'signal': 'wait',
-               'title': 'Loading sample',
-               'message': 'Please wait while loading sample',
-               'show': True,
-               'blocking': True}
+def sc_state_changed(*args):
+    new_state = args[0]
+    old_state = None
 
-        socketio.emit('dialog', msg, namespace='/hwr')
+    if len(args) == 2:
+        old_state = args[1]
+
+    location = ''
+
+    if mxcube.sample_changer.getLoadedSample():
+      location =  mxcube.sample_changer.getLoadedSample().getAddress()
+
+    if new_state == 9 and old_state == None:
+        msg = {'signal': 'loadingSample',
+               'location': location,
+               'message': 'Please wait, loading sample %s' % location}
+
+        socketio.emit('sc', msg, namespace='/hwr')
         
-    elif new_state in [1, 2]:
-        msg = {'signal': 'wait',
-               'title': '',
-               'message': '',
-               'show': False }
+    elif new_state == 1 and old_state == 3:
+        msg = {'signal': 'loadedSample',
+               'location': location}
     
-        socketio.emit('dialog', msg, namespace='/hwr')
+        socketio.emit('sc', msg, namespace='/hwr')
 
 
 def centring_started(method, *args):
-    print("Please center sample")
+    usr_msg = 'Using 3-click centring, please click the position on '
+    usr_msg += 'the sample you would like to center (three times)'
+
+    msg = {'signal': 'SampleCentringRequest',
+           'message': usr_msg}
+
+    socketio.emit('sample_centring', msg, namespace='/hwr')
 
 
 def queue_execution_started(entry):
