@@ -49,9 +49,9 @@ export default class SampleGrid extends React.Component {
 
 
   shouldComponentUpdate(nextProps) {
-    this._doReorder = false;
-
-    if (this.props.order !== nextProps.order || this.props.sampleList !== nextProps.sampleList) {
+    if (this.props.order !== nextProps.order ||
+        this.props.sampleList !== nextProps.sampleList ||
+        this._doReorder) {
       this._doReorder = true;
     }
 
@@ -64,6 +64,7 @@ export default class SampleGrid extends React.Component {
       this.isotope.reloadItems();
       this.isotope.layout();
       this.isotope.arrange({ sortBy: 'seqId' });
+      this._doReorder = false;
     }
   }
 
@@ -272,6 +273,9 @@ export default class SampleGrid extends React.Component {
           }
         }
 
+        const deleteTaskFun = this.props.queue.queueStatus === 'QueueStopped' ?
+                              this.props.deleteTask : '';
+
         sampleGrid.push(
           <SampleGridItem
             ref={i}
@@ -284,10 +288,10 @@ export default class SampleGrid extends React.Component {
             dm={sample.code}
             loadable={false}
             location={sample.location}
-            queueOrder={sample.queueOrder}
+            queueOrder={this.props.queue.sampleOrder.indexOf(sample.sampleID)}
             tags={tags}
             selected={this.props.selected}
-            deleteTask={this.props.deleteTask}
+            deleteTask={deleteTaskFun}
             showTaskParametersForm={this.props.showTaskParametersForm}
             toggleMovable={this.props.toggleMovable}
             picked={this.props.queue.queue[sample.sampleID]}

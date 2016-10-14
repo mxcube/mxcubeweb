@@ -28,6 +28,7 @@ export class SampleGridItem extends React.Component {
     this.taskSummary = this.taskSummary.bind(this);
     this.taskTitle = this.taskTitle.bind(this);
     this.taskStateClass = this.taskStateClass.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
 
@@ -361,25 +362,25 @@ export class SampleGridItem extends React.Component {
   }
 
 
-  taskTitle(task, i) {
+  taskTitle(task) {
     const point = task.parameters.point !== -1 ? ` at P-${task.parameters.point}` : '';
     let taskStatus = 'To be collected';
 
-    if (this.props.displayData.tasks[i].state === 1) {
+    if (task.state === 1) {
       taskStatus = 'In progress';
-    } else if (this.props.displayData.tasks[i].state === 2) {
+    } else if (task.state === 2) {
       taskStatus = 'Collected';
     }
 
     return `${task.label}${point} (${taskStatus})`;
   }
 
-  taskStateClass(task, i) {
+  taskStateClass(task) {
     let cls = 'btn-primary';
 
-    if (this.props.displayData.tasks[i].state === 1) {
+    if (task.state === 1) {
       cls = 'btn-warning';
-    } else if (this.props.displayData.tasks[i].state === 2) {
+    } else if (task.state === 2) {
       cls = 'btn-success';
     }
 
@@ -400,6 +401,14 @@ export class SampleGridItem extends React.Component {
 
     return result;
   }
+
+
+  handleClick(task) {
+    if (task.state === 0) {
+      this.props.showTaskParametersForm(task.type, task.sampleID, task);
+    }
+  }
+
 
   render() {
     const itemKey = this.props.itemKey;
@@ -453,7 +462,7 @@ export class SampleGridItem extends React.Component {
                 // assuming a Task
                 let showForm = (e) => {
                   e.stopPropagation();
-                  return this.props.showTaskParametersForm(tag.type, this.props.sampleID, tag);
+                  return this.handleClick(tag, this.props.sampleID);
                 };
 
                 let deleteTask = (e) => {
@@ -467,14 +476,14 @@ export class SampleGridItem extends React.Component {
                     overlay={(
                       <Popover
                         style={{ 'min-width': '700px !important', 'padding-bottom': '1em' }}
-                        title={(<b>{this.taskTitle(tag, i)}</b>)}
+                        title={(<b>{this.taskTitle(tag)}</b>)}
                       >
                          {this.taskSummary(tag)}
                       </Popover>) }
                   >
                    <span
                      key={i}
-                     className={`${this.taskStateClass(tag, i)} label`}
+                     className={`${this.taskStateClass(tag)} label`}
                      style={style}
                      onClick={showForm}
                    >

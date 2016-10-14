@@ -1,30 +1,16 @@
-<object class="ISPyBRestClient">
+<object class="ISPyBClient2Mockup">
   <restRoot>
-    https://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest/
+   https://your.lims.org
   </restRoot>
   <site>
    ESRF
   </site>
   <exi_root>
-   https://exi.esrf.fr/mx/
+   https://your.exi.org
   </exi_root>
   <restUserName></restUserName>
   <restPass></restPass>
 
   <object role="session" href="/session"/>
 
-  <proposals>
-    <proposal>
-      <code>ifx</code>
-      <ispyb>fx</ispyb>
-      <gui>fx</gui>
-    </proposal>
-  </proposals>
-
-  <inhouse>
-    <proposal>
-      <code>opid</code>
-      <number>30</number>
-    </proposal>
-  </inhouse>
 </object>
