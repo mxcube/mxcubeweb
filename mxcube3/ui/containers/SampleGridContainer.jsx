@@ -276,7 +276,7 @@ class SampleGridContainer extends React.Component {
         onClick={this.startCollect}
         disabled={this.isCollectDisabled()}
       >
-        Collect {this.numSamplesPicked()}/{this.numSamples()}
+        Collect Queue {this.numSamplesPicked()}/{this.numSamples()}
         <Glyphicon glyph="chevron-right" />
       </Button>);
 
