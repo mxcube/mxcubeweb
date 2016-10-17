@@ -54,7 +54,7 @@ def queue_abort():
     Abort execution of the queue.
 
     :returns: Response object, status code set to:
-              200 on error
+              200 On success
               409 queue could not be aborted
     """
     mxcube.queue.queue_hwobj.stop()
