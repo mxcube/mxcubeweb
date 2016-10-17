@@ -10,6 +10,7 @@ export default class SampleImage extends React.Component {
   constructor(props) {
     super(props);
     this.setImageRatio = this.setImageRatio.bind(this);
+    this.setColorPoint = this.setColorPoint.bind(this);
     this.canvas = {};
   }
 
@@ -19,6 +20,11 @@ export default class SampleImage extends React.Component {
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', (option) => this.leftClick(option));
+
+    // Render color of points
+    this.canvas.on('before:selection:cleared', (o) => this.setColorPoint(o, false));
+    this.canvas.on('object:selected', (o) => this.setColorPoint(o, true));
+    this.canvas.on('selection:cleared', (o) => this.setColorPoint(o, false));
 
     // Bind rigthclick to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
@@ -45,6 +51,29 @@ export default class SampleImage extends React.Component {
   componentWillUnmount() {
     // Important to remove listener if component isn't active
     window.removeEventListener('resize', this.setImageRatio);
+  }
+
+  setColorPoint(o, selection){
+    if (o.target && o.target.type === 'group') {
+      o.target.hasBorders = false;
+      o.target.hasControls = false;
+      o.target.forEachObject(function (point) {
+        const color = selection ? 'red' : point.defaultColor;
+        point.stroke = color;
+        point.text.stroke = color;
+        point.text.fill = color;
+        point.hasBorders = false;
+      });
+    } else if (o.target && o.target.text) {
+      this.canvas.getObjects('SAVED').forEach((point) =>{
+        const color = point.active ? 'red' : point.defaultColor;
+        point.stroke = color;
+        point.text.stroke = color;
+        point.text.fill = color;
+        point.hasBorders = false;
+        point.hasControls = false;
+      });
+    }
   }
 
   setImageRatio() {
