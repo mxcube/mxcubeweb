@@ -9,7 +9,12 @@ import {
   startClickCentring,
 } from './actions/sampleview';
 import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
-import { setStatus, addTaskResultAction, addTaskAction, collapseTask, setCurrentSample } from './actions/queue';
+import { setStatus,
+         addTaskResultAction,
+         addTaskAction,
+         collapseTask,
+         setCurrentSample,
+         sendStopQueue } from './actions/queue';
 import { setLoading } from './actions/general';
 
 class ServerIO {
@@ -121,7 +126,7 @@ class ServerIO {
     this.hwrSocket.on('sc', (record) => {
       this.dispatch(setLoading(record.signal === 'loadingSample',
                                'Loading sample',
-                               record.message, true));
+                               record.message, true, () => (this.dispatch(sendStopQueue()))));
       this.dispatch(setCurrentSample(record.location));
     });
 

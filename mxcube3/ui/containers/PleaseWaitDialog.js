@@ -31,13 +31,13 @@ export class PleaseWaitDialog extends React.Component {
   }
 
   abort() {
+    debugger;
+  
     if (this.props.abortFun) {
       this.props.abortFun();
     }
 
-    if (this.refs.modal) {
-      this.refs.modal.getHideFun()();
-    }
+    this.getHideFun()();
   }
 
   renderHeader() {
@@ -116,7 +116,8 @@ function mapStateToProps(state) {
     loading: state.general.loading,
     title: state.general.title,
     message: state.general.message,
-    blocking: state.general.blocking
+    blocking: state.general.blocking,
+    abortFun: state.general.abortFun
   };
 }
 
