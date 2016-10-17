@@ -15,7 +15,8 @@ export default (state = initialState, action) => {
                  loading: action.loading,
                  title: action.title,
                  message: action.message,
-                 blocking: action.blocking
+                 blocking: action.blocking,
+                 abortFun: action.abortFun
                };
       }
     case 'SHOW_ERROR_PANEL':

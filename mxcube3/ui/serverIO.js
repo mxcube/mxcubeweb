@@ -12,7 +12,8 @@ import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
 import { setStatus,
          addTaskResultAction,
          addTaskAction,
-         collapseTask, 
+         collapseTask,
+         sendStopQueue,
          setCurrentSample } from './actions/queue';
 import { setLoading } from './actions/general';
 
@@ -125,7 +126,7 @@ class ServerIO {
     this.hwrSocket.on('sc', (record) => {
       this.dispatch(setLoading(record.signal === 'loadingSample',
                                'Loading sample',
-                               record.message, true));
+                               record.message, true, () => (this.dispatch(sendStopQueue()))));
       this.dispatch(setCurrentSample(record.location));
     });
 

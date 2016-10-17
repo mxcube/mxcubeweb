@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
 import { showTaskForm } from './taskForm';
+import { sendAbortCentring } from './sampleview';
 
 export function setSampleListAction(sampleList) {
   return { type: 'SET_SAMPLE_LIST', sampleList };
@@ -312,7 +313,7 @@ export function sendUnpauseQueue() {
 
 
 export function sendStopQueue() {
-  return function () {
+  return function (dispatch) {
     fetch('mxcube/api/v0.1/queue/stop', {
       method: 'PUT',
       credentials: 'include',
@@ -321,6 +322,7 @@ export function sendStopQueue() {
         'Content-type': 'application/json'
       }
     }).then((response) => {
+      dispatch(sendAbortCentring());
       if (response.status >= 400) {
         throw new Error('Server refused to stop queue');
       }

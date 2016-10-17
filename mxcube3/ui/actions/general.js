@@ -4,9 +4,10 @@ export function setInitialStatus(data) {
   return { type: 'SET_INITIAL_STATUS', data };
 }
 
-export function setLoading(loading, title = '', message = '', blocking = false) {
+export function setLoading(loading, title = '', message = '', blocking = false,
+                           abortFun = undefined) {
   return {
-    type: 'SET_LOADING', loading, title, message, blocking
+    type: 'SET_LOADING', loading, title, message, blocking, abortFun
   };
 }
 
