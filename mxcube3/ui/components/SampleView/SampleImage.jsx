@@ -57,24 +57,26 @@ export default class SampleImage extends React.Component {
     const shape = o.target;
     if (shape && shape.type === 'group') {
       // shape.hasBorders = false;
-      // shape.hasControls = false;
+      shape.hasControls = false;
       shape.forEachObject((point) => {
         if (point.type === 'SAVED') {
-          const color = selection ? 'red' : point.defaultColor;
+          const color = selection ? 'green' : point.defaultColor;
+          const width = selection ? 4 : 2;
           point.stroke = color;
           point.text.stroke = color;
           point.text.fill = color;
-          point.hasBorders = false;
+          point.strokeWidth = width;
         }
       });
     } else if (shape && shape.text) {
       this.canvas.getObjects('SAVED').forEach((point) => {
-        const color = point.active ? 'red' : point.defaultColor;
+        const color = point.active ? 'green' : point.defaultColor;
+        const width = point.active ? 4 : 2;
         point.stroke = color;
         point.text.stroke = color;
         point.text.fill = color;
-        point.hasBorders = false;
         point.hasControls = false;
+        point.strokeWidth = width;
       });
     }
   }
@@ -197,6 +199,7 @@ export default class SampleImage extends React.Component {
   renderSampleView(nextProps) {
     const group = this.canvas.getActiveGroup();
     const selection = this.canvas.getActiveObject();
+    console.log(group);
     const {
       imageRatio,
       beamPosition,
@@ -224,7 +227,7 @@ export default class SampleImage extends React.Component {
       ...makeLines(lines, points, imageRatio)
     ];
     this.canvas.add(...fabricSelectables);
-    if (group && nextProps.contextMenuVisible) {
+    if (group) {
       const groupIDs = group.getObjects().map((shape) => shape.id);
       const selectedShapes = [];
       fabricSelectables.forEach((shape) => {
