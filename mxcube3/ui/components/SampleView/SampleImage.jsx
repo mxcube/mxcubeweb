@@ -58,7 +58,8 @@ export default class SampleImage extends React.Component {
     if (shape && shape.type === 'group') {
       // shape.hasBorders = false;
       shape.hasControls = false;
-      shape.forEachObject((point) => {
+      shape.forEachObject((p) => {
+        const point = p;
         if (point.type === 'SAVED') {
           const color = selection ? 'green' : point.defaultColor;
           const width = selection ? 4 : 2;
@@ -69,7 +70,8 @@ export default class SampleImage extends React.Component {
         }
       });
     } else if (shape && shape.text) {
-      this.canvas.getObjects('SAVED').forEach((point) => {
+      this.canvas.getObjects('SAVED').forEach((p) => {
+        const point = p;
         const color = point.active ? 'green' : point.defaultColor;
         const width = point.active ? 4 : 2;
         point.stroke = color;
@@ -199,7 +201,6 @@ export default class SampleImage extends React.Component {
   renderSampleView(nextProps) {
     const group = this.canvas.getActiveGroup();
     const selection = this.canvas.getActiveObject();
-    console.log(group);
     const {
       imageRatio,
       beamPosition,
