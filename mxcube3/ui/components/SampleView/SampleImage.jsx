@@ -53,19 +53,22 @@ export default class SampleImage extends React.Component {
     window.removeEventListener('resize', this.setImageRatio);
   }
 
-  setColorPoint(o, selection){
-    if (o.target && o.target.type === 'group') {
-      o.target.hasBorders = false;
-      o.target.hasControls = false;
-      o.target.forEachObject(function (point) {
-        const color = selection ? 'red' : point.defaultColor;
-        point.stroke = color;
-        point.text.stroke = color;
-        point.text.fill = color;
-        point.hasBorders = false;
+  setColorPoint(o, selection) {
+    const shape = o.target;
+    if (shape && shape.type === 'group') {
+      // shape.hasBorders = false;
+      // shape.hasControls = false;
+      shape.forEachObject((point) => {
+        if (point.type === 'SAVED') {
+          const color = selection ? 'red' : point.defaultColor;
+          point.stroke = color;
+          point.text.stroke = color;
+          point.text.fill = color;
+          point.hasBorders = false;
+        }
       });
-    } else if (o.target && o.target.text) {
-      this.canvas.getObjects('SAVED').forEach((point) =>{
+    } else if (shape && shape.text) {
+      this.canvas.getObjects('SAVED').forEach((point) => {
         const color = point.active ? 'red' : point.defaultColor;
         point.stroke = color;
         point.text.stroke = color;
@@ -246,7 +249,6 @@ export default class SampleImage extends React.Component {
         }
       });
     }
-    console.log(this.canvas.getObjects());
     this.canvas.renderAll();
   }
 

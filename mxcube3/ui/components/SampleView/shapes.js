@@ -34,7 +34,7 @@ export function makeElipse(posX, posY, sizeX, sizeY, color) {
   });
 }
 
-export function makeCircle(x, y, selectable, radius, color = 'red', id = 'no id', type = 'TMP', text={}) {
+export function makeCircle(x, y, selectable, radius, color, id, type, text) {
   return new fabric.Circle({
     radius,
     strokeWidth: 2,
@@ -132,8 +132,8 @@ export function makePoint(x, y, id, color, type) {
   const text = makeText(x + 10, y - 25, 14, color, `P${id}`);
   const circle = makeCircle(x, y, true, 10, color, id, type, text);
   return [
-   circle,
-   text
+    circle,
+    text
   ];
 }
 
