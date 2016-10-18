@@ -227,6 +227,7 @@ export default class SampleImage extends React.Component {
       fabricSelectables.forEach((shape) => {
         if (groupIDs.includes(shape.id)) {
           selectedShapes.push(shape);
+          this.setColorPoint(shape);
         }
       });
       this.canvas.setActiveGroup(
@@ -241,9 +242,12 @@ export default class SampleImage extends React.Component {
       fabricSelectables.forEach((shape) => {
         if (shape.id === selection.id) {
           this.canvas.setActiveObject(shape);
+          this.setColorPoint(shape);
         }
       });
     }
+    console.log(this.canvas.getObjects());
+    this.canvas.renderAll();
   }
 
 

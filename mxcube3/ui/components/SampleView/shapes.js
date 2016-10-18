@@ -54,6 +54,8 @@ export function makeCircle(x, y, selectable, radius, color = 'red', id = 'no id'
     originY: 'center',
     hasRotatingPoint: false,
     defaultColor: color,
+    hasBorders: false,
+    hasControls: false,
     id,
     text
   });
