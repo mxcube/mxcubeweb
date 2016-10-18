@@ -20,7 +20,7 @@ class SampleViewContainer extends Component {
     return (
       <div className="row">
         <div className="col-xs-1"
-          style={{ 'margin-top': '0em', 'padding-right': '5px', 'padding-left': '1.5em' }}
+          style={ { 'margin-top': '0em', 'padding-right': '5px', 'padding-left': '1.5em' } }
         >
             <MotorControl
               save={sendMotorPosition}
@@ -36,7 +36,7 @@ class SampleViewContainer extends Component {
                 <BeamlineSetupContainer />
               </div>
             </div>
-            <div className="row">
+            <div className="row" style={ { display: 'flex' } }>
               <div className="col-xs-9">
                 <ContextMenu
                   {...this.props.contextMenu}
@@ -55,7 +55,7 @@ class SampleViewContainer extends Component {
                   points={this.props.points.points}
                 />
               </div>
-              <div className="col-xs-3">
+              <div className="col-xs-3" style={ { display: 'flex' } }>
                 <SampleQueueContainer />
             </div>
             </div>

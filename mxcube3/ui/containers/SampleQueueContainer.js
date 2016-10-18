@@ -84,7 +84,7 @@ export default class SampleQueueContainer extends React.Component {
     } = this.props.queueActions;
 
     return (
-      <div>
+      <div style={ { display: 'flex', flexDirection: 'column' } }>
                 <QueueControl
                   historyLength={history.nodes.length}
                   todoLength={todo.nodes.length}
@@ -93,51 +93,49 @@ export default class SampleQueueContainer extends React.Component {
                   runQueue={sendRunQueue}
                   stopQueue={sendStopQueue}
                 />
-              <div className="queue-body">
-                <div className="m-tree">
-                  <Nav
-                    bsStyle="tabs"
-                    justified
-                    activeKey={visibleList}
-                    onSelect={this.handleSelect}
-                  >
-                    <NavItem eventKey={'current'}>Current</NavItem>
-                    <NavItem eventKey={'todo'}>Upcoming</NavItem>
-                  </Nav>
-                  <CurrentTree
-                    changeOrder={changeTaskOrder}
-                    show={visibleList === 'current'}
-                    mounted={current.node}
-                    sampleInformation={sampleInformation}
-                    queue={queue}
-                    toggleCheckBox={sendToggleCheckBox}
-                    checked={checked}
-                    deleteTask={deleteTask}
-                    run={sendRunSample}
-                    pause={sendPauseQueue}
-                    unpause={sendUnpauseQueue}
-                    stop={sendStopQueue}
-                    showForm={showForm}
-                    unmount={sendUnmountSample}
-                    queueStatus={queueStatus}
-                    rootPath={rootPath}
-                    collapseTask={collapseTask}
-                    displayData={displayData}
-                    manualMount={manualMount}
-                    mount={setCurrentSample}
-                    todoList={todo.nodes}
-                  />
-                  <TodoTree
-                    show={visibleList === 'todo'}
-                    list={todo.nodes}
-                    sampleInformation={queue}
-                    queue={queue}
-                    collapseSample={collapseSample}
-                    displayData={displayData}
-                    mount={setCurrentSample}
-                  />
-                </div>
-            </div>
+              <div className="m-tree queue-body">
+                <Nav
+                  bsStyle="tabs"
+                  justified
+                  activeKey={visibleList}
+                  onSelect={this.handleSelect}
+                >
+                  <NavItem eventKey={'current'}>Current</NavItem>
+                  <NavItem eventKey={'todo'}>Upcoming</NavItem>
+                </Nav>
+                <CurrentTree
+                  changeOrder={changeTaskOrder}
+                  show={visibleList === 'current'}
+                  mounted={current.node}
+                  sampleInformation={sampleInformation}
+                  queue={queue}
+                  toggleCheckBox={sendToggleCheckBox}
+                  checked={checked}
+                  deleteTask={deleteTask}
+                  run={sendRunSample}
+                  pause={sendPauseQueue}
+                  unpause={sendUnpauseQueue}
+                  stop={sendStopQueue}
+                  showForm={showForm}
+                  unmount={sendUnmountSample}
+                  queueStatus={queueStatus}
+                  rootPath={rootPath}
+                  collapseTask={collapseTask}
+                  displayData={displayData}
+                  manualMount={manualMount}
+                  mount={setCurrentSample}
+                  todoList={todo.nodes}
+                />
+                <TodoTree
+                  show={visibleList === 'todo'}
+                  list={todo.nodes}
+                  sampleInformation={queue}
+                  queue={queue}
+                  collapseSample={collapseSample}
+                  displayData={displayData}
+                  mount={setCurrentSample}
+                />
+              </div>
       </div>
     );
   }
