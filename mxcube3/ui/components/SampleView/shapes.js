@@ -60,10 +60,11 @@ export function makeCircle(x, y, selectable, radius, color, id, type, text) {
   });
 }
 
-export function makeLine(x1, y1, x2, y2, col, wid, select = false, id = '', hover = 'crosshair') {
+export function makeLine(x1, y1, x2, y2, col, wid, select = false, id, hover = 'crosshair', text, type) {
   return new fabric.Line([x1, y1, x2, y2], {
     fill: col,
     stroke: col,
+    defaultColor: col,
     strokeWidth: wid,
     originX: 'center',
     originY: 'center',
@@ -73,10 +74,11 @@ export function makeLine(x1, y1, x2, y2, col, wid, select = false, id = '', hove
     lockScalingX: true,
     lockScalingY: true,
     hasRotatingPoint: false,
-    type: 'LINE',
+    type,
     selectable: select,
     hoverCursor: hover,
-    id
+    id,
+    text
   });
 }
 
@@ -170,9 +172,11 @@ export function makePoints(points, imageRatio) {
 }
 
 export function pointLine(x1, y1, x2, y2, color, width, selectable, id, cursor) {
+  const text = makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, `L${id}`);
+  const line = makeLine(x1, y1, x2, y2, color, width, selectable, id, cursor, text, 'LINE');
   return [
-    makeLine(x1, y1, x2, y2, color, width, selectable, id, cursor),
-    makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, `L${id}`)
+    text,
+    line
   ];
 }
 

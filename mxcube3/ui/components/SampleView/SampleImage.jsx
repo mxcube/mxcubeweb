@@ -60,7 +60,7 @@ export default class SampleImage extends React.Component {
       shape.hasControls = false;
       shape.forEachObject((p) => {
         const point = p;
-        if (point.type === 'SAVED') {
+        if (point.type === 'SAVED' || point.type === 'LINE') {
           const color = selection ? 'green' : point.defaultColor;
           const width = selection ? 4 : 2;
           point.stroke = color;
@@ -70,7 +70,8 @@ export default class SampleImage extends React.Component {
         }
       });
     } else if (shape && shape.text) {
-      this.canvas.getObjects('SAVED').forEach((p) => {
+      this.canvas.getObjects('SAVED').concat(
+      this.canvas.getObjects('LINE')).forEach((p) => {
         const point = p;
         const color = point.active ? 'green' : point.defaultColor;
         const width = point.active ? 4 : 2;
