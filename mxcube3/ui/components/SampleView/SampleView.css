@@ -28,10 +28,12 @@
     border: 1px solid #AAA;
     border-radius: 3px;
     box-shadow: 0px 2px 3px 0px #AAA;
+    overflow: auto
 }
 
 .sample-controlls-bottom{
     margin-top: 10px;
+    display: flex;
 }
 
 .information-box{

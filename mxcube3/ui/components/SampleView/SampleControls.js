@@ -72,6 +72,8 @@ export default class SampleControls extends React.Component {
     const motors = this.props.motors;
     return (
         <div className="sample-controlls sample-controlls-bottom text-center">
+        <ul className="bs-glyphicons-list">
+          <li>
           <OverlayTrigger trigger="click" placement="top" rootClose overlay={
             <Popover id="Aperture" title="Aperture">
               <div className="form-inline">
@@ -100,20 +102,23 @@ export default class SampleControls extends React.Component {
             bsStyle="link"
           />
           </OverlayTrigger>
-
-          <a
+          <span className="sample-controll-label">Aperture</span>
+          </li>
+          <li>
+          <Button
             href="#"
             id="downloadLink"
             type="button"
             data-toggle="tooltip"
             title="Take snapshot"
-            className="btn btn-link pull-center"
+            className="fa fa-2x fa-camera sample-controll"
             onClick={this.takeSnapShot}
+            bsStyle="link"
             download
-          >
-            <i className="fa fa-2x fa-fw fa-camera"></i>
-          </a>
-
+          />
+          <span className="sample-controll-label">Snapshot</span>
+          </li>
+          <li>
           <Button
             type="button"
             data-toggle="tooltip"
@@ -122,6 +127,9 @@ export default class SampleControls extends React.Component {
             bsStyle="link"
             onClick={this.props.sampleActions.sendStartAutoCentring}
           />
+          <span className="sample-controll-label">Auto-Centring</span>
+          </li>
+          <li>
           <Button
             type="button"
             data-toggle="tooltip"
@@ -131,7 +139,9 @@ export default class SampleControls extends React.Component {
             onClick={this.toggleCentring}
             active={this.props.clickCentring}
           />
-
+          <span className="sample-controll-label">3-click Centring</span>
+          </li>
+          <li>
           <Button
             type="button"
             data-toggle="tooltip"
@@ -141,7 +151,6 @@ export default class SampleControls extends React.Component {
             onClick={this.setZoom}
             name="zoomOut"
           />
-
           <input
             className="bar"
             type="range"
@@ -176,6 +185,9 @@ export default class SampleControls extends React.Component {
               onClick={this.setZoom}
               name="zoomIn"
             />
+            <span className="sample-controll-label">Zoom Controls</span>
+            </li>
+            <li>
             <Button
               type="button"
               data-toggle="tooltip"
@@ -197,6 +209,9 @@ export default class SampleControls extends React.Component {
                 state={motors.BackLight.Status}
               />
             </div>
+            <span className="sample-controll-label">Backlight Controls</span>
+            </li>
+            <li>
             <Button
               type="button"
               data-toggle="tooltip"
@@ -217,15 +232,9 @@ export default class SampleControls extends React.Component {
                 state={motors.FrontLight.Status}
               />
             </div>
-            <Button
-              type="button"
-              data-toggle="tooltip"
-              title="Cinema On/Off"
-              className="fa fa-2x fa-arrows-alt sample-controll pull-right"
-              bsStyle="link"
-              onClick={this.props.sampleActions.toggleCinema}
-              active={this.props.cinema}
-            />
+            <span className="sample-controll-label">Frontlight Controls</span>
+            </li>
+            </ul>
           </div>
 
         );
