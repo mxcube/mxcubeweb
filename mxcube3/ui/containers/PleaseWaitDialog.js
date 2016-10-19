@@ -31,8 +31,6 @@ export class PleaseWaitDialog extends React.Component {
   }
 
   abort() {
-    debugger;
-  
     if (this.props.abortFun) {
       this.props.abortFun();
     }

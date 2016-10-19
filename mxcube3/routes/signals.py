@@ -117,39 +117,33 @@ def sc_state_changed(*args):
     if mxcube.sample_changer.getLoadedSample():
       location =  mxcube.sample_changer.getLoadedSample().getAddress()
 
-    if new_state == SampleChangerState.Moving and old_state == None:
-        msg = {'signal': 'loadingSample',
-               'location': location,
-               'message': 'Please wait, operating sample changer'}
+    if location:
+        if new_state == SampleChangerState.Moving and old_state == None:
+            msg = {'signal': 'loadingSample',
+                   'location': location,
+                   'message': 'Please wait, operating sample changer'}
 
-        socketio.emit('sc', msg, namespace='/hwr')
+            socketio.emit('sc', msg, namespace='/hwr')
 
-    elif new_state == SampleChangerState.Unloading:
-        msg = {'signal': 'loadingSample',
-               'location': location,
-               'message': 'Please wait, Unloading sample %s' % location}
+        elif new_state == SampleChangerState.Unloading and location:
+            msg = {'signal': 'loadingSample',
+                   'location': location,
+                   'message': 'Please wait, Unloading sample %s' % location}
 
-        socketio.emit('sc', msg, namespace='/hwr')
+            socketio.emit('sc', msg, namespace='/hwr')
 
-    elif new_state == SampleChangerState.Loading:
-        msg = {'signal': 'loadingSample',
-               'location': location,
-               'message': 'Please wait, Loading sample %s' % location}
+        elif new_state == SampleChangerState.Ready and old_state == SampleChangerState.Loading:
+            msg = {'signal': 'loadedSample',
+                   'location': location,
+                   'message': 'Please wait, Loaded sample %s' % location}
 
-        socketio.emit('sc', msg, namespace='/hwr')
+            socketio.emit('sc', msg, namespace='/hwr')
 
-    elif new_state == SampleChangerState.Ready and old_state == SampleChangerState.Loading:
-        msg = {'signal': 'loadingSample',
-               'location': location,
-               'message': 'Please wait, Loaded sample %s' % location}
+        elif new_state == SampleChangerState.Ready and old_state == None:
+            msg = {'signal': 'loadReady',
+                   'location': location}
 
-        socketio.emit('sc', msg, namespace='/hwr')
-
-    elif new_state == SampleChangerState.Ready and old_state == None:
-        msg = {'signal': 'loadedSample',
-               'location': location}
-    
-        socketio.emit('sc', msg, namespace='/hwr')
+            socketio.emit('sc', msg, namespace='/hwr')
 
 
 def centring_started(method, *args):
