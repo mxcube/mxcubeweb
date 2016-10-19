@@ -60,7 +60,7 @@ export function makeCircle(x, y, selectable, radius, color, id, type, text) {
   });
 }
 
-export function makeLine(x1, y1, x2, y2, col, wid, select = false, id, hover = 'crosshair', text, type) {
+export function makeLine(x1, y1, x2, y2, col, wid, select, id, hover = 'crosshair', text, type) {
   return new fabric.Line([x1, y1, x2, y2], {
     fill: col,
     stroke: col,
@@ -96,23 +96,23 @@ export function makeText(x, y, fontSize, color, text) {
 
 export function makeScale(height, scaleLength, color, text) {
   return [
-    makeLine(10, height - 10, scaleLength + 10, height - 10, 'green', 4),
-    makeLine(10, height - 10, 10, height - 10 - scaleLength, 'green', 4),
+    makeLine(10, height - 10, scaleLength + 10, height - 10, 'green', 4, false),
+    makeLine(10, height - 10, 10, height - 10 - scaleLength, 'green', 4, false),
     makeText(20, height - 30, 16, color, text)
   ];
 }
 
 export function makeCross(point, imageRatio, width, height) {
   return [
-    makeLine(point.x / imageRatio, 0, point.x / imageRatio, height, 'yellow', 2),
-    makeLine(0, point.y / imageRatio, width, point.y / imageRatio, 'yellow', 2)
+    makeLine(point.x / imageRatio, 0, point.x / imageRatio, height, 'yellow', 2, false),
+    makeLine(0, point.y / imageRatio, width, point.y / imageRatio, 'yellow', 2, false)
   ];
 }
 
 export function makeBeam(posX, posY, sizeX, sizeY, shape) {
   return [
-    makeLine(posX - 20, posY, posX + 20, posY, 'red', 1),
-    makeLine(posX, posY - 20, posX, posY + 20, 'red', 1),
+    makeLine(posX - 20, posY, posX + 20, posY, 'red', 1, false),
+    makeLine(posX, posY - 20, posX, posY + 20, 'red', 1, false),
     (shape === 'ellipse' ?
       makeElipse(posX, posY, sizeX, sizeY, 'blue') :
       makeRectangle(posX, posY, sizeX, sizeY, 'blue'))
@@ -124,7 +124,7 @@ export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   const b = p1.y - p2.y;
   const length = parseInt(Math.sqrt(a * a + b * b) / ppMm * 1000, 10);
   return [
-    makeLine(p1.x / iR, p1.y / iR, p2.x / iR, p2.y / iR, color, width),
+    makeLine(p1.x / iR, p1.y / iR, p2.x / iR, p2.y / iR, color, width, false),
     makeText(p2.x / iR, p2.y / iR, 12, color, `${length} µm`)
   ];
 }
@@ -147,7 +147,7 @@ export function makePoints(points, imageRatio) {
           fabricPoints.push(
             ...makePoint(points[id].x / imageRatio,
               points[id].y / imageRatio, id,
-              'yellow',
+              '#e4ff09',
               'SAVED'
             )
           );

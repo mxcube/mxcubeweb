@@ -61,7 +61,7 @@ export default class SampleImage extends React.Component {
       shape.forEachObject((p) => {
         const point = p;
         if (point.type === 'SAVED' || point.type === 'LINE') {
-          const color = selection ? 'green' : point.defaultColor;
+          const color = selection ? '#88ff5b' : point.defaultColor;
           const width = selection ? 4 : 2;
           point.stroke = color;
           point.text.stroke = color;
@@ -73,12 +73,13 @@ export default class SampleImage extends React.Component {
       this.canvas.getObjects('SAVED').concat(
       this.canvas.getObjects('LINE')).forEach((p) => {
         const point = p;
-        const color = point.active ? 'green' : point.defaultColor;
+        const color = point.active ? '#88ff5b' : point.defaultColor;
         const width = point.active ? 4 : 2;
         point.stroke = color;
         point.text.stroke = color;
         point.text.fill = color;
         point.hasControls = false;
+        shape.hasBorders = false;
         point.strokeWidth = width;
       });
     }
