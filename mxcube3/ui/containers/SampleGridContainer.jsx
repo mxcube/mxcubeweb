@@ -261,19 +261,24 @@ class SampleGridContainer extends React.Component {
 
 
   startCollect() {
-    this.props.setQueueAndRun(this.props.queue.queue, this.props.queue.sampleOrder);
+    if (!this.props.queue.manualMount.set) {
+      this.props.setQueueAndRun(this.props.queue.queue, this.props.queue.sampleOrder);
+    }
+
     window.location = '#/datacollection';
   }
 
-
   collectButton() {
+    const collectText = this.props.queue.manualMount.set ? 'Collect' :
+                        `Collect Queue ${this.numSamplesPicked()}/${this.numSamples()}`;
+
     let button = (
       <Button
         className="btn btn-success pull-right"
         onClick={this.startCollect}
         disabled={this.isCollectDisabled()}
       >
-        Collect Queue {this.numSamplesPicked()}/{this.numSamples()}
+        {collectText}
         <Glyphicon glyph="chevron-right" />
       </Button>);
 
