@@ -42,19 +42,31 @@ class DataCollection extends React.Component {
       }
     }
 
+    let sampleId = undefined;
+    let taskIndex = undefined;
+
     if (this.props.sampleIds.constructor === Array) {
-      for (const sampleId of this.props.sampleIds) {
+      for (const sid of this.props.sampleIds) {
+        sampleId = sid;
+
         if (this.props.queue[sampleId]) {
-          this.props.addTask(sampleId, parameters, this.props.queue, runNow);
+          taskIndex = this.props.queue[sampleId].tasks.length;
+          this.props.addTask(sampleId, parameters);
         } else {
           const sampleData = this.props.sampleList[sampleId];
-          this.props.addSampleAndTask(sampleId, parameters, sampleData, this.props.queue, runNow);
+          taskIndex = 0;
+          this.props.addSampleAndTask(sampleId, parameters, sampleData);
         }
       }
     } else {
       const { taskData, sampleIds } = this.props;
-      const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
-      this.props.changeTask(sampleIds, taskIndex, parameters, this.props.queue, runNow);
+      sampleId = sampleIds;
+      taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
+      this.props.changeTask(sampleId, taskIndex, parameters);
+    }
+
+    if (runNow) {
+      this.props.setRunNow(true, sampleId, taskIndex);
     }
 
     this.props.hide();

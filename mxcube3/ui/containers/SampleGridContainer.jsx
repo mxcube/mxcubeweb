@@ -34,7 +34,7 @@ import {
   sendClearQueue,
   addSample,
   sendRunQueue,
-  setCurrentSample
+  setQueueAndRun
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
@@ -261,10 +261,7 @@ class SampleGridContainer extends React.Component {
 
 
   startCollect() {
-    if (!this.props.queue.manualMount.set) {
-      this.props.setCurrentSample(this.props.queue.sampleOrder[0]);
-      this.props.runQueue();
-    }
+    this.props.setQueueAndRun(this.props.queue.queue, this.props.queue.sampleOrder);
     window.location = '#/datacollection';
   }
 
@@ -532,7 +529,7 @@ function mapDispatchToProps(dispatch) {
     addSample: (sampleData) => dispatch(addSample(sampleData)),
     showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
     runQueue: () => dispatch(sendRunQueue()),
-    setCurrentSample: (sampleID) => dispatch(setCurrentSample(sampleID))
+    setQueueAndRun: (queue, sampleOrder) => dispatch(setQueueAndRun(queue, sampleOrder))
   };
 }
 

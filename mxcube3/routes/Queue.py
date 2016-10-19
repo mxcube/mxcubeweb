@@ -178,17 +178,32 @@ def execute_entry_with_id(sid, tindex):
 
     signals.queue_execution_finished(None)
 
-    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/queue", methods=['PUT'])
+def set_queue():
+    # Clear queue
+    mxcube.diffractometer.savedCentredPos = []
+    mxcube.queue = qutils.new_queue()
+
+    # Set new queue
+    qutils.queue_add_item(request.get_json())
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    qutils.save_queue(session)
 
     return Response(status=200)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
-     qutils.queue_add_item(request.get_json())
-     #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-     qutils.save_queue(session)
-     return Response(status=200)
+    qutils.queue_add_item(request.get_json())
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    qutils.save_queue(session)
+
+    return Response(status=200)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>", methods=['POST'])
@@ -231,7 +246,7 @@ def queue_delete_item(sid, tindex):
 
     qutils.delete_entry(entry)
 
-    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     qutils.save_queue(session)
     return Response(status=200)
 
@@ -239,7 +254,7 @@ def queue_delete_item(sid, tindex):
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/swap", methods=['POST'])
 def queue_swap_task_item(sid, ti1, ti2):
     qutils.swap_task_entry(sid, int(ti1), int(ti2))
-    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     qutils.save_queue(session)
     return Response(status=200) 
    
@@ -409,7 +424,7 @@ def get_default_dc_params():
         'inverse_beam': False,
         'take_dark_current': True,
         'skip_existing_images': False,
-        'take_snapshots': True
+        'take_snapshots': True,
         })
     resp.status_code = 200
     return resp
