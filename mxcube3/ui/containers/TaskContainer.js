@@ -29,6 +29,7 @@ class TaskContainer extends React.Component {
   constructor(props) {
     super(props);
     this.addSample = this.addSample.bind(this);
+    this.addTask = this.addTask.bind(this);
   }
 
   addSample(sampleData) {
@@ -39,59 +40,76 @@ class TaskContainer extends React.Component {
     this.props.setCurrentSample(sampleData.sampleID);
   }
 
+  addTask(params, stringFields, runNow) {
+    const parameters = { ...params };
+
+    for (const key in parameters) {
+      if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
+        parameters[key] = Number(parameters[key]);
+      }
+    }
+
+    let sampleId = undefined;
+    let taskIndex = undefined;
+
+    if (this.props.sampleIds.constructor === Array) {
+      for (const sid of this.props.sampleIds) {
+        sampleId = sid;
+
+        if (this.props.queue[sampleId]) {
+          taskIndex = this.props.queue[sampleId].tasks.length;
+          this.props.addTask(sampleId, parameters);
+        } else {
+          const sampleData = this.props.sampleList[sampleId];
+          taskIndex = 0;
+          this.props.addSampleAndTask(sampleId, parameters, sampleData);
+        }
+      }
+    } else {
+      const { taskData, sampleIds } = this.props;
+      sampleId = sampleIds;
+      taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
+      this.props.changeTask(sampleId, taskIndex, parameters);
+    }
+
+    if (runNow) {
+      this.props.setRunNow(true, sampleId, taskIndex);
+    }
+  }
+
   render() {
     return (
       <div className="col-xs-12">
         <Characterisation
+          addTask={this.addTask}
           pointId={this.props.pointId}
-          sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
-          addSampleAndTask={this.props.addSampleAndTask}
-          changeTask={this.props.changeTask}
-          addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'Characterisation'}
           rootPath={this.props.path}
-          queue={this.props.queue}
-          sampleOrder={this.props.sampleOrder}
-          sampleList={this.props.sampleList}
-          setRunNow={this.props.setRunNow}
         />
 
         <DataCollection
+          addTask={this.addTask}
           pointId={this.props.pointId}
-          sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
-          addSampleAndTask={this.props.addSampleAndTask}
-          changeTask={this.props.changeTask}
-          addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'DataCollection'}
           rootPath={this.props.path}
-          queue={this.props.queue}
-          sampleOrder={this.props.sampleOrder}
-          sampleList={this.props.sampleList}
-          setRunNow={this.props.setRunNow}
         />
 
         <Helical
+          addTask={this.addTask}
           pointId={this.props.pointId}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
-          addSampleAndTask={this.props.addSampleAndTask}
-          changeTask={this.props.changeTask}
-          addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'Helical'}
           rootPath={this.props.path}
-          queue={this.props.queue}
-          sampleOrder={this.props.sampleOrder}
-          sampleList={this.props.sampleList}
           lines={this.props.lines}
-          setRunNow={this.props.setRunNow}
         />
 
         <AddSample
