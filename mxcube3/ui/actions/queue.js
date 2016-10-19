@@ -39,7 +39,7 @@ export function sendClearQueue() {
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      }
+     }
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to clear queue');
@@ -70,7 +70,6 @@ export function sendManualMount(manual) {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Could not toogle manual mode'));
       } else {
-        dispatch(sendClearQueue());
         dispatch(setSampleListAction({}));
         dispatch(setManualMountAction(manual));
         if (manual) {
@@ -212,13 +211,6 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
 export function changeTaskOrder(sampleID, oldIndex, newIndex) {
   return function (dispatch) {
     dispatch(changeTaskOrderAction(sampleID, oldIndex, newIndex));
-
-    sendChangeTaskOrder(sampleID, oldIndex, newIndex).then((response) => {
-      if (response.status >= 400) {
-        dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-        throw new Error('Could not change order');
-      }
-    });
   };
 }
 
@@ -336,24 +328,22 @@ export function setQueueAction(queue) {
 }
 
 
-export function sendSetQueue(queue) {
-  return function () {
-    return fetch('mxcube/api/v0.1/queue', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(queue)
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Could not set queue');
-      }
+export function sendSetQueue(queue, sampleOrder) {
+  const itemList = [];
 
-      return response.json();
-    });
-  };
+  for (const key of sampleOrder) {
+    itemList.push(queue[key]);
+  }
+
+  return fetch('mxcube/api/v0.1/queue', {
+    method: 'PUT',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(itemList)
+  });
 }
 
 
@@ -380,8 +370,6 @@ export function sendMountSample(sampleID) {
 export function addSample(sampleData) {
   return function (dispatch) {
     const data = { ...sampleData, checked: true, tasks: [] };
-
-    sendAddQueueItem([data]);
     dispatch(addSampleAction(data));
   };
 }
@@ -396,7 +384,6 @@ export function appendSampleList(sampleData) {
 
 export function deleteSample(sampleID) {
   return function (dispatch) {
-    sendDeleteQueueItem(sampleID, undefined);
     dispatch(removeSampleAction(sampleID));
   };
 }
@@ -422,10 +409,15 @@ export function sendRunSample(sampleID, taskIndex) {
 }
 
 
-export function setQueueAndRun(sampleID, taskIndex, queue) {
+export function setQueueAndRun(queue, sampleOrder) {
   return function (dispatch) {
-    dispatch(sendSetQueue(queue)).then(() => {
-      dispatch(sendRunQueue());
+    sendSetQueue(queue, sampleOrder).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused to set queue');
+      } else {
+        dispatch(setCurrentSample(sampleOrder[0]));
+        dispatch(sendRunQueue());
+      }
     });
   };
 }
@@ -447,7 +439,6 @@ export function removeTaskAction(sampleID, taskIndex) {
 
 export function deleteTask(sampleID, taskIndex) {
   return function (dispatch) {
-    sendDeleteQueueItem(sampleID, taskIndex);
     dispatch(removeTaskAction(sampleID, taskIndex));
   };
 }
@@ -467,18 +458,10 @@ export function addTask(sampleID, parameters, queue, runNow) {
                    checked: true };
 
     dispatch(addTaskAction(task));
-    const taskIndex = queue[sampleID].tasks.length - 1;
 
-    sendAddQueueItem([task]).then((response) => {
-      if (response.status >= 400) {
-        dispatch(removeTaskAction(sampleID, taskIndex));
-        throw new Error('The task could not be added to the server');
-      } else {
-        if (runNow) {
-          dispatch(sendRunSample(sampleID, taskIndex));
-        }
-      }
-    });
+    if (runNow) {
+      dispatch(setQueueAndRun([task], [sampleID]));
+    }
   };
 }
 
@@ -495,16 +478,9 @@ export function addSampleAndTask(sampleID, parameters, sampleData, queue, runNow
 
     dispatch(addSampleAction(data));
 
-    sendAddQueueItem([data]).then((response) => {
-      if (response.status >= 400) {
-        dispatch(removeTaskAction(sampleID, 0));
-        throw new Error('The sample could not be added to the server');
-      } else {
-        if (runNow) {
-          dispatch(sendRunSample(sampleID, 0));
-        }
-      }
-    });
+    if (runNow) {
+      dispatch(setQueueAndRun([data], [sampleID]));
+    }
   };
 }
 
@@ -519,15 +495,9 @@ export function updateTask(sampleID, taskIndex, params, queue, runNow) {
     const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
     dispatch(updateTaskAction(sampleID, taskIndex, taskData));
 
-    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('The task could not be modified on the server');
-      } else {
-        if (runNow) {
-          dispatch(sendRunSample(sampleID, taskIndex));
-        }
-      }
-    });
+    if (runNow) {
+      dispatch(setQueueAndRun({ sampleID: queue[sampleID] }, [sampleID]));
+    }
   };
 }
 
@@ -575,6 +545,7 @@ export function sendToggleCheckBox(data, index) {
     });
   };
 }
+
 
 export function clearQueue() {
   return { type: 'CLEAR_QUEUE' };

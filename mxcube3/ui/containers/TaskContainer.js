@@ -16,7 +16,8 @@ import {
   clearQueue,
   appendSampleList,
   setQueueAndRun,
-  setCurrentSample
+  setCurrentSample,
+  setRunNow,
 } from '../actions/queue';
 
 import {
@@ -53,7 +54,9 @@ class TaskContainer extends React.Component {
           show={this.props.showForm === 'Characterisation'}
           rootPath={this.props.path}
           queue={this.props.queue}
+          sampleOrder={this.props.sampleOrder}
           sampleList={this.props.sampleList}
+          setRunNow={this.props.setRunNow}
         />
 
         <DataCollection
@@ -68,7 +71,9 @@ class TaskContainer extends React.Component {
           show={this.props.showForm === 'DataCollection'}
           rootPath={this.props.path}
           queue={this.props.queue}
+          sampleOrder={this.props.sampleOrder}
           sampleList={this.props.sampleList}
+          setRunNow={this.props.setRunNow}
         />
 
         <Helical
@@ -83,9 +88,10 @@ class TaskContainer extends React.Component {
           show={this.props.showForm === 'Helical'}
           rootPath={this.props.path}
           queue={this.props.queue}
+          sampleOrder={this.props.sampleOrder}
           sampleList={this.props.sampleList}
-          setQueueAndRun={this.props.setQueueAndRun}
           lines={this.props.lines}
+          setRunNow={this.props.setRunNow}
         />
 
         <AddSample
@@ -103,6 +109,7 @@ class TaskContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     queue: state.queue.queue,
+    sampleOrder: state.queue.sampleOrder,
     sampleList: state.queue.sampleList,
     showForm: state.taskForm.showForm,
     taskData: state.taskForm.taskData,
@@ -127,7 +134,8 @@ function mapDispatchToProps(dispatch) {
     addSample: bindActionCreators(addSample, dispatch),
     setCurrentSample: bindActionCreators(setCurrentSample, dispatch),
     selectSamples: bindActionCreators(selectAction, dispatch),
-    clearQueue: bindActionCreators(clearQueue, dispatch)
+    clearQueue: bindActionCreators(clearQueue, dispatch),
+    setRunNow: bindActionCreators(setRunNow, dispatch)
   };
 }
 
