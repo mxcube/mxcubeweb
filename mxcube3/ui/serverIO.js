@@ -124,10 +124,14 @@ class ServerIO {
     });
 
     this.hwrSocket.on('sc', (record) => {
-      this.dispatch(setLoading(record.signal === 'loadingSample',
+      this.dispatch(setLoading((record.signal === 'loadingSample' ||
+                                record.signal === 'loadedSample'),
                                'Loading sample',
                                record.message, true, () => (this.dispatch(sendStopQueue()))));
-      this.dispatch(setCurrentSample(record.location));
+
+      if (record.signal === 'loadReady') {
+        this.dispatch(setCurrentSample(record.location));
+      }
     });
 
     this.hwrSocket.on('sample_centring', (record) => {
