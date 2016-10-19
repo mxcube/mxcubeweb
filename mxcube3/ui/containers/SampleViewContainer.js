@@ -13,14 +13,14 @@ import SampleQueueContainer from './SampleQueueContainer';
 class SampleViewContainer extends Component {
 
   render() {
-    const { imageRatio, motorSteps, cinema } = this.props.sampleViewState;
+    const { imageRatio, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleId = this.props.current.node;
 
     return (
       <div className="row">
         <div className="col-xs-1"
-          style={{ 'margin-top': '0em', 'padding-right': '5px', 'padding-left': '1.5em' }}
+          style={ { 'margin-top': '0em', 'padding-right': '5px', 'padding-left': '1.5em' } }
         >
             <MotorControl
               save={sendMotorPosition}
@@ -30,9 +30,14 @@ class SampleViewContainer extends Component {
               stop={sendStopMotor}
             />
         </div>
-        <div className={cinema ? 'col-xs-9' : 'col-xs-8'}>
+        <div className="col-xs-11">
             <div className="row">
-              <div className="col-xs-12">
+              <div className="col-xs-9">
+                <BeamlineSetupContainer />
+              </div>
+            </div>
+            <div className="row" style={ { display: 'flex' } }>
+              <div className="col-xs-9">
                 <ContextMenu
                   {...this.props.contextMenu}
                   sampleActions={this.props.sampleViewActions}
@@ -42,7 +47,6 @@ class SampleViewContainer extends Component {
                   defaultParameters={this.props.defaultParameters}
                   imageRatio={imageRatio}
                 />
-                <BeamlineSetupContainer />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   {...this.props.sampleViewState}
@@ -51,10 +55,10 @@ class SampleViewContainer extends Component {
                   points={this.props.points.points}
                 />
               </div>
+              <div className="col-xs-3" style={ { display: 'flex' } }>
+                <SampleQueueContainer />
             </div>
-        </div>
-        <div className={cinema ? 'col-xs-2' : 'col-xs-3'}>
-          <SampleQueueContainer />
+            </div>
         </div>
       </div>
     );

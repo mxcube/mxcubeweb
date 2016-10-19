@@ -160,9 +160,9 @@ export function setStatus(queueState) {
 }
 
 
-export function collapseList(listName) {
+export function showList(listName) {
   return {
-    type: 'COLLAPSE_LIST',
+    type: 'SHOW_LIST',
     list_name: listName
   };
 }

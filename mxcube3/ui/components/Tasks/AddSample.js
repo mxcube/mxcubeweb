@@ -17,8 +17,14 @@ class AddSample extends React.Component {
 
 
   handleSubmit() {
-    this.props.add({ ...this.props.values, type: 'Sample',
-                     location: 'Manual', sampleID: this.props.id });
+    let prefix = this.props.values.sampleName ? this.props.values.sampleName : 'noname';
+
+    if (this.props.values.proteinAcronym && this.props.values.sampleName) {
+      prefix += `-${this.props.values.proteinAcronym}`;
+    }
+
+    this.props.add({ ...this.props.values, type: 'Sample', defaultPrefix: prefix,
+                     location: 'Manual', sampleID: this.props.id.toString() });
     this.props.hide();
   }
 
