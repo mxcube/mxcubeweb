@@ -84,7 +84,7 @@ export default class SampleQueueContainer extends React.Component {
     } = this.props.queueActions;
 
     return (
-      <div style={ { display: 'flex', flexDirection: 'column' } }>
+      <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
                   historyLength={history.nodes.length}
                   todoLength={todo.nodes.length}
