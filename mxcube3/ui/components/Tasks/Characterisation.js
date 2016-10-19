@@ -38,39 +38,7 @@ class Characterisation extends React.Component {
       'helical'
     ];
 
-    for (const key in parameters) {
-      if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
-        parameters[key] = Number(parameters[key]);
-      }
-    }
-
-    let sampleId = undefined;
-    let taskIndex = undefined;
-
-    if (this.props.sampleIds.constructor === Array) {
-      for (const sid of this.props.sampleIds) {
-        sampleId = sid;
-
-        if (this.props.queue[sampleId]) {
-          taskIndex = this.props.queue[sampleId].tasks.length;
-          this.props.addTask(sampleId, parameters);
-        } else {
-          const sampleData = this.props.sampleList[sampleId];
-          taskIndex = 0;
-          this.props.addSampleAndTask(sampleId, parameters, sampleData);
-        }
-      }
-    } else {
-      const { taskData, sampleIds } = this.props;
-      sampleId = sampleIds;
-      taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
-      this.props.changeTask(sampleId, taskIndex, parameters);
-    }
-
-    if (runNow) {
-      this.props.setRunNow(true, sampleId, taskIndex);
-    }
-
+    this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
