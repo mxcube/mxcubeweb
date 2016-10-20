@@ -10,6 +10,7 @@ export default class SampleImage extends React.Component {
   constructor(props) {
     super(props);
     this.setImageRatio = this.setImageRatio.bind(this);
+    this.setColorPoint = this.setColorPoint.bind(this);
     this.canvas = {};
   }
 
@@ -19,6 +20,11 @@ export default class SampleImage extends React.Component {
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', (option) => this.leftClick(option));
+
+    // Render color of points
+    this.canvas.on('before:selection:cleared', (o) => this.setColorPoint(o, false));
+    this.canvas.on('object:selected', (o) => this.setColorPoint(o, true));
+    this.canvas.on('selection:cleared', (o) => this.setColorPoint(o, false));
 
     // Bind rigthclick to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
@@ -45,6 +51,37 @@ export default class SampleImage extends React.Component {
   componentWillUnmount() {
     // Important to remove listener if component isn't active
     window.removeEventListener('resize', this.setImageRatio);
+  }
+
+  setColorPoint(o, selection) {
+    const shape = o.target;
+    if (shape && shape.type === 'group') {
+      shape.hasBorders = false;
+      shape.hasControls = false;
+      shape.forEachObject((p) => {
+        const point = p;
+        if (point.type === 'SAVED' || point.type === 'LINE') {
+          const color = selection ? '#88ff5b' : point.defaultColor;
+          const width = selection ? 4 : 2;
+          point.stroke = color;
+          point.text.stroke = color;
+          point.text.fill = color;
+          point.strokeWidth = width;
+        }
+      });
+    } else if (shape && shape.text) {
+      this.canvas.getObjects('SAVED').concat(
+      this.canvas.getObjects('LINE')).forEach((p) => {
+        const point = p;
+        const color = point.active ? '#88ff5b' : point.defaultColor;
+        const width = point.active ? 4 : 2;
+        point.stroke = color;
+        point.text.stroke = color;
+        point.text.fill = color;
+        point.hasControls = false;
+        point.strokeWidth = width;
+      });
+    }
   }
 
   setImageRatio() {
@@ -93,23 +130,68 @@ export default class SampleImage extends React.Component {
       }
     });
 
-    if (group && group.containsPoint(clickPoint) && group.getObjects().length === 2) {
+    if (group && group.containsPoint(clickPoint)) {
       const points = group.getObjects();
+      this.canvas.discardActiveGroup();
 
-      showContextMenu(true, {
-        type: 'GROUP',
-        id: {
-          p1: points[0].id,
-          p2: points[1].id
+      group.getObjects().forEach((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
         }
-      },
+      });
+
+      if (objectFound) {
+        group.getObjects().forEach((obj) => {
+          const shape = obj;
+          shape.active = true;
+        });
+        this.canvas.setActiveGroup(
+          new fabric.Group(
+            group.getObjects(),
+            { originX: 'center',
+            originY: 'center' }
+        ));
+        showContextMenu(true, {
+          type: 'GROUP',
+          id: {
+            p1: points[0].id,
+            p2: points[1].id
+          }
+        },
         e.offsetX, e.offsetY);
-    } else if (!objectFound) {
+      }
+    }
+
+    if (!objectFound) {
+      this.canvas.discardActiveGroup();
       showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
     }
   }
 
   leftClick(option) {
+    this.canvas.discardActiveGroup();
+    let objectFound = false;
+    if (option.target && option.target.type === 'group') {
+      const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
+      option.target.getObjects().forEach((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
+        }
+      });
+    }
+    if (objectFound) {
+      option.target.getObjects().forEach((obj) => {
+        const shape = obj;
+        shape.active = true;
+      });
+      this.canvas.setActiveGroup(
+        new fabric.Group(
+          option.target.getObjects(),
+          { originX: 'center',
+          originY: 'center' }
+      ));
+    }
+
     const {
       sampleActions,
       clickCentring,
@@ -192,12 +274,15 @@ export default class SampleImage extends React.Component {
       ...makeLines(lines, points, imageRatio)
     ];
     this.canvas.add(...fabricSelectables);
-    if (group && nextProps.contextMenuVisible) {
+    if (group) {
       const groupIDs = group.getObjects().map((shape) => shape.id);
       const selectedShapes = [];
-      fabricSelectables.forEach((shape) => {
+      fabricSelectables.forEach((obj) => {
+        const shape = obj;
         if (groupIDs.includes(shape.id)) {
           selectedShapes.push(shape);
+          this.setColorPoint(shape);
+          shape.active = true;
         }
       });
       this.canvas.setActiveGroup(
@@ -212,9 +297,11 @@ export default class SampleImage extends React.Component {
       fabricSelectables.forEach((shape) => {
         if (shape.id === selection.id) {
           this.canvas.setActiveObject(shape);
+          this.setColorPoint(shape);
         }
       });
     }
+    this.canvas.renderAll();
   }
 
 
