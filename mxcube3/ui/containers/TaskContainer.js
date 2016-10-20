@@ -9,15 +9,9 @@ import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 
 import {
-  addSampleAndTask,
   addTask,
   updateTask,
-  addSample,
-  clearQueue,
-  appendSampleList,
-  setQueueAndRun,
-  setCurrentSample,
-  setRunNow,
+  addSampleManualMount
 } from '../actions/queue';
 
 import {
@@ -33,11 +27,8 @@ class TaskContainer extends React.Component {
   }
 
   addSample(sampleData) {
-    this.props.clearQueue();
-    this.props.appendSampleList(sampleData);
-    this.props.addSample(sampleData);
+    this.props.addSampleManualMount(sampleData);
     this.props.selectSamples([sampleData.sampleID], true);
-    this.props.setCurrentSample(sampleData.sampleID);
   }
 
   addTask(params, stringFields, runNow) {
@@ -49,31 +40,12 @@ class TaskContainer extends React.Component {
       }
     }
 
-    let sampleId = undefined;
-    let taskIndex = undefined;
-
     if (this.props.sampleIds.constructor === Array) {
-      for (const sid of this.props.sampleIds) {
-        sampleId = sid;
-
-        if (this.props.queue[sampleId]) {
-          taskIndex = this.props.queue[sampleId].tasks.length;
-          this.props.addTask(sampleId, parameters);
-        } else {
-          const sampleData = this.props.sampleList[sampleId];
-          taskIndex = 0;
-          this.props.addSampleAndTask(sampleId, parameters, sampleData);
-        }
-      }
+      this.props.addTask(this.props.sampleIds, parameters, runNow);
     } else {
       const { taskData, sampleIds } = this.props;
-      sampleId = sampleIds;
-      taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
-      this.props.changeTask(sampleId, taskIndex, parameters);
-    }
-
-    if (runNow) {
-      this.props.setRunNow(true, sampleId, taskIndex);
+      const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
+      this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
     }
   }
 
@@ -144,16 +116,10 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-    addSampleAndTask: bindActionCreators(addSampleAndTask, dispatch),
-    addTask: bindActionCreators(addTask, dispatch),
-    setQueueAndRun: bindActionCreators(setQueueAndRun, dispatch),
-    appendSampleList: bindActionCreators(appendSampleList, dispatch),
-    changeTask: bindActionCreators(updateTask, dispatch),
-    addSample: bindActionCreators(addSample, dispatch),
-    setCurrentSample: bindActionCreators(setCurrentSample, dispatch),
     selectSamples: bindActionCreators(selectAction, dispatch),
-    clearQueue: bindActionCreators(clearQueue, dispatch),
-    setRunNow: bindActionCreators(setRunNow, dispatch)
+    updateTask: bindActionCreators(updateTask, dispatch),
+    addTask: bindActionCreators(addTask, dispatch),
+    addSampleManualMount: bindActionCreators(addSampleManualMount, dispatch),
   };
 }
 

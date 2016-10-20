@@ -39,7 +39,7 @@ export function sendClearQueue() {
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-     }
+      }
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to clear queue');
@@ -423,9 +423,16 @@ export function setQueueAndRun(queue, sampleOrder) {
 }
 
 
-export function setQueueAndRunTask(sampleID, taskIndex, queue) {
-  return function (dispatch) {
-    dispatch(sendSetQueue(queue)).then(() => {
+export function setQueueAndRunTask(sampleID, taskIndex) {
+  return function (dispatch, getState) {
+    const { queue } = getState();
+    let ti = taskIndex;
+
+    if (ti === undefined) {
+      ti = queue.queue[sampleID].tasks.length;
+    }
+
+    sendSetQueue(queue.queue, queue.sampleOrder).then(() => {
       dispatch(sendRunSample(sampleID, taskIndex));
     });
   };
@@ -449,54 +456,42 @@ export function addTaskAction(task) {
 }
 
 
-export function addTask(sampleID, parameters, queue, runNow) {
-  return function (dispatch) {
-    const task = { type: parameters.type,
-                   label: parameters.label,
-                   sampleID,
-                   parameters,
-                   checked: true };
+export function updateTaskAction(sampleID, taskIndex, params) {
+  return { type: 'UPDATE_TASK', sampleID, taskIndex, params };
+}
 
-    dispatch(addTaskAction(task));
+
+export function updateTask(sampleID, taskIndex, params, runNow) {
+  return function (dispatch) {
+    dispatch(updateTaskAction(sampleID, taskIndex, params));
 
     if (runNow) {
-      dispatch(setQueueAndRun([task], [sampleID]));
+      dispatch(setQueueAndRunTask(sampleID, taskIndex));
     }
   };
 }
 
 
-export function addSampleAndTask(sampleID, parameters, sampleData, queue, runNow) {
-  return function (dispatch) {
-    const data = { ...sampleData,
-                   checked: true,
-                   tasks: [{ type: parameters.type,
-                             label: parameters.type.split(/(?=[A-Z])/).join(' '),
-                             sampleID,
-                             parameters,
-                             checked: true }] };
+export function addTask(sampleIDList, parameters, runNow) {
+  return function (dispatch, getState) {
+    const { queue } = getState();
 
-    dispatch(addSampleAction(data));
+    for (const sampleID of sampleIDList) {
+      if (!queue.queue[sampleID]) {
+        dispatch(addSample(queue.sampleList[sampleID]));
+      }
 
-    if (runNow) {
-      dispatch(setQueueAndRun([data], [sampleID]));
+      const task = { type: parameters.type,
+                     label: parameters.label,
+                     sampleID,
+                     parameters,
+                     checked: true };
+
+      dispatch(addTaskAction(task));
     }
-  };
-}
 
-
-export function updateTaskAction(sampleID, taskIndex, taskData) {
-  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
-}
-
-
-export function updateTask(sampleID, taskIndex, params, queue, runNow) {
-  return function (dispatch) {
-    const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
-    dispatch(updateTaskAction(sampleID, taskIndex, taskData));
-
-    if (runNow) {
-      dispatch(setQueueAndRun({ sampleID: queue[sampleID] }, [sampleID]));
+    if (sampleIDList.length === 1 && runNow) {
+      dispatch(setQueueAndRunTask(sampleIDList[0]));
     }
   };
 }
@@ -549,4 +544,19 @@ export function sendToggleCheckBox(data, index) {
 
 export function clearQueue() {
   return { type: 'CLEAR_QUEUE' };
+}
+
+
+export function setunNow(run, sampleID, taskIndex) {
+  return { type: 'SET_RUN_NOW', run, sampleID, taskIndex };
+}
+
+
+export function addSampleManualMount(sampleData) {
+  return function (dispatch) {
+    dispatch(clearQueue());
+    dispatch(appendSampleList(sampleData));
+    dispatch(addSample(sampleData));
+    dispatch(setCurrentSample(sampleData.sampleID));
+  };
 }
