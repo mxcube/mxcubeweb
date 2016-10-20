@@ -74,7 +74,7 @@ export default class SampleControls extends React.Component {
       <div style={ { float: 'left', position: 'absolute', width: '100%', zIndex: 1000 } } >
         <div
           className="sample-controlls text-center"
-          style={ { marginLeft: 'auto', marginRight: 'auto', width: '1000px' } }
+          style={ { marginLeft: 'auto', marginRight: 'auto', width: '64em' } }
         >
           <ul className="bs-glyphicons-list">
           <li>
