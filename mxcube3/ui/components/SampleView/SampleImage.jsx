@@ -132,9 +132,8 @@ export default class SampleImage extends React.Component {
 
     if (group && group.containsPoint(clickPoint)) {
       const points = group.getObjects();
-      let pointInGroup = [];
       this.canvas.discardActiveGroup();
-      
+
       group.getObjects().forEach((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
@@ -142,35 +141,34 @@ export default class SampleImage extends React.Component {
       });
 
       if (objectFound) {
-        console.log(objectFound);
         group.getObjects().forEach((obj) => {
-          obj.active = true;
+          const shape = obj;
+          shape.active = true;
         });
         this.canvas.setActiveGroup(
           new fabric.Group(
             group.getObjects(),
-            {originX: 'center',
-            originY: 'center'}
+            { originX: 'center',
+            originY: 'center' }
         ));
         showContextMenu(true, {
-            type: 'GROUP',
-            id: {
-              p1: points[0].id,
-              p2: points[1].id
-            }
-          },
+          type: 'GROUP',
+          id: {
+            p1: points[0].id,
+            p2: points[1].id
+          }
+        },
         e.offsetX, e.offsetY);
-
       }
     }
 
     if (!objectFound) {
+      this.canvas.discardActiveGroup();
       showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
     }
   }
 
   leftClick(option) {
-    let pointInGroup = [];
     this.canvas.discardActiveGroup();
     let objectFound = false;
     if (option.target && option.target.type === 'group') {
@@ -183,13 +181,14 @@ export default class SampleImage extends React.Component {
     }
     if (objectFound) {
       option.target.getObjects().forEach((obj) => {
-        obj.active = true;
+        const shape = obj;
+        shape.active = true;
       });
       this.canvas.setActiveGroup(
         new fabric.Group(
           option.target.getObjects(),
-          {originX: 'center',
-          originY: 'center'}
+          { originX: 'center',
+          originY: 'center' }
       ));
     }
 
@@ -276,10 +275,10 @@ export default class SampleImage extends React.Component {
     ];
     this.canvas.add(...fabricSelectables);
     if (group) {
-      console.log("sdasda");
       const groupIDs = group.getObjects().map((shape) => shape.id);
       const selectedShapes = [];
-      fabricSelectables.forEach((shape) => {
+      fabricSelectables.forEach((obj) => {
+        const shape = obj;
         if (groupIDs.includes(shape.id)) {
           selectedShapes.push(shape);
           this.setColorPoint(shape);
