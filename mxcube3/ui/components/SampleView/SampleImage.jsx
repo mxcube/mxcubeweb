@@ -56,7 +56,7 @@ export default class SampleImage extends React.Component {
   setColorPoint(o, selection) {
     const shape = o.target;
     if (shape && shape.type === 'group') {
-      // shape.hasBorders = false;
+      shape.hasBorders = false;
       shape.hasControls = false;
       shape.forEachObject((p) => {
         const point = p;
@@ -79,7 +79,6 @@ export default class SampleImage extends React.Component {
         point.text.stroke = color;
         point.text.fill = color;
         point.hasControls = false;
-        shape.hasBorders = false;
         point.strokeWidth = width;
       });
     }
@@ -131,23 +130,69 @@ export default class SampleImage extends React.Component {
       }
     });
 
-    if (group && group.containsPoint(clickPoint) && group.getObjects().length === 2) {
+    if (group && group.containsPoint(clickPoint)) {
       const points = group.getObjects();
-
-      showContextMenu(true, {
-        type: 'GROUP',
-        id: {
-          p1: points[0].id,
-          p2: points[1].id
+      let pointInGroup = [];
+      this.canvas.discardActiveGroup();
+      
+      group.getObjects().forEach((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
         }
-      },
+      });
+
+      if (objectFound) {
+        console.log(objectFound);
+        group.getObjects().forEach((obj) => {
+          obj.active = true;
+        });
+        this.canvas.setActiveGroup(
+          new fabric.Group(
+            group.getObjects(),
+            {originX: 'center',
+            originY: 'center'}
+        ));
+        showContextMenu(true, {
+            type: 'GROUP',
+            id: {
+              p1: points[0].id,
+              p2: points[1].id
+            }
+          },
         e.offsetX, e.offsetY);
-    } else if (!objectFound) {
+
+      }
+    }
+
+    if (!objectFound) {
       showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
     }
   }
 
   leftClick(option) {
+    let pointInGroup = [];
+    this.canvas.discardActiveGroup();
+    let objectFound = false;
+    if (option.target && option.target.type === 'group') {
+      const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
+      option.target.getObjects().forEach((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
+        }
+      });
+    }
+    if (objectFound) {
+      option.target.getObjects().forEach((obj) => {
+        obj.active = true;
+      });
+      this.canvas.setActiveGroup(
+        new fabric.Group(
+          option.target.getObjects(),
+          {originX: 'center',
+          originY: 'center'}
+      ));
+    }
+
     const {
       sampleActions,
       clickCentring,
@@ -231,12 +276,14 @@ export default class SampleImage extends React.Component {
     ];
     this.canvas.add(...fabricSelectables);
     if (group) {
+      console.log("sdasda");
       const groupIDs = group.getObjects().map((shape) => shape.id);
       const selectedShapes = [];
       fabricSelectables.forEach((shape) => {
         if (groupIDs.includes(shape.id)) {
           selectedShapes.push(shape);
           this.setColorPoint(shape);
+          shape.active = true;
         }
       });
       this.canvas.setActiveGroup(
