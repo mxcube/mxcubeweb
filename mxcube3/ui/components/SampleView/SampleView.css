@@ -24,10 +24,14 @@
 }
 
 .sample-controlls{
-    opacity: 0.4;
-    background-color: transparent;
-    border-radius: 3px;
     z-index: 1000;
+    overflow: hidden;
+    width: 64em; 
+    margin-left: auto; 
+    margin-right: auto;
+    opacity: 0.4;
+    border-radius: 3px;
+    background-color: rgba(34, 34, 34, 0.4);
 }
 
 .sample-controlls:hover{

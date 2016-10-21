@@ -72,10 +72,7 @@ export default class SampleControls extends React.Component {
     const motors = this.props.motors;
     return (
       <div style={ { float: 'left', position: 'absolute', width: '100%', zIndex: 1000 } } >
-        <div
-          className="sample-controlls text-center"
-          style={ { marginLeft: 'auto', marginRight: 'auto', width: '64em' } }
-        >
+        <div className="sample-controlls text-center" >
           <ul className="bs-glyphicons-list">
           <li>
           <OverlayTrigger trigger="click" placement="top" rootClose overlay={
