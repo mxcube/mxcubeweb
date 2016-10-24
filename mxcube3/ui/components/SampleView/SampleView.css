@@ -24,11 +24,23 @@
 }
 
 .sample-controlls{
-    background-color: white;
-    border: 1px solid #AAA;
+    z-index: 1000;
+    overflow: hidden;
+    width: 64em; 
+    margin-left: auto; 
+    margin-right: auto;
+    opacity: 0.4;
     border-radius: 3px;
-    box-shadow: 0px 2px 3px 0px #AAA;
-    overflow: auto
+    background-color: rgba(34, 34, 34, 0.4);
+}
+
+.sample-controlls:hover{
+    opacity: 1;
+    transition: opacity .3s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+}
+
+.sample-controlls li{
+    border: 0px !important;
 }
 
 .sample-controlls-bottom{
@@ -112,6 +124,20 @@
     background-color: transparent !important;
 }
 
+.sample-controll{
+    font-size: 2.5em !important;
+    border: 0px !important;
+    color: #33BEFF !important;
+    background-color: transparent !important;
+    padding-bottom: 0px !important;
+}
+
+.sample-controll-label {
+    font-size: 1.1em !important;
+    font-weight: bold;
+    color: #33BEFF !important;
+}
+
 
 .overlay-box{
     position: absolute;
@@ -123,9 +149,9 @@
 }
 
 .overlay-arrow{
-    top: -11px;
-    border-width: 5px;
-        left: 50%;
+  top: -11px;
+  border-width: 5px;
+  left: 50%;
   position: absolute;
   width: 0; 
   height: 0;

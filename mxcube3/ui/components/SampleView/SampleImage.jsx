@@ -309,20 +309,20 @@ export default class SampleImage extends React.Component {
     return (
       <div>
         <div className="outsideWrapper" id="outsideWrapper">
-            <div className="insideWrapper" id="insideWrapper">
-                <img
-                  id= "sample-img"
-                  className="img"
-                  src="/mxcube/api/v0.1/sampleview/camera/subscribe"
-                  alt="SampleView"
-                />
-                <canvas id="canvas" className="coveringCanvas" />
-            </div>
+          <div className="insideWrapper" id="insideWrapper">
+            <SampleControls
+              {...this.props}
+              canvas={this.canvas}
+            />
+            <img
+              id= "sample-img"
+              className="img"
+              src="/mxcube/api/v0.1/sampleview/camera/subscribe"
+              alt="SampleView"
+            />
+            <canvas id="canvas" className="coveringCanvas" />
+          </div>
         </div>
-        <SampleControls
-          {...this.props}
-          canvas={this.canvas}
-        />
       </div>
     );
   }

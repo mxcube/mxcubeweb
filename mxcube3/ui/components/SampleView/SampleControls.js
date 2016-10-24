@@ -71,8 +71,9 @@ export default class SampleControls extends React.Component {
   render() {
     const motors = this.props.motors;
     return (
-        <div className="sample-controlls sample-controlls-bottom text-center">
-        <ul className="bs-glyphicons-list">
+      <div style={ { float: 'left', position: 'absolute', width: '100%', zIndex: 1000 } } >
+        <div className="sample-controlls text-center" >
+          <ul className="bs-glyphicons-list">
           <li>
           <OverlayTrigger trigger="click" placement="top" rootClose overlay={
             <Popover id="Aperture" title="Aperture">
@@ -99,7 +100,6 @@ export default class SampleControls extends React.Component {
             data-toggle="tooltip"
             title="Set Aperture"
             className="fa fa-2x fa-dot-circle-o sample-controll"
-            bsStyle="link"
           />
           </OverlayTrigger>
           <span className="sample-controll-label">Aperture</span>
@@ -111,9 +111,8 @@ export default class SampleControls extends React.Component {
             type="button"
             data-toggle="tooltip"
             title="Take snapshot"
-            className="fa fa-2x fa-camera sample-controll"
+            className="fa fa-camera sample-controll"
             onClick={this.takeSnapShot}
-            bsStyle="link"
             download
           />
           <span className="sample-controll-label">Snapshot</span>
@@ -123,8 +122,7 @@ export default class SampleControls extends React.Component {
             type="button"
             data-toggle="tooltip"
             title="Start auto centring"
-            className="fa fa-2x fa-arrows sample-controll"
-            bsStyle="link"
+            className="fa fa-arrows sample-controll"
             onClick={this.props.sampleActions.sendStartAutoCentring}
           />
           <span className="sample-controll-label">Auto-Centring</span>
@@ -134,8 +132,7 @@ export default class SampleControls extends React.Component {
             type="button"
             data-toggle="tooltip"
             title="Start 3-click Centring"
-            className="fa fa-2x fa-circle-o-notch sample-controll"
-            bsStyle="link"
+            className="fa fa-circle-o-notch sample-controll"
             onClick={this.toggleCentring}
             active={this.props.clickCentring}
           />
@@ -146,8 +143,7 @@ export default class SampleControls extends React.Component {
             type="button"
             data-toggle="tooltip"
             title="Zoom out"
-            className="fa fa-2x fa-search-minus sample-controll"
-            bsStyle="link"
+            className="fa fa-search-minus sample-controll"
             onClick={this.setZoom}
             name="zoomOut"
           />
@@ -180,8 +176,7 @@ export default class SampleControls extends React.Component {
               type="button"
               data-toggle="tooltip"
               title="Zoom in"
-              className="fa fa-2x fa-search-plus sample-controll"
-              bsStyle="link"
+              className="fa fa-search-plus sample-controll"
               onClick={this.setZoom}
               name="zoomIn"
             />
@@ -192,8 +187,7 @@ export default class SampleControls extends React.Component {
               type="button"
               data-toggle="tooltip"
               title="Backlight On/Off"
-              className="fa fa-2x fa-lightbulb-o sample-controll"
-              bsStyle="link"
+              className="fa fa-lightbulb-o sample-controll"
               onClick={this.toggleBackLight}
               active={motors.BackLightSwitch.Status === 1}
             />
@@ -216,8 +210,7 @@ export default class SampleControls extends React.Component {
               type="button"
               data-toggle="tooltip"
               title="Frontlight On/Off"
-              className="fa fa-2x fa-lightbulb-o sample-controll"
-              bsStyle="link"
+              className="fa fa-lightbulb-o sample-controll"
               onClick={this.toggleFrontLight}
               active={motors.FrontLightSwitch.Status === 1}
             />
@@ -236,7 +229,7 @@ export default class SampleControls extends React.Component {
             </li>
             </ul>
           </div>
-
+        </div>
         );
   }
 }
