@@ -74,13 +74,16 @@ class SampleGridContainer extends React.Component {
     document.addEventListener('click', this.onClick, false);
   }
 
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.queue.queue !== this.props.queue.queue) {
       this.props.setSampleOrderAction(nextProps.order);
     }
   }
 
+  componentWillUnmount() {
+    // Important to remove listener if component isn't active
+    document.removeEventListener('click', this.onClick);
+  }
 
   onClick(e) {
     let res = true;
