@@ -8,19 +8,49 @@ from mxcube3 import app as mxcube
 
 
 def lims_login(loginID, password):
-    login_res = mxcube.db_connection.login(loginID, password)
+    """
+    :param str loginID: Username
+    :param str password: Password
+    :returns dict: On the format:
+    
+      {'status': { 'code': 'ok', 'msg': msg }, 'Proposal': proposal,
+      'session': todays_session,
+      'local_contact': local_contact,
+      'person': Person,
+      'laboratory': Laboratory}
+    """
 
-    try:
-        mxcube.session.session_id = login_res['session']['session']['sessionId']
-        mxcube.session.proposal_code = login_res['Proposal']['code']
-        mxcube.session.proposal_number = login_res['Proposal']['number']
+    try: 
+        login_res = mxcube.db_connection.login(loginID, password)
     except:
-        logging.getLogger('HWR').info('[LIMS] Could not get LIMS session')
+        logging.getLogger('HWR').info('[LIMS] Could not login to LIMS')
 
     try:
         mxcube.rest_lims.authenticate(loginID, password)
     except:
         logging.getLogger('HWR').info('[LIMS-REST] Could not authenticate')
+
+    try:
+        mxcube.rest_lims.authenticate(loginID, password)
+        proplist = mxcube.rest_lims.get_proposals_by_user(loginID)
+
+        # Temporary fix until we have the user have the possibility to select
+        # proposal. If there is a proposal in the list use the first one,
+        # Otherwise use the one returned by login
+        if proplist:
+            proposal_code = proplist[0]['Proposal']['code']
+            proposal_number = proplist[0]['Proposal']['number']
+            session = proplist[0]['Proposal']['number']['Sessions'][0]
+        else:
+            proposal_code = login_res['Proposal']['code']
+            proposal_number = login_res['Proposal']['number']
+            session = login_res['session']['session']
+        
+        mxcube.session.session_id = session['sessionId']
+        mxcube.session.proposal_code = proposal_code
+        mxcube.session.proposal_number = proposal_number
+    except:
+        logging.getLogger('HWR').info('[LIMS] Could not get LIMS session')
 
     return login_res
 
