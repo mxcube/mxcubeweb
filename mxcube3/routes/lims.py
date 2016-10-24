@@ -13,7 +13,7 @@ def proposal_samples(proposal_id):
     for sample_info in samples_info_list:
         sample_info["limsID"] = sample_info.pop("sampleId")
         sample_info["limsLink"] = mxcube.rest_lims.sample_link()
-        sample_info["defaultPrefix"] = limsutils.get_default_prefix(sample_info, false)
+        sample_info["defaultPrefix"] = limsutils.get_default_prefix(sample_info, False)
         
         try:
             basket = int(sample_info["containerSampleChangerLocation"])
