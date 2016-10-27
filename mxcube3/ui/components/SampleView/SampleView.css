@@ -26,9 +26,7 @@
 .sample-controlls{
     z-index: 1000;
     overflow: hidden;
-    width: 64em; 
-    margin-left: auto; 
-    margin-right: auto;
+    margin: auto;
     opacity: 0.4;
     border-radius: 3px;
     background-color: rgba(34, 34, 34, 0.4);
@@ -179,10 +177,6 @@
     padding: 5px;
 }
 
-
-.input-sm{
-    width: 80px !important;
-}
 
 .inline{ 
   display: inline;
