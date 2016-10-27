@@ -12,6 +12,7 @@ export default class SampleImage extends React.Component {
     this.setImageRatio = this.setImageRatio.bind(this);
     this.setColorPoint = this.setColorPoint.bind(this);
     this.canvas = {};
+    this.state = { keyPressed: null };
   }
 
   componentDidMount() {
@@ -38,6 +39,15 @@ export default class SampleImage extends React.Component {
 
     // Add so that the canvas will resize if the window changes size
     window.addEventListener('resize', this.setImageRatio);
+    document.addEventListener('keydown', (event) => {
+      if (!this.state.keyPressed) {
+        this.setState({ keyPressed: event.key });
+      }
+    }, false);
+
+    document.addEventListener('keyup', () => {
+      this.setState({ keyPressed: null });
+    }, false);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -214,8 +224,8 @@ export default class SampleImage extends React.Component {
     e.stopPropagation();
     const { sampleActions, motorSteps, zoom, motors } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
-
-    if (e.ctrlKey && motors.phi.Status === 2) {
+    const keyPressed = this.state.keyPressed;
+    if (keyPressed === 'r' && motors.phi.Status === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -224,7 +234,7 @@ export default class SampleImage extends React.Component {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (e.altKey && motors.focus.Status === 2) {
+    } else if (keyPressed === 'f' && motors.focus.Status === 2) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
@@ -232,7 +242,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (!e.ctrlKey && !e.altKey && motors.zoom.Status === 2) {
+    } else if (keyPressed === 'z' && motors.zoom.Status === 2) {
       // in this case zooming
       if (e.deltaY > 0 && zoom < 10) {
         // zoom in
