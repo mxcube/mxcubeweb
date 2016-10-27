@@ -313,7 +313,7 @@ class SampleGridContainer extends React.Component {
   render() {
     const gridWidth = this.calcGridWidth();
     const innerSearchIcon = (
-      <DropdownButton bstyle="default" id="filter-drop-down">
+      <DropdownButton bstyle="default" id="filter-drop-down" title="">
         <div style={{ padding: '1em', width: '300px' }}>
           <b>Filter:</b>
           <form style={{ marginTop: '1em' }}>
@@ -396,7 +396,7 @@ class SampleGridContainer extends React.Component {
                 <span >Select: </span>
                 <OverlayTrigger
                   placement="top"
-                  overlay={(<Tooltip>Select samples</Tooltip>)}
+                  overlay={(<Tooltip id="select-samples">Select samples</Tooltip>)}
                 >
                   <ButtonGroup>
                     <Button eventKey="1" onClick={this.selectAllSamples}>
@@ -410,7 +410,7 @@ class SampleGridContainer extends React.Component {
                 <span style={{ marginLeft: '1em' }} ></span>
                 <OverlayTrigger
                   placement="top"
-                  overlay={(<Tooltip>Add Tasks</Tooltip>)}
+                  overlay={(<Tooltip id="add-tasks">Add Tasks</Tooltip>)}
                 >
                   <DropdownButton
                     disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
@@ -432,7 +432,7 @@ class SampleGridContainer extends React.Component {
                 <span style={{ marginLeft: '1em' }} ></span>
                 <OverlayTrigger
                   placement="top"
-                  overlay={(<Tooltip>Remove Tasks</Tooltip>)}
+                  overlay={(<Tooltip id="remove-task">Remove Tasks</Tooltip>)}
                 >
                   <DropdownButton
                     disabled={this.props.queue.queueStatus === QUEUE_RUNNING}

@@ -90,7 +90,7 @@ export default (state = initialState, action) => {
             {
               ...state.queue[action.sampleID].tasks[action.taskIndex],
               checked: false,
-              limsID: action.limsID,
+              limsResultData: action.limsResultData,
               state: action.state
             },
             ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)

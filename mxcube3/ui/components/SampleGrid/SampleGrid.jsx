@@ -278,6 +278,7 @@ export default class SampleGrid extends React.Component {
 
         sampleGrid.push(
           <SampleGridItem
+            key={i}
             ref={i}
             seqId={this.props.order[key]}
             itemKey={key}
