@@ -19,16 +19,19 @@ def lims_login(loginID, password):
       'person': Person,
       'laboratory': Laboratory}
     """
-
+    login_res = {}
+    
     try: 
         login_res = mxcube.db_connection.login(loginID, password)
     except:
         logging.getLogger('HWR').info('[LIMS] Could not login to LIMS')
+        return login_res
 
     try:
         mxcube.rest_lims.authenticate(loginID, password)
     except:
         logging.getLogger('HWR').info('[LIMS-REST] Could not authenticate')
+        return login_res
 
     try:
         mxcube.rest_lims.authenticate(loginID, password)
@@ -36,7 +39,7 @@ def lims_login(loginID, password):
 
         # Temporary fix until we have the user have the possibility to select
         # proposal. If there is a proposal in the list use the first one,
-        # Otherwise use the one returned by login
+        # Otherwise use the one returned by db_connection.login
         if proplist:
             proposal_code = proplist[0]['Proposal']['code']
             proposal_number = proplist[0]['Proposal']['number']
