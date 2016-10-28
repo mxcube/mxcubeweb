@@ -1,4 +1,3 @@
-import time
 import json
 import logging
 import signals
@@ -13,28 +12,6 @@ from mxcube3 import socketio
 from . import qutils
 
 qm = QueueManager.QueueManager('Mxcube3')
-
-
-def init_signals(queue):
-    """Initialize hwobj signals."""
-    for signal in signals.collect_signals:
-        mxcube.collect.connect(mxcube.collect, signal,
-                               signals.task_event_callback)
-    mxcube.collect.connect(mxcube.collect, 'collectOscillationStarted',
-                           signals.collect_oscillation_started)
-    mxcube.collect.connect(mxcube.collect, 'collectOscillationFailed',
-                           signals.collect_oscillation_failed)
-    mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
-                           signals.collect_oscillation_finished)
-    queue.connect(queue, 'child_added', qutils.add_diffraction_plan)
-
-    queue.queue_hwobj.connect("queue_execute_started",
-                              signals.queue_execution_started)
-
-    queue.queue_hwobj.connect("queue_execution_finished",
-                              signals.queue_execution_finished)
-
-    queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])

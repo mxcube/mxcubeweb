@@ -57,6 +57,22 @@ def node_index(node):
     return {'sample': sample, 'idx': index, 'queue_id': node._node_id}
 
 
+def load_queue_from_dict(queue_dict):
+    """
+    Loads the queue in queue_dict in to the current mxcube queue (mxcube.queue)
+
+    :param dict queue_dict: Queue dictionary, on the same format as returned by
+                            queue_to_dict
+    """
+    if queue_dict:
+        item_list = []
+
+        for sid in queue_dict['sample_order']:
+            item_list.append(queue_dict[sid])
+            
+        queue_add_item(item_list)
+
+
 def queue_to_dict(node=None):
     """
     Returns the dictionary representation of the queue
@@ -65,11 +81,17 @@ def queue_to_dict(node=None):
                           nothing is passed.
 
     :returns: dictionary on the form:
-              { sampleID_1: [task1, ... taskn]
-                .
-                .
-                .
-                sampleID_n: [task1, ... taskn] }
+              { sampleID_1:{ sampleID_1: sid_1,
+                             queueID: qid_1,
+                             location: location_n
+                             tasks: [task1, ... taskn]},
+                             .
+                             .
+                             .
+                sampleID_N:{ sampleID_N: sid_N,
+                             queueID: qid_N,
+                             location: location_n,
+                             tasks: [task1, ... taskn]}
 
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (DataCollection, Chracterisation, Sample). The
@@ -79,7 +101,7 @@ def queue_to_dict(node=None):
     if not node:
         node = mxcube.queue.get_model_root()
 
-    return reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+    return reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
 
 
 def queue_to_json(node=None):
@@ -90,12 +112,18 @@ def queue_to_json(node=None):
                           nothing is passed.
 
     :returns: json str on the form:
-              { sampleID_1: [task1, ... taskn]
+              [ { sampleID_1: sid_1,
+                  queueID: qid_1,
+                  location: location_n
+                  tasks: [task1, ... taskn]},
                 .
                 .
                 .
-                sampleID_n: [task1, ... taskn] }
-
+                { sampleID_N: sid_N,
+                  queueID: qid_N,
+                  location: location_n,
+                  tasks: [task1, ... taskn]} ]
+    
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (Datacollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
@@ -104,7 +132,7 @@ def queue_to_json(node=None):
     if not node:
         node = mxcube.queue.get_model_root()
     
-    res = reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+    res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
     return json.dumps(res, sort_keys=True, indent=4)
 
 
@@ -121,13 +149,14 @@ def queue_to_json_response(node=None):
     if not node:
         node = mxcube.queue.get_model_root()
     
-    res = reduce(lambda x, y: x.update(y) or x, queue_to_json_rec(node), {})
+    res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
     return jsonify(res)
 
 
 def _handle_dc(sample_id, node):
     parameters = node.as_dict()
     parameters["point"] = node.get_point_index()
+    parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
 
     parameters.pop('sample')
     parameters.pop('acquisitions')
@@ -161,26 +190,44 @@ def _handle_char(sample_id, node):
 
     return res
 
+def _handle_sample(node):
+    location = 'Manual' if node.free_pin_mode else node.loc_str
+    
+    return {node.loc_str: {'sampleID': node.loc_str,
+                           'queueID': node._node_id,
+                           'location': location,
+                           'type': 'Sample',
+                           'tasks': queue_to_dict_rec(node)}}
 
-def queue_to_json_rec(node):
+
+def queue_to_dict_rec(node):
     """
     Parses node recursively and builds a representation of the queue based on
     python dictionaries.
 
     :param TaskNode node: The node to parse
     :returns: A list on the form:
-              [ {sampleID_1: [task1, ... taskn]},
+              [ { sampleID_1: sid_1,
+                  queueID: qid_1,
+                  location: location_n
+                  tasks: [task1, ... taskn]},
                 .
-                . 
-                {sampleID_N: [task1, ... taskn]} ]
+                .
+                .
+                { sampleID_N: sid_N,
+                  queueID: qid_N,
+                  location: location_n,
+                  tasks: [task1, ... taskn]} ]
     """
     result = []
 
     for node in node.get_children():
         if isinstance(node, qmo.Sample):
-            result.append({node.loc_str: {'sampleID': node.loc_str,
-                                          'queueID': node._node_id,
-                                          'tasks': queue_to_json_rec(node)}})
+            if len(result) == 0:
+                result = [{'sample_order': []}]
+            
+            result.append(_handle_sample(node))
+            result[0]['sample_order'].append(node.loc_str)
         elif isinstance(node, qmo.Characterisation):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_char(sample_id, node))
@@ -188,7 +235,8 @@ def queue_to_json_rec(node):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_dc(sample_id, node))
         else:
-            result.extend(queue_to_json_rec(node))
+            result.extend(queue_to_dict_rec(node))
+
 
     return result
 
@@ -360,7 +408,7 @@ def set_dc_params(model, entry, task_data):
 
     # If there is a centered position associated with this data collection, get
     # the necessary data for the position and pass it to the collection.
-    if int(params["point"]) > 0:
+    if params["point"]:
         for cpos in mxcube.diffractometer.savedCentredPos:
             if cpos['posId'] == int(params['point']):
                 _cpos = qmo.CentredPosition(cpos['motor_positions'])
@@ -369,13 +417,15 @@ def set_dc_params(model, entry, task_data):
 
     if params["helical"]:
         model.experiment_type = qme.EXPERIMENT_TYPE.HELICAL
-        if int(params["p1"]) > 0:
+
+        if params["p1"]:
             for cpos in mxcube.diffractometer.savedCentredPos:
                 if cpos['posId'] == int(params['p1']):
                     _cpos = qmo.CentredPosition(cpos['motor_positions'])
                     _cpos.index = int(params['p1'])
                     acq.acquisition_parameters.centred_position = _cpos
-        if int(params["p2"]) > 0:
+
+        if params["p2"]:
             acq2 = qmo.Acquisition()
             for cpos in mxcube.diffractometer.savedCentredPos:
                 if cpos['posId'] == int(params['p2']):
@@ -497,30 +547,48 @@ def add_data_collection(node_id, task):
     return dc_model._node_id
 
 
-def save_queue(session, redis=redis.Redis()):
-    proposal_id = Utils._proposal_id(session)
-    if proposal_id is not None:
-        redis.set("mxcube:queue:%d" % proposal_id, pickle.dumps(mxcube.queue))
-
-
-def new_queue(serialized_queue=None):
-    if not serialized_queue:
-        serialized_queue = mxcube.empty_queue
-    queue = pickle.loads(serialized_queue)
-    import Queue
-    Queue.init_signals(queue)
-
+def new_queue():
+    """
+    Creates a new queue
+    :returns: MxCuBE QueueModel Object
+    """
+    queue = pickle.loads(mxcube.empty_queue)
+    init_signals(queue)
     return queue
 
 
-def get_queue(session, redis=redis.Redis()):
+def save_queue(session, redis=redis.Redis()):
+    """
+    Saves the current mxcube queue (mxcube.queue) into a redis database.
+    The queue that is saved is the pickled result returned by queue_to_dict
+
+    :param session: Session to save queue for
+    :param redis: Redis database
+    
+    """
     proposal_id = Utils._proposal_id(session)
+    
+    if proposal_id is not None:
+        # List of samples dicts (containing tasks) sample and tasks have same
+        # order as the in queue HO
+        queue = queue_to_dict(mxcube.queue.get_model_root())
+        redis.set("mxcube:queue:%d" % proposal_id, pickle.dumps(queue))
+
+
+def load_queue(session, redis=redis.Redis()):
+    """
+    Loads the queue belonging to session <session> into redis db <redis>
+
+    :param session: Session for queue to load
+    :param redis: Redis database
+    
+    """
+    proposal_id = Utils._proposal_id(session)
+
     if proposal_id is not None:
         serialized_queue = redis.get("mxcube:queue:%d" % proposal_id)
-    else:
-        serialized_queue = None
-
-    return new_queue(serialized_queue)
+        queue = pickle.loads(serialized_queue)
+        load_queue_from_dict(queue)
 
 
 def add_diffraction_plan(parent, child):
@@ -561,3 +629,29 @@ def add_diffraction_plan(parent, child):
             msg['parameters']['typePrefix'] = 'P'
             # TODO: add saved centring pos id, centred_position is removed in _handle_dc
             socketio.emit('add_task', msg, namespace='/hwr')
+
+
+def init_signals(queue):
+    """
+    Initialize queue hwobj related signals.
+    """
+    import signals
+
+    for signal in signals.collect_signals:
+        mxcube.collect.connect(mxcube.collect, signal,
+                               signals.task_event_callback)
+    mxcube.collect.connect(mxcube.collect, 'collectOscillationStarted',
+                           signals.collect_oscillation_started)
+    mxcube.collect.connect(mxcube.collect, 'collectOscillationFailed',
+                           signals.collect_oscillation_failed)
+    mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
+                           signals.collect_oscillation_finished)
+    queue.connect(queue, 'child_added', add_diffraction_plan)
+
+    queue.queue_hwobj.connect("queue_execute_started",
+                              signals.queue_execution_started)
+
+    queue.queue_hwobj.connect("queue_execution_finished",
+                              signals.queue_execution_finished)
+
+    queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
