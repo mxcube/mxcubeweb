@@ -29,6 +29,7 @@ export class SampleGridItem extends React.Component {
     this.taskTitle = this.taskTitle.bind(this);
     this.taskStateClass = this.taskStateClass.bind(this);
     this.handleClick = this.handleClick.bind(this);
+    this.taskResult = this.taskResult.bind(this);
   }
 
 
@@ -103,7 +104,7 @@ export class SampleGridItem extends React.Component {
     const pickButton = (
       <OverlayTrigger
         placement="top"
-        overlay={(<Tooltip>Pick/Unpick sample for collect</Tooltip>)}
+        overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
       >
         <button
           className="samples-grid-item-button"
@@ -119,7 +120,10 @@ export class SampleGridItem extends React.Component {
     const moveButton = (
       <OverlayTrigger
         placement="top"
-        overlay={(<Tooltip>Move sample (change order in which sample is collected)</Tooltip>)}
+        overlay={(
+          <Tooltip id="move-sample">
+            Move sample (change order in which sample is collected)
+          </Tooltip>)}
       >
         <button
           className="samples-grid-item-button"
@@ -133,7 +137,7 @@ export class SampleGridItem extends React.Component {
     const collectButton = (
       <OverlayTrigger
         placement="top"
-        overlay={(<Tooltip>Mount and collect THIS sample now</Tooltip>)}
+        overlay={(<Tooltip id="mount-and-collect" >Mount and collect THIS sample now</Tooltip>)}
       >
         <button
           className="samples-grid-item-button"
@@ -334,7 +338,7 @@ export class SampleGridItem extends React.Component {
     return (
       <div>
         <div className="row">
-          <span style={{ 'padding-bottom': '0.5em' }} className="col-sm-12">
+          <span style={{ paddingBottom: '0.5em' }} className="col-sm-12">
             <b>Path: {filePath}</b>
           </span>
           <span className="col-sm-3">Oscillation range:</span>
@@ -361,6 +365,80 @@ export class SampleGridItem extends React.Component {
    );
   }
 
+
+  taskResult(task) {
+    let content = (<div></div>);
+    let lImageUrl = '';
+    let fImageUrl = '';
+
+    const r = task.limsResultData;
+    if (task.limsResultData && Object.keys(task.limsResultData).length > 0) {
+      if (task.limsResultData.firstImageId) {
+        fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
+        fImageUrl += task.limsResultData.firstImageId.toString();
+      }
+
+      if (task.limsResultData.lastImageId) {
+        lImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
+        lImageUrl += task.limsResultData.lastImageId.toString();
+      }
+
+      const sFlux = parseInt(r.flux, 10) / Math.pow(10, 9);
+      const eFlux = parseInt(r.flux_end, 10) / Math.pow(10, 9);
+
+      content = (
+        <div>
+          <div
+            className="row"
+            style={ { paddingLeft: '1em', paddingTop: '1em', paddingBottom: '0.2em' } }
+          >
+            <b>Status: {r.runStatus}</b>
+          </div>
+
+          <div className="row">
+            <span className="col-sm-3">Resolution at collect</span>
+            <span className="col-sm-3">{`${r.resolution} Å`}</span>
+            <span className="col-sm-3">Resolution at corner:</span>
+            <span className="col-sm-3">{`${r.resolutionAtCorner} Å`}</span>
+          </div>
+
+          <div className="row">
+            <span className="col-sm-3">Wavelength</span>
+            <span className="col-sm-3">{`${r.wavelength} Å`}</span>
+            <span className="col-sm-3"> </span>
+            <span className="col-sm-3"> </span>
+          </div>
+
+          <div className="row" style={ { paddingTop: '1em' } }>
+            <span className="col-sm-2">Start time:</span>
+            <span className="col-sm-4">{r.startTime}</span>
+            <span className="col-sm-2">End time</span>
+            <span className="col-sm-4">{r.endTime}</span>
+          </div>
+
+          <div className="row">
+            <span className="col-sm-2">Flux at start:</span>
+            <span className="col-sm-4">{sFlux}e+9 (Giga) ph/s</span>
+            <span className="col-sm-2">Flux at end</span>
+            <span className="col-sm-4">{eFlux}e+9 (Giga) ph/s</span>
+          </div>
+
+          <div className="row" style={ { paddingTop: '0.5em' } } >
+            <span className="col-sm-6">
+              <b>First image: </b>
+              <img ref="fimage" alt="First" src={fImageUrl} />
+            </span>
+            <span className="col-sm-6">
+              <b>Last image: </b>
+              <img ref="limage" alt="Last" src={lImageUrl} />
+            </span>
+          </div>
+        </div>
+      );
+    }
+
+    return content;
+  }
 
   taskTitle(task) {
     const point = task.parameters.point !== -1 ? ` at P-${task.parameters.point}` : '';
@@ -389,7 +467,7 @@ export class SampleGridItem extends React.Component {
 
   popoverPosition() {
     const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    let result = 'top';
+    let result = 'bottom';
 
     if (this.refs.sampleItem) {
       if (parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
@@ -435,6 +513,7 @@ export class SampleGridItem extends React.Component {
         <div className={scLocationClasses}>{this.props.location}</div>
         <div style={{ display: 'block', clear: 'both' }}>
         <OverlayTrigger
+          ref="sampleInfoPopoverTrigger"
           placement={this.popoverPosition()}
           overlay={(
             <Popover title={(<b>{this.sampleDisplayName()}</b>)}>
@@ -471,26 +550,29 @@ export class SampleGridItem extends React.Component {
                 };
 
                 content = (
-                  <OverlayTrigger
-                    placement={this.popoverPosition()}
-                    overlay={(
-                      <Popover
-                        style={{ 'min-width': '700px !important', 'padding-bottom': '1em' }}
-                        title={(<b>{this.taskTitle(tag)}</b>)}
+                  <div key={i}>
+                    <OverlayTrigger
+                      ref="taskSummaryPopoverTrigger"
+                      placement={this.popoverPosition()}
+                      overlay={(
+                        <Popover
+                          style={{ minWidth: '700px !important', paddingBottom: '1em' }}
+                          title={(<b>{this.taskTitle(tag)}</b>)}
+                        >
+                           {this.taskSummary(tag)}
+                           {this.taskResult(tag)}
+                        </Popover>) }
+                    >
+                      <span
+                        className={`${this.taskStateClass(tag)} label`}
+                        style={style}
+                        onClick={showForm}
                       >
-                         {this.taskSummary(tag)}
-                      </Popover>) }
-                  >
-                   <span
-                     key={i}
-                     className={`${this.taskStateClass(tag)} label`}
-                     style={style}
-                     onClick={showForm}
-                   >
-                      {this.taskTagName(tag.type)}
-                      <i className="fa fa-times" onClick={deleteTask} />
-                   </span>
-                  </OverlayTrigger>
+                        {this.taskTagName(tag.type)}
+                        <i className="fa fa-times" onClick={deleteTask} />
+                      </span>
+                    </OverlayTrigger>
+                  </div>
                 );
               }
 

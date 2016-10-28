@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from flask import jsonify
+import StringIO
+
+from flask import jsonify, Response, send_file
 from mxcube3 import app as mxcube
 from . import limsutils
 
@@ -13,7 +15,7 @@ def proposal_samples(proposal_id):
     for sample_info in samples_info_list:
         sample_info["limsID"] = sample_info.pop("sampleId")
         sample_info["limsLink"] = mxcube.rest_lims.sample_link()
-        sample_info["defaultPrefix"] = limsutils.get_default_prefix(sample_info, false)
+        sample_info["defaultPrefix"] = limsutils.get_default_prefix(sample_info, False)
         
         try:
             basket = int(sample_info["containerSampleChangerLocation"])
@@ -26,3 +28,17 @@ def proposal_samples(proposal_id):
                 sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
 
     return jsonify({"samples_info": samples_info_list})
+
+
+@mxcube.route("/mxcube/api/v0.1/lims/dc/thumbnail/<image_id>", methods=['GET'])
+def get_dc_thumbnail(image_id):
+    fname, data = mxcube.rest_lims.get_dc_thumbnail(image_id)
+    data = StringIO.StringIO(data)
+    data.seek(0)    
+    return send_file(data, attachment_filename=fname, as_attachment=True)
+
+
+@mxcube.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=['GET'])
+def get_dc(dc_id):
+    data = mxcube.rest_lims.get_dc_(dc_id)
+    return jsonify(data)

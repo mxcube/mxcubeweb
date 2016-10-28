@@ -530,8 +530,8 @@ export function updateTask(sampleID, taskIndex, params, queue, runNow) {
 }
 
 
-export function addTaskResultAction(sampleID, taskIndex, state, progress, limsID) {
-  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress, limsID };
+export function addTaskResultAction(sampleID, taskIndex, state, progress, limsResultData) {
+  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress, limsResultData };
 }
 
 
