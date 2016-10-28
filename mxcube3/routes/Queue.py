@@ -107,7 +107,7 @@ def queue_clear():
     """
     mxcube.diffractometer.savedCentredPos = []
     mxcube.queue = qutils.new_queue()
-    qutils.save_queue(session)
+    #qutils.save_queue(session)
     logging.getLogger('HWR').info('[QUEUE] Cleared  ' +
                                   str(mxcube.queue.get_model_root()._name))
     return Response(status=200)
@@ -164,7 +164,7 @@ def execute_entry_with_id(sid, tindex):
 def queue_add_item():
      qutils.queue_add_item(request.get_json())
      #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-     qutils.save_queue(session)
+     #qutils.save_queue(session)
      return Response(status=200)
 
 
@@ -186,7 +186,7 @@ def queue_update_item(sid, tindex):
         qutils.set_char_params(model, entry, data)
 
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    qutils.save_queue(session)
+    #qutils.save_queue(session)
     return Response(status=200)
 
 
@@ -209,7 +209,7 @@ def queue_delete_item(sid, tindex):
     qutils.delete_entry(entry)
 
     #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    qutils.save_queue(session)
+    #qutils.save_queue(session)
     return Response(status=200)
 
 
@@ -217,7 +217,7 @@ def queue_delete_item(sid, tindex):
 def queue_swap_task_item(sid, ti1, ti2):
     qutils.swap_task_entry(sid, int(ti1), int(ti2))
     #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    qutils.save_queue(session)
+    #qutils.save_queue(session)
     return Response(status=200) 
    
 
@@ -244,7 +244,7 @@ def update_sample(sample_id):
         # TODO: update here the model with the new 'params'
         # missing lines...
         sample_entry.set_data_model(sample_node)
-        qutils.save_queue(session)
+        #qutils.save_queue(session)
         logging.getLogger('HWR').info('[QUEUE] sample updated')
         resp = jsonify({'QueueId': node_id})
         resp.status_code = 200
@@ -352,7 +352,7 @@ def add_centring(id):
 
     logging.getLogger('HWR').info('[QUEUE] centring added to sample')
 
-    qutils.save_queue(session)
+    #qutils.save_queue(session)
 
     resp = jsonify({'QueueId': new_node,
                     'Type': 'Centring',
