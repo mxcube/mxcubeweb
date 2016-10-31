@@ -11,6 +11,8 @@ export default class SampleImage extends React.Component {
     super(props);
     this.setImageRatio = this.setImageRatio.bind(this);
     this.setColorPoint = this.setColorPoint.bind(this);
+    this.keyDown = this.keyDown.bind(this);
+    this.keyUp = this.keyUp.bind(this);
     this.canvas = {};
     this.state = { keyPressed: null };
   }
@@ -39,15 +41,8 @@ export default class SampleImage extends React.Component {
 
     // Add so that the canvas will resize if the window changes size
     window.addEventListener('resize', this.setImageRatio);
-    document.addEventListener('keydown', (event) => {
-      if (!this.state.keyPressed) {
-        this.setState({ keyPressed: event.key });
-      }
-    }, false);
-
-    document.addEventListener('keyup', () => {
-      this.setState({ keyPressed: null });
-    }, false);
+    document.addEventListener('keydown', this.keyDown, false);
+    document.addEventListener('keyup', this.keyUp, false);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,6 +55,8 @@ export default class SampleImage extends React.Component {
 
   componentWillUnmount() {
     // Important to remove listener if component isn't active
+    document.removeEventListener('keydown', this.keyDown);
+    document.removeEventListener('keyup', this.keyUp);
     window.removeEventListener('resize', this.setImageRatio);
   }
 
@@ -97,6 +94,17 @@ export default class SampleImage extends React.Component {
   setImageRatio() {
     this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
   }
+
+  keyDown(event) {
+    if (!this.state.keyPressed) {
+      this.setState({ keyPressed: event.key });
+    }
+  }
+
+  keyUp() {
+    this.setState({ keyPressed: null });
+  }
+
   goToBeam(e) {
     const { sampleActions, imageRatio } = this.props;
     const { sendGoToBeam } = sampleActions;
