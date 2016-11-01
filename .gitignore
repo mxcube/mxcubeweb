@@ -61,3 +61,5 @@ backend_server.js
 *~
 npm-debug.log*
 .DS_Store
+/dump.rdb
+/supervisord.pid
