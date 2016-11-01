@@ -10,7 +10,11 @@ export default class SampleImage extends React.Component {
   constructor(props) {
     super(props);
     this.setImageRatio = this.setImageRatio.bind(this);
+    this.setColorPoint = this.setColorPoint.bind(this);
+    this.keyDown = this.keyDown.bind(this);
+    this.keyUp = this.keyUp.bind(this);
     this.canvas = {};
+    this.state = { keyPressed: null };
   }
 
   componentDidMount() {
@@ -19,6 +23,11 @@ export default class SampleImage extends React.Component {
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', (option) => this.leftClick(option));
+
+    // Render color of points
+    this.canvas.on('before:selection:cleared', (o) => this.setColorPoint(o, false));
+    this.canvas.on('object:selected', (o) => this.setColorPoint(o, true));
+    this.canvas.on('selection:cleared', (o) => this.setColorPoint(o, false));
 
     // Bind rigthclick to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
@@ -32,6 +41,8 @@ export default class SampleImage extends React.Component {
 
     // Add so that the canvas will resize if the window changes size
     window.addEventListener('resize', this.setImageRatio);
+    document.addEventListener('keydown', this.keyDown, false);
+    document.addEventListener('keyup', this.keyUp, false);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -44,12 +55,56 @@ export default class SampleImage extends React.Component {
 
   componentWillUnmount() {
     // Important to remove listener if component isn't active
+    document.removeEventListener('keydown', this.keyDown);
+    document.removeEventListener('keyup', this.keyUp);
     window.removeEventListener('resize', this.setImageRatio);
+  }
+
+  setColorPoint(o, selection) {
+    const shape = o.target;
+    if (shape && shape.type === 'group') {
+      shape.hasBorders = false;
+      shape.hasControls = false;
+      shape.forEachObject((p) => {
+        const point = p;
+        if (point.type === 'SAVED' || point.type === 'LINE') {
+          const color = selection ? '#88ff5b' : point.defaultColor;
+          const width = selection ? 4 : 2;
+          point.stroke = color;
+          point.text.stroke = color;
+          point.text.fill = color;
+          point.strokeWidth = width;
+        }
+      });
+    } else if (shape && shape.text) {
+      this.canvas.getObjects('SAVED').concat(
+      this.canvas.getObjects('LINE')).forEach((p) => {
+        const point = p;
+        const color = point.active ? '#88ff5b' : point.defaultColor;
+        const width = point.active ? 4 : 2;
+        point.stroke = color;
+        point.text.stroke = color;
+        point.text.fill = color;
+        point.hasControls = false;
+        point.strokeWidth = width;
+      });
+    }
   }
 
   setImageRatio() {
     this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
   }
+
+  keyDown(event) {
+    if (!this.state.keyPressed) {
+      this.setState({ keyPressed: event.key });
+    }
+  }
+
+  keyUp() {
+    this.setState({ keyPressed: null });
+  }
+
   goToBeam(e) {
     const { sampleActions, imageRatio } = this.props;
     const { sendGoToBeam } = sampleActions;
@@ -93,23 +148,68 @@ export default class SampleImage extends React.Component {
       }
     });
 
-    if (group && group.containsPoint(clickPoint) && group.getObjects().length === 2) {
+    if (group && group.containsPoint(clickPoint)) {
       const points = group.getObjects();
+      this.canvas.discardActiveGroup();
 
-      showContextMenu(true, {
-        type: 'GROUP',
-        id: {
-          p1: points[0].id,
-          p2: points[1].id
+      group.getObjects().forEach((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
         }
-      },
+      });
+
+      if (objectFound) {
+        group.getObjects().forEach((obj) => {
+          const shape = obj;
+          shape.active = true;
+        });
+        this.canvas.setActiveGroup(
+          new fabric.Group(
+            group.getObjects(),
+            { originX: 'center',
+            originY: 'center' }
+        ));
+        showContextMenu(true, {
+          type: 'GROUP',
+          id: {
+            p1: points[0].id,
+            p2: points[1].id
+          }
+        },
         e.offsetX, e.offsetY);
-    } else if (!objectFound) {
+      }
+    }
+
+    if (!objectFound) {
+      this.canvas.discardActiveGroup();
       showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
     }
   }
 
   leftClick(option) {
+    this.canvas.discardActiveGroup();
+    let objectFound = false;
+    if (option.target && option.target.type === 'group') {
+      const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
+      option.target.getObjects().forEach((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
+        }
+      });
+    }
+    if (objectFound) {
+      option.target.getObjects().forEach((obj) => {
+        const shape = obj;
+        shape.active = true;
+      });
+      this.canvas.setActiveGroup(
+        new fabric.Group(
+          option.target.getObjects(),
+          { originX: 'center',
+          originY: 'center' }
+      ));
+    }
+
     const {
       sampleActions,
       clickCentring,
@@ -132,8 +232,8 @@ export default class SampleImage extends React.Component {
     e.stopPropagation();
     const { sampleActions, motorSteps, zoom, motors } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
-
-    if (e.ctrlKey && motors.phi.Status === 2) {
+    const keyPressed = this.state.keyPressed;
+    if (keyPressed === 'r' && motors.phi.Status === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -142,7 +242,7 @@ export default class SampleImage extends React.Component {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (e.altKey && motors.focus.Status === 2) {
+    } else if (keyPressed === 'f' && motors.focus.Status === 2) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
@@ -150,7 +250,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (!e.ctrlKey && !e.altKey && motors.zoom.Status === 2) {
+    } else if (keyPressed === 'z' && motors.zoom.Status === 2) {
       // in this case zooming
       if (e.deltaY > 0 && zoom < 10) {
         // zoom in
@@ -192,12 +292,15 @@ export default class SampleImage extends React.Component {
       ...makeLines(lines, points, imageRatio)
     ];
     this.canvas.add(...fabricSelectables);
-    if (group && nextProps.contextMenuVisible) {
+    if (group) {
       const groupIDs = group.getObjects().map((shape) => shape.id);
       const selectedShapes = [];
-      fabricSelectables.forEach((shape) => {
+      fabricSelectables.forEach((obj) => {
+        const shape = obj;
         if (groupIDs.includes(shape.id)) {
           selectedShapes.push(shape);
+          this.setColorPoint(shape);
+          shape.active = true;
         }
       });
       this.canvas.setActiveGroup(
@@ -212,9 +315,11 @@ export default class SampleImage extends React.Component {
       fabricSelectables.forEach((shape) => {
         if (shape.id === selection.id) {
           this.canvas.setActiveObject(shape);
+          this.setColorPoint(shape);
         }
       });
     }
+    this.canvas.renderAll();
   }
 
 
@@ -222,20 +327,20 @@ export default class SampleImage extends React.Component {
     return (
       <div>
         <div className="outsideWrapper" id="outsideWrapper">
-            <div className="insideWrapper" id="insideWrapper">
-                <img
-                  id= "sample-img"
-                  className="img"
-                  src="/mxcube/api/v0.1/sampleview/camera/subscribe"
-                  alt="SampleView"
-                />
-                <canvas id="canvas" className="coveringCanvas" />
-            </div>
+          <div className="insideWrapper" id="insideWrapper">
+            <SampleControls
+              {...this.props}
+              canvas={this.canvas}
+            />
+            <img
+              id= "sample-img"
+              className="img"
+              src="/mxcube/api/v0.1/sampleview/camera/subscribe"
+              alt="SampleView"
+            />
+            <canvas id="canvas" className="coveringCanvas" />
+          </div>
         </div>
-        <SampleControls
-          {...this.props}
-          canvas={this.canvas}
-        />
       </div>
     );
   }

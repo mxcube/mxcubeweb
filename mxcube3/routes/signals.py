@@ -172,7 +172,7 @@ def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params):
            'Message': task_signals['collectOscillationFailed'],
            'taskIndex' : last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'taskLimsID': lims_id,
+           'limstResultData': mxcube.rest_lims.get_dc(lims_id),
            'state': get_signal_result('collectOscillationFailed'),
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
@@ -189,7 +189,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
            'Message': task_signals['collectOscillationFinished'],
            'taskIndex': last_queue_node()['idx'] ,
            'sample': last_queue_node()['sample'],
-           'taskLimsID': lims_id,
+           'limsResultData': mxcube.rest_lims.get_dc(lims_id),
            'state': 2,
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
