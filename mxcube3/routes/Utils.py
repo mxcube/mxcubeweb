@@ -1,5 +1,22 @@
 import logging
 from mxcube3 import app as mxcube
+import time
+import gevent
+
+def RateLimited(maxPerSecond):
+    minInterval = 1.0 / float(maxPerSecond)
+    def decorate(func):
+        lastTimeCalled = [0.0]
+        def rateLimitedFunction(*args,**kargs):
+            elapsed = time.time() - lastTimeCalled[0]
+            leftToWait = minInterval - elapsed
+            if leftToWait>0:
+                gevent.sleep(leftToWait)
+            ret = func(*args,**kargs)
+            lastTimeCalled[0] = time.time()
+            return ret
+        return rateLimitedFunction
+    return decorate
 
 
 def _proposal_id(session):

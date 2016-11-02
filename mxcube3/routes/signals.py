@@ -242,6 +242,9 @@ def task_event_callback(*args, **kwargs):
     #     logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
+def motor_position_callback(motor, pos):
+   socketio.emit('motor_position', { 'name': motor, 'position': pos }, namespace='/hwr')
+
 def motor_event_callback(*args, **kwargs):
     # logging.getLogger('HWR').debug('[MOTOR CALLBACK]')
     # logging.getLogger("HWR").debug(kwargs)
