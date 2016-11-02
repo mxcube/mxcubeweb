@@ -8,7 +8,7 @@ import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
-
+import MachInfo from '../components/MachInfo/MachInfo';
 
 class SampleViewContainer extends Component {
 
@@ -34,6 +34,11 @@ class SampleViewContainer extends Component {
             <div className="row">
               <div className="col-xs-9">
                 <BeamlineSetupContainer />
+              </div>
+              <div className="col-xs-3">
+                <MachInfo
+                  info={this.props.machinfo}
+                />
               </div>
             </div>
             <div className="row" style={ { display: 'flex' } }>
@@ -73,6 +78,7 @@ function mapStateToProps(state) {
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     beamline: state.beamline,
+    machinfo: state.machinfo,
     defaultParameters: state.taskForm.defaultParameters,
     points: state.points
   };

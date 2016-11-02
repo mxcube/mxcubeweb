@@ -10,6 +10,7 @@ import { setBeamlineAttrAction } from './actions/beamline';
 import { setStatus, addTaskResultAction, addTaskAction, collapseTask } from './actions/queue';
 import { setLoading } from './actions/general';
 
+import { setMachInfo } from './actions/machinfo';
 
 export default class ServerIO {
 
@@ -65,6 +66,10 @@ export default class ServerIO {
 
     this.hwrSocket.on('beam_changed', (record) => {
       this.dispatch(setBeamInfo(record.Data));
+    });
+
+    this.hwrSocket.on('mach_info_changed', (info) => {
+      this.dispatch(setMachInfo(info));
     });
 
     this.hwrSocket.on('beamline_value_change', (data) => {

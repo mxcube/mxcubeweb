@@ -91,7 +91,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
-                        SampleCentring, SampleChanger, Diffractometer, lims)
+                        SampleCentring, SampleChanger, Diffractometer, lims,
+                        MachInfo)
 
     ### Install server-side UI state storage
     import state_storage
@@ -111,10 +112,16 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
 
+
         try:
             SampleCentring.init_signals()
             SampleChanger.init_signals()
             Beamline.init_signals()
+        except Exception:
+            sys.excepthook(*sys.exc_info())
+
+        try:
+            MachInfo.init(app.beamline)
         except Exception:
             sys.excepthook(*sys.exc_info())
 

@@ -69,6 +69,10 @@ motor_signals = {
     'stateChanged':                 'stateChanged'
 }
 
+mach_info_signals = {
+    'mach_info_changed':                 'mach_info_changed'
+}
+
 
 def get_signal_result(signal):
     result = 0
