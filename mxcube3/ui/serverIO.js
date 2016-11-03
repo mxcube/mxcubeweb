@@ -3,6 +3,7 @@ import { addLogRecord } from './actions/logger';
 import {
   updatePointsPosition,
   saveMotorPositions,
+  saveMotorPosition,
   setCurrentPhase,
   setBeamInfo
 } from './actions/sampleview';
@@ -61,6 +62,10 @@ export default class ServerIO {
           break;
         default:
       }
+    });
+
+    this.hwrSocket.on('motor_position', (record) => {
+      this.dispatch(saveMotorPosition(record.name, record.position));
     });
 
     this.hwrSocket.on('beam_changed', (record) => {
