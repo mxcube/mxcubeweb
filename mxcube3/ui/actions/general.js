@@ -39,7 +39,7 @@ export function getInitialStatus() {
   return function (dispatch) {
     const state = {};
 
-    const queue = fetch('mxcube/api/v0.1/queue', {
+    const queue = fetch('mxcube/api/v0.1/queue_state', {
       method: 'GET',
       credentials: 'include',
       headers: {
