@@ -376,11 +376,14 @@ export function sendMountSample(sampleID) {
 
 
 export function addSample(sampleData) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     const data = { ...sampleData, checked: true, tasks: [] };
-
+    const { queue } = getState();
     sendAddQueueItem([data]);
     dispatch(addSampleAction(data));
+    if (queue.manualMount.set) {
+      dispatch(sendMountSample(data.sampleID));
+    }
   };
 }
 

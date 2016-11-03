@@ -6,8 +6,8 @@ const initialState = {
   queue: {},
   current: { node: null, running: false },
   sampleOrder: [],
-  todo: { nodes: [] },
-  history: { nodes: [] },
+  todo: [],
+  history: [],
   searchString: '',
   queueStatus: 'QueueStopped',
   showRestoreDialog: false,
@@ -136,7 +136,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state,
         {
           displayData,
-          todo: { ...state.todo, nodes: state.todo.nodes.concat(sampleID) },
+          todo: [...state.todo, sampleID],
           queue: { ...state.queue, [sampleID]: { ...action.sampleData, state: 0 } },
           sampleOrder: [...state.sampleOrder, sampleID],
           manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
@@ -153,7 +153,7 @@ export default (state = initialState, action) => {
         // Removing sample from queue
     case 'REMOVE_SAMPLE':
       return Object.assign({}, state,
-        { todo: { ...state.todo, nodes: without(state.todo.nodes, action.sampleID) },
+        { todo: without(state.todo.nodes, action.sampleID),
           queue: omit(state.queue, action.sampleID),
           sampleOrder: without(state.sampleOrder, action.sampleID),
           displayData: omit(state.displayData, action.sampleID),
@@ -233,24 +233,15 @@ export default (state = initialState, action) => {
       return Object.assign({}, state,
         {
           current: { ...state.current, node: action.sampleID, running: false },
-          todo: { ...state.todo, nodes: without(state.todo.nodes, action.sampleID) },
-          history: { ...state.history,
-                     nodes: (state.current.node ?
-                             state.history.nodes.concat(state.current.node) : state.history.nodes)
-          }
+          todo: without(state.todo.nodes, action.sampleID),
+          history: [ ...state.history, state.current.node]
         }
       );
     case 'CLEAR_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { node: null, collapsed: false, running: false },
-          history: {
-            ...state.history,
-            nodes: (
-              state.current.node ?
-              state.history.nodes.concat(state.current.node) : state.history.nodes
-            )
-          }
+          history: [ ...state.history, state.current.node]
         }
       );
         // Run Sample
@@ -339,7 +330,11 @@ export default (state = initialState, action) => {
           ...state,
           rootPath: action.data.rootPath,
           manualMount: { set: state.manualMount.set, id: 1 },
-          queue: action.data.queue
+          queue: action.data.queue.queue,
+          todo: action.data.queue.todo,
+          history: action.data.queue.history,
+          sampleOrder: action.data.queue.sample_list,
+          current: {node: action.data.queue.loaded, running: false}
         };
       }
     default:

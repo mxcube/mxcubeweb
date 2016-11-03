@@ -86,8 +86,8 @@ export default class SampleQueueContainer extends React.Component {
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
-                  historyLength={history.nodes.length}
-                  todoLength={todo.nodes.length}
+                  historyLength={history.length}
+                  todoLength={todo.length}
                   currentNode={current.node}
                   queueStatus={queueStatus}
                   runQueue={sendRunQueue}
@@ -124,11 +124,11 @@ export default class SampleQueueContainer extends React.Component {
                   displayData={displayData}
                   manualMount={manualMount}
                   mount={sendMountSample}
-                  todoList={todo.nodes}
+                  todoList={todo}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
-                  list={todo.nodes}
+                  list={todo}
                   sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}
