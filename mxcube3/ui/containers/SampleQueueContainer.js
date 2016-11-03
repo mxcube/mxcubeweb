@@ -94,7 +94,7 @@ export default class SampleQueueContainer extends React.Component {
       collapseTask,
       collapseSample,
       deleteTask,
-      setCurrentSample
+      sendMountSample
     } = this.props.queueActions;
 
     return (
@@ -138,7 +138,7 @@ export default class SampleQueueContainer extends React.Component {
                   collapseTask={collapseTask}
                   displayData={displayData}
                   manualMount={manualMount}
-                  mount={setCurrentSample}
+                  mount={sendMountSample}
                   todoList={todo.nodes}
                 />
                 <TodoTree
@@ -148,7 +148,7 @@ export default class SampleQueueContainer extends React.Component {
                   queue={queue}
                   collapseSample={collapseSample}
                   displayData={displayData}
-                  mount={setCurrentSample}
+                  mount={sendMountSample}
                 />
                 <UserMessage
                   messages={this.props.userMessages}
