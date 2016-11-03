@@ -23,7 +23,6 @@ function mapStateToProps(state) {
     queueStatus: state.queue.queueStatus,
     history: state.queue.history,
     queue: state.queue.queue,
-    sampleOrder: state.queue.sampleOrder,
     sampleInformation: state.queue.sampleList,
     checked: state.queue.checked,
     select_all: state.queue.selectAll,
@@ -52,22 +51,12 @@ export default class SampleQueueContainer extends React.Component {
   constructor(props) {
     super(props);
     this.handleSelect = this.handleSelect.bind(this);
-    this.runQueue = this.runQueue.bind(this);
-    this.runSample = this.runSample.bind(this);
   }
 
   handleSelect(selectedKey) {
     this.props.queueActions.showList(selectedKey);
   }
 
-  runQueue() {
-    this.props.queueActions.setQueueAndRun(this.props.queue, this.props.sampleOrder);
-  }
-
-  runSample(sampleID) {
-    const queue = { sampleID: this.props.queue[sampleID] };
-    this.props.queueActions.setQueueAndRun(queue, this.props.sampleOrder);
-  }
 
   render() {
     const {
@@ -86,6 +75,8 @@ export default class SampleQueueContainer extends React.Component {
     } = this.props;
     const {
       sendToggleCheckBox,
+      sendRunSample,
+      sendRunQueue,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
@@ -100,12 +91,11 @@ export default class SampleQueueContainer extends React.Component {
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
-                  ref="queueContainer"
-                  historyLength={history.nodes.length}
-                  todoLength={todo.nodes.length}
+                  historyLength={history.length}
+                  todoLength={todo.length}
                   currentNode={current.node}
                   queueStatus={queueStatus}
-                  runQueue={this.runQueue}
+                  runQueue={sendRunQueue}
                   stopQueue={sendStopQueue}
                 />
               <div className="m-tree queue-body">
@@ -127,7 +117,7 @@ export default class SampleQueueContainer extends React.Component {
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
                   deleteTask={deleteTask}
-                  run={this.runSample}
+                  run={sendRunSample}
                   pause={sendPauseQueue}
                   unpause={sendUnpauseQueue}
                   stop={sendStopQueue}
@@ -139,11 +129,11 @@ export default class SampleQueueContainer extends React.Component {
                   displayData={displayData}
                   manualMount={manualMount}
                   mount={sendMountSample}
-                  todoList={todo.nodes}
+                  todoList={todo}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
-                  list={todo.nodes}
+                  list={todo}
                   sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}

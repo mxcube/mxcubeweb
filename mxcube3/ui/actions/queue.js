@@ -70,6 +70,7 @@ export function sendManualMount(manual) {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Could not toogle manual mode'));
       } else {
+        dispatch(sendClearQueue());
         dispatch(setSampleListAction({}));
         dispatch(setManualMountAction(manual));
         if (manual) {
@@ -211,6 +212,13 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
 export function changeTaskOrder(sampleID, oldIndex, newIndex) {
   return function (dispatch) {
     dispatch(changeTaskOrderAction(sampleID, oldIndex, newIndex));
+
+    sendChangeTaskOrder(sampleID, oldIndex, newIndex).then((response) => {
+      if (response.status >= 400) {
+        dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
+        throw new Error('Could not change order');
+      }
+    });
   };
 }
 
@@ -368,9 +376,14 @@ export function sendMountSample(sampleID) {
 
 
 export function addSample(sampleData) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
     const data = { ...sampleData, checked: true, tasks: [] };
+    const { queue } = getState();
+    sendAddQueueItem([data]);
     dispatch(addSampleAction(data));
+    if (queue.manualMount.set) {
+      dispatch(sendMountSample(data.sampleID));
+    }
   };
 }
 
@@ -384,6 +397,7 @@ export function appendSampleList(sampleData) {
 
 export function deleteSample(sampleID) {
   return function (dispatch) {
+    sendDeleteQueueItem(sampleID, undefined);
     dispatch(removeSampleAction(sampleID));
   };
 }
@@ -409,30 +423,18 @@ export function sendRunSample(sampleID, taskIndex) {
 }
 
 
-export function setQueueAndRun(queue, sampleOrder) {
+export function setQueueAndRun(sampleID, taskIndex, queue) {
   return function (dispatch) {
-    sendSetQueue(queue, sampleOrder).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to set queue');
-      } else {
-        dispatch(setCurrentSample(sampleOrder[0]));
-        dispatch(sendRunQueue());
-      }
+    dispatch(sendSetQueue(queue)).then(() => {
+      dispatch(sendRunQueue());
     });
   };
 }
 
 
-export function setQueueAndRunTask(sampleID, taskIndex) {
-  return function (dispatch, getState) {
-    const { queue } = getState();
-    let ti = taskIndex;
-
-    if (ti === undefined) {
-      ti = queue.queue[sampleID].tasks.length;
-    }
-
-    sendSetQueue(queue.queue, queue.sampleOrder).then(() => {
+export function setQueueAndRunTask(sampleID, taskIndex, queue) {
+  return function (dispatch) {
+    dispatch(sendSetQueue(queue)).then(() => {
       dispatch(sendRunSample(sampleID, taskIndex));
     });
   };
@@ -446,6 +448,7 @@ export function removeTaskAction(sampleID, taskIndex) {
 
 export function deleteTask(sampleID, taskIndex) {
   return function (dispatch) {
+    sendDeleteQueueItem(sampleID, taskIndex);
     dispatch(removeTaskAction(sampleID, taskIndex));
   };
 }
@@ -456,43 +459,76 @@ export function addTaskAction(task) {
 }
 
 
-export function updateTaskAction(sampleID, taskIndex, params) {
-  return { type: 'UPDATE_TASK', sampleID, taskIndex, params };
-}
-
-
-export function updateTask(sampleID, taskIndex, params, runNow) {
+export function addTask(sampleID, parameters, queue, runNow) {
   return function (dispatch) {
-    dispatch(updateTaskAction(sampleID, taskIndex, params));
+    const task = { type: parameters.type,
+                   label: parameters.label,
+                   sampleID,
+                   parameters,
+                   checked: true };
 
-    if (runNow) {
-      dispatch(setQueueAndRunTask(sampleID, taskIndex));
-    }
+    dispatch(addTaskAction(task));
+    const taskIndex = queue[sampleID].tasks.length - 1;
+
+    sendAddQueueItem([task]).then((response) => {
+      if (response.status >= 400) {
+        dispatch(removeTaskAction(sampleID, taskIndex));
+        throw new Error('The task could not be added to the server');
+      } else {
+        if (runNow) {
+          dispatch(sendRunSample(sampleID, taskIndex));
+        }
+      }
+    });
   };
 }
 
 
-export function addTask(sampleIDList, parameters, runNow) {
-  return function (dispatch, getState) {
-    const { queue } = getState();
+export function addSampleAndTask(sampleID, parameters, sampleData, queue, runNow) {
+  return function (dispatch) {
+    const data = { ...sampleData,
+                   checked: true,
+                   tasks: [{ type: parameters.type,
+                             label: parameters.type.split(/(?=[A-Z])/).join(' '),
+                             sampleID,
+                             parameters,
+                             checked: true }] };
 
-    for (const sampleID of sampleIDList) {
-      if (!queue.queue[sampleID]) {
-        dispatch(addSample(queue.sampleList[sampleID]));
+    dispatch(addSampleAction(data));
+
+    sendAddQueueItem([data]).then((response) => {
+      if (response.status >= 400) {
+        dispatch(removeTaskAction(sampleID, 0));
+        throw new Error('The sample could not be added to the server');
+      } else {
+        if (runNow) {
+          dispatch(sendRunSample(sampleID, 0));
+        }
       }
+    });
+  };
+}
 
-      const task = { type: parameters.type,
-                     label: parameters.label,
-                     sampleID,
-                     parameters,
-                     checked: true };
 
-      dispatch(addTaskAction(task));
-    }
+export function updateTaskAction(sampleID, taskIndex, taskData) {
+  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
+}
 
-    if (sampleIDList.length === 1 && runNow) {
-      dispatch(setQueueAndRunTask(sampleIDList[0]));
-    }
+
+export function updateTask(sampleID, taskIndex, params, queue, runNow) {
+  return function (dispatch) {
+    const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
+    dispatch(updateTaskAction(sampleID, taskIndex, taskData));
+
+    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('The task could not be modified on the server');
+      } else {
+        if (runNow) {
+          dispatch(sendRunSample(sampleID, taskIndex));
+        }
+      }
+    });
   };
 }
 
