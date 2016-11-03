@@ -111,6 +111,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
 
+
         try:
             SampleCentring.init_signals()
             SampleChanger.init_signals()
