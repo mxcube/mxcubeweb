@@ -25,8 +25,6 @@ def mach_info_get():
               200: On success
               409: Queue could not be started
     """
-    logging.getLogger('HWR').info('[QUEUE] Queue going to start')
-
     try:
         values = mxcube.machinfo.get_values(False)
         logging.getLogger('HWR').info('[MACHINFO] Got values ' % str(values))
