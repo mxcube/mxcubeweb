@@ -313,3 +313,10 @@ def beam_changed(*args, **kwargs):
         socketio.emit('beam_changed', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+
+def mach_info_changed(values):
+    try:
+        socketio.emit("mach_info_changed", values, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+

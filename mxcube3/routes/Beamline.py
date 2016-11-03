@@ -12,6 +12,10 @@ def init_signals():
     for sig in signals.beam_signals:
         beamInfo.connect(beamInfo, sig, signals.beam_changed)
 
+    machInfo = mxcube.beamline.getObjectByRole("machinfo")
+    machInfo.connect(machInfo, 'machInfoChanged',
+                           signals.mach_info_changed)
+
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():
     ho = BeamlineSetupMediator(mxcube.beamline)
@@ -134,3 +138,25 @@ def beamline_get_data_path():
     """
     data = mxcube.session.get_base_image_directory()
     return Response(json.dumps(data), status=200, mimetype='application/json')
+
+
+@mxcube.route("/mxcube/api/v0.1/machinfo/", methods=['GET'])
+def mach_info_get():
+    """
+    Get machine information from machine control system
+
+    :returns: Response object with values, status code set to:
+              200: On success
+              409: Error getting information 
+    """
+    try:
+        values = mxcube.machinfo.get_values(False)
+        resp = jsonify({'values': values})
+        resp.status_code = 200
+    except Exception as ex:
+        logging.getLogger('HWR').info('[MACHINFO] Cannot read values ')
+        resp = Response()
+        resp.status_code = 409
+    
+    return resp
+

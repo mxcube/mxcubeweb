@@ -26,16 +26,16 @@ export default class MachInfo extends React.Component {
     let propvalue = '';
     let popContent = '';
 
-    if (this.props.info.info.attention === true) {
+    if (this.props.info.attention === true) {
       msgBgStyle = 'machine-msg-attention';
     } else {
       msgBgStyle = 'machine-msg-normal';
     }
 
-    for (propname in this.props.info.info) {
-      if (this.props.info.info.hasOwnProperty(propname)) {
+    for (propname in this.props.info) {
+      if (this.props.info.hasOwnProperty(propname)) {
         if (propname === 'attention') { continue; }
-        propvalue = this.props.info.info[propname];
+        propvalue = this.props.info[propname];
         msg = <p>{propname} : {propvalue}</p>;
         popContent = <span>{popContent}{msg}</span>;
       }
@@ -55,9 +55,9 @@ export default class MachInfo extends React.Component {
         <div className="current-label">
           {this.currentLabel}
           <span className="current-value">
-             {this.props.info.info.current} </span>
+             {this.props.info.current} </span>
           <div className={`${msgBgStyle}`}>
-             {this.props.info.info.message}
+             {this.props.info.message}
           </div>
         </div>
         </OverlayTrigger>
@@ -67,5 +67,5 @@ export default class MachInfo extends React.Component {
 }
 
 MachInfo.defaultProps = {
-  info: { info: { current: -1, message: '' }, }
+  info: { current: -1, message: '' }
 };

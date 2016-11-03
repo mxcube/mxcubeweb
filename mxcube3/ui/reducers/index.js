@@ -11,7 +11,6 @@ import logger from './logger';
 import contextMenu from './contextMenu';
 import remoteAccess from './remoteAccess';
 import points from './points';
-import machinfo from './machinfo';
 import { reducer as formReducer } from 'redux-form';
 
 const mxcubeReducer = combineReducers({
@@ -27,7 +26,6 @@ const mxcubeReducer = combineReducers({
   remoteAccess,
   contextMenu,
   points,
-  machinfo,
   form: formReducer
 });
 

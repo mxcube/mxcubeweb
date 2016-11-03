@@ -6,11 +6,9 @@ import {
   setCurrentPhase,
   setBeamInfo
 } from './actions/sampleview';
-import { setBeamlineAttrAction } from './actions/beamline';
+import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
 import { setStatus, addTaskResultAction, addTaskAction, collapseTask } from './actions/queue';
 import { setLoading } from './actions/general';
-
-import { setMachInfo } from './actions/machinfo';
 
 export default class ServerIO {
 

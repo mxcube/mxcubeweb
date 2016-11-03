@@ -78,7 +78,7 @@ function mapStateToProps(state) {
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     beamline: state.beamline,
-    machinfo: state.machinfo,
+    machinfo: state.beamline.machinfo,
     defaultParameters: state.taskForm.defaultParameters,
     points: state.points
   };
