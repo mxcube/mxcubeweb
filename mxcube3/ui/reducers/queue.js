@@ -342,8 +342,12 @@ export default (state = initialState, action) => {
       }
     case 'SET_INITIAL_STATUS':
       {
-        return { ...state, rootPath: action.data.rootPath,
-                           manualMount: { set: state.manualMount.set, id: 1 } };
+        return {
+          ...state,
+          rootPath: action.data.rootPath,
+          manualMount: { set: state.manualMount.set, id: 1 },
+          queue: action.data.queue
+        };
       }
     default:
       return state;

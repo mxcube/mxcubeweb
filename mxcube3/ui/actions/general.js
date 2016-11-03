@@ -39,6 +39,14 @@ export function getInitialStatus() {
   return function (dispatch) {
     const state = {};
 
+    const queue = fetch('mxcube/api/v0.1/queue', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
     const motors = fetch('mxcube/api/v0.1/diffractometer/movables/state', {
       method: 'GET',
       credentials: 'include',
@@ -105,6 +113,7 @@ export function getInitialStatus() {
     });
 
     const pchains = [
+      queue.then(parse).then(json => { state.queue = json; }).catch(notify),
       motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
       beamInfo.then(parse).then(json => { state.beamInfo = json; }).catch(notify),
       sampleVideoInfo.then(parse).then(json => { state.Camera = json; }).catch(notify),
