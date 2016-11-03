@@ -82,15 +82,14 @@ export default class SampleQueueContainer extends React.Component {
       collapseTask,
       collapseSample,
       deleteTask,
-      sendMountSample,
-      moveTask
+      sendMountSample
     } = this.props.queueActions;
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
-                  historyLength={history.length}
-                  todoLength={todo.length}
+                  historyLength={history.nodes.length}
+                  todoLength={todo.nodes.length}
                   currentNode={current.node}
                   queueStatus={queueStatus}
                   runQueue={sendRunQueue}
@@ -107,7 +106,7 @@ export default class SampleQueueContainer extends React.Component {
                   <NavItem eventKey={'todo'}>Upcoming</NavItem>
                 </Nav>
                 <CurrentTree
-                  changeOrder={changeTaskOrderAction}
+                  changeOrder={changeTaskOrder}
                   show={visibleList === 'current'}
                   mounted={current.node}
                   sampleInformation={sampleInformation}
@@ -127,12 +126,11 @@ export default class SampleQueueContainer extends React.Component {
                   displayData={displayData}
                   manualMount={manualMount}
                   mount={sendMountSample}
-                  todoList={todo}
-                  moveTask={moveTask}
+                  todoList={todo.nodes}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
-                  list={todo}
+                  list={todo.nodes}
                   sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}
