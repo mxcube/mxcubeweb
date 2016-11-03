@@ -10,10 +10,8 @@ import './style.css';
 export default class MachInfo extends React.Component {
   constructor(props) {
     super(props);
-    this.current = this.props.info.current;
-    this.info = this.props.info.info;
+    this.currentLabel = 'Current:';
   }
-
 
   shouldComponentUpdate(nextProps) {
     return nextProps.info !== this.props.info;
@@ -55,7 +53,7 @@ export default class MachInfo extends React.Component {
       <div>
         <OverlayTrigger container={this} trigger="hover" placement="bottom" overlay={machinfoPop}>
         <div className="current-label">
-          {this.props.currentLabel}
+          {this.currentLabel}
           <span className="current-value">
              {this.props.info.info.current} </span>
           <div className={`${msgBgStyle}`}>
@@ -68,9 +66,6 @@ export default class MachInfo extends React.Component {
   }
 }
 
-
 MachInfo.defaultProps = {
-  currentLabel: 'Current:',
-  current: '-1',
-  info: { message: 'toto', }
+  info: { info: { current: -1, message: '' }, }
 };

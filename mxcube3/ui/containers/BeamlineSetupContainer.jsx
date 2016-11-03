@@ -126,8 +126,6 @@ class BeamlineSetupContainer extends React.Component {
                   onCancel={this.onCancelHandler}
                 />
               </div>
-              <div style={{ paddingTop: '1em', marginLeft: '4em', display: 'inline-block' }}>
-              </div>
               </div>
             </div>
           </div>
