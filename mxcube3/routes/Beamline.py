@@ -8,13 +8,28 @@ from mxcube3 import app as mxcube
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
 def init_signals():
-    beamInfo = mxcube.beamline.getObjectByRole("beam_info")
-    for sig in signals.beam_signals:
-        beamInfo.connect(beamInfo, sig, signals.beam_changed)
+    try: 
+        beamInfo = mxcube.beamline.getObjectByRole("beam_info")
+        if beamInfo is not None:
+            for sig in signals.beam_signals:
+                beamInfo.connect(beamInfo, sig, signals.beam_changed)
+        else:
+            logging.getLogger('HWR').error("beam_info is not defined")
+    except Exception, ex: 
+        logging.getLogger('HWR').\
+            error("error loading beam_info hwo is not defined (%s)" % str(ex))
 
-    machInfo = mxcube.beamline.getObjectByRole("machinfo")
-    machInfo.connect(machInfo, 'machInfoChanged',
+    try: 
+        machInfo = mxcube.beamline.getObjectByRole("mach_info")
+        if machInfo is not None:
+            machInfo.connect(machInfo, 'machInfoChanged',
                            signals.mach_info_changed)
+        else:
+            logging.getLogger('HWR').error("mach_info is not defined")
+    except Exception, ex: 
+        logging.getLogger('HWR').\
+            error("error loading mach_info hwo is not defined (%s)" % str(ex))
+
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():

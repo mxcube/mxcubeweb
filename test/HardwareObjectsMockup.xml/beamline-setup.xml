@@ -18,7 +18,7 @@
   <object href="/lims-rest" role="lims_rest_client"/>
   <object href="/sc-mockup" role="sample_changer"/>
   <object href="/session" role="session"/>
-  <object href="/mach-info" role="machinfo"/>
+  <object href="/mach-info" role="mach_info"/>
 
 
 
