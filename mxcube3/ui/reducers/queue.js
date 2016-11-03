@@ -1,4 +1,4 @@
-import { omit } from 'lodash/object';
+import { omit, invert } from 'lodash/object';
 import { without } from 'lodash/array';
 import update from 'react/lib/update';
 
@@ -31,21 +31,14 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { sampleList });
     }
     case 'SET_SAMPLE_ORDER': {
-      const sortedOrder = Object.entries(action.order).sort((a, b) => a[1] > b[1]);
-      const sampleOrder = [...state.sampleOrder];
-      let i = 0;
-
-      // Use the grid order to generate the order of the samples in the queue
-      // iterate over the sorted grid order, updating only those indexes that
-      // have changed
-      for (const [key] of sortedOrder) {
-        if (Object.keys(state.queue).includes(key)) {
-          if (sampleOrder[i] !== key) {
-            sampleOrder[i] = key;
-          }
-          i++;
+      const sortedOrder = invert(action.order);
+      const sampleOrder = [];
+ 
+      Object.values(sortedOrder).forEach((key) => {
+        if (Reflect.has(state.queue, key)) {
+          sampleOrder.push(key);
         }
-      }
+      });
 
       return Object.assign({}, state, { sampleOrder });
     }
