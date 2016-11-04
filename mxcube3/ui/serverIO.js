@@ -11,12 +11,9 @@ import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
 import { setStatus, addTaskResultAction, addTaskAction, collapseTask } from './actions/queue';
 import { setLoading } from './actions/general';
 
-export default class ServerIO {
+class ServerIO {
 
-  constructor(store) {
-    this.store = store;
-    this.dispatch = store.dispatch;
-
+  constructor() {
     this.hwrSocket = null;
     this.loggingSocket = null;
     this.uiStateSocket = null;
@@ -37,16 +34,24 @@ export default class ServerIO {
     };
   }
 
-  listen(statePersistor) {
+  connectStateSocket(statePersistor) {
     this.uiStateSocket = io.connect(`http://${document.domain}:${location.port}/ui_state`);
-
-    this.hwrSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
-
-    this.loggingSocket = io.connect(`http://${document.domain}:${location.port}/logging`);
 
     this.uiStateSocket.on('state_update', (newState) => {
       statePersistor.rehydrate(JSON.parse(newState));
     });
+  }
+
+  setRemoteAccessMaster(cb) {
+    this.hwrSocket.emit('setRaMaster', cb);
+  }
+
+  listen(store) {
+    this.dispatch = store.dispatch;
+
+    this.hwrSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
+
+    this.loggingSocket = io.connect(`http://${document.domain}:${location.port}/logging`);
 
     this.loggingSocket.on('log_record', (record) => {
       this.dispatch(addLogRecord(record));
@@ -79,8 +84,12 @@ export default class ServerIO {
       this.dispatch(setBeamlineAttrAction(data));
     });
 
-    this.hwrSocket.on('task', (record) => {
-      const sampleDisplayData = this.store.getState().queue.displayData[record.sample];
+    this.hwrSocket.on('task', (record, callback) => {
+      if (callback) {
+        callback();
+      }
+
+      const sampleDisplayData = store.getState().queue.displayData[record.sample];
       const taskCollapsed = sampleDisplayData.tasks[record.taskIndex].collapsed;
 
       if (record.state === 1 && !taskCollapsed) {
@@ -92,11 +101,19 @@ export default class ServerIO {
                                         record.progress, record.limsResultData));
     });
 
-    this.hwrSocket.on('add_task', (record) => {
+    this.hwrSocket.on('add_task', (record, callback) => {
+      if (callback) {
+        callback();
+      }
+
       this.dispatch(addTaskAction(record));
     });
 
-    this.hwrSocket.on('queue', (record) => {
+    this.hwrSocket.on('queue', (record, callback) => {
+      if (callback) {
+        callback();
+      }
+
       this.dispatch(setStatus(record.Signal));
     });
 
@@ -110,3 +127,6 @@ export default class ServerIO {
     });
   }
 }
+
+export const serverIO = new ServerIO();
+

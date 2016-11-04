@@ -12,10 +12,6 @@ class Login extends React.Component {
     this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
-  componentWillMount() {
-    this.props.getLoginInfo();
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.status.code === 'ok') {
       window.location.assign('#datacollection');

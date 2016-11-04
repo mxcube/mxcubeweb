@@ -1,10 +1,13 @@
 from flask import request
 from flask.ext.socketio import emit, join_room, leave_room
 from mxcube3 import socketio
-from routes import Login
 import json
 
 UI_STATE = dict()
+
+def flush():
+    global UI_STATE
+    UI_STATE = dict()
 
 @socketio.on('connect', namespace='/ui_state')
 def connect():
@@ -28,19 +31,16 @@ def ui_state_rm(k):
 
 @socketio.on('ui_state_set', namespace='/ui_state')
 def ui_state_update(key_val):
-    print request.sid, 'leaving slaves room'
-    leave_room('raSlaves')
+    leave_room("raSlaves")
 
     key, val = key_val
     print 'ui state SET', key
     UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
-    #print ' '*10,json.loads(val)
 
     emit("state_update", json.dumps(UI_STATE), namespace="/ui_state", room="raSlaves")
 
 @socketio.on('ui_state_getkeys', namespace='/ui_state')
 def ui_state_getkeys(*args):
-    print request.sid,'entering slaves room'
     join_room("raSlaves")
 
     return ['reduxPersist:'+k for k in UI_STATE.iterkeys()]
