@@ -94,7 +94,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
                         SampleCentring, SampleChanger, Diffractometer, lims)
 
     ### Install server-side UI state storage
-    import state_storage
+    from mxcube3 import state_storage
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
