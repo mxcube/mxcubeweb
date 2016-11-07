@@ -16,9 +16,6 @@ from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
 
-class PMock(Mock):
-    def __reduce__(self):
-        return (Mock, ())
 
 
 def node_index(node):
@@ -128,7 +125,7 @@ def queue_to_json(node=None):
              the TaskNode type (Datacollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
              the corresponding node.
-    """
+    """   
     if not node:
         node = mxcube.queue.get_model_root()
     
@@ -369,7 +366,7 @@ def add_sample(sample_id, item):
     else:
         sample_model.location = item['location'].split(':')
 
-    sample_entry = qe.SampleQueueEntry(PMock(), sample_model)
+    sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
     sample_entry.set_enabled(True)
     
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
@@ -465,7 +462,7 @@ def _create_dc(task):
     :rtype: Tuple
     """
     dc_model = qmo.DataCollection()
-    dc_entry = qe.DataCollectionQueueEntry(PMock(), dc_model)
+    dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
 
@@ -488,7 +485,7 @@ def add_characterisation(node_id, task):
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
     char_model = qmo.Characterisation(refdc_model, char_params)
-    char_entry = qe.CharacterisationGroupQueueEntry(PMock(), char_model)
+    char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
     char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters 
     set_char_params(char_model, char_entry, task)
@@ -501,7 +498,7 @@ def add_characterisation(node_id, task):
     mxcube.queue.add_child(sample_model, refgroup_model)
     mxcube.queue.add_child(refgroup_model, char_model)
     
-    refgroup_entry = qe.TaskGroupQueueEntry(PMock(), refgroup_model)
+    refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
     refgroup_entry.set_enabled(True)
     sample_entry.enqueue(refgroup_entry)
     refgroup_entry.enqueue(char_entry)
@@ -539,7 +536,7 @@ def add_data_collection(node_id, task):
     mxcube.queue.add_child(sample_model, group_model)
     mxcube.queue.add_child(group_model, dc_model)
 
-    group_entry = qe.TaskGroupQueueEntry(PMock(), group_model)
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
     sample_entry.enqueue(group_entry)
     group_entry.enqueue(dc_entry)
@@ -608,8 +605,8 @@ def add_diffraction_plan(parent, child):
             # name example string 'Diffraction plan - 3'
             # then we do know that we need to add the entry here
             # Create a new entry for the new child, in this case a data collection
-            dc_entry = qe.DataCollectionQueueEntry(PMock(), child)
-            dcg_entry = qe.TaskGroupQueueEntry(PMock(), parent)
+            dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
+            dcg_entry = qe.TaskGroupQueueEntry(Mock(), parent)
 
             parent.set_enabled(True)
             dcg_entry.set_enabled(True)
