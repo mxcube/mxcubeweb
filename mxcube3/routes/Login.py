@@ -119,11 +119,7 @@ def loginInfo():
             remote_access.set_master(session.sid)
         session['loginInfo'] = login_info
 
-    print 'SESSION SID =', session.sid  
-    mxcube.queue = qutils.load_queue(session)
-    logging.getLogger('HWR').info('Loaded queue')
-    logging.getLogger('HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
-
+    print 'SESSION SID =', session.sid
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
 
