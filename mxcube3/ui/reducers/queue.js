@@ -33,7 +33,7 @@ export default (state = initialState, action) => {
     case 'SET_SAMPLE_ORDER': {
       const sortedOrder = invert(action.order);
       const sampleOrder = [];
- 
+
       Object.values(sortedOrder).forEach((key) => {
         if (Reflect.has(state.queue, key)) {
           sampleOrder.push(key);

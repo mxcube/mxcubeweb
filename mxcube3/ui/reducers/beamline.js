@@ -144,7 +144,11 @@ export default (state = INITIAL_STATE, action) => {
                 pixelsPerMm: action.data.pixelsPerMm[0]
       };
     case 'SAVE_MOTOR_POSITION':
-      return { ...state, motors: { ...state.motors, [action.name]: { position: action.value, Status: state.motors[action.name].Status } } };
+      return { ...state, motors: { ...state.motors, [action.name]:
+                                   { position: action.value,
+                                     Status: state.motors[action.name].Status }
+                                 }
+             };
     case 'SET_INITIAL_STATUS':
       return { ...state,
         motors: { ...state.motors, ...action.data.Motors },
