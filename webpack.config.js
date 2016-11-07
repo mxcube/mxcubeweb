@@ -77,6 +77,9 @@ var config = {
 	    "window.jQuery": "jquery"
 	  })
   ],
+  externals: {
+  'guiConfig': JSON.stringify(require('./config.gui.prod.js'))
+  },
   resolve: {
 	  root: path.resolve(__dirname, 'mxcube3/ui'), 
     alias: {
