@@ -16,8 +16,6 @@ from mxcube3 import app as mxcube
 from mxcube3 import socketio
 
 
-
-
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
@@ -578,7 +576,6 @@ def load_queue(session, redis=redis.Redis()):
 
     :param session: Session for queue to load
     :param redis: Redis database
-    
     """
     proposal_id = Utils._proposal_id(session)
 
@@ -592,8 +589,7 @@ def add_diffraction_plan(parent, child):
     """
     Listen to the addition of elements to the queue ('child_added')
     and if it is a diff plan create the appropiate queue entry and
-    emit a s
-    ocketio signal.
+    emit a socketio signal.
     This is to overcome the fact that the Characterisation entry only
     creates the model of the diff plan.
     """
@@ -603,8 +599,8 @@ def add_diffraction_plan(parent, child):
 
         if 'Diffraction plan' in parent_model.get_name():
             # name example string 'Diffraction plan - 3'
-            # then we do know that we need to add the entry here
-            # Create a new entry for the new child, in this case a data collection
+            # Then we do know that we need to add the entry here, Create a
+            # new entry for the new child, in this case a data collection
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), parent)
 
@@ -619,12 +615,14 @@ def add_diffraction_plan(parent, child):
             # TODO: check if the parent entry exits in case multiple diff plans
             sample_entry.enqueue(dcg_entry)
 
-            # Add the entry to the newly created task group, brother to the characterisation
+            # Add the entry to the newly created task group, brother to the
+            # characterisation
             dcg_entry.enqueue(dc_entry)
 
             msg = _handle_dc(sample._node_id, child)
             msg['parameters']['typePrefix'] = 'P'
-            # TODO: add saved centring pos id, centred_position is removed in _handle_dc
+            # TODO: add saved centring pos id, centred_position is removed in
+            # _handle_dc
             socketio.emit('add_task', msg, namespace='/hwr')
 
 
