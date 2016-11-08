@@ -159,9 +159,15 @@ def get_diffractometer_info():
         ret['useSC'] = False  # in case the diff does not have this implemented
 
     try:
-        ret['current_phase'] = mxcube.diffractometer.current_phase
+        ret['currentPhase'] = mxcube.diffractometer.current_phase
     except AttributeError:
-        ret['current_phase'] = 'None'  # in case the diff does not have this implemented
+        ret['currentPhase'] = 'None'  # in case the diff does not have this implemented
+
+    try:
+        ret['phaseList'] = mxcube.diffractometer.get_phase_list()
+    except AttributeError:
+        ret['phaseList'] = []  # in case the diff does not have this implemented
+
 
     resp = jsonify(ret)
     resp.status_code = 200

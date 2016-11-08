@@ -2,7 +2,9 @@ import './SampleView.css';
 import React from 'react';
 import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
 import MotorInput from './MotorInput';
+import PhaseInput from './PhaseInput';
 import 'fabric';
+import config from 'guiConfig';
 const fabric = window.fabric;
 
 export default class SampleControls extends React.Component {
@@ -69,9 +71,18 @@ export default class SampleControls extends React.Component {
   }
 
   render() {
+    const phaseControl = (
+      <li>
+        <PhaseInput
+          phase={this.props.currentPhase}
+          phaseList={this.props.phaseList}
+          sendPhase={this.props.sampleActions.sendCurrentPhase}
+        />
+        <span className="sample-controll-label">Phase</span>
+      </li>);
     const motors = this.props.motors;
     return (
-      <div style={ { float: 'left', position: 'absolute', width: '100%', zIndex: 1000 } } >
+      <div style={ { display: 'flex', position: 'absolute', width: '100%', zIndex: 1000 } } >
         <div className="sample-controlls text-center" >
           <ul className="bs-glyphicons-list">
           <li>
@@ -227,6 +238,7 @@ export default class SampleControls extends React.Component {
             </div>
             <span className="sample-controll-label">Frontlight Controls</span>
             </li>
+            {config.phaseControl ? phaseControl : null }
             </ul>
           </div>
         </div>
