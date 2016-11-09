@@ -67,14 +67,13 @@
 
 
 .samples-grid-item {
-    border: 1px solid #AAA;
-    background: #FFF;
-    padding: 5px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    border-radius: 3px;
+  border: 1px solid #AAA;
+  background: #FFF;
+  padding: 5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  border-radius: 3px;
 }
-
 
 .samples-grid-item-moving { 
   border: 2px dashed #888;
