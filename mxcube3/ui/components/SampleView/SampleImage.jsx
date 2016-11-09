@@ -108,7 +108,11 @@ export default class SampleImage extends React.Component {
   goToBeam(e) {
     const { sampleActions, imageRatio } = this.props;
     const { sendGoToBeam } = sampleActions;
-    sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
+
+    // Only move to beam if the click was done directly on the canvas.
+    if (e.target.tagName === 'CANVAS') {
+      sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
+    }
   }
 
   drawCanvas(imageRatio) {
