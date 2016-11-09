@@ -4,6 +4,7 @@ import {
   updatePointsPosition,
   saveMotorPositions,
   saveMotorPosition,
+  updateMotorState,
   setCurrentPhase,
   setBeamInfo
 } from './actions/sampleview';
@@ -70,6 +71,11 @@ class ServerIO {
 
     this.hwrSocket.on('motor_position', (record) => {
       this.dispatch(saveMotorPosition(record.name, record.position));
+    });
+
+    this.hwrSocket.on('motor_state', (record) => {
+      this.dispatch(updatePointsPosition(record.centredPositions));
+      this.dispatch(updateMotorState(record.name, record.state));
     });
 
     this.hwrSocket.on('beam_changed', (record) => {

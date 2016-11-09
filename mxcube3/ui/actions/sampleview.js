@@ -122,6 +122,12 @@ export function saveMotorPosition(name, value) {
   };
 }
 
+export function updateMotorState(name, value) {
+  return {
+    type: 'UPDATE_MOTOR_STATE', name, value
+  };
+}
+
 export function updatePointsPosition(points) {
   return {
     type: 'UPDATE_POINTS_POSITION', points
