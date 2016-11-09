@@ -46,6 +46,16 @@ def login():
 
         LOGGED_IN_USER = loginID
 
+        # Create a new queue just in case any previous queue was not cleared
+        # properly
+        mxcube.queue = qutils.new_queue()
+
+        # For the moment not loading queue from persistent storage (redis),
+        # uncomment to enable loading.
+        #qutils.load_queue(session)
+        #logging.getLogger('HWR').info('Loaded queue')
+        logging.getLogger('HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
+
         if not remote_access.MASTER:
             remote_access.set_master(session.sid)
 
@@ -58,6 +68,9 @@ def signout():
     Signout from Mxcube3 and reset the session
     """
     global LOGGED_IN_USER
+
+    qutils.save_queue(session)
+    mxcube.queue = qutils.new_queue()
 
     LOGGED_IN_USER = None
     if remote_access.is_master(session.sid):
@@ -106,11 +119,7 @@ def loginInfo():
             remote_access.set_master(session.sid)
         session['loginInfo'] = login_info
 
-    print 'SESSION SID =', session.sid  
-    mxcube.queue = qutils.get_queue(session)
-    logging.getLogger('HWR').info('Loaded queue')
-    logging.getLogger('HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
-
+    print 'SESSION SID =', session.sid
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
 
