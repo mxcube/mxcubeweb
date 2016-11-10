@@ -70,8 +70,9 @@ export default class App extends React.Component {
   componentWillMount() {
     const persistor = persistStore(store,
            { blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-                         'form', 'login', 'general', 'logger', 'points'],
-             storage: new ServerStorage() },
+
+                         'form', 'login', 'general', 'logger', 'points', 'queue'],
+             storage: new ServerStorage(this.serverIO) },
              () => {
                serverIO.listen(store);
                this.setState({ initialized: true });
