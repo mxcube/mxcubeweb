@@ -23,7 +23,8 @@ const initialState = {
   beamPosition: [0, 0],
   beamShape: 'elipse',
   beamSize: { x: 0, y: 0 },
-  cinema: false
+  cinema: false,
+  phaseList: []
 };
 
 export default (state = initialState, action) => {
@@ -134,6 +135,8 @@ export default (state = initialState, action) => {
           beamPosition: action.data.beamInfo.position,
           beamShape: action.data.beamInfo.shape,
           beamSize: { x: action.data.beamInfo.size_x, y: action.data.beamInfo.size_y },
+          phaseList: action.data.phaseList,
+          currentPhase: action.data.currentPhase,
           lines: []
         };
       }

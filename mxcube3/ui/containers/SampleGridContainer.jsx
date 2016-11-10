@@ -387,7 +387,7 @@ class SampleGridContainer extends React.Component {
         </div>
         <Sticky
           className="samples-grid-header"
-          style={{ width: gridWidth, marginBottom: '5px' }}
+          style={{ transform: 'translateZ(1)', width: gridWidth, marginBottom: '5px' }}
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">

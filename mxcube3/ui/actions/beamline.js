@@ -13,6 +13,7 @@ export const STATE = {
 export const BL_ATTR_SET = 'BL_ATTR_SET';
 export const BL_ATTR_GET_ALL = 'BL_ATTR_GET_ALL';
 export const BL_ATTR_SET_STATE = 'BL_ATTR_SET_STATE';
+export const BL_MACH_INFO = 'BL_MACH_INFO';
 
 
 export function setBeamlineAttrAction(data) {
@@ -24,6 +25,10 @@ export function getBeamlineAttrsAction(data) {
   return { type: BL_ATTR_GET_ALL, data };
 }
 
+
+export function setMachInfo(info) {
+  return { type: BL_MACH_INFO, info };
+}
 
 export function busyStateAction(name) {
   return {
@@ -89,3 +94,4 @@ export function sendAbortCurrentAction(name) {
     });
   };
 }
+

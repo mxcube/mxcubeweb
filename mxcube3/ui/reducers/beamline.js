@@ -105,6 +105,7 @@ export const INITIAL_STATE = {
     kappa: { position: 0, Status: 0 },
     kappa_phi: { position: 0, Status: 0 }
   },
+  machinfo: { current: -1, message: '' },
   pixelsPerMm: 0,
   zoom: 0
 };
@@ -143,12 +144,20 @@ export default (state = INITIAL_STATE, action) => {
                 pixelsPerMm: action.data.pixelsPerMm[0]
       };
     case 'SAVE_MOTOR_POSITION':
-      return { ...state, motors: { ...state.motors, [action.name]: { position: action.value } } };
+      return { ...state, motors: { ...state.motors, [action.name]:
+                                   { position: action.value,
+                                     Status: state.motors[action.name].Status }
+                                 }
+             };
     case 'SET_INITIAL_STATUS':
       return { ...state,
         motors: { ...state.motors, ...action.data.Motors },
         pixelsPerMm: action.data.Camera.pixelsPerMm[0],
         zoom: action.data.Motors.zoom.position
+      };
+    case 'BL_MACH_INFO':
+      return { ...state,
+        machinfo: { ...state.machinfo, ...action.info },
       };
     default:
       return state;
