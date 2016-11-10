@@ -234,12 +234,16 @@ def task_event_callback(*args, **kwargs):
 def motor_position_callback(motor, pos):
    socketio.emit('motor_position', { 'name': motor, 'position': pos }, namespace='/hwr')
 
-def motor_state_callback(motor, state):
+def motor_state_callback(motor, state, sender=None, **kw):
     centred_positions = dict()
     for pos in mxcube.diffractometer.savedCentredPos:
         centred_positions.update({pos['posId']: pos})
-            
-    socketio.emit('motor_state', { 'name': motor, 'state': state, "centredPositions": centred_positions }, namespace='/hwr')
+    
+    if state == 2:
+      # READY
+      motor_position_callback(motor, sender.getPosition())
+        
+    socketio.emit('motor_state', { 'name': motor, 'state': state, 'centredPositions': centred_positions }, namespace='/hwr')
 
 def motor_event_callback(*args, **kwargs):
     # logging.getLogger('HWR').debug('[MOTOR CALLBACK]')

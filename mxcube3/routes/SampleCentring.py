@@ -36,7 +36,7 @@ def init_signals():
           signals.motor_position_callback(motor, pos)
 
         def state_cb(state, motor=motor.lower(), **kw):
-          signals.motor_state_callback(motor, state)
+          signals.motor_state_callback(motor, state, **kw)
 
         setattr(mxcube.diffractometer, "_%s_pos_callback" % motor, pos_cb)
         setattr(mxcube.diffractometer, "_%s_state_callback" % motor, state_cb)
