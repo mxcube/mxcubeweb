@@ -378,7 +378,7 @@ def queue_to_dict_rec(node):
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]
-            
+
             result.append(_handle_sample(node))
             result[0]['sample_order'].append(node.loc_str)
         elif isinstance(node, qmo.Characterisation):
@@ -677,8 +677,8 @@ def add_characterisation(node_id, task):
 
     mxcube.queue.add_child(sample_model, refgroup_model)
     mxcube.queue.add_child(refgroup_model, char_model)
-    
     refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
+
     refgroup_entry.set_enabled(True)
     sample_entry.enqueue(refgroup_entry)
     refgroup_entry.enqueue(char_entry)
