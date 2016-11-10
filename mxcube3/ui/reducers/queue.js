@@ -328,6 +328,7 @@ export default (state = initialState, action) => {
       {
         return {
           ...state,
+          sampleList: action.data.queue.samplesList,
           rootPath: action.data.rootPath,
           manualMount: { set: state.manualMount.set, id: 1 },
           queue: action.data.queue.queue,
