@@ -130,6 +130,23 @@ def queue_get():
     return resp
 
 
+@mxcube.route("/mxcube/api/v0.1/queue_state", methods=['GET'])
+def queue_get_state():
+    """
+    Get the queue.
+
+    :returns: Response object response Content-Type: application/json, json
+              object containing the queue state. The status code is set to:
+
+              200: On success
+              409: On error, could not retrieve queue
+    """
+    logging.getLogger('HWR').info('[QUEUE] queue_get called')
+    resp = jsonify(qutils.get_queue_state())
+    resp.status_code = 200
+    return resp
+
+
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=['PUT'])
 def execute_entry_with_id(sid, tindex):
     """
