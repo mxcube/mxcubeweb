@@ -15,7 +15,7 @@ import thunk from 'redux-thunk';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import crosstabSync from 'redux-persist-crosstab';
 import rootReducer from './reducers';
-import ServerIO from './serverIO';
+import { serverIO } from './serverIO';
 import 'font-awesome-webpack';
 import { getLoginInfo } from './actions/login';
 require('file?name=[name].[ext]!index.html');
@@ -30,8 +30,9 @@ if (module.hot) {
   });
 }
 
-
 function requireAuth(nextState, replace) {
+  store.dispatch(getLoginInfo());
+
   if (!store.getState().login.loggedIn) {
     replace(null, '/login');
   }
@@ -39,26 +40,22 @@ function requireAuth(nextState, replace) {
 
 
 class ServerStorage {
-  constructor(serverIO) {
-    this.serverIO = serverIO;
-  }
-
   setItem(key, value) {
     if (store.getState().remoteAccess.master) {
-      this.serverIO.uiStorage.setItem(key, value);
+      serverIO.uiStorage.setItem(key, value);
     }
   }
 
   getItem(key, cb) {
-    this.serverIO.uiStorage.getItem(key, cb);
+    serverIO.uiStorage.getItem(key, cb);
   }
 
   removeItem(key) {
-    this.serverIO.uiStorage.removeItem(key);
+    serverIO.uiStorage.removeItem(key);
   }
 
   getAllKeys(cb) {
-    this.serverIO.uiStorage.getAllKeys(cb);
+    serverIO.uiStorage.getAllKeys(cb);
   }
 }
 
@@ -68,21 +65,20 @@ export default class App extends React.Component {
     super(props);
 
     this.state = { initialized: false };
-    this.serverIO = new ServerIO(store);
   }
 
   componentWillMount() {
     const persistor = persistStore(store,
            { blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
                          'form', 'login', 'general', 'logger', 'points', 'queue'],
-             storage: new ServerStorage(this.serverIO) },
+             storage: new ServerStorage() },
              () => {
-               store.dispatch(getLoginInfo());
+               serverIO.listen(store);
                this.setState({ initialized: true });
              }
     );
 
-    this.serverIO.listen(persistor);
+    serverIO.connectStateSocket(persistor);
 
     crosstabSync(persistor);
   }
