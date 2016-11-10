@@ -1,0 +1,22 @@
+.current-label{ 
+  font-size: 18px;
+  text-align: center;
+}
+
+.current-value{ 
+  padding: 10px;
+  font-weight: bold;
+  color: blue;
+}
+
+.machine-msg-attention{ 
+  font-size: 12px;
+  font-style: italic;
+  color: red;
+}
+
+.machine-msg-normal{ 
+  font-size: 12px;
+  font-style: italic;
+  color: black;
+}

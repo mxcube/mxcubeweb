@@ -4,6 +4,7 @@ from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
 from mxcube3.routes import qutils
+from mxcube3.remote_access import safe_emit
 
 
 def last_queue_node():
@@ -13,12 +14,6 @@ def last_queue_node():
         node = parent._children[0]  # but the rfdc children not here @#@#!!!
     return qutils.node_index(node)
 
-
-@socketio.on('connect', namespace='/hwr')
-def connect():
-    # this is needed to create the namespace, and the actual connection
-    # to the server, but we don't need to do anything more
-    pass
 
 collect_signals = ['collectStarted', 'testSignal', 'warning']
 collect_osc_signals = ['collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
@@ -67,6 +62,10 @@ motor_signals = {
     'zoomMotorPredefinedPositionChanged': 'zoomMotorPredefinedPositionChanged',
     'diffractometerMoved':          'diffractometerMoved',
     'stateChanged':                 'stateChanged'
+}
+
+mach_info_signals = {
+    'mach_info_changed':                 'mach_info_changed'
 }
 
 
@@ -133,7 +132,7 @@ def queue_execution_started(entry):
            'Message': 'Queue execution started',
            'State': 1}
 
-    socketio.emit('queue', msg, namespace='/hwr')
+    safe_emit('queue', msg, namespace='/hwr')
 
 
 def queue_execution_finished(entry):
@@ -141,7 +140,7 @@ def queue_execution_finished(entry):
            'Message': 'Queue execution stopped',
            'State': 1}
 
-    socketio.emit('queue', msg, namespace='/hwr')
+    safe_emit('queue', msg, namespace='/hwr')
 
 
 def queue_execution_failed(entry):    
@@ -149,7 +148,7 @@ def queue_execution_failed(entry):
            'Message': 'Queue execution stopped',
            'State': 2}
 
-    socketio.emit('queue', msg, namespace='/hwr')
+    safe_emit('queue', msg, namespace='/hwr')
 
 
 def collect_oscillation_started(*args):
@@ -162,7 +161,7 @@ def collect_oscillation_started(*args):
 
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
-        socketio.emit('task', msg, namespace='/hwr')
+        safe_emit('task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
@@ -177,7 +176,7 @@ def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params):
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
     try:
-        socketio.emit('task', msg, namespace='/hwr')
+        safe_emit('task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
@@ -194,7 +193,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
-        socketio.emit('task', msg, namespace='/hwr')
+        safe_emit('task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
@@ -210,7 +209,7 @@ def collect_ended(owner, success, message):
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
-        socketio.emit('task', msg, namespace='/hwr')
+        safe_emit('task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
@@ -228,7 +227,7 @@ def task_event_callback(*args, **kwargs):
            'progress': get_signal_progress(kwargs['signal'])}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
-        socketio.emit('task', msg, namespace='/hwr')
+        safe_emit('task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
     # try:
@@ -241,6 +240,9 @@ def task_event_callback(*args, **kwargs):
     # except Exception:
     #     logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
+
+def motor_position_callback(motor, pos):
+   socketio.emit('motor_position', { 'name': motor, 'position': pos }, namespace='/hwr')
 
 def motor_event_callback(*args, **kwargs):
     # logging.getLogger('HWR').debug('[MOTOR CALLBACK]')
@@ -309,3 +311,10 @@ def beam_changed(*args, **kwargs):
         socketio.emit('beam_changed', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+
+def mach_info_changed(values):
+    try:
+        socketio.emit("mach_info_changed", values, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+

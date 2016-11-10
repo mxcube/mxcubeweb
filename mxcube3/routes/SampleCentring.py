@@ -33,9 +33,13 @@ def init_signals():
         else:
             pass
     for motor in mxcube.diffractometer.centring_motors_list:
+        @Utils.RateLimited(3)
+        def pos_cb(pos, motor=motor.lower(), **kw):
+          signals.motor_position_callback(motor, pos)
+        setattr(mxcube.diffractometer, "_%s_pos_callback" % motor, pos_cb)
         mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
                                       "positionChanged",
-                                      signals.motor_event_callback)
+                                      pos_cb)
         mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
                                       "stateChanged",
                                       signals.motor_event_callback)

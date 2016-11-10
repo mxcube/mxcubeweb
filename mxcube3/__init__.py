@@ -91,10 +91,11 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
-                        SampleCentring, SampleChanger, Diffractometer, lims)
+                        SampleCentring, SampleChanger, Diffractometer, Queue,
+                        lims, qutils)
 
     ### Install server-side UI state storage
-    import state_storage
+    from mxcube3 import state_storage
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
@@ -110,6 +111,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
+        app.queue = qutils.new_queue()
+
 
         try:
             SampleCentring.init_signals()

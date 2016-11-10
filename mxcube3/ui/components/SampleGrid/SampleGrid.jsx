@@ -254,6 +254,8 @@ export default class SampleGrid extends React.Component {
       filterItem = this.props.picked[key];
     }
 
+    this._doReorder = true;
+
     return filterItem;
   }
 
