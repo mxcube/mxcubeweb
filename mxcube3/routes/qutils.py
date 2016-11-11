@@ -486,6 +486,9 @@ def add_sample(sample_id, item):
     sample_model.loc_str = sample_id
     sample_model.free_pin_mode = item['location'] == 'Manual'
 
+    sample_model.set_name(item['sampleName'])
+    sample_model.crystals[0].protein_acronym = item.get('proteinAcronym', '')
+
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
     else:
