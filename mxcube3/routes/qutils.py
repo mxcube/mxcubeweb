@@ -16,7 +16,6 @@ from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from . import limsutils
 
-
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
