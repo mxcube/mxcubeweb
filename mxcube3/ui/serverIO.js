@@ -95,7 +95,7 @@ class ServerIO {
         callback();
       }
 
-      const sampleDisplayData = store.getState().queue.displayData[record.sample];
+      const sampleDisplayData = store.getState().queueGUI.displayData[record.sample];
       const taskCollapsed = sampleDisplayData.tasks[record.taskIndex].collapsed;
 
       if (record.state === 1 && !taskCollapsed) {

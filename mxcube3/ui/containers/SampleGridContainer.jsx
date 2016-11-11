@@ -481,6 +481,7 @@ class SampleGridContainer extends React.Component {
               pickSelected={this.toggleAddDeleteSelectedSamples}
               toggleSelectedSample={this.props.toggleSelectedSample}
               showSampleGridContextMenu={this.props.showSampleGridContextMenu}
+              queueGUI={this.props.queueGUI}
             />
           </div>
         </div>
@@ -492,6 +493,7 @@ function mapStateToProps(state) {
   return {
     loginData: state.login.data,
     queue: state.queue,
+    queueGUI: state.queueGUI,
     selected: state.sampleGrid.selected,
     moving: state.sampleGrid.moving,
     sampleList: state.queue.sampleList,
