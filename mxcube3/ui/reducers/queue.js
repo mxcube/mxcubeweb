@@ -274,7 +274,7 @@ export default (state = initialState, action) => {
           },
           queue: action.data.queue.queue,
           todo: without(action.data.queue.todo, action.data.queue.loaded),
-          history: action.data.queue.history,
+          history: without(action.data.queue.history, action.data.queue.loaded),
           sampleOrder: action.data.queue.sample_order,
           current: { node: action.data.queue.loaded, running: false }
         };
