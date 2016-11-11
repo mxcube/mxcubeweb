@@ -257,11 +257,17 @@ def get_queue_state():
         todo.pop(loaded)
     except Exception:
         pass
+
+    queue = queue_to_dict()
+    try:
+        queue.pop("sample_order")
+    except Exception:
+        pass
     res = {"sample_list": sample_list,
            "history": history,
            "todo": todo,
            "loaded": loaded,
-           "queue": queue_to_dict()
+           "queue": queue
            }
 
     return res
