@@ -132,7 +132,7 @@ export default (state = initialState, action) => {
         // Removing sample from queue
     case 'REMOVE_SAMPLE':
       return Object.assign({}, state,
-        { todo: without(state.todo.nodes, action.sampleID),
+        { todo: without(state.todo, action.sampleID),
           queue: omit(state.queue, action.sampleID),
           sampleOrder: without(state.sampleOrder, action.sampleID),
         });
@@ -193,15 +193,15 @@ export default (state = initialState, action) => {
       return Object.assign({}, state,
         {
           current: { ...state.current, node: action.sampleID, running: false },
-          todo: without(state.todo.nodes, action.sampleID),
-          history: [ ...state.history, state.current.node]
+          todo: without(state.todo, action.sampleID),
+          history: [...state.history, state.current.node]
         }
       );
     case 'CLEAR_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { node: null, collapsed: false, running: false },
-          history: [ ...state.history, state.current.node]
+          history: [...state.history, state.current.node]
         }
       );
         // Run Sample
@@ -268,12 +268,15 @@ export default (state = initialState, action) => {
           ...state,
           sampleList: action.data.queue.sample_list,
           rootPath: action.data.rootPath,
-          manualMount: { set: state.manualMount.set, id: 1 },
+          manualMount: {
+            set: !action.data.useSC,
+            id: action.data.queue.todo.length + action.data.queue.history.length + 1
+          },
           queue: action.data.queue.queue,
-          todo: action.data.queue.todo,
+          todo: without(action.data.queue.todo, action.data.queue.loaded),
           history: action.data.queue.history,
-          sampleOrder: action.data.queue.queue.sample_order,
-          current: {node: action.data.queue.loaded, running: false}
+          sampleOrder: action.data.queue.sample_order,
+          current: { node: action.data.queue.loaded, running: false }
         };
       }
     default:

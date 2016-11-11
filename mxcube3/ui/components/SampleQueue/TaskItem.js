@@ -132,7 +132,7 @@ export default class TaskItem extends Component {
       warning: state === 4
     });
 
-    let typePrefix = ''
+    let typePrefix = '';
 
     if (data.type === 'DataCollection' || data.type === 'Characterisation') {
       typePrefix = 'P';
@@ -160,6 +160,7 @@ export default class TaskItem extends Component {
                       onMouseEnter={() => this.setState({ overInput: true }) }
                       onMouseLeave={() => this.setState({ overInput: false }) }
                       className="form-control"
+                      readOnly
                       value={`${rootPath}${data.parameters.path}`}
                     />
                   </div>
@@ -169,6 +170,7 @@ export default class TaskItem extends Component {
                     onMouseEnter={() => this.setState({ overInput: true }) }
                     onMouseLeave={() => this.setState({ overInput: false }) }
                     className="form-control"
+                    readOnly
                     value={data.parameters.prefix}
                   />
                 </div>

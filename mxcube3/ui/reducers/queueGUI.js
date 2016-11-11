@@ -1,3 +1,6 @@
+import update from 'react/lib/update';
+import { omit } from 'lodash/object';
+
 const initialState = {
   showRestoreDialog: false,
   displayData: {},
@@ -43,14 +46,14 @@ export default (state = initialState, action) => {
 
       // Not creating a copy here since we know that the reference
       // displayData[sampleID] did not exist before
-      for (const task of action.sampleData.tasks) {
+      action.sampleData.tasks.forEach(() => {
         displayData[sampleID].tasks.push({ collapsed: false });
-      }
+      });
 
       return Object.assign({}, state, { displayData });
     }
     case 'REMOVE_SAMPLE':
-      return Object.assign({}, state, { displayData: omit(state.displayData, action.sampleID)});
+      return Object.assign({}, state, { displayData: omit(state.displayData, action.sampleID) });
     // Removing the task from the queue
     case 'REMOVE_TASK': {
       const displayData = {
