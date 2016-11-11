@@ -14,6 +14,7 @@ from flask import jsonify
 from mock import Mock
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
+from . import limsutils
 
 
 def node_index(node):
@@ -182,7 +183,7 @@ def get_node_state(node_id):
 
 def get_queue_state():
     """
-    Return the dictionary representation of the queue state.
+    Return the dictionary representation of the queue state plus some extra lists.
 
     :returns: dictionary on the form:
               {
@@ -195,12 +196,29 @@ def get_queue_state():
                         .
                         .
                         sampleID_n: [task1, ... taskn] }
+                "sample_list": {......}
                }
     """
+    if mxcube.diffractometer.use_sc:
+        samples_list_sc = mxcube.sample_changer.getSampleList()
+        samples = {}
+
+        for s in samples_list_sc:
+            sample_dm = s.getID() or ""
+            sample_data = {"sampleID": s.getAddress(),
+                           "location": ":".join(map(str, s.getCoords())),
+                           "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
+                           "code": sample_dm,
+                           "type": "Sample"}
+
+            sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
+            samples.update({s.getAddress(): sample_data})
+
+
     sample_list_ho = mxcube.queue.queue_hwobj._queue_entry_list
     todo = []
     history = []
-    sample_list = []
+    sample_list = {}
     for sample in sample_list_ho:
         sample_model = sample.get_data_model()
         name = sample_model.loc_str
@@ -208,8 +226,22 @@ def get_queue_state():
             history.append(name)
         else:
             todo.append(name)
-        sample_list.append(name)
+
+        sample_data = {"sampleID": name,
+                       "location": "Manual" if sample_model.free_pin_mode else sample_model.loc_str,
+                       "sampleName": sample_model.get_name(),
+                       "type": "Sample",
+                       "proteinAcronym": sample_model.crystals[0].protein_acronym,
+                       "defaultPrefix": sample_model.get_name() + '-' + sample_model.crystals[0].protein_acronym
+                       }
+
+        sample_list.update({name: sample_data})
+
     if mxcube.diffractometer.use_sc:
+        if len(sample_list) != 0:
+            sample_list = samples
+        else:
+            sample_list = {}
         try:
             basket, puck = mxcube.queue.mounted_sample.split(':')  #sample_changer.getLoadedSample().split(':')
             loaded = basket + ":{:0>2d}".format(int(puck))  # "1:2" -> "1:02"
@@ -308,6 +340,8 @@ def _handle_sample(node):
     return {node.loc_str: {'sampleID': node.loc_str,
                            'queueID': node._node_id,
                            'location': location,
+                           'sampleName': node.get_name(),
+                           'proteinAcronym': node.crystals[0].protein_acronym,
                            'type': 'Sample',
                            'checked': enabled,
                            'state': state,
