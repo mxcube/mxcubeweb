@@ -16,7 +16,6 @@ from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from . import limsutils
 
-
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
@@ -214,6 +213,12 @@ def get_queue_state():
             sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
             samples.update({s.getAddress(): sample_data})
 
+    queue = queue_to_dict()
+    try:
+        order = queue.pop("sample_order")
+    except Exception:
+        order = []
+        pass
 
     sample_list_ho = mxcube.queue.queue_hwobj._queue_entry_list
     todo = []
@@ -222,7 +227,7 @@ def get_queue_state():
     for sample in sample_list_ho:
         sample_model = sample.get_data_model()
         name = sample_model.loc_str
-        if sample_model.is_executed():
+        if queue[name]["state"] > 1:
             history.append(name)
         else:
             todo.append(name)
@@ -258,16 +263,12 @@ def get_queue_state():
     except Exception:
         pass
 
-    queue = queue_to_dict()
-    try:
-        queue.pop("sample_order")
-    except Exception:
-        pass
     res = {"sample_list": sample_list,
            "history": history,
            "todo": todo,
            "loaded": loaded,
-           "queue": queue
+           "queue": queue,
+           "sample_order": order
            }
 
     return res
@@ -338,7 +339,7 @@ def _handle_sample(node):
         state = 1
     elif 3 in children_states:
         state = 3
-    elif 2 in children_states:
+    elif all(i == 2 for i in children_states) and len(children_states) > 0:
         state = 2
     else:
         state = 0
