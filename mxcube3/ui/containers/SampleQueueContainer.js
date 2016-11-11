@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
@@ -11,7 +10,6 @@ import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
-import UserMessage from '../components/Notify/UserMessage';
 
 
 function mapStateToProps(state) {
@@ -28,9 +26,8 @@ function mapStateToProps(state) {
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
-    displayData: state.queue.displayData,
-    manualMount: state.queue.manualMount,
-    userMessages: state.general.userMessages
+    displayData: state.queueGUI.displayData,
+    manualMount: state.queue.manualMount
   };
 }
 
@@ -39,7 +36,7 @@ function mapDispatchToProps(dispatch) {
   return {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch),
+    showForm: bindActionCreators(showTaskForm, dispatch)
   };
 }
 
@@ -139,12 +136,6 @@ export default class SampleQueueContainer extends React.Component {
                   collapseSample={collapseSample}
                   displayData={displayData}
                   mount={sendMountSample}
-                />
-                <UserMessage
-                  messages={this.props.userMessages}
-                  domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
-                  placement="left"
-                  target="queue"
                 />
               </div>
       </div>
