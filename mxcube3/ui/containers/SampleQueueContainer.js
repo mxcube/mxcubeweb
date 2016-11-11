@@ -25,7 +25,7 @@ function mapStateToProps(state) {
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
-    displayData: state.queue.displayData,
+    displayData: state.queueGUI.displayData,
     manualMount: state.queue.manualMount
   };
 }
@@ -80,14 +80,14 @@ export default class SampleQueueContainer extends React.Component {
       collapseTask,
       collapseSample,
       deleteTask,
-      setCurrentSample
+      sendMountSample
     } = this.props.queueActions;
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
-                  historyLength={history.nodes.length}
-                  todoLength={todo.nodes.length}
+                  historyLength={history.length}
+                  todoLength={todo.length}
                   currentNode={current.node}
                   queueStatus={queueStatus}
                   runQueue={sendRunQueue}
@@ -123,17 +123,17 @@ export default class SampleQueueContainer extends React.Component {
                   collapseTask={collapseTask}
                   displayData={displayData}
                   manualMount={manualMount}
-                  mount={setCurrentSample}
-                  todoList={todo.nodes}
+                  mount={sendMountSample}
+                  todoList={todo}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
-                  list={todo.nodes}
+                  list={todo}
                   sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}
                   displayData={displayData}
-                  mount={setCurrentSample}
+                  mount={sendMountSample}
                 />
               </div>
       </div>

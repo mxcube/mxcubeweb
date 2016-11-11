@@ -17,8 +17,7 @@ class DataCollection extends React.Component {
       type: 'DataCollection',
       label: 'Data Collection',
       helical: false,
-      point: this.props.pointId,
-      typePrefix: 'P',
+      point: this.props.pointId
     };
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
@@ -31,7 +30,6 @@ class DataCollection extends React.Component {
       'path',
       'type',
       'point',
-      'typePrefix',
       'label',
       'helical'
     ];

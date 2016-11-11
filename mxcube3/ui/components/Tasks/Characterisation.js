@@ -18,7 +18,6 @@ class Characterisation extends React.Component {
       type: 'Characterisation',
       label: 'Characterisation',
       point: this.props.pointId,
-      typePrefix: 'P',
       helical: false
     };
 
@@ -33,7 +32,6 @@ class Characterisation extends React.Component {
       'path',
       'type',
       'point',
-      'typePrefix',
       'label',
       'helical'
     ];

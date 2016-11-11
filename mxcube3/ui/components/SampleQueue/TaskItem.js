@@ -132,11 +132,20 @@ export default class TaskItem extends Component {
       warning: state === 4
     });
 
+    let typePrefix = '';
+
+    if (data.type === 'DataCollection' || data.type === 'Characterisation') {
+      typePrefix = 'P';
+    } else {
+      typePrefix = 'L';
+    }
+
+
     const element = (
       <div className="node node-sample" style={{ opacity }}>
           <div className={taskCSS} onClick={this.collapseTask}>
             <p className="node-name">
-              {`${data.parameters.typePrefix}${data.parameters.point} ${data.label}`}
+              {`${typePrefix}${data.parameters.point} ${data.label}`}
             </p>
           </div>
           <Collapse in={Boolean(show)}>
@@ -151,6 +160,7 @@ export default class TaskItem extends Component {
                       onMouseEnter={() => this.setState({ overInput: true }) }
                       onMouseLeave={() => this.setState({ overInput: false }) }
                       className="form-control"
+                      readOnly
                       value={`${rootPath}${data.parameters.path}`}
                     />
                   </div>
@@ -160,6 +170,7 @@ export default class TaskItem extends Component {
                     onMouseEnter={() => this.setState({ overInput: true }) }
                     onMouseLeave={() => this.setState({ overInput: false }) }
                     className="form-control"
+                    readOnly
                     value={data.parameters.prefix}
                   />
                 </div>
