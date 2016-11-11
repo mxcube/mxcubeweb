@@ -64,7 +64,7 @@ def load_queue_from_dict(queue_dict):
 
         for sid in queue_dict['sample_order']:
             item_list.append(queue_dict[sid])
-            
+
         queue_add_item(item_list)
 
 
@@ -118,15 +118,15 @@ def queue_to_json(node=None):
                   queueID: qid_N,
                   location: location_n,
                   tasks: [task1, ... taskn]} ]
-    
+
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (Datacollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
              the corresponding node.
-    """   
+    """
     if not node:
         node = mxcube.queue.get_model_root()
-    
+
     res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
     return json.dumps(res, sort_keys=True, indent=4)
 
@@ -140,10 +140,10 @@ def queue_to_json_response(node=None):
                           nothing is passed.
 
     :returns: Flask Response object
-    """   
+    """
     if not node:
         node = mxcube.queue.get_model_root()
-    
+
     res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
     return jsonify(res)
 
@@ -158,7 +158,10 @@ def get_node_state(node_id):
             where state: {0, 1, 2, 3} = {in_queue, running, sucess, failed}
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
-    node, entry = get_entry(node_id)
+    try:
+        node, entry = get_entry(node_id)
+    except:
+        return (1, 0)
     executed = node.is_executed()
     enabled = node.is_enabled()
     failed = entry._execution_failed
@@ -263,26 +266,50 @@ def _handle_char(sample_id, node):
     refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
     parameters.update(refp)
 
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+
     res = {"label": "Characterisation",
            "type": "Characterisation",
            "parameters": parameters,
            "checked": node.is_enabled(),
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
-           "queueID": node._node_id}
+           "queueID": node._node_id,
+           "checked": enabled,
+           "state": state
+           }
 
     return res
+
 
 def _handle_sample(node):
     location = 'Manual' if node.free_pin_mode else node.loc_str
     enabled, state = get_node_state(node._node_id)
+
+    children = node.get_children()
+
+    children_states = []
+    for child in children:
+        child = child.get_children()[0]  # assuming on task on each task group
+        child_enabled, child_state = get_node_state(child._node_id)
+        children_states.append(child_state)
+
+    if 1 in children_states:
+        state = 1
+    elif 3 in children_states:
+        state = 3
+    elif 2 in children_states:
+        state = 2
+    else:
+        state = 0
 
     return {node.loc_str: {'sampleID': node.loc_str,
                            'queueID': node._node_id,
                            'location': location,
                            'type': 'Sample',
                            'checked': enabled,
-                           'state': state
+                           'state': state,
                            'tasks': queue_to_dict_rec(node)}}
 
 
@@ -438,6 +465,7 @@ def add_sample(sample_id, item):
     """
     # Is the sample with location sample_id already in the queue,
     # in that case, send error response
+
     for sampleId, sampleData in queue_to_dict().iteritems():
         if sampleId == sample_id:
             msg = "[QUEUE] sample could not be added, already in the queue"
@@ -447,7 +475,7 @@ def add_sample(sample_id, item):
 
     # We should really use sample_id instead of loc_str
     sample_model.loc_str = sample_id
-    sample_model.free_pin_mode = item['location'] == 'Manual' 
+    sample_model.free_pin_mode = item['location'] == 'Manual'
 
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
