@@ -101,14 +101,15 @@ def mountSample(sample):
     # beamline.mount_sample(location)
    
     try:
-        pass
         # We are not using the sample changer to mount the sample, set
         # centering phase directly
         #if not mxcube.diffractometer.use_sc:
         #    mxcube.diffractometer.set_phase("Centring")
+        logging.getLogger('HWR').info('[SC] mounting %s' % sample)
 
-        mxcube.sample_changer.load(sample, False)
-
+        if mxcube.diffractometer.use_sc:  
+            mxcube.sample_changer.load(sample, False)
+        mxcube.queue.mounted_sample = sample
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         return Response(status=409)
@@ -132,6 +133,7 @@ def unmountSample(sample):
             return Response(status=200)
 
         mxcube.sample_changer.unload(sample, False)
+        mxcube.queue.mounted_sample = ''
 
         #Remove Centring points
         mxcube.diffractometer.savedCentredPos = []
