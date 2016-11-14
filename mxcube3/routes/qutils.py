@@ -288,7 +288,6 @@ def _handle_dc(sample_id, node):
     res = {"label": "Data Collection",
            "type": "DataCollection",
            "parameters": parameters,
-           "checked": node.is_enabled(),
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
