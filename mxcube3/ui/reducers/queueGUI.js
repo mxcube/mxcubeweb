@@ -40,6 +40,18 @@ export default (state = initialState, action) => {
 
       return Object.assign({}, state, { displayData });
     }
+
+    case 'ADD_SAMPLES': {
+      const samplesData = {};
+      action.samplesData.forEach((sample) => {
+        samplesData[sample.sampleID] = { collapsed: false, tasks: sample.tasks.map(() => {
+          return { collapsed: false };
+        }) };
+      });
+
+      return Object.assign({}, state, { displayData: { ...state.displayData, ...samplesData } });
+    }
+
     case 'ADD_SAMPLE': {
       const sampleID = action.sampleData.sampleID;
       const displayData = { ...state.displayData, [sampleID]: { collapsed: false, tasks: [] } };
@@ -91,6 +103,10 @@ export default (state = initialState, action) => {
 
       return { ...state, displayData };
     }
+    case 'CLEAR_ALL':
+      {
+        return initialState;
+      }
     default:
       return state;
   }
