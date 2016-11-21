@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
@@ -10,6 +11,8 @@ import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
+import UserMessage from '../components/Notify/UserMessage';
+
 
 function mapStateToProps(state) {
   return {
@@ -27,7 +30,8 @@ function mapStateToProps(state) {
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
     displayData: state.queue.displayData,
-    manualMount: state.queue.manualMount
+    manualMount: state.queue.manualMount,
+    userMessages: state.general.userMessages
   };
 }
 
@@ -36,7 +40,7 @@ function mapDispatchToProps(dispatch) {
   return {
     queueActions: bindActionCreators(QueueActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch)
+    showForm: bindActionCreators(showTaskForm, dispatch),
   };
 }
 
@@ -96,6 +100,7 @@ export default class SampleQueueContainer extends React.Component {
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
+                  ref="queueContainer"
                   historyLength={history.nodes.length}
                   todoLength={todo.nodes.length}
                   currentNode={current.node}
@@ -103,51 +108,55 @@ export default class SampleQueueContainer extends React.Component {
                   runQueue={this.runQueue}
                   stopQueue={sendStopQueue}
                 />
-              <div className="queue-body">
-                <div className="m-tree">
-                  <Nav
-                    bsStyle="tabs"
-                    justified
-                    activeKey={visibleList}
-                    onSelect={this.handleSelect}
-                  >
-                    <NavItem eventKey={'current'}>Current</NavItem>
-                    <NavItem eventKey={'todo'}>Upcoming</NavItem>
-                  </Nav>
-                  <CurrentTree
-                    changeOrder={changeTaskOrder}
-                    show={visibleList === 'current'}
-                    mounted={current.node}
-                    sampleInformation={sampleInformation}
-                    queue={queue}
-                    toggleCheckBox={sendToggleCheckBox}
-                    checked={checked}
-                    deleteTask={deleteTask}
-                    run={this.runSample}
-                    pause={sendPauseQueue}
-                    unpause={sendUnpauseQueue}
-                    stop={sendStopQueue}
-                    showForm={showForm}
-                    unmount={sendUnmountSample}
-                    queueStatus={queueStatus}
-                    rootPath={rootPath}
-                    collapseTask={collapseTask}
-                    displayData={displayData}
-                    manualMount={manualMount}
-                    mount={setCurrentSample}
-                    todoList={todo.nodes}
-                  />
-                  <TodoTree
-                    show={visibleList === 'todo'}
-                    list={todo.nodes}
-                    sampleInformation={queue}
-                    queue={queue}
-                    collapseSample={collapseSample}
-                    displayData={displayData}
-                    mount={setCurrentSample}
-                  />
-                </div>
-            </div>
+              <div className="m-tree queue-body">
+                <Nav
+                  bsStyle="tabs"
+                  justified
+                  activeKey={visibleList}
+                  onSelect={this.handleSelect}
+                >
+                  <NavItem eventKey={'current'}>Current</NavItem>
+                  <NavItem eventKey={'todo'}>Upcoming</NavItem>
+                </Nav>
+                <CurrentTree
+                  changeOrder={changeTaskOrder}
+                  show={visibleList === 'current'}
+                  mounted={current.node}
+                  sampleInformation={sampleInformation}
+                  queue={queue}
+                  toggleCheckBox={sendToggleCheckBox}
+                  checked={checked}
+                  deleteTask={deleteTask}
+                  run={this.runSample}
+                  pause={sendPauseQueue}
+                  unpause={sendUnpauseQueue}
+                  stop={sendStopQueue}
+                  showForm={showForm}
+                  unmount={sendUnmountSample}
+                  queueStatus={queueStatus}
+                  rootPath={rootPath}
+                  collapseTask={collapseTask}
+                  displayData={displayData}
+                  manualMount={manualMount}
+                  mount={setCurrentSample}
+                  todoList={todo.nodes}
+                />
+                <TodoTree
+                  show={visibleList === 'todo'}
+                  list={todo.nodes}
+                  sampleInformation={queue}
+                  queue={queue}
+                  collapseSample={collapseSample}
+                  displayData={displayData}
+                  mount={setCurrentSample}
+                />
+                <UserMessage
+                  messages={this.props.userMessages}
+                  domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
+                  placement="left"
+                  target="queue"
+                />
+              </div>
       </div>
     );
   }
