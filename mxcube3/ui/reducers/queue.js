@@ -101,6 +101,24 @@ export default (state = initialState, action) => {
     case 'CLEAR_QUEUE': {
       return Object.assign({}, state, { queue: {} });
     }
+
+    // Adding sample to queue
+    case 'ADD_SAMPLES': {
+      const samplesID = action.samplesData.map((sample) => sample.sampleID);
+      const samplesData = {};
+      action.samplesData.forEach((sample) => {
+        samplesData[sample.sampleID] = { ...sample, state: 0 };
+      });
+
+      return Object.assign({}, state,
+        {
+          todo: [...state.todo, ...samplesID],
+          queue: { ...state.queue, ...samplesData },
+          sampleOrder: [...state.sampleOrder, ...samplesID]
+        }
+      );
+    }
+
     // Adding sample to queue
     case 'ADD_SAMPLE': {
       const sampleID = action.sampleData.sampleID;
@@ -122,6 +140,7 @@ export default (state = initialState, action) => {
         }
       );
     }
+
         // Setting state
     case 'SET_QUEUE_STATUS':
       return {
