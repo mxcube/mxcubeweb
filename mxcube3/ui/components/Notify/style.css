@@ -1,0 +1,65 @@
+.message {
+  position: relative;
+  padding: 0.7em;
+  border-color: #333;
+  opacity: 1;
+}
+
+.messageINFO {
+  border-top: 5px solid #2196F3;
+  background-color: #5B8DB4B3;
+}
+
+.messageWARNING {
+  border-top: 5px solid #2196F3;
+  background-color: #5B8DB4B3;
+}
+
+.messageERROR {
+  border-top: 5px solid #D9534F;
+  background-color: #D9534F99;
+}
+
+.messageText {
+  color: #FFF;
+  font-weight: bold;
+}
+
+.messageHidden {
+  transition: 1s ease-out;
+  position: relative;
+  margin: 1em;
+  padding: 1em;
+  border-radius: 5px;
+  border-color: #333;
+  opacity: 0;
+  height: 0px;
+}
+
+.closebtn {
+  display: block;
+  margin-left: 15px;
+  color: #FFF;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+
+.messageContainer {
+  position: relative;
+  z-index: 9999;
+  background-color: #CCC;
+}
+
+.messageContainerInner {
+  position: absolute;
+  bottom: 0px;
+  overflow: hidden;
+}
