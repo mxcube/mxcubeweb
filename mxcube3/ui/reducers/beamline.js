@@ -149,6 +149,12 @@ export default (state = INITIAL_STATE, action) => {
                                      Status: state.motors[action.name].Status }
                                  }
              };
+    case 'UPDATE_MOTOR_STATE':
+      return { ...state, motors: { ...state.motors, [action.name]:
+                                   { position: state.motors[action.name].position,
+                                     Status: action.value }
+                                 }
+             };
     case 'SET_INITIAL_STATUS':
       return { ...state,
         motors: { ...state.motors, ...action.data.Motors },

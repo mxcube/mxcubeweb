@@ -24,25 +24,28 @@ def init_signals():
     mxcube.diffractometer.savedCentredPos = []
     mxcube.diffractometer.savedCentredPosCount = 1
     for signal in signals.microdiffSignals:
-        if signal in signals.motor_signals:
-            mxcube.diffractometer.connect(mxcube.diffractometer, signal,
-                                          signals.motor_event_callback)
-        elif signal in signals.task_signals:
+        if signal in signals.task_signals:
             mxcube.diffractometer.connect(mxcube.diffractometer,
                                           signal, signals.task_event_callback)
         else:
-            pass
+            mxcube.diffractometer.connect(mxcube.diffractometer, signal,
+                                          signals.motor_event_callback)
     for motor in mxcube.diffractometer.centring_motors_list:
         @Utils.RateLimited(3)
         def pos_cb(pos, motor=motor.lower(), **kw):
           signals.motor_position_callback(motor, pos)
+
+        def state_cb(state, motor=motor.lower(), **kw):
+          signals.motor_state_callback(motor, state, **kw)
+
         setattr(mxcube.diffractometer, "_%s_pos_callback" % motor, pos_cb)
+        setattr(mxcube.diffractometer, "_%s_state_callback" % motor, state_cb)
         mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
                                       "positionChanged",
                                       pos_cb)
         mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
                                       "stateChanged",
-                                      signals.motor_event_callback)
+                                      state_cb) #signals.motor_event_callback)
     try:
         frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
         frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged',

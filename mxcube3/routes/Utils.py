@@ -11,7 +11,8 @@ def RateLimited(maxPerSecond):
             elapsed = time.time() - lastTimeCalled[0]
             leftToWait = minInterval - elapsed
             if leftToWait>0:
-                gevent.sleep(leftToWait)
+                # ignore update
+                return
             ret = func(*args,**kargs)
             lastTimeCalled[0] = time.time()
             return ret
