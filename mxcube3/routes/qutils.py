@@ -455,6 +455,26 @@ def swap_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list[ti1] = ti2_temp_entry
 
 
+def move_task_entry(sid, ti1, ti2):
+    """
+    Swaps order of two queue entries in the queue, with the same sample <sid>
+    as parent
+
+    :param str sid: Sample id
+    :param int ti1: Position of task1 (old position)
+    :param int ti2: Position of task2 (new position)
+    """
+    current_queue = queue_to_dict()
+
+    node_id = current_queue[sid]["queueID"]
+    smodel, sentry = get_entry(node_id)
+
+    # Move the order in the queue model
+    smodel._children.insert(ti2, smodel._children.pop(ti1))
+
+    # Swap queue entry order
+    sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
+
 def queue_add_item(item_list):
     """
     Adds the queue items in item_list to the queue. The items in the list can
