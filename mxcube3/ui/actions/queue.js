@@ -211,19 +211,40 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
   });
 }
 
+export function sendMoveTask(sampleID, oldIndex, newIndex) {
+  return fetch(`mxcube/api/v0.1/queue/${sampleID}/${oldIndex}/${newIndex}/move`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    }
+  });
+}
 
-export function changeTaskOrder(sampleID, oldIndex, newIndex) {
+export function moveTask(sampleID, oldIndex, newIndex) {
   return function (dispatch) {
-    dispatch(changeTaskOrderAction(sampleID, oldIndex, newIndex));
-
-    sendChangeTaskOrder(sampleID, oldIndex, newIndex).then((response) => {
+    sendMoveTask(sampleID, oldIndex, newIndex).then((response) => {
       if (response.status >= 400) {
         dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-        throw new Error('Could not change order');
+        throw new Error('Could not move task');
       }
     });
   };
 }
+
+// export function changeTaskOrder(sampleID, oldIndex, newIndex) {
+//   return function (dispatch) {
+//     dispatch(changeTaskOrderAction(sampleID, oldIndex, newIndex));
+
+//     sendChangeTaskOrder(sampleID, oldIndex, newIndex).then((response) => {
+//       if (response.status >= 400) {
+//         dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
+//         throw new Error('Could not change order');
+//       }
+//     });
+//   };
+// }
 
 
 export function runSample(queueID) {
