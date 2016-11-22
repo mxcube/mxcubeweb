@@ -8,11 +8,12 @@ const cardSource = {
   beginDrag(props) {
     return {
       id: props.id,
-      index: props.index
+      index: props.index,
+      startIndex: props.index
     };
   },
-  endDrag(props) {
-    // insert call to server for changing order
+  endDrag(props, monitor) {
+    props.moveTask(props.sampleId, monitor.getItem().startIndex, props.index);
     return {
       id: props.id,
       index: props.index
@@ -69,7 +70,7 @@ const cardTarget = {
 };
 
 @dropTarget('task', cardTarget, connect => ({
-  connectDropTarget: connect.dropTarget()
+  connectDropTarget: connect.dropTarget(),
 }))
 @dragSource('task', cardSource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),

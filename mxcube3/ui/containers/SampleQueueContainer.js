@@ -76,11 +76,12 @@ export default class SampleQueueContainer extends React.Component {
       sendUnpauseQueue,
       sendStopQueue,
       sendUnmountSample,
-      changeTaskOrder,
+      changeTaskOrderAction,
       collapseTask,
       collapseSample,
       deleteTask,
-      sendMountSample
+      sendMountSample,
+      moveTask
     } = this.props.queueActions;
 
     return (
@@ -104,7 +105,7 @@ export default class SampleQueueContainer extends React.Component {
                   <NavItem eventKey={'todo'}>Upcoming</NavItem>
                 </Nav>
                 <CurrentTree
-                  changeOrder={changeTaskOrder}
+                  changeOrder={changeTaskOrderAction}
                   show={visibleList === 'current'}
                   mounted={current.node}
                   sampleInformation={sampleInformation}
@@ -125,6 +126,7 @@ export default class SampleQueueContainer extends React.Component {
                   manualMount={manualMount}
                   mount={sendMountSample}
                   todoList={todo}
+                  moveTask={moveTask}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
