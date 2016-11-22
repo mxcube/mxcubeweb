@@ -236,6 +236,15 @@ def queue_swap_task_item(sid, ti1, ti2):
     #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     #qutils.save_queue(session)
     return Response(status=200) 
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/move", methods=['POST'])
+def queue_move_task_item(sid, ti1, ti2):
+    qutils.move_task_entry(sid, int(ti1), int(ti2))
+    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    #qutils.save_queue(session)
+    return Response(status=200)
+
    
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
