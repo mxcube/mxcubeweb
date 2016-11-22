@@ -32,7 +32,8 @@ import {
   deleteTask,
   deleteSample,
   sendClearQueue,
-  addSample
+  addSample,
+  addSamples
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
@@ -235,9 +236,11 @@ class SampleGridContainer extends React.Component {
 
 
   addSelectedSamples() {
+    const samples = [];
     for (const sampleID of Object.keys(this.props.selected)) {
-      this.props.addSample(this.props.sampleList[sampleID]);
+      samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
     }
+    this.props.addSamples(samples);
   }
 
 
@@ -520,6 +523,7 @@ function mapDispatchToProps(dispatch) {
     deleteSample: (sampleID) => dispatch(deleteSample(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSample: (sampleData) => dispatch(addSample(sampleData)),
+    addSamples: (sampleData) => dispatch(addSamples(sampleData)),
     showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
   };
 }

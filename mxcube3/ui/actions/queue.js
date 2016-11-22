@@ -144,6 +144,10 @@ export function addSampleAction(sampleData) {
   return { type: 'ADD_SAMPLE', sampleData };
 }
 
+export function addSamplesAction(samplesData) {
+  return { type: 'ADD_SAMPLES', samplesData };
+}
+
 
 export function appendSampleListAction(sampleData) {
   return { type: 'APPEND_TO_SAMPLE_LIST', sampleData };
@@ -374,6 +378,12 @@ export function sendMountSample(sampleID) {
   };
 }
 
+export function addSamples(sampleData) {
+  return function (dispatch) {
+    sendAddQueueItem(sampleData);
+    dispatch(addSamplesAction(sampleData));
+  };
+}
 
 export function addSample(sampleData) {
   return function (dispatch, getState) {
