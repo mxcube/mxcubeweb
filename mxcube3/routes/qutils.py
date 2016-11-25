@@ -685,6 +685,7 @@ def add_characterisation(node_id, task):
 
     mxcube.queue.add_child(sample_model, refgroup_model)
     mxcube.queue.add_child(refgroup_model, char_model)
+
     refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
     refgroup_entry.set_enabled(True)
