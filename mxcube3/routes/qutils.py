@@ -292,7 +292,8 @@ def _handle_dc(sample_id, node):
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
            "checked": enabled,
-           "state": state
+           "state": state,
+           "limstResultData": mxcube.rest_lims.get_dc(node.id),
            }
 
     return res
