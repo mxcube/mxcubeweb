@@ -20,6 +20,7 @@ function mapStateToProps(state) {
     queueStatus: state.queue.queueStatus,
     history: state.queue.history,
     queue: state.queue.queue,
+    sampleOrder: state.queue.sampleOrder,
     sampleInformation: state.queue.sampleList,
     checked: state.queue.checked,
     select_all: state.queue.selectAll,
@@ -47,10 +48,21 @@ export default class SampleQueueContainer extends React.Component {
   constructor(props) {
     super(props);
     this.handleSelect = this.handleSelect.bind(this);
+    this.runQueue = this.runQueue.bind(this);
+    this.runSample = this.runSample.bind(this);
   }
 
   handleSelect(selectedKey) {
     this.props.queueActions.showList(selectedKey);
+  }
+
+  runQueue() {
+    this.props.queueActions.setQueueAndRun(this.props.queue, this.props.sampleOrder);
+  }
+
+  runSample(sampleID) {
+    const queue = { sampleID: this.props.queue[sampleID] };
+    this.props.queueActions.setQueueAndRun(queue, this.props.sampleOrder);
   }
 
   render() {
@@ -70,8 +82,6 @@ export default class SampleQueueContainer extends React.Component {
     } = this.props;
     const {
       sendToggleCheckBox,
-      sendRunSample,
-      sendRunQueue,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
@@ -90,52 +100,54 @@ export default class SampleQueueContainer extends React.Component {
                   todoLength={todo.nodes.length}
                   currentNode={current.node}
                   queueStatus={queueStatus}
-                  runQueue={sendRunQueue}
+                  runQueue={this.runQueue}
                   stopQueue={sendStopQueue}
                 />
-              <div className="m-tree queue-body">
-                <Nav
-                  bsStyle="tabs"
-                  justified
-                  activeKey={visibleList}
-                  onSelect={this.handleSelect}
-                >
-                  <NavItem eventKey={'current'}>Current</NavItem>
-                  <NavItem eventKey={'todo'}>Upcoming</NavItem>
-                </Nav>
-                <CurrentTree
-                  changeOrder={changeTaskOrder}
-                  show={visibleList === 'current'}
-                  mounted={current.node}
-                  sampleInformation={sampleInformation}
-                  queue={queue}
-                  toggleCheckBox={sendToggleCheckBox}
-                  checked={checked}
-                  deleteTask={deleteTask}
-                  run={sendRunSample}
-                  pause={sendPauseQueue}
-                  unpause={sendUnpauseQueue}
-                  stop={sendStopQueue}
-                  showForm={showForm}
-                  unmount={sendUnmountSample}
-                  queueStatus={queueStatus}
-                  rootPath={rootPath}
-                  collapseTask={collapseTask}
-                  displayData={displayData}
-                  manualMount={manualMount}
-                  mount={setCurrentSample}
-                  todoList={todo.nodes}
-                />
-                <TodoTree
-                  show={visibleList === 'todo'}
-                  list={todo.nodes}
-                  sampleInformation={queue}
-                  queue={queue}
-                  collapseSample={collapseSample}
-                  displayData={displayData}
-                  mount={setCurrentSample}
-                />
-              </div>
+              <div className="queue-body">
+                <div className="m-tree">
+                  <Nav
+                    bsStyle="tabs"
+                    justified
+                    activeKey={visibleList}
+                    onSelect={this.handleSelect}
+                  >
+                    <NavItem eventKey={'current'}>Current</NavItem>
+                    <NavItem eventKey={'todo'}>Upcoming</NavItem>
+                  </Nav>
+                  <CurrentTree
+                    changeOrder={changeTaskOrder}
+                    show={visibleList === 'current'}
+                    mounted={current.node}
+                    sampleInformation={sampleInformation}
+                    queue={queue}
+                    toggleCheckBox={sendToggleCheckBox}
+                    checked={checked}
+                    deleteTask={deleteTask}
+                    run={this.runSample}
+                    pause={sendPauseQueue}
+                    unpause={sendUnpauseQueue}
+                    stop={sendStopQueue}
+                    showForm={showForm}
+                    unmount={sendUnmountSample}
+                    queueStatus={queueStatus}
+                    rootPath={rootPath}
+                    collapseTask={collapseTask}
+                    displayData={displayData}
+                    manualMount={manualMount}
+                    mount={setCurrentSample}
+                    todoList={todo.nodes}
+                  />
+                  <TodoTree
+                    show={visibleList === 'todo'}
+                    list={todo.nodes}
+                    sampleInformation={queue}
+                    queue={queue}
+                    collapseSample={collapseSample}
+                    displayData={displayData}
+                    mount={setCurrentSample}
+                  />
+                </div>
+            </div>
       </div>
     );
   }

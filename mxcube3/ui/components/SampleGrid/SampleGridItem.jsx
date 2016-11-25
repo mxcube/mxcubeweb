@@ -490,10 +490,14 @@ export class SampleGridItem extends React.Component {
 
   render() {
     const itemKey = this.props.itemKey;
+
     let classes = classNames('samples-grid-item',
       { 'samples-grid-item-selected': this.props.selected[itemKey] && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
-        'samples-grid-item-to-be-collected': this.props.picked });
+        'samples-grid-item-to-be-collected': this.props.picked &&
+                                             !(this.props.collected || this.props.current),
+        'samples-grid-item-current': this.props.current && !this.props.collected,
+        'samples-grid-item-collected': this.props.collected });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
                                        { 'label-success': this.props.loadable });

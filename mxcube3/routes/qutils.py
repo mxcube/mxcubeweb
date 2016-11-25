@@ -362,7 +362,7 @@ def add_sample(sample_id, item):
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
     else:
-        sample_model.location = item['location'].split(':')
+        sample_model.location = tuple(map(int, item['location'].split(':')))
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
     sample_entry.set_enabled(True)

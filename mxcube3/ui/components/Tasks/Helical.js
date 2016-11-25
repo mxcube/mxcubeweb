@@ -38,27 +38,7 @@ class Helical extends React.Component {
       'helical'
     ];
 
-    for (const key in parameters) {
-      if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
-        parameters[key] = Number(parameters[key]);
-      }
-    }
-
-    if (this.props.sampleIds.constructor === Array) {
-      for (const sampleId of this.props.sampleIds) {
-        if (this.props.queue[sampleId]) {
-          this.props.addTask(sampleId, parameters, this.props.queue, runNow);
-        } else {
-          const sampleData = this.props.sampleList[sampleId];
-          this.props.addSampleAndTask(sampleId, parameters, sampleData, this.props.queue, runNow);
-        }
-      }
-    } else {
-      const { taskData, sampleIds } = this.props;
-      const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
-      this.props.changeTask(sampleIds, taskIndex, parameters, this.props.queue, runNow);
-    }
-
+    this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 

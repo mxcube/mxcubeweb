@@ -32,7 +32,9 @@ import {
   deleteTask,
   deleteSample,
   sendClearQueue,
-  addSample
+  addSample,
+  sendRunQueue,
+  setQueueAndRun
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
@@ -67,6 +69,7 @@ class SampleGridContainer extends React.Component {
     this.onClick = this.onClick.bind(this);
     this.collectButton = this.collectButton.bind(this);
     this.headerContent = this.headerContent.bind(this);
+    this.startCollect = this.startCollect.bind(this);
   }
 
 
@@ -257,14 +260,25 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  startCollect() {
+    if (!this.props.queue.manualMount.set) {
+      this.props.setQueueAndRun(this.props.queue.queue, this.props.queue.sampleOrder);
+    }
+
+    window.location = '#/datacollection';
+  }
+
   collectButton() {
+    const collectText = this.props.queue.manualMount.set ? 'Collect' :
+                        `Collect Queue ${this.numSamplesPicked()}/${this.numSamples()}`;
+
     let button = (
       <Button
         className="btn btn-success pull-right"
-        href="#/datacollection"
+        onClick={this.startCollect}
         disabled={this.isCollectDisabled()}
       >
-        Collect {this.numSamplesPicked()}/{this.numSamples()}
+        {collectText}
         <Glyphicon glyph="chevron-right" />
       </Button>);
 
@@ -519,6 +533,8 @@ function mapDispatchToProps(dispatch) {
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSample: (sampleData) => dispatch(addSample(sampleData)),
     showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
+    runQueue: () => dispatch(sendRunQueue()),
+    setQueueAndRun: (queue, sampleOrder) => dispatch(setQueueAndRun(queue, sampleOrder))
   };
 }
 
