@@ -81,6 +81,16 @@
 }
 
 
+.samples-grid-item-current {
+  background-color: #F0D64E;
+}
+
+
+.samples-grid-item-collected { 
+  background-color: #BAF04E;
+}
+
+
 .samples-grid-item-to-be-collected { 
   background-color: #CEE3F6;
 }

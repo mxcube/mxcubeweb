@@ -54,7 +54,7 @@ def queue_abort():
     Abort execution of the queue.
 
     :returns: Response object, status code set to:
-              200 on error
+              200 On success
               409 queue could not be aborted
     """
     mxcube.queue.queue_hwobj.stop()
@@ -172,7 +172,21 @@ def execute_entry_with_id(sid, tindex):
 
     signals.queue_execution_finished(None)
 
-    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/queue", methods=['PUT'])
+def set_queue():
+    # Clear queue
+    mxcube.diffractometer.savedCentredPos = []
+    mxcube.queue = qutils.new_queue()
+
+    # Set new queue
+    qutils.queue_add_item(request.get_json())
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    qutils.save_queue(session)
 
     return Response(status=200)
 
@@ -412,7 +426,7 @@ def get_default_dc_params():
         'inverse_beam': False,
         'take_dark_current': True,
         'skip_existing_images': False,
-        'take_snapshots': True
+        'take_snapshots': True,
         })
     resp.status_code = 200
     return resp
