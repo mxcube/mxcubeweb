@@ -547,9 +547,10 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 }
 
 
-export function updateTask(sampleID, taskIndex, params, queue, runNow) {
-  return function (dispatch) {
-    const taskData = { ...queue[sampleID].tasks[taskIndex], parameters: params };
+export function updateTask(sampleID, taskIndex, params, runNow) {
+  return function (dispatch, getState) {
+    const { queue } = getState();
+    const taskData = { ...queue.queue[sampleID].tasks[taskIndex], parameters: params };
     dispatch(updateTaskAction(sampleID, taskIndex, taskData));
 
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
