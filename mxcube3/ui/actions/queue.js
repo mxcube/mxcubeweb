@@ -492,7 +492,6 @@ export function addTaskAction(task) {
 
 export function addTask(sampleID, parameters, runNow) {
   return function (dispatch, getState) {
-    const { queue } = getState();
     const task = { type: parameters.type,
                    label: parameters.label,
                    sampleID,
@@ -500,6 +499,7 @@ export function addTask(sampleID, parameters, runNow) {
                    checked: true };
 
     dispatch(addTaskAction(task));
+    const { queue } = getState();
     const taskIndex = queue.queue[sampleID].tasks.length - 1;
 
     sendAddQueueItem([task]).then((response) => {
