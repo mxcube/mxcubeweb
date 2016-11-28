@@ -33,6 +33,7 @@ import {
   deleteSample,
   sendClearQueue,
   addSample,
+  addSamples,
   sendRunQueue,
   setQueueAndRun
 } from '../actions/queue';

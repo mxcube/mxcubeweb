@@ -44,9 +44,13 @@ export default (state = initialState, action) => {
     case 'ADD_SAMPLES': {
       const samplesData = {};
       action.samplesData.forEach((sample) => {
-        samplesData[sample.sampleID] = { collapsed: false, tasks: sample.tasks.map(() => {
-          return { collapsed: false };
-        }) };
+        samplesData[sample.sampleID] = {
+          collapsed: false,
+          tasks: sample.tasks.map(() => {
+            const taskGUI = { collapsed: false };
+            return taskGUI;
+          })
+        };
       });
 
       return Object.assign({}, state, { displayData: { ...state.displayData, ...samplesData } });
