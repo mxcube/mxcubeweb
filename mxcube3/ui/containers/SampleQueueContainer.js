@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
@@ -10,7 +11,7 @@ import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
-
+import UserMessage from '../components/Notify/UserMessage';
 
 function mapStateToProps(state) {
   return {
@@ -27,7 +28,8 @@ function mapStateToProps(state) {
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
     displayData: state.queueGUI.displayData,
-    manualMount: state.queue.manualMount
+    manualMount: state.queue.manualMount,
+    userMessages: state.general.userMessages
   };
 }
 
@@ -89,6 +91,7 @@ export default class SampleQueueContainer extends React.Component {
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
+                  ref="queueContainer"
                   historyLength={history.length}
                   todoLength={todo.length}
                   currentNode={current.node}
@@ -138,6 +141,12 @@ export default class SampleQueueContainer extends React.Component {
                   collapseSample={collapseSample}
                   displayData={displayData}
                   mount={sendMountSample}
+                />
+                <UserMessage
+                  messages={this.props.userMessages}
+                  domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
+                  placement="left"
+                  target="queue"
                 />
               </div>
       </div>
