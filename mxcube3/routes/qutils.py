@@ -292,7 +292,8 @@ def _handle_dc(sample_id, node):
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
            "checked": enabled,
-           "state": state
+           "state": state,
+           "limstResultData": mxcube.rest_lims.get_dc(node.id),
            }
 
     return res
@@ -323,6 +324,7 @@ def _handle_char(sample_id, node):
 
 def _handle_sample(node):
     location = 'Manual' if node.free_pin_mode else node.loc_str
+
     enabled, state = get_node_state(node._node_id)
 
     children = node.get_children()
@@ -378,8 +380,16 @@ def queue_to_dict_rec(node):
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]
+
             result.append(_handle_sample(node))
             result[0]['sample_order'].append(node.loc_str)
+            enabled, state = get_node_state(node._node_id)
+            result.append({node.loc_str: {'sampleID': node.loc_str,
+                                          'queueID': node._node_id,
+                                          'tasks': queue_to_json_rec(node),
+                                          'checked': enabled,
+                                          'state': state
+                                          }})
         elif isinstance(node, qmo.Characterisation):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_char(sample_id, node))
@@ -678,6 +688,7 @@ def add_characterisation(node_id, task):
     mxcube.queue.add_child(refgroup_model, char_model)
 
     refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
+
     refgroup_entry.set_enabled(True)
     sample_entry.enqueue(refgroup_entry)
     refgroup_entry.enqueue(char_entry)
