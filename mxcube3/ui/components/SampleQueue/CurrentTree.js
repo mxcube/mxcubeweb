@@ -114,8 +114,9 @@ export default class CurrentTree extends React.Component {
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
                   collapseTask={this.props.collapseTask}
-                  show={this.props.displayData[taskData.sampleID].tasks[i].collapsed}
                   state={this.props.queue[taskData.sampleID].tasks[i].state}
+                  show={this.props.displayData[taskData.sampleID].tasks[i].collapsed}
+                  moveTask={this.props.moveTask}
                 />);
               return task;
             })}

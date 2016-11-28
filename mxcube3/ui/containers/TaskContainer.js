@@ -9,9 +9,14 @@ import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 
 import {
+  addSampleAndTask,
   addTask,
   updateTask,
-  addSampleManualMount
+  addSample,
+  clearQueue,
+  appendSampleList,
+  setQueueAndRun,
+  setCurrentSample
 } from '../actions/queue';
 
 import {
@@ -23,64 +28,62 @@ class TaskContainer extends React.Component {
   constructor(props) {
     super(props);
     this.addSample = this.addSample.bind(this);
-    this.addTask = this.addTask.bind(this);
   }
 
   addSample(sampleData) {
-    this.props.addSampleManualMount(sampleData);
+    this.props.appendSampleList(sampleData);
+    this.props.addSample(sampleData);
     this.props.selectSamples([sampleData.sampleID], true);
-  }
-
-  addTask(params, stringFields, runNow) {
-    const parameters = { ...params };
-
-    for (const key in parameters) {
-      if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
-        parameters[key] = Number(parameters[key]);
-      }
-    }
-
-    if (this.props.sampleIds.constructor === Array) {
-      this.props.addTask(this.props.sampleIds, parameters, runNow);
-    } else {
-      const { taskData, sampleIds } = this.props;
-      const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
-      this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
-    }
+    this.props.setCurrentSample(sampleData.sampleID);
   }
 
   render() {
     return (
       <div className="col-xs-12">
         <Characterisation
-          addTask={this.addTask}
           pointId={this.props.pointId}
+          sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
+          addSampleAndTask={this.props.addSampleAndTask}
+          changeTask={this.props.changeTask}
+          addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'Characterisation'}
           rootPath={this.props.path}
+          queue={this.props.queue}
+          sampleList={this.props.sampleList}
         />
 
         <DataCollection
-          addTask={this.addTask}
           pointId={this.props.pointId}
+          sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
+          addSampleAndTask={this.props.addSampleAndTask}
+          changeTask={this.props.changeTask}
+          addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'DataCollection'}
           rootPath={this.props.path}
+          queue={this.props.queue}
+          sampleList={this.props.sampleList}
         />
 
         <Helical
-          addTask={this.addTask}
           pointId={this.props.pointId}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
+          addSampleAndTask={this.props.addSampleAndTask}
+          changeTask={this.props.changeTask}
+          addTask={this.props.addTask}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           show={this.props.showForm === 'Helical'}
           rootPath={this.props.path}
+          queue={this.props.queue}
+          sampleList={this.props.sampleList}
+          setQueueAndRun={this.props.setQueueAndRun}
           lines={this.props.lines}
         />
 
@@ -99,7 +102,6 @@ class TaskContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     queue: state.queue.queue,
-    sampleOrder: state.queue.sampleOrder,
     sampleList: state.queue.sampleList,
     showForm: state.taskForm.showForm,
     taskData: state.taskForm.taskData,
@@ -116,10 +118,15 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
-    selectSamples: bindActionCreators(selectAction, dispatch),
-    updateTask: bindActionCreators(updateTask, dispatch),
+    addSampleAndTask: bindActionCreators(addSampleAndTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
-    addSampleManualMount: bindActionCreators(addSampleManualMount, dispatch),
+    setQueueAndRun: bindActionCreators(setQueueAndRun, dispatch),
+    appendSampleList: bindActionCreators(appendSampleList, dispatch),
+    changeTask: bindActionCreators(updateTask, dispatch),
+    addSample: bindActionCreators(addSample, dispatch),
+    setCurrentSample: bindActionCreators(setCurrentSample, dispatch),
+    selectSamples: bindActionCreators(selectAction, dispatch),
+    clearQueue: bindActionCreators(clearQueue, dispatch)
   };
 }
 

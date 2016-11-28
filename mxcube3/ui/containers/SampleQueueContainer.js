@@ -29,7 +29,7 @@ function mapStateToProps(state) {
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
-    displayData: state.queue.displayData,
+    displayData: state.queueGUI.displayData,
     manualMount: state.queue.manualMount,
     userMessages: state.general.userMessages
   };
@@ -52,21 +52,10 @@ export default class SampleQueueContainer extends React.Component {
   constructor(props) {
     super(props);
     this.handleSelect = this.handleSelect.bind(this);
-    this.runQueue = this.runQueue.bind(this);
-    this.runSample = this.runSample.bind(this);
   }
 
   handleSelect(selectedKey) {
     this.props.queueActions.showList(selectedKey);
-  }
-
-  runQueue() {
-    this.props.queueActions.setQueueAndRun(this.props.queue, this.props.sampleOrder);
-  }
-
-  runSample(sampleID) {
-    const queue = { sampleID: this.props.queue[sampleID] };
-    this.props.queueActions.setQueueAndRun(queue, this.props.sampleOrder);
   }
 
   render() {
@@ -86,26 +75,28 @@ export default class SampleQueueContainer extends React.Component {
     } = this.props;
     const {
       sendToggleCheckBox,
+      sendRunSample,
+      sendRunQueue,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
       sendUnmountSample,
-      changeTaskOrder,
+      changeTaskOrderAction,
       collapseTask,
       collapseSample,
       deleteTask,
-      setCurrentSample
+      sendMountSample,
+      moveTask
     } = this.props.queueActions;
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
-                  ref="queueContainer"
-                  historyLength={history.nodes.length}
-                  todoLength={todo.nodes.length}
+                  historyLength={history.length}
+                  todoLength={todo.length}
                   currentNode={current.node}
                   queueStatus={queueStatus}
-                  runQueue={this.runQueue}
+                  runQueue={sendRunQueue}
                   stopQueue={sendStopQueue}
                 />
               <div className="m-tree queue-body">
@@ -119,7 +110,7 @@ export default class SampleQueueContainer extends React.Component {
                   <NavItem eventKey={'todo'}>Upcoming</NavItem>
                 </Nav>
                 <CurrentTree
-                  changeOrder={changeTaskOrder}
+                  changeOrder={changeTaskOrderAction}
                   show={visibleList === 'current'}
                   mounted={current.node}
                   sampleInformation={sampleInformation}
@@ -127,7 +118,7 @@ export default class SampleQueueContainer extends React.Component {
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
                   deleteTask={deleteTask}
-                  run={this.runSample}
+                  run={sendRunSample}
                   pause={sendPauseQueue}
                   unpause={sendUnpauseQueue}
                   stop={sendStopQueue}
@@ -138,17 +129,18 @@ export default class SampleQueueContainer extends React.Component {
                   collapseTask={collapseTask}
                   displayData={displayData}
                   manualMount={manualMount}
-                  mount={setCurrentSample}
-                  todoList={todo.nodes}
+                  mount={sendMountSample}
+                  todoList={todo}
+                  moveTask={moveTask}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
-                  list={todo.nodes}
+                  list={todo}
                   sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}
                   displayData={displayData}
-                  mount={setCurrentSample}
+                  mount={sendMountSample}
                 />
                 <UserMessage
                   messages={this.props.userMessages}
