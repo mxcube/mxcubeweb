@@ -386,7 +386,7 @@ def queue_to_dict_rec(node):
             enabled, state = get_node_state(node._node_id)
             result.append({node.loc_str: {'sampleID': node.loc_str,
                                           'queueID': node._node_id,
-                                          'tasks': queue_to_json_rec(node),
+                                          'tasks': queue_to_json(node),
                                           'checked': enabled,
                                           'state': state
                                           }})
