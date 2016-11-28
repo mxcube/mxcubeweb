@@ -29,7 +29,7 @@ function mapStateToProps(state) {
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
-    displayData: state.queue.displayData,
+    displayData: state.queueGUI.displayData,
     manualMount: state.queue.manualMount,
     userMessages: state.general.userMessages
   };
