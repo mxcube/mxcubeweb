@@ -248,8 +248,8 @@ def get_queue_state():
         else:
             sample_list = {}
         try:
-            basket, puck = mxcube.queue.mounted_sample.split(':')  #sample_changer.getLoadedSample().split(':')
-            loaded = basket + ":{:0>2d}".format(int(puck))  # "1:2" -> "1:02"
+            res = mxcube.queue.mounted_sample.split(':')  # no matter how many ~containers
+            loaded = ':'.join(res[:-1]) + ":{:0>2d}".format(int(res[-1]))  # "2:1:2" -> "2:1:02"
         except:
             loaded = ''
     else:
