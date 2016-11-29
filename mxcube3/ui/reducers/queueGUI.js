@@ -45,7 +45,8 @@ export default (state = initialState, action) => {
       const samplesData = {};
       action.samplesData.forEach((sample) => {
         samplesData[sample.sampleID] = { collapsed: false, tasks: sample.tasks.map(() => {
-          return { collapsed: false };
+          const task = { collapsed: false };
+          return task;
         }) };
       });
 
