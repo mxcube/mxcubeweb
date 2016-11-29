@@ -14,7 +14,7 @@ from flask import jsonify
 from mock import Mock
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
-
+from . import limsutils
 
 def node_index(node):
     """
@@ -64,7 +64,7 @@ def load_queue_from_dict(queue_dict):
 
         for sid in queue_dict['sample_order']:
             item_list.append(queue_dict[sid])
-            
+
         queue_add_item(item_list)
 
 
@@ -118,15 +118,15 @@ def queue_to_json(node=None):
                   queueID: qid_N,
                   location: location_n,
                   tasks: [task1, ... taskn]} ]
-    
+
              where the contents of task is a dictionary, the content depends on
              the TaskNode type (Datacollection, Chracterisation, Sample). The
              task dict can be directly used with the set_from_dict methods of
              the corresponding node.
-    """   
+    """
     if not node:
         node = mxcube.queue.get_model_root()
-    
+
     res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
     return json.dumps(res, sort_keys=True, indent=4)
 
@@ -140,12 +140,138 @@ def queue_to_json_response(node=None):
                           nothing is passed.
 
     :returns: Flask Response object
-    """   
+    """
     if not node:
         node = mxcube.queue.get_model_root()
-    
+
     res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
     return jsonify(res)
+
+
+def get_node_state(node_id):
+    """
+    Get the satus af the given node.
+
+    :param TaskNode node: Node to get status for
+
+    :returns: tuple containing (enabled, state)
+            where state: {0, 1, 2, 3} = {in_queue, running, sucess, failed}
+              {'sample': sample, 'idx': index, 'queue_id': node_id}
+    """
+    try:
+        node, entry = get_entry(node_id)
+    except:
+        return (1, 0)
+    executed = node.is_executed()
+    enabled = node.is_enabled()
+    failed = entry._execution_failed
+
+    curr_entry = mxcube.queue.queue_hwobj.get_current_entry()
+
+    if failed:
+        state = 3
+    elif executed:
+        state = 2
+    elif mxcube.queue.queue_hwobj.is_executing and (curr_entry == entry or curr_entry == entry._parent_container):
+        state = 1
+    else:
+        state = 0
+
+    return (enabled, state)
+
+
+def get_queue_state():
+    """
+    Return the dictionary representation of the queue state plus some extra lists.
+
+    :returns: dictionary on the form:
+              {
+                "history": [],
+                "loaded": "1:01",
+                "sample_list": [ sampleID_1, sampleID_2 ...],
+                "todo": [ sampleID_1, sampleID_2, ...],
+                "queue": {sampleID_1: [task1, ... taskn]
+                        .
+                        .
+                        .
+                        sampleID_n: [task1, ... taskn] }
+                "sample_list": {......}
+               }
+    """
+    if mxcube.diffractometer.use_sc:
+        samples_list_sc = mxcube.sample_changer.getSampleList()
+        samples = {}
+
+        for s in samples_list_sc:
+            sample_dm = s.getID() or ""
+            sample_data = {"sampleID": s.getAddress(),
+                           "location": ":".join(map(str, s.getCoords())),
+                           "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
+                           "code": sample_dm,
+                           "type": "Sample"}
+
+            sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
+            samples.update({s.getAddress(): sample_data})
+
+    queue = queue_to_dict()
+    try:
+        order = queue.pop("sample_order")
+    except Exception:
+        order = []
+        pass
+
+    sample_list_ho = mxcube.queue.queue_hwobj._queue_entry_list
+    todo = []
+    history = []
+    sample_list = {}
+    for sample in sample_list_ho:
+        sample_model = sample.get_data_model()
+        name = sample_model.loc_str
+        if queue[name]["state"] > 1:
+            history.append(name)
+        else:
+            todo.append(name)
+
+        sample_data = {"sampleID": name,
+                       "location": "Manual" if sample_model.free_pin_mode else sample_model.loc_str,
+                       "sampleName": sample_model.get_name(),
+                       "type": "Sample",
+                       "proteinAcronym": sample_model.crystals[0].protein_acronym,
+                       "defaultPrefix": sample_model.get_name() + '-' + sample_model.crystals[0].protein_acronym
+                       }
+
+        sample_list.update({name: sample_data})
+
+    if mxcube.diffractometer.use_sc:
+        if len(sample_list) != 0:
+            sample_list = samples
+        else:
+            sample_list = {}
+        try:
+            res = mxcube.queue.mounted_sample.split(':')  # no matter how many ~containers
+            loaded = ':'.join(res[:-1]) + ":{:0>2d}".format(int(res[-1]))  # "2:1:2" -> "2:1:02"
+        except:
+            loaded = ''
+    else:
+        try:
+            loaded = mxcube.queue.mounted_sample
+        except Exception:
+            loaded = ''
+
+    try:
+        todo.pop(loaded)
+    except Exception:
+        pass
+
+    res = {"sample_list": sample_list,
+           "history": history,
+           "todo": todo,
+           "loaded": loaded,
+           "queue": queue,
+           "sample_order": order
+           }
+
+    return res
 
 
 def _handle_dc(sample_id, node):
@@ -157,14 +283,18 @@ def _handle_dc(sample_id, node):
     parameters.pop('acquisitions')
     parameters.pop('acq_parameters')
     parameters.pop('centred_position')
- 
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
     res = {"label": "Data Collection",
            "type": "DataCollection",
            "parameters": parameters,
-           "checked": node.is_enabled(),
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
-           "queueID": node._node_id}
+           "queueID": queueID,
+           "checked": enabled,
+           "state": state,
+           "limstResultData": mxcube.rest_lims.get_dc(node.id),
+           }
 
     return res
 
@@ -175,23 +305,52 @@ def _handle_char(sample_id, node):
     refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
     parameters.update(refp)
 
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+
     res = {"label": "Characterisation",
            "type": "Characterisation",
            "parameters": parameters,
            "checked": node.is_enabled(),
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
-           "queueID": node._node_id}
+           "queueID": node._node_id,
+           "checked": enabled,
+           "state": state
+           }
 
     return res
 
+
 def _handle_sample(node):
     location = 'Manual' if node.free_pin_mode else node.loc_str
-    
+    enabled, state = get_node_state(node._node_id)
+
+    children = node.get_children()
+
+    children_states = []
+    for child in children:
+        child = child.get_children()[0]  # assuming on task on each task group
+        child_enabled, child_state = get_node_state(child._node_id)
+        children_states.append(child_state)
+
+    if 1 in children_states:
+        state = 1
+    elif 3 in children_states:
+        state = 3
+    elif all(i == 2 for i in children_states) and len(children_states) > 0:
+        state = 2
+    else:
+        state = 0
+
     return {node.loc_str: {'sampleID': node.loc_str,
                            'queueID': node._node_id,
                            'location': location,
+                           'sampleName': node.get_name(),
+                           'proteinAcronym': node.crystals[0].protein_acronym,
                            'type': 'Sample',
+                           'checked': enabled,
+                           'state': state,
                            'tasks': queue_to_dict_rec(node)}}
 
 
@@ -220,7 +379,7 @@ def queue_to_dict_rec(node):
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]
-            
+
             result.append(_handle_sample(node))
             result[0]['sample_order'].append(node.loc_str)
         elif isinstance(node, qmo.Characterisation):
@@ -283,7 +442,7 @@ def swap_task_entry(sid, ti1, ti2):
     :param int ti2: Position of task2 (new position)
     """
     current_queue = queue_to_dict() 
-  
+
     node_id = current_queue[sid]["queueID"]
     smodel, sentry = get_entry(node_id)
 
@@ -297,6 +456,26 @@ def swap_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list[ti2] = sentry._queue_entry_list[ti1]
     sentry._queue_entry_list[ti1] = ti2_temp_entry
 
+
+def move_task_entry(sid, ti1, ti2):
+    """
+    Swaps order of two queue entries in the queue, with the same sample <sid>
+    as parent
+
+    :param str sid: Sample id
+    :param int ti1: Position of task1 (old position)
+    :param int ti2: Position of task2 (new position)
+    """
+    current_queue = queue_to_dict()
+
+    node_id = current_queue[sid]["queueID"]
+    smodel, sentry = get_entry(node_id)
+
+    # Move the order in the queue model
+    smodel._children.insert(ti2, smodel._children.pop(ti1))
+
+    # Swap queue entry order
+    sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
 def queue_add_item(item_list):
     """
@@ -348,6 +527,7 @@ def add_sample(sample_id, item):
     """
     # Is the sample with location sample_id already in the queue,
     # in that case, send error response
+
     for sampleId, sampleData in queue_to_dict().iteritems():
         if sampleId == sample_id:
             msg = "[QUEUE] sample could not be added, already in the queue"
@@ -357,7 +537,10 @@ def add_sample(sample_id, item):
 
     # We should really use sample_id instead of loc_str
     sample_model.loc_str = sample_id
-    sample_model.free_pin_mode = item['location'] == 'Manual' 
+    sample_model.free_pin_mode = item['location'] == 'Manual'
+
+    sample_model.set_name(item['sampleName'])
+    sample_model.crystals[0].protein_acronym = item.get('proteinAcronym', '')
 
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
@@ -366,7 +549,7 @@ def add_sample(sample_id, item):
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
     sample_entry.set_enabled(True)
-    
+
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
 
@@ -445,7 +628,7 @@ def set_char_params(model, entry, task_data):
     params = task_data['parameters']
     set_dc_params(model.reference_image_collection, entry, task_data)
     model.characterisation_parameters.set_from_dict(params)
-    
+
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
 
@@ -485,18 +668,18 @@ def add_characterisation(node_id, task):
     char_model = qmo.Characterisation(refdc_model, char_params)
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
     char_entry.queue_model_hwobj = mxcube.queue
-    # Set the characterisation and reference collection parameters 
+    # Set the characterisation and reference collection parameters
     set_char_params(char_model, char_entry, task)
 
     # A characterisation has two TaskGroups one for the characterisation itself
     # and its reference collection and one for the resulting diffraction plans.
-    # But we only create a reference group if there is a result !   
+    # But we only create a reference group if there is a result !
     refgroup_model = qmo.TaskGroup()
 
     mxcube.queue.add_child(sample_model, refgroup_model)
     mxcube.queue.add_child(refgroup_model, char_model)
-    
     refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
+
     refgroup_entry.set_enabled(True)
     sample_entry.enqueue(refgroup_entry)
     refgroup_entry.enqueue(char_entry)
@@ -505,7 +688,7 @@ def add_characterisation(node_id, task):
     char_entry.set_enabled(task['checked'])
 
     return char_model._node_id
-    
+
 
 def add_data_collection(node_id, task):
     """
@@ -520,14 +703,14 @@ def add_data_collection(node_id, task):
     sample_model, sample_entry = get_entry(node_id)
     dc_model, dc_entry = _create_dc(task)
     set_dc_params(dc_model, dc_entry, task)
-   
+
     pt = dc_model.acquisitions[0].path_template
 
     if mxcube.queue.check_for_path_collisions(pt):
         msg = "[QUEUE] data collection could not be added to sample: "
         msg += "path collision"
         raise Exception(msg)
-    
+
     group_model = qmo.TaskGroup()
 
     group_model.set_enabled(True)

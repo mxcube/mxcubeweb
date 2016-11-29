@@ -16,7 +16,6 @@ class Helical extends React.Component {
       ...this.props.values,
       type: 'DataCollection',
       label: 'Helical',
-      typePrefix: 'L',
       helical: true,
       point: this.props.lines.length - 1,
       p1: this.props.pointId.p1,
@@ -33,7 +32,6 @@ class Helical extends React.Component {
       'path',
       'type',
       'point',
-      'typePrefix',
       'label',
       'helical'
     ];

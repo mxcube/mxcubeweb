@@ -295,13 +295,13 @@ export default class SampleGrid extends React.Component {
             tags={tags}
             selected={this.props.selected}
             current={this.props.queue.current.node === sample.sampleID}
-            collected={this.props.queue.history.nodes.includes(sample.sampleID)}
+            collected={this.props.queue.history.includes(sample.sampleID)}
             deleteTask={deleteTaskFun}
             showTaskParametersForm={this.props.showTaskParametersForm}
             toggleMovable={this.props.toggleMovable}
             picked={this.props.queue.queue[sample.sampleID]}
             rootPath={this.props.queue.rootPath}
-            displayData={this.props.queue.displayData[sample.sampleID]}
+            displayData={this.props.queueGUI.displayData[sample.sampleID]}
             moving={this.props.moving[key]}
             moveItem={this.moveItem}
             canMove={this.canMove}

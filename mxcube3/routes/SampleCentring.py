@@ -576,7 +576,7 @@ def wait_for_centring_finishes(*args, **kwargs):
     centred point.
     """
     motor_positions = mxcube.diffractometer.centringStatus["motors"]
-    motor_positions.pop('zoom')
+    motor_positions.pop('zoom', None)
     motor_positions.pop('beam_y', None)
     motor_positions.pop('beam_x', None)
     pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)

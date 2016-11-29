@@ -33,8 +33,7 @@ import {
   deleteSample,
   sendClearQueue,
   addSample,
-  sendRunQueue,
-  setQueueAndRun
+  addSamples
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
@@ -238,9 +237,11 @@ class SampleGridContainer extends React.Component {
 
 
   addSelectedSamples() {
+    const samples = [];
     for (const sampleID of Object.keys(this.props.selected)) {
-      this.props.addSample(this.props.sampleList[sampleID]);
+      samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
     }
+    this.props.addSamples(samples);
   }
 
 
@@ -261,12 +262,9 @@ class SampleGridContainer extends React.Component {
 
 
   startCollect() {
-    if (!this.props.queue.manualMount.set) {
-      this.props.setQueueAndRun(this.props.queue.queue, this.props.queue.sampleOrder);
-    }
-
     window.location = '#/datacollection';
   }
+
 
   collectButton() {
     const collectText = this.props.queue.manualMount.set ? 'Collect' :
@@ -495,6 +493,7 @@ class SampleGridContainer extends React.Component {
               pickSelected={this.toggleAddDeleteSelectedSamples}
               toggleSelectedSample={this.props.toggleSelectedSample}
               showSampleGridContextMenu={this.props.showSampleGridContextMenu}
+              queueGUI={this.props.queueGUI}
             />
           </div>
         </div>
@@ -506,6 +505,7 @@ function mapStateToProps(state) {
   return {
     loginData: state.login.data,
     queue: state.queue,
+    queueGUI: state.queueGUI,
     selected: state.sampleGrid.selected,
     moving: state.sampleGrid.moving,
     sampleList: state.queue.sampleList,
@@ -532,9 +532,8 @@ function mapDispatchToProps(dispatch) {
     deleteSample: (sampleID) => dispatch(deleteSample(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSample: (sampleData) => dispatch(addSample(sampleData)),
+    addSamples: (sampleData) => dispatch(addSamples(sampleData)),
     showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
-    runQueue: () => dispatch(sendRunQueue()),
-    setQueueAndRun: (queue, sampleOrder) => dispatch(setQueueAndRun(queue, sampleOrder))
   };
 }
 
