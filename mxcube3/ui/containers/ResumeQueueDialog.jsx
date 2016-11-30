@@ -3,10 +3,9 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import { Modal, Button } from 'react-bootstrap';
-import { showRestoreDialog, setState, sendClearQueue } from '../actions/queue';
+import { showResumeQueueDialog } from '../actions/queue';
 
-export class QueueRestoreDialog extends React.Component {
-
+export class ResumeQueueDialog extends React.Component {
   constructor(props) {
     super(props);
     this.accept = this.accept.bind(this);
@@ -14,13 +13,11 @@ export class QueueRestoreDialog extends React.Component {
   }
 
   accept() {
-    this.props.restoreQueueState(this.props.savedQueueState);
     this.props.hide();
   }
 
   reject() {
     this.props.hide();
-    this.props.clearQueue();
   }
 
   render() {
@@ -29,12 +26,18 @@ export class QueueRestoreDialog extends React.Component {
         show={this.props.show}
         onHide={this.props.hide}
       >
+        <Modal.Header>
+          <Modal.Title>
+            Resume Queue
+          </Modal.Title>
+        </Modal.Header>
         <Modal.Body>
-          Do you want to restore the saved queue?
+          Ooops ! The application was closed or there was problems with the
+          connection while the queue was running. Just press Run Queue
+          (found above the queue) if you like to continue execution.
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.accept} bsStyle="primary"> Yes </Button>
-          <Button onClick={this.reject}> No </Button>
+          <Button onClick={this.reject}> OK </Button>
         </Modal.Footer>
       </Modal>);
   }
@@ -42,20 +45,17 @@ export class QueueRestoreDialog extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    show: state.queue.showRestoreDialog,
-    savedQueueState: state.queue.queueRestoreState
+    show: state.queue.showResumeQueueDialog,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    hide: bindActionCreators(showRestoreDialog.bind(this, {}, false), dispatch),
-    restoreQueueState: bindActionCreators(setState.bind(this), dispatch),
-    clearQueue: bindActionCreators(sendClearQueue.bind(this), dispatch)
+    hide: bindActionCreators(showResumeQueueDialog.bind(this, false), dispatch),
   };
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(QueueRestoreDialog);
+)(ResumeQueueDialog);

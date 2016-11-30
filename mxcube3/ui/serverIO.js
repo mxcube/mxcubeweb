@@ -15,8 +15,11 @@ import { setStatus,
          addTaskAction,
          collapseTask,
          sendStopQueue,
-         setCurrentSample } from './actions/queue';
-import { setLoading, addUserMessage } from './actions/general';
+         setCurrentSample,
+         showResumeQueueDialog } from './actions/queue';
+import { setLoading,
+         addUserMessage,
+         showConnectionLostDialog } from './actions/general';
 
 class ServerIO {
 
@@ -24,6 +27,8 @@ class ServerIO {
     this.hwrSocket = null;
     this.loggingSocket = null;
     this.uiStateSocket = null;
+    this.hwrsid = null;
+    this.connected = false;
 
     this.uiStorage = {
       setItem: (key, value) => {
@@ -57,7 +62,6 @@ class ServerIO {
     this.dispatch = store.dispatch;
 
     this.hwrSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
-
     this.loggingSocket = io.connect(`http://${document.domain}:${location.port}/logging`);
 
     this.loggingSocket.on('log_record', (record) => {
@@ -151,6 +155,22 @@ class ServerIO {
                               'Center sample',
                                record.message, false));
       this.dispatch(startClickCentring());
+    });
+
+    this.hwrSocket.on('disconnect', () => {
+      if (this.connected) {
+        this.connected = false;
+        setTimeout(() => { this.dispatch(showConnectionLostDialog(!this.connected)); }, 2000);
+      }
+    });
+
+    this.hwrSocket.on('connect', () => {
+      this.connected = true;
+      this.dispatch(showConnectionLostDialog(false));
+    });
+
+    this.hwrSocket.on('resumeQueueDialog', () => {
+      this.dispatch(showResumeQueueDialog(true));
     });
   }
 }

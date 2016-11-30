@@ -268,7 +268,8 @@ def get_queue_state():
            "todo": todo,
            "loaded": loaded,
            "queue": queue,
-           "sample_order": order
+           "sample_order": order,
+           "queueStatus": queue_exec_state()
            }
 
     return res
@@ -393,6 +394,22 @@ def queue_to_dict_rec(node):
 
 
     return result
+
+
+def queue_exec_state():
+    """
+    :returns: The queue execution state, one of the strings 'QueueStopped',
+              'QueuePaused' or 'QueueStarted'
+
+    """
+    state = "QueueStopped"
+
+    if mxcube.queue.queue_hwobj.is_paused():
+        state = "QueuePaused"
+    elif mxcube.queue.queue_hwobj.is_executing():
+        state = "QueueStarted"
+
+    return state
 
 
 def get_entry(id):

@@ -281,9 +281,9 @@ export function toggleChecked(sampleID, index) {
 }
 
 
-export function showRestoreDialog(queueState, show = true) {
+export function showResumeQueueDialog(show = true) {
   return {
-    type: 'SHOW_RESTORE_DIALOG', queueState, show
+    type: 'SHOW_RESUME_QUEUE_DIALOG', show
   };
 }
 

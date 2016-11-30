@@ -8,7 +8,8 @@ const initialState = {
   dialogMessage: '',
   dialogTitle: '',
   showDialog: false,
-  userMessages: []
+  userMessages: [],
+  showConnectionLostDialog: false
 };
 
 export default (state = initialState, action) => {
@@ -68,7 +69,10 @@ export default (state = initialState, action) => {
       {
         return { ...state, userMessages: {} };
       }
-
+    case 'SHOW_CONNECTION_LOST_DIALOG':
+      {
+        return { ...state, showConnectionLostDialog: action.show };
+      }
     default:
       return state;
   }

@@ -168,3 +168,9 @@ export function getInitialStatus() {
     });
   };
 }
+
+export function showConnectionLostDialog(show = true) {
+  return {
+    type: 'SHOW_CONNECTION_LOST_DIALOG', show
+  };
+}
