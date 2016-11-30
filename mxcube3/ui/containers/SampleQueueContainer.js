@@ -12,6 +12,7 @@ import { DragDropContext as dragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
 import UserMessage from '../components/Notify/UserMessage';
+import loader from '../img/loader.gif';
 
 function mapStateToProps(state) {
   return {
@@ -29,6 +30,7 @@ function mapStateToProps(state) {
     rootPath: state.queue.rootPath,
     displayData: state.queueGUI.displayData,
     manualMount: state.queue.manualMount,
+    loading: state.queueGUI.loading,
     userMessages: state.general.userMessages
   };
 }
@@ -70,7 +72,8 @@ export default class SampleQueueContainer extends React.Component {
       rootPath,
       displayData,
       manualMount,
-      visibleList
+      visibleList,
+      loading
     } = this.props;
     const {
       sendToggleCheckBox,
@@ -109,6 +112,12 @@ export default class SampleQueueContainer extends React.Component {
                   <NavItem eventKey={'current'}>Current</NavItem>
                   <NavItem eventKey={'todo'}>Upcoming</NavItem>
                 </Nav>
+                {loading ?
+                  <div className="center-in-box">
+                    <img src={loader} className="img-responsive" alt="" />
+                  </div>
+                  : null
+                }
                 <CurrentTree
                   changeOrder={changeTaskOrderAction}
                   show={visibleList === 'current'}

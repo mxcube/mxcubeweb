@@ -4,7 +4,8 @@ import { omit } from 'lodash/object';
 const initialState = {
   showRestoreDialog: false,
   displayData: {},
-  visibleList: 'current'
+  visibleList: 'current',
+  loading: false
 };
 
 export default (state = initialState, action) => {
@@ -84,6 +85,9 @@ export default (state = initialState, action) => {
       displayData[action.sampleID].collapsed ^= true;
 
       return { ...state, displayData };
+    }
+    case 'QUEUE_LOADING': {
+      return { ...state, loading: action.loading };
     }
     // Toggle task collapse flag
     case 'COLLAPSE_TASK': {

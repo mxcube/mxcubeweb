@@ -7,6 +7,9 @@ export function setSampleListAction(sampleList) {
   return { type: 'SET_SAMPLE_LIST', sampleList };
 }
 
+export function queueLoading(loading) {
+  return { type: 'QUEUE_LOADING', loading };
+}
 
 export function sendGetSampleList() {
   return function (dispatch) {
@@ -225,11 +228,13 @@ export function sendMoveTask(sampleID, oldIndex, newIndex) {
 
 export function moveTask(sampleID, oldIndex, newIndex) {
   return function (dispatch) {
+    dispatch(queueLoading(true));
     sendMoveTask(sampleID, oldIndex, newIndex).then((response) => {
       if (response.status >= 400) {
         dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-        throw new Error('Could not move task');
+        dispatch(showErrorPanel(true, 'Could not move task'));
       }
+      dispatch(queueLoading(false));
     });
   };
 }
@@ -428,8 +433,15 @@ export function appendSampleList(sampleData) {
 
 export function deleteSample(sampleID) {
   return function (dispatch) {
-    sendDeleteQueueItem(sampleID, undefined);
-    dispatch(removeSampleAction(sampleID));
+    dispatch(queueLoading(true));
+    sendDeleteQueueItem(sampleID, undefined).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to delete sample'));
+      } else {
+        dispatch(removeSampleAction(sampleID));
+      }
+      dispatch(queueLoading(false));
+    });
   };
 }
 
@@ -479,8 +491,15 @@ export function removeTaskAction(sampleID, taskIndex) {
 
 export function deleteTask(sampleID, taskIndex) {
   return function (dispatch) {
-    sendDeleteQueueItem(sampleID, taskIndex);
-    dispatch(removeTaskAction(sampleID, taskIndex));
+    dispatch(queueLoading(true));
+    sendDeleteQueueItem(sampleID, taskIndex).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to delete task'));
+      } else {
+        dispatch(removeTaskAction(sampleID, taskIndex));
+      }
+      dispatch(queueLoading(false));
+    });
   };
 }
 
@@ -497,20 +516,20 @@ export function addTask(sampleID, parameters, runNow) {
                    sampleID,
                    parameters,
                    checked: true };
-
-    dispatch(addTaskAction(task));
+    dispatch(queueLoading(true));
     const { queue } = getState();
-    const taskIndex = queue.queue[sampleID].tasks.length - 1;
 
     sendAddQueueItem([task]).then((response) => {
       if (response.status >= 400) {
-        dispatch(removeTaskAction(sampleID, taskIndex));
-        throw new Error('The task could not be added to the server');
+        dispatch(showErrorPanel(true, 'The task could not be added to the server'));
       } else {
+        dispatch(addTaskAction(task));
         if (runNow) {
+          const taskIndex = queue.queue[sampleID].tasks.length;
           dispatch(sendRunSample(sampleID, taskIndex));
         }
       }
+      dispatch(queueLoading(false));
     });
   };
 }
@@ -551,16 +570,17 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
   return function (dispatch, getState) {
     const { queue } = getState();
     const taskData = { ...queue.queue[sampleID].tasks[taskIndex], parameters: params };
-    dispatch(updateTaskAction(sampleID, taskIndex, taskData));
-
+    dispatch(queueLoading(true));
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
-        throw new Error('The task could not be modified on the server');
+        dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
       } else {
+        dispatch(updateTaskAction(sampleID, taskIndex, taskData));
         if (runNow) {
           dispatch(sendRunSample(sampleID, taskIndex));
         }
       }
+      dispatch(queueLoading(false));
     });
   };
 }
@@ -614,7 +634,6 @@ export function sendToggleCheckBox(data, index) {
 export function clearQueue() {
   return { type: 'CLEAR_QUEUE' };
 }
-
 
 export function setunNow(run, sampleID, taskIndex) {
   return { type: 'SET_RUN_NOW', run, sampleID, taskIndex };
