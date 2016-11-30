@@ -141,22 +141,26 @@ export function toggleCinema() {
 }
 
 export function sendStartClickCentring() {
-  return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to start 3click');
-      } else {
-        dispatch(startClickCentring());
-      }
-    });
-  };
+  return function (dispatch, getState) {
+    const { queue } = getState();
+    if (queue.current.node) {
+      fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json'
+        }
+      }).then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to start 3click');
+        } else {
+          dispatch(startClickCentring());
+        }
+      });
+    } else {
+      dispatch(showErrorPanel(true, 'There is not a sample mounted! Cannot center.'));
+    }};
 }
 
 export function sendCentringPoint(x, y) {
