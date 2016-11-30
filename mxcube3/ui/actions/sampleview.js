@@ -142,7 +142,6 @@ export function toggleCinema() {
 
 export function sendStartClickCentring() {
   return function (dispatch, getState) {
-    dispatch(showErrorPanel(true, 'dfjsadn.fjksa.'));
     const { queue } = getState();
     if (queue.current.node) {
       fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
