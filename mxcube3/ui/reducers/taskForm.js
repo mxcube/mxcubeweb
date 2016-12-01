@@ -78,7 +78,8 @@ export default (state = initialState, action) => {
               run_number: 1,
               ...action.data.dcParameters,
               ...state.defaultParameters.helical }
-          }
+          },
+          acqParametersLimits: { ...action.data.acqParametersLimits }
         };
       }
     default:
