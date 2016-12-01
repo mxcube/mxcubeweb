@@ -28,6 +28,12 @@ def _proposal_id(session):
 
 
 def get_light_state_and_intensity():
+    """
+    Return the light actuator state (in/out) and the light motor level. It takes
+    into accojunt the two find of light hwobj available
+        * MicrodiffLight + MicrodiffInOut
+        * Combined hwobj such as ID30Light
+    """
     ret = dict()
 
     for light in ('BackLight', 'FrontLight'):
@@ -47,6 +53,17 @@ def get_light_state_and_intensity():
 
     return ret
 
+def get_light_limits():
+    ret = dict()
+
+    for light in ('BackLight', 'FrontLight'):
+        item_role = light.lower()
+
+        hwobj = mxcube.diffractometer.getObjectByRole(item_role)
+
+        ret.update({light: {'limits': hwobj.getLimits()}})
+
+    return ret
 
 def get_movable_state_and_position(item_name):
     item_role = item_name.lower()
@@ -72,15 +89,50 @@ def get_movable_state_and_position(item_name):
                 else:
                     pos = None
             else:
-		pos = hwobj.getPosition()
+                pos = hwobj.getPosition()
                 # invalid code: no arbitrary rounding, precision depends on motor
 		#try:
 		#    pos = round(pos, 2)
 		#except:
 		#    pass
-            return {item_name: {'Status': hwobj.getState(), 'position': pos}}
+        return {item_name: {'Status': hwobj.getState(), 'position': pos}}
     except Exception:
         logging.getLogger('HWR').exception('[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item "%s"' % item_name)
+
+def get_movable_limits(item_name):
+    item_role = item_name.lower()
+    ret = dict()
+
+    try:
+        if 'light' in item_role:
+            # handle all *light* items in the same way;
+            # this returns more than needed, but it doesn't
+            # matter
+            return get_light_limits()
+
+        hwobj = mxcube.diffractometer.getObjectByRole(item_role)
+
+        if hwobj is None:
+            logging.getLogger("HWR").error('[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role "%s"' % item_role)
+            limits = ()
+        else:
+            limits = hwobj.getLimits()
+
+            return {item_name: {'limits': limits}}
+    except Exception:
+        logging.getLogger('HWR').exception('[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item "%s"' % item_name)
+
+
+# def get_parameters_limits():
+#     """
+#     returns the limit values for the acquisition and for the moveables.
+#     """
+#     acq_limits = mxcube.beamline.get_acquisition_limit_values()
+#     ret = dict()
+#     for name in mxcube.diffractometer.centring_motors_list:
+#         motor_info = get_movable_state_and_position(name)
+#         if motor_info and motor_info[name]['position'] is not None:
+#             ret.update(motor_info)
 
 
 def get_centring_motors_info():
@@ -90,6 +142,7 @@ def get_centring_motors_info():
         motor_info = get_movable_state_and_position(name)
         if motor_info and motor_info[name]['position'] is not None:
             ret.update(motor_info)
+
     return ret
 
 def my_execute_entry(self, entry):
