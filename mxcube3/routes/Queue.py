@@ -427,7 +427,7 @@ def get_default_dc_params():
         'take_dark_current': True,
         'skip_existing_images': False,
         'take_snapshots': True,
-        })
+    })
     resp.status_code = 200
     return resp
 
@@ -438,6 +438,16 @@ def get_default_char_params():
     returns the default values for a characterisation.
     """
     resp = jsonify(mxcube.beamline.get_default_characterisation_parameters().as_dict())
+    resp.status_code = 200
+    return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/acq/limits", methods=['GET'])
+def get_default_acquisition_limits():
+    """
+    returns the limit values for an acquisition, stored in an xml file.
+    """
+    resp = jsonify(mxcube.beamline.get_acquisition_limit_values())
     resp.status_code = 200
     return resp
 
