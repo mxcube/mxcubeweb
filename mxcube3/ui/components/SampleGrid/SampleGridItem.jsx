@@ -520,7 +520,7 @@ export class SampleGridItem extends React.Component {
           ref="sampleInfoPopoverTrigger"
           placement={this.popoverPosition()}
           overlay={(
-            <Popover title={(<b>{this.sampleDisplayName()}</b>)}>
+            <Popover id={this.sampleDisplayName()} title={(<b>{this.sampleDisplayName()}</b>)}>
               {this.sampleInformation()}
             </Popover>)}
         >
@@ -560,6 +560,7 @@ export class SampleGridItem extends React.Component {
                       placement={this.popoverPosition()}
                       overlay={(
                         <Popover
+                          id={this.taskTitle(tag)}
                           style={{ minWidth: '700px !important', paddingBottom: '1em' }}
                           title={(<b>{this.taskTitle(tag)}</b>)}
                         >

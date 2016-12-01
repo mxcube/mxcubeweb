@@ -20,7 +20,7 @@ class SampleViewContainer extends Component {
     return (
       <div className="row">
         <div className="col-xs-1"
-          style={ { 'margin-top': '0em', 'padding-right': '5px', 'padding-left': '1.5em' } }
+          style={ { marginTop: '0em', paddingRight: '5px', paddingLeft: '1.5em' } }
         >
             <MotorControl
               save={sendMotorPosition}

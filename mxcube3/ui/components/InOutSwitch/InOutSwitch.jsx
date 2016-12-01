@@ -52,7 +52,7 @@ export default class InOutSwitch extends React.Component {
         </div>
         <OverlayTrigger
           placement="bottom"
-          overlay={(<Popover>
+          overlay={(<Popover id={this.props.labelText}>
                       {this.props.labelText} is:
                       <div className={`inout-switch-msg ${msgBgStyle}`}>
                         {this.props.data.msg}

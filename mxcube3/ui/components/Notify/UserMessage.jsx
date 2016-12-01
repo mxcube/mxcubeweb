@@ -45,7 +45,7 @@ export default class UserMessage extends React.Component {
       break;
     }
 
-    if (this.refs.overlay.props.show && !showOverlay) {
+    if (this.refs.overlay && this.refs.overlay.props.show && !showOverlay) {
       this.forceUpdate();
     }
   }
@@ -88,7 +88,7 @@ export default class UserMessage extends React.Component {
       }
 
       messages.push((
-        <div ref={message.id} className={messageClass}>
+        <div key={message.id} ref={message.id} className={messageClass}>
           <span className="messageText">
             {message.message}
           </span>
@@ -115,7 +115,7 @@ export default class UserMessage extends React.Component {
         placement={this.props.placement}
         target={this.props.domTarget}
       >
-        <Popover style={ { minWidth: '500px' } }>
+        <Popover id="usermessages" style={ { minWidth: '500px' } }>
           <div>
             {messages}
           </div>
