@@ -1,7 +1,10 @@
 import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Modal, Button } from 'react-bootstrap';
+import validate from './validate';
+// import asyncValidate from './asyncValidate';
 /* eslint camelcase: 0 */
+
 
 class DataCollection extends React.Component {
 
@@ -9,6 +12,8 @@ class DataCollection extends React.Component {
     super(props);
     this.runNow = this.handleSubmit.bind(this, true);
     this.addToQueue = this.handleSubmit.bind(this, false);
+    this.inputCSS = this.inputCSS.bind(this);
+    this.anyError = this.anyError.bind(this);
   }
 
   handleSubmit(runNow) {
@@ -37,6 +42,27 @@ class DataCollection extends React.Component {
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
+
+  inputCSS(field) {
+    let className;
+    if (this.props.fields[field].error) {
+      className = 'form-control warning';
+    }
+    else {
+      className = 'form-control';
+    }
+    return className;
+  }
+
+  anyError() {
+    if (Object.keys(this.props.errors).length == 0) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+
 
   handleShowHide(e) {
     const node = e.target;
@@ -131,7 +157,7 @@ class DataCollection extends React.Component {
             <div className="form-group">
               <label className="col-sm-3 control-label">Oscillation range</label>
               <div className="col-sm-3">
-                <input type="number" className="form-control" {...osc_range} />
+                <input type="number" className={this.inputCSS('osc_range')} {...osc_range} />
               </div>
               <label className="col-sm-3 control-label">First Image</label>
               <div className="col-sm-3">
@@ -142,18 +168,18 @@ class DataCollection extends React.Component {
             <div className="form-group">
               <label className="col-sm-3 control-label">Oscillation start</label>
               <div className="col-sm-3">
-                  <input type="number" className="form-control" {...osc_start} />
+                  <input type="number" className={this.inputCSS('osc_start')} {...osc_start} />
               </div>
               <label className="col-sm-3 control-label">Number of images</label>
               <div className="col-sm-3">
-                  <input type="number" className="form-control" {...num_images} />
+                  <input type="number" className={this.inputCSS('num_images')} {...num_images} />
               </div>
             </div>
 
             <div className="form-group">
               <label className="col-sm-3 control-label">Exposure time(s)</label>
               <div className="col-sm-3">
-                  <input type="number" className="form-control" {...exp_time} />
+                  <input type="number" className={this.inputCSS('exp_time')} {...exp_time} />
               </div>
               <label className="col-sm-3 control-label">Transmission (%)</label>
               <div className="col-sm-3">
@@ -164,7 +190,7 @@ class DataCollection extends React.Component {
             <div className="form-group">
               <label className="col-sm-3 control-label">Energy (KeV)</label>
               <div className="col-sm-3">
-                  <input type="number" className="form-control" step="0.1" {...energy} />
+                  <input type="number" className={this.inputCSS('energy')} step="0.1" {...energy} />
               </div>
               <label className="col-sm-3 control-label">
                 <input type="checkbox" />MAD
@@ -180,7 +206,7 @@ class DataCollection extends React.Component {
             <div className="form-group">
                 <label className="col-sm-3 control-label">Resolution (Å)</label>
                 <div className="col-sm-3">
-                    <input type="number" className="form-control" step="0.1" {...resolution} />
+                    <input type="number" className={this.inputCSS('resolution')} step="0.1" {...resolution} />
                 </div>
             </div>
 
@@ -334,10 +360,10 @@ class DataCollection extends React.Component {
             X-ray Centring
           </label>
         </div>
-            <Button bsStyle="success" disabled={this.props.pointId === -1} onClick={this.runNow}>
+            <Button bsStyle="success" disabled={this.props.pointId === -1 || this.anyError()} onClick={this.runNow}>
               Run Now
             </Button>
-            <Button bsStyle="primary" onClick={this.addToQueue}>
+            <Button bsStyle="primary" disabled={this.anyError()} onClick={this.addToQueue}>
               {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
             </Button>
           </Modal.Footer>
@@ -348,6 +374,7 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'datacollection',                           // a unique name for this form
+  validate,
   fields: [
     'num_images',
     'first_image',
@@ -371,6 +398,8 @@ DataCollection = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   ] // all the fields in your form
 },
 state => ({ // mapStateToProps
+  motorLimits: { ...state.beamline.motorsLimits },
+  acqParametersLimits: { ...state.taskForm.acqParametersLimits },
   initialValues: {
     ...state.taskForm.taskData.parameters,
     beam_size: state.sampleview.currentAperture

@@ -1,6 +1,8 @@
 import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
+import validate from './validate';
+
 /* eslint camelcase: 0 */
 
 class Characterisation extends React.Component {
@@ -10,6 +12,7 @@ class Characterisation extends React.Component {
     super(props);
     this.runNow = this.handleSubmit.bind(this, true);
     this.addToQueue = this.handleSubmit.bind(this, false);
+    this.inputCSS = this.inputCSS.bind(this);
   }
 
   handleSubmit(runNow) {
@@ -40,6 +43,25 @@ class Characterisation extends React.Component {
     this.props.hide();
   }
 
+  inputCSS(field) {
+    let className;
+    if (this.props.fields[field].error) {
+      className = 'form-control warning';
+    }
+    else {
+      className = 'form-control';
+    }
+    return className;
+  }
+
+  anyError(){
+    if (Object.keys(this.props.errors).length == 0) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
   handleShowHide(e) {
     const node = e.target;
     if (node.innerHTML === 'Show More') {
@@ -157,7 +179,7 @@ class Characterisation extends React.Component {
 
               <label className="col-sm-3 control-label">Exposure time(ms)</label>
               <div className="col-sm-3">
-                <input type="number" className="form-control" {...exp_time} />
+                <input type="number" className={this.inputCSS('exp_time')} {...exp_time} />
               </div>
               <label className="col-sm-3 control-label">Beam size</label>
               <div className="col-sm-3">
@@ -174,12 +196,12 @@ class Characterisation extends React.Component {
 
               <label className="col-sm-3 control-label">Oscillation range</label>
               <div className="col-sm-3">
-                <input type="number" className="form-control" {...osc_range} />
+                <input type="number" className={this.inputCSS('osc_range')} {...osc_range} />
               </div>
 
               <label className="col-sm-3 control-label">Resolution (Å)</label>
               <div className="col-sm-3">
-                 <input type="number" className="form-control" {...resolution} />
+                 <input type="number" className={this.inputCSS('resolution')} {...resolution} />
               </div>
 
             </div>
@@ -189,12 +211,12 @@ class Characterisation extends React.Component {
 
                 <label className="col-sm-3 control-label">Oscillation start</label>
                 <div className="col-sm-3">
-                    <input type="number" className="form-control" {...osc_start} />
+                    <input type="number" className={this.inputCSS('osc_start')} {...osc_start} />
                 </div>
 
                 <label className="col-sm-3 control-label">Energy (KeV)</label>
                 <div className="col-sm-3">
-                    <input type="number" className="form-control" {...energy} />
+                    <input type="number" className={this.inputCSS('energy')} {...energy} />
                 </div>
 
             </div>
@@ -354,11 +376,12 @@ class Characterisation extends React.Component {
             <button
               type="button"
               className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'}
+              disabled={this.anyError()} 
               onClick={this.runNow}
             >
               Run Now
             </button>
-            <button type="button" className="btn btn-primary" onClick={this.addToQueue}>
+            <button type="button" className="btn btn-primary" disabled={this.anyError()} onClick={this.addToQueue}>
               {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
             </button>
         </Modal.Footer>
@@ -369,6 +392,7 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'characterisation',                           // a unique name for this form
+  validate,
   fields: [
     'num_images',
     'exp_time',
@@ -396,6 +420,8 @@ Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   ] // all the fields in your form
 },
 state => ({ // mapStateToProps
+  motorLimits: { ...state.beamline.motorsLimits },
+  acqParametersLimits: { ...state.taskForm.acqParametersLimits },
   initialValues: {
     ...state.taskForm.taskData.parameters,
     beam_size: state.sampleview.currentAperture,
