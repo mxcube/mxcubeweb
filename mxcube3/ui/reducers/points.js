@@ -14,6 +14,10 @@ export default (state = initialState, action) => {
       {
         return { ...state, points: { ...state.points, [action.point.posId]: action.point } };
       }
+    case 'SET_CURRENT_SAMPLE':
+      {
+        return initialState;
+      }
     case 'DELETE_POINT':
       {
         return { ...state, points: omit(state.points, action.id) };
