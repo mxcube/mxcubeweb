@@ -172,6 +172,10 @@ class ServerIO {
     this.hwrSocket.on('resumeQueueDialog', () => {
       this.dispatch(showResumeQueueDialog(true));
     });
+
+    this.hwrSocket.on('take_xtal_snapshot', (unused, cb) => { 
+      cb(window.takeSnapshot());
+    });
   }
 }
 

@@ -71,7 +71,7 @@ export function sendManualMount(manual) {
       body: JSON.stringify({ use_sc: !manual })
     }).then((response) => {
       if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Could not toogle manual mode'));
+        dispatch(showErrorPanel(true, 'Could not toggle manual mode'));
       } else {
         dispatch(sendClearQueue());
         dispatch(setSampleListAction({}));
