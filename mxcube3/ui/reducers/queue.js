@@ -10,8 +10,7 @@ const initialState = {
   history: [],
   searchString: '',
   queueStatus: 'QueueStopped',
-  showRestoreDialog: false,
-  queueRestoreState: {},
+  showResumeQueueDialog: false,
   sampleList: {},
   manualMount: { set: false, id: 1 },
   visibleList: 'current'
@@ -273,9 +272,9 @@ export default (state = initialState, action) => {
         return Object.assign({}, state, { ...initialState,
                                           manualMount: { set: state.manualMount.set, id: 1 } });
       }
-    case 'SHOW_RESTORE_DIALOG':
+    case 'SHOW_RESUME_QUEUE_DIALOG':
       {
-        return { ...state, showRestoreDialog: action.show, queueRestoreState: action.queueState };
+        return { ...state, showResumeQueueDialog: action.show };
       }
     case 'QUEUE_STATE':
       {

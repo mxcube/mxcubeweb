@@ -1,10 +1,16 @@
+import logging
+
 from flask import request, session
 from mxcube3 import socketio
 from collections import deque
 
+from mxcube3 import app as mxcube
+
+
 MASTER = None
 MASTER_ROOM = None
 PENDING_EVENTS = deque()
+DISCONNECT_HANDLED = True
 
 def set_master(master_sid):
     global MASTER
@@ -44,14 +50,33 @@ def safe_emit(event, json_dict, **kwargs):
 
 @socketio.on('connect', namespace='/hwr')
 def connect():
-    global MASTER_ROOM
+    global MASTER_ROOM, DISCONNECT_HANDLED
+
     if is_master(session.sid):
         MASTER_ROOM = request.sid
-        emit_pending_events() 
+        emit_pending_events()
+
+        if not mxcube.queue.queue_hwobj.is_executing() and not DISCONNECT_HANDLED:
+            DISCONNECT_HANDLED = True
+            socketio.emit("resumeQueueDialog", namespace='/hwr')
+            msg = 'Client reconnected, Queue was previously stopped, asking '
+            msg += 'client for action'
+            logging.getLogger('HWR').info(msg)
+
+@socketio.on('disconnect', namespace='/hwr')
+def disconnect():
+    global DISCONNECT_HANDLED, MASTER_ROOM
+    
+    if is_master(session.sid) and MASTER_ROOM == request.sid and \
+           mxcube.queue.queue_hwobj.is_executing():
+
+        DISCONNECT_HANDLED = False
+        mxcube.queue.queue_hwobj.stop()
+        logging.getLogger('HWR').info('Client disconnected, stopping queue')
 
 @socketio.on('setRaMaster', namespace='/hwr')
 def set_master_id():
     global MASTER_ROOM
     MASTER_ROOM = request.sid
     emit_pending_events()
- 
+    return MASTER_ROOM

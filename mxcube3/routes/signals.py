@@ -147,7 +147,7 @@ def centring_started(method, *args):
 
 
 def queue_execution_started(entry):
-    msg = {'Signal': 'QueueStarted',
+    msg = {'Signal': qutils.queue_exec_state(),
            'Message': 'Queue execution started',
            'State': 1}
 
@@ -155,7 +155,7 @@ def queue_execution_started(entry):
 
 
 def queue_execution_finished(entry):
-    msg = {'Signal': 'QueueStopped',
+    msg = {'Signal': qutils.queue_exec_state(),
            'Message': 'Queue execution stopped',
            'State': 1}
 
@@ -163,7 +163,7 @@ def queue_execution_finished(entry):
 
 
 def queue_execution_failed(entry):    
-    msg = {'Signal': 'QueueStopped',
+    msg = {'Signal': qutils.queue_exec_state(),
            'Message': 'Queue execution stopped',
            'State': 2}
 

@@ -71,7 +71,7 @@ def queue_pause():
               409: Queue could not be paused
     """
     mxcube.queue.queue_hwobj.pause(True)
-    msg = {'Signal': 'QueuePaused',
+    msg = {'Signal': qutils.queue_exec_state(),
            'Message': 'Queue execution paused',
            'State': 1}
     socketio.emit('queue', msg, namespace='/hwr')
@@ -89,7 +89,7 @@ def queue_unpause():
               409: Queue could not be unpause
     """
     mxcube.queue.queue_hwobj.pause(False)
-    msg = {'Signal': 'QueueStarted',
+    msg = {'Signal': qutils.queue_exec_state(),
            'Message': 'Queue execution started',
            'State': 1}
     socketio.emit('queue', msg, namespace='/hwr')

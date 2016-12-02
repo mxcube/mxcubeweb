@@ -3,8 +3,11 @@ import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
 import ErrorNotificationPanel from '../containers/ErrorNotificationPanel';
-import QueueRestoreDialog from '../containers/QueueRestoreDialog';
+import ResumeQueueDialog from '../containers/ResumeQueueDialog';
 import LoggerOverlayContainer from '../containers/LoggerOverlayContainer';
+import ConnectionLostDialog from '../containers/ConnectionLostDialog';
+
+
 import './Main.css';
 export default class Main extends React.Component {
   render() {
@@ -13,7 +16,8 @@ export default class Main extends React.Component {
         <TaskContainer />
         <PleaseWaitDialog />
         <ErrorNotificationPanel />
-        <QueueRestoreDialog />
+        <ResumeQueueDialog />
+        <ConnectionLostDialog />
         <MXNavbarContainer location={this.props.location} />
         <div className="container-fluid o-wrapper" id="o-wrapper">
           <div className="row">

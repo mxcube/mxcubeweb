@@ -8,7 +8,8 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state,
           {
-            master: action.master
+            master: action.master,
+            sid: action.sid
           });
       }
 
