@@ -2,6 +2,8 @@ import logging
 from mxcube3 import app as mxcube
 import time
 import gevent
+import types
+import inspect
 
 def RateLimited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
@@ -214,7 +216,7 @@ def __execute_entry(self, entry):
         entry.get_view().setText(1, 'Queue paused, waiting')
     self.wait_for_pause_event()
     try:
-        # Procedure to be done before main implmentation
+        # Procedure to be done before main implementation
         # of task.
         entry.pre_execute()
         entry.execute()
@@ -238,3 +240,21 @@ def __execute_entry(self, entry):
         entry.post_execute()
 
     self._current_queue_entries.remove(entry)
+
+def take_snapshots(self, snapshots=None):
+    if snapshots is None:
+      # called via AbstractCollect
+      dc_params = self.current_dc_parameters
+    else:
+      # called via AbstractMultiCollect
+      calling_frame = inspect.currentframe(2)
+      import pdb;pdb.set_trace()
+      dc_params = calling_frame.f_locals['data_collect_parameters']
+
+    import pdb;pdb.set_trace()
+    
+
+def enable_snapshots(collect_object):
+    # patch collect object
+    collect_object.take_crystal_snapshots = types.MethodType(take_snapshots, collect_object.__class__, collect_object)
+     
