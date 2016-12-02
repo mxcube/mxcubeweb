@@ -5,7 +5,7 @@ import logging
 
 BEAMLINE_SETUP = None
 
-# Singleton like interface is needed to keep the same referance to the
+# Sinleeton like interface is needed to keep the same referance to the
 # mediator object and its corresponding hardware objects, so that the signal
 # system wont cleanup signal handlers. (PyDispatcher removes signal handlers
 # when a object is garabge collected)
@@ -33,11 +33,11 @@ class _BeamlineSetupMediator(object):
     def getObjectByRole(self, name):
         try:
             if name == 'dtox':
-                ho = self._bl.getObjectByRole('resolution') # we retrieve dtox through res_hwobj
+                ho = self._bl.getObjectByRole('resolution')  # we retrieve dtox through res_hwobj
             else:
                 ho = self._bl.getObjectByRole(name.lower())
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get get object with role: %s" % name)
+            logging.getLogger("HWR").exception("Failed to get object with role: %s" % name)
 
         if name == "energy":
             return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
