@@ -41,7 +41,7 @@ class BeamlineSetupContainer extends React.Component {
     return (
         <div className="beamline-setup-container">
           <div className="beamline-setup-content">
-            <div className="row" style={{ 'margin-bottom': '1em' }}>
+            <div className="row" style={{ marginBottom: '1em' }}>
               <div className="col-sm-6">
                 <div style={{ paddingLeft: '0px', display: 'inline-block' }}>
                 <InOutSwitch

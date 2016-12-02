@@ -51,7 +51,7 @@ export default class MachInfo extends React.Component {
 
     return (
       <div>
-        <OverlayTrigger container={this} trigger="hover" placement="bottom" overlay={machinfoPop}>
+        <OverlayTrigger container={this} placement="bottom" overlay={machinfoPop}>
         <div className="current-label">
           {this.currentLabel}
           <span className="current-value">
