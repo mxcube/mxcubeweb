@@ -47,20 +47,20 @@ class DataCollection extends React.Component {
     let className;
     if (this.props.fields[field].error) {
       className = 'form-control warning';
-    }
-    else {
+    } else {
       className = 'form-control';
     }
     return className;
   }
 
   anyError() {
-    if (Object.keys(this.props.errors).length == 0) {
-      return false;
+    let err;
+    if (Object.keys(this.props.errors).length === 0) {
+      err = false;
+    } else {
+      err = true;
     }
-    else {
-      return true;
-    }
+    return err;
   }
 
 
@@ -206,7 +206,11 @@ class DataCollection extends React.Component {
             <div className="form-group">
                 <label className="col-sm-3 control-label">Resolution (Å)</label>
                 <div className="col-sm-3">
-                    <input type="number" className={this.inputCSS('resolution')} step="0.1" {...resolution} />
+                    <input
+                      type="number"
+                      className={this.inputCSS('resolution')}
+                      step="0.1" {...resolution}
+                    />
                 </div>
             </div>
 
@@ -360,7 +364,10 @@ class DataCollection extends React.Component {
             X-ray Centring
           </label>
         </div>
-            <Button bsStyle="success" disabled={this.props.pointId === -1 || this.anyError()} onClick={this.runNow}>
+            <Button bsStyle="success"
+              disabled={this.props.pointId === -1 || this.anyError()}
+              onClick={this.runNow}
+            >
               Run Now
             </Button>
             <Button bsStyle="primary" disabled={this.anyError()} onClick={this.addToQueue}>

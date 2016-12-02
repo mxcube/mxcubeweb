@@ -47,21 +47,22 @@ class Characterisation extends React.Component {
     let className;
     if (this.props.fields[field].error) {
       className = 'form-control warning';
-    }
-    else {
+    } else {
       className = 'form-control';
     }
     return className;
   }
 
-  anyError(){
-    if (Object.keys(this.props.errors).length == 0) {
-      return false;
+  anyError() {
+    let err;
+    if (Object.keys(this.props.errors).length === 0) {
+      err = false;
+    } else {
+      err = true;
     }
-    else {
-      return true;
-    }
+    return err;
   }
+
   handleShowHide(e) {
     const node = e.target;
     if (node.innerHTML === 'Show More') {
@@ -376,12 +377,17 @@ class Characterisation extends React.Component {
             <button
               type="button"
               className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'}
-              disabled={this.anyError()} 
+              disabled={this.anyError()}
               onClick={this.runNow}
             >
               Run Now
             </button>
-            <button type="button" className="btn btn-primary" disabled={this.anyError()} onClick={this.addToQueue}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={this.anyError()}
+              onClick={this.addToQueue}
+            >
               {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
             </button>
         </Modal.Footer>
