@@ -1,4 +1,4 @@
-<object class="ISPyBClient2Mockup">
+<object class="ISPyBRestClientMockup">
   <restRoot>
    https://your.lims.org
   </restRoot>
