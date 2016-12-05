@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from mxcube3 import socketio
+from mxcube3 import app as mxcube
+
 from .statedefs import (MOTOR_STATE, INOUT_STATE)
 import logging
+from numpy import arange
+import math
 
 BEAMLINE_SETUP = None
 
-# Sinlgeton like interface is needed to keep the same referance to the 
+# Singleton like interface is needed to keep the same referance to the
 # mediator object and its corresponding hardware objects, so that the signal
 # system wont cleanup signal handlers. (PyDispatcher removes signal handlers
 # when a object is garabge collected)
@@ -33,11 +37,11 @@ class _BeamlineSetupMediator(object):
     def getObjectByRole(self, name):
         try:
             if name == 'dtox':
-                ho = self._bl.getObjectByRole('resolution') # we retrieve dtox through res_hwobj
+                ho = self._bl.getObjectByRole('resolution')  # we retrieve dtox through res_hwobj
             else:
                 ho = self._bl.getObjectByRole(name.lower())
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get get object with role: %s" %name)
+            logging.getLogger("HWR").exception("Failed to get object with role: %s" % name)
 
         if name == "energy":
             return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
@@ -57,18 +61,18 @@ class _BeamlineSetupMediator(object):
             return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "dtox"))
         else:
             return ho
-       
+
 
     def dict_repr(self):
         """
         :returns: Dictionary value-representation for each beamline attribute
-        """        
+        """
 #        capillary = self.getObjectByRole("capillary")
 
         data = dict()
-        
+
         try:
-            energy =  self.getObjectByRole("energy")
+            energy = self.getObjectByRole("energy")
             data.update({"energy": energy.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get energy info")
@@ -208,7 +212,7 @@ class HOMediatorBase(object):
         """
         data = {"name": self._name,
                 "value": self.get(),
-                "limits":self.limits(),
+                "limits": self.limits(),
                 "state": self.state(),
                 "msg": self.msg()}
 
@@ -280,6 +284,20 @@ class EnergyHOMediator(HOMediatorBase):
 
     def stop(self):
         self._ho.stop()
+
+
+    def limits(self):
+        """
+        :returns: The energy limits.
+        """
+        try:
+            energy_limits = self._ho.getEnergyLimits()
+        except (AttributeError, TypeError):
+            energy_limits = (0, 50)
+            logging.getLogger("HWR").exception("Failed to get get object with role: %s" % name)
+            raise ValueError("Could not get limits")
+
+        return energy_limits
 
 
 class InOutHOMediator(HOMediatorBase):
@@ -473,13 +491,66 @@ class ResolutionHOMediator(HOMediatorBase):
 
         return resolution
 
+    def limits(self):
+        """
+        :returns: The resolution limits.
+        """
+        try:
+            resolution_limits = self._ho.getLimits()
+        except (AttributeError, TypeError):
+            raise ValueError("Could not get limits")
+
+        return resolution_limits
 
     def stop(self):
         self._ho.stop()
 
-
     def state(self):
         return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
+
+    def _calc_res(self, radius, energy, dist):
+        current_wavelength = 12.3984 / energy
+
+        try:
+            ttheta = math.atan(radius / dist)
+            if ttheta != 0:
+                return current_wavelength / (2 * math.sin(ttheta / 2))
+            else:
+                return 0
+        except Exception:
+            logging.getLogger().exception("error while calculating resolution")
+            return 0
+
+    def get_lookup_limits(self):
+        energy_ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('energy')
+        e_min, e_max = energy_ho.limits()
+        limits = []
+        x = arange(e_min, e_max, 0.5)
+
+        radius = self._ho.det_radius
+        det_dist = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('dtox')
+
+        pos_min, pos_max = det_dist.limits()
+
+        for energy in x:
+            res_min, res_max = self._calc_res(radius, energy, pos_min),\
+                self._calc_res(radius, energy, pos_max)
+            limits.append((energy, res_min, res_max))
+
+        return limits
+
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "value": self.get(),
+                "limits": self.get_lookup_limits(),
+                "state": self.state(),
+                "msg": self.msg(),
+                }
+
+        return data
 
 
 class DetectorDistanceHOMediator(HOMediatorBase):
@@ -501,6 +572,18 @@ class DetectorDistanceHOMediator(HOMediatorBase):
             detdist = 0
 
         return detdist
+
+
+    def limits(self):
+        """
+        :returns: The detector distance limits.
+        """
+        try:
+            detdist_limits = self._ho.getLimits()
+        except (AttributeError, TypeError):
+            raise ValueError("Could not get limits")
+
+        return detdist_limits
 
 
     def stop(self):

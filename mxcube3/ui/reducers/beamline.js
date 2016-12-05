@@ -158,6 +158,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_INITIAL_STATUS':
       return { ...state,
         motors: { ...state.motors, ...action.data.Motors },
+        motorsLimits: { ...action.data.motorsLimits, ...action.data.beamlineSetup },
         pixelsPerMm: action.data.Camera.pixelsPerMm[0],
         zoom: action.data.Motors.zoom.position
       };

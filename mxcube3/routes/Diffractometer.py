@@ -113,6 +113,21 @@ def get_movables_state():
     return resp
 
 
+@mxcube.route("/mxcube/api/v0.1/diffractometer/movables/limits", methods=['GET'])
+def get_movables_limits():
+    ret = {}
+    for name in mxcube.diffractometer.centring_motors_list:
+            motor_info = Utils.get_movable_limits(name)
+            if motor_info and motor_info[name]['limits'] is not None:
+                ret.update(motor_info)
+
+    ret.update(Utils.get_light_limits())
+
+    resp = jsonify(ret)
+    resp.status_code = 200
+    return resp
+
+
 @mxcube.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['PUT'])
 def set_aperture():
     """
