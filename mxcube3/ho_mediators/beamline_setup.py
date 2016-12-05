@@ -9,7 +9,7 @@ import math
 
 BEAMLINE_SETUP = None
 
-# Sinleeton like interface is needed to keep the same referance to the
+# Singleton like interface is needed to keep the same referance to the
 # mediator object and its corresponding hardware objects, so that the signal
 # system wont cleanup signal handlers. (PyDispatcher removes signal handlers
 # when a object is garabge collected)
