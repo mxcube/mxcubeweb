@@ -548,7 +548,6 @@ class ResolutionHOMediator(HOMediatorBase):
                 "limits": self.get_lookup_limits(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "det_radius": self._ho.det_radius
                 }
 
         return data
