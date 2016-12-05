@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from mxcube3 import socketio
+from mxcube3 import app as mxcube
+
 from .statedefs import (MOTOR_STATE, INOUT_STATE)
 import logging
+from numpy import arange
+import math
 
 BEAMLINE_SETUP = None
 
@@ -501,9 +505,53 @@ class ResolutionHOMediator(HOMediatorBase):
     def stop(self):
         self._ho.stop()
 
-
     def state(self):
         return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
+
+    def _calc_res(self, radius, energy, dist):
+        current_wavelength = 12.3984 / energy
+
+        try:
+            ttheta = math.atan(radius / dist)
+            if ttheta != 0:
+                return current_wavelength / (2 * math.sin(ttheta / 2))
+            else:
+                return 0
+        except Exception:
+            logging.getLogger().exception("error while calculating resolution")
+            return 0
+
+    def get_lookup_limits(self):
+        energy_ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('energy')
+        e_min, e_max = energy_ho.limits()
+        limits = []
+        x = arange(e_min, e_max, 0.5)
+
+        radius = self._ho.det_radius
+        det_dist = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('dtox')
+
+        pos_min, pos_max = det_dist.limits()
+
+        for energy in x:
+            res_min, res_max = self._calc_res(radius, energy, pos_min),\
+                self._calc_res(radius, energy, pos_max)
+            limits.append((energy, res_min, res_max))
+
+        return limits
+
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "value": self.get(),
+                "limits": self.get_lookup_limits(),
+                "state": self.state(),
+                "msg": self.msg(),
+                "det_radius": self._ho.det_radius
+                }
+
+        return data
 
 
 class DetectorDistanceHOMediator(HOMediatorBase):
