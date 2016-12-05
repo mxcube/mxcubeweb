@@ -50,7 +50,8 @@
     "socket.io-client": "1.4.5",
     "style-loader": "0.12.3",
     "underscore": "^1.8.3",
-    "x-editable": "1.5.1"
+    "x-editable": "1.5.1",
+    "everpolate": "0.0.3"
   },
   "devDependencies": {
     "babel-core": "6.4.0",
