@@ -100,7 +100,7 @@ export default class CurrentTree extends React.Component {
           </div>
           <div className="list-body">
             {sampleTasks.map((taskData, i) => {
-              const key = taskData.type + taskData.parameters.run_number;
+              const key = taskData.label + taskData.parameters.run_number;
               const task =
                 (<TaskItem key={key}
                   index={i}
