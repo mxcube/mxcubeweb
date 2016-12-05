@@ -90,11 +90,7 @@ def get_movable_state_and_position(item_name):
                     pos = None
             else:
                 pos = hwobj.getPosition()
-                # invalid code: no arbitrary rounding, precision depends on motor
-		#try:
-		#    pos = round(pos, 2)
-		#except:
-		#    pass
+
         return {item_name: {'Status': hwobj.getState(), 'position': pos}}
     except Exception:
         logging.getLogger('HWR').exception('[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item "%s"' % item_name)
