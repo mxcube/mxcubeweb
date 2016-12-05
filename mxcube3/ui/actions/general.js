@@ -108,7 +108,7 @@ export function getInitialStatus() {
         'Content-type': 'application/json'
       }
     });
-    const beamlineLimits = fetch('mxcube/api/v0.1/beamline', {
+    const beamlineSetup = fetch('mxcube/api/v0.1/beamline', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -178,7 +178,7 @@ export function getInitialStatus() {
       motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
       motorsLimits.then(parse).then(json => { state.motorsLimits = json; }).catch(notify),
       beamInfo.then(parse).then(json => { state.beamInfo = json; }).catch(notify),
-      beamlineLimits.then(parse).then(json => { state.beamlineLimits = json; }).catch(notify),
+      beamlineSetup.then(parse).then(json => { state.beamlineSetup = json; }).catch(notify),
       sampleVideoInfo.then(parse).then(json => { state.Camera = json; }).catch(notify),
       diffractometerInfo.then(parse).then(json => { Object.assign(state, json); }).catch(notify),
       dataPath.then(parse).then(path => { state.rootPath = path; }).catch(notify),
