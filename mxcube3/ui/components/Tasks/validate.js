@@ -36,7 +36,7 @@ const validate = (values, props) => {
         currEnergy < props.motorLimits.energy.limits[1])) {
     errors.energy = 'Energy outside working range';
   }
-  if (values.num_images === '' || values.osc_range > props.acqParametersLimits.osc_range) {
+  if (values.osc_range === '' || values.osc_range > props.acqParametersLimits.osc_range) {
     errors.osc_range = 'Oscillation range outside the limit';
   }
   return errors;
