@@ -47,7 +47,8 @@ def get_light_state_and_intensity():
             hwobj_switch = mxcube.diffractometer.getObjectByRole(light + 'Switch')
             switch_state = 1 if hwobj_switch.getActuatorState() == 'in' else 0
 
-        ret.update({light: {"Status": hwobj.getState(), "position": hwobj.getPosition()},
+        ret.update({light: {"Status": hwobj.getState(), "position": hwobj.getPosition(),
+                            'limits': hwobj.getLimits()},
                     light + 'Switch': {"Status": switch_state, "position": 0}
                     })
 
@@ -109,37 +110,30 @@ def get_movable_limits(item_name):
         hwobj = mxcube.diffractometer.getObjectByRole(item_role)
 
         if hwobj is None:
-            logging.getLogger("HWR").error('[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role "%s"' % item_role)
+            logging.getLogger("HWR").error('[UTILS.GET_MOVABLE_LIMIT] No movable with role "%s"' % item_role)
             limits = ()
         else:
             limits = hwobj.getLimits()
 
             return {item_name: {'limits': limits}}
     except Exception:
-        logging.getLogger('HWR').exception('[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item "%s"' % item_name)
-
-
-# def get_parameters_limits():
-#     """
-#     returns the limit values for the acquisition and for the moveables.
-#     """
-#     acq_limits = mxcube.beamline.get_acquisition_limit_values()
-#     ret = dict()
-#     for name in mxcube.diffractometer.centring_motors_list:
-#         motor_info = get_movable_state_and_position(name)
-#         if motor_info and motor_info[name]['position'] is not None:
-#             ret.update(motor_info)
-
+        logging.getLogger('HWR').exception('[UTILS.GET_MOVABLE_LIMIT] could not get item "%s"' % item_name)
 
 def get_centring_motors_info():
     # the centring motors are: ["phi", "focus", "phiz", "phiy", "zoom", "sampx", "sampy", "kappa", "kappa_phi"]
     ret = dict()
     for name in mxcube.diffractometer.centring_motors_list:
+        print name
         motor_info = get_movable_state_and_position(name)
         if motor_info and motor_info[name]['position'] is not None:
             ret.update(motor_info)
-
+#        print ret
+        motor_limits = get_movable_limits(name)
+        if motor_limits and motor_limits[name]['limits'] is not None:
+            ret[name].update(motor_limits[name])
+#        print ret
     return ret
+
 
 def my_execute_entry(self, entry):
     import queue_entry as qe
