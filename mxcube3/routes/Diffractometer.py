@@ -57,7 +57,7 @@ def set_phase():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/usesc", methods=['PUT'])
-def use_sc():
+def set_use_sc():
     """
     use_sample_changer: set use_sample_changer
     data = { "use_sc": , "msg":}
