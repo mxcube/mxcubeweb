@@ -12,12 +12,18 @@ export default class SampleControls extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.takeSnapShot = this.takeSnapShot.bind(this);
+    this.doTakeSnapshot = this.doTakeSnapshot.bind(this);
     this.setZoom = this.setZoom.bind(this);
     this.setApertureSize = this.setApertureSize.bind(this);
     this.toggleFrontLight = this.toggleLight.bind(this, 'FrontLight');
     this.toggleBackLight = this.toggleLight.bind(this, 'BackLight');
     this.toggleCentring = this.toggleCentring.bind(this);
+  }
+
+  componentDidMount() {
+    window.takeSnapshot = this.doTakeSnapshot;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -41,14 +47,22 @@ export default class SampleControls extends React.Component {
     this.props.sampleActions.sendChangeAperture(option.target.value);
   }
 
-  takeSnapShot() {
+  doTakeSnapshot() {
     const img = document.getElementById('sample-img');
     const fimg = new fabric.Image(img);
+    let imgDataURI = "";
+
     this.props.canvas.setBackgroundImage(fimg);
     this.props.canvas.renderAll();
-    document.getElementById('downloadLink').href = this.props.canvas.toDataURL();
+    imgDataURI = this.props.canvas.toDataURL({format: "jpeg"});
     this.props.canvas.setBackgroundImage(0);
     this.props.canvas.renderAll();
+    
+    return imgDataURI;
+  }
+
+  takeSnapShot() {
+    document.getElementById('downloadLink').href = this.doTakeSnapshot();
   }
 
   toggleCentring() {

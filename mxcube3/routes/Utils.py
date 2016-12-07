@@ -1,7 +1,18 @@
 import logging
 from mxcube3 import app as mxcube
+from mxcube3 import remote_access
+from mxcube3 import socketio
 import time
 import gevent
+import gevent.event
+import types
+import inspect
+import base64
+import os
+import sys
+
+SNAPSHOT_RECEIVED = gevent.event.Event()
+SNAPSHOT = None
 
 def RateLimited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
@@ -214,7 +225,7 @@ def __execute_entry(self, entry):
         entry.get_view().setText(1, 'Queue paused, waiting')
     self.wait_for_pause_event()
     try:
-        # Procedure to be done before main implmentation
+        # Procedure to be done before main implementation
         # of task.
         entry.pre_execute()
         entry.execute()
@@ -238,3 +249,73 @@ def __execute_entry(self, entry):
         entry.post_execute()
 
     self._current_queue_entries.remove(entry)
+
+def _snapshot_received(snapshot_jpg):
+    global SNAPSHOT
+    SNAPSHOT = base64.b64decode(snapshot_jpg.split(',')[1])
+    SNAPSHOT_RECEIVED.set()
+
+def _do_take_snapshot(filename):
+    SNAPSHOT_RECEIVED.clear()
+
+    socketio.emit('take_xtal_snapshot', namespace='/hwr', room=remote_access.MASTER_ROOM, callback=_snapshot_received)
+
+    SNAPSHOT_RECEIVED.wait(timeout=30)
+
+    with file(filename, 'wb') as snapshot_file:
+      snapshot_file.write(SNAPSHOT)
+    
+
+def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
+    if snapshots is None:
+        # called via AbstractCollect
+        dc_params = self.current_dc_parameters
+        diffractometer = self.diffractometer_hwobj
+        move_omega_relative = diffractometer.move_omega_relative
+    else:
+        # called via AbstractMultiCollect
+        calling_frame = inspect.currentframe(2)
+        dc_params = calling_frame.f_locals['data_collect_parameters']
+        diffractometer = self.diffractometer()
+        move_omega_relative = diffractometer.phiMotor.syncMoveRelative
+
+    number_of_snapshots = dc_params.get("take_snapshots", 4)
+    if number_of_snapshots == True:
+        # backward compatibility
+        number_of_snapshots = 4 
+  
+    if number_of_snapshots > 0:
+        snapshot_directory = dc_params["fileinfo"]["archive_directory"]
+        if not os.path.exists(snapshot_directory):
+            try:
+                self.create_directories(snapshot_directory)
+            except Exception:
+                logging.getLogger("HWR").exception("Collection: Error creating snapshot directory")
+
+        logging.getLogger("user_level_log").info(\
+                 "Collection: Taking %d sample snapshot(s)" % number_of_snapshots)
+
+        for snapshot_index in range(number_of_snapshots):
+            snapshot_filename = os.path.join(\
+                   snapshot_directory,
+                   "%s_%s_%s.snapshot.jpeg" % (\
+                   dc_params["fileinfo"]["prefix"],
+                   dc_params["fileinfo"]["run_number"],
+                   (snapshot_index + 1)))
+            dc_params['xtalSnapshotFullPath%i' % \
+                (snapshot_index + 1)] = snapshot_filename
+
+            try:
+                _do_take_snapshot(snapshot_filename)
+            except Exception:
+                sys.excepthook(*sys.exc_info())
+                raise RuntimeError("Could not take snapshot '%s`", snapshot_filename)
+
+            if number_of_snapshots > 1:
+                move_omega_relative(90)
+
+
+def enable_snapshots(collect_object):
+    # patch collect object
+    collect_object.take_crystal_snapshots = types.MethodType(take_snapshots, collect_object)
+     
