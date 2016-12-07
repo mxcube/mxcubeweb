@@ -466,24 +466,6 @@ export function sendRunSample(sampleID, taskIndex) {
 }
 
 
-export function setQueueAndRun(sampleID, taskIndex, queue) {
-  return function (dispatch) {
-    dispatch(sendSetQueue(queue)).then(() => {
-      dispatch(sendRunQueue());
-    });
-  };
-}
-
-
-export function setQueueAndRunTask(sampleID, taskIndex, queue) {
-  return function (dispatch) {
-    dispatch(sendSetQueue(queue)).then(() => {
-      dispatch(sendRunSample(sampleID, taskIndex));
-    });
-  };
-}
-
-
 export function removeTaskAction(sampleID, taskIndex) {
   return { type: 'REMOVE_TASK', sampleID, taskIndex };
 }
@@ -549,32 +531,6 @@ export function addTask(sampleIDs, parameters, runNow) {
         }
       }
       dispatch(queueLoading(false));
-    });
-  };
-}
-
-
-export function addSampleAndTask(sampleID, parameters, sampleData, queue, runNow) {
-  return function (dispatch) {
-    const data = { ...sampleData,
-                   checked: true,
-                   tasks: [{ type: parameters.type,
-                             label: parameters.type.split(/(?=[A-Z])/).join(' '),
-                             sampleID,
-                             parameters,
-                             checked: true }] };
-
-    dispatch(addSampleAction(data));
-
-    sendAddQueueItem([data]).then((response) => {
-      if (response.status >= 400) {
-        dispatch(removeTaskAction(sampleID, 0));
-        throw new Error('The sample could not be added to the server');
-      } else {
-        if (runNow) {
-          dispatch(sendRunSample(sampleID, 0));
-        }
-      }
     });
   };
 }
@@ -652,10 +608,6 @@ export function sendToggleCheckBox(data, index) {
 
 export function clearQueue() {
   return { type: 'CLEAR_QUEUE' };
-}
-
-export function setunNow(run, sampleID, taskIndex) {
-  return { type: 'SET_RUN_NOW', run, sampleID, taskIndex };
 }
 
 

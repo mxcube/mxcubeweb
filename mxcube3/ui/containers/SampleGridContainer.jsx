@@ -57,7 +57,6 @@ class SampleGridContainer extends React.Component {
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
     this.addSelectedSamples = this.addSelectedSamples.bind(this);
     this.toggleAddDeleteSelectedSamples = this.toggleAddDeleteSelectedSamples.bind(this);
-    this.addAllSamples = this.addAllSamples.bind(this);
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeAllSamples = this.removeAllSamples.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
@@ -71,15 +70,8 @@ class SampleGridContainer extends React.Component {
     this.startCollect = this.startCollect.bind(this);
   }
 
-
   componentDidMount() {
     document.addEventListener('click', this.onClick, false);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.queue.queue !== this.props.queue.queue) {
-      this.props.setSampleOrderAction(nextProps.order);
-    }
   }
 
   componentWillUnmount() {
