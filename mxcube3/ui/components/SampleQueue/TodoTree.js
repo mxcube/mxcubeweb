@@ -53,7 +53,7 @@ export default class TodoTree extends React.Component {
                           <Button
                             className="pull-right"
                             bsSize="xs"
-                            onClick={() => this.props.mount(sampleData.sampleID)}
+                            onClick={() => this.props.mount(sampleData)}
                           >
                             Mount
                           </Button>
