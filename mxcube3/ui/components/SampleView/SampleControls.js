@@ -50,14 +50,14 @@ export default class SampleControls extends React.Component {
   doTakeSnapshot() {
     const img = document.getElementById('sample-img');
     const fimg = new fabric.Image(img);
-    let imgDataURI = "";
+    let imgDataURI = '';
 
     this.props.canvas.setBackgroundImage(fimg);
     this.props.canvas.renderAll();
-    imgDataURI = this.props.canvas.toDataURL({format: "jpeg"});
+    imgDataURI = this.props.canvas.toDataURL({ format: 'jpeg' });
     this.props.canvas.setBackgroundImage(0);
     this.props.canvas.renderAll();
-    
+
     return imgDataURI;
   }
 
