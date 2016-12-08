@@ -35,6 +35,7 @@ def init_signals():
 def beamline_get_all_attributes():
     ho = BeamlineSetupMediator(mxcube.beamline)
     data = ho.dict_repr()
+    data.update({'path': mxcube.session.get_base_image_directory()})
     return Response(json.dumps(data), status=200, mimetype='application/json')
 
 
