@@ -586,10 +586,6 @@ def set_dc_params(model, entry, task_data):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
-    # Snapshots are disabled for the time being ;
-    # snapshosts require a communication from server to client,
-    # to get the jpegs with overlays
-    acq.acquisition_parameters.take_snapshots = False
 
     acq.path_template.set_from_dict(params)
     acq.path_template.base_prefix = params['prefix']

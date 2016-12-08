@@ -101,6 +101,9 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
+
+        Utils.enable_snapshots(app.collect)        
+
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
 
         if getattr(app.diffractometer, 'centring_motors_list', None) is None:
@@ -112,7 +115,6 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
         app.queue = qutils.new_queue()
-
 
         try:
             SampleCentring.init_signals()
