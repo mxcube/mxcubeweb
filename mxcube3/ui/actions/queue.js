@@ -418,9 +418,9 @@ export function addSample(sampleData) {
     const { queue } = getState();
     sendAddQueueItem([data]);
     dispatch(addSampleAction(data));
-    if (queue.manualMount.set) {
+    /*if (queue.manualMount.set) {
       dispatch(sendMountSample(data.sampleID));
-    }
+    }*/
   };
 }
 
