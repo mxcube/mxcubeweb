@@ -643,6 +643,6 @@ export function addSampleManualMount(sampleData) {
     dispatch(clearQueue());
     dispatch(appendSampleList(sampleData));
     dispatch(addSample(sampleData));
-    dispatch(setCurrentSample(sampleData.sampleID));
+    //dispatch(setCurrentSample(sampleData.sampleID));
   };
 }
