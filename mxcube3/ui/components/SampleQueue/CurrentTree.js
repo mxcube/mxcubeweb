@@ -36,9 +36,10 @@ export default class CurrentTree extends React.Component {
   }
 
   nextSample() {
-    if (this.props.manualMount.set) {
+    /*if (this.props.manualMount.set) {
       this.showForm();
-    } else if (this.props.todoList[0]) {
+    } else*/
+    if (this.props.todoList[0]) {
       this.props.mount(this.props.todoList[0]);
     }
   }
