@@ -247,26 +247,7 @@ def get_queue_state():
 
         sample_list.update({name: sample_data})
 
-    if mxcube.diffractometer.use_sc:
-        if len(sample_list) != 0:
-            sample_list = samples
-        else:
-            sample_list = {}
-        try:
-            res = mxcube.queue.mounted_sample.split(':')  # no matter how many ~containers
-            loaded = ':'.join(res[:-1]) + ":{:0>2d}".format(int(res[-1]))  # "2:1:2" -> "2:1:02"
-        except:
-            loaded = ''
-    else:
-        try:
-            loaded = mxcube.queue.mounted_sample
-        except Exception:
-            loaded = ''
-
-    try:
-        todo.pop(loaded)
-    except Exception:
-        pass
+    loaded = ''
 
     res = {"sample_list": sample_list,
            "history": history,
