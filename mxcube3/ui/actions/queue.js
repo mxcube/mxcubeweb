@@ -239,19 +239,6 @@ export function moveTask(sampleID, oldIndex, newIndex) {
   };
 }
 
-// export function changeTaskOrder(sampleID, oldIndex, newIndex) {
-//   return function (dispatch) {
-//     dispatch(changeTaskOrderAction(sampleID, oldIndex, newIndex));
-
-//     sendChangeTaskOrder(sampleID, oldIndex, newIndex).then((response) => {
-//       if (response.status >= 400) {
-//         dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-//         throw new Error('Could not change order');
-//       }
-//     });
-//   };
-// }
-
 
 export function runSample(queueID) {
   return {
