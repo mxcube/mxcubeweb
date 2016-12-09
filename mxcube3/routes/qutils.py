@@ -247,7 +247,7 @@ def get_queue_state():
 
         sample_list.update({name: sample_data})
 
-    if mxcube.diffractometer.use_sc:
+    """if mxcube.diffractometer.use_sc:
         if len(sample_list) != 0:
             sample_list = samples
         else:
@@ -267,6 +267,8 @@ def get_queue_state():
         todo.pop(loaded)
     except Exception:
         pass
+    """
+    loaded = ''
 
     res = {"sample_list": sample_list,
            "history": history,
