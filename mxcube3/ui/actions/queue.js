@@ -637,10 +637,6 @@ export function clearQueue() {
   return { type: 'CLEAR_QUEUE' };
 }
 
-export function setunNow(run, sampleID, taskIndex) {
-  return { type: 'SET_RUN_NOW', run, sampleID, taskIndex };
-}
-
 
 export function addSampleManualMount(sampleData) {
   return function (dispatch) {
