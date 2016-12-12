@@ -59,29 +59,15 @@ export function setManualMountAction(manual) {
 }
 
 
-export function sendManualMount(manual) {
+export function setManualMount(manual) {
   return function (dispatch) {
-    return fetch('mxcube/api/v0.1/diffractometer/usesc', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({ use_sc: !manual })
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Could not toggle manual mode'));
-      } else {
+    dispatch(setManualMountAction(manual));
+    if (manual) {
+      dispatch(showTaskForm('AddSample'));
+    }
+  }
         dispatch(sendClearQueue());
         dispatch(setSampleListAction({}));
-        dispatch(setManualMountAction(manual));
-        if (manual) {
-          dispatch(showTaskForm('AddSample'));
-        }
-      }
-    });
-  };
 }
 
 
