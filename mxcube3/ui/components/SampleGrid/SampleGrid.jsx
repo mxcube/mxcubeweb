@@ -1,6 +1,6 @@
 import React from 'react';
 import Isotope from 'isotope-layout';
-
+import { isEqual } from 'lodash/lang';
 import { SampleGridItem, SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_HEIGHT,
          SAMPLE_ITEM_SPACE } from './SampleGridItem';
 import './SampleGrid.css';
@@ -9,7 +9,10 @@ export default class SampleGrid extends React.Component {
 
   constructor(props) {
     super(props);
+
     this._doReorder = false;
+    this._nVisibleSamples = 0;
+    this._prevNVisibleSamples = 0;
     this._selectStartSeqId = -1;
     this.filter = this.filter.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
@@ -19,13 +22,11 @@ export default class SampleGrid extends React.Component {
     this.dragSelectItem = this.dragSelectItem.bind(this);
   }
 
-
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown, false);
 
     if (! this.isotope) {
       const options = { itemSelector: '.samples-grid-item',
-                        resize: false,
                         initLayout: false,
                         layoutMode: 'fitRows',
                         getSortData: {
@@ -47,19 +48,18 @@ export default class SampleGrid extends React.Component {
     }
   }
 
-
-  shouldComponentUpdate(nextProps) {
-    if (this.props.order !== nextProps.order ||
-        this.props.sampleList !== nextProps.sampleList ||
-        this._doReorder) {
+  componentWillUpdate(nextProps, nextState) {
+    if (!(isEqual(this.props.order, nextProps.order) && 
+          (this.props.sampleList.length === nextProps.sampleList.length))) {
       this._doReorder = true;
     }
-
-    return true;
   }
 
-
   componentDidUpdate() {
+    if (this._prevNVisibleSamples != this._nVisibleSamples) {
+      this.prevNVisibleSamples = this._nVisibleSamples;
+      this._doReorder = true;
+    }
     if (this.isotope && this._doReorder) {
       this.isotope.reloadItems();
       this.isotope.layout();
@@ -254,8 +254,6 @@ export default class SampleGrid extends React.Component {
       filterItem = this.props.picked[key];
     }
 
-    this._doReorder = true;
-
     return filterItem;
   }
 
@@ -317,6 +315,8 @@ export default class SampleGrid extends React.Component {
         ++i;
       }
     });
+
+    this._nVisibleSamples = sampleGrid.length;
 
     return (
       <div ref="container" className="samples-grid" style={{ width: this.props.gridWidth }}>
