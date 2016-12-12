@@ -29,8 +29,9 @@ export function getLoginInfo() {
       credentials: 'include'
     }).then(response => response.json())
           .then(loginInfo => {
-            dispatch(setMaster(loginInfo.master));
+            dispatch(setMaster(loginInfo.master, loginInfo.observerName));
             dispatch(setLoginInfo(loginInfo));
+
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
               dispatch(getInitialStatus());
