@@ -606,9 +606,9 @@ export function clearQueue() {
 
 export function addSampleManualMount(sampleData) {
   return function (dispatch) {
-    dispatch(clearQueue());
-    dispatch(addSample(sampleData));
+    //dispatch(clearQueue());
     dispatch(appendSampleListAction(sampleData));
+    //dispatch(addSample(sampleData));
     //dispatch(setCurrentSample(sampleData.sampleID));
   };
 }
