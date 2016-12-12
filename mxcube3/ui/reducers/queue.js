@@ -26,7 +26,11 @@ export default (state = initialState, action) => {
     }
     case 'APPEND_TO_SAMPLE_LIST': {
       const sampleList = { ...state.sampleList, [action.sampleData.sampleID]: action.sampleData };
-      return Object.assign({}, state, { sampleList });
+      const manualMount = { ...state.manualMount };
+      if (state.manualMount.set) {
+          manualMount.id = state.manualMount.id + 1;
+      }
+      return Object.assign({}, state, { sampleList, manualMount });
     }
     case 'SET_SAMPLE_ORDER': {
       const sortedOrder = invert(action.order);
@@ -135,7 +139,6 @@ export default (state = initialState, action) => {
           todo: [...state.todo, sampleID],
           queue: { ...state.queue, [sampleID]: { ...action.sampleData, state: 0 } },
           sampleOrder: [...state.sampleOrder, sampleID],
-          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
         }
       );
     }
