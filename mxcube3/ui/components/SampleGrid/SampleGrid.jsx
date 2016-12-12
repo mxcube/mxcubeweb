@@ -1,6 +1,6 @@
 import React from 'react';
 import Isotope from 'isotope-layout';
-
+import { isEqual } from 'lodash/lang';
 import { SampleGridItem, SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_HEIGHT,
          SAMPLE_ITEM_SPACE } from './SampleGridItem';
 import './SampleGrid.css';
@@ -47,17 +47,13 @@ export default class SampleGrid extends React.Component {
     }
   }
 
-
-  shouldComponentUpdate(nextProps) {
-    if (this.props.order !== nextProps.order ||
-        this.props.sampleList !== nextProps.sampleList ||
-        this._doReorder) {
+  componentWillUpdate(nextProps) {
+    if (!(isEqual(this.props.order, nextProps.order) && 
+          (this.props.sampleList.length === nextProps.sampleList.length))) 
+    {
       this._doReorder = true;
     }
-
-    return true;
   }
-
 
   componentDidUpdate() {
     if (this.isotope && this._doReorder) {
