@@ -25,7 +25,6 @@ export default class SampleGrid extends React.Component {
 
     if (! this.isotope) {
       const options = { itemSelector: '.samples-grid-item',
-                        resize: false,
                         initLayout: false,
                         layoutMode: 'fitRows',
                         getSortData: {
