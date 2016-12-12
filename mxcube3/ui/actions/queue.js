@@ -398,13 +398,6 @@ export function addSample(sampleData) {
 }
 
 
-export function appendSampleList(sampleData) {
-  return function (dispatch) {
-    dispatch(appendSampleListAction(sampleData));
-  };
-}
-
-
 export function deleteSample(sampleID) {
   return function (dispatch) {
     dispatch(queueLoading(true));
@@ -614,8 +607,8 @@ export function clearQueue() {
 export function addSampleManualMount(sampleData) {
   return function (dispatch) {
     dispatch(clearQueue());
-    dispatch(appendSampleList(sampleData));
     dispatch(addSample(sampleData));
+    dispatch(appendSampleListAction(sampleData));
     //dispatch(setCurrentSample(sampleData.sampleID));
   };
 }
