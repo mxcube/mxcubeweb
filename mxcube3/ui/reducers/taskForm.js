@@ -29,7 +29,6 @@ export default (state = initialState, action) => {
         if (action.tasks[0].parameters.helical) {
           type = 'helical';
         }
-        console.log(action)
         return { ...state, defaultParameters:
                  { ...state.defaultParameters, [type]: {
                    ...action.tasks[0].parameters, run_number:
