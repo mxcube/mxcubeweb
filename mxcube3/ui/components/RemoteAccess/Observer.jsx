@@ -5,7 +5,7 @@ import { Input, ButtonInput } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
 import { requestControl } from '../../actions/remoteAccess';
 
-export default class Observer extends React.Component {
+class Observer extends React.Component {
   constructor(props) {
     super(props);
     this.askForControl = this.askForControl.bind(this);

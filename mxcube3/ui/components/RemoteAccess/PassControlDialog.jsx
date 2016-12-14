@@ -55,6 +55,7 @@ export class PassControlDialog extends React.Component {
     return (
       <Modal
         show={this.show()}
+        rootClose="false"
       >
         <Modal.Header>
           <Modal.Title>

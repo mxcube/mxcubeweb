@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
-export default class Master extends React.Component {
+class Master extends React.Component {
   getObservers() {
     const observers = [];
 

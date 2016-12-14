@@ -44,6 +44,7 @@ export class ObserverDialog extends React.Component {
   render() {
     return (
       <Modal
+        rootClose="false"
         show={this.show()}
       >
         <Modal.Header>
