@@ -82,16 +82,12 @@ def set_master_id(data):
     if data['master']:
         MASTER_ROOM = request.sid
         emit_pending_events()
-        return session.sid
-    else:
-        user_info = session['loginInfo']['loginRes']['person']
-        
+    else:       
         OBSERVERS[remote_addr()] = {"host": remote_addr(),
-                                          "name": data["name"],
-                                          "userInfo": user_info,
-                                          "requestsControl": False,
-                                          "message": '',
-                                          "sid": session.sid}
+                                    "name": data["name"],
+                                    "requestsControl": False,
+                                    "message": '',
+                                    "sid": session.sid}
 
         socketio.emit("observersChanged", OBSERVERS.values(), namespace='/hwr')
     
