@@ -5,7 +5,7 @@ import { Input, ButtonInput } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
 import { requestControl } from '../../actions/remoteAccess';
 
-export default class Master extends React.Component {
+export default class Observer extends React.Component {
   constructor(props) {
     super(props);
     this.askForControl = this.askForControl.bind(this);
@@ -86,4 +86,5 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Master);
+)(Observer);
+

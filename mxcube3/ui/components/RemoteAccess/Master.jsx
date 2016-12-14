@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
-export default class Observer extends React.Component {
+export default class Master extends React.Component {
   getObservers() {
     const observers = [];
 
@@ -38,4 +38,4 @@ function mapStateToProps(state) {
 
 export default connect(
   mapStateToProps
-)(Observer);
+)(Master);
