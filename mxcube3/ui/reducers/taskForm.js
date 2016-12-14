@@ -23,12 +23,13 @@ export default (state = initialState, action) => {
           pointId: action.point_id
         };
       }
-    case 'ADD_TASK':
+    case 'ADD_TASKS':
       {
         let type = action.tasks[0].type.toLowerCase();
         if (action.tasks[0].parameters.helical) {
           type = 'helical';
         }
+        console.log(action)
         return { ...state, defaultParameters:
                  { ...state.defaultParameters, [type]: {
                    ...action.tasks[0].parameters, run_number:

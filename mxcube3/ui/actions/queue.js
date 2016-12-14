@@ -511,7 +511,6 @@ export function addTaskAction(tasks) {
 
 export function addTask(sampleIDs, parameters, runNow) {
   return function (dispatch, getState) {
-
     const tasks = sampleIDs.map((id) => (
                   { type: parameters.type,
                   label: parameters.label,
@@ -521,11 +520,28 @@ export function addTask(sampleIDs, parameters, runNow) {
                   ));
     dispatch(queueLoading(true));
     const { queue } = getState();
+    const missingSamples = sampleIDs.filter((id) => !queue.queue[id]);  // the ones not in the queue
+    const samplesToAdd = missingSamples.map((sample) => (
+      {
+        type: 'Sample',
+        sampleID: sample,
+        sampleName: queue.sampleList[sample].sampleName,
+        location: queue.sampleList[sample].location,
+        proteinAcronym: '',
+        checked: true,
+        tasks: [] // TODO?:tasks.filter((tk) => tk.sampleID === sample)
+      }
+    ));
 
-    sendAddQueueItem(tasks).then((response) => {
+    // const tasksClean = tasks.filter((tk) => (samplesToAdd.forEach((smp) => !smp.tasks[0] === tk)));
+
+    const allItems = samplesToAdd.concat(tasks);
+
+    sendAddQueueItem(allItems).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'The task could not be added to the server'));
       } else {
+        dispatch(addSamplesAction(samplesToAdd));
         dispatch(addTaskAction(tasks));
         if (runNow) {
           const taskIndex = queue.queue[sampleIDs][0].tasks.length;

@@ -41,8 +41,8 @@ class TaskContainer extends React.Component {
     }
 
     if (this.props.sampleIds.constructor === Array) {
-        this.props.addTask(this.props.sampleIds, parameters, runNow);
-      } else {
+      this.props.addTask(this.props.sampleIds, parameters, runNow);
+    } else {
       const { taskData, sampleIds } = this.props;
       const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
       this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
