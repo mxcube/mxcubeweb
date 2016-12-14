@@ -41,11 +41,16 @@ export class ObserverDialog extends React.Component {
     return 'Observer mode';
   }
 
+  onHide() {
+    
+  }
+
   render() {
     return (
       <Modal
-        rootClose="false"
+        backdrop="static"
         show={this.show()}
+        onHide={this.onHide}
       >
         <Modal.Header>
           <Modal.Title>

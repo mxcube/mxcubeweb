@@ -49,13 +49,18 @@ export class PassControlDialog extends React.Component {
     this.props.requestControlResponse(false, message);
   }
 
+  onHide() {
+    
+  }
+
   render() {
     const observer = this.getObserver();
 
     return (
       <Modal
         show={this.show()}
-        rootClose="false"
+        backdrop="static"
+        onHide={this.onHide}
       >
         <Modal.Header>
           <Modal.Title>

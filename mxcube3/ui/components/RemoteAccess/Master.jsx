@@ -9,7 +9,7 @@ class Master extends React.Component {
 
     for (const observer of this.props.remoteAccess.observers) {
       observers.push((
-        <div>
+        <div key={observer.host}>
           <div className="col-xs-6">{observer.name}</div>
           <div className="col-xs-6">{observer.host}</div>
         </div>
