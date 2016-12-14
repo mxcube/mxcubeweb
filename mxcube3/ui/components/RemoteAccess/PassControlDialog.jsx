@@ -71,6 +71,7 @@ export class PassControlDialog extends React.Component {
           <Input
             ref="message"
             id="name"
+            defaultValue="Here you go !"
             type="textarea"
             placeholder="Message"
             rows="3"

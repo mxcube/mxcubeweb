@@ -12,6 +12,10 @@ export default class Observer extends React.Component {
     this.cancelControlRequest = this.cancelControlRequest.bind(this);
   }
 
+  componentDidUpdate() {
+    this.refs.name.refs.input.value = this.getName();
+  }
+
   getName() {
     let name = '';
 
