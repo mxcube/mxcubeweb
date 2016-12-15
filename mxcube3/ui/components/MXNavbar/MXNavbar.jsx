@@ -119,11 +119,12 @@ export default class MXNavbar extends React.Component {
               style={ raStyle }
               eventKey={1}
             >
-              <i
+              <a
                 className="fa fa-2x fa-universal-access icon"
                 aria-hidden="true"
+                href="#/remoteaccess"
               >
-              </i>
+              </a>
             </p>
           </OverlayTrigger>
           <OverlayTrigger

@@ -21,6 +21,8 @@ import { setLoading,
          addUserMessage,
          showConnectionLostDialog } from './actions/general';
 
+import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
+
 class ServerIO {
 
   constructor() {
@@ -55,7 +57,11 @@ class ServerIO {
   }
 
   setRemoteAccessMaster(cb) {
-    this.hwrSocket.emit('setRaMaster', cb);
+    this.hwrSocket.emit('setRaMaster', { master: true, name: null }, cb);
+  }
+
+  setRemoteAccessObserver(observer, name, cb) {
+    this.hwrSocket.emit('setRaMaster', { master: false, name }, cb);
   }
 
   listen(store) {
@@ -171,6 +177,32 @@ class ServerIO {
 
     this.hwrSocket.on('resumeQueueDialog', () => {
       this.dispatch(showResumeQueueDialog(true));
+    });
+
+    this.hwrSocket.on('observersChanged', (data) => {
+      this.dispatch(setObservers(data));
+    });
+
+    this.hwrSocket.on('setMaster', (data) => {
+      const ra = store.getState().remoteAccess;
+
+      if (ra.sid === data.sid && !ra.master) {
+        // Given control
+        this.dispatch(setMaster(true));
+        this.dispatch(setLoading(true, 'You were given control', data.message));
+      } else if (ra.sid === data.sid && ra.master) {
+        // Keep control
+        this.dispatch(setMaster(true));
+      } else if (!ra.master) {
+        // Control was denied
+        if (ra.requestingControl) {
+          this.dispatch(setLoading(true, 'You were denied control', data.message));
+          this.dispatch(requestControlAction(false));
+        }
+      } else if (ra.master) {
+        // Lost control
+        this.dispatch(setMaster(false));
+      }
     });
 
     this.hwrSocket.on('take_xtal_snapshot', (unused, cb) => {

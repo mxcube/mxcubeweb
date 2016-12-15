@@ -7,6 +7,7 @@ import SampleGridContainer from './containers/SampleGridContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
+import RemoteAccessContainer from './containers/RemoteAccessContainer';
 import Main from './components/Main';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
@@ -93,6 +94,7 @@ export default class App extends React.Component {
                <Route path="datacollection" component={SampleViewContainer} />
                <Route path="sampleChanger" component={SampleChangerContainer} />
                <Route path="logging" component={LoggerContainer} />
+               <Route path="remoteaccess" component={RemoteAccessContainer} />
               </Route>
               <Route path="login" component={LoginContainer} />
             </Router>

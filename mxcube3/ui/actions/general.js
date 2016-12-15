@@ -148,6 +148,14 @@ export function getInitialStatus() {
         'Content-type': 'application/json'
       }
     });
+    const observers = fetch('mxcube/api/v0.1/login/observers', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
 
     const pchains = [
       queue.then(parse).then(json => { state.queue = json; }).catch(notify),
@@ -163,7 +171,8 @@ export function getInitialStatus() {
       savedPoints.then(parse).then(json => { state.points = json; }).catch(notify),
       sampleChangerContents.then(parse).then(json => {
         state.sampleChangerContents = json;
-      }).catch(notify)
+      }).catch(notify),
+      observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify)
     ];
 
     Promise.all(pchains).then(() => {

@@ -11,6 +11,7 @@ MASTER = None
 MASTER_ROOM = None
 PENDING_EVENTS = deque()
 DISCONNECT_HANDLED = True
+OBSERVERS = {}
 
 def set_master(master_sid):
     global MASTER
@@ -31,7 +32,7 @@ def _event_callback():
 
 def emit_pending_events():
     try:
-        event_id, event, json_dict, kwargs = PENDING_EVENTS[0] 
+        event_id, event, json_dict, kwargs = PENDING_EVENTS[0]
     except IndexError:
         pass
     else:
@@ -66,7 +67,7 @@ def connect():
 @socketio.on('disconnect', namespace='/hwr')
 def disconnect():
     global DISCONNECT_HANDLED, MASTER_ROOM
-    
+
     if is_master(session.sid) and MASTER_ROOM == request.sid and \
            mxcube.queue.queue_hwobj.is_executing():
 
@@ -75,8 +76,33 @@ def disconnect():
         logging.getLogger('HWR').info('Client disconnected, stopping queue')
 
 @socketio.on('setRaMaster', namespace='/hwr')
-def set_master_id():
-    global MASTER_ROOM
-    MASTER_ROOM = request.sid
-    emit_pending_events()
-    return MASTER_ROOM
+def set_master_id(data):
+    global MASTER_ROOM, OBSERVERS
+
+    if data['master']:
+        MASTER_ROOM = request.sid
+        emit_pending_events()
+    else:       
+        OBSERVERS[remote_addr()] = {"host": remote_addr(),
+                                    "name": data["name"],
+                                    "requestsControl": False,
+                                    "message": '',
+                                    "sid": session.sid}
+
+        socketio.emit("observersChanged", OBSERVERS.values(), namespace='/hwr')
+    
+    return session.sid
+
+def observer_name():
+    global OBSERVERS
+    observer_name = ''
+    
+    try:
+        observer_name = OBSERVERS[remote_addr()]['name']
+    except KeyError:
+        pass
+
+    return observer_name
+
+def remote_addr():
+    return str(request.headers.get('x-forwarded-for', request.remote_addr))

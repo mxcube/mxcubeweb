@@ -5,6 +5,7 @@ from mxcube3 import app as mxcube
 from mxcube3.routes import qutils
 from mxcube3.routes import limsutils
 from mxcube3 import remote_access, state_storage
+from mxcube3 import socketio
 
 LOGGED_IN_USER = None
 
@@ -117,9 +118,9 @@ def loginInfo():
 
         if not remote_access.MASTER:
             remote_access.set_master(session.sid)
+
         session['loginInfo'] = login_info
 
-    print 'SESSION SID =', session.sid
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
 
@@ -129,7 +130,84 @@ def loginInfo():
           "loginType": mxcube.db_connection.loginType.title(),
           "loginRes": login_info,
           "queue": qutils.queue_to_dict(),
-          "master": remote_access.is_master(session.sid)
+          "master": remote_access.is_master(session.sid),
+          "observerName": remote_access.observer_name()
         }
     )
 
+
+@mxcube.route("/mxcube/api/v0.1/login/request_control", methods=["POST"])
+def request_control():
+    """
+    """
+    data = request.get_json()
+
+    # Is someone already asking for control
+    for observer in remote_access.OBSERVERS.values():
+        if observer["requestsControl"]:
+            msg = "Another user is already asking for control"
+            return make_response(msg, 409)
+
+    remote_addr = remote_access.remote_addr()
+
+    remote_access.OBSERVERS[remote_addr]["name"] = data["name"]
+    remote_access.OBSERVERS[remote_addr]["requestsControl"] = True
+    remote_access.OBSERVERS[remote_addr]["message"] = data["message"]
+    
+    data = remote_access.OBSERVERS.values()
+   
+    socketio.emit("observersChanged", data, namespace='/hwr')
+
+    return make_response("", 200)
+
+
+@mxcube.route("/mxcube/api/v0.1/login/observers", methods=["GET"])
+def observers():
+    """
+    """    
+    data = {'observers': remote_access.OBSERVERS.values(),
+            'sid': session.sid,
+            'master': remote_access.is_master(session.sid),
+            'observerName': remote_access.observer_name()}
+    
+    return jsonify(data=data)
+
+
+def observer_requesting_control():
+    observer = None
+    
+    for o in remote_access.OBSERVERS.values():
+        if o["requestsControl"]:
+            observer = o
+
+    return observer
+
+@mxcube.route("/mxcube/api/v0.1/login/request_control_response", methods=["POST"])
+def request_control_response():
+    """
+    """
+    data = request.get_json()
+    observer = observer_requesting_control()
+    observers = remote_access.OBSERVERS.values()
+
+    # Request was denied
+    if not data['giveControl']:
+        data["sid"] = session.sid
+
+        # Reset request of observer, since it was denied
+        observer["requestsControl"] = False
+
+        socketio.emit("observersChanged", observers, namespace='/hwr')
+        socketio.emit("setMaster", data, namespace='/hwr')
+    else:
+        # Find the user asking for control and remove her from observers
+        # and make her master
+        observer = remote_access.OBSERVERS.pop(observer["host"])
+        remote_access.set_master(observer["sid"])
+
+        data["sid"] = observer["sid"]
+
+        socketio.emit("observersChanged", observers, namespace='/hwr')
+        socketio.emit("setMaster", data, namespace='/hwr')
+
+    return make_response("", 200)

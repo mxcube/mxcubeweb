@@ -35,7 +35,7 @@ export class PleaseWaitDialog extends React.Component {
       this.props.abortFun();
     }
 
-    this.getHideFun()();
+    this.props.setLoadingFalse();
   }
 
   renderHeader() {
@@ -59,14 +59,14 @@ export class PleaseWaitDialog extends React.Component {
   renderFooter() {
     let footer = (
       <Modal.Footer>
-	<Button onClick={this.getHideFun()}>OK</Button>
+        <Button onClick={this.getHideFun()}>OK</Button>
       </Modal.Footer>
     );
 
     if (this.props.blocking) {
       footer = (
         <Modal.Footer>
-          <Button onClick={this.abort}>Abort</Button>
+          <Button onClick={this.abort}>Cancel</Button>
         </Modal.Footer>
       );
     }
@@ -89,7 +89,7 @@ export class PleaseWaitDialog extends React.Component {
             {this.getMessage()}
           </p>
           <ProgressBar active now={100} />
-	</div>);
+        </div>);
     }
 
     return content;
