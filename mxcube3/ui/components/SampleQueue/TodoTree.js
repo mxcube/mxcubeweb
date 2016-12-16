@@ -41,21 +41,22 @@ export default class TodoTree extends React.Component {
                     />
                 </div>
                 <div className="list-body todo-body">
-                {list.map((key, id) => {
-                  const sampleData = this.props.queue[key];
-                  return (
-                    <div key={id} className="node node-sample">
-                      <div className="task-head">
-                        <p className="node-name">
-                          {`${sampleData.sampleID}`}
-                          <Button
-                            className="pull-right"
-                            bsSize="xs"
-                            onClick={() => this.props.mount(sampleData)}
-                          >
-                            Mount
-                          </Button>
-                        </p>
+                  {list.map((key, id) => {
+                    const sampleData = this.props.queue[key];
+                    return (
+                      <div key={id} className="node node-sample">
+                        <div className="task-head">
+                          <p className="node-name">
+                            {`${sampleData.sampleID}`}
+                            <Button
+                              className="pull-right"
+                              bsSize="xs"
+                              onClick={() => this.props.mount(sampleData)}
+                            >
+                              Mount
+                            </Button>
+                          </p>
+                        </div>
                       </div>
                     );
                   })}

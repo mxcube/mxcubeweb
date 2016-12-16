@@ -13,68 +13,60 @@
 *  filterText: Current filter text
 */
 const INITIAL_STATE = { selected: {},
-                        order: {},
+                        sampleList: {},
+                        order: [],
                         moving: {},
                         contextMenu: {},
                         filterText: '' };
 
-/**
- * Calculates the inital grid display order from a set of samples
- *
- * @param {Object} sampleList - key, value (sample id, sample data object)
- * @returns {Object} - key, value (sample id, order number (int))
- *
- */
-function initialGridOrder(sampleList) {
-  const gridOrder = {};
-
-  for (const key in sampleList) {
-    if (key) {
-      const order = Object.keys(gridOrder).length;
-      gridOrder[key] = order;
-    }
-  }
-
-  return gridOrder;
-}
-
-
-/**
- * Gets the sampleOrder for the next sample to be appended to the sample grid
- *
- * @param {Object} order - Grid display order object containing (key, order) pairs
- * @returns {int} - next order number
- *
- */
-function sampleOrder(order) {
-  let m = Math.max.apply(null, Object.values(order));
-
-  if (m === -Infinity) {
-    m = 0;
-  } else {
-    m++;
-  }
-
-  return m;
-}
-
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    // Sets the list of samples (sampleList), clearing any existing list
-    // Sets only the initial display order of samples in grid for this reducer
+    // Set the list of samples (sampleList), clearing any existing list
     case 'SET_SAMPLE_LIST': {
-      return Object.assign({}, state, { order: initialGridOrder(action.sampleList) });
+      return Object.assign({}, state, { sampleList: action.sampleList, order: action.order });
     }
-    // Append one sample to the list of samples (sampleList),
-    case 'APPEND_TO_SAMPLE_LIST': {
-      const order = { ...state.order, [action.sampleData.sampleID]: sampleOrder(state.order) };
+    case 'ADD_SAMPLES_TO_LIST': {
+      const sampleList = { ...state.sampleList };
+      const order = [...state.order];
 
-      return Object.assign({}, state, { order });
+      for (const sampleData of action.samplesData) {
+        const sampleID = sampleData.sampleID;
+        sampleList[sampleID] = Object.assign({}, sampleData);
+        order.push(sampleID);
+      }
+
+      return Object.assign({}, state, { sampleList, order });
     }
-    // Set display order of samples in grid
-    case 'SET_SAMPLE_ORDER': {
-      return Object.assign({}, state, { order: action.order });
+    case 'SET_SAMPLES_INFO': {
+      const sampleList = {};
+      Object.keys(state.sampleList).forEach(key => {
+        const sample = state.sampleList[key];
+        let sampleInfo;
+        for (sampleInfo of action.sampleInfoList) {
+          if (sampleInfo.code) {
+            // find sample with data matrix code
+            if (sample.code === sampleInfo.code) {
+              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
+              break;
+            }
+          } else {
+            // check with sample changer location
+            const containerLocation = sampleInfo.containerSampleChangerLocation;
+            const sampleLocation = sampleInfo.sampleLocation;
+            const limsLocation = `${containerLocation}:${sampleLocation}`;
+
+            if (sample.location === limsLocation) {
+              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
+              break;
+            }
+          }
+        }
+        if (sampleList[key] === undefined) {
+          sampleList[key] = Object.assign({}, sample, { });
+        }
+      });
+      return Object.assign({}, state, { sampleList });
     }
     // Toggles a samples movable flag
     case 'TOGGLE_MOVABLE_SAMPLE': {

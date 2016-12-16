@@ -189,7 +189,6 @@ def get_queue_state():
                 "history": [],
                 "loaded": "1:01",
                 "sample_list": [ sampleID_1, sampleID_2 ...],
-                "todo": [ sampleID_1, sampleID_2, ...],
                 "queue": {sampleID_1: [task1, ... taskn]
                         .
                         .
@@ -226,16 +225,10 @@ def get_queue_state():
         pass
 
     sample_list_ho = mxcube.queue.queue_hwobj._queue_entry_list
-    todo = []
-    history = []
     sample_list = {}
     for sample in sample_list_ho:
         sample_model = sample.get_data_model()
         name = sample_model.loc_str
-        if queue[name]["state"] > 1:
-            history.append(name)
-        else:
-            todo.append(name)
 
         sample_data = {"sampleID": name,
                        "location": "Manual" if sample_model.free_pin_mode else sample_model.loc_str,
@@ -250,11 +243,8 @@ def get_queue_state():
     loaded = ''
 
     res = {"sample_list": sample_list,
-           "history": history,
-           "todo": todo,
            "loaded": loaded,
            "queue": queue,
-           "sample_order": order,
            "queueStatus": queue_exec_state()
            }
 

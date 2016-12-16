@@ -17,6 +17,8 @@ import {
 } from 'react-bootstrap';
 
 import {
+  sendGetSampleList,
+  sendSyncSamples,
   filterAction,
   toggleMovableAction,
   selectAction,
@@ -25,15 +27,16 @@ import {
 } from '../actions/SamplesGrid';
 
 import {
-  sendGetSampleList,
-  sendSyncSamples,
-  setManualMount,
-  setSampleOrderAction,
   deleteTask,
-  deleteSample,
   sendClearQueue,
-  addSamples
+  //TODO: deleteSamples
+  deleteSampleFromQueue,
+  addSamplesToQueue
 } from '../actions/queue';
+
+import {
+  setSampleOrderAction,
+} from '../actions/SamplesGrid';
 
 import { showTaskForm } from '../actions/taskForm';
 import SampleGrid from '../components/SampleGrid/SampleGrid';
@@ -50,7 +53,6 @@ class SampleGridContainer extends React.Component {
     super(props);
     this.syncSamples = this.syncSamples.bind(this);
 
-    this.manualMount = this.manualMount.bind(this);
     this.filterSampleGrid = this.filterSampleGrid.bind(this);
     this.filterSampleGridClear = this.filterSampleGridClear.bind(this);
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
@@ -60,7 +62,6 @@ class SampleGridContainer extends React.Component {
     this.removeAllSamples = this.removeAllSamples.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
     this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
-    this.showAddSampleForm = this.props.showTaskParametersForm.bind(this, 'AddSample');
     this.showCharacterisationForm = this.handleSubmit.bind(this, 'Characterisation');
     this.showDataCollectionForm = this.handleSubmit.bind(this, 'DataCollection');
     this.onClick = this.onClick.bind(this);
@@ -135,11 +136,6 @@ class SampleGridContainer extends React.Component {
   }
 
 
-  manualMount() {
-    this.props.setManualMount(!this.props.manualMount);
-  }
-
-
   filterSampleGrid() {
     this.props.filter(this.refs.filterInput.getInputDOMNode().value.trim());
   }
@@ -210,12 +206,12 @@ class SampleGridContainer extends React.Component {
     const samples = [];
     for (const sampleID in this.props.selected) {
       if (this.picked(sampleID)) {
-        this.props.deleteSample(sampleID);
+        this.props.deleteSampleFromQueue(sampleID);
       } else {
         samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
       }
     }
-    if (samples.length > 0) { this.props.addSamples(samples); }
+    if (samples.length > 0) { this.props.addSamplesToQueue(samples) };
   }
 
 
@@ -224,14 +220,14 @@ class SampleGridContainer extends React.Component {
     for (const sampleID of Object.keys(this.props.selected)) {
       samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
     }
-    this.props.addSamples(samples);
+    this.props.addSamplesToQueue(samples);
   }
 
 
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
       if (this.picked(sampleID)) {
-        this.props.deleteSample(sampleID);
+        this.props.deleteSampleFromQueue(sampleID);
       }
     }
   }
@@ -239,7 +235,7 @@ class SampleGridContainer extends React.Component {
 
   removeAllSamples() {
     for (const sampleID of Object.keys(this.props.queue.queue)) {
-      this.props.deleteSample(sampleID);
+      this.props.deleteSampleFromQueue(sampleID);
     }
   }
 
@@ -250,8 +246,7 @@ class SampleGridContainer extends React.Component {
 
 
   collectButton() {
-    const collectText = this.props.queue.manualMount.set ? 'Collect' :
-                        `Collect Queue ${this.numSamplesPicked()}/${this.numSamples()}`;
+    const collectText = `Collect ${this.numSamplesPicked()}/${this.numSamples()}`;
 
     let button = (
       <Button
@@ -283,7 +278,7 @@ class SampleGridContainer extends React.Component {
           <SplitButton
             bsStyle="primary"
             title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
-            onClick={this.props.manualMount ? this.showAddSampleForm : this.props.getSamples}
+            onClick={this.props.manualMount ? "" : this.props.getSamples}
             onSelect={this.manualMount}
             id="split-button-sample-changer-selection"
           >
@@ -491,9 +486,8 @@ function mapStateToProps(state) {
     queueGUI: state.queueGUI,
     selected: state.sampleGrid.selected,
     moving: state.sampleGrid.moving,
-    sampleList: state.queue.sampleList,
+    sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
-    manualMount: state.queue.manualMount.set,
     filterText: state.sampleGrid.filterText,
     order: state.sampleGrid.order,
     sampleGridContextMenu: state.sampleGrid.contextMenu
@@ -506,15 +500,15 @@ function mapDispatchToProps(dispatch) {
     setSampleOrderAction: (order) => dispatch(setSampleOrderAction(order)),
     filter: (filterText) => dispatch(filterAction(filterText)),
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
-    setManualMount: (manual) => dispatch(setManualMount(manual)),
+    //setManualMount: (manual) => dispatch(setManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     selectSamples: (keys, selected) => dispatch(selectAction(keys, selected)),
     toggleSelectedSample: (keys) => dispatch(toggleSelectedAction(keys)),
-    deleteSample: (sampleID) => dispatch(deleteSample(sampleID)),
+    deleteSampleFromQueue: (sampleID) => dispatch(deleteSampleFromQueue(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
-    addSamples: (sampleData) => dispatch(addSamples(sampleData)),
+    addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
   };
 }

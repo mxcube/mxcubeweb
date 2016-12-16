@@ -19,16 +19,13 @@ function mapStateToProps(state) {
     searchString: state.queue.searchString,
     current: state.queue.current,
     visibleList: state.queue.visibleList,
-    todo: state.queue.todo,
     queueStatus: state.queue.queueStatus,
-    history: state.queue.history,
     queue: state.queue.queue,
+    sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
     select_all: state.queue.selectAll,
-    mounted: state.queue.manualMount.set,
     rootPath: state.queue.rootPath,
     displayData: state.queueGUI.displayData,
-    manualMount: state.queue.manualMount,
     loading: state.queueGUI.loading,
     userMessages: state.general.userMessages
   };
@@ -61,15 +58,13 @@ export default class SampleQueueContainer extends React.Component {
   render() {
     const {
       checked,
-      todo,
       current,
-      history,
+      sampleOrder,
       queue,
       showForm,
       queueStatus,
       rootPath,
       displayData,
-      manualMount,
       visibleList,
       loading
     } = this.props;
@@ -88,6 +83,22 @@ export default class SampleQueueContainer extends React.Component {
       sendMountSample,
       moveTask
     } = this.props.queueActions;
+
+    // go through the queue, check if sample has been collected or not
+    // to make todo and history lists
+    const todo = [];
+
+    sampleOrder.map(key => {
+      const sample = queue[key];
+
+      if (sample) {
+        todo.push(sample.sampleID);
+      }
+
+      return sample;
+    });
+
+    const history = [];
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
@@ -134,7 +145,6 @@ export default class SampleQueueContainer extends React.Component {
                   rootPath={rootPath}
                   collapseTask={collapseTask}
                   displayData={displayData}
-                  manualMount={manualMount}
                   mount={sendMountSample}
                   todoList={todo}
                   moveTask={moveTask}

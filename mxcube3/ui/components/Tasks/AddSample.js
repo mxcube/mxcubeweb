@@ -2,7 +2,6 @@ import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 
-
 class AddSample extends React.Component {
   constructor(props) {
     super(props);
@@ -23,8 +22,8 @@ class AddSample extends React.Component {
       prefix += `-${this.props.values.proteinAcronym}`;
     }
 
-    this.props.add({ ...this.props.values, type: 'Sample', tasks: [], defaultPrefix: prefix,
-                     location: 'Manual', sampleID: this.props.id.toString() });
+    this.props.add({ ...this.props.values, type: 'Sample', defaultPrefix: prefix,
+                     location: 'Manual' });
     this.props.hide();
   }
 

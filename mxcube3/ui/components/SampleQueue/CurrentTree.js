@@ -12,7 +12,6 @@ export default class CurrentTree extends React.Component {
     this.runSample = this.runSample.bind(this);
     this.unmount = this.unMountSample.bind(this);
     this.nextSample = this.nextSample.bind(this);
-    this.showForm = this.props.showForm.bind(this, 'AddSample');
     this.state = {
       options: {
         QueueStarted: [
@@ -35,9 +34,7 @@ export default class CurrentTree extends React.Component {
   }
 
   nextSample() {
-    if (this.props.manualMount.set) {
-      this.showForm();
-    } else if (this.props.todoList[0]) {
+    if (this.props.todoList[0]) {
       this.props.mount(this.props.todoList[0]);
     }
   }
@@ -77,9 +74,6 @@ export default class CurrentTree extends React.Component {
       sampleData = this.props.queue[sampleId];
       sampleTasks = this.props.queue[sampleId].tasks;
       queueOptions = this.state.options[this.props.queueStatus];
-    } else if (this.props.manualMount.set) {
-      sampleData.sampleName = 'No Sample Mounted';
-      queueOptions = this.state.options.NoSampleMounted;
     } else {
       sampleData.sampleName = 'Go To SampleGrid';
       queueOptions = [];
@@ -106,7 +100,6 @@ export default class CurrentTree extends React.Component {
                   data={taskData}
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
-                  showForm={this.props.showForm}
                   sampleId={sampleData.sampleID}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}

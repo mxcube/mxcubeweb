@@ -16,19 +16,29 @@ def init_signals():
 def get_samples_list():
     samples_list = mxcube.sample_changer.getSampleList()
     samples = {}
+    samplesByCoords = {}
+    order = []
 
     for s in samples_list:
         sample_dm = s.getID() or ""
+        coords = s.getCoords()
         sample_data = {"sampleID": s.getAddress(),
-                       "location": ":".join(map(str, s.getCoords())),
+                       "location": ":".join(map(str, coords)),
                        "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
                        "code": sample_dm,
+                       "tasks": [],
                        "type": "Sample"}
+        order.append(coords)
+        samplesByCoords[coords] = sample_data['sampleID']
 
         sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-        samples.update({s.getAddress(): sample_data})
 
-    return jsonify(samples)
+        samples[s.getAddress()] = sample_data
+
+    # sort by location, using coords tuple
+    order.sort()
+
+    return jsonify({ 'sampleList': samples, 'sampleOrder': [samplesByCoords[coords] for coords in order] })
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
 def get_sc_contents():

@@ -29,19 +29,11 @@ export default class SampleGrid extends React.Component {
       const options = { itemSelector: '.samples-grid-item',
                         initLayout: false,
                         layoutMode: 'fitRows',
-                        getSortData: {
-                          name: '.protein-acronym',
-                          seqId: (itemElem) => {
-                            const seqId = itemElem.getElementsByClassName('seq-id')[0].innerHTML;
-                            return parseFloat(seqId);
-                          }
-                        },
                         fitRows: {
                           width: SAMPLE_ITEM_WIDTH,
                           height: SAMPLE_ITEM_HEIGHT,
                           gutter: SAMPLE_ITEM_SPACE
-                        },
-                        sortBy: 'seqId'
+                        }
       };
 
       this.isotope = new Isotope(this.refs.container, options);
@@ -63,7 +55,7 @@ export default class SampleGrid extends React.Component {
     if (this.isotope && this._doReorder) {
       this.isotope.reloadItems();
       this.isotope.layout();
-      this.isotope.arrange({ sortBy: 'seqId' });
+      this.isotope.arrange();
       this._doReorder = false;
     }
   }
@@ -106,7 +98,7 @@ export default class SampleGrid extends React.Component {
   itemGridPosition(key) {
     const gridDim = this.gridDimension();
     const numCols = gridDim[0];
-    const pos = this.props.order[key];
+    const pos = this.props.order.indexOf(key);
 
     const rowPos = Math.floor(pos / numCols);
     const colPos = pos - (rowPos * numCols);
@@ -147,32 +139,14 @@ export default class SampleGrid extends React.Component {
   }
 
 
-  keysFromSeqId(start, end) {
-    let [_start, _end] = [start, end];
-    const keys = [];
-
-    if (start > end) {
-      [_start, _end] = [end, start];
-    }
-
-    for (const [key, value] of Object.entries(this.props.order)) {
-      if (value >= _start && value <= _end) {
-        keys.push(key);
-      }
-    }
-
-    return keys;
+  dragStartSelection(key) {
+    this._selectStartSeqId = key;
+    this.props.select([key]);
   }
 
 
-  dragStartSelection(key, seqId) {
-    this._selectStartSeqId = seqId;
-    this.props.select(this.keysFromSeqId(this._selectStartSeqId, seqId));
-  }
-
-
-  dragSelectItem(key, seqId) {
-    this.props.select(this.keysFromSeqId(this._selectStartSeqId, seqId));
+  dragSelectItem(key) {
+    this.props.select([key]);
   }
 
 
@@ -190,28 +164,6 @@ export default class SampleGrid extends React.Component {
   }
 
 
-  sortSample(order, key, targetPos) {
-    const newSampleOrder = Object.assign({}, order);
-    const sourcePos = order[key];
-
-    // Shift samples between the old and new position one step
-    for (const [_key, _pos] of Object.entries(order)) {
-      if (sourcePos < targetPos) {
-        if ((sourcePos < _pos) && (_pos <= targetPos)) {
-          newSampleOrder[_key] = _pos - 1;
-        }
-      } else if (sourcePos > targetPos) {
-        if ((sourcePos > _pos) && (_pos >= targetPos)) {
-          newSampleOrder[_key] = _pos + 1;
-        }
-      }
-    }
-
-    newSampleOrder[key] = targetPos;
-    this.props.setSampleOrder(newSampleOrder);
-  }
-
-
   moveItem(dir) {
     const selectedItemKey = this.selectedItem();
 
@@ -224,22 +176,25 @@ export default class SampleGrid extends React.Component {
     }
 
     const numCols = this.gridDimension()[0];
-    let newPos = this.props.order[selectedItemKey];
+    const sourcePos = this.props.order.indexOf(selectedItemKey);
+    let targetPos = sourcePos;
     const [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] = this.canMove(selectedItemKey);
 
     if (dir === 'RIGHT' && canMoveRight) {
-      newPos = newPos + 1;
+      targetPos = targetPos + 1;
     } else if (dir === 'LEFT' && canMoveLeft) {
-      newPos = newPos - 1;
+      targetPos = targetPos - 1;
     } else if (dir === 'DOWN' && canMoveDown) {
-      newPos = newPos + numCols;
+      targetPos = targetPos + numCols;
     } else if (dir === 'UP' && canMoveUp) {
-      newPos = newPos - numCols;
+      targetPos = targetPos - numCols;
     } else {
       return;
     }
 
-    this.sortSample(this.props.order, selectedItemKey, newPos);
+    const newSampleOrder = [...this.props.order];
+    newSampleOrder.splice(targetPos, 0, newSampleOrder.splice(sourcePos, 1)[0]);
+    this.props.setSampleOrder(newSampleOrder);
   }
 
 
@@ -259,15 +214,23 @@ export default class SampleGrid extends React.Component {
 
 
   render() {
-    const samplesList = this.props.sampleList;
     let [sampleGrid, i] = [[], 0];
+    const samplesList = this.props.sampleList;
+    const orderedList = [];
+    this.props.order.forEach(key => {
+      const sampleID = samplesList[key].sampleID;
+      if (this.props.queue.queue[sampleID]) {
+        orderedList.push(key);
+      }
+    });
 
-    Object.keys(samplesList).forEach(key => {
+    this.props.order.forEach(key => {
       if (this.filter(key)) {
         const sample = samplesList[key];
         const [acronym, name, tags] = [sample.proteinAcronym, sample.sampleName, []];
+        const picked = this.props.queue.queue[sample.sampleID];
 
-        if (this.props.queue.queue[sample.sampleID]) {
+        if (picked) {
           for (const task of this.props.queue.queue[sample.sampleID].tasks) {
             tags.push(task);
           }
@@ -280,24 +243,23 @@ export default class SampleGrid extends React.Component {
           <SampleGridItem
             key={i}
             ref={i}
-            seqId={this.props.order[key]}
+            queueOrder={orderedList.indexOf(key) + 1}
             itemKey={key}
-            sampleData={this.props.queue.sampleList[sample.sampleID]}
+            sampleData={samplesList[sample.sampleID]}
             sampleID={sample.sampleID}
             acronym={acronym}
             name={name}
             dm={sample.code}
             loadable={false}
             location={sample.location}
-            queueOrder={this.props.queue.sampleOrder.indexOf(sample.sampleID)}
             tags={tags}
             selected={this.props.selected}
             current={this.props.queue.current.node === sample.sampleID}
-            collected={this.props.queue.history.includes(sample.sampleID)}
+            collected={false}
             deleteTask={deleteTaskFun}
             showTaskParametersForm={this.props.showTaskParametersForm}
             toggleMovable={this.props.toggleMovable}
-            picked={this.props.queue.queue[sample.sampleID]}
+            picked={picked}
             rootPath={this.props.queue.rootPath}
             displayData={this.props.queueGUI.displayData[sample.sampleID]}
             moving={this.props.moving[key]}

@@ -10,24 +10,24 @@ import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 import {
   addTask,
-  updateTask,
-  addSampleManualMount
+  updateTask
 } from '../actions/queue';
 
 import {
   selectAction,
+  addSamplesToList
 } from '../actions/SamplesGrid';
 
 
 class TaskContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.addSample = this.addSample.bind(this);
+    this.addSampleToList = this.addSampleToList.bind(this);
     this.addTask = this.addTask.bind(this);
   }
 
-  addSample(sampleData) {
-    this.props.addSampleManualMount(sampleData);
+  addSampleToList(sampleData) {
+    this.props.addSamplesToList([sampleData]);
     this.props.selectSamples([sampleData.sampleID], true);
   }
 
@@ -54,7 +54,7 @@ class TaskContainer extends React.Component {
       <div className="col-xs-12">
         <Characterisation
           addTask={this.addTask}
-          pointId={this.props.pointId}
+          pointID={this.props.pointID}
           taskData={this.props.taskData}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
@@ -64,7 +64,7 @@ class TaskContainer extends React.Component {
 
         <DataCollection
           addTask={this.addTask}
-          pointId={this.props.pointId}
+          pointID={this.props.pointID}
           taskData={this.props.taskData}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
@@ -74,7 +74,7 @@ class TaskContainer extends React.Component {
 
         <Helical
           addTask={this.addTask}
-          pointId={this.props.pointId}
+          pointID={this.props.pointID}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
           hide={this.props.hideTaskParametersForm}
@@ -87,8 +87,7 @@ class TaskContainer extends React.Component {
         <AddSample
           hide={this.props.hideTaskParametersForm}
           show={this.props.showForm === 'AddSample'}
-          add={this.addSample}
-          id={this.props.manualMountID}
+          add={this.addSampleToList}
         />
       </div>
     );
@@ -104,8 +103,7 @@ function mapStateToProps(state) {
     showForm: state.taskForm.showForm,
     taskData: state.taskForm.taskData,
     sampleIds: state.taskForm.sampleIds,
-    pointId: state.taskForm.pointId,
-    manualMountID: state.queue.manualMount.id,
+    pointID: state.taskForm.pointID,
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath,
     lines: state.sampleview.lines
@@ -119,7 +117,7 @@ function mapDispatchToProps(dispatch) {
     selectSamples: bindActionCreators(selectAction, dispatch),
     updateTask: bindActionCreators(updateTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
-    addSampleManualMount: bindActionCreators(addSampleManualMount, dispatch),
+    addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
   };
 }
 
