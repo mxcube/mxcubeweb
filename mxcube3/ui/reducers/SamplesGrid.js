@@ -7,9 +7,6 @@
 *  order:      Map (key, order) for each sample. The order map is kept sorted
 *              (ascending)
 *
-*  picked:     Object (key, picked), picked indicating if sample with key
-*              currently is picked
-*
 *  moving:     Object (key, moving), moving indicating if sample with key is
 *              currently beeing moved
 *
@@ -90,7 +87,7 @@ export default (state = INITIAL_STATE, action) => {
       const selectedItems = {};
       const movingItems = {};
 
-      for (const key of action.indices) {
+      for (const key of action.keys) {
         selectedItems[key] = action.selected;
         movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
       }

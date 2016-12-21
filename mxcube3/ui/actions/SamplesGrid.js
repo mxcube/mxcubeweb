@@ -1,8 +1,8 @@
 import fetch from 'isomorphic-fetch';
 
 
-export function selectAction(indices, selected = true) {
-  return { type: 'SELECT_SAMPLES', indices, selected };
+export function selectAction(keys, selected = true) {
+  return { type: 'SELECT_SAMPLES', keys, selected };
 }
 
 
@@ -40,3 +40,4 @@ export function toggleMovableAction(key) {
 export function showSampleGridContextMenu(x, y, show) {
   return { type: 'SAMPLE_GRID_CONTEXT_MENU', x, y, show };
 }
+
