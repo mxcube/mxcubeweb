@@ -122,28 +122,7 @@ export default (state = initialState, action) => {
       );
     }
 
-    // Adding sample to queue
-    case 'ADD_SAMPLE': {
-      const sampleID = action.sampleData.sampleID;
-
-      for (const task of action.sampleData.tasks) {
-        task.state = 0;
-
-        if (task.parameters.prefix === '') {
-          task.parameters.prefix = state.sampleList[sampleID].defaultPrefix;
-        }
-      }
-
-      return Object.assign({}, state,
-        {
-          todo: [...state.todo, sampleID],
-          queue: { ...state.queue, [sampleID]: { ...action.sampleData, state: 0 } },
-          sampleOrder: [...state.sampleOrder, sampleID],
-        }
-      );
-    }
-
-        // Setting state
+    // Setting state
     case 'SET_QUEUE_STATUS':
       return {
         ...state,
