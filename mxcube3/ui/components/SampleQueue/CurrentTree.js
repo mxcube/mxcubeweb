@@ -75,7 +75,7 @@ export default class CurrentTree extends React.Component {
     let queueOptions = [];
 
     if (sampleId) {
-      sampleData = this.props.sampleInformation[sampleId];
+      sampleData = this.props.queue[sampleId];
       sampleTasks = this.props.queue[sampleId].tasks;
       queueOptions = this.state.options[this.props.queueStatus];
     } else if (this.props.manualMount.set) {
