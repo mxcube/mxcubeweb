@@ -68,6 +68,7 @@ class SampleGridContainer extends React.Component {
     this.collectButton = this.collectButton.bind(this);
     this.headerContent = this.headerContent.bind(this);
     this.startCollect = this.startCollect.bind(this);
+    this.picked = this.picked.bind(this);
   }
 
   componentDidMount() {
@@ -202,10 +203,14 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  picked(sampleID) {
+    return this.props.queue.queue[sampleID];
+  }
+
   toggleAddDeleteSelectedSamples() {
     const samples = [];
     for (const sampleID in this.props.selected) {
-      if (this.props.queue.queue[sampleID]) {
+      if (this.picked(sampleID)) {
         this.props.deleteSample(sampleID);
       } else {
         samples.push({...this.props.sampleList[sampleID], checked: true, tasks: []});
@@ -226,7 +231,7 @@ class SampleGridContainer extends React.Component {
 
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
-      if (this.props.queue.queue[sampleID]) {
+      if (this.picked(sampleID)) {
         this.props.deleteSample(sampleID);
       }
     }
