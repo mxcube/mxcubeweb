@@ -46,9 +46,9 @@ export function sendClearQueue() {
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to clear queue');
+      } else {
+        dispatch(clearAll());
       }
-    }).then(() => {
-      dispatch(clearAll());
     });
   };
 }
