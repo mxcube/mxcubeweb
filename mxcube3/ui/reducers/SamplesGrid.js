@@ -110,11 +110,9 @@ export default (state = INITIAL_STATE, action) => {
     case 'FILTER_SAMPLE_LIST': {
       return Object.assign({}, state, { filterText: action.filterText });
     }
-    case 'QUEUE_STATE': {
-      return state; // action.sampleGridState;
-    }
-    case 'CLEAR_ALL': {
-      return { ...INITIAL_STATE };
+    // Set display order of samples in grid
+    case 'SET_SAMPLE_ORDER': {
+      return Object.assign({}, state, { order:action.order });
     }
     case 'SET_INITIAL_STATUS': {
       return { ...state };
