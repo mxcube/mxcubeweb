@@ -47,7 +47,7 @@ export default class TodoTree extends React.Component {
                     <div key={id} className="node node-sample">
                       <div className="task-head">
                         <p className="node-name">
-                          {`Sample ${sampleData.sampleID}`}
+                          {`${sampleData.sampleID}`}
                           <Button
                             className="pull-right"
                             bsSize="xs"
