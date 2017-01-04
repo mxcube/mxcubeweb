@@ -156,25 +156,20 @@ export default (state = initialState, action) => {
         });
 
         // Adding the new task to the queue
-    case 'ADD_TASK': {
-      const sampleID = action.task.sampleID;
-      const task = action.task;
+    case 'ADD_TASKS': {
+      const queue = { ...state.queue };
 
-      if (task.parameters.prefix === '') {
-        task.parameters.prefix = state.sampleList[sampleID].defaultPrefix;
-      }
-
-      const queue = {
-        ...state.queue,
-        [sampleID]: {
-          ...state.queue[sampleID],
-          tasks: [...state.queue[sampleID].tasks, { ...task, state: 0 }]
+      action.tasks.forEach((task) => {
+        if (task.parameters.prefix === '') {
+          task.parameters.prefix = state.sampleList[task.sampleID].defaultPrefix;
         }
-      };
+        queue[task.sampleID] = {
+          ...queue[task.sampleID],
+          tasks: [...queue[task.sampleID].tasks, { ...task, state: 0 }]
+        };
+      });
 
-      const sampleOrder = [...state.sampleOrder, sampleID];
-
-      return Object.assign({}, state, { queue, sampleOrder });
+      return Object.assign({}, state, { queue });
     }
     // Removing the task from the queue
     case 'REMOVE_TASK': {

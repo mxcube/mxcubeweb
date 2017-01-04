@@ -10,16 +10,15 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'ADD_TASK': {
-      const sampleID = action.task.sampleID;
+    case 'ADD_TASKS': {
+      const displayData = { ...state.displayData };
 
-      const displayData = {
-        ...state.displayData,
-        [sampleID]: {
-          ...state.displayData[sampleID],
-          tasks: [...state.displayData[sampleID].tasks, { collapsed: false }]
-        }
-      };
+      action.tasks.forEach((task) => {
+        displayData[task.sampleID] = {
+          ...displayData[task.sampleID],
+          tasks: [...displayData[task.sampleID].tasks, { collapsed: false }]
+        };
+      });
 
       return Object.assign({}, state, { displayData });
     }

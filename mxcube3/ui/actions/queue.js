@@ -504,29 +504,48 @@ export function deleteTask(sampleID, taskIndex) {
 }
 
 
-export function addTaskAction(task) {
-  return { type: 'ADD_TASK', task };
+export function addTaskAction(tasks) {
+  return { type: 'ADD_TASKS', tasks };
 }
 
 
-export function addTask(sampleID, parameters, runNow) {
+export function addTask(sampleIDs, parameters, runNow) {
   return function (dispatch, getState) {
-    const task = { type: parameters.type,
-                   label: parameters.label,
-                   sampleID,
-                   parameters,
-                   checked: true };
+    const tasks = sampleIDs.map((id) => (
+                  { type: parameters.type,
+                  label: parameters.label,
+                  sampleID: id,
+                  parameters,
+                  checked: true }
+                  ));
     dispatch(queueLoading(true));
     const { queue } = getState();
+    const missingSamples = sampleIDs.filter((id) => !queue.queue[id]);  // the ones not in the queue
+    const samplesToAdd = missingSamples.map((sample) => (
+      {
+        type: 'Sample',
+        sampleID: sample,
+        sampleName: queue.sampleList[sample].sampleName,
+        location: queue.sampleList[sample].location,
+        proteinAcronym: '',
+        checked: true,
+        tasks: [] // TODO?:tasks.filter((tk) => tk.sampleID === sample)
+      }
+    ));
 
-    sendAddQueueItem([task]).then((response) => {
+    // const tasksClean = tasks.filter((tk) => (samplesToAdd.forEach((smp) => !smp.tasks[0] === tk)));
+
+    const allItems = samplesToAdd.concat(tasks);
+
+    sendAddQueueItem(allItems).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'The task could not be added to the server'));
       } else {
-        dispatch(addTaskAction(task));
+        dispatch(addSamplesAction(samplesToAdd));
+        dispatch(addTaskAction(tasks));
         if (runNow) {
-          const taskIndex = queue.queue[sampleID].tasks.length;
-          dispatch(sendRunSample(sampleID, taskIndex));
+          const taskIndex = queue.queue[sampleIDs][0].tasks.length;
+          dispatch(sendRunSample(sampleIDs, taskIndex));
         }
       }
       dispatch(queueLoading(false));

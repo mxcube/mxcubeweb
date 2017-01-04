@@ -512,10 +512,10 @@ def queue_add_item(item_list):
 
     Each item (dictionary) describes either a sample or a task.
     """
-    current_queue = queue_to_dict()
 
     for item in item_list:
         item_t = item["type"]
+        current_queue = queue_to_dict()
 
         # Is the item a sample, then add it and its tasks. If its not, get the
         # node id for the sample of the new task and append it to the sample
