@@ -14,6 +14,8 @@ export class PassControlDialog extends React.Component {
     this.getObserver = this.getObserver.bind(this);
   }
 
+  onHide() { }
+
   getObserver() {
     let observer = { name: '', message: '', requestsControl: false };
 
@@ -47,10 +49,6 @@ export class PassControlDialog extends React.Component {
   reject() {
     const message = this.refs.message.refs.input.value;
     this.props.requestControlResponse(false, message);
-  }
-
-  onHide() {
-    
   }
 
   render() {

@@ -85,7 +85,7 @@ export default class CurrentTree extends React.Component {
       queueOptions = [];
     }
 
-    if (! this.props.show) { return <div/> };
+    if (! this.props.show) { return <div />; }
 
     return (
       <div>

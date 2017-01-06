@@ -24,7 +24,7 @@ export default class TodoTree extends React.Component {
   }
 
   render() {
-    if (! this.props.show) { return <div/> };
+    if (! this.props.show) { return <div />; }
 
     const list = this.filter(this.props.list, this.state.searchWord);
 
@@ -57,9 +57,8 @@ export default class TodoTree extends React.Component {
                           </Button>
                         </p>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 </div>
             </div>
         );

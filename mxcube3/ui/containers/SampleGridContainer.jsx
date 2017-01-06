@@ -32,7 +32,6 @@ import {
   deleteTask,
   deleteSample,
   sendClearQueue,
-  addSample,
   addSamples
 } from '../actions/queue';
 
@@ -213,10 +212,10 @@ class SampleGridContainer extends React.Component {
       if (this.picked(sampleID)) {
         this.props.deleteSample(sampleID);
       } else {
-        samples.push({...this.props.sampleList[sampleID], checked: true, tasks: []});
+        samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
       }
     }
-    if (samples.length > 0) { this.props.addSamples(samples) };
+    if (samples.length > 0) { this.props.addSamples(samples); }
   }
 
 

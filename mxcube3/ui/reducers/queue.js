@@ -27,9 +27,11 @@ export default (state = initialState, action) => {
     case 'APPEND_TO_SAMPLE_LIST': {
       const sampleList = { ...state.sampleList, [action.sampleData.sampleID]: action.sampleData };
       const manualMount = { ...state.manualMount };
+
       if (state.manualMount.set) {
-          manualMount.id = state.manualMount.id + 1;
+        manualMount.id = state.manualMount.id + 1;
       }
+
       return Object.assign({}, state, { sampleList, manualMount });
     }
     case 'SET_SAMPLE_ORDER': {
@@ -103,7 +105,6 @@ export default (state = initialState, action) => {
     }
     case 'CLEAR_QUEUE': {
       return Object.assign({}, state, { queue: {}, todo: {} });
-      return Object.assign({}, state, { queue: {} });
     }
 
     // Adding sample to queue
@@ -142,13 +143,16 @@ export default (state = initialState, action) => {
     case 'ADD_TASKS': {
       const queue = { ...state.queue };
 
-      action.tasks.forEach((task) => {
+      action.tasks.forEach((t) => {
+        const task = { ...t, state: 0 };
+
         if (task.parameters.prefix === '') {
           task.parameters.prefix = state.sampleList[task.sampleID].defaultPrefix;
         }
+
         queue[task.sampleID] = {
           ...queue[task.sampleID],
-          tasks: [...queue[task.sampleID].tasks, { ...task, state: 0 }]
+          tasks: [...queue[task.sampleID].tasks, task]
         };
       });
 

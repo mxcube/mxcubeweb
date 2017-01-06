@@ -48,15 +48,15 @@ export default class SampleGrid extends React.Component {
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    if (!(isEqual(this.props.order, nextProps.order) && 
+  componentWillUpdate(nextProps) {
+    if (!(isEqual(this.props.order, nextProps.order) &&
           (this.props.sampleList.length === nextProps.sampleList.length))) {
       this._doReorder = true;
     }
   }
 
   componentDidUpdate() {
-    if (this._prevNVisibleSamples != this._nVisibleSamples) {
+    if (this._prevNVisibleSamples !== this._nVisibleSamples) {
       this.prevNVisibleSamples = this._nVisibleSamples;
       this._doReorder = true;
     }

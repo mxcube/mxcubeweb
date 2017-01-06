@@ -402,8 +402,13 @@ export function sendMountSample(sampleID) {
 
 export function addSamples(sampleData) {
   return function (dispatch) {
-    sendAddQueueItem(sampleData);
-    dispatch(addSamplesAction(sampleData));
+    sendAddQueueItem(sampleData).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to add sample'));
+      } else {
+        dispatch(addSamplesAction(sampleData));
+      }
+    });
   };
 }
 
@@ -487,11 +492,9 @@ export function addTask(sampleIDs, parameters, runNow) {
         location: queue.sampleList[sample].location,
         proteinAcronym: '',
         checked: true,
-        tasks: [] // TODO?:tasks.filter((tk) => tk.sampleID === sample)
+        tasks: []
       }
     ));
-
-    // const tasksClean = tasks.filter((tk) => (samplesToAdd.forEach((smp) => !smp.tasks[0] === tk)));
 
     const allItems = samplesToAdd.concat(tasks);
 
