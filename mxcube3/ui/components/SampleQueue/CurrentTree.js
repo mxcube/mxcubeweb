@@ -1,7 +1,6 @@
 import React from 'react';
 import 'bootstrap';
 import './app.less';
-import cx from 'classnames';
 import TaskItem from './TaskItem';
 import { Button } from 'react-bootstrap';
 
@@ -86,11 +85,10 @@ export default class CurrentTree extends React.Component {
       queueOptions = [];
     }
 
-    const bodyClass = cx('', {
-      hidden: (!this.props.show)
-    });
+    if (! this.props.show) { return <div/> };
+
     return (
-      <div className={bodyClass}>
+      <div>
           <div className="list-head">
               {queueOptions.map((option) => this.renderOptions(option))}
               <p className="queue-root" onClick={this.collapse}>
