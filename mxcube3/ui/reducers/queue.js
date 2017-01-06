@@ -102,6 +102,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, data);
     }
     case 'CLEAR_QUEUE': {
+      return Object.assign({}, state, { queue: {}, todo: {} });
       return Object.assign({}, state, { queue: {} });
     }
 
