@@ -159,13 +159,15 @@ export default (state = initialState, action) => {
     case 'ADD_TASKS': {
       const queue = { ...state.queue };
 
-      action.tasks.forEach((task) => {
+      action.tasks.forEach((t) => {
+        const task = { ...t, state: 0 };
+
         if (task.parameters.prefix === '') {
           task.parameters.prefix = state.sampleList[task.sampleID].defaultPrefix;
         }
         queue[task.sampleID] = {
           ...queue[task.sampleID],
-          tasks: [...queue[task.sampleID].tasks, { ...task, state: 0 }]
+          tasks: [...queue[task.sampleID].tasks, task]
         };
       });
 

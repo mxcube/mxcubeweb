@@ -65,9 +65,7 @@ export function setManualMount(manual) {
     if (manual) {
       dispatch(showTaskForm('AddSample'));
     }
-  }
-        dispatch(sendClearQueue());
-        dispatch(setSampleListAction({}));
+  };
 }
 
 
@@ -373,7 +371,7 @@ export function sendSetQueue(queue, sampleOrder) {
 
 export function sendMountSample(sampleData) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/mount`, {
+    fetch('mxcube/api/v0.1/sample_changer/mount', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -516,11 +514,9 @@ export function addTask(sampleIDs, parameters, runNow) {
         location: queue.sampleList[sample].location,
         proteinAcronym: '',
         checked: true,
-        tasks: [] // TODO?:tasks.filter((tk) => tk.sampleID === sample)
+        tasks: []
       }
     ));
-
-    // const tasksClean = tasks.filter((tk) => (samplesToAdd.forEach((smp) => !smp.tasks[0] === tk)));
 
     const allItems = samplesToAdd.concat(tasks);
 
@@ -599,7 +595,7 @@ export function addTaskResultAction(sampleID, taskIndex, state, progress, limsRe
 
 export function sendUnmountSample(sample) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/unmount`, {
+    fetch('mxcube/api/v0.1/sample_changer/unmount', {
       method: 'POST',
       credentials: 'include',
       headers: {
