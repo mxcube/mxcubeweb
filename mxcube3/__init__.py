@@ -16,7 +16,7 @@ opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
                       dest="hwr_directory",
                       help="Hardware Repository XML files path",
-                      default=os.path.join(os.path.dirname(__file__), 'HardwareObjects.xml/'))
+                      default=os.path.join(os.path.join(os.path.dirname(__file__), os.pardir), 'test/HardwareObjectsMockup.xml/'))
 opt_parser.add_option("-l", "--log-file",
                       dest="log_file",
                       help="Hardware Repository log file name",
@@ -102,7 +102,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
 
-        Utils.enable_snapshots(app.collect)        
+        Utils.enable_snapshots(app.collect)
 
         app.diffractometer = app.beamline.getObjectByRole("diffractometer")
 
@@ -127,4 +127,3 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     # however, objects are not all initialized, so requests can return errors
     # TODO: synchronize web UI with server operation status
     gevent.spawn(complete_initialization, app)
-
