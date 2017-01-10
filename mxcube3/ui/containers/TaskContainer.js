@@ -16,7 +16,7 @@ import {
 import {
   selectAction,
   addSamplesToList
-} from '../actions/SamplesGrid';
+} from '../actions/sampleGrid';
 
 
 class TaskContainer extends React.Component {

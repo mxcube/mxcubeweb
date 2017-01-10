@@ -1,7 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { sendAbortCentring } from './sampleview';
-import { addSamples } from './SamplesGrid';
 
 export function queueLoading(loading) {
   return { type: 'QUEUE_LOADING', loading };

@@ -24,7 +24,7 @@ import {
   toggleSelectedAction,
   showSampleGridContextMenu,
   setSampleOrderAction,
-} from '../actions/SamplesGrid';
+} from '../actions/sampleGrid';
 
 import {
   deleteTask,
