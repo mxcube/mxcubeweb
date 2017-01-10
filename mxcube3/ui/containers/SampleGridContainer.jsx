@@ -29,8 +29,7 @@ import {
 import {
   deleteTask,
   sendClearQueue,
-  // TODO: deleteSamples
-  deleteSampleFromQueue,
+  deleteSamplesFromQueue,
   addSamplesToQueue
 } from '../actions/queue';
 
@@ -201,7 +200,7 @@ class SampleGridContainer extends React.Component {
     const samples = [];
     for (const sampleID in this.props.selected) {
       if (this.picked(sampleID)) {
-        this.props.deleteSampleFromQueue(sampleID);
+        this.props.deleteSamplesFromQueue([sampleID]);
       } else {
         samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
       }
@@ -222,7 +221,7 @@ class SampleGridContainer extends React.Component {
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
       if (this.picked(sampleID)) {
-        this.props.deleteSampleFromQueue(sampleID);
+        this.props.deleteSamplesFromQueue([sampleID]);
       }
     }
   }
@@ -230,7 +229,7 @@ class SampleGridContainer extends React.Component {
 
   removeAllSamples() {
     for (const sampleID of Object.keys(this.props.queue.queue)) {
-      this.props.deleteSampleFromQueue(sampleID);
+      this.props.deleteSamplesFromQueue([sampleID]);
     }
   }
 
@@ -478,7 +477,7 @@ function mapDispatchToProps(dispatch) {
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     selectSamples: (keys, selected) => dispatch(selectAction(keys, selected)),
     toggleSelectedSample: (keys) => dispatch(toggleSelectedAction(keys)),
-    deleteSampleFromQueue: (sampleID) => dispatch(deleteSampleFromQueue(sampleID)),
+    deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),

@@ -221,26 +221,27 @@ def queue_update_item(sid, tindex):
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>", methods=['DELETE'])
-def queue_delete_item(sid, tindex):
+@mxcube.route("/mxcube/api/v0.1/queue/delete", methods=['POST'])
+def queue_delete_item():
+    item_pos_list = request.get_json()
     current_queue = qutils.queue_to_dict() 
-  
-    if tindex in ['undefined']:
-        node_id = current_queue[sid]["queueID"]
-        model, entry = qutils.get_entry(node_id)
-    else:
-        node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
-        model, entry = qutils.get_entry(node_id)
 
-        # Get the TaskGroup of the item, there is currently only one
-        # task per TaskGroup so we have to remove the entire TaskGroup
-        # with its task.
-        entry = entry.get_container()
+    for (sid, tindex) in item_pos_list:
+        if tindex in ['undefined', None]:
+            node_id = current_queue[sid]["queueID"]
+            model, entry = qutils.get_entry(node_id)
+        else:
+            node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
+            model, entry = qutils.get_entry(node_id)
 
-    qutils.delete_entry(entry)
+            # Get the TaskGroup of the item, there is currently only one
+            # task per TaskGroup so we have to remove the entire TaskGroup
+            # with its task.
+            entry = entry.get_container()
 
-    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    #qutils.save_queue(session)
+        qutils.delete_entry(entry)
+
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200)
 
 

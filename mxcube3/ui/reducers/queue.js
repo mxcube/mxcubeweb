@@ -59,9 +59,15 @@ export default (state = initialState, action) => {
         queueStatus: action.queueState
       };
 
-    case 'REMOVE_SAMPLE_FROM_QUEUE':
-      return Object.assign({}, state, { queue: omit(state.queue, action.sampleID) });
+    case 'REMOVE_SAMPLES_FROM_QUEUE': {
+      let queue = { ...state.queue };
 
+      for (const sampleID of action.sampleIDList) {
+        queue = omit(state.queue, sampleID);
+      }
+
+      return Object.assign({}, state, { queue });
+    }
     // Adding the new task to the queue
     case 'ADD_TASKS': {
       const queue = { ...state.queue };
