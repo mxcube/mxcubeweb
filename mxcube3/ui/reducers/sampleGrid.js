@@ -99,7 +99,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'FILTER_SAMPLE_LIST': {
       return Object.assign({}, state, { filterText: action.filterText });
     }
-    case 'SET_INITIAL_STATUS': {
+    case 'SET_INITIAL_STATE': {
       return { ...state };
     }
     default: {

@@ -26,7 +26,7 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state, { requestingControl: action.control });
       }
-    case 'SET_INITIAL_STATUS':
+    case 'SET_INITIAL_STATE':
       {
         return { ...state,
                  observers: action.data.remoteAccess.observers,

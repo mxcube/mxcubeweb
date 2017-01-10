@@ -155,7 +155,7 @@ export default (state = INITIAL_STATE, action) => {
                                      Status: action.value }
                                  }
              };
-    case 'SET_INITIAL_STATUS':
+    case 'SET_INITIAL_STATE':
       return { ...state,
         motors: { ...state.motors, ...action.data.Motors },
         motorsLimits: { ...action.data.motorsLimits, ...action.data.beamlineSetup },

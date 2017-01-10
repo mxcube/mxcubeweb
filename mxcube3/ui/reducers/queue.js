@@ -181,7 +181,7 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state, ...action.queueState);
       }
-    case 'SET_INITIAL_STATUS':
+    case 'SET_INITIAL_STATE':
       {
         return {
           ...state,

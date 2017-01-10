@@ -65,7 +65,7 @@ export default (state = initialState, action) => {
       {
         return { ...state, showForm: '' };
       }
-    case 'SET_INITIAL_STATUS':
+    case 'SET_INITIAL_STATE':
       {
         return {
           ...state,
