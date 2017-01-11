@@ -185,7 +185,7 @@ def collect_oscillation_started(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params):
+def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params=None):
     msg = {'Signal': 'collectOscillationFailed',
            'Message': task_signals['collectOscillationFailed'],
            'taskIndex' : last_queue_node()['idx'] ,

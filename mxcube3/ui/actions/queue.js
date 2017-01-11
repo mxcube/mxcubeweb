@@ -59,29 +59,15 @@ export function setManualMountAction(manual) {
 }
 
 
-export function sendManualMount(manual) {
+export function setManualMount(manual) {
   return function (dispatch) {
-    return fetch('mxcube/api/v0.1/diffractometer/usesc', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({ use_sc: !manual })
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Could not toggle manual mode'));
-      } else {
+    dispatch(setManualMountAction(manual));
+    if (manual) {
+      dispatch(showTaskForm('AddSample'));
+    }
+  }
         dispatch(sendClearQueue());
         dispatch(setSampleListAction({}));
-        dispatch(setManualMountAction(manual));
-        if (manual) {
-          dispatch(showTaskForm('AddSample'));
-        }
-      }
-    });
-  };
 }
 
 
@@ -239,19 +225,6 @@ export function moveTask(sampleID, oldIndex, newIndex) {
   };
 }
 
-// export function changeTaskOrder(sampleID, oldIndex, newIndex) {
-//   return function (dispatch) {
-//     dispatch(changeTaskOrderAction(sampleID, oldIndex, newIndex));
-
-//     sendChangeTaskOrder(sampleID, oldIndex, newIndex).then((response) => {
-//       if (response.status >= 400) {
-//         dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-//         throw new Error('Could not change order');
-//       }
-//     });
-//   };
-// }
-
 
 export function runSample(queueID) {
   return {
@@ -385,20 +358,21 @@ export function sendSetQueue(queue, sampleOrder) {
 }
 
 
-export function sendMountSample(sampleID) {
+export function sendMountSample(sampleData) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/${sampleID}/mount`, {
-      method: 'PUT',
+    fetch(`mxcube/api/v0.1/sample_changer/mount`, {
+      method: 'POST',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      }
+      },
+      body: JSON.stringify(sampleData)
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to mount sample');
       } else {
-        dispatch(setCurrentSample(sampleID));
+        dispatch(setCurrentSample(sampleData.sampleID));
       }
     });
   };
@@ -417,16 +391,9 @@ export function addSample(sampleData) {
     const { queue } = getState();
     sendAddQueueItem([data]);
     dispatch(addSampleAction(data));
-    if (queue.manualMount.set) {
+    /*if (queue.manualMount.set) {
       dispatch(sendMountSample(data.sampleID));
-    }
-  };
-}
-
-
-export function appendSampleList(sampleData) {
-  return function (dispatch) {
-    dispatch(appendSampleListAction(sampleData));
+    }*/
   };
 }
 
@@ -610,15 +577,16 @@ export function addTaskResultAction(sampleID, taskIndex, state, progress, limsRe
 }
 
 
-export function sendUnmountSample(queueID) {
+export function sendUnmountSample(sample) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/${queueID}/unmount`, {
-      method: 'PUT',
+    fetch(`mxcube/api/v0.1/sample_changer/unmount`, {
+      method: 'POST',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      }
+      },
+      body: JSON.stringify(sample)
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to unmount sample');
@@ -654,16 +622,12 @@ export function clearQueue() {
   return { type: 'CLEAR_QUEUE' };
 }
 
-export function setunNow(run, sampleID, taskIndex) {
-  return { type: 'SET_RUN_NOW', run, sampleID, taskIndex };
-}
-
 
 export function addSampleManualMount(sampleData) {
   return function (dispatch) {
-    dispatch(clearQueue());
-    dispatch(appendSampleList(sampleData));
-    dispatch(addSample(sampleData));
-    dispatch(setCurrentSample(sampleData.sampleID));
+    //dispatch(clearQueue());
+    dispatch(appendSampleListAction(sampleData));
+    //dispatch(addSample(sampleData));
+    //dispatch(setCurrentSample(sampleData.sampleID));
   };
 }

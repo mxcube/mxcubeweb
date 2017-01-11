@@ -29,16 +29,17 @@ export default class CurrentTree extends React.Component {
         { text: 'Unpause', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
         ],
         NoSampleMounted: [
-        { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
+        //{ text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
         ]
       }
     };
   }
 
   nextSample() {
-    if (this.props.manualMount.set) {
+    /*if (this.props.manualMount.set) {
       this.showForm();
-    } else if (this.props.todoList[0]) {
+    } else*/
+    if (this.props.todoList[0]) {
       this.props.mount(this.props.todoList[0]);
     }
   }

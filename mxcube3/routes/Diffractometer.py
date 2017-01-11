@@ -56,20 +56,8 @@ def set_phase():
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/diffractometer/usesc", methods=['GET'])
-def get_use_sc():
-    """
-    use_sample_changer: set use_sample_changer
-    data = { "use_sc": , "msg":}
-    return_data: data plus error code 200/409
-    """
-    resp = jsonify({'use_sc': mxcube.diffractometer.use_sc})
-    resp.status_code = 200
-    return resp
-
-
 @mxcube.route("/mxcube/api/v0.1/diffractometer/usesc", methods=['PUT'])
-def use_sc():
+def set_use_sc():
     """
     use_sample_changer: set use_sample_changer
     data = { "use_sc": , "msg":}
