@@ -10,7 +10,9 @@ import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 import {
   addTask,
-  updateTask
+  updateTask,
+  addSamplesToQueue,
+  addSampleAndMount
 } from '../actions/queue';
 
 import {
@@ -21,13 +23,19 @@ import {
 class TaskContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.addSampleToList = this.addSampleToList.bind(this);
+    this.addSampleToQueue = this.addSampleToQueue.bind(this);
+    this.addSampleAndMount = this.addSampleAndMount.bind(this);
     this.addTask = this.addTask.bind(this);
   }
 
-  addSampleToList(sampleData) {
+  addSampleToQueue(sampleData) {
     this.props.addSamplesToList([sampleData]);
-    this.props.selectSamples([sampleData.sampleID], true);
+    this.props.addSamplesToQueue([sampleData]);
+  }
+
+  addSampleAndMount(sampleData) {
+    this.props.addSamplesToList([sampleData]);
+    this.props.addSampleAndMount(sampleData);
   }
 
   addTask(params, stringFields, runNow) {
@@ -86,7 +94,8 @@ class TaskContainer extends React.Component {
         <AddSample
           hide={this.props.hideTaskParametersForm}
           show={this.props.showForm === 'AddSample'}
-          add={this.addSampleToList}
+          addToQueue={this.addSampleToQueue}
+          addAndMount={this.addSampleAndMount}
         />
       </div>
     );
@@ -116,6 +125,8 @@ function mapDispatchToProps(dispatch) {
     updateTask: bindActionCreators(updateTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
+    addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
+    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
   };
 }
 
