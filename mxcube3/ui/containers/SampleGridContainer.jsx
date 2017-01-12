@@ -27,7 +27,7 @@ import {
 import {
   sendGetSampleList,
   sendSyncSamples,
-  sendManualMount,
+  setManualMount,
   setSampleOrderAction,
   deleteTask,
   deleteSample,
@@ -506,7 +506,7 @@ function mapDispatchToProps(dispatch) {
     setSampleOrderAction: (order) => dispatch(setSampleOrderAction(order)),
     filter: (filterText) => dispatch(filterAction(filterText)),
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
-    setManualMount: (manual) => dispatch(sendManualMount(manual)),
+    setManualMount: (manual) => dispatch(setManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),

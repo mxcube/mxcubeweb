@@ -198,20 +198,25 @@ def get_queue_state():
                 "sample_list": {......}
                }
     """
-    if mxcube.diffractometer.use_sc:
+    try:
         samples_list_sc = mxcube.sample_changer.getSampleList()
-        samples = {}
+    except Exception:
+        # if no sample changer is used, or if it has a problem,
+        # set an empty list
+        samples_list_sc = []
+    
+    samples = {}
 
-        for s in samples_list_sc:
-            sample_dm = s.getID() or ""
-            sample_data = {"sampleID": s.getAddress(),
-                           "location": ":".join(map(str, s.getCoords())),
-                           "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
-                           "code": sample_dm,
-                           "type": "Sample"}
+    for s in samples_list_sc:
+        sample_dm = s.getID() or ""
+        sample_data = {"sampleID": s.getAddress(),
+                       "location": ":".join(map(str, s.getCoords())),
+                       "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
+                       "code": sample_dm,
+                       "type": "Sample"}
 
-            sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-            samples.update({s.getAddress(): sample_data})
+        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
+        samples.update({s.getAddress(): sample_data})
 
     queue = queue_to_dict()
     try:
@@ -242,26 +247,7 @@ def get_queue_state():
 
         sample_list.update({name: sample_data})
 
-    if mxcube.diffractometer.use_sc:
-        if len(sample_list) != 0:
-            sample_list = samples
-        else:
-            sample_list = {}
-        try:
-            res = mxcube.queue.mounted_sample.split(':')  # no matter how many ~containers
-            loaded = ':'.join(res[:-1]) + ":{:0>2d}".format(int(res[-1]))  # "2:1:2" -> "2:1:02"
-        except:
-            loaded = ''
-    else:
-        try:
-            loaded = mxcube.queue.mounted_sample
-        except Exception:
-            loaded = ''
-
-    try:
-        todo.pop(loaded)
-    except Exception:
-        pass
+    loaded = ''
 
     res = {"sample_list": sample_list,
            "history": history,

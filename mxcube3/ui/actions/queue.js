@@ -59,28 +59,12 @@ export function setManualMountAction(manual) {
 }
 
 
-export function sendManualMount(manual) {
+export function setManualMount(manual) {
   return function (dispatch) {
-    return fetch('mxcube/api/v0.1/diffractometer/usesc', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({ use_sc: !manual })
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Could not toggle manual mode'));
-      } else {
-        dispatch(sendClearQueue());
-        dispatch(setSampleListAction({}));
-        dispatch(setManualMountAction(manual));
-        if (manual) {
-          dispatch(showTaskForm('AddSample'));
-        }
-      }
-    });
+    dispatch(setManualMountAction(manual));
+    if (manual) {
+      dispatch(showTaskForm('AddSample'));
+    }
   };
 }
 
@@ -381,20 +365,21 @@ export function sendSetQueue(queue, sampleOrder) {
 }
 
 
-export function sendMountSample(sampleID) {
+export function sendMountSample(sampleData) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/${sampleID}/mount`, {
-      method: 'PUT',
+    fetch('mxcube/api/v0.1/sample_changer/mount', {
+      method: 'POST',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      }
+      },
+      body: JSON.stringify(sampleData)
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to mount sample');
       } else {
-        dispatch(setCurrentSample(sampleID));
+        dispatch(setCurrentSample(sampleData.sampleID));
       }
     });
   };
@@ -545,15 +530,16 @@ export function addTaskResultAction(sampleID, taskIndex, state, progress, limsRe
 }
 
 
-export function sendUnmountSample(queueID) {
+export function sendUnmountSample(sample) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/${queueID}/unmount`, {
-      method: 'PUT',
+    fetch('mxcube/api/v0.1/sample_changer/unmount', {
+      method: 'POST',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      }
+      },
+      body: JSON.stringify(sample)
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to unmount sample');
