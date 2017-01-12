@@ -1,7 +1,6 @@
 import React from 'react';
 import 'bootstrap-webpack';
 import './app.less';
-import cx from 'classnames';
 import { Button } from 'react-bootstrap';
 
 export default class TodoTree extends React.Component {
@@ -25,13 +24,12 @@ export default class TodoTree extends React.Component {
   }
 
   render() {
-    const bodyClass = cx('', {
-      hidden: !this.props.show
-    });
+    if (! this.props.show) { return <div />; }
 
     const list = this.filter(this.props.list, this.state.searchWord);
+
     return (
-            <div className={bodyClass}>
+            <div>
                 <div className="list-head">
                     <span className="queue-root" onClick={this.collapse}>Upcoming Samples</span>
                     <hr className="queue-divider" />
@@ -43,13 +41,13 @@ export default class TodoTree extends React.Component {
                     />
                 </div>
                 <div className="list-body todo-body">
-                {list.map((sampleId, id) => {
-                  const sampleData = this.props.sampleInformation[sampleId];
+                {list.map((key, id) => {
+                  const sampleData = this.props.queue[key];
                   return (
                     <div key={id} className="node node-sample">
                       <div className="task-head">
                         <p className="node-name">
-                          {`Sample ${sampleData.sampleID}`}
+                          {`${sampleData.sampleID}`}
                           <Button
                             className="pull-right"
                             bsSize="xs"
@@ -59,9 +57,8 @@ export default class TodoTree extends React.Component {
                           </Button>
                         </p>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 </div>
             </div>
         );

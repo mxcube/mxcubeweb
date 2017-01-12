@@ -48,7 +48,7 @@ class SampleViewContainer extends Component {
                   sampleActions={this.props.sampleViewActions}
                   showForm={this.props.showForm}
                   sampleId={sampleId}
-                  samplesInformation={this.props.sampleInformation}
+                  sampleData={this.props.queue[sampleId]}
                   defaultParameters={this.props.defaultParameters}
                   imageRatio={imageRatio}
                 />
@@ -73,8 +73,8 @@ class SampleViewContainer extends Component {
 
 function mapStateToProps(state) {
   return {
+    queue: state.queue.queue,
     current: state.queue.current,
-    sampleInformation: state.queue.sampleList,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     beamline: state.beamline,

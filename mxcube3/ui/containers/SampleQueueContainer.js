@@ -23,7 +23,6 @@ function mapStateToProps(state) {
     queueStatus: state.queue.queueStatus,
     history: state.queue.history,
     queue: state.queue.queue,
-    sampleInformation: state.queue.sampleList,
     checked: state.queue.checked,
     select_all: state.queue.selectAll,
     mounted: state.queue.manualMount.set,
@@ -65,7 +64,6 @@ export default class SampleQueueContainer extends React.Component {
       todo,
       current,
       history,
-      sampleInformation,
       queue,
       showForm,
       queueStatus,
@@ -122,7 +120,6 @@ export default class SampleQueueContainer extends React.Component {
                   changeOrder={changeTaskOrderAction}
                   show={visibleList === 'current'}
                   mounted={current.node}
-                  sampleInformation={sampleInformation}
                   queue={queue}
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
@@ -145,7 +142,6 @@ export default class SampleQueueContainer extends React.Component {
                 <TodoTree
                   show={visibleList === 'todo'}
                   list={todo}
-                  sampleInformation={queue}
                   queue={queue}
                   collapseSample={collapseSample}
                   displayData={displayData}

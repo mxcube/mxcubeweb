@@ -517,12 +517,12 @@ def queue_add_item(item_list):
         item_t = item["type"]
         current_queue = queue_to_dict()
 
-        # Is the item a sample, then add it and its tasks. If its not, get the
+        # If the item a sample, then add it and its tasks. If its not, get the
         # node id for the sample of the new task and append it to the sample
         sample_id = str(item["sampleID"])
         if item_t == "Sample":
             sample_node_id = add_sample(sample_id, item)
-            tasks = item["tasks"]
+            tasks = item.get("tasks")
 
             if tasks:
                 queue_add_item(tasks)

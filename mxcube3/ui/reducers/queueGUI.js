@@ -53,18 +53,6 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { displayData: { ...state.displayData, ...samplesData } });
     }
 
-    case 'ADD_SAMPLE': {
-      const sampleID = action.sampleData.sampleID;
-      const displayData = { ...state.displayData, [sampleID]: { collapsed: false, tasks: [] } };
-
-      // Not creating a copy here since we know that the reference
-      // displayData[sampleID] did not exist before
-      action.sampleData.tasks.forEach(() => {
-        displayData[sampleID].tasks.push({ collapsed: false });
-      });
-
-      return Object.assign({}, state, { displayData });
-    }
     case 'REMOVE_SAMPLE':
       return Object.assign({}, state, { displayData: omit(state.displayData, action.sampleID) });
     // Removing the task from the queue
