@@ -26,7 +26,13 @@ export default (state = initialState, action) => {
     }
     case 'APPEND_TO_SAMPLE_LIST': {
       const sampleList = { ...state.sampleList, [action.sampleData.sampleID]: action.sampleData };
-      return Object.assign({}, state, { sampleList });
+      const manualMount = { ...state.manualMount };
+
+      if (state.manualMount.set) {
+        manualMount.id = state.manualMount.id + 1;
+      }
+
+      return Object.assign({}, state, { sampleList, manualMount });
     }
     case 'SET_SAMPLE_ORDER': {
       const sortedOrder = invert(action.order);
@@ -98,7 +104,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, data);
     }
     case 'CLEAR_QUEUE': {
-      return Object.assign({}, state, { queue: {} });
+      return Object.assign({}, state, { queue: {}, todo: {} });
     }
 
     // Adding sample to queue
@@ -118,29 +124,7 @@ export default (state = initialState, action) => {
       );
     }
 
-    // Adding sample to queue
-    case 'ADD_SAMPLE': {
-      const sampleID = action.sampleData.sampleID;
-
-      for (const task of action.sampleData.tasks) {
-        task.state = 0;
-
-        if (task.parameters.prefix === '') {
-          task.parameters.prefix = state.sampleList[sampleID].defaultPrefix;
-        }
-      }
-
-      return Object.assign({}, state,
-        {
-          todo: [...state.todo, sampleID],
-          queue: { ...state.queue, [sampleID]: { ...action.sampleData, state: 0 } },
-          sampleOrder: [...state.sampleOrder, sampleID],
-          manualMount: { ...state.manualMount, id: state.manualMount.id + 1 }
-        }
-      );
-    }
-
-        // Setting state
+    // Setting state
     case 'SET_QUEUE_STATUS':
       return {
         ...state,
@@ -159,13 +143,16 @@ export default (state = initialState, action) => {
     case 'ADD_TASKS': {
       const queue = { ...state.queue };
 
-      action.tasks.forEach((task) => {
+      action.tasks.forEach((t) => {
+        const task = { ...t, state: 0 };
+
         if (task.parameters.prefix === '') {
           task.parameters.prefix = state.sampleList[task.sampleID].defaultPrefix;
         }
+
         queue[task.sampleID] = {
           ...queue[task.sampleID],
-          tasks: [...queue[task.sampleID].tasks, { ...task, state: 0 }]
+          tasks: [...queue[task.sampleID].tasks, task]
         };
       });
 

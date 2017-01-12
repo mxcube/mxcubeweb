@@ -46,9 +46,9 @@ export function sendClearQueue() {
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to clear queue');
+      } else {
+        dispatch(clearAll());
       }
-    }).then(() => {
-      dispatch(clearAll());
     });
   };
 }
@@ -143,10 +143,6 @@ export function setSampleOrderAction(newSampleOrder) {
   return { type: 'SET_SAMPLE_ORDER', order: newSampleOrder };
 }
 
-
-export function addSampleAction(sampleData) {
-  return { type: 'ADD_SAMPLE', sampleData };
-}
 
 export function addSamplesAction(samplesData) {
   return { type: 'ADD_SAMPLES', samplesData };
@@ -406,30 +402,15 @@ export function sendMountSample(sampleID) {
 
 export function addSamples(sampleData) {
   return function (dispatch) {
-    sendAddQueueItem(sampleData);
-    dispatch(addSamplesAction(sampleData));
+    sendAddQueueItem(sampleData).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to add sample'));
+      } else {
+        dispatch(addSamplesAction(sampleData));
+      }
+    });
   };
 }
-
-export function addSample(sampleData) {
-  return function (dispatch, getState) {
-    const data = { ...sampleData, checked: true, tasks: [] };
-    const { queue } = getState();
-    sendAddQueueItem([data]);
-    dispatch(addSampleAction(data));
-    if (queue.manualMount.set) {
-      dispatch(sendMountSample(data.sampleID));
-    }
-  };
-}
-
-
-export function appendSampleList(sampleData) {
-  return function (dispatch) {
-    dispatch(appendSampleListAction(sampleData));
-  };
-}
-
 
 export function deleteSample(sampleID) {
   return function (dispatch) {
@@ -461,24 +442,6 @@ export function sendRunSample(sampleID, taskIndex) {
       } else {
         dispatch(runSample(sampleID));
       }
-    });
-  };
-}
-
-
-export function setQueueAndRun(sampleID, taskIndex, queue) {
-  return function (dispatch) {
-    dispatch(sendSetQueue(queue)).then(() => {
-      dispatch(sendRunQueue());
-    });
-  };
-}
-
-
-export function setQueueAndRunTask(sampleID, taskIndex, queue) {
-  return function (dispatch) {
-    dispatch(sendSetQueue(queue)).then(() => {
-      dispatch(sendRunSample(sampleID, taskIndex));
     });
   };
 }
@@ -529,11 +492,9 @@ export function addTask(sampleIDs, parameters, runNow) {
         location: queue.sampleList[sample].location,
         proteinAcronym: '',
         checked: true,
-        tasks: [] // TODO?:tasks.filter((tk) => tk.sampleID === sample)
+        tasks: []
       }
     ));
-
-    // const tasksClean = tasks.filter((tk) => (samplesToAdd.forEach((smp) => !smp.tasks[0] === tk)));
 
     const allItems = samplesToAdd.concat(tasks);
 
@@ -549,32 +510,6 @@ export function addTask(sampleIDs, parameters, runNow) {
         }
       }
       dispatch(queueLoading(false));
-    });
-  };
-}
-
-
-export function addSampleAndTask(sampleID, parameters, sampleData, queue, runNow) {
-  return function (dispatch) {
-    const data = { ...sampleData,
-                   checked: true,
-                   tasks: [{ type: parameters.type,
-                             label: parameters.type.split(/(?=[A-Z])/).join(' '),
-                             sampleID,
-                             parameters,
-                             checked: true }] };
-
-    dispatch(addSampleAction(data));
-
-    sendAddQueueItem([data]).then((response) => {
-      if (response.status >= 400) {
-        dispatch(removeTaskAction(sampleID, 0));
-        throw new Error('The sample could not be added to the server');
-      } else {
-        if (runNow) {
-          dispatch(sendRunSample(sampleID, 0));
-        }
-      }
     });
   };
 }
@@ -654,16 +589,11 @@ export function clearQueue() {
   return { type: 'CLEAR_QUEUE' };
 }
 
-export function setunNow(run, sampleID, taskIndex) {
-  return { type: 'SET_RUN_NOW', run, sampleID, taskIndex };
-}
-
 
 export function addSampleManualMount(sampleData) {
   return function (dispatch) {
     dispatch(clearQueue());
-    dispatch(appendSampleList(sampleData));
-    dispatch(addSample(sampleData));
-    dispatch(setCurrentSample(sampleData.sampleID));
+    dispatch(addSamples([sampleData]));
+    dispatch(appendSampleListAction(sampleData));
   };
 }

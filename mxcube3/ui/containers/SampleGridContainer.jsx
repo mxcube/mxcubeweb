@@ -32,7 +32,6 @@ import {
   deleteTask,
   deleteSample,
   sendClearQueue,
-  addSample,
   addSamples
 } from '../actions/queue';
 
@@ -57,7 +56,6 @@ class SampleGridContainer extends React.Component {
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
     this.addSelectedSamples = this.addSelectedSamples.bind(this);
     this.toggleAddDeleteSelectedSamples = this.toggleAddDeleteSelectedSamples.bind(this);
-    this.addAllSamples = this.addAllSamples.bind(this);
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeAllSamples = this.removeAllSamples.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
@@ -69,17 +67,11 @@ class SampleGridContainer extends React.Component {
     this.collectButton = this.collectButton.bind(this);
     this.headerContent = this.headerContent.bind(this);
     this.startCollect = this.startCollect.bind(this);
+    this.picked = this.picked.bind(this);
   }
-
 
   componentDidMount() {
     document.addEventListener('click', this.onClick, false);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.queue.queue !== this.props.queue.queue) {
-      this.props.setSampleOrderAction(nextProps.order);
-    }
   }
 
   componentWillUnmount() {
@@ -179,12 +171,6 @@ class SampleGridContainer extends React.Component {
     return Object.keys(this.props.sampleList).length;
   }
 
-  addSamples() {
-    Object.keys(this.props.picked).forEach((sampleID) => {
-      this.props.addSample(this.props.sampleList[sampleID]);
-      return sampleID;
-    });
-  }
 
   calcGridWidth() {
     // We know that the side menu is fixed width 65px and that the padding from
@@ -216,23 +202,20 @@ class SampleGridContainer extends React.Component {
   }
 
 
-  toggleAddDeleteSelectedSamples() {
-    for (const sampleID in this.props.selected) {
-      if (this.props.queue.queue[sampleID]) {
-        this.props.deleteSample(sampleID);
-      } else {
-        this.props.addSample(this.props.sampleList[sampleID]);
-      }
-    }
+  picked(sampleID) {
+    return this.props.queue.queue[sampleID];
   }
 
-
-  addAllSamples() {
-    for (const sampleID of Object.keys(this.props.selected)) {
-      if (this.props.queue.queue[sampleID]) {
-        this.props.addSample(sampleID);
+  toggleAddDeleteSelectedSamples() {
+    const samples = [];
+    for (const sampleID in this.props.selected) {
+      if (this.picked(sampleID)) {
+        this.props.deleteSample(sampleID);
+      } else {
+        samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
       }
     }
+    if (samples.length > 0) { this.props.addSamples(samples); }
   }
 
 
@@ -247,7 +230,7 @@ class SampleGridContainer extends React.Component {
 
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
-      if (this.props.queue.queue[sampleID]) {
+      if (this.picked(sampleID)) {
         this.props.deleteSample(sampleID);
       }
     }
@@ -531,7 +514,6 @@ function mapDispatchToProps(dispatch) {
     toggleSelectedSample: (keys) => dispatch(toggleSelectedAction(keys)),
     deleteSample: (sampleID) => dispatch(deleteSample(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
-    addSample: (sampleData) => dispatch(addSample(sampleData)),
     addSamples: (sampleData) => dispatch(addSamples(sampleData)),
     showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
   };

@@ -23,7 +23,7 @@ class AddSample extends React.Component {
       prefix += `-${this.props.values.proteinAcronym}`;
     }
 
-    this.props.add({ ...this.props.values, type: 'Sample', defaultPrefix: prefix,
+    this.props.add({ ...this.props.values, type: 'Sample', tasks: [], defaultPrefix: prefix,
                      location: 'Manual', sampleID: this.props.id.toString() });
     this.props.hide();
   }

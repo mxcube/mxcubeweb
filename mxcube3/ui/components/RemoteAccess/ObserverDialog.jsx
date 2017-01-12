@@ -21,6 +21,8 @@ export class ObserverDialog extends React.Component {
     }
   }
 
+  onHide() { }
+
   show() {
     return !this.props.remoteAccess.observerName && !this.props.remoteAccess.master;
   }
@@ -39,10 +41,6 @@ export class ObserverDialog extends React.Component {
 
   title() {
     return 'Observer mode';
-  }
-
-  onHide() {
-    
   }
 
   render() {
