@@ -25,9 +25,21 @@ const INITIAL_STATE = { selected: {},
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     // Set the list of samples (sampleList), clearing any existing list
-    case 'SET_SAMPLE_LIST': {
-      return Object.assign({}, state, { sampleList: action.sampleList,
-					order: action.order,
+    case 'UPDATE_SAMPLE_LIST': {
+      const sampleList = { ...state.sampleList };
+      const order = [...state.order];
+ 
+      for (const sampleID of action.order) {
+        const sampleData = action.sampleList[sampleID];
+        if (! sampleList[sampleID]) {
+          // new sample
+          order.push(sampleID);
+        }
+        sampleList[sampleID] = sampleData;
+      }
+
+      return Object.assign({}, state, { sampleList,
+					order,
 					selected: {} });
     }
     case 'ADD_SAMPLES_TO_LIST': {

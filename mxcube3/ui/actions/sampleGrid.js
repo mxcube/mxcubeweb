@@ -2,8 +2,8 @@ import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
 
 
-export function setSampleList(sampleList, order) {
-  return { type: 'SET_SAMPLE_LIST', sampleList, order };
+export function updateSampleList(sampleList, order) {
+  return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
 }
 
 
@@ -62,7 +62,7 @@ export function sendGetSampleList() {
                           const sampleList = res.sampleList;
                           const sampleOrder = res.sampleOrder;
 
-                          dispatch(setSampleList(sampleList, sampleOrder));
+                          dispatch(updateSampleList(sampleList, sampleOrder));
                           dispatch(setLoading(false));
                         }, () => {
                           dispatch(setLoading(false));
