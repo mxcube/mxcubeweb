@@ -111,6 +111,7 @@ export class SampleGridItem extends React.Component {
           bsStyle="default"
           bsSize="s"
           onClick={this.togglePicked}
+          disabled={this.props.current}
         >
           <i className={iconClassName} />
         </button>
