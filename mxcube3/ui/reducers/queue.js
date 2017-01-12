@@ -1,6 +1,6 @@
 import { omit } from 'lodash/object';
 import update from 'react/lib/update';
-import { QUEUE_STOPPED } from '../constants';
+import { QUEUE_STOPPED, SAMPLE_UNCOLLECTED } from '../constants';
 
 const initialState = {
   queue: {},
@@ -82,7 +82,8 @@ export default (state = initialState, action) => {
 
         queue[task.sampleID] = {
           ...queue[task.sampleID],
-          tasks: [...queue[task.sampleID].tasks, task]
+          tasks: [...queue[task.sampleID].tasks, task],
+          state: SAMPLE_UNCOLLECTED
         };
       });
 
