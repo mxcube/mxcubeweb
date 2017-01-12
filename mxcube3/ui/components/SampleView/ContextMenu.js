@@ -1,5 +1,5 @@
 import React from 'react';
-
+import cx from 'classnames';
 export default class ContextMenu extends React.Component {
 
   constructor(props) {
@@ -33,8 +33,6 @@ export default class ContextMenu extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.show) {
       this.showContextMenu(nextProps.x, nextProps.y);
-    } else {
-      this.hideContextMenu();
     }
   }
 
@@ -59,7 +57,6 @@ export default class ContextMenu extends React.Component {
   showContextMenu(x, y) {
     document.getElementById('contextMenu').style.top = `${y}px`;
     document.getElementById('contextMenu').style.left = `${x + 15}px`;
-    document.getElementById('contextMenu').style.display = 'block';
   }
 
   savePoint() {
@@ -101,9 +98,6 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.deleteLine(this.props.shape.id);
   }
-  hideContextMenu() {
-    document.getElementById('contextMenu').style.display = 'none';
-  }
 
   listOptions(type) {
     return (
@@ -112,6 +106,9 @@ export default class ContextMenu extends React.Component {
   }
 
   render() {
+    const bodyClass = cx('dropdown-menu', {
+      hidden: (!this.props.show)
+    });
     let optionList = [];
     if (this.props.sampleId !== undefined) {
       optionList = this.state.options[this.props.shape.type].map(this.listOptions);
@@ -119,7 +116,7 @@ export default class ContextMenu extends React.Component {
       optionList = this.state.options.NONE.map(this.listOptions);
     }
     return (
-      <ul id="contextMenu" className="dropdown-menu" role="menu">
+      <ul id="contextMenu" className={bodyClass} role="menu">
         {optionList}
       </ul>
     );
