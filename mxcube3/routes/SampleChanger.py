@@ -26,6 +26,7 @@ def get_samples_list():
                        "location": ":".join(map(str, coords)),
                        "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
                        "code": sample_dm,
+                       "loadable": True,
                        "tasks": [],
                        "type": "Sample"}
         order.append(coords)

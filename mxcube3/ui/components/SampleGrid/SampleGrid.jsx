@@ -251,7 +251,7 @@ export default class SampleGrid extends React.Component {
             acronym={acronym}
             name={name}
             dm={sample.code}
-            loadable={false}
+            loadable={sample.loadable}
             location={sample.location}
             tags={tags}
             selected={this.props.selected}

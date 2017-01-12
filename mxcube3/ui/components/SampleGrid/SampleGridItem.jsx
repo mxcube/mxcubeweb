@@ -500,7 +500,7 @@ export class SampleGridItem extends React.Component {
         'samples-grid-item-collected': this.props.collected });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
-                                       { 'label-success': this.props.loadable });
+                                       { 'label-success': this.props.loadable===true });
 
     const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
 
@@ -597,7 +597,7 @@ SampleGridItem.defaultProps = {
   acronym: '',
   name: '',
   dm: '',
-  loadable: [],
+  loadable: false,
   location: '',
   tags: '',
   selected: false,
