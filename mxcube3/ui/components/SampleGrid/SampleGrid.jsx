@@ -270,7 +270,6 @@ export default class SampleGrid extends React.Component {
             dragStartSelection={this.dragStartSelection}
             dragSelectItem={this.dragSelectItem}
             toggleSelectedSample={this.props.toggleSelectedSample}
-            showSampleGridContextMenu={this.props.showSampleGridContextMenu}
           />
         );
 

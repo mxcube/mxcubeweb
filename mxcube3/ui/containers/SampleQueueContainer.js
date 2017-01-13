@@ -23,7 +23,6 @@ function mapStateToProps(state) {
     queue: state.queue.queue,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
-    select_all: state.queue.selectAll,
     rootPath: state.queue.rootPath,
     displayData: state.queueGUI.displayData,
     loading: state.queueGUI.loading,
