@@ -35,8 +35,8 @@ export function clearAllUserMessages() {
 }
 
 
-export function setInitialStatus(data) {
-  return { type: 'SET_INITIAL_STATUS', data };
+export function setInitialState(data) {
+  return { type: 'SET_INITIAL_STATE', data };
 }
 
 export function setLoading(loading, title = '', message = '', blocking = false,
@@ -69,6 +69,7 @@ function parse(response) {
 }
 
 function notify(error) {
+  // eslint-disable-next-line no-console
   console.error('REQUEST FAILED', error);
 }
 
@@ -176,7 +177,7 @@ export function getInitialStatus() {
     ];
 
     Promise.all(pchains).then(() => {
-      dispatch(setInitialStatus(state));
+      dispatch(setInitialState(state));
     });
   };
 }

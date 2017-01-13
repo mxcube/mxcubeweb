@@ -2,12 +2,29 @@ import React from 'react';
 import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 
-
 class AddSample extends React.Component {
   constructor(props) {
     super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.addAndEnqueue = this.addAndEnqueue.bind(this);
+    this.addAndMount = this.addAndMount.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.getDefaultSampleData = this.getDefaultSampleData.bind(this);
+  }
+
+
+  getDefaultSampleData() {
+    let prefix = this.props.values.sampleName ? this.props.values.sampleName : 'noname';
+
+    if (this.props.values.proteinAcronym && this.props.values.sampleName) {
+      prefix += `-${this.props.values.proteinAcronym}`;
+    }
+
+    return { ...this.props.values,
+             type: 'Sample',
+             defaultPrefix: prefix,
+             location: 'Manual',
+             loadable: true,
+             tasks: [] };
   }
 
 
@@ -16,15 +33,14 @@ class AddSample extends React.Component {
   }
 
 
-  handleSubmit() {
-    let prefix = this.props.values.sampleName ? this.props.values.sampleName : 'noname';
+  addAndEnqueue() {
+    this.props.addToQueue(this.getDefaultSampleData());
+    this.props.hide();
+  }
 
-    if (this.props.values.proteinAcronym && this.props.values.sampleName) {
-      prefix += `-${this.props.values.proteinAcronym}`;
-    }
 
-    this.props.add({ ...this.props.values, type: 'Sample', tasks: [], defaultPrefix: prefix,
-                     location: 'Manual', sampleID: this.props.id.toString() });
+  addAndMount() {
+    this.props.addAndMount(this.getDefaultSampleData());
     this.props.hide();
   }
 
@@ -54,9 +70,16 @@ class AddSample extends React.Component {
           <button
             className="btn btn-primary"
             type="button"
-            onClick={this.handleSubmit}
+            onClick={this.addAndEnqueue}
           >
             Add Sample
+          </button>
+          <button
+            className="btn btn-primary"
+            type="button"
+            onClick={this.addAndMount}
+          >
+            Add and mount sample
           </button>
         </Modal.Footer>
       </Modal>

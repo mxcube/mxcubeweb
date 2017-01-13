@@ -21,8 +21,8 @@ class Helical extends React.Component {
       label: 'Helical',
       helical: true,
       point: this.props.lines.length - 1,
-      p1: this.props.pointId.p1,
-      p2: this.props.pointId.p2
+      p1: this.props.pointID.p1,
+      p2: this.props.pointID.p2
     };
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
@@ -344,7 +344,7 @@ class Helical extends React.Component {
               </form>
           </Modal.Body>
           <Modal.Footer className={this.props.taskData.state ? 'hidden' : 'task-footer'}>
-        <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
+        <div className={this.props.pointID === -1 ? 'pull-left' : 'hidden'}>
           <label className="centring-method">
             <input
               type="radio" {...centringMethod}
@@ -363,7 +363,7 @@ class Helical extends React.Component {
           </label>
         </div>
             <Button bsStyle="success"
-              disabled={this.props.pointId === -1 || this.anyError()}
+              disabled={this.props.pointID === -1 || this.anyError()}
               onClick={this.runNow}
             >
               Run Now

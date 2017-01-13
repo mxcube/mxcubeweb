@@ -1,7 +1,7 @@
 const initialState = {
   sampleIds: [],
   taskData: {},
-  pointId: -1,
+  pointID: -1,
   showForm: '',
   path: '',
   defaultParameters: {
@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
           showForm: action.name,
           sampleIds: action.sampleIDs,
           taskData: action.taskData,
-          pointId: action.point_id
+          pointID: action.pointID
         };
       }
     case 'ADD_TASKS':
@@ -65,7 +65,7 @@ export default (state = initialState, action) => {
       {
         return { ...state, showForm: '' };
       }
-    case 'SET_INITIAL_STATUS':
+    case 'SET_INITIAL_STATE':
       {
         return {
           ...state,

@@ -4,7 +4,7 @@ export function showForm(formName, sampleQueueID = [], taskData = {}, pointQueue
     name: formName,
     sampleIDs: sampleQueueID,
     taskData,
-    point_id: pointQueueID
+    pointID: pointQueueID
   };
 }
 
