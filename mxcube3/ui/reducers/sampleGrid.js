@@ -28,7 +28,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'UPDATE_SAMPLE_LIST': {
       const sampleList = { ...state.sampleList };
       const order = [...state.order];
- 
+
       for (const sampleID of action.order) {
         const sampleData = action.sampleList[sampleID];
         if (! sampleList[sampleID]) {

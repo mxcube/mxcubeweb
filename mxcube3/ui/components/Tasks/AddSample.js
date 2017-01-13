@@ -12,11 +12,6 @@ class AddSample extends React.Component {
   }
 
 
-  handleCancel() {
-    this.props.hide();
-  }
-
-  
   getDefaultSampleData() {
     let prefix = this.props.values.sampleName ? this.props.values.sampleName : 'noname';
 
@@ -32,10 +27,17 @@ class AddSample extends React.Component {
              tasks: [] };
   }
 
+
+  handleCancel() {
+    this.props.hide();
+  }
+
+
   addAndEnqueue() {
     this.props.addToQueue(this.getDefaultSampleData());
     this.props.hide();
   }
+
 
   addAndMount() {
     this.props.addAndMount(this.getDefaultSampleData());
