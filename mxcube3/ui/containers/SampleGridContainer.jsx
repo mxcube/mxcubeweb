@@ -345,10 +345,7 @@ class SampleGridContainer extends React.Component {
                   onClick={this.showAddSampleForm}
                 >
                   <MenuItem eventKey="2" onClick={this.props.getSamples}>
-                    Add samples from SC
-                  </MenuItem>
-                  <MenuItem eventKey="2" onClick={this.props.sendClearQueue}>
-                    Clear grid (also clears queue)
+                    Get samples from SC
                   </MenuItem>
                 </SplitButton>
                 <span style={{ marginLeft: '1em' }} ></span>
@@ -363,6 +360,29 @@ class SampleGridContainer extends React.Component {
                     <Glyphicon glyph="refresh" /> ISPyB
                   </Button>
                 </OverlayTrigger>
+                <span style={{ marginLeft: '1em' }} ></span>
+                <OverlayTrigger
+                  placement="bottom"
+                  overlay={(
+                    <Tooltip id="select-samples">
+                      Remove all samples from sample list and queue
+                    </Tooltip>)}
+                >
+                  <Button
+                    onClick={this.props.sendClearQueue}
+                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                  >
+                    Clear sample list
+                  </Button>
+                </OverlayTrigger>
+                <span style={{ marginLeft: '3em' }}>Filter: </span>
+                <Input
+                  type="text"
+                  ref="filterInput"
+                  defaultValue={this.props.filterText}
+                  buttonAfter={innerSearchIcon}
+                  onChange={this.filterSampleGrid}
+                />
                 <span style={{ marginLeft: '3em' }}>Select: </span>
                 <OverlayTrigger
                   placement="bottom"
@@ -378,44 +398,20 @@ class SampleGridContainer extends React.Component {
                   </ButtonGroup>
                 </OverlayTrigger>
                 <span style={{ marginLeft: '3em' }} ></span>
-                <DropdownButton
+                <SplitButton
                   disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                  onClick={this.addSelectedSamples}
                   bsStyle="default"
                   title={<span><Glyphicon glyph="plus" /> Add to queue</span>}
                   id="pipeline-mode-dropdown"
                 >
-                  <MenuItem eventKey="1" onClick={this.addSelectedSamples}>
-                    Sample (without task)
-                  </MenuItem>
                   <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
                     Data collection
                   </MenuItem>
                   <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
                     Characterisation
                   </MenuItem>
-                </DropdownButton>
-                <span style={{ marginLeft: '1em' }} ></span>
-                <DropdownButton
-                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                  bsStyle="default"
-                  title={<span><Glyphicon glyph="minus" /> Remove tasks </span>}
-                  id="pipeline-mode-dropdown"
-                >
-                  <MenuItem eventKey="1" onClick={this.removeAllSamples}>
-                    All  samples
-                  </MenuItem>
-                  <MenuItem eventKey="2" onClick={this.removeSelectedSamples}>
-                   Selected samples
-                  </MenuItem>
-                </DropdownButton>
-                <span style={{ marginLeft: '5em' }}>Filter: </span>
-                <Input
-                  type="text"
-                  ref="filterInput"
-                  defaultValue={this.props.filterText}
-                  buttonAfter={innerSearchIcon}
-                  onChange={this.filterSampleGrid}
-                />
+                </SplitButton>
               </div>
              </div>
              <div className="col-xs-2 pull-right">
