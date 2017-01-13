@@ -107,7 +107,6 @@ def queue_clear():
     """
     mxcube.diffractometer.savedCentredPos = []
     mxcube.queue = qutils.new_queue()
-    #qutils.save_queue(session)
     logging.getLogger('HWR').info('[QUEUE] Cleared  ' +
                                   str(mxcube.queue.get_model_root()._name))
     return Response(status=200)
@@ -194,8 +193,7 @@ def set_queue():
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
      qutils.queue_add_item(request.get_json())
-     #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-     #qutils.save_queue(session)
+     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
      return Response(status=200)
 
 
@@ -217,7 +215,6 @@ def queue_update_item(sid, tindex):
         qutils.set_char_params(model, entry, data)
 
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    #qutils.save_queue(session)
     return Response(status=200)
 
 
@@ -248,16 +245,14 @@ def queue_delete_item():
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/swap", methods=['POST'])
 def queue_swap_task_item(sid, ti1, ti2):
     qutils.swap_task_entry(sid, int(ti1), int(ti2))
-    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    #qutils.save_queue(session)
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200) 
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/move", methods=['POST'])
 def queue_move_task_item(sid, ti1, ti2):
     qutils.move_task_entry(sid, int(ti1), int(ti2))
-    #logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    #qutils.save_queue(session)
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200)
 
    
@@ -392,8 +387,6 @@ def add_centring(id):
     entry.enqueue(cent_entry)
 
     logging.getLogger('HWR').info('[QUEUE] centring added to sample')
-
-    #qutils.save_queue(session)
 
     resp = jsonify({'QueueId': new_node,
                     'Type': 'Centring',
