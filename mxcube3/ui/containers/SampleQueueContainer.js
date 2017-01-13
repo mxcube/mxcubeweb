@@ -13,6 +13,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
+import { SAMPLE_MOUNTED } from '../constants';
 
 function mapStateToProps(state) {
   return {
@@ -21,6 +22,7 @@ function mapStateToProps(state) {
     visibleList: state.queue.visibleList,
     queueStatus: state.queue.queueStatus,
     queue: state.queue.queue,
+    sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
     rootPath: state.queue.rootPath,
@@ -60,6 +62,7 @@ export default class SampleQueueContainer extends React.Component {
       current,
       sampleOrder,
       queue,
+      sampleList,
       showForm,
       queueStatus,
       rootPath,
@@ -86,18 +89,20 @@ export default class SampleQueueContainer extends React.Component {
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
     const todo = [];
-
-    sampleOrder.map(key => {
-      const sample = queue[key];
-
-      if (sample) {
-        todo.push(sample.sampleID);
-      }
-
-      return sample;
-    });
-
     const history = [];
+
+    for (const key of sampleOrder) {
+      if (queue[key]) {
+        const sample = sampleList[key];
+        if (sample.state && SAMPLE_MOUNTED) {
+          history.push(sample.sampleID);
+        } else {
+          if (sample.sampleID !== current.node) {
+            todo.push(sample.sampleID);
+          }
+        }
+      }
+    }
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
@@ -156,6 +161,7 @@ export default class SampleQueueContainer extends React.Component {
                   displayData={displayData}
                   mount={sendMountSample}
                   showForm={showForm}
+                  queueStatus={queueStatus}
                 />
                 <UserMessage
                   messages={this.props.userMessages}

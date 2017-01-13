@@ -36,9 +36,7 @@ import { showTaskForm } from '../actions/taskForm';
 import SampleGrid from '../components/SampleGrid/SampleGrid';
 import { SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 import '../components/SampleGrid/SampleGrid.css';
-
-const QUEUE_RUNNING = 'QueueStarted';
-
+import { QUEUE_RUNNING } from '../constants';
 
 class SampleGridContainer extends React.Component {
 
@@ -341,6 +339,7 @@ class SampleGridContainer extends React.Component {
             <div style={{ paddingLeft: '0px' }} className="col-xs-10">
               <div className="form-inline">
                 <SplitButton
+                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                   title={'Create new sample'}
                   id="split-button-sample-changer-selection"
                   onClick={this.showAddSampleForm}

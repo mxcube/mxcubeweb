@@ -16,6 +16,16 @@ from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from . import limsutils
 
+# Important: same constants as in constants.js
+QUEUE_PAUSED = 'QueuePaused';
+QUEUE_RUNNING = 'QueueStarted';
+QUEUE_STOPPED = 'QueueStopped';
+SAMPLE_MOUNTED = 0x8;
+COLLECTED = 0x4
+FAILED = 0x2
+RUNNING = 0x1
+UNCOLLECTED = 0x0
+
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
@@ -155,7 +165,7 @@ def get_node_state(node_id):
     :param TaskNode node: Node to get status for
 
     :returns: tuple containing (enabled, state)
-            where state: {0, 1, 2, 3} = {in_queue, running, sucess, failed}
+            where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
     try:
@@ -169,13 +179,13 @@ def get_node_state(node_id):
     curr_entry = mxcube.queue.queue_hwobj.get_current_entry()
 
     if failed:
-        state = 3
+        state = FAILED
     elif executed:
-        state = 2
+        state = COLLECTED
     elif mxcube.queue.queue_hwobj.is_executing and (curr_entry == entry or curr_entry == entry._parent_container):
-        state = 1
+        state = RUNNING
     else:
-        state = 0
+        state = UNCOLLECTED
 
     return (enabled, state)
 
@@ -312,14 +322,14 @@ def _handle_sample(node):
         child_enabled, child_state = get_node_state(child._node_id)
         children_states.append(child_state)
 
-    if 1 in children_states:
-        state = 1
+    if RUNNING in children_states:
+        state = RUNNING & SAMPLE_MOUNTED
     elif 3 in children_states:
-        state = 3
-    elif all(i == 2 for i in children_states) and len(children_states) > 0:
-        state = 2
+        state = FAILED & SAMPLE_MOUNTED
+    elif all(i == COLLECTED for i in children_states) and len(children_states) > 0:
+        state = COLLECTED & SAMPLE_MOUNTED
     else:
-        state = 0
+        state = UNCOLLECTED
 
     return {node.loc_str: {'sampleID': node.loc_str,
                            'queueID': node._node_id,
@@ -375,16 +385,16 @@ def queue_to_dict_rec(node):
 
 def queue_exec_state():
     """
-    :returns: The queue execution state, one of the strings 'QueueStopped',
-              'QueuePaused' or 'QueueStarted'
+    :returns: The queue execution state, one of QUEUE_STOPPED, QUEUE_PAUSED
+              or QUEUE_RUNNING
 
     """
-    state = "QueueStopped"
+    state = QUEUE_STOPPED 
 
     if mxcube.queue.queue_hwobj.is_paused():
-        state = "QueuePaused"
+        state = QUEUE_PAUSED
     elif mxcube.queue.queue_hwobj.is_executing():
-        state = "QueueStarted"
+        state = QUEUE_RUNNING
 
     return state
 

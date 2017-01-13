@@ -4,6 +4,7 @@ import { isEqual } from 'lodash/lang';
 import { SampleGridItem, SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_HEIGHT,
          SAMPLE_ITEM_SPACE } from './SampleGridItem';
 import './SampleGrid.css';
+import { QUEUE_STOPPED } from '../../constants';
 
 export default class SampleGrid extends React.Component {
 
@@ -236,7 +237,7 @@ export default class SampleGrid extends React.Component {
           }
         }
 
-        const deleteTaskFun = this.props.queue.queueStatus === 'QueueStopped' ?
+        const deleteTaskFun = this.props.queue.queueStatus === QUEUE_STOPPED ?
                               this.props.deleteTask : '';
 
         sampleGrid.push(

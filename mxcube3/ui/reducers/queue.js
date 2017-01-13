@@ -1,11 +1,12 @@
 import { omit } from 'lodash/object';
 import update from 'react/lib/update';
+import { QUEUE_STOPPED } from '../constants';
 
 const initialState = {
   queue: {},
   current: { node: null, running: false },
   searchString: '',
-  queueStatus: 'QueueStopped',
+  queueStatus: QUEUE_STOPPED,
   showResumeQueueDialog: false,
   visibleList: 'current'
 };

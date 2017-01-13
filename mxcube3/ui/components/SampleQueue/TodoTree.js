@@ -2,6 +2,7 @@ import React from 'react';
 import 'bootstrap-webpack';
 import './app.less';
 import { Button } from 'react-bootstrap';
+import { QUEUE_RUNNING } from '../../constants';
 
 export default class TodoTree extends React.Component {
   constructor(props) {
@@ -45,6 +46,7 @@ export default class TodoTree extends React.Component {
                 </div>
                 <div className="col-xs-5" style={ { paddingRight: '0px' } }>
                   <Button
+                    disabled={this.props.queueStatus === QUEUE_RUNNING}
                     className="btn-primary pull-right"
                     bsSize="sm"
                     onClick={this.showAddSampleForm}

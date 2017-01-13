@@ -3,6 +3,7 @@ import 'bootstrap';
 import './app.less';
 import TaskItem from './TaskItem';
 import { Button } from 'react-bootstrap';
+import { QUEUE_STOPPED, QUEUE_PAUSED, QUEUE_RUNNING } from '../../constants';
 
 export default class CurrentTree extends React.Component {
 
@@ -14,15 +15,15 @@ export default class CurrentTree extends React.Component {
     this.nextSample = this.nextSample.bind(this);
     this.state = {
       options: {
-        QueueStarted: [
+        [QUEUE_RUNNING]: [
         { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
         { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
         ],
-        QueueStopped: [
+        [QUEUE_STOPPED]: [
         { text: 'Run Sample', class: 'btn-success', action: this.runSample, key: 1 },
         { text: 'Next Sample', class: 'btn-primary pull-right', action: this.nextSample, key: 2 }
         ],
-        QueuePaused: [
+        [QUEUE_PAUSED]: [
         { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
         { text: 'Unpause', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
         ],

@@ -12,6 +12,8 @@
 *
 *  filterText: Current filter text
 */
+import { SAMPLE_MOUNTED } from '../constants';
+
 const INITIAL_STATE = { selected: {},
                         sampleList: {},
                         order: [],
@@ -71,6 +73,11 @@ export default (state = INITIAL_STATE, action) => {
           sampleList[key] = Object.assign({}, sample, { });
         }
       });
+      return Object.assign({}, state, { sampleList });
+    }
+    case 'SET_CURRENT_SAMPLE': {
+      const sampleList = Object.assign({}, state.sampleList);
+      sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
       return Object.assign({}, state, { sampleList });
     }
     // Toggles a samples movable flag
