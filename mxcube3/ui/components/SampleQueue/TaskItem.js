@@ -106,6 +106,8 @@ export default class TaskItem extends Component {
   }
 
   deleteTask() {
+    console.log(this.props.sampleId);
+    console.log(this.props.index);
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
