@@ -109,6 +109,7 @@ export default class CurrentTree extends React.Component {
                   state={this.props.queue[taskData.sampleID].tasks[i].state}
                   show={this.props.displayData[taskData.sampleID].tasks[i].collapsed}
                   moveTask={this.props.moveTask}
+                  showForm={this.props.showForm}
                 />);
               return task;
             })}
