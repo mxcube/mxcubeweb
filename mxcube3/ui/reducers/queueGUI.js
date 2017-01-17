@@ -41,7 +41,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { displayData });
     }
 
-    case 'ADD_SAMPLES': {
+    case 'ADD_SAMPLES_TO_QUEUE': {
       const samplesData = {};
       action.samplesData.forEach((sample) => {
         samplesData[sample.sampleID] = { collapsed: false, tasks: sample.tasks.map(() => {
@@ -53,9 +53,9 @@ export default (state = initialState, action) => {
       return Object.assign({}, state, { displayData: { ...state.displayData, ...samplesData } });
     }
 
-    case 'REMOVE_SAMPLE':
+    case 'REMOVE_SAMPLE_FROM_QUEUE':
       return Object.assign({}, state, { displayData: omit(state.displayData, action.sampleID) });
-    // Removing the task from the queue
+
     case 'REMOVE_TASK': {
       const displayData = {
         ...state.displayData,

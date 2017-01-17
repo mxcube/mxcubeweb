@@ -56,39 +56,6 @@ def set_phase():
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/diffractometer/usesc", methods=['GET'])
-def get_use_sc():
-    """
-    use_sample_changer: set use_sample_changer
-    data = { "use_sc": , "msg":}
-    return_data: data plus error code 200/409
-    """
-    resp = jsonify({'use_sc': mxcube.diffractometer.use_sc})
-    resp.status_code = 200
-    return resp
-
-
-@mxcube.route("/mxcube/api/v0.1/diffractometer/usesc", methods=['PUT'])
-def use_sc():
-    """
-    use_sample_changer: set use_sample_changer
-    data = { "use_sc": , "msg":}
-    return_data: data plus error code 200/409
-    """
-    params = request.data
-    params = json.loads(params)
-    use_sc = params['use_sc']
-    try:
-        ret = mxcube.diffractometer.set_use_sc(use_sc)
-    except AttributeError:
-        ret = True
-    if ret:
-        logging.getLogger('HWR').info("Set use_sample_changer mode to %s" % use_sc)
-        return Response(status=200)
-    else:
-        return Response(status=409)
-
-
 @mxcube.route("/mxcube/api/v0.1/diffractometer/platemode", methods=['GET'])
 def md_in_plate_mode():
     """

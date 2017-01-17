@@ -20,7 +20,7 @@ class Characterisation extends React.Component {
       ...this.props.values,
       type: 'Characterisation',
       label: 'Characterisation',
-      point: this.props.pointId,
+      point: this.props.pointID,
       helical: false
     };
 
@@ -356,7 +356,7 @@ class Characterisation extends React.Component {
         </form>
           </Modal.Body>
           <Modal.Footer>
-        <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
+        <div className={this.props.pointID === -1 ? 'pull-left' : 'hidden'}>
           <label className="centring-method">
             <input
               type="radio" {...centringMethod}
@@ -376,7 +376,7 @@ class Characterisation extends React.Component {
         </div>
             <button
               type="button"
-              className={this.props.pointId !== -1 ? 'btn btn-success' : 'hidden'}
+              className={this.props.pointID !== -1 ? 'btn btn-success' : 'hidden'}
               disabled={this.anyError()}
               onClick={this.runNow}
             >

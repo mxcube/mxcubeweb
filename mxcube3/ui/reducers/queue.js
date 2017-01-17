@@ -1,82 +1,23 @@
-import { omit, invert } from 'lodash/object';
-import { without } from 'lodash/array';
+import { omit } from 'lodash/object';
 import update from 'react/lib/update';
+import { QUEUE_STOPPED, SAMPLE_UNCOLLECTED } from '../constants';
 
 const initialState = {
   queue: {},
   current: { node: null, running: false },
-  sampleOrder: [],
-  todo: [],
-  history: [],
   searchString: '',
-  queueStatus: 'QueueStopped',
+  queueStatus: QUEUE_STOPPED,
   showResumeQueueDialog: false,
-  sampleList: {},
-  manualMount: { set: false, id: 1 },
   visibleList: 'current'
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_QUEUE': {
-      return Object.assign({}, state, { queue: action.queue });
+      const queue = {};
+      action.queue.forEach(sample => { queue[sample.sampleID] = sample; });
+      return Object.assign({}, initialState, { queue });
     }
-    case 'SET_SAMPLE_LIST': {
-      return Object.assign({}, state, { sampleList: action.sampleList });
-    }
-    case 'APPEND_TO_SAMPLE_LIST': {
-      const sampleList = { ...state.sampleList, [action.sampleData.sampleID]: action.sampleData };
-      const manualMount = { ...state.manualMount };
-
-      if (state.manualMount.set) {
-        manualMount.id = state.manualMount.id + 1;
-      }
-
-      return Object.assign({}, state, { sampleList, manualMount });
-    }
-    case 'SET_SAMPLE_ORDER': {
-      const sortedOrder = invert(action.order);
-      const sampleOrder = [];
-
-      Object.values(sortedOrder).forEach((key) => {
-        if (Reflect.has(state.queue, key)) {
-          sampleOrder.push(key);
-        }
-      });
-
-      return Object.assign({}, state, { sampleOrder });
-    }
-    case 'SET_SAMPLES_INFO': {
-      const sampleList = {};
-      Object.keys(state.sampleList).forEach(key => {
-        const sample = state.sampleList[key];
-        let sampleInfo;
-        for (sampleInfo of action.sampleInfoList) {
-          if (sampleInfo.code) {
-            // find sample with data matrix code
-            if (sample.code === sampleInfo.code) {
-              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
-              break;
-            }
-          } else {
-            // check with sample changer location
-            const containerLocation = sampleInfo.containerSampleChangerLocation;
-            const sampleLocation = sampleInfo.sampleLocation;
-            const limsLocation = `${containerLocation}:${sampleLocation}`;
-
-            if (sample.location === limsLocation) {
-              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
-              break;
-            }
-          }
-        }
-        if (sampleList[key] === undefined) {
-          sampleList[key] = Object.assign({}, sample, { });
-        }
-      });
-      return Object.assign({}, state, { sampleList });
-    }
-
     case 'ADD_TASK_RESULT': {
       const queue = {
         ...state.queue,
@@ -99,29 +40,17 @@ export default (state = initialState, action) => {
 
       return Object.assign({}, state, { queue, current });
     }
-    case 'SET_MANUAL_MOUNT': {
-      const data = { manualMount: { ...state.manualMount, set: action.manual } };
-      return Object.assign({}, state, data);
-    }
     case 'CLEAR_QUEUE': {
-      return Object.assign({}, state, { queue: {}, todo: {} });
+      return Object.assign({}, state, { queue: {} });
     }
-
-    // Adding sample to queue
-    case 'ADD_SAMPLES': {
-      const samplesID = action.samplesData.map((sample) => sample.sampleID);
+    case 'ADD_SAMPLES_TO_QUEUE': {
       const samplesData = {};
+
       action.samplesData.forEach((sample) => {
         samplesData[sample.sampleID] = { ...sample, state: 0 };
       });
 
-      return Object.assign({}, state,
-        {
-          todo: [...state.todo, ...samplesID],
-          queue: { ...state.queue, ...samplesData },
-          sampleOrder: [...state.sampleOrder, ...samplesID]
-        }
-      );
+      return Object.assign({}, state, { queue: { ...state.queue, ...samplesData } });
     }
 
     // Setting state
@@ -131,15 +60,16 @@ export default (state = initialState, action) => {
         queueStatus: action.queueState
       };
 
-        // Removing sample from queue
-    case 'REMOVE_SAMPLE':
-      return Object.assign({}, state,
-        { todo: without(state.todo, action.sampleID),
-          queue: omit(state.queue, action.sampleID),
-          sampleOrder: without(state.sampleOrder, action.sampleID),
-        });
+    case 'REMOVE_SAMPLES_FROM_QUEUE': {
+      let queue = { ...state.queue };
 
-        // Adding the new task to the queue
+      for (const sampleID of action.sampleIDList) {
+        queue = omit(state.queue, sampleID);
+      }
+
+      return Object.assign({}, state, { queue });
+    }
+    // Adding the new task to the queue
     case 'ADD_TASKS': {
       const queue = { ...state.queue };
 
@@ -147,12 +77,13 @@ export default (state = initialState, action) => {
         const task = { ...t, state: 0 };
 
         if (task.parameters.prefix === '') {
-          task.parameters.prefix = state.sampleList[task.sampleID].defaultPrefix;
+          task.parameters.prefix = queue[task.sampleID].defaultPrefix;
         }
 
         queue[task.sampleID] = {
           ...queue[task.sampleID],
-          tasks: [...queue[task.sampleID].tasks, task]
+          tasks: [...queue[task.sampleID].tasks, task],
+          state: SAMPLE_UNCOLLECTED
         };
       });
 
@@ -168,9 +99,8 @@ export default (state = initialState, action) => {
                   ...state.queue[action.sampleID].tasks.slice(action.taskIndex + 1)]
         }
       };
-      const sampleOrder = without(state.order, action.sampleID);
 
-      return Object.assign({}, state, { queue, sampleOrder });
+      return Object.assign({}, state, { queue });
     }
     case 'UPDATE_TASK': {
       const queue = {
@@ -193,8 +123,6 @@ export default (state = initialState, action) => {
       return Object.assign({}, state,
         {
           current: { ...state.current, node: action.sampleID, running: false },
-          todo: without(state.todo, action.sampleID),
-          history: [...state.history, state.current.node]
         }
       );
     case 'CLEAR_CURRENT_SAMPLE':
@@ -251,8 +179,7 @@ export default (state = initialState, action) => {
       return state;
     case 'CLEAR_ALL':
       {
-        return Object.assign({}, state, { ...initialState,
-                                          manualMount: { set: state.manualMount.set, id: 1 } });
+        return Object.assign({}, state, { ...initialState });
       }
     case 'SHOW_RESUME_QUEUE_DIALOG':
       {
@@ -262,20 +189,12 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state, ...action.queueState);
       }
-    case 'SET_INITIAL_STATUS':
+    case 'SET_INITIAL_STATE':
       {
         return {
           ...state,
-          sampleList: action.data.queue.sample_list,
           rootPath: action.data.rootPath,
-          manualMount: {
-            set: !action.data.useSC,
-            id: action.data.queue.todo.length + action.data.queue.history.length + 1
-          },
           queue: action.data.queue.queue,
-          todo: without(action.data.queue.todo, action.data.queue.loaded),
-          history: without(action.data.queue.history, action.data.queue.loaded),
-          sampleOrder: action.data.queue.sample_order,
           current: { node: action.data.queue.loaded, running: false }
         };
       }

@@ -16,6 +16,16 @@ from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from . import limsutils
 
+# Important: same constants as in constants.js
+QUEUE_PAUSED = 'QueuePaused';
+QUEUE_RUNNING = 'QueueStarted';
+QUEUE_STOPPED = 'QueueStopped';
+SAMPLE_MOUNTED = 0x8;
+COLLECTED = 0x4
+FAILED = 0x2
+RUNNING = 0x1
+UNCOLLECTED = 0x0
+
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
@@ -155,7 +165,7 @@ def get_node_state(node_id):
     :param TaskNode node: Node to get status for
 
     :returns: tuple containing (enabled, state)
-            where state: {0, 1, 2, 3} = {in_queue, running, sucess, failed}
+            where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
     try:
@@ -169,13 +179,13 @@ def get_node_state(node_id):
     curr_entry = mxcube.queue.queue_hwobj.get_current_entry()
 
     if failed:
-        state = 3
+        state = FAILED
     elif executed:
-        state = 2
+        state = COLLECTED
     elif mxcube.queue.queue_hwobj.is_executing and (curr_entry == entry or curr_entry == entry._parent_container):
-        state = 1
+        state = RUNNING
     else:
-        state = 0
+        state = UNCOLLECTED
 
     return (enabled, state)
 
@@ -189,7 +199,6 @@ def get_queue_state():
                 "history": [],
                 "loaded": "1:01",
                 "sample_list": [ sampleID_1, sampleID_2 ...],
-                "todo": [ sampleID_1, sampleID_2, ...],
                 "queue": {sampleID_1: [task1, ... taskn]
                         .
                         .
@@ -198,20 +207,25 @@ def get_queue_state():
                 "sample_list": {......}
                }
     """
-    if mxcube.diffractometer.use_sc:
+    try:
         samples_list_sc = mxcube.sample_changer.getSampleList()
-        samples = {}
+    except Exception:
+        # if no sample changer is used, or if it has a problem,
+        # set an empty list
+        samples_list_sc = []
+    
+    samples = {}
 
-        for s in samples_list_sc:
-            sample_dm = s.getID() or ""
-            sample_data = {"sampleID": s.getAddress(),
-                           "location": ":".join(map(str, s.getCoords())),
-                           "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
-                           "code": sample_dm,
-                           "type": "Sample"}
+    for s in samples_list_sc:
+        sample_dm = s.getID() or ""
+        sample_data = {"sampleID": s.getAddress(),
+                       "location": ":".join(map(str, s.getCoords())),
+                       "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
+                       "code": sample_dm,
+                       "type": "Sample"}
 
-            sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-            samples.update({s.getAddress(): sample_data})
+        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
+        samples.update({s.getAddress(): sample_data})
 
     queue = queue_to_dict()
     try:
@@ -221,16 +235,10 @@ def get_queue_state():
         pass
 
     sample_list_ho = mxcube.queue.queue_hwobj._queue_entry_list
-    todo = []
-    history = []
     sample_list = {}
     for sample in sample_list_ho:
         sample_model = sample.get_data_model()
         name = sample_model.loc_str
-        if queue[name]["state"] > 1:
-            history.append(name)
-        else:
-            todo.append(name)
 
         sample_data = {"sampleID": name,
                        "location": "Manual" if sample_model.free_pin_mode else sample_model.loc_str,
@@ -242,33 +250,11 @@ def get_queue_state():
 
         sample_list.update({name: sample_data})
 
-    if mxcube.diffractometer.use_sc:
-        if len(sample_list) != 0:
-            sample_list = samples
-        else:
-            sample_list = {}
-        try:
-            res = mxcube.queue.mounted_sample.split(':')  # no matter how many ~containers
-            loaded = ':'.join(res[:-1]) + ":{:0>2d}".format(int(res[-1]))  # "2:1:2" -> "2:1:02"
-        except:
-            loaded = ''
-    else:
-        try:
-            loaded = mxcube.queue.mounted_sample
-        except Exception:
-            loaded = ''
-
-    try:
-        todo.pop(loaded)
-    except Exception:
-        pass
+    loaded = ''
 
     res = {"sample_list": sample_list,
-           "history": history,
-           "todo": todo,
            "loaded": loaded,
            "queue": queue,
-           "sample_order": order,
            "queueStatus": queue_exec_state()
            }
 
@@ -336,14 +322,14 @@ def _handle_sample(node):
         child_enabled, child_state = get_node_state(child._node_id)
         children_states.append(child_state)
 
-    if 1 in children_states:
-        state = 1
+    if RUNNING in children_states:
+        state = RUNNING & SAMPLE_MOUNTED
     elif 3 in children_states:
-        state = 3
-    elif all(i == 2 for i in children_states) and len(children_states) > 0:
-        state = 2
+        state = FAILED & SAMPLE_MOUNTED
+    elif all(i == COLLECTED for i in children_states) and len(children_states) > 0:
+        state = COLLECTED & SAMPLE_MOUNTED
     else:
-        state = 0
+        state = UNCOLLECTED
 
     return {node.loc_str: {'sampleID': node.loc_str,
                            'queueID': node._node_id,
@@ -399,16 +385,16 @@ def queue_to_dict_rec(node):
 
 def queue_exec_state():
     """
-    :returns: The queue execution state, one of the strings 'QueueStopped',
-              'QueuePaused' or 'QueueStarted'
+    :returns: The queue execution state, one of QUEUE_STOPPED, QUEUE_PAUSED
+              or QUEUE_RUNNING
 
     """
-    state = "QueueStopped"
+    state = QUEUE_STOPPED 
 
     if mxcube.queue.queue_hwobj.is_paused():
-        state = "QueuePaused"
+        state = QUEUE_PAUSED
     elif mxcube.queue.queue_hwobj.is_executing():
-        state = "QueueStarted"
+        state = QUEUE_RUNNING
 
     return state
 

@@ -22,7 +22,7 @@ class DataCollection extends React.Component {
       type: 'DataCollection',
       label: 'Data Collection',
       helical: false,
-      point: this.props.pointId
+      point: this.props.pointID
     };
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
@@ -346,7 +346,7 @@ class DataCollection extends React.Component {
               </form>
           </Modal.Body>
           <Modal.Footer className={this.props.taskData.state ? 'hidden' : 'task-footer'}>
-        <div className={this.props.pointId === -1 ? 'pull-left' : 'hidden'}>
+        <div className={this.props.pointID === -1 ? 'pull-left' : 'hidden'}>
           <label className="centring-method">
             <input
               type="radio" {...centringMethod}
@@ -365,7 +365,7 @@ class DataCollection extends React.Component {
           </label>
         </div>
             <Button bsStyle="success"
-              disabled={this.props.pointId === -1 || this.anyError()}
+              disabled={this.props.pointID === -1 || this.anyError()}
               onClick={this.runNow}
             >
               Run Now

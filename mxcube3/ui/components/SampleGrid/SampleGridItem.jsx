@@ -53,16 +53,16 @@ export class SampleGridItem extends React.Component {
     // If shift key is pressed select range from first selected item to this
     // (currently clicked item)
     } else if (e.shiftKey) {
-      this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
+      this.props.dragSelectItem(this.props.itemKey);
     } else {
       // On left click just select the clicked item, on left click only
       // select if the item is not already selected. This makes selection
       // feature work nicely with the context menu.
       if (e.nativeEvent.buttons === 1) {
-        this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+        this.props.dragStartSelection(this.props.itemKey);
       } else if (e.nativeEvent.button === 2) {
         if (!this.props.selected[this.props.itemKey]) {
-          this.props.dragStartSelection(this.props.itemKey, this.props.seqId);
+          this.props.dragStartSelection(this.props.itemKey);
         }
       }
     }
@@ -71,7 +71,7 @@ export class SampleGridItem extends React.Component {
 
   onMouseEnter(e) {
     if (e.nativeEvent.buttons === 1 || e.nativeEvent.button === 2) {
-      this.props.dragSelectItem(this.props.itemKey, this.props.seqId);
+      this.props.dragSelectItem(this.props.itemKey);
     }
   }
 
@@ -111,6 +111,7 @@ export class SampleGridItem extends React.Component {
           bsStyle="default"
           bsSize="s"
           onClick={this.togglePicked}
+          disabled={this.props.current}
         >
           <i className={iconClassName} />
         </button>
@@ -196,7 +197,6 @@ export class SampleGridItem extends React.Component {
     const showId = this.props.picked ? '' : 'none';
     return (
       <div>
-        <div style={{ display: 'none' }} className="seq-id">{this.props.seqId}</div>
         <div style={{ display: showId }} className="queue-order">{this.props.queueOrder}</div>
       </div>
     );
@@ -500,7 +500,7 @@ export class SampleGridItem extends React.Component {
         'samples-grid-item-collected': this.props.collected });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
-                                       { 'label-success': this.props.loadable });
+                                       { 'label-success': this.props.loadable === true });
 
     const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
 
@@ -592,13 +592,12 @@ export class SampleGridItem extends React.Component {
 
 
 SampleGridItem.defaultProps = {
-  seqId: '',
   itemKey: '',
   sampleID: '',
   acronym: '',
   name: '',
   dm: '',
-  loadable: [],
+  loadable: false,
   location: '',
   tags: '',
   selected: false,

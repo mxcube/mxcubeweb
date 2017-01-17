@@ -2,7 +2,7 @@ import logging
 
 import signals
 
-from flask import Response, jsonify
+from flask import Response, jsonify, request
 from mxcube3 import app as mxcube
 from . import limsutils
 
@@ -16,19 +16,30 @@ def init_signals():
 def get_samples_list():
     samples_list = mxcube.sample_changer.getSampleList()
     samples = {}
+    samplesByCoords = {}
+    order = []
 
     for s in samples_list:
         sample_dm = s.getID() or ""
+        coords = s.getCoords()
         sample_data = {"sampleID": s.getAddress(),
-                       "location": ":".join(map(str, s.getCoords())),
+                       "location": ":".join(map(str, coords)),
                        "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
                        "code": sample_dm,
+                       "loadable": True,
+                       "tasks": [],
                        "type": "Sample"}
+        order.append(coords)
+        samplesByCoords[coords] = sample_data['sampleID']
 
         sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-        samples.update({s.getAddress(): sample_data})
 
-    return jsonify(samples)
+        samples[s.getAddress()] = sample_data
+
+    # sort by location, using coords tuple
+    order.sort()
+
+    return jsonify({ 'sampleList': samples, 'sampleOrder': [samplesByCoords[coords] for coords in order] })
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
 def get_sc_contents():
@@ -93,23 +104,17 @@ def unmount_sample(loc):
     mxcube.sample_changer.unload(loc)
     return get_sc_contents()
 
-@mxcube.route("/mxcube/api/v0.1/sample_changer/<sample>/mount", methods=['PUT'])
-def mountSample(sample):
-    # Most of this code should be moved to diffractometer or more general
-    # beamline object. The route should probably not know details about if
-    # the diffractometer has phase ... We should just need to do
-    # beamline.mount_sample(location)
-   
+@mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
+def mountSample():
+    sample = request.get_json()
+    
     try:
-        # We are not using the sample changer to mount the sample, set
-        # centering phase directly
-        #if not mxcube.diffractometer.use_sc:
-        #    mxcube.diffractometer.set_phase("Centring")
-        logging.getLogger('HWR').info('[SC] mounting %s' % sample)
+        logging.getLogger('HWR').info('[SC] mounting %s (%r)', sample['location'], sample['sampleID'])
 
-        if mxcube.diffractometer.use_sc:  
-            mxcube.sample_changer.load(sample, False)
-        mxcube.queue.mounted_sample = sample
+        if not sample['location'] == 'Manual':
+            mxcube.sample_changer.load(sample['sampleID'], False)
+
+        mxcube.queue.mounted_sample = sample['sampleID']
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         return Response(status=409)
@@ -123,23 +128,20 @@ def mountSample(sample):
         return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/sample_changer/<sample>/unmount", methods=['PUT'])
+@mxcube.route("/mxcube/api/v0.1/sample_changer/unmount", methods=['POST'])
 def unmountSample(sample):
+    sample = request.get_json()
+
     try:
-        use_sc = mxcube.diffractometer.use_sc
-
-        if not use_sc: 
-            mxcube.diffractometer.set_phase("Transfer")
-            return Response(status=200)
-
-        mxcube.sample_changer.unload(sample, False)
+        if not sample['location'] == 'Manual':
+            mxcube.sample_changer.unload(sample['sampleID'], False)
         mxcube.queue.mounted_sample = ''
 
         #Remove Centring points
         mxcube.diffractometer.savedCentredPos = []
         mxcube.diffractometer.savedCentredPosCount = 1
 
-        logging.getLogger('HWR').info('[SC] %s un-mounted %s' % sample)
+        logging.getLogger('HWR').info('[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID'])
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')

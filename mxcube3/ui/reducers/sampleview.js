@@ -124,7 +124,7 @@ export default (state = initialState, action) => {
           { lines: [], distancePoints: [], clickCentringPoints: [] }
         );
       }
-    case 'SET_INITIAL_STATUS':
+    case 'SET_INITIAL_STATE':
       {
         return {
           ...state,

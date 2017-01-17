@@ -7,7 +7,6 @@ import {
   Input,
   Button,
   Glyphicon,
-  ButtonToolbar,
   SplitButton,
   DropdownButton,
   MenuItem,
@@ -17,32 +16,27 @@ import {
 } from 'react-bootstrap';
 
 import {
-  filterAction,
-  toggleMovableAction,
-  selectAction,
-  toggleSelectedAction,
-  showSampleGridContextMenu
-} from '../actions/SamplesGrid';
-
-import {
   sendGetSampleList,
   sendSyncSamples,
-  sendManualMount,
+  filterAction,
+  toggleMovableAction,
+  selectSamplesAction,
+  toggleSelectedAction,
   setSampleOrderAction,
+} from '../actions/sampleGrid';
+
+import {
   deleteTask,
-  deleteSample,
   sendClearQueue,
-  addSamples
+  deleteSamplesFromQueue,
+  addSamplesToQueue
 } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
 import SampleGrid from '../components/SampleGrid/SampleGrid';
 import { SAMPLE_ITEM_WIDTH, SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 import '../components/SampleGrid/SampleGrid.css';
-
-const QUEUE_STOPPED = 'QueueStopped';
-const QUEUE_RUNNING = 'QueueStarted';
-
+import { QUEUE_RUNNING } from '../constants';
 
 class SampleGridContainer extends React.Component {
 
@@ -50,7 +44,6 @@ class SampleGridContainer extends React.Component {
     super(props);
     this.syncSamples = this.syncSamples.bind(this);
 
-    this.manualMount = this.manualMount.bind(this);
     this.filterSampleGrid = this.filterSampleGrid.bind(this);
     this.filterSampleGridClear = this.filterSampleGridClear.bind(this);
     this.filterSampleGridPicked = this.filterSampleGridPicked.bind(this);
@@ -60,12 +53,11 @@ class SampleGridContainer extends React.Component {
     this.removeAllSamples = this.removeAllSamples.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
     this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
-    this.showAddSampleForm = this.props.showTaskParametersForm.bind(this, 'AddSample');
     this.showCharacterisationForm = this.handleSubmit.bind(this, 'Characterisation');
     this.showDataCollectionForm = this.handleSubmit.bind(this, 'DataCollection');
+    this.showAddSampleForm = this.handleSubmit.bind(this, 'AddSample');
     this.onClick = this.onClick.bind(this);
     this.collectButton = this.collectButton.bind(this);
-    this.headerContent = this.headerContent.bind(this);
     this.startCollect = this.startCollect.bind(this);
     this.picked = this.picked.bind(this);
   }
@@ -132,11 +124,6 @@ class SampleGridContainer extends React.Component {
     }
 
     this.props.syncSamples(proposalId);
-  }
-
-
-  manualMount() {
-    this.props.setManualMount(!this.props.manualMount);
   }
 
 
@@ -210,12 +197,12 @@ class SampleGridContainer extends React.Component {
     const samples = [];
     for (const sampleID in this.props.selected) {
       if (this.picked(sampleID)) {
-        this.props.deleteSample(sampleID);
+        this.props.deleteSamplesFromQueue([sampleID]);
       } else {
         samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
       }
     }
-    if (samples.length > 0) { this.props.addSamples(samples); }
+    if (samples.length > 0) { this.props.addSamplesToQueue(samples); }
   }
 
 
@@ -224,14 +211,14 @@ class SampleGridContainer extends React.Component {
     for (const sampleID of Object.keys(this.props.selected)) {
       samples.push({ ...this.props.sampleList[sampleID], checked: true, tasks: [] });
     }
-    this.props.addSamples(samples);
+    this.props.addSamplesToQueue(samples);
   }
 
 
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
       if (this.picked(sampleID)) {
-        this.props.deleteSample(sampleID);
+        this.props.deleteSamplesFromQueue([sampleID]);
       }
     }
   }
@@ -239,7 +226,7 @@ class SampleGridContainer extends React.Component {
 
   removeAllSamples() {
     for (const sampleID of Object.keys(this.props.queue.queue)) {
-      this.props.deleteSample(sampleID);
+      this.props.deleteSamplesFromQueue([sampleID]);
     }
   }
 
@@ -250,8 +237,7 @@ class SampleGridContainer extends React.Component {
 
 
   collectButton() {
-    const collectText = this.props.queue.manualMount.set ? 'Collect' :
-                        `Collect Queue ${this.numSamplesPicked()}/${this.numSamples()}`;
+    const collectText = `Collect ${this.numSamplesPicked()}/${this.numSamples()}`;
 
     let button = (
       <Button
@@ -271,37 +257,6 @@ class SampleGridContainer extends React.Component {
     }
 
     return button;
-  }
-
-
-  headerContent() {
-    let content = '';
-
-    if (this.props.queue.queueStatus === QUEUE_STOPPED) {
-      content = (
-        <ButtonToolbar>
-          <SplitButton
-            bsStyle="primary"
-            title={this.props.manualMount ? 'Manual Mount' : 'Check sample changer contents'}
-            onClick={this.props.manualMount ? this.showAddSampleForm : this.props.getSamples}
-            onSelect={this.manualMount}
-            id="split-button-sample-changer-selection"
-          >
-            <MenuItem eventKey="1">
-              {this.props.manualMount ? 'Sample changer' : 'Manual mount'}
-            </MenuItem>
-          </SplitButton>
-          <Button
-            className="btn-primary"
-            disabled={this.props.manualMount}
-            onClick={this.syncSamples}
-          >
-            <Glyphicon glyph="refresh" /> Sync. ISPyB
-          </Button>
-        </ButtonToolbar>);
-    }
-
-    return content;
   }
 
 
@@ -375,22 +330,62 @@ class SampleGridContainer extends React.Component {
             Remove tasks
           </MenuItem>
         </ul>
-        <div style={{ marginBottom: '20px' }} className="row row-centered">
-          <div className="col-centered" >
-            {this.headerContent()}
-          </div>
-        </div>
         <Sticky
           className="samples-grid-header"
           style={{ transform: 'translateZ(1)', width: gridWidth, marginBottom: '5px' }}
           stickyStyle={{ padding: '10px' }}
         >
           <div className="row">
-            <div style={{ paddingLeft: '0px' }} className="col-xs-5">
+            <div style={{ paddingLeft: '0px' }} className="col-xs-10">
               <div className="form-inline">
-                <span >Select: </span>
+                <SplitButton
+                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                  title={'Create new sample'}
+                  id="split-button-sample-changer-selection"
+                  onClick={this.showAddSampleForm}
+                >
+                  <MenuItem eventKey="2" onClick={this.props.getSamples}>
+                    Get samples from SC
+                  </MenuItem>
+                </SplitButton>
+                <span style={{ marginLeft: '1em' }} ></span>
                 <OverlayTrigger
-                  placement="top"
+                  placement="bottom"
+                  overlay={(
+                    <Tooltip id="select-samples">
+                      Synchronise sample list with ISPyB
+                    </Tooltip>)}
+                >
+                  <Button onClick={this.syncSamples}>
+                    <Glyphicon glyph="refresh" /> ISPyB
+                  </Button>
+                </OverlayTrigger>
+                <span style={{ marginLeft: '1em' }} ></span>
+                <OverlayTrigger
+                  placement="bottom"
+                  overlay={(
+                    <Tooltip id="select-samples">
+                      Remove all samples from sample list and queue
+                    </Tooltip>)}
+                >
+                  <Button
+                    onClick={this.props.sendClearQueue}
+                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                  >
+                    Clear sample list
+                  </Button>
+                </OverlayTrigger>
+                <span style={{ marginLeft: '3em' }}>Filter: </span>
+                <Input
+                  type="text"
+                  ref="filterInput"
+                  defaultValue={this.props.filterText}
+                  buttonAfter={innerSearchIcon}
+                  onChange={this.filterSampleGrid}
+                />
+                <span style={{ marginLeft: '3em' }}>Select: </span>
+                <OverlayTrigger
+                  placement="bottom"
                   overlay={(<Tooltip id="select-samples">Select samples</Tooltip>)}
                 >
                   <ButtonGroup>
@@ -402,55 +397,21 @@ class SampleGridContainer extends React.Component {
                     </Button>
                   </ButtonGroup>
                 </OverlayTrigger>
-                <span style={{ marginLeft: '1em' }} ></span>
-                <OverlayTrigger
-                  placement="top"
-                  overlay={(<Tooltip id="add-tasks">Add Tasks</Tooltip>)}
+                <span style={{ marginLeft: '3em' }} ></span>
+                <SplitButton
+                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                  onClick={this.addSelectedSamples}
+                  bsStyle="default"
+                  title={<span><Glyphicon glyph="plus" /> Add to queue</span>}
+                  id="pipeline-mode-dropdown"
                 >
-                  <DropdownButton
-                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    bsStyle="default"
-                    title={<span><Glyphicon glyph="plus" /></span>}
-                    id="pipeline-mode-dropdown"
-                  >
-                    <MenuItem eventKey="1" onClick={this.addSelectedSamples}>
-                      Sample
-                    </MenuItem>
-                    <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
-                      Data collection
-                    </MenuItem>
-                    <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
-                      Characterisation
-                    </MenuItem>
-                  </DropdownButton>
-                </OverlayTrigger>
-                <span style={{ marginLeft: '1em' }} ></span>
-                <OverlayTrigger
-                  placement="top"
-                  overlay={(<Tooltip id="remove-task">Remove Tasks</Tooltip>)}
-                >
-                  <DropdownButton
-                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    bsStyle="default"
-                    title={<span><Glyphicon glyph="minus" /></span>}
-                    id="pipeline-mode-dropdown"
-                  >
-                    <MenuItem eventKey="1" onClick={this.removeAllSamples}>
-                      All
-                    </MenuItem>
-                    <MenuItem eventKey="2" onClick={this.removeSelectedSamples}>
-                      Selected
-                    </MenuItem>
-                  </DropdownButton>
-                </OverlayTrigger>
-                <span style={{ marginLeft: '5em' }}>Filter: </span>
-                <Input
-                  type="text"
-                  ref="filterInput"
-                  defaultValue={this.props.filterText}
-                  buttonAfter={innerSearchIcon}
-                  onChange={this.filterSampleGrid}
-                />
+                  <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
+                    Data collection
+                  </MenuItem>
+                  <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
+                    Characterisation
+                  </MenuItem>
+                </SplitButton>
               </div>
              </div>
              <div className="col-xs-2 pull-right">
@@ -475,7 +436,6 @@ class SampleGridContainer extends React.Component {
               select={this.props.selectSamples}
               pickSelected={this.toggleAddDeleteSelectedSamples}
               toggleSelectedSample={this.props.toggleSelectedSample}
-              showSampleGridContextMenu={this.props.showSampleGridContextMenu}
               queueGUI={this.props.queueGUI}
             />
           </div>
@@ -491,9 +451,8 @@ function mapStateToProps(state) {
     queueGUI: state.queueGUI,
     selected: state.sampleGrid.selected,
     moving: state.sampleGrid.moving,
-    sampleList: state.queue.sampleList,
+    sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
-    manualMount: state.queue.manualMount.set,
     filterText: state.sampleGrid.filterText,
     order: state.sampleGrid.order,
     sampleGridContextMenu: state.sampleGrid.contextMenu
@@ -506,16 +465,14 @@ function mapDispatchToProps(dispatch) {
     setSampleOrderAction: (order) => dispatch(setSampleOrderAction(order)),
     filter: (filterText) => dispatch(filterAction(filterText)),
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
-    setManualMount: (manual) => dispatch(sendManualMount(manual)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
-    selectSamples: (keys, selected) => dispatch(selectAction(keys, selected)),
+    selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
     toggleSelectedSample: (keys) => dispatch(toggleSelectedAction(keys)),
-    deleteSample: (sampleID) => dispatch(deleteSample(sampleID)),
+    deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
-    addSamples: (sampleData) => dispatch(addSamples(sampleData)),
-    showSampleGridContextMenu: bindActionCreators(showSampleGridContextMenu, dispatch),
+    addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
   };
 }
 
