@@ -88,7 +88,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         visibleList: action.list_name
-      }
+      };
     case 'SHOW_RESUME_QUEUE_DIALOG':
       {
         return { ...state, showResumeQueueDialog: action.show };

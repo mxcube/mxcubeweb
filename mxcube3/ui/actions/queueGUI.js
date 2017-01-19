@@ -26,4 +26,3 @@ export function showResumeQueueDialog(show = true) {
   };
 }
 
-

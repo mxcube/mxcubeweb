@@ -37,7 +37,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     queueActions: bindActionCreators(QueueActions, dispatch),
-    queueGUIActions: bindActionsCreators(QueueGUIActions, dispatch),
+    queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch)
   };
