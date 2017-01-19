@@ -5,10 +5,7 @@ import { QUEUE_STOPPED, SAMPLE_UNCOLLECTED } from '../constants';
 const initialState = {
   queue: {},
   current: { node: null, running: false },
-  searchString: '',
-  queueStatus: QUEUE_STOPPED,
-  showResumeQueueDialog: false,
-  visibleList: 'current'
+  queueStatus: QUEUE_STOPPED
 };
 
 export default (state = initialState, action) => {
@@ -141,12 +138,6 @@ export default (state = initialState, action) => {
 
       return { ...state, queue };
     }
-     // show list
-    case 'SHOW_LIST':
-      return {
-        ...state,
-        visibleList: action.list_name
-      };
     // Change order of samples in queue on drag and drop
     case 'CHANGE_QUEUE_ORDER':
 
@@ -172,18 +163,9 @@ export default (state = initialState, action) => {
         });
       return { ...state, queue };
     }
-    case 'redux-form/CHANGE':
-      if (action.form === 'search-sample') {
-        return Object.assign({}, state, { searchString: action.value });
-      }
-      return state;
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state, { ...initialState });
-      }
-    case 'SHOW_RESUME_QUEUE_DIALOG':
-      {
-        return { ...state, showResumeQueueDialog: action.show };
       }
     case 'QUEUE_STATE':
       {
