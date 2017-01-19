@@ -15,7 +15,7 @@ class SampleViewContainer extends Component {
   render() {
     const { imageRatio, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
-    const sampleId = this.props.current.node;
+    const sampleId = this.props.current.sampleID;
 
     return (
       <div className="row">

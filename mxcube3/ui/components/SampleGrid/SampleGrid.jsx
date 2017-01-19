@@ -255,7 +255,7 @@ export default class SampleGrid extends React.Component {
             location={sample.location}
             tags={tags}
             selected={this.props.selected}
-            current={this.props.queue.current.node === sample.sampleID}
+            current={this.props.queue.current.sampleID === sample.sampleID}
             collected={false}
             deleteTask={deleteTaskFun}
             showTaskParametersForm={this.props.showTaskParametersForm}

@@ -101,7 +101,7 @@ export default class SampleQueueContainer extends React.Component {
         if (sample.state && SAMPLE_MOUNTED) {
           history.push(sample.sampleID);
         } else {
-          if (sample.sampleID !== current.node) {
+          if (sample.sampleID !== current.sampleID) {
             todo.push(sample.sampleID);
           }
         }
@@ -114,7 +114,7 @@ export default class SampleQueueContainer extends React.Component {
                   ref="queueContainer"
                   historyLength={history.length}
                   todoLength={todo.length}
-                  currentNode={current.node}
+                  currentNode={current.sampleID}
                   queueStatus={queueStatus}
                   runQueue={sendRunQueue}
                   stopQueue={sendStopQueue}
@@ -138,7 +138,7 @@ export default class SampleQueueContainer extends React.Component {
                 <CurrentTree
                   changeOrder={changeTaskOrderAction}
                   show={visibleList === 'current'}
-                  mounted={current.node}
+                  mounted={current.sampleID}
                   queue={queue}
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
