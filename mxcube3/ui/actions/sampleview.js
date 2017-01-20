@@ -143,7 +143,7 @@ export function toggleCinema() {
 export function sendStartClickCentring() {
   return function (dispatch, getState) {
     const { queue } = getState();
-    if (queue.current.node) {
+    if (queue.current.sampleID) {
       fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
         method: 'PUT',
         credentials: 'include',

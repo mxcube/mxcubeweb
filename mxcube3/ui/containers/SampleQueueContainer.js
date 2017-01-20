@@ -6,6 +6,7 @@ import CurrentTree from '../components/SampleQueue/CurrentTree';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import * as QueueActions from '../actions/queue';
+import * as QueueGUIActions from '../actions/queueGUI';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import { DragDropContext as dragDropContext } from 'react-dnd';
@@ -17,9 +18,9 @@ import { SAMPLE_MOUNTED } from '../constants';
 
 function mapStateToProps(state) {
   return {
-    searchString: state.queue.searchString,
+    searchString: state.queueGUI.searchString,
     current: state.queue.current,
-    visibleList: state.queue.visibleList,
+    visibleList: state.queueGUI.visibleList,
     queueStatus: state.queue.queueStatus,
     queue: state.queue.queue,
     sampleList: state.sampleGrid.sampleList,
@@ -36,6 +37,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     queueActions: bindActionCreators(QueueActions, dispatch),
+    queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch)
   };
@@ -52,7 +54,7 @@ export default class SampleQueueContainer extends React.Component {
   }
 
   handleSelect(selectedKey) {
-    this.props.queueActions.showList(selectedKey);
+    this.props.queueGUIActions.showList(selectedKey);
   }
 
 
@@ -79,12 +81,14 @@ export default class SampleQueueContainer extends React.Component {
       sendStopQueue,
       sendUnmountSample,
       changeTaskOrderAction,
-      collapseTask,
-      collapseSample,
       deleteTask,
       sendMountSample,
       moveTask
     } = this.props.queueActions;
+    const {
+      collapseTask,
+      collapseSample
+    } = this.props.queueGUIActions;
 
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
@@ -97,7 +101,7 @@ export default class SampleQueueContainer extends React.Component {
         if (sample.state && SAMPLE_MOUNTED) {
           history.push(sample.sampleID);
         } else {
-          if (sample.sampleID !== current.node) {
+          if (sample.sampleID !== current.sampleID) {
             todo.push(sample.sampleID);
           }
         }
@@ -110,7 +114,7 @@ export default class SampleQueueContainer extends React.Component {
                   ref="queueContainer"
                   historyLength={history.length}
                   todoLength={todo.length}
-                  currentNode={current.node}
+                  currentNode={current.sampleID}
                   queueStatus={queueStatus}
                   runQueue={sendRunQueue}
                   stopQueue={sendStopQueue}
@@ -134,7 +138,7 @@ export default class SampleQueueContainer extends React.Component {
                 <CurrentTree
                   changeOrder={changeTaskOrderAction}
                   show={visibleList === 'current'}
-                  mounted={current.node}
+                  mounted={current.sampleID}
                   queue={queue}
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}

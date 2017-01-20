@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import { Modal, Button } from 'react-bootstrap';
-import { showResumeQueueDialog } from '../actions/queue';
+import { showResumeQueueDialog } from '../actions/queueGUI';
 
 export class ResumeQueueDialog extends React.Component {
   constructor(props) {

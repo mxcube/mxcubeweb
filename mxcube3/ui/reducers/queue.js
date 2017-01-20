@@ -4,11 +4,8 @@ import { QUEUE_STOPPED, SAMPLE_UNCOLLECTED } from '../constants';
 
 const initialState = {
   queue: {},
-  current: { node: null, running: false },
-  searchString: '',
-  queueStatus: QUEUE_STOPPED,
-  showResumeQueueDialog: false,
-  visibleList: 'current'
+  current: { sampleID: null, running: false },
+  queueStatus: QUEUE_STOPPED
 };
 
 export default (state = initialState, action) => {
@@ -36,7 +33,7 @@ export default (state = initialState, action) => {
         }
       };
 
-      const current = { ...state.current, node: action.sampleID };
+      const current = { ...state.current, sampleID: action.sampleID };
 
       return Object.assign({}, state, { queue, current });
     }
@@ -122,14 +119,14 @@ export default (state = initialState, action) => {
     case 'SET_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
-          current: { ...state.current, node: action.sampleID, running: false },
+          current: { ...state.current, sampleID: action.sampleID, running: false },
         }
       );
     case 'CLEAR_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
-          current: { node: null, collapsed: false, running: false },
-          history: [...state.history, state.current.node]
+          current: { sampleID: null, collapsed: false, running: false },
+          history: [...state.history, state.current.sampleID]
         }
       );
         // Run Sample
@@ -141,22 +138,16 @@ export default (state = initialState, action) => {
 
       return { ...state, queue };
     }
-     // show list
-    case 'SHOW_LIST':
-      return {
-        ...state,
-        visibleList: action.list_name
-      };
     // Change order of samples in queue on drag and drop
     case 'CHANGE_QUEUE_ORDER':
 
       return {
         ...state,
         [action.listName]: { ...state[action.listName],
-                    nodes: update(state[action.listName].nodes, {
+                    sampleIDs: update(state[action.listName].sampleIDs, {
                       $splice: [
                             [action.oldIndex, 1],
-                            [action.newIndex, 0, state[action.listName].nodes[action.oldIndex]]
+                            [action.newIndex, 0, state[action.listName].sampleIDs[action.oldIndex]]
                       ] }) }
       };
 
@@ -172,18 +163,9 @@ export default (state = initialState, action) => {
         });
       return { ...state, queue };
     }
-    case 'redux-form/CHANGE':
-      if (action.form === 'search-sample') {
-        return Object.assign({}, state, { searchString: action.value });
-      }
-      return state;
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state, { ...initialState });
-      }
-    case 'SHOW_RESUME_QUEUE_DIALOG':
-      {
-        return { ...state, showResumeQueueDialog: action.show };
       }
     case 'QUEUE_STATE':
       {
@@ -195,7 +177,7 @@ export default (state = initialState, action) => {
           ...state,
           rootPath: action.data.rootPath,
           queue: action.data.queue.queue,
-          current: { node: action.data.queue.loaded, running: false }
+          current: { sampleID: action.data.queue.loaded, running: false }
         };
       }
     default:
