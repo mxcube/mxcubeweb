@@ -144,11 +144,6 @@ export function setQueue(queueSamples, queueSamplesOrder) {
 }
 
 
-export function setSamplesInfoAction(sampleInfoList) {
-  return { type: 'SET_SAMPLES_INFO', sampleInfoList };
-}
-
-
 export function sendUpdateQueueItem(sid, tindex, data) {
   return fetch(`mxcube/api/v0.1/queue/${sid}/${tindex}`, {
     method: 'POST',
