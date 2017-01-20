@@ -21,8 +21,6 @@ export default (state = initialState, action) => {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
       return Object.assign({}, state, { queue: state.queue.concat(sampleIDList) });
     }
-
-    // Setting state
     case 'SET_QUEUE_STATUS':
       return {
         ...state,
@@ -47,7 +45,6 @@ export default (state = initialState, action) => {
           history: [...state.history, state.current.sampleID]
         }
       );
-        // Run Sample
     case 'RUN_SAMPLE':
       return Object.assign({}, state, { current: { ...state.current, running: true } });
     case 'TOGGLE_CHECKED': {
@@ -56,8 +53,7 @@ export default (state = initialState, action) => {
 
       return { ...state, queue };
     }
-    // Change order of samples in queue on drag and drop
-    case 'CHANGE_QUEUE_ORDER':
+    case 'CHANGE_SAMPLE_ORDER':
 
       return {
         ...state,
