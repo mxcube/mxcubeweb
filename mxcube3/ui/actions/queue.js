@@ -194,7 +194,7 @@ export function setState(queueState) {
 
 export function changeTaskOrderAction(sampleId, oldIndex, newIndex) {
   return {
-    type: 'CHANGE_METHOD_ORDER', sampleId, oldIndex, newIndex
+    type: 'CHANGE_TASK_ORDER', sampleId, oldIndex, newIndex
   };
 }
 
