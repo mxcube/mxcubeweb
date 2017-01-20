@@ -15,7 +15,7 @@ class SampleViewContainer extends Component {
   render() {
     const { imageRatio, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
-    const sampleId = this.props.current.sampleID;
+    const sampleID = this.props.current.sampleID;
 
     return (
       <div className="row">
@@ -47,8 +47,8 @@ class SampleViewContainer extends Component {
                   {...this.props.contextMenu}
                   sampleActions={this.props.sampleViewActions}
                   showForm={this.props.showForm}
-                  sampleId={sampleId}
-                  sampleData={this.props.queue[sampleId]}
+                  sampleID={sampleID}
+                  sampleData={this.props.sampleList[sampleID]}
                   defaultParameters={this.props.defaultParameters}
                   imageRatio={imageRatio}
                 />
@@ -73,7 +73,7 @@ class SampleViewContainer extends Component {
 
 function mapStateToProps(state) {
   return {
-    queue: state.queue.queue,
+    sampleList: state.sampleGrid.sampleList,
     current: state.queue.current,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,

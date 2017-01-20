@@ -190,7 +190,7 @@ class SampleGridContainer extends React.Component {
 
 
   picked(sampleID) {
-    return this.props.queue.queue[sampleID];
+    return this.props.queue.queue.includes(sampleID);
   }
 
   toggleAddDeleteSelectedSamples() {

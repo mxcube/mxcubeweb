@@ -389,7 +389,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                      parameters,
                      checked: true };
 
-      if (!state.queue.queue[sampleID]) {
+      if (!state.queue.queue.includes(sampleID)) {
         const sample = state.sampleGrid.sampleList[sampleID];
         sample.tasks = [task];
         samples.push(sample);
