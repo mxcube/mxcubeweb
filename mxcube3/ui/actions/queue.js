@@ -185,28 +185,6 @@ export function removeSamplesFromQueueAction(sampleIDList) {
 }
 
 
-export function showList(listName) {
-  return {
-    type: 'SHOW_LIST',
-    list_name: listName
-  };
-}
-
-
-export function collapseSample(sampleID) {
-  return {
-    type: 'COLLAPSE_SAMPLE', sampleID
-  };
-}
-
-
-export function collapseTask(sampleID, taskIndex) {
-  return {
-    type: 'COLLAPSE_TASK', sampleID, taskIndex
-  };
-}
-
-
 export function setState(queueState) {
   return {
     type: 'QUEUE_STATE', queueState
@@ -231,6 +209,7 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
     }
   });
 }
+
 
 export function sendMoveTask(sampleID, oldIndex, newIndex) {
   return fetch(`mxcube/api/v0.1/queue/${sampleID}/${oldIndex}/${newIndex}/move`, {
@@ -275,13 +254,6 @@ export function clearCurrentSample() {
 export function toggleChecked(sampleID, index) {
   return {
     type: 'TOGGLE_CHECKED', sampleID, index
-  };
-}
-
-
-export function showResumeQueueDialog(show = true) {
-  return {
-    type: 'SHOW_RESUME_QUEUE_DIALOG', show
   };
 }
 
@@ -547,3 +519,4 @@ export function deleteSamplesFromQueue(sampleIDList) {
     });
   };
 }
+

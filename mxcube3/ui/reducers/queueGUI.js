@@ -3,13 +3,20 @@ import { omit } from 'lodash/object';
 
 const initialState = {
   showRestoreDialog: false,
+  searchString: '',
   displayData: {},
   visibleList: 'current',
-  loading: false
+  loading: false,
+  showResumeQueueDialog: false
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case 'redux-form/CHANGE':
+      if (action.form === 'search-sample') {
+        return Object.assign({}, state, { searchString: action.value });
+      }
+      return state;
     case 'ADD_TASKS': {
       const displayData = { ...state.displayData };
 
@@ -76,6 +83,16 @@ export default (state = initialState, action) => {
     case 'QUEUE_LOADING': {
       return { ...state, loading: action.loading };
     }
+    // show list
+    case 'SHOW_LIST':
+      return {
+        ...state,
+        visibleList: action.list_name
+      };
+    case 'SHOW_RESUME_QUEUE_DIALOG':
+      {
+        return { ...state, showResumeQueueDialog: action.show };
+      }
     // Toggle task collapse flag
     case 'COLLAPSE_TASK': {
       const displayData = Object.assign({}, state.displayData);

@@ -13,10 +13,10 @@ import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
 import { setStatus,
          addTaskResultAction,
          addTaskAction,
-         collapseTask,
          sendStopQueue,
-         setCurrentSample,
-         showResumeQueueDialog } from './actions/queue';
+         setCurrentSample } from './actions/queue';
+import { collapseTask,
+         showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading,
          addUserMessage,
          showConnectionLostDialog } from './actions/general';
