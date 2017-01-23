@@ -39,10 +39,10 @@ export default class ContextMenu extends React.Component {
   }
 
   showModal(modalName) {
-    const { sampleId, defaultParameters, shape, sampleData } = this.props;
+    const { sampleID, defaultParameters, shape, sampleData } = this.props;
     this.props.showForm(
       modalName,
-      [sampleId],
+      [sampleID],
       { parameters:
         { path: sampleData.sampleName,
           ...defaultParameters[modalName.toLowerCase()],
@@ -112,7 +112,7 @@ export default class ContextMenu extends React.Component {
 
   render() {
     let optionList = [];
-    if (this.props.sampleId !== undefined) {
+    if (this.props.sampleID !== undefined) {
       optionList = this.state.options[this.props.shape.type].map(this.listOptions);
     } else {
       optionList = this.state.options.NONE.map(this.listOptions);

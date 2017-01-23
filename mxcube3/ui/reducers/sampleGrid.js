@@ -12,7 +12,8 @@
 *
 *  filterText: Current filter text
 */
-import { SAMPLE_MOUNTED } from '../constants';
+import update from 'react/lib/update';
+import { SAMPLE_MOUNTED, SAMPLE_UNCOLLECTED } from '../constants';
 
 const INITIAL_STATE = { selected: {},
                         sampleList: {},
@@ -87,6 +88,85 @@ export default (state = INITIAL_STATE, action) => {
       });
       return Object.assign({}, state, { sampleList });
     }
+    case 'ADD_TASK_RESULT': {
+      const sampleList = {
+        ...state.sampleList,
+        [action.sampleID]: {
+          ...state.sampleList[action.sampleID],
+          tasks: [
+            ...state.sampleList[action.sampleID].tasks.slice(0, action.taskIndex),
+            {
+              ...state.sampleList[action.sampleID].tasks[action.taskIndex],
+              checked: false,
+              limsResultData: action.limsResultData,
+              state: action.state
+            },
+            ...state.sampleList[action.sampleID].tasks.slice(action.taskIndex + 1)
+          ]
+        }
+      };
+
+      return Object.assign({}, state, { sampleList });
+    }
+    case 'ADD_TASKS': {
+      const sampleList = { ...state.sampleList };
+
+      action.tasks.forEach((t) => {
+        const task = { ...t, state: 0 };
+
+        if (task.parameters.prefix === '') {
+          task.parameters.prefix = sampleList[task.sampleID].defaultPrefix;
+        }
+
+        sampleList[task.sampleID] = {
+          ...sampleList[task.sampleID],
+          tasks: [...sampleList[task.sampleID].tasks, task],
+          state: SAMPLE_UNCOLLECTED
+        };
+      });
+
+      return Object.assign({}, state, { sampleList });
+    }
+    case 'REMOVE_TASK': {
+      const sampleList = {
+        ...state.sampleList,
+        [action.sampleID]: {
+          ...state.sampleList[action.sampleID],
+          tasks: [...state.sampleList[action.sampleID].tasks.slice(0, action.taskIndex),
+                  ...state.sampleList[action.sampleID].tasks.slice(action.taskIndex + 1)]
+        }
+      };
+
+      return Object.assign({}, state, { sampleList });
+    }
+    case 'UPDATE_TASK': {
+      const sampleList = {
+        ...state.sampleList,
+        [action.sampleID]: {
+          ...state.sampleList[action.sampleID],
+          tasks:
+          [
+            ...state.sampleList[action.sampleID].tasks.slice(0, action.taskIndex),
+            action.taskData,
+            ...state.sampleList[action.sampleID].tasks.slice(action.taskIndex + 1)
+          ]
+        }
+      };
+
+      return Object.assign({}, state, { sampleList });
+    }
+
+    case 'CHANGE_TASK_ORDER': {
+      const sampleList = Object.assign({}, state.sampleList);
+
+      sampleList[action.sampleId].tasks = update(state.sampleList[action.sampleId].tasks, {
+        $splice: [[action.oldIndex, 1],
+                  [action.newIndex, 0,
+                   state.sampleList[action.sampleId].tasks[action.oldIndex]]]
+      });
+
+      return { ...state, sampleList };
+    }
     case 'SET_CURRENT_SAMPLE': {
       const sampleList = Object.assign({}, state.sampleList);
       sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
@@ -124,7 +204,15 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, { filterText: action.filterText });
     }
     case 'SET_INITIAL_STATE': {
-      return { ...state };
+      const sampleList = { ...state.sampleList };
+
+      for (const sampleID in action.data.queue.queue) {
+        if (action.data.queue.queue.hasOwnProperty(sampleID)) {
+          sampleList[sampleID] = action.data.queue.queue[sampleID];
+        }
+      }
+
+      return { ...state, sampleList };
     }
     case 'CLEAR_ALL': {
       return Object.assign({}, state, { ...INITIAL_STATE });

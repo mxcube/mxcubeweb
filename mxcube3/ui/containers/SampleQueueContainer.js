@@ -96,14 +96,13 @@ export default class SampleQueueContainer extends React.Component {
     const history = [];
 
     for (const key of sampleOrder) {
-      if (queue[key]) {
+      if (queue.includes(key)) {
         const sample = sampleList[key];
+
         if (sample.state && SAMPLE_MOUNTED) {
           history.push(sample.sampleID);
-        } else {
-          if (sample.sampleID !== current.sampleID) {
-            todo.push(sample.sampleID);
-          }
+        } else if (sample.sampleID !== current.sampleID) {
+          todo.push(sample.sampleID);
         }
       }
     }
@@ -140,6 +139,7 @@ export default class SampleQueueContainer extends React.Component {
                   show={visibleList === 'current'}
                   mounted={current.sampleID}
                   queue={queue}
+                  sampleList={sampleList}
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
                   deleteTask={deleteTask}
@@ -161,6 +161,7 @@ export default class SampleQueueContainer extends React.Component {
                   show={visibleList === 'todo'}
                   list={todo}
                   queue={queue}
+                  sampleList={sampleList}
                   collapseSample={collapseSample}
                   displayData={displayData}
                   mount={sendMountSample}

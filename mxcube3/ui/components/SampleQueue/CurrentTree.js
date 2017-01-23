@@ -36,7 +36,7 @@ export default class CurrentTree extends React.Component {
 
   nextSample() {
     if (this.props.todoList[0]) {
-      this.props.mount(this.props.todoList[0]);
+      this.props.mount(this.props.sampleList[this.props.todoList[0]]);
     }
   }
 
@@ -49,7 +49,7 @@ export default class CurrentTree extends React.Component {
   }
 
   unMountSample() {
-    this.props.unmount(this.props.queue[this.props.mounted].queueID);
+    this.props.unmount(this.props.sampleList[this.props.mounted].queueID);
   }
 
   renderOptions(option) {
@@ -72,8 +72,8 @@ export default class CurrentTree extends React.Component {
     let queueOptions = [];
 
     if (sampleId) {
-      sampleData = this.props.queue[sampleId];
-      sampleTasks = this.props.queue[sampleId].tasks;
+      sampleData = this.props.sampleList[sampleId];
+      sampleTasks = this.props.sampleList[sampleId].tasks;
       queueOptions = this.state.options[this.props.queueStatus];
     } else {
       sampleData.sampleName = 'Go To SampleGrid';
@@ -106,7 +106,7 @@ export default class CurrentTree extends React.Component {
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
                   collapseTask={this.props.collapseTask}
-                  state={this.props.queue[taskData.sampleID].tasks[i].state}
+                  state={this.props.sampleList[taskData.sampleID].tasks[i].state}
                   show={this.props.displayData[taskData.sampleID].tasks[i].collapsed}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}

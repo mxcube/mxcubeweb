@@ -220,7 +220,7 @@ export default class SampleGrid extends React.Component {
     const orderedList = [];
     this.props.order.forEach(key => {
       const sampleID = samplesList[key].sampleID;
-      if (this.props.queue.queue[sampleID]) {
+      if (this.props.queue.queue.includes(sampleID)) {
         orderedList.push(key);
       }
     });
@@ -229,10 +229,10 @@ export default class SampleGrid extends React.Component {
       if (this.filter(key)) {
         const sample = samplesList[key];
         const [acronym, name, tags] = [sample.proteinAcronym, sample.sampleName, []];
-        const picked = this.props.queue.queue[sample.sampleID];
+        const picked = this.props.queue.queue.includes(sample.sampleID);
 
         if (picked) {
-          for (const task of this.props.queue.queue[sample.sampleID].tasks) {
+          for (const task of this.props.sampleList[sample.sampleID].tasks) {
             tags.push(task);
           }
         }

@@ -144,11 +144,6 @@ export function setQueue(queueSamples, queueSamplesOrder) {
 }
 
 
-export function setSamplesInfoAction(sampleInfoList) {
-  return { type: 'SET_SAMPLES_INFO', sampleInfoList };
-}
-
-
 export function sendUpdateQueueItem(sid, tindex, data) {
   return fetch(`mxcube/api/v0.1/queue/${sid}/${tindex}`, {
     method: 'POST',
@@ -194,7 +189,7 @@ export function setState(queueState) {
 
 export function changeTaskOrderAction(sampleId, oldIndex, newIndex) {
   return {
-    type: 'CHANGE_METHOD_ORDER', sampleId, oldIndex, newIndex
+    type: 'CHANGE_TASK_ORDER', sampleId, oldIndex, newIndex
   };
 }
 
@@ -389,7 +384,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                      parameters,
                      checked: true };
 
-      if (!state.queue.queue[sampleID]) {
+      if (!state.queue.queue.includes(sampleID)) {
         const sample = state.sampleGrid.sampleList[sampleID];
         sample.tasks = [task];
         samples.push(sample);
