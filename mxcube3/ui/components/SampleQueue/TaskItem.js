@@ -3,6 +3,7 @@ import { Button, Collapse } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
 import cx from 'classnames';
+import { TASK_UNCOLLECTED } from '../../constants';
 
 const cardSource = {
   beginDrag(props) {
@@ -109,6 +110,16 @@ export default class TaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
+  deleteButton() {
+    let content = (<Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>);
+
+    if (this.props.state !== TASK_UNCOLLECTED) {
+      content = (<span> </span>);
+    }
+
+    return content;
+  }
+
   showForm() {
     const { data, sampleId } = this.props;
     const { type, parameters } = data;
@@ -187,7 +198,7 @@ export default class TaskItem extends Component {
                 </span>
               </div>
                 <Button bsSize="sm" onClick={this.showForm}>Change</Button>
-                <Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>
+                {this.deleteButton()}
                 <Button bsSize="sm" disabled={state !== 2}>Results</Button>
             </form>
           </div>
