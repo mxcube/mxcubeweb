@@ -13,7 +13,7 @@
 *  filterText: Current filter text
 */
 import update from 'react/lib/update';
-import { SAMPLE_MOUNTED, SAMPLE_UNCOLLECTED } from '../constants';
+import { SAMPLE_MOUNTED, TASK_UNCOLLECTED } from '../constants';
 
 const INITIAL_STATE = { selected: {},
                         sampleList: {},
@@ -121,7 +121,7 @@ export default (state = INITIAL_STATE, action) => {
         sampleList[task.sampleID] = {
           ...sampleList[task.sampleID],
           tasks: [...sampleList[task.sampleID].tasks, task],
-          state: SAMPLE_UNCOLLECTED
+          state: TASK_UNCOLLECTED
         };
       });
 
