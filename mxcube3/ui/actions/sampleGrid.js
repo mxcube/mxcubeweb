@@ -19,7 +19,7 @@ export function addSamplesToList(samplesData) {
     for (const sampleData of samplesData) {
       if (! sampleData.sampleID) {
         lastSampleID++;
-        sampleData.sampleID = lastSampleID;
+        sampleData.sampleID = lastSampleID.toString();
       }
     }
 
