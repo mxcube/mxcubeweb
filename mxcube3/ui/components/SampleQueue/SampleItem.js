@@ -90,6 +90,8 @@ export default class SampleItem extends Component {
     this.deleteSample = () => this.props.deleteSample(this.props.id, this.props.sampleId);
   }
 
+  
+
   render() {
     const { text, isDragging, connectDragSource, connectDropTarget } = this.props;
     const opacity = isDragging ? 0 : 1;
@@ -99,7 +101,7 @@ export default class SampleItem extends Component {
          <div className="pull-right">
              <i className="fa fa-sign-in" onClick={this.mountSample}></i>
              <i className="fa fa-times" onClick={this.deleteSample}></i>
-           </div>
+        </div>
       </div>
     ));
   }

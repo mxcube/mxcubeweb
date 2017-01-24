@@ -9,10 +9,10 @@ export const QUEUE_RUNNING = 'QueueStarted';
 export const QUEUE_STOPPED = 'QueueStopped';
 export const QUEUE_PAUSED = 'QueuePaused';
 export const SAMPLE_MOUNTED = 0x8;
-export const SAMPLE_COLLECTED = 0x4;
-export const SAMPLE_COLLECT_FAILED = 0x2;
-export const SAMPLE_RUNNING = 0x1;
-export const SAMPLE_UNCOLLECTED = 0x0;
+export const TASK_COLLECTED = 0x4;
+export const TASK_COLLECT_FAILED = 0x2;
+export const TASK_RUNNING = 0x1;
+export const TASK_UNCOLLECTED = 0x0;
 
 
 /* eslint-enable no-unused-vars */
