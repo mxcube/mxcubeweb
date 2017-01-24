@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { sendAbortCentring } from './sampleview';
 import { selectSamplesAction } from '../actions/sampleGrid';
-
+import { TASK_UNCOLLECTED } from '../constants';
 
 export function queueLoading(loading) {
   return { type: 'QUEUE_LOADING', loading };
@@ -144,11 +144,6 @@ export function setQueue(queueSamples, queueSamplesOrder) {
 }
 
 
-export function setSamplesInfoAction(sampleInfoList) {
-  return { type: 'SET_SAMPLES_INFO', sampleInfoList };
-}
-
-
 export function sendUpdateQueueItem(sid, tindex, data) {
   return fetch(`mxcube/api/v0.1/queue/${sid}/${tindex}`, {
     method: 'POST',
@@ -194,7 +189,7 @@ export function setState(queueState) {
 
 export function changeTaskOrderAction(sampleId, oldIndex, newIndex) {
   return {
-    type: 'CHANGE_METHOD_ORDER', sampleId, oldIndex, newIndex
+    type: 'CHANGE_TASK_ORDER', sampleId, oldIndex, newIndex
   };
 }
 
@@ -357,16 +352,20 @@ export function removeTaskAction(sampleID, taskIndex) {
 
 
 export function deleteTask(sampleID, taskIndex) {
-  return function (dispatch) {
-    dispatch(queueLoading(true));
-    sendDeleteQueueItem([[sampleID, taskIndex]]).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to delete task'));
-      } else {
-        dispatch(removeTaskAction(sampleID, taskIndex));
-      }
-      dispatch(queueLoading(false));
-    });
+  return function (dispatch, getState) {
+    const state = getState();
+
+    if (state.sampleGrid.sampleList[sampleID].tasks[taskIndex].state === TASK_UNCOLLECTED) {
+      dispatch(queueLoading(true));
+      sendDeleteQueueItem([[sampleID, taskIndex]]).then((response) => {
+        if (response.status >= 400) {
+          dispatch(showErrorPanel(true, 'Server refused to delete task'));
+        } else {
+          dispatch(removeTaskAction(sampleID, taskIndex));
+        }
+        dispatch(queueLoading(false));
+      });
+    }
   };
 }
 
@@ -385,11 +384,12 @@ export function addTask(sampleIDs, parameters, runNow) {
     sampleIDs.forEach((sampleID) => {
       const task = { type: parameters.type,
                      label: parameters.label,
+                     state: TASK_UNCOLLECTED,
                      sampleID,
                      parameters,
                      checked: true };
 
-      if (!state.queue.queue[sampleID]) {
+      if (!state.queue.queue.includes(sampleID)) {
         const sample = state.sampleGrid.sampleList[sampleID];
         sample.tasks = [task];
         samples.push(sample);

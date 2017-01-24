@@ -100,7 +100,7 @@ export default (state = initialState, action) => {
 
       return { ...state, displayData };
     }
-    case 'CHANGE_METHOD_ORDER': {
+    case 'CHANGE_TASK_ORDER': {
       const displayData = Object.assign({}, state.displayData);
 
       displayData[action.sampleId].tasks = update(state.displayData[action.sampleId].tasks,
