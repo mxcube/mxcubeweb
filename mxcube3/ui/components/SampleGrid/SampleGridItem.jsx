@@ -1,6 +1,7 @@
 import React from 'react';
 import { OverlayTrigger, Tooltip, Popover } from 'react-bootstrap';
 import classNames from 'classnames';
+import { TASK_UNCOLLECTED } from '../../constants';
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
 import './SampleGrid.css';
@@ -30,6 +31,8 @@ export class SampleGridItem extends React.Component {
     this.taskStateClass = this.taskStateClass.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.taskResult = this.taskResult.bind(this);
+    this.deleteTask = this.deleteTask.bind(this);
+    this.getDeleteButton = this.getDeleteButton.bind(this);
   }
 
 
@@ -75,6 +78,23 @@ export class SampleGridItem extends React.Component {
     }
   }
 
+
+  getDeleteButton(task, i) {
+    const deleteTask = this.deleteTask.bind(this, i);
+    let content = (<span> <i className="fa fa-times" onClick={deleteTask} /> </span>);
+
+    if (task.state !== TASK_UNCOLLECTED) {
+      content = (<span> </span>);
+    }
+
+    return content;
+  }
+
+
+  deleteTask(i, e) {
+    e.stopPropagation();
+    return this.props.deleteTask(this.props.sampleID, i);
+  }
 
   contextMenu(e) {
     e.preventDefault();
@@ -548,11 +568,6 @@ export class SampleGridItem extends React.Component {
                   return this.handleClick(tag, this.props.sampleID);
                 };
 
-                let deleteTask = (e) => {
-                  e.stopPropagation();
-                  return this.props.deleteTask(this.props.sampleID, i);
-                };
-
                 content = (
                   <div key={i}>
                     <OverlayTrigger
@@ -574,7 +589,7 @@ export class SampleGridItem extends React.Component {
                         onClick={showForm}
                       >
                         {this.taskTagName(tag.type)}
-                        <i className="fa fa-times" onClick={deleteTask} />
+                        {this.getDeleteButton(tag, i)}
                       </span>
                     </OverlayTrigger>
                   </div>
