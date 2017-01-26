@@ -25,7 +25,7 @@ Latest information about the MXCuBE project can be found in the
 For the backend we are using Python-flask as the microwebframework, with the SocketIO library for handling internal messages of the Hardware Objects (see below). 
 The web server tries to provide to the client a Rest like api. See [here] (http://mxcube.github.io/mxcube3/) for the documentation.
 
-And for the client interface a react based development, configured through webpack for an easy developemnt. Among others, we are also using socket-io, bootstrap, and isotope for drawing sample cards.
+And for the client interface a react based development, configured through webpack for an easy developemnt. Among others, we are also using socket-io and  bootstrap.
 
 ### HardwareObjects
 

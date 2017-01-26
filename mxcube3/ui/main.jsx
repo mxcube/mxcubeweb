@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
 import SampleViewContainer from './containers/SampleViewContainer';
-import SampleGridContainer from './containers/SampleGridContainer';
+import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
@@ -90,7 +90,7 @@ export default class App extends React.Component {
     return (<Provider store={store}>
             <Router>
               <Route path="/" component={Main} onEnter={requireAuth}>
-               <IndexRoute component={SampleGridContainer} />
+               <IndexRoute component={SampleGridViewContainer} />
                <Route path="datacollection" component={SampleViewContainer} />
                <Route path="sampleChanger" component={SampleChangerContainer} />
                <Route path="logging" component={LoggerContainer} />

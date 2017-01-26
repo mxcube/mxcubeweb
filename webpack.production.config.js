@@ -14,10 +14,6 @@ var config = {
 
     module: {
     loaders: [
-        {
-        test: /isotope-layout/,
-        loader: 'imports?define=>false&this=>window'
-        },
         {  
         test: /\.css$/,
         loader: "style-loader!css-loader"
@@ -30,10 +26,6 @@ var config = {
         test: /\.jsx?$/,
         loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=stage-0,plugins[]=transform-decorators-legacy'],
         exclude: /node_modules/
-        },
-        {
-        test: /isotope\-|fizzy\-ui\-utils|desandro\-|masonry|outlayer|get\-size|doc\-ready|eventie|eventemitter|classie|get\-style\-property|packery/,
-        loader: 'imports?define=>false&this=>window'
         },
         {test: /bootstrap\/js\//, loader: 'imports?jQuery=jquery' },
         {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
