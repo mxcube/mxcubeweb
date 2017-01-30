@@ -335,6 +335,20 @@ class InOutHOMediator(HOMediatorBase):
 
         return msg
 
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "value": self.get(),
+                "limits": self.limits(),
+                "state": self.state(),
+                "msg": self.msg(),
+                "commands": ["Open", "Close"]
+                }
+
+        return data
+
 
 class TangoShutterHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
@@ -384,7 +398,19 @@ class TangoShutterHOMediator(HOMediatorBase):
 
         return msg
 
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "value": self.get(),
+                "limits": self.limits(),
+                "state": self.state(),
+                "msg": self.msg(),
+                "commands": ["Open", "Close"]
+                }
 
+        return data
 class BeamstopHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(BeamstopHOMediator, self).__init__(ho, name)
@@ -432,6 +458,20 @@ class BeamstopHOMediator(HOMediatorBase):
             msg = "OUT"
 
         return msg
+
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "value": self.get(),
+                "limits": self.limits(),
+                "state": self.state(),
+                "msg": self.msg(),
+                "commands": ["In", "Out"]
+                }
+
+        return data
 
 
     def value_change(self, value):
