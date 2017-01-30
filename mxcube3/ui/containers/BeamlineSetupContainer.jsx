@@ -5,7 +5,10 @@ import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 
 import PopInput from '../components/PopInput/PopInput';
-import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
+import BeamlineActions from '../components/BeamlineActions/BeamlineActions';
+import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
+import MachInfo from '../components/MachInfo/MachInfo';
+import CryoInput from '../components/Cryo/CryoInput';
 
 import { sendGetAllAttributes,
          sendSetAttribute,
@@ -42,29 +45,48 @@ class BeamlineSetupContainer extends React.Component {
         <div className="beamline-setup-container">
           <div className="beamline-setup-content">
             <div className="row" style={{ marginBottom: '1em' }}>
-              <div className="col-sm-6">
-                <div style={{ paddingLeft: '0px', display: 'inline-block' }}>
-                <InOutSwitch
-                  onText="Open"
-                  offText="Close"
-                  labelText="Fast Shutter"
-                  pkey="fast_shutter"
-                  data={this.props.data.fast_shutter}
-                  onSave={this.onSaveHandler}
-                />
+              <div className="col-sm-12" style={{ alignItems: 'stretch', display: 'flex' }}>
+                <div style={{ marginLeft: '0em', display: 'flex' }}>
+                  <div className="m-tree" style={{ overflow: 'visible',
+                    alignItems: 'center', display: 'flex' }}
+                  >
+                    <div className="list-head" >
+                      <BeamlineActions />
+                    </div>
+                  </div>
+                </div>
+                 <div style={{ paddingLeft: '1em', display: 'inline-block' }}>
+                 <div className="m-tree">
+                    <div className="list-head">
+                      <InOutSwitch2
+                        onText="Open"
+                        offText="Close"
+                        labelText="Fast Shutter"
+                        pkey="fast_shutter"
+                        data={this.props.data.fast_shutter}
+                        onSave={this.onSaveHandler}
+                      />
+                    </div>
+                </div>
               </div>
-              <div style={{ marginLeft: '4em', display: 'inline-block' }}>
-                <InOutSwitch
-                  onText="Open"
-                  offText="Close"
-                  labelText="Safety Shutter"
-                  pkey="safety_shutter"
-                  data={this.props.data.safety_shutter}
-                  onSave={this.onSaveHandler}
-                />
+              <div style={{ marginLeft: '0em', display: 'inline-block' }}>
+              <div className="m-tree">
+                <div className="list-head">
+                  <InOutSwitch2
+                    onText="Open"
+                    offText="Close"
+                    labelText="Safety Shutter"
+                    pkey="safety_shutter"
+                    data={this.props.data.safety_shutter}
+                    onSave={this.onSaveHandler}
+                  />
+                </div>
+                </div>
               </div>
-              <div style={{ marginLeft: '4em', display: 'inline-block' }}>
-                <InOutSwitch
+              <div style={{ marginLeft: '0em', display: 'inline-block' }}>
+              <div className="m-tree">
+                <div className="list-head">
+                <InOutSwitch2
                   onText="In"
                   offText="Out"
                   labelText="Beamstop"
@@ -73,8 +95,12 @@ class BeamlineSetupContainer extends React.Component {
                   onSave={this.onSaveHandler}
                 />
               </div>
-              <div style={{ marginLeft: '4em', display: 'inline-block' }}>
-                <InOutSwitch
+              </div>
+              </div>
+              <div style={{ marginLeft: '0em', display: 'inline-block' }}>
+              <div className="m-tree">
+                <div className="list-head">
+                <InOutSwitch2
                   onText="In"
                   offText="Out"
                   labelText="Capillary"
@@ -83,9 +109,11 @@ class BeamlineSetupContainer extends React.Component {
                   onSave={this.onSaveHandler}
                 />
               </div>
-            </div>
-            <div className="col-sm-6">
-              <div style={{ paddingTop: '1em', marginLeft: '4em', display: 'inline-block' }}>
+              </div>
+              </div>
+              <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex' }}>
+              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+                <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="energy"
                   name="Energy"
@@ -96,17 +124,45 @@ class BeamlineSetupContainer extends React.Component {
                   onCancel={this.onCancelHandler}
                 />
                 <PopInput
-                  ref="resolution"
-                  name="Resolution"
-                  pkey="resolution"
+                  ref="wavelength"
+                  name="Wavelength"
+                  pkey="wavelength"
                   placement="left"
                   suffix="&Aring;"
-                  data={this.props.data.resolution}
+                  data={this.props.data.wavelength}
                   onSave={this.onSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
               </div>
-              <div style={{ paddingTop: '1em', marginLeft: '4em', display: 'inline-block' }}>
+              </div>
+              </div>
+              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex' }}>
+              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+                <div className="list-head" style={{ paddingRight: '0em' }}>
+                <PopInput
+                  ref="resolution"
+                  name="Resolution"
+                  pkey="resolution"
+                  suffix="A"
+                  data={this.props.data.resolution}
+                  onSave={this.onSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+                <PopInput
+                  ref="detdist"
+                  name="Detector"
+                  pkey="detdist"
+                  suffix="mm"
+                  data={this.props.data.detdist}
+                  onSave={this.onSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+              </div>
+              </div>
+              </div>
+              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex' }}>
+              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+                <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="transmission"
                   name="Transmission"
@@ -117,15 +173,44 @@ class BeamlineSetupContainer extends React.Component {
                   onCancel={this.onCancelHandler}
                 />
                 <PopInput
-                  ref="detdist"
-                  name="Detector Distance"
-                  pkey="detdist"
-                  suffix="mm"
-                  data={this.props.data.detdist}
+                  ref="flux"
+                  name="Flux"
+                  pkey="flux"
+                  suffix="p/s"
+                  data={this.props.data.flux}
                   onSave={this.onSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
               </div>
+              </div>
+              </div>
+              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex' }}>
+              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+                <div className="list-head" style={{ paddingLeft: '2em' }}>
+                <CryoInput
+                  ref="cryo"
+                  name="Cryo"
+                  pkey="cryo"
+                  suffix="K"
+                  data={this.props.data.cryo}
+                  onSave={this.onSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+              </div>
+              </div>
+              </div>
+              <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex' }}>
+              <div className="m-tree" style={{ overflow: 'visible',
+                alignItems: 'center', display: 'flex' }}
+              >
+                <div className="list-head">
+                  <MachInfo
+                    info={this.props.data.machinfo}
+                  />
+              </div>
+              </div>
+              </div>
+
               </div>
             </div>
           </div>
@@ -137,7 +222,7 @@ class BeamlineSetupContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    data: state.beamline
+    data: state.beamline,
   };
 }
 
