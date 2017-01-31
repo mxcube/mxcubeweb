@@ -52,9 +52,9 @@ class _BeamlineSetupMediator(object):
         elif name == "fast_shutter":
             return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fast_shutter"))
         elif name == "safety_shutter":
-            return self._ho_dict.setdefault(name, TangoShutterHOMediator(ho, "safety_shutter"))
+            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "safety_shutter"))
         elif name == "beamstop":
-            return self._ho_dict.setdefault(name, BeamstopHOMediator(ho, "beamstop"))
+            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "beamstop"))
         elif name == "capillary":
             return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
         elif name == "dtox":
@@ -70,49 +70,52 @@ class _BeamlineSetupMediator(object):
 #        capillary = self.getObjectByRole("capillary")
 
         data = dict()
+        movables = dict()
+        actuators = dict()
 
         try:
             energy = self.getObjectByRole("energy")
-            data.update({"energy": energy.dict_repr()})
+            movables.update({"energy": energy.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get energy info")
 
         try:
             transmission = self.getObjectByRole("transmission")
-            data.update({"transmission": transmission.dict_repr()})
+            movables.update({"transmission": transmission.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get transmission info")
 
         try:
             resolution = self.getObjectByRole("resolution")
-            data.update({"resolution": resolution.dict_repr()})
+            movables.update({"resolution": resolution.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get resolution info")
 
         try:
             fast_shutter = self.getObjectByRole("fast_shutter")
-            data.update({"fast_shutter": fast_shutter.dict_repr()})
+            actuators.update({"fast_shutter": fast_shutter.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get fast_shutter info")
 
         try:
             safety_shutter = self.getObjectByRole("safety_shutter")
-            data.update({"safety_shutter": safety_shutter.dict_repr()})
+            actuators.update({"safety_shutter": safety_shutter.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get safety_shutter info")
 
         try:
             beamstop = self.getObjectByRole("beamstop")
-            data.update({"beamstop": beamstop.dict_repr()})
+            actuators.update({"beamstop": beamstop.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get beamstop info")
 
         try:
             detdist = self.getObjectByRole("dtox")
-            data.update({"detdist": detdist.dict_repr()})
+            movables.update({"detdist": detdist.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get detdist info")
 
+        data.update({'movables': movables, 'actuators': actuators})
 
         return data
 
@@ -211,10 +214,13 @@ class HOMediatorBase(object):
         :returns: The dictionary representation of the hardware object.
         """
         data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
                 "value": self.get(),
                 "limits": self.limits(),
                 "state": self.state(),
-                "msg": self.msg()}
+                "msg": self.msg(),
+                "type": "movable"
+                }
 
         return data
 
@@ -340,11 +346,13 @@ class InOutHOMediator(HOMediatorBase):
         :returns: The dictionary representation of the hardware object.
         """
         data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
                 "value": self.get(),
                 "limits": self.limits(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "commands": ["Open", "Close"]
+                "commands": ["Open", "Close"],
+                "type": "actuator"
                 }
 
         return data
@@ -403,11 +411,13 @@ class TangoShutterHOMediator(HOMediatorBase):
         :returns: The dictionary representation of the hardware object.
         """
         data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
                 "value": self.get(),
                 "limits": self.limits(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "commands": ["Open", "Close"]
+                "commands": ["Open", "Close"],
+                "type": "actuator"
                 }
 
         return data
@@ -464,6 +474,7 @@ class BeamstopHOMediator(HOMediatorBase):
         :returns: The dictionary representation of the hardware object.
         """
         data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
                 "value": self.get(),
                 "limits": self.limits(),
                 "state": self.state(),
@@ -584,6 +595,7 @@ class ResolutionHOMediator(HOMediatorBase):
         :returns: The dictionary representation of the hardware object.
         """
         data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
                 "value": self.get(),
                 "limits": self.get_lookup_limits(),
                 "state": self.state(),
