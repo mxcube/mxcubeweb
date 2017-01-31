@@ -13,11 +13,6 @@ export default class InOutSwitch2 extends React.Component {
   }
 
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.data !== this.props.data;
-  }
-
-
   setIn() {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.pkey, 'in');
@@ -34,16 +29,15 @@ export default class InOutSwitch2 extends React.Component {
 
   render() {
     const isIn = this.props.data.state === 'in';
+
     const inButtonStyle = isIn ? 'success' : 'default';
     const outButtonStyle = isIn ? 'default' : 'success';
     let msgBgStyle = 'input-bg-moving';
-
     if (this.props.data.state === 'in') {
       msgBgStyle = 'input-bg-ready';
     } else if (this.props.data.state === 'out') {
       msgBgStyle = 'input-bg-fault';
     }
-
 
     return (
       <div>
@@ -63,6 +57,7 @@ export default class InOutSwitch2 extends React.Component {
             bsSize="small"
             onClick={this.setIn}
             active={isIn}
+            disabled={isIn}
           >
             {this.props.onText}
           </Button>
@@ -72,6 +67,7 @@ export default class InOutSwitch2 extends React.Component {
             className=""
             onClick={this.setOut}
             active={!isIn}
+            disabled={!isIn}
           >
             {this.props.offText}
           </Button>
