@@ -20,7 +20,12 @@ const INITIAL_STATE = { selected: {},
                         order: [],
                         moving: {},
                         contextMenu: {},
-                        filterText: '' };
+                        filterOptions: { text: '',
+                                         inQueue: false,
+                                         notInQueue: false,
+                                         collected: false,
+                                         notCollected: false,
+                                         useFilter: false } };
 
 
 export default (state = INITIAL_STATE, action) => {
@@ -201,7 +206,8 @@ export default (state = INITIAL_STATE, action) => {
                                                        show: action.show } });
     }
     case 'FILTER_SAMPLE_LIST': {
-      return Object.assign({}, state, { filterText: action.filterText });
+      const filterOptions = Object.assign({}, state.filterOptions, action.filterOptions);
+      return Object.assign({}, state, { filterOptions });
     }
     case 'SET_INITIAL_STATE': {
       const sampleList = { ...state.sampleList };

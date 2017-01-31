@@ -40,7 +40,9 @@ class SampleGridViewContainer extends React.Component {
   constructor(props) {
     super(props);
     this.syncSamples = this.syncSamples.bind(this);
-    this.filterSampleGrid = this.filterSampleGrid.bind(this);
+    this.sampleGridFilter = this.sampleGridFilter.bind(this);
+    this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
+    this.sampleGridClearFilter = this.sampleGridClearFilter.bind(this);
 
     // Methods for handling addition and removal of queue items (Samples and Tasks)
     // Also used by the SampleGridContainer
@@ -56,6 +58,29 @@ class SampleGridViewContainer extends React.Component {
 
     this.collectButton = this.collectButton.bind(this);
     this.startCollect = this.startCollect.bind(this);
+  }
+
+
+  /**
+   * Mapping between a input and a filter option value
+   *
+   * @param {string} id - id of input in DOM
+   * @return {?} the value for the input
+   */
+  getFilterOptionValue(id) {
+    let value = false;
+
+    const optionMap = {
+      inQueue: this.props.filterOptions.inQueue,
+      notInQueue: this.props.filterOptions.notInQueue,
+      collected: this.props.filterOptions.collected,
+      notCollected: this.props.filterOptions.notCollected,
+      filterText: this.props.filterOptions.text
+    };
+
+    value = optionMap[id];
+
+    return value;
   }
 
 
@@ -112,8 +137,28 @@ class SampleGridViewContainer extends React.Component {
   /**
    * Applies filter defined by user
    */
-  filterSampleGrid() {
-    this.props.filter(this.refs.filterInput.getInputDOMNode().value.trim());
+  sampleGridFilter(e) {
+    const optionMap = {
+      inQueue: { inQueue: e.target.checked },
+      notInQueue: { notInQueue: e.target.checked },
+      collected: { collected: e.target.checked },
+      notCollected: { notCollected: e.target.checked },
+      filterText: { text: this.refs.filterInput.getInputDOMNode().value.trim() }
+    };
+
+    this.props.filter(optionMap[e.target.id]);
+  }
+
+
+  /**
+   *  Clears the filter
+   */
+  sampleGridClearFilter() {
+    this.props.filter({ inQueue: false,
+                        notInQueue: false,
+                        collected: false,
+                        notCollected: false,
+                        filterText: '' });
   }
 
 
@@ -271,12 +316,26 @@ class SampleGridViewContainer extends React.Component {
               <div className="col-xs-12">
                 <div className="col-xs-6">
                   <span>
-                    <Input type="radio" name="picked" value="picked" /> <b>Picked</b>
+                    <Input
+                      id="inQueue"
+                      type="checkbox"
+                      value="inQueue"
+                      checked={this.getFilterOptionValue('inQueue')}
+                      onChange={this.sampleGridFilter}
+                    />
+                    <b>In Queue</b>
                   </span>
                 </div>
                 <div className="col-xs-6">
                   <span>
-                    <Input type="radio" name="picked" value="notPicked" /> <b>Not Picked</b>
+                    <Input
+                      id="notInQueue"
+                      type="checkbox"
+                      value="notInQueue"
+                      checked={this.getFilterOptionValue('notInQueue')}
+                      onChange={this.sampleGridFilter}
+                    />
+                    <b>Not in Queue</b>
                   </span>
                 </div>
               </div>
@@ -285,23 +344,36 @@ class SampleGridViewContainer extends React.Component {
               <div className="col-xs-12">
                 <div className="col-xs-6">
                   <span>
-                    <Input type="radio" name="collected" value="picked" /> <b>Collected</b>
+                    <Input
+                      id="collected"
+                      type="checkbox"
+                      name="collected"
+                      value="collected"
+                      checked={this.getFilterOptionValue('collected')}
+                      onChange={this.sampleGridFilter}
+                    />
+                    <b>Collected</b>
                   </span>
                 </div>
                 <div className="col-xs-6">
                   <span>
-                    <Input type="radio" name="collected" value="notPicked" /> <b>Not Collected</b>
+                    <Input
+                      id="notCollected"
+                      type="checkbox"
+                      name="collected"
+                      value="notCollected"
+                      checked={this.getFilterOptionValue('notCollected')}
+                      onChange={this.sampleGridFilter}
+                    />
+                    <b>Not Collected</b>
                   </span>
                 </div>
               </div>
             </div>
             <div className="pull-right" style={{ paddingTop: '1em', paddingBottom: '1em' }}>
               <ButtonGroup>
-                <Button eventKey="1">
+                <Button eventKey="1" onClick={this.sampleGridClearFilter}>
                   Clear
-                </Button>
-                <Button eventKey="2">
-                  Apply
                 </Button>
               </ButtonGroup>
             </div>
@@ -361,10 +433,11 @@ class SampleGridViewContainer extends React.Component {
                 <span style={{ position: 'absolute', zIndex: 1000 }}>
                   <Input
                     type="text"
+                    id="filterText"
                     ref="filterInput"
-                    defaultValue={this.props.filterText}
+                    defaultValue={this.props.filterOptions.text}
                     buttonAfter={innerSearchIcon}
-                    onChange={this.filterSampleGrid}
+                    onChange={this.sampleGridFilter}
                   />
                 </span>
                 <span style={{ marginLeft: '3em' }}>Select: </span>
@@ -427,7 +500,7 @@ class SampleGridViewContainer extends React.Component {
  * @property {array} queue - samples in queue
  * @property {object} selected - contains samples that are currentl selected
  * @property {object} defaultParameters - default task parameters
- * @property {object} filterText - current filter options
+ * @property {object} filterOptions - current filter options
  *
  */
 function mapStateToProps(state) {
@@ -437,7 +510,7 @@ function mapStateToProps(state) {
     selected: state.sampleGrid.selected,
     sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
-    filterText: state.sampleGrid.filterText,
+    filterOptions: state.sampleGrid.filterOptions,
   };
 }
 
@@ -445,7 +518,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleList()),
-    filter: (filterText) => dispatch(filterAction(filterText)),
+    filter: (filterOptions) => dispatch(filterAction(filterOptions)),
     syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),

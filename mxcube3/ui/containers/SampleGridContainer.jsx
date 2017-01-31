@@ -12,7 +12,7 @@ import {
   makeResponsive
 } from 'react-stonecutter';
 
-import { QUEUE_STOPPED, QUEUE_RUNNING } from '../constants';
+import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected } from '../constants';
 
 import { toggleMovableAction,
          selectSamplesAction,
@@ -44,7 +44,9 @@ class SampleGridContainer extends React.Component {
     this.onKeyDown = this.onKeyDown.bind(this);
 
     this.filter = this.filter.bind(this);
+    this.mutualExclusiveFilterOption = this.mutualExclusiveFilterOption.bind(this);
     this.sampleGridItemsSelectedHandler = this.sampleGridItemsSelectedHandler.bind(this);
+    this.inQueueSampleID = this.inQueueSampleID.bind(this);
 
     this.getSampleItems = this.getSampleItems.bind(this);
     this.selectItemUnderCusor = this.selectItemUnderCusor.bind(this);
@@ -333,26 +335,71 @@ class SampleGridContainer extends React.Component {
 
 
   /**
-   * Filter function for SamplItems
+   * Helper function for filter that takes a sample object instead of sampleID
    *
-   * @property {Object} sampleList
-   * @property {string} filterText
-   * @property {object} picked
+   * @param {object} sample
+   * return {boolean} true if sample is in queue otherwise false
+   */
+  inQueueSampleID(sample) {
+    return this.props.inQueue(sample.sampleID);
+  }
+
+
+  /**
+   * Performs filtering on a sample with two options that are mutually exclusive
+   * Includes sample according to provided options o1 and o2, always includes the
+   * sample if both options are either true or false simultaneously (ignoring the
+   * options o1 and o2)
+   *
+   * @property {Object} filterOptions
+   * @param {Object} sample
+   * @param {string} o1 - option name 1
+   * @param {string} o2 - option name 2
+   * @param {function} fun - function that tests for inclusion
    *
    * return {boolean} true if item is to be included otherwise false
+   */
+  mutualExclusiveFilterOption(sample, o1, o2, testFun) {
+    let includeItem = false;
+
+    // First case is included for clarity since the two options
+    // cancel each other out. Dont do anything same as both false. Otherwise
+    // apply filter.
+    if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
+      includeItem = true;
+    } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {
+      includeItem = true;
+    } else if (this.props.filterOptions[o1]) {
+      includeItem = testFun(sample);
+    } else if (this.props.filterOptions[o2]) {
+      includeItem = !testFun(sample);
+    }
+
+    return includeItem;
+  }
+
+
+  /**
+   * Filter function for SampleItems
+   *
+   * @property {Object} sampleList
+   * @property {Object} filterOptions
+   *
+   * @param {string} key - sampleID
+   *
+   * return {boolean} true if item is to be excluded otherwise false
    */
   filter(key) {
     const sample = this.props.sampleList[key];
     let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
     sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
 
-    let filterItem = sampleFilter.includes(this.props.filterText.toLowerCase());
+    let fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
-    if (this.props.filterText.includes('is:picked')) {
-      filterItem = this.props.picked[key];
-    }
+    fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
+    fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
 
-    return filterItem;
+    return fi;
   }
 
 
@@ -656,7 +703,7 @@ function mapStateToProps(state) {
     selected: state.sampleGrid.selected,
     moving: state.sampleGrid.moving,
     sampleList: state.sampleGrid.sampleList,
-    filterText: state.sampleGrid.filterText,
+    filterOptions: state.sampleGrid.filterOptions,
     order: state.sampleGrid.order,
   };
 }
