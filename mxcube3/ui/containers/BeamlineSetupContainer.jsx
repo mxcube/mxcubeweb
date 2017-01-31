@@ -21,7 +21,10 @@ class BeamlineSetupContainer extends React.Component {
   constructor(props) {
     super(props);
     this.onSaveHandler = this.onSaveHandler.bind(this);
+    this.actuatorSaveHandler = this.actuatorSaveHandler.bind(this);
+    this.movableSaveHandler = this.movableSaveHandler.bind(this);
     this.onCancelHandler = this.onCancelHandler.bind(this);
+    this.createActuatorComponent = this.createActuatorComponent.bind(this);
   }
 
 
@@ -40,7 +43,36 @@ class BeamlineSetupContainer extends React.Component {
   }
 
 
+  actuatorSaveHandler(name, value) {
+    this.props.setAttribute(name, value, 'actuator');
+  }
+
+
+  movableSaveHandler(name, value) {
+    this.props.setAttribute(name, value, 'movable');
+  }
+
+
+  createActuatorComponent() {
+    const acts = [];
+    for (let key in this.props.data.actuators) {
+      acts.push(<div className="list-head" style={{ paddingRight: '2em' }}>
+                      <InOutSwitch2
+                        onText="Open"
+                        offText="Close"
+                        labelText={ this.props.data.actuators[key].label }
+                        pkey= { key }
+                        data= { this.props.data.actuators[key] }
+                        onSave= { this.actuatorSaveHandler }
+                      />
+                    </div>
+              );
+    }
+    return acts;
+  }
+
   render() {
+    // this.createActuatorComponent()
     return (
         <div className="beamline-setup-container">
           <div className="beamline-setup-content">
@@ -55,62 +87,11 @@ class BeamlineSetupContainer extends React.Component {
                     </div>
                   </div>
                 </div>
-                 <div style={{ paddingLeft: '1em', display: 'inline-block' }}>
-                 <div className="m-tree">
-                    <div className="list-head">
-                      <InOutSwitch2
-                        onText="Open"
-                        offText="Close"
-                        labelText="Fast Shutter"
-                        pkey="fast_shutter"
-                        data={this.props.data.fast_shutter}
-                        onSave={this.onSaveHandler}
-                      />
-                    </div>
-                </div>
-              </div>
-              <div style={{ marginLeft: '0em', display: 'inline-block' }}>
-              <div className="m-tree">
-                <div className="list-head">
-                  <InOutSwitch2
-                    onText="Open"
-                    offText="Close"
-                    labelText="Safety Shutter"
-                    pkey="safety_shutter"
-                    data={this.props.data.safety_shutter}
-                    onSave={this.onSaveHandler}
-                  />
+                <div style={{ paddingLeft: '1em', display: 'flex' }}>
+                <div className="m-tree" style={{ display: 'flex' }}>
+                {this.createActuatorComponent()}
                 </div>
                 </div>
-              </div>
-              <div style={{ marginLeft: '0em', display: 'inline-block' }}>
-              <div className="m-tree">
-                <div className="list-head">
-                <InOutSwitch2
-                  onText="In"
-                  offText="Out"
-                  labelText="Beamstop"
-                  pkey="beamstop"
-                  data={this.props.data.beamstop}
-                  onSave={this.onSaveHandler}
-                />
-              </div>
-              </div>
-              </div>
-              <div style={{ marginLeft: '0em', display: 'inline-block' }}>
-              <div className="m-tree">
-                <div className="list-head">
-                <InOutSwitch2
-                  onText="In"
-                  offText="Out"
-                  labelText="Capillary"
-                  pkey="capillary"
-                  data={this.props.data.capillary}
-                  onSave={this.onSaveHandler}
-                />
-              </div>
-              </div>
-              </div>
               <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex' }}>
               <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
                 <div className="list-head" style={{ paddingRight: '0em' }}>
@@ -119,9 +100,9 @@ class BeamlineSetupContainer extends React.Component {
                   name="Energy"
                   pkey="energy"
                   suffix="keV"
-                  data={this.props.data.energy}
-                  onSave={this.onSaveHandler}
-                  onCancel={this.onCancelHandler}
+                  data= { this.props.data.movables.energy }
+                  onSave= { this.movableSaveHandler }
+                  onCancel= { this.onCancelHandler }
                 />
                 <PopInput
                   ref="wavelength"
@@ -129,8 +110,8 @@ class BeamlineSetupContainer extends React.Component {
                   pkey="wavelength"
                   placement="left"
                   suffix="&Aring;"
-                  data={this.props.data.wavelength}
-                  onSave={this.onSaveHandler}
+                  data={this.props.data.movables.wavelength}
+                  onSave={this.movableSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
               </div>
@@ -144,8 +125,8 @@ class BeamlineSetupContainer extends React.Component {
                   name="Resolution"
                   pkey="resolution"
                   suffix="A"
-                  data={this.props.data.resolution}
-                  onSave={this.onSaveHandler}
+                  data={this.props.data.movables.resolution}
+                  onSave={this.movableSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
                 <PopInput
@@ -153,8 +134,8 @@ class BeamlineSetupContainer extends React.Component {
                   name="Detector"
                   pkey="detdist"
                   suffix="mm"
-                  data={this.props.data.detdist}
-                  onSave={this.onSaveHandler}
+                  data={this.props.data.movables.detdist}
+                  onSave={this.movableSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
               </div>
@@ -168,8 +149,8 @@ class BeamlineSetupContainer extends React.Component {
                   name="Transmission"
                   pkey="transmission"
                   suffix="%"
-                  data={this.props.data.transmission}
-                  onSave={this.onSaveHandler}
+                  data={this.props.data.movables.transmission}
+                  onSave={this.movableSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
                 <PopInput
@@ -177,8 +158,8 @@ class BeamlineSetupContainer extends React.Component {
                   name="Flux"
                   pkey="flux"
                   suffix="p/s"
-                  data={this.props.data.flux}
-                  onSave={this.onSaveHandler}
+                  data={this.props.data.movables.flux}
+                  onSave={this.movableSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
               </div>
@@ -193,7 +174,7 @@ class BeamlineSetupContainer extends React.Component {
                   pkey="cryo"
                   suffix="K"
                   data={this.props.data.cryo}
-                  onSave={this.onSaveHandler}
+                  onSave={this.movableSaveHandler}
                   onCancel={this.onCancelHandler}
                 />
               </div>
