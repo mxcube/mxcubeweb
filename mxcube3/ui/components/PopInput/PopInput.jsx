@@ -58,11 +58,6 @@ export default class PopInput extends React.Component {
   }
 
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.data !== this.props.data;
-  }
-
-
   getChild(key) {
     let children = this.props.children;
     let child;
