@@ -209,3 +209,14 @@
   display: none;
   z-index: 10;
 }
+
+.filter-input-active {
+    outline: none;
+    border-color: #ffbf00;
+    box-shadow: 0 0 7px #ffbf00;
+}
+
+.filter-input-active input:focus {
+    box-shadow: none;
+}
+

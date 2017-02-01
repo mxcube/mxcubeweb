@@ -43,8 +43,8 @@ export function toggleSelectedAction(sampleID) {
 }
 
 
-export function filterAction(filterText) {
-  return { type: 'FILTER_SAMPLE_LIST', filterText };
+export function filterAction(filterOptions) {
+  return { type: 'FILTER_SAMPLE_LIST', filterOptions };
 }
 
 
