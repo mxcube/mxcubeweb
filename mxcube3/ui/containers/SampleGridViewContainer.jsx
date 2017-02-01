@@ -43,6 +43,7 @@ class SampleGridViewContainer extends React.Component {
     this.sampleGridFilter = this.sampleGridFilter.bind(this);
     this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
     this.sampleGridClearFilter = this.sampleGridClearFilter.bind(this);
+    this.filterIsUsed = this.filterIsUsed.bind(this);
 
     // Methods for handling addition and removal of queue items (Samples and Tasks)
     // Also used by the SampleGridContainer
@@ -131,6 +132,15 @@ class SampleGridViewContainer extends React.Component {
     }
 
     this.props.syncSamples(proposalId);
+  }
+
+
+  filterIsUsed() {
+    return (this.props.filterOptions.inQueue ||
+            this.props.filterOptions.notInQueue ||
+            this.props.filterOptions.collected ||
+            this.props.filterOptions.notCollected ||
+            (this.props.filterOptions.text.length > 0));
   }
 
 
@@ -382,6 +392,8 @@ class SampleGridViewContainer extends React.Component {
       </DropdownButton>
     );
 
+    const filterActiveCls = this.filterIsUsed() ? 'filter-input-active' : '';
+
     return (
       <StickyContainer>
         <Sticky
@@ -430,7 +442,7 @@ class SampleGridViewContainer extends React.Component {
                   </Button>
                 </OverlayTrigger>
                 <span style={{ marginLeft: '3em' }}>Filter: </span>
-                <span style={{ position: 'absolute', zIndex: 1000 }}>
+                <span className={filterActiveCls} style={{ position: 'absolute', zIndex: 1000 }}>
                   <Input
                     type="text"
                     id="filterText"
