@@ -705,6 +705,7 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     filterOptions: state.sampleGrid.filterOptions,
     order: state.sampleGrid.order,
+    showConfirmActionDialog: state
   };
 }
 
