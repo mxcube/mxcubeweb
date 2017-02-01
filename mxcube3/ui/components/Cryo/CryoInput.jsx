@@ -42,7 +42,6 @@ export default class CryoInput extends React.Component {
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
-    this.setAnnealing = this.setAnnealing.bind(this);
   }
 
 
@@ -56,16 +55,6 @@ export default class CryoInput extends React.Component {
         this.handleError(nextProps.data);
       }
     }
-  }
-
-
-  shouldComponentUpdate(nextProps) {
-    return nextProps.data !== this.props.data;
-  }
-
-
-  setAnnealing() {
-    console.log('Going to anneal...');
   }
 
 
@@ -224,31 +213,6 @@ export default class CryoInput extends React.Component {
               {this.props.data.value} K
             </a>
           </OverlayTrigger>
-        </span>
-        <span className={`popinput-input-value ${this.props.pkey}`}>
-          <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
-            overlay={popover}
-          >
-            <a ref="valueLabel" key="valueLabel" className={`${linkClass} ${stateClass}`}>
-              {this.props.data.value} s
-            </a>
-          </OverlayTrigger>
-        </span>
-        </div>
-        <div className="row">
-          <span className={`popinput-input-label ${this.props.ref}`}>
-          Annealing:
-          </span>
-          <span className={`popinput-input-value ${this.props.pkey}`}>
-          <a ref="anealingButton" key="anealingButton">
-            <Button
-              bsSize="xsmall"
-              className=""
-              onClick={this.setAnnealing}
-            >
-            Go
-            </Button>
-            </a>
         </span>
         </div>
       </div>
