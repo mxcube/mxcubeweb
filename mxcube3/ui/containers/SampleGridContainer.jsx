@@ -32,7 +32,7 @@ import { TaskItem } from '../components/SampleGrid/TaskItem';
 import '../components/SampleGrid/SampleGrid.css';
 
 
-export default class SampleGrid extends React.Component {
+class SampleGridContainer extends React.Component {
 
   constructor(props) {
     super(props);
@@ -674,4 +674,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SampleGrid);
+)(SampleGridContainer);
