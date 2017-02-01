@@ -72,9 +72,6 @@ export function addSamplesToQueue(sampleDataList) {
         dispatch(showErrorPanel(true, 'Server refused to add sample'));
       } else {
         dispatch(addSamplesToQueueAction(sampleDataList));
-
-        const keys = sampleDataList.map(sampleData => sampleData.sampleID);
-        dispatch(selectSamplesAction(keys));
       }
     });
   };

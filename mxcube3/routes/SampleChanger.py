@@ -6,6 +6,8 @@ from flask import Response, jsonify, request
 from mxcube3 import app as mxcube
 from . import limsutils
 
+from .qutils import UNCOLLECTED
+
 
 def init_signals():
     """Initialize hwobj signals."""
@@ -27,6 +29,7 @@ def get_samples_list():
                        "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
                        "code": sample_dm,
                        "loadable": True,
+                       "state": UNCOLLECTED,
                        "tasks": [],
                        "type": "Sample"}
         order.append(coords)

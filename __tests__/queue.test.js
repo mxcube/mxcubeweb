@@ -20,7 +20,7 @@ describe('queue reducer', () => {
       reducer(undefined, {})
     ).toEqual(
       {
-		  queue: {},
+		  queue: [],
 		  current: { node: null, running: false },
 		  searchString: '',
 		  queueStatus: QUEUE_STOPPED,

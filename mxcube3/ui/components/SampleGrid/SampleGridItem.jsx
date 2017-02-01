@@ -1,38 +1,31 @@
 import React from 'react';
 import { OverlayTrigger, Tooltip, Popover } from 'react-bootstrap';
 import classNames from 'classnames';
-import { TASK_UNCOLLECTED } from '../../constants';
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
+import { isCollected } from '../../constants';
 
 import './SampleGrid.css';
 
 
-export const SAMPLE_ITEM_WIDTH = 190;
+export const SAMPLE_ITEM_WIDTH = 192;
 export const SAMPLE_ITEM_HEIGHT = 130;
-export const SAMPLE_ITEM_SPACE = 4;
+export const SAMPLE_ITEM_SPACE = 8;
 
 
 export class SampleGridItem extends React.Component {
 
   constructor(props) {
     super(props);
-    this.toggleMovable = this.toggleMovable.bind(this);
-    this.togglePicked = this.togglePicked.bind(this);
+    this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
+    this.sampleItemOnClick = this.sampleItemOnClick.bind(this);
+    this.moveButtonOnClick = this.moveButtonOnClick.bind(this);
+
+    this.moveItem = this.moveItem.bind(this);
     this.moveItemUp = this.moveItemUp.bind(this);
     this.moveItemDown = this.moveItemDown.bind(this);
     this.moveItemRight = this.moveItemRight.bind(this);
     this.moveItemLeft = this.moveItemLeft.bind(this);
-    this.onMouseDown = this.onMouseDown.bind(this);
-    this.onMouseEnter = this.onMouseEnter.bind(this);
+
     this.sampleInformation = this.sampleInformation.bind(this);
-    this.taskTagName = this.taskTagName.bind(this);
-    this.taskSummary = this.taskSummary.bind(this);
-    this.taskTitle = this.taskTitle.bind(this);
-    this.taskStateClass = this.taskStateClass.bind(this);
-    this.handleClick = this.handleClick.bind(this);
-    this.taskResult = this.taskResult.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
-    this.getDeleteButton = this.getDeleteButton.bind(this);
   }
 
 
@@ -40,81 +33,29 @@ export class SampleGridItem extends React.Component {
     this.refs.sampleItem.addEventListener('contextmenu', (e) => this.contextMenu(e), false);
   }
 
-
-  onMouseDown(e) {
-    if (e.target.className === 'samples-grid-item-button') {
-      if (this.props.selected[this.props.itemKey]) {
-        return;
-      }
-    }
-
-    // If the ctrl key pressesd then toggle selection and add to preivous
-    // selection.
-    if (e.ctrlKey) {
-      this.props.toggleSelectedSample(this.props.itemKey);
-
-    // If shift key is pressed select range from first selected item to this
-    // (currently clicked item)
-    } else if (e.shiftKey) {
-      this.props.dragSelectItem(this.props.itemKey);
-    } else {
-      // On left click just select the clicked item, on left click only
-      // select if the item is not already selected. This makes selection
-      // feature work nicely with the context menu.
-      if (e.nativeEvent.buttons === 1) {
-        this.props.dragStartSelection(this.props.itemKey);
-      } else if (e.nativeEvent.button === 2) {
-        if (!this.props.selected[this.props.itemKey]) {
-          this.props.dragStartSelection(this.props.itemKey);
-        }
-      }
-    }
-  }
-
-
-  onMouseEnter(e) {
-    if (e.nativeEvent.buttons === 1 || e.nativeEvent.button === 2) {
-      this.props.dragSelectItem(this.props.itemKey);
-    }
-  }
-
-
-  getDeleteButton(task, i) {
-    const deleteTask = this.deleteTask.bind(this, i);
-    let content = (<span> <i className="fa fa-times" onClick={deleteTask} /> </span>);
-
-    if (task.state !== TASK_UNCOLLECTED) {
-      content = (<span> </span>);
-    }
-
-    return content;
-  }
-
-
-  deleteTask(i, e) {
-    e.stopPropagation();
-    return this.props.deleteTask(this.props.sampleID, i);
-  }
-
   contextMenu(e) {
     e.preventDefault();
   }
 
-
-  toggleMovable(e) {
-    e.stopPropagation();
-    this.props.toggleMovable(this.props.itemKey);
+  pickButtonOnClick(e) {
+    if (this.props.pickButtonOnClickHandler) {
+      this.props.pickButtonOnClickHandler(e, this.props.sampleData.sampleID);
+    }
   }
 
-
-  togglePicked(e) {
-    e.stopPropagation();
-    this.props.pickSelected();
+  moveButtonOnClick(e) {
+    if (this.props.moveButtonOnClickHandler) {
+      this.props.moveButtonOnClickHandler(e, this.props.sampleData.sampleID);
+    }
   }
 
+  moveItem(e, direction) {
+    if (this.props.onMoveHandler) {
+      this.props.onMoveHandler(e, this.props.sampleData.sampleID, direction);
+    }
+  }
 
-  showItemControls() {
-    const itemKey = this.props.itemKey;
+  itemControls() {
     let iconClassName = 'glyphicon glyphicon-unchecked';
 
     if (this.props.picked) {
@@ -130,7 +71,7 @@ export class SampleGridItem extends React.Component {
           className="samples-grid-item-button"
           bsStyle="default"
           bsSize="s"
-          onClick={this.togglePicked}
+          onClick={this.pickButtonOnClick}
           disabled={this.props.current}
         >
           <i className={iconClassName} />
@@ -148,7 +89,7 @@ export class SampleGridItem extends React.Component {
       >
         <button
           className="samples-grid-item-button"
-          onMouseDown={this.toggleMovable}
+          onClick={this.moveButtonOnClick}
         >
           <i className="glyphicon glyphicon-move" />
         </button>
@@ -175,7 +116,7 @@ export class SampleGridItem extends React.Component {
       </div>
     );
 
-    if (this.props.selected[itemKey] && !this.props.canMove().every(value => value === false)) {
+    if (this.props.selected && !this.props.allowedDirections.every(value => value === false)) {
       content = (
         <div className="samples-item-controls-container">
           {pickButton}
@@ -190,30 +131,26 @@ export class SampleGridItem extends React.Component {
 
 
   moveItemUp(e) {
-    e.stopPropagation();
-    this.props.moveItem('UP');
+    this.moveItem(e, 'UP');
   }
 
 
   moveItemDown(e) {
-    e.stopPropagation();
-    this.props.moveItem('DOWN');
+    this.moveItem(e, 'DOWN');
   }
 
 
   moveItemRight(e) {
-    e.stopPropagation();
-    this.props.moveItem('RIGHT');
+    this.moveItem(e, 'RIGHT');
   }
 
 
   moveItemLeft(e) {
-    e.stopPropagation();
-    this.props.moveItem('LEFT');
+    this.moveItem(e, 'LEFT');
   }
 
 
-  showSeqId() {
+  seqId() {
     const showId = this.props.picked ? '' : 'none';
     return (
       <div>
@@ -223,9 +160,9 @@ export class SampleGridItem extends React.Component {
   }
 
 
-  showMoveArrows() {
+  moveArrows() {
     let [displayUp, displayDown, displayLeft, displayRight] = ['', '', '', ''];
-    const [up, down, left, right] = this.props.canMove(this.props.itemKey);
+    const [up, down, left, right] = this.props.allowedDirections;
 
     if (!left) {
       displayLeft = 'none';
@@ -251,28 +188,28 @@ export class SampleGridItem extends React.Component {
           <button
             style={{ display: displayUp }}
             className="move-arrow move-arrow-up"
-            onMouseDown={this.moveItemUp}
+            onClick={this.moveItemUp}
           >
             <i className="glyphicon glyphicon-arrow-up" />
           </button>
           <button
             style={{ display: displayLeft }}
             className="move-arrow move-arrow-left"
-            onMouseDown={this.moveItemLeft}
+            onClick={this.moveItemLeft}
           >
             <i className="glyphicon glyphicon-arrow-left" />
           </button>
           <button
             style={{ display: displayRight }}
             className="move-arrow move-arrow-right"
-            onMouseDown={this.moveItemRight}
+            onClick={this.moveItemRight}
           >
             <i className="glyphicon glyphicon-arrow-right" />
           </button>
           <button
             style={{ display: displayDown }}
             className="move-arrow move-arrow-down"
-            onMouseDown={this.moveItemDown}
+            onClick={this.moveItemDown}
           >
             <i className="glyphicon glyphicon-arrow-down" />
           </button>
@@ -324,7 +261,6 @@ export class SampleGridItem extends React.Component {
         </div>
       </div>);
 
-
     return (
       <div>
         <div className="row">
@@ -338,152 +274,6 @@ export class SampleGridItem extends React.Component {
     );
   }
 
-
-  taskTagName(type) {
-    let res = 'DC';
-
-    if (type === 'DataCollection') {
-      res = 'DC';
-    } else if (type === 'Characterisation') {
-      res = 'C';
-    }
-
-    return res;
-  }
-
-
-  taskSummary(task) {
-    let filePath = `${this.props.rootPath}/${task.parameters.path}/${task.parameters.prefix}`;
-    filePath += `_${task.parameters.run_number}_xxxx.cbf`;
-    return (
-      <div>
-        <div className="row">
-          <span style={{ paddingBottom: '0.5em' }} className="col-sm-12">
-            <b>Path: {filePath}</b>
-          </span>
-          <span className="col-sm-3">Oscillation range:</span>
-          <span className="col-sm-3">{task.parameters.osc_range}&deg;</span>
-          <span className="col-sm-3">First image</span>
-          <span className="col-sm-3">{task.parameters.first_image}</span>
-
-          <span className="col-sm-3">Oscillation start:</span>
-          <span className="col-sm-3">{task.parameters.osc_start}&deg;</span>
-          <span className="col-sm-3">Number of images</span>
-          <span className="col-sm-3">{task.parameters.num_images}</span>
-
-          <span className="col-sm-3">Exposure time:</span>
-          <span className="col-sm-3">{`${task.parameters.exp_time}s`}</span>
-          <span className="col-sm-3">Transmission</span>
-          <span className="col-sm-3">{`${task.parameters.transmission} %`}</span>
-
-          <span className="col-sm-3">Energy:</span>
-          <span className="col-sm-3">{`${task.parameters.energy} KeV`}</span>
-          <span className="col-sm-3">Resolution</span>
-          <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
-        </div>
-      </div>
-   );
-  }
-
-
-  taskResult(task) {
-    let content = (<div></div>);
-    let lImageUrl = '';
-    let fImageUrl = '';
-
-    const r = task.limsResultData;
-    if (task.limsResultData && Object.keys(task.limsResultData).length > 0) {
-      if (task.limsResultData.firstImageId) {
-        fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
-        fImageUrl += task.limsResultData.firstImageId.toString();
-      }
-
-      if (task.limsResultData.lastImageId) {
-        lImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
-        lImageUrl += task.limsResultData.lastImageId.toString();
-      }
-
-      const sFlux = parseInt(r.flux, 10) / Math.pow(10, 9);
-      const eFlux = parseInt(r.flux_end, 10) / Math.pow(10, 9);
-
-      content = (
-        <div>
-          <div
-            className="row"
-            style={ { paddingLeft: '1em', paddingTop: '1em', paddingBottom: '0.2em' } }
-          >
-            <b>Status: {r.runStatus}</b>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-3">Resolution at collect</span>
-            <span className="col-sm-3">{`${r.resolution} Å`}</span>
-            <span className="col-sm-3">Resolution at corner:</span>
-            <span className="col-sm-3">{`${r.resolutionAtCorner} Å`}</span>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-3">Wavelength</span>
-            <span className="col-sm-3">{`${r.wavelength} Å`}</span>
-            <span className="col-sm-3"> </span>
-            <span className="col-sm-3"> </span>
-          </div>
-
-          <div className="row" style={ { paddingTop: '1em' } }>
-            <span className="col-sm-2">Start time:</span>
-            <span className="col-sm-4">{r.startTime}</span>
-            <span className="col-sm-2">End time</span>
-            <span className="col-sm-4">{r.endTime}</span>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-2">Flux at start:</span>
-            <span className="col-sm-4">{sFlux}e+9 (Giga) ph/s</span>
-            <span className="col-sm-2">Flux at end</span>
-            <span className="col-sm-4">{eFlux}e+9 (Giga) ph/s</span>
-          </div>
-
-          <div className="row" style={ { paddingTop: '0.5em' } } >
-            <span className="col-sm-6">
-              <b>First image: </b>
-              <img ref="fimage" alt="First" src={fImageUrl} />
-            </span>
-            <span className="col-sm-6">
-              <b>Last image: </b>
-              <img ref="limage" alt="Last" src={lImageUrl} />
-            </span>
-          </div>
-        </div>
-      );
-    }
-
-    return content;
-  }
-
-  taskTitle(task) {
-    const point = task.parameters.point !== -1 ? ` at P-${task.parameters.point}` : '';
-    let taskStatus = 'To be collected';
-
-    if (task.state === 1) {
-      taskStatus = 'In progress';
-    } else if (task.state === 2) {
-      taskStatus = 'Collected';
-    }
-
-    return `${task.label}${point} (${taskStatus})`;
-  }
-
-  taskStateClass(task) {
-    let cls = 'btn-primary';
-
-    if (task.state === 1) {
-      cls = 'btn-warning';
-    } else if (task.state === 2) {
-      cls = 'btn-success';
-    }
-
-    return cls;
-  }
 
   popoverPosition() {
     const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -501,40 +291,37 @@ export class SampleGridItem extends React.Component {
   }
 
 
-  handleClick(task) {
-    if (task.state === 0) {
-      this.props.showTaskParametersForm(task.type, task.sampleID, task);
+  sampleItemOnClick(e) {
+    if (this.props.onClick) {
+      this.props.onClick(e, this.props.sampleData.sampleID);
     }
   }
 
 
   render() {
-    const itemKey = this.props.itemKey;
-
     let classes = classNames('samples-grid-item',
-      { 'samples-grid-item-selected': this.props.selected[itemKey] && !this.props.moving,
+      { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
-        'samples-grid-item-to-be-collected': this.props.picked &&
-                                             !(this.props.collected || this.props.current),
-        'samples-grid-item-current': this.props.current && !this.props.collected,
-        'samples-grid-item-collected': this.props.collected });
+        'samples-grid-item-to-be-collected':
+          this.props.picked && (!isCollected(this.props.sampleData) || this.props.current),
+        'samples-grid-item-current': this.props.current && !isCollected(this.props.sampleData),
+        'samples-grid-item-collected': isCollected(this.props.sampleData) });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
-                                       { 'label-success': this.props.loadable === true });
+      { 'label-success': this.props.sampleData.loadable === true });
 
     const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
 
     return (
       <div
+        id={this.props.sampleData.sampleID}
         ref="sampleItem"
         className={classes}
-        draggable="true"
-        onMouseDown={this.onMouseDown}
-        onMouseEnter={this.onMouseEnter}
+        onClick={this.sampleItemOnClick}
       >
-        {this.showMoveArrows()}
-        {this.showItemControls()}
-        <div className={scLocationClasses}>{this.props.location}</div>
+        {this.moveArrows()}
+        {this.itemControls()}
+        <div className={scLocationClasses}>{this.props.sampleData.location}</div>
         <div style={{ display: 'block', clear: 'both' }}>
         <OverlayTrigger
           ref="sampleInfoPopoverTrigger"
@@ -551,54 +338,10 @@ export class SampleGridItem extends React.Component {
           </a>
         </OverlayTrigger>
         </div>
-        {this.showSeqId()}
+        {this.seqId()}
         <br />
         <div className="samples-grid-item-tasks">
-          {
-            this.props.tags.map((tag, i) => {
-              const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
-              let content;
-
-              if ((typeof tag) === 'string') {
-                content = <span key={i} className="label label-primary" style={style}>{tag}</span>;
-              } else {
-                // assuming a Task
-                let showForm = (e) => {
-                  e.stopPropagation();
-                  return this.handleClick(tag, this.props.sampleID);
-                };
-
-                content = (
-                  <div key={i}>
-                    <OverlayTrigger
-                      ref="taskSummaryPopoverTrigger"
-                      placement={this.popoverPosition()}
-                      overlay={(
-                        <Popover
-                          id={this.taskTitle(tag)}
-                          style={{ minWidth: '700px !important', paddingBottom: '1em' }}
-                          title={(<b>{this.taskTitle(tag)}</b>)}
-                        >
-                           {this.taskSummary(tag)}
-                           {this.taskResult(tag)}
-                        </Popover>) }
-                    >
-                      <span
-                        className={`${this.taskStateClass(tag)} label`}
-                        style={style}
-                        onClick={showForm}
-                      >
-                        {this.taskTagName(tag.type)}
-                        {this.getDeleteButton(tag, i)}
-                      </span>
-                    </OverlayTrigger>
-                  </div>
-                );
-              }
-
-              return content;
-            })
-          }
+          { this.props.children }
         </div>
       </div>
     );
@@ -608,22 +351,14 @@ export class SampleGridItem extends React.Component {
 
 SampleGridItem.defaultProps = {
   itemKey: '',
-  sampleID: '',
-  acronym: '',
-  name: '',
-  dm: '',
-  loadable: false,
-  location: '',
-  tags: '',
+  sampleData: {},
+  queueOrder: [],
   selected: false,
-  deleteTask: undefined,
-  showTaskParametersForm: undefined,
-  toggleMovable: undefined,
+  current: false,
   picked: false,
   moving: false,
-  moveItem: undefined,
-  canMove: undefined,
-  pickSelected: undefined,
-  dragStartSelection: undefined,
-  dragSelectItem: undefined
+  allowedDirections: [],
+  pickButtonOnClickHandler: undefined,
+  moveButtonOnClickHandler: undefined,
+  onMoveHandler: undefined
 };
