@@ -1,7 +1,7 @@
 import React from 'react';
 
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
 
@@ -36,12 +36,13 @@ import './style.css';
  * @class
  *
  */
-export default class PopInput extends React.Component {
+export default class CryoInput extends React.Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
+    this.setAnnealing = this.setAnnealing.bind(this);
   }
 
 
@@ -55,6 +56,16 @@ export default class PopInput extends React.Component {
         this.handleError(nextProps.data);
       }
     }
+  }
+
+
+  shouldComponentUpdate(nextProps) {
+    return nextProps.data !== this.props.data;
+  }
+
+
+  setAnnealing() {
+    console.log('Going to anneal...');
   }
 
 
@@ -201,6 +212,7 @@ export default class PopInput extends React.Component {
 
     return (
       <div className={`${this.props.className} popinput-input-container`}>
+        <div className="row">
         <span className={`popinput-input-label ${this.props.ref}`}>
           {this.props.name}:
         </span>
@@ -209,17 +221,43 @@ export default class PopInput extends React.Component {
             overlay={popover}
           >
             <a ref="valueLabel" key="valueLabel" className={`${linkClass} ${stateClass}`}>
-              {this.props.data.value} {this.props.suffix}
+              {this.props.data.value} K
             </a>
           </OverlayTrigger>
         </span>
+        <span className={`popinput-input-value ${this.props.pkey}`}>
+          <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
+            overlay={popover}
+          >
+            <a ref="valueLabel" key="valueLabel" className={`${linkClass} ${stateClass}`}>
+              {this.props.data.value} s
+            </a>
+          </OverlayTrigger>
+        </span>
+        </div>
+        <div className="row">
+          <span className={`popinput-input-label ${this.props.ref}`}>
+          Annealing:
+          </span>
+          <span className={`popinput-input-value ${this.props.pkey}`}>
+          <a ref="anealingButton" key="anealingButton">
+            <Button
+              bsSize="xsmall"
+              className=""
+              onClick={this.setAnnealing}
+            >
+            Go
+            </Button>
+            </a>
+        </span>
+        </div>
       </div>
     );
   }
 }
 
 
-PopInput.defaultProps = {
+CryoInput.defaultProps = {
   className: '',
   dataType: 'number',
   inputSize: '100px',
