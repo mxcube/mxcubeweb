@@ -30,6 +30,7 @@ import {
   addSamplesToQueue
 } from '../actions/queue';
 
+import { showConfirmCollectDialog } from '../actions/queueGUI';
 import { showConfirmClearQueueDialog } from '../actions/general';
 
 import { showTaskForm } from '../actions/taskForm';
@@ -292,6 +293,7 @@ class SampleGridViewContainer extends React.Component {
    */
   startCollect() {
     window.location = '#/datacollection';
+    this.props.showConfirmCollectDialog();
   }
 
 
@@ -552,10 +554,10 @@ function mapDispatchToProps(dispatch) {
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
-    confirmClearQueueShow:
-      bindActionCreators(showConfirmClearQueueDialog.bind(this, true), dispatch),
+    confirmClearQueueShow: bindActionCreators(showConfirmClearQueueDialog, dispatch),
     confirmClearQueueHide:
       bindActionCreators(showConfirmClearQueueDialog.bind(this, false), dispatch),
+    showConfirmCollectDialog: bindActionCreators(showConfirmCollectDialog, dispatch)
   };
 }
 

@@ -7,7 +7,8 @@ const initialState = {
   displayData: {},
   visibleList: 'current',
   loading: false,
-  showResumeQueueDialog: false
+  showResumeQueueDialog: false,
+  showConfirmCollectDialog: false
 };
 
 export default (state = initialState, action) => {
@@ -89,10 +90,12 @@ export default (state = initialState, action) => {
         ...state,
         visibleList: action.list_name
       };
-    case 'SHOW_RESUME_QUEUE_DIALOG':
-      {
-        return { ...state, showResumeQueueDialog: action.show };
-      }
+    case 'SHOW_RESUME_QUEUE_DIALOG': {
+      return { ...state, showResumeQueueDialog: action.show };
+    }
+    case 'SHOW_CONFIRM_COLLECT_DIALOG': {
+      return { ...state, showConfirmCollectDialog: action.show };
+    }
     // Toggle task collapse flag
     case 'COLLAPSE_TASK': {
       const displayData = Object.assign({}, state.displayData);

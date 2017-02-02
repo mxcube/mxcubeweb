@@ -1,0 +1,8 @@
+.collect-confirm-dialog {
+  width: 80%;
+}
+
+#collect-confirm-dialog-popover {
+  width: auto;
+  max-width: 80%;
+}

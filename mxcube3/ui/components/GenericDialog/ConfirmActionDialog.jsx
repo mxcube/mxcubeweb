@@ -39,14 +39,15 @@ export default class ConfirmActionDialog extends React.Component {
           {this.props.message}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.onOkClick}>{this.props.okButtonText}</Button>
           <Button onClick={this.onCancelClick}>{this.props.cancelButtonText}</Button>
+          <Button onClick={this.onOkClick}>{this.props.okButtonText}</Button>
         </Modal.Footer>
       </Modal>);
   }
 }
 
 ConfirmActionDialog.defaultProps = {
+  show: false,
   title: '',
   message: '',
   okButtonText: 'Ok',
