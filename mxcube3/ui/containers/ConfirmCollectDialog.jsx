@@ -27,6 +27,13 @@ export class ConfirmCollectDialog extends React.Component {
     this.props.hide();
   }
 
+  /**
+   * Returns collection summary, total number of samples and tasks in the queue
+   *
+   * @property {Object} sampleGrid
+   * @property {Object} queue
+   * @return {Object} {numSaples, numTasks}
+   */
   collectionSummary() {
     const numSamples = this.props.queue.queue.length;
     const numTasks = Object.values(this.props.sampleGrid.sampleList).filter((sample) => (
@@ -36,6 +43,14 @@ export class ConfirmCollectDialog extends React.Component {
     return { numSamples, numTasks };
   }
 
+  /**
+   * Returns the markup for a table containing summary/details for each task
+   * in the queue
+   *
+   * @property {Object} sampleGrid
+   * @property {Object} queue
+   * @return {ReactDomNode} Table Markup
+   */
   taskTable() {
     const tasks = [].concat.apply([],
       Object.values(this.props.sampleGrid.sampleList).filter((sample) => (
