@@ -75,7 +75,6 @@ export default class SampleQueueContainer extends React.Component {
     const {
       sendToggleCheckBox,
       sendRunSample,
-      sendRunQueue,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
