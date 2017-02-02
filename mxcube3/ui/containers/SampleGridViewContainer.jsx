@@ -30,8 +30,12 @@ import {
   addSamplesToQueue
 } from '../actions/queue';
 
+import { showConfirmCollectDialog } from '../actions/queueGUI';
+import { showConfirmClearQueueDialog } from '../actions/general';
+
 import { showTaskForm } from '../actions/taskForm';
 import SampleGridContainer from './SampleGridContainer';
+import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
 
 import '../components/SampleGrid/SampleGrid.css';
 
@@ -135,6 +139,9 @@ class SampleGridViewContainer extends React.Component {
   }
 
 
+  /**
+   * @return {boolean} true if any filter option is used
+   */
   filterIsUsed() {
     return (this.props.filterOptions.inQueue ||
             this.props.filterOptions.notInQueue ||
@@ -286,6 +293,7 @@ class SampleGridViewContainer extends React.Component {
    */
   startCollect() {
     window.location = '#/datacollection';
+    this.props.showConfirmCollectDialog();
   }
 
 
@@ -396,6 +404,14 @@ class SampleGridViewContainer extends React.Component {
 
     return (
       <StickyContainer>
+        <ConfirmActionDialog
+          title="Clear sample grid ?"
+          message="This will remove all samples (and collections) from the grid,
+                   are you sure you would like to continue ?"
+          onOk={this.props.sendClearQueue}
+          show={this.props.showConfirmClearQueueDialog}
+          hide={this.props.confirmClearQueueHide}
+        />
         <Sticky
           className="samples-grid-header"
           style={{ transform: 'translateZ(1)', marginBottom: '5px' }}
@@ -435,7 +451,7 @@ class SampleGridViewContainer extends React.Component {
                     </Tooltip>)}
                 >
                   <Button
-                    onClick={this.props.sendClearQueue}
+                    onClick={this.props.confirmClearQueueShow}
                     disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                   >
                     Clear sample list
@@ -513,7 +529,7 @@ class SampleGridViewContainer extends React.Component {
  * @property {object} selected - contains samples that are currentl selected
  * @property {object} defaultParameters - default task parameters
  * @property {object} filterOptions - current filter options
- *
+ * @property {boolean} showConfirmClearQueue
  */
 function mapStateToProps(state) {
   return {
@@ -523,6 +539,7 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
+    showConfirmClearQueueDialog: state.general.showConfirmClearQueueDialog
   };
 }
 
@@ -537,6 +554,10 @@ function mapDispatchToProps(dispatch) {
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
+    confirmClearQueueShow: bindActionCreators(showConfirmClearQueueDialog, dispatch),
+    confirmClearQueueHide:
+      bindActionCreators(showConfirmClearQueueDialog.bind(this, false), dispatch),
+    showConfirmCollectDialog: bindActionCreators(showConfirmCollectDialog, dispatch)
   };
 }
 

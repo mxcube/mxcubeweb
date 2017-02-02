@@ -187,3 +187,9 @@ export function showConnectionLostDialog(show = true) {
     type: 'SHOW_CONNECTION_LOST_DIALOG', show
   };
 }
+
+export function showConfirmClearQueueDialog(show = true) {
+  return {
+    type: 'SHOW_CONFIRM_CLEAR_QUEUE_DIALOG', show
+  };
+}

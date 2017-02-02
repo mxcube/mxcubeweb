@@ -75,7 +75,6 @@ export default class SampleQueueContainer extends React.Component {
     const {
       sendToggleCheckBox,
       sendRunSample,
-      sendRunQueue,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
@@ -87,7 +86,8 @@ export default class SampleQueueContainer extends React.Component {
     } = this.props.queueActions;
     const {
       collapseTask,
-      collapseSample
+      collapseSample,
+      showConfirmCollectDialog
     } = this.props.queueGUIActions;
 
     // go through the queue, check if sample has been collected or not
@@ -115,7 +115,7 @@ export default class SampleQueueContainer extends React.Component {
                   todoLength={todo.length}
                   currentNode={current.sampleID}
                   queueStatus={queueStatus}
-                  runQueue={sendRunQueue}
+                  runQueue={showConfirmCollectDialog}
                   stopQueue={sendStopQueue}
                 />
               <div className="m-tree queue-body">

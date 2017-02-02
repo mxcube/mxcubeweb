@@ -9,7 +9,8 @@ const initialState = {
   dialogTitle: '',
   showDialog: false,
   userMessages: [],
-  showConnectionLostDialog: false
+  showConnectionLostDialog: false,
+  showConfirmClearQueueDialog: false
 };
 
 export default (state = initialState, action) => {
@@ -72,6 +73,10 @@ export default (state = initialState, action) => {
     case 'SHOW_CONNECTION_LOST_DIALOG':
       {
         return { ...state, showConnectionLostDialog: action.show };
+      }
+    case 'SHOW_CONFIRM_CLEAR_QUEUE_DIALOG':
+      {
+        return { ...state, showConfirmClearQueueDialog: action.show };
       }
     default:
       return state;

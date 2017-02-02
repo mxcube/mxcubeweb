@@ -26,3 +26,9 @@ export function showResumeQueueDialog(show = true) {
   };
 }
 
+
+export function showConfirmCollectDialog(show = true) {
+  return {
+    type: 'SHOW_CONFIRM_COLLECT_DIALOG', show
+  };
+}

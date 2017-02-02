@@ -8,6 +8,7 @@ import LoggerOverlayContainer from '../containers/LoggerOverlayContainer';
 import ConnectionLostDialog from '../containers/ConnectionLostDialog';
 import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
+import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 
 import './Main.css';
 export default class Main extends React.Component {
@@ -21,6 +22,7 @@ export default class Main extends React.Component {
         <ConnectionLostDialog />
         <ObserverDialog />
         <PassControlDialog />
+        <ConfirmCollectDialog />
         <MXNavbarContainer location={this.props.location} />
         <div className="container-fluid o-wrapper" id="o-wrapper">
           <div className="row">
