@@ -56,7 +56,8 @@ class BeamlineSetupContainer extends React.Component {
   createActuatorComponent() {
     const acts = [];
     for (let key in this.props.data.actuators) {
-      acts.push(<div className="list-head" style={{ paddingRight: '2em' }}>
+      if (this.props.data.actuators.hasOwnProperty(key)) {
+        acts.push(<div className="list-head" style={{ paddingRight: '2em' }}>
                       <InOutSwitch2
                         onText="Open"
                         offText="Close"
@@ -67,6 +68,7 @@ class BeamlineSetupContainer extends React.Component {
                       />
                     </div>
               );
+      }
     }
     return acts;
   }

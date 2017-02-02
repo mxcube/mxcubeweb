@@ -1,9 +1,4 @@
-import { STATE,
-         BL_ATTR_SET,
-         BL_ATTR_MOV_SET,
-         BL_ATTR_ACT_SET,
-         BL_ATTR_GET_ALL,
-         BL_ATTR_SET_STATE } from '../actions/beamline';
+import { STATE } from '../actions/beamline';
 
 /**
  *  Initial redux state for beamline attributes, object containing each beamline

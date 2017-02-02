@@ -1,7 +1,7 @@
 import React from 'react';
 
 import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
-import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
 
