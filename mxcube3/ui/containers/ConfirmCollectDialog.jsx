@@ -134,7 +134,7 @@ export class ConfirmCollectDialog extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.onCancelClick}>Cancel</Button>
-          <Button onClick={this.onOkClick}>Go Collect !</Button>
+          <Button onClick={this.onOkClick}>Collect</Button>
         </Modal.Footer>
       </Modal>);
   }
