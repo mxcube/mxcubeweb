@@ -72,30 +72,24 @@ class BeamlineSetupContainer extends React.Component {
     }
     return acts;
   }
-
+// <div className="m-tree" style={{ overflow: 'visible',
+                    // alignItems: 'center', display: 'flex' }}
+                  // >
   render() {
-    // this.createActuatorComponent()
     return (
         <div className="beamline-setup-container">
           <div className="beamline-setup-content">
             <div className="row" style={{ marginBottom: '1em' }}>
               <div className="col-sm-12" style={{ alignItems: 'stretch', display: 'flex' }}>
-                <div style={{ marginLeft: '0em', display: 'flex' }}>
-                  <div className="m-tree" style={{ overflow: 'visible',
-                    alignItems: 'center', display: 'flex' }}
-                  >
+                <div style={{ marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
                     <div className="list-head" >
                       <BeamlineActions />
                     </div>
-                  </div>
                 </div>
                 <div style={{ paddingLeft: '1em', display: 'flex' }}>
-                <div className="m-tree" style={{ display: 'flex' }}>
                 {this.createActuatorComponent()}
                 </div>
-                </div>
-              <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex' }}>
-              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex', alignItems: 'center' }}>
                 <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="energy"
@@ -118,9 +112,7 @@ class BeamlineSetupContainer extends React.Component {
                 />
               </div>
               </div>
-              </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex' }}>
-              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
                 <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="resolution"
@@ -142,9 +134,7 @@ class BeamlineSetupContainer extends React.Component {
                 />
               </div>
               </div>
-              </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex' }}>
-              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
                 <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="transmission"
@@ -166,9 +156,7 @@ class BeamlineSetupContainer extends React.Component {
                 />
               </div>
               </div>
-              </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex' }}>
-              <div className="m-tree" style={{ alignItems: 'center', display: 'flex' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
                 <div className="list-head" style={{ paddingLeft: '2em' }}>
                 <CryoInput
                   ref="cryo"
@@ -181,19 +169,13 @@ class BeamlineSetupContainer extends React.Component {
                 />
               </div>
               </div>
-              </div>
               <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex' }}>
-              <div className="m-tree" style={{ overflow: 'visible',
-                alignItems: 'center', display: 'flex' }}
-              >
-                <div className="list-head">
+                <div className="list-head" style={{ alignItems: 'center', display: 'flex' }}>
                   <MachInfo
                     info={this.props.data.machinfo}
                   />
+                </div>
               </div>
-              </div>
-              </div>
-
               </div>
             </div>
           </div>
