@@ -36,7 +36,7 @@ import './style.css';
  * @class
  *
  */
-export default class PopInput extends React.Component {
+export default class CryoInput extends React.Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
@@ -201,6 +201,7 @@ export default class PopInput extends React.Component {
 
     return (
       <div className={`${this.props.className} popinput-input-container`}>
+        <div className="row">
         <span className={`popinput-input-label ${this.props.ref}`}>
           {this.props.name}:
         </span>
@@ -209,17 +210,18 @@ export default class PopInput extends React.Component {
             overlay={popover}
           >
             <a ref="valueLabel" key="valueLabel" className={`${linkClass} ${stateClass}`}>
-              {this.props.data.value} {this.props.suffix}
+              {this.props.data.value} K
             </a>
           </OverlayTrigger>
         </span>
+        </div>
       </div>
     );
   }
 }
 
 
-PopInput.defaultProps = {
+CryoInput.defaultProps = {
   className: '',
   dataType: 'number',
   inputSize: '100px',

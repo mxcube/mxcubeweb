@@ -9,7 +9,9 @@ import {
   setBeamInfo,
   startClickCentring,
 } from './actions/sampleview';
-import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
+import { setBeamlineAttrAction,
+         setBeamlineMovAttrAction,
+         setMachInfo } from './actions/beamline';
 import { setStatus,
          addTaskResultAction,
          addTaskAction,
@@ -109,7 +111,13 @@ class ServerIO {
     });
 
     this.hwrSocket.on('beamline_value_change', (data) => {
-      this.dispatch(setBeamlineAttrAction(data));
+      if (data.type === 'actuator') {
+        void(0);
+      } else if (data.type === 'movable') {
+        this.dispatch(setBeamlineMovAttrAction(data));
+      } else {
+        this.dispatch(setBeamlineAttrAction(data));
+      }
     });
 
     this.hwrSocket.on('task', (record, callback) => {
