@@ -227,14 +227,9 @@ def get_queue_state():
         sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
         samples.update({s.getAddress(): sample_data})
 
-    queue = queue_to_dict()
     
-    try:
-        order = queue.pop("sample_order")
-    except Exception:
-        order = []
-        pass
-
+    queue = queue_to_dict()
+    queue_to_dict().pop("sample_order") if queue else queue
     loaded = ''
 
     res = { "loaded": loaded,
