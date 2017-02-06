@@ -1,8 +1,38 @@
 .collect-confirm-dialog {
-  width: 80%;
+  width: 60%;
 }
 
 #collect-confirm-dialog-popover {
   width: auto;
   max-width: 80%;
+}
+
+.scroll table{
+  width: auto;
+  border-spacing: 0;
+}
+
+.scroll tbody,
+.scroll thead {  
+  display: block;
+}
+
+.scroll thead tr th { }
+
+.scroll tbody {
+  height: 500px;
+  overflow-y: auto;
+  overflow-x: auto
+}
+
+.scroll tbody { }
+
+.scroll tbody td,
+.scroll thead th {
+  white-space: nowrap;
+}
+
+.scroll tbody td:last-child,
+.scroll thead th:last-child {
+  border-right: none;
 }
