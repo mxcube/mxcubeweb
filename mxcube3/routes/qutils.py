@@ -53,11 +53,11 @@ def node_index(node):
         task_groups = sample_model.get_children();
         group_list = [group.get_children() for group in task_groups]
         tlist = [task for task_list in group_list for task in task_list]
-        # there is probably a better fix...
+
         try:
             index = tlist.index(node)
         except Exception:
-            print 'node not in list: ', node
+            pass
 
     return {'sample': sample, 'idx': index, 'queue_id': node._node_id}
 
@@ -228,35 +228,18 @@ def get_queue_state():
         samples.update({s.getAddress(): sample_data})
 
     queue = queue_to_dict()
+    
     try:
         order = queue.pop("sample_order")
     except Exception:
         order = []
         pass
 
-    sample_list_ho = mxcube.queue.queue_hwobj._queue_entry_list
-    sample_list = {}
-    for sample in sample_list_ho:
-        sample_model = sample.get_data_model()
-        name = sample_model.loc_str
-
-        sample_data = {"sampleID": name,
-                       "location": "Manual" if sample_model.free_pin_mode else sample_model.loc_str,
-                       "sampleName": sample_model.get_name(),
-                       "type": "Sample",
-                       "proteinAcronym": sample_model.crystals[0].protein_acronym,
-                       "defaultPrefix": sample_model.get_name() + '-' + sample_model.crystals[0].protein_acronym
-                       }
-
-        sample_list.update({name: sample_data})
-
     loaded = ''
 
-    res = {"sample_list": sample_list,
-           "loaded": loaded,
-           "queue": queue,
-           "queueStatus": queue_exec_state()
-           }
+    res = { "loaded": loaded,
+            "queue": queue,
+            "queueStatus": queue_exec_state() }
 
     return res
 
