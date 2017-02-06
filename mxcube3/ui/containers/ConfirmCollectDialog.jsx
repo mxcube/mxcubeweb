@@ -16,6 +16,21 @@ export class ConfirmCollectDialog extends React.Component {
     this.onCancelClick = this.onCancelClick.bind(this);
     this.collectionSummary = this.collectionSummary.bind(this);
     this.taskTable = this.taskTable.bind(this);
+    this.onResize = this.onResize.bind(this);
+    this.resizeTable = this.resizeTable.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.onResize, false);
+    this.resizeTable();
+  }
+
+  componentDidUpdate() {
+    this.resizeTable();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize);
   }
 
   onOkClick() {
@@ -25,6 +40,46 @@ export class ConfirmCollectDialog extends React.Component {
 
   onCancelClick() {
     this.props.hide();
+  }
+
+  onResize() {
+    this.resizeTable();
+  }
+
+  /**
+  * The CSS that adds the scroll bar changes the way the table rows are displayed
+  * so we need to recalculate the width of the header and body rows so that they
+  * are aligned properly
+  *
+  * @property {Object} sampleGrid
+  * @property {Object} queue
+  */
+  resizeTable() {
+    const tableHead = document.getElementById('table-head');
+    const tableBody = document.getElementById('table-body');
+
+    if (tableHead && tableBody) {
+      const headerColWidthArray = Array.map(tableHead.children[0].children, (td) => (
+        td.getBoundingClientRect().width));
+
+      const bodyColWidthArray = Array.map(tableBody.children[0].children, (td) => (
+        td.getBoundingClientRect().width));
+
+      // Set the width of each collumn in the body to be atleast the width of the
+      // corresponding collumn in the header
+      Array.map(tableBody.children, (tr) => Array.forEach(tr.children, (td, i) => {
+        const _td = td;
+        _td.width = headerColWidthArray[i];
+      }));
+
+      // Update the header columns so that they match the content of the body
+      Array.forEach(tableHead.children[0].children, (th, i) => {
+        if (bodyColWidthArray[i] > th.getBoundingClientRect().width) {
+          const _th = th;
+          _th.width = bodyColWidthArray[i];
+        }
+      });
+    }
   }
 
   /**
@@ -53,13 +108,14 @@ export class ConfirmCollectDialog extends React.Component {
    */
   taskTable() {
     const tasks = [].concat.apply([],
-      Object.values(this.props.sampleGrid.sampleList).filter((sample) => (
-        this.props.queue.queue.includes(sample.sampleID)
+      Object.values(this.props.queue.queue).map((sampleID) => (
+        this.props.sampleGrid.sampleList[sampleID]
       )).map((sample) => sample.tasks));
 
     const table = (
+      <div className="scroll">
       <Table striped bordered condensed hover>
-        <thead>
+        <thead id="table-head">
           <tr>
             <th>Type</th>
             <th>Sample</th>
@@ -68,7 +124,7 @@ export class ConfirmCollectDialog extends React.Component {
             <th># Images</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="table-body">
           {tasks.map((task) => (
             <OverlayTrigger
               bsClass="collect-confirm-dialog-overlay-trigger"
@@ -109,6 +165,7 @@ export class ConfirmCollectDialog extends React.Component {
           </OverlayTrigger>))}
         </tbody>
       </Table>
+      </div>
     );
 
     return table;
