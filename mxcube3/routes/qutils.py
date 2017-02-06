@@ -192,42 +192,15 @@ def get_node_state(node_id):
 
 def get_queue_state():
     """
-    Return the dictionary representation of the queue state plus some extra lists.
+    Return the dictionary representation of the current queue and its state
 
     :returns: dictionary on the form:
               {
-                "history": [],
-                "loaded": "1:01",
-                "sample_list": [ sampleID_1, sampleID_2 ...],
-                "queue": {sampleID_1: [task1, ... taskn]
-                        .
-                        .
-                        .
-                        sampleID_n: [task1, ... taskn] }
-                "sample_list": {......}
-               }
+                loaded: ID of currently loaded sample,
+                queue: same format as queue_to_dict() but without sample_order,
+                queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
+              }
     """
-    try:
-        samples_list_sc = mxcube.sample_changer.getSampleList()
-    except Exception:
-        # if no sample changer is used, or if it has a problem,
-        # set an empty list
-        samples_list_sc = []
-    
-    samples = {}
-
-    for s in samples_list_sc:
-        sample_dm = s.getID() or ""
-        sample_data = {"sampleID": s.getAddress(),
-                       "location": ":".join(map(str, s.getCoords())),
-                       "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
-                       "code": sample_dm,
-                       "type": "Sample"}
-
-        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-        samples.update({s.getAddress(): sample_data})
-
-    
     queue = queue_to_dict()
     queue_to_dict().pop("sample_order") if queue else queue
     loaded = ''
