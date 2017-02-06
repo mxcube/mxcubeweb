@@ -50,9 +50,6 @@ export class ConfirmCollectDialog extends React.Component {
   * The CSS that adds the scroll bar changes the way the table rows are displayed
   * so we need to recalculate the width of the header and body rows so that they
   * are aligned properly
-  *
-  * @property {Object} sampleGrid
-  * @property {Object} queue
   */
   resizeTable() {
     const tableHead = document.getElementById('table-head');
