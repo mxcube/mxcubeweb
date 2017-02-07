@@ -14,7 +14,7 @@ from flask import jsonify
 from mock import Mock
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
-from . import limsutils
+from . import scutils
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = 'QueuePaused';
@@ -25,6 +25,7 @@ COLLECTED = 0x4
 FAILED = 0x2
 RUNNING = 0x1
 UNCOLLECTED = 0x0
+
 
 def node_index(node):
     """
@@ -203,9 +204,8 @@ def get_queue_state():
     """
     queue = queue_to_dict()
     queue_to_dict().pop("sample_order") if queue else queue
-    loaded = ''
 
-    res = { "loaded": loaded,
+    res = { "loaded": scutils.get_current_sample(),
             "queue": queue,
             "queueStatus": queue_exec_state() }
 

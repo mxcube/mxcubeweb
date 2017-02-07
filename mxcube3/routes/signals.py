@@ -4,6 +4,7 @@ from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
 from mxcube3.routes import qutils
+from mxcube3.routes import scutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
 
@@ -102,10 +103,18 @@ def sc_state_changed(*args):
     if len(args) == 2:
         old_state = args[1]
 
-    location = ''
+    location, sc_location, msg = '', '',  None
 
-    if mxcube.sample_changer.getLoadedSample():
-      location =  mxcube.sample_changer.getLoadedSample().getAddress()
+    # Handle inconsistent API getLoadedSample sometimes returns a sampleID
+    # and other times an object.
+    if isinstance(mxcube.sample_changer.getLoadedSample(), str):
+        parts = map(int, mxcube.sample_changer.getLoadedSample().split(':'))
+        sc_location =  ":".join(["%s" % parts[0], '%0.2d' % parts[1]])
+    else:
+        sc_location =  mxcube.sample_changer.getLoadedSample().getAddress()
+
+    known_location =  scutils.get_current_sample()
+    location = known_location if known_location else sc_location
 
     if location:
         if new_state == SampleChangerState.Moving and old_state == None:
@@ -113,26 +122,23 @@ def sc_state_changed(*args):
                    'location': location,
                    'message': 'Please wait, operating sample changer'}
 
-            socketio.emit('sc', msg, namespace='/hwr')
+        elif new_state == SampleChangerState.Loading:
+            msg = {'signal': 'loadingSample',
+                   'location': location,
+                   'message': 'Please wait, Loading sample %s' % location}
 
         elif new_state == SampleChangerState.Unloading and location:
             msg = {'signal': 'loadingSample',
                    'location': location,
                    'message': 'Please wait, Unloading sample %s' % location}
 
-            socketio.emit('sc', msg, namespace='/hwr')
+        elif new_state == SampleChangerState.Ready and (old_state == None or
+             old_state == SampleChangerState.Loading):
 
-        elif new_state == SampleChangerState.Ready and old_state == SampleChangerState.Loading:
-            msg = {'signal': 'loadedSample',
-                   'location': location,
-                   'message': 'Please wait, Loaded sample %s' % location}
+            msg = {'signal': 'loadReady', 'location': location}
+            scutils.set_current_sample(location)
 
-            socketio.emit('sc', msg, namespace='/hwr')
-
-        elif new_state == SampleChangerState.Ready and old_state == None:
-            msg = {'signal': 'loadReady',
-                   'location': location}
-
+        if msg:
             socketio.emit('sc', msg, namespace='/hwr')
 
 

@@ -156,7 +156,7 @@ class ServerIO {
     this.hwrSocket.on('sc', (record) => {
       this.dispatch(setLoading((record.signal === 'loadingSample' ||
                                 record.signal === 'loadedSample'),
-                               'Loading sample',
+                               `Loading sample ${record.location}`,
                                record.message, true, () => (this.dispatch(sendStopQueue()))));
 
       if (record.signal === 'loadReady') {

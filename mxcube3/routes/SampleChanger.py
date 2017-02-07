@@ -7,6 +7,7 @@ from mxcube3 import app as mxcube
 from . import limsutils
 
 from .qutils import UNCOLLECTED
+from .scutils import set_current_sample
 
 
 def init_signals():
@@ -100,19 +101,22 @@ def scan_location(loc):
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
 def mount_sample(loc):
     mxcube.sample_changer.load(loc)
+    set_current_sample(loc)
     return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
 def unmount_sample(loc):
     mxcube.sample_changer.unload(loc)
+    set_current_sample('')
     return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
-def mountSample():
+def mount_sample_clean_up():
     sample = request.get_json()
     
     try:
-        logging.getLogger('HWR').info('[SC] mounting %s (%r)', sample['location'], sample['sampleID'])
+        msg = '[SC] mounting %s (%r)', sample['location'], sample['sampleID']
+        logging.getLogger('HWR').info(msg)
 
         if not sample['location'] == 'Manual':
             mxcube.sample_changer.load(sample['sampleID'], False)
@@ -127,12 +131,13 @@ def mountSample():
         mxcube.diffractometer.savedCentredPosCount = 1
 
         logging.getLogger('HWR').info('[SC] mounted %s' % sample)
+        set_current_sample(sample['sampleID'])
 
         return Response(status=200)
 
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount", methods=['POST'])
-def unmountSample(sample):
+def unmount_sample_clean_up(sample):
     sample = request.get_json()
 
     try:
@@ -140,11 +145,13 @@ def unmountSample(sample):
             mxcube.sample_changer.unload(sample['sampleID'], False)
         mxcube.queue.mounted_sample = ''
 
-        #Remove Centring points
+        # Remove Centring points
         mxcube.diffractometer.savedCentredPos = []
         mxcube.diffractometer.savedCentredPosCount = 1
 
-        logging.getLogger('HWR').info('[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID'])
+        msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
+        logging.getLogger('HWR').info(msg)
+        set_current_sample('')
         return Response(status=200)
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
