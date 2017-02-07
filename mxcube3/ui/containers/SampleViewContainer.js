@@ -17,16 +17,16 @@ class SampleViewContainer extends Component {
     const sampleID = this.props.current.sampleID;
 
     return (
-      <div className="row">
+        <div className="row">
         <div className="col-xs-12">
             <div className="row">
               <div className="col-xs-12">
                 <BeamlineSetupContainer />
               </div>
             </div>
-            <div className="row" style={ { display: 'flex' } }>
+            <div className="row" style={ { display: 'flex', marginTop: '1em' } }>
               <div className="col-xs-1"
-                style={ { marginTop: '5em', paddingRight: '5px', paddingLeft: '1.5em' } }
+                style={ { paddingRight: '5px', paddingLeft: '1.5em' } }
               >
                 <MotorControl
                   save={sendMotorPosition}
