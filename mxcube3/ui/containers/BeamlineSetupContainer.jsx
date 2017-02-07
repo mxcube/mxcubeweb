@@ -80,7 +80,7 @@ class BeamlineSetupContainer extends React.Component {
         <div className="beamline-setup-container">
           <div className="beamline-setup-content">
             <div className="row" style={{ marginBottom: '1em' }}>
-              <div className="col-sm-12" style={{ alignItems: 'stretch', display: 'flex' }}>
+              <div className="col-sm-12 topbar">
                 <div style={{ marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
                     <div className="list-head" >
                       <BeamlineActions />
@@ -89,7 +89,9 @@ class BeamlineSetupContainer extends React.Component {
                 <div style={{ paddingLeft: '1em', display: 'flex' }}>
                 {this.createActuatorComponent()}
                 </div>
-              <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex', alignItems: 'center' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '1em',
+                            display: 'flex', alignItems: 'center' }}
+              >
                 <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="energy"
@@ -112,7 +114,9 @@ class BeamlineSetupContainer extends React.Component {
                 />
               </div>
               </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '0em',
+                            display: 'flex', alignItems: 'center' }}
+              >
                 <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="resolution"
@@ -134,7 +138,9 @@ class BeamlineSetupContainer extends React.Component {
                 />
               </div>
               </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '0em',
+                            display: 'flex', alignItems: 'center' }}
+              >
                 <div className="list-head" style={{ paddingRight: '0em' }}>
                 <PopInput
                   ref="transmission"
@@ -156,7 +162,9 @@ class BeamlineSetupContainer extends React.Component {
                 />
               </div>
               </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
+              <div style={{ paddingTop: '0em', marginLeft: '0em',
+                            display: 'flex', alignItems: 'center' }}
+              >
                 <div className="list-head" style={{ paddingLeft: '2em' }}>
                 <CryoInput
                   ref="cryo"
