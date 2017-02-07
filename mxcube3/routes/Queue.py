@@ -10,6 +10,7 @@ from flask import Response, jsonify, request, session
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from . import qutils
+from . import scutils
 
 qm = QueueManager.QueueManager('Mxcube3')
 
@@ -26,8 +27,17 @@ def queue_start():
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
 
     try:
-        mxcube.queue.queue_hwobj.set_pause(False)
-        mxcube.queue.queue_hwobj.execute()
+        queue = qutils.queue_to_dict()
+        sample_id = queue["sample_order"][0]
+
+        # If auto mount sample is false, just run the first one
+        if not qutils.get_auto_mount_sample():
+            sid = scutils.get_current_sample() or sample_id
+            qutils.execute_entry_with_id(sid)
+        else:
+            mxcube.queue.queue_hwobj.set_pause(False)
+            mxcube.queue.queue_hwobj.execute()
+
     except Exception as ex:
         signals.queue_execution_failed(ex)
     
@@ -149,31 +159,20 @@ def queue_get_state():
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=['PUT'])
 def execute_entry_with_id(sid, tindex):
     """
-    Execute the entry with the client id <client_id>
-    :param int client_id: Identifier of client item to execute
+    Execute the entry at position (sampleID, task index) in queue
+    :param str sid: sampleID
+    :param int tindex: task index of task within sample with id sampleID
 
     :statuscode: 200, no error
                  409, queue entry could not be executed
     """
-    if tindex in ['undefined', 'None', 'null']:
-        node_id = qutils.queue_to_dict()[sid]["queueID"]
+    try:
+        qutils.execute_entry_with_id(sid, tindex)                
+    except:
+        return Response(status=409)
     else:
-        node_id = qutils.queue_to_dict()[sid]["tasks"][int(tindex)]["queueID"]
-
-    node, entry = qutils.get_entry(node_id)
-
-    signals.queue_execution_started(None)
-
-    mxcube.queue.queue_hwobj._is_stopped = False
-    mxcube.queue.queue_hwobj._set_in_queue_flag()
-    mxcube.queue.queue_hwobj.set_pause(False)
-    mxcube.queue.queue_hwobj.execute_entry(entry)
-
-    signals.queue_execution_finished(None)
-
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-
-    return Response(status=200)
+        logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+        return Response(status=200)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['PUT'])
@@ -502,3 +501,15 @@ def serialize():
     except Exception:
         logging.getLogger("HWR").exception("[QUEUE] cannot serialize")
         return Response(status=409)
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/automount", methods=["POST"])
+def set_autmount():
+    automount = request.get_json()
+
+    qutils.set_auto_mount_sample(automount)
+
+    resp = jsonify({'automount': automount})
+    resp.status_code = 200
+    
+    return resp

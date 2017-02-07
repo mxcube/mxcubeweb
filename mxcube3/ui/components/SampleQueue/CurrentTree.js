@@ -10,25 +10,25 @@ export default class CurrentTree extends React.Component {
   constructor(props) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
-    this.runSample = this.runSample.bind(this);
-    this.unmount = this.unMountSample.bind(this);
+    this.unMountSample = this.unMountSample.bind(this);
     this.nextSample = this.nextSample.bind(this);
+
     this.state = {
       options: {
         [QUEUE_RUNNING]: [
-        { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
-        { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
+          { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
         ],
         [QUEUE_STOPPED]: [
-        { text: 'Run Sample', class: 'btn-success', action: this.runSample, key: 1 },
-        { text: 'Next Sample', class: 'btn-primary pull-right', action: this.nextSample, key: 2 }
+          { text: 'Next Sample', class: 'btn-primary pull-right', action: this.nextSample, key: 2 }
         ],
         [QUEUE_PAUSED]: [
-        { text: 'Stop', class: 'btn-danger', action: this.props.stop, key: 1 },
-        { text: 'Unpause', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
+          { text: 'Continue', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
         ],
         NoSampleMounted: [
-        { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
+          { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
+        ],
+        LastSample: [
+          { text: 'Finish', class: 'btn-primary pull-right', action: this.unMountSample, key: 1 }
         ]
       }
     };
@@ -36,20 +36,17 @@ export default class CurrentTree extends React.Component {
 
   nextSample() {
     if (this.props.todoList[0]) {
-      this.props.mount(this.props.sampleList[this.props.todoList[0]]);
+      this.props.runSample(this.props.todoList[0]);
     }
   }
 
   moveCard(dragIndex, hoverIndex) {
-    this.props.changeOrder(this.props.mounted, dragIndex, hoverIndex);
-  }
-
-  runSample() {
-    this.props.run(this.props.mounted, undefined);
+    this.props.changeOrder(this.props.sampleList[this.props.mounted], dragIndex, hoverIndex);
   }
 
   unMountSample() {
-    this.props.unmount(this.props.sampleList[this.props.mounted].queueID);
+    this.props.sendClearQueue(true);
+    this.props.unmount(this.props.sampleList[this.props.mounted]);
   }
 
   renderOptions(option) {
@@ -74,7 +71,12 @@ export default class CurrentTree extends React.Component {
     if (sampleId) {
       sampleData = this.props.sampleList[sampleId];
       sampleTasks = this.props.sampleList[sampleId].tasks;
-      queueOptions = this.state.options[this.props.queueStatus];
+
+      if (this.props.todoList.length === 0 && this.props.queueStatus === QUEUE_STOPPED) {
+        queueOptions = this.state.options.LastSample;
+      } else {
+        queueOptions = this.state.options[this.props.queueStatus];
+      }
     } else {
       sampleData.sampleName = 'Go To SampleGrid';
       queueOptions = [];

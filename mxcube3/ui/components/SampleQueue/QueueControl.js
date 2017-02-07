@@ -5,23 +5,28 @@ import { ProgressBar, Button, Input } from 'react-bootstrap';
 import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED } from '../../constants';
 
 export default class QueueControl extends React.Component {
-
   constructor(props) {
     super(props);
+
+    this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
 
     this.state = {
       options: {
         [QUEUE_RUNNING]: [
-        { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
+          { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
         ],
         [QUEUE_STOPPED]: [
-        { text: 'Run Queue', class: 'btn-success', action: props.runQueue, key: 1 },
+          { text: 'Run', class: 'btn-success', action: props.runQueue, key: 1 },
         ],
         [QUEUE_PAUSED]: [
-        { text: 'Run Queue', class: 'btn-success', action: props.runQueue, key: 1 },
+          { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
         ]
       }
     };
+  }
+
+  autoMountNextOnClick(e) {
+    this.props.setAutoMountSample(e.target.checked);
   }
 
   renderOptions(option) {
@@ -38,12 +43,13 @@ export default class QueueControl extends React.Component {
   }
 
   render() {
-    const { historyLength, todoLength, currentNode } = this.props;
-    const totalSamples = historyLength + todoLength + 1;
-    const progress = (100 / totalSamples) * historyLength;
-    const current = currentNode ? 0 : 1;
-
+    const { queueLength, historyLength } = this.props;
+    let progress = (100 / queueLength) * historyLength;
     const queueOptions = this.state.options[this.props.queueStatus];
+
+    if (this.props.todoLength === 0) {
+      progress = 0;
+    }
 
     return (
       <div className="m-tree">
@@ -51,15 +57,29 @@ export default class QueueControl extends React.Component {
           <div className="left">
             {queueOptions.map((option) => this.renderOptions(option))}
             <span className="queue-root">
-            Total Progress {`${historyLength}/${totalSamples - current} `}:
-          </span>
+              Total Progress {`${historyLength}/${queueLength} `}:
+            </span>
           </div>
           <div className="right">
             <ProgressBar active now={progress} />
           </div>
-          <div style={ { marginLeft: '20px' } }>
-            <span><Input type="checkbox" name="autoLoopCentring" /> Auto loop centring </span>
-            <span><Input type="checkbox" name="autoMountNext" /> Automount next sample </span>
+        <div style={ { marginLeft: '20px' } }>
+            <span>
+              <Input
+                type="checkbox"
+                name="autoMountNext"
+                onClick={this.autoMountNextOnClick}
+                checked={this.props.autoMountNext}
+              />
+              Automount next sample
+            </span>
+            <span>
+              <Input
+                type="checkbox"
+                name="autoLoopCentring"
+              />
+              Auto loop centring
+            </span>
           </div>
         </div>
       </div>

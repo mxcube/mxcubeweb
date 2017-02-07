@@ -17,10 +17,12 @@ from mxcube3 import socketio
 from . import scutils
 
 # Important: same constants as in constants.js
-QUEUE_PAUSED = 'QueuePaused';
-QUEUE_RUNNING = 'QueueStarted';
-QUEUE_STOPPED = 'QueueStopped';
-SAMPLE_MOUNTED = 0x8;
+QUEUE_PAUSED = 'QueuePaused'
+QUEUE_RUNNING = 'QueueStarted'
+QUEUE_STOPPED = 'QueueStopped'
+QUEUE_FAILED = 'QueueFailed'
+
+SAMPLE_MOUNTED = 0x8
 COLLECTED = 0x4
 FAILED = 0x2
 RUNNING = 0x1
@@ -206,6 +208,7 @@ def get_queue_state():
     queue_to_dict().pop("sample_order") if queue else queue
 
     res = { "loaded": scutils.get_current_sample(),
+            "autoMountNext": get_auto_mount_sample(),
             "queue": queue,
             "queueStatus": queue_exec_state() }
 
@@ -373,18 +376,24 @@ def delete_entry(entry):
     mxcube.queue.del_child(model.get_parent(), model)
 
 
-def enable_entry(id, flag):
+def enable_entry(id_or_qentry, flag):
     """
     Helper function that sets the enabled flag to <flag> for the entry
-    that has a model with node id <id>. Sets enabled flag on both entry and
-    model.
+    and associated model. Takes either the model node id or the QueueEntry
+    object.
 
-    :param int id: Node id 
+    Sets enabled flag on both the entry and model.
+
+    :param object id_or_qentry: Node id of model or QueueEntry object
     :param bool flag: True for enabled False for disabled
     """
-    model, entry = get_entry(id)
-    entry.set_enabled(flag)
-    model.set_enabled(flag)
+    if isinstance(id_or_qentry, qe.BaseQueueEntry):
+        id_or_qentry.set_enabled(flag)
+        id_or_qentry.get_data_model().set_enabled(flag)
+    else:
+        model, entry = get_entry(id_or_qentry)
+        entry.set_enabled(flag)
+        model.set_enabled(flag)
 
 
 def swap_task_entry(sid, ti1, ti2):
@@ -760,6 +769,40 @@ def add_diffraction_plan(parent, child):
             socketio.emit('add_task', msg, namespace='/hwr')
 
 
+def execute_entry_with_id(sid, tindex = None):
+    """
+    Execute the entry at position (sampleID, task index) in queue
+    
+    :param str sid: sampleID
+    :param int tindex: task index of task within sample with id sampleID
+    """
+    current_queue = queue_to_dict()
+    mxcube.queue.queue_hwobj.set_pause(False)
+
+    if tindex in ['undefined', 'None', 'null', None]:
+        node_id = current_queue[sid]["queueID"]
+        
+        enable_sample_entries(current_queue["sample_order"], False)
+        enable_sample_entries([sid], True)
+
+        # The queue ignores empty samples (so does not run the mount defined by
+        # the sample task), so in order function as expected; just mount the
+        # sample
+        if (not len(current_queue[sid]["tasks"])) and \
+           sid != scutils.get_current_sample():
+
+            scutils.mount_sample_clean_up(current_queue[sid])
+        
+        mxcube.queue.queue_hwobj.execute()
+    else:
+        node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
+
+        node, entry = get_entry(node_id)
+        mxcube.queue.queue_hwobj._is_stopped = False
+        mxcube.queue.queue_hwobj._set_in_queue_flag()
+        mxcube.queue.queue_hwobj.execute_entry(entry)
+
+
 def init_signals(queue):
     """
     Initialize queue hwobj related signals.
@@ -783,4 +826,44 @@ def init_signals(queue):
     queue.queue_hwobj.connect("queue_execution_finished",
                               signals.queue_execution_finished)
 
+    queue.queue_hwobj.connect("queue_execute_entry_finished",
+                              signals.queue_execution_entry_finished)
+
     queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
+
+
+def enable_sample_entries(sample_id_list, flag):
+    current_queue = queue_to_dict()
+
+    for sample_id in sample_id_list:
+        sample_data = current_queue[sample_id]
+        enable_entry(sample_data["queueID"], flag)
+
+
+def set_auto_mount_sample(automount, current_sample=None):
+    """
+    Sets auto mount next flag, automatically mount next sample in queue
+    (True) or wait for user (False)
+    
+    :param bool automount: True auto-mount, False wait for user
+    """
+    mxcube.AUTO_MOUNT_SAMPLE = automount
+    current_queue = queue_to_dict()
+
+    sample = current_sample if current_sample else scutils.get_current_sample()
+
+    # If automount next is off, that is do not mount and run next
+    # sample, disable all entries except the current one
+    # If automount next is on, enable all
+    enable_sample_entries(current_queue["sample_order"], automount)
+
+    # No automount, enable the current entry if any
+    enable_sample_entries([sample], True)
+
+
+def get_auto_mount_sample():
+    """
+    :returns: Returns auto mount flag
+    :rtype: bool
+    """
+    return mxcube.AUTO_MOUNT_SAMPLE

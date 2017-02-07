@@ -4,7 +4,8 @@ import { QUEUE_STOPPED } from '../constants';
 const initialState = {
   queue: [],
   current: { sampleID: null, running: false },
-  queueStatus: QUEUE_STOPPED
+  queueStatus: QUEUE_STOPPED,
+  autoMountNext: false
 };
 
 export default (state = initialState, action) => {
@@ -15,7 +16,7 @@ export default (state = initialState, action) => {
       return Object.assign({}, initialState, { queue });
     }
     case 'CLEAR_QUEUE': {
-      return Object.assign({}, state, { queue: {} });
+      return Object.assign({}, state, { queue: [] });
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
@@ -42,7 +43,6 @@ export default (state = initialState, action) => {
       return Object.assign({}, state,
         {
           current: { sampleID: null, collapsed: false, running: false },
-          history: [...state.history, state.current.sampleID]
         }
       );
     case 'RUN_SAMPLE':
@@ -54,7 +54,6 @@ export default (state = initialState, action) => {
       return { ...state, queue };
     }
     case 'CHANGE_SAMPLE_ORDER':
-
       return {
         ...state,
         [action.listName]: { ...state[action.listName],
@@ -64,9 +63,12 @@ export default (state = initialState, action) => {
                             [action.newIndex, 0, state[action.listName].sampleIDs[action.oldIndex]]
                       ] }) }
       };
+    case 'SET_AUTO_MOUNT_SAMPLE': {
+      return { ...state, autoMountNext: action.automount };
+    }
     case 'CLEAR_ALL':
       {
-        return Object.assign({}, state, { ...initialState });
+        return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
       }
     case 'QUEUE_STATE':
       {
@@ -78,7 +80,9 @@ export default (state = initialState, action) => {
           ...state,
           rootPath: action.data.rootPath,
           queue: Object.keys(action.data.queue.queue),
-          current: { sampleID: action.data.queue.loaded, running: false }
+          autoMountNext: action.data.queue.autoMountNext,
+          current: { sampleID: action.data.queue.loaded,
+                     running: action.data.queue.queueStatus }
         };
       }
     default:

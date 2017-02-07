@@ -94,5 +94,46 @@ def mount_sample(beamline_setup_hwobj,
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
 
+def mount_sample_clean_up(sample):
+    try:
+        msg = '[SC] mounting %s (%r)', sample['location'], sample['sampleID']
+        logging.getLogger('HWR').info(msg)
+        set_current_sample(sample['sampleID'])
+
+        if not sample['location'] == 'Manual':
+            mxcube.sample_changer.load(sample['sampleID'], False)
+
+        mxcube.queue.mounted_sample = sample['sampleID']
+    except Exception:
+        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
+        set_current_sample('')
+        raise
+    else:       
+        # Clearing centered position
+        mxcube.diffractometer.savedCentredPos = []
+        mxcube.diffractometer.savedCentredPosCount = 1
+
+        logging.getLogger('HWR').info('[SC] mounted %s' % sample)
+
+
+def unmount_sample_clean_up(sample):
+    try:
+        if not sample['location'] == 'Manual':
+            mxcube.sample_changer.unload(sample['sampleID'], False)
+        mxcube.queue.mounted_sample = ''
+
+        # Remove Centring points
+        mxcube.diffractometer.savedCentredPos = []
+        mxcube.diffractometer.savedCentredPosCount = 1
+
+        msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
+        logging.getLogger('HWR').info(msg)
+    except Exception:
+        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
+        raise
+    else:
+         set_current_sample('')
+
+
 # Important, patch queue_entry.mount_sample with the mount_sample defined above
 queue_entry.mount_sample = mount_sample

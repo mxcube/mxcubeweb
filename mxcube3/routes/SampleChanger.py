@@ -5,6 +5,7 @@ import signals
 from flask import Response, jsonify, request
 from mxcube3 import app as mxcube
 from . import limsutils
+from . import scutils
 
 from .qutils import UNCOLLECTED
 from .scutils import set_current_sample
@@ -112,47 +113,18 @@ def unmount_sample(loc):
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
 def mount_sample_clean_up():
-    sample = request.get_json()
-    
     try:
-        msg = '[SC] mounting %s (%r)', sample['location'], sample['sampleID']
-        logging.getLogger('HWR').info(msg)
-
-        if not sample['location'] == 'Manual':
-            mxcube.sample_changer.load(sample['sampleID'], False)
-
-        mxcube.queue.mounted_sample = sample['sampleID']
+        scutils.mount_sample_clean_up(request.get_json())
     except Exception:
-        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         return Response(status=409)
-    else:       
-        # Clearing centered position
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
-
-        logging.getLogger('HWR').info('[SC] mounted %s' % sample)
-        set_current_sample(sample['sampleID'])
-
+    else:
         return Response(status=200)
-
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount", methods=['POST'])
-def unmount_sample_clean_up(sample):
-    sample = request.get_json()
-
+def unmount_sample_clean_up():
     try:
-        if not sample['location'] == 'Manual':
-            mxcube.sample_changer.unload(sample['sampleID'], False)
-        mxcube.queue.mounted_sample = ''
-
-        # Remove Centring points
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
-
-        msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
-        logging.getLogger('HWR').info(msg)
-        set_current_sample('')
-        return Response(status=200)
+        scutils.unmount_sample_clean_up(request.get_json())
     except Exception:
-        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         return Response(status=409)
+    else:
+        return Response(status=200)

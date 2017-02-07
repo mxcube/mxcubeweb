@@ -93,7 +93,12 @@ export function addSampleAndMount(sampleData) {
 }
 
 
-export function sendClearQueue() {
+export function clearQueue() {
+  return { type: 'CLEAR_QUEUE' };
+}
+
+
+export function sendClearQueue(clearQueueOnly = false) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/queue/clear', {
       method: 'PUT',
@@ -106,7 +111,11 @@ export function sendClearQueue() {
       if (response.status >= 400) {
         throw new Error('Server refused to clear queue');
       } else {
-        dispatch(clearAll());
+        if (clearQueueOnly) {
+          dispatch(clearQueue());
+        } else {
+          dispatch(clearAll());
+        }
       }
     });
   };
@@ -491,11 +500,6 @@ export function sendToggleCheckBox(data, index) {
 }
 
 
-export function clearQueue() {
-  return { type: 'CLEAR_QUEUE' };
-}
-
-
 export function deleteSamplesFromQueue(sampleIDList) {
   return function (dispatch) {
     dispatch(queueLoading(true));
@@ -517,3 +521,31 @@ export function deleteSamplesFromQueue(sampleIDList) {
   };
 }
 
+
+export function setAutoMountAction(automount) {
+  return { type: 'SET_AUTO_MOUNT_SAMPLE', automount };
+}
+
+
+export function setAutoMountSample(automount) {
+  return function (dispatch) {
+    return fetch('mxcube/api/v0.1/queue/automount', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(automount)
+    }).then(response => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Could not set/unset automount'));
+      }
+      return response.json();
+    }).then(response => {
+      let a = response.automount;
+      a = a === undefined ? false : a;
+      dispatch(setAutoMountAction(a));
+    });
+  };
+}

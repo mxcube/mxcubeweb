@@ -1,5 +1,7 @@
 import logging
 
+import queue_model_objects_v1 as qmo
+
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
@@ -11,9 +13,13 @@ from sample_changer.GenericSampleChanger import SampleChangerState
 
 def last_queue_node():
     node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
-    if 'refdc' in node.get_name():  # link to the corresponding char
-        parent = node.get_parent()  # same parent as char
-        node = parent._children[0]  # but the rfdc children not here @#@#!!!
+
+    # Reference collections are orphans, the node we want is the
+    # characterisation not the reference collection itself
+    if 'refdc' in node.get_name():
+        parent = node.get_parent()
+        node = parent._children[0]
+
     return qutils.node_index(node)
 
 
@@ -96,6 +102,23 @@ def get_signal_progress(signal):
     return result
 
 
+def handle_auto_mount_next(entry):      
+    model = entry.get_data_model()
+
+    if isinstance(model.get_parent(), qmo.TaskGroup):
+        tgroup = model.get_parent()
+        auto_mount = qutils.get_auto_mount_sample()
+        tgroup = entry.get_data_model()
+        tgroup_list = entry.get_data_model().get_parent().get_children()
+        last_group_entry = tgroup_list.index(tgroup) == (len(tgroup_list) - 1)
+
+        if not auto_mount and last_group_entry:
+            msg = "Not mounting next sample automatically (Auto mount next)"
+            logging.getLogger('user_level_log').info(msg)
+#            mxcube.queue.queue_hwobj.set_pause(True)
+#            mxcube.queue.queue_hwobj.stop()
+
+
 def sc_state_changed(*args):
     new_state = args[0]
     old_state = None
@@ -104,14 +127,16 @@ def sc_state_changed(*args):
         old_state = args[1]
 
     location, sc_location, msg = '', '',  None
+    loaded_sample = mxcube.sample_changer.getLoadedSample()
 
     # Handle inconsistent API getLoadedSample sometimes returns a sampleID
     # and other times an object.
-    if isinstance(mxcube.sample_changer.getLoadedSample(), str):
-        parts = map(int, mxcube.sample_changer.getLoadedSample().split(':'))
-        sc_location =  ":".join(["%s" % parts[0], '%0.2d' % parts[1]])
+    if isinstance(loaded_sample, str):
+        if not 'None' in loaded_sample:
+            parts = map(int, loaded_sample.split(':'))
+            sc_location =  ":".join(["%s" % parts[0], '%0.2d' % parts[1]])
     else:
-        sc_location =  mxcube.sample_changer.getLoadedSample().getAddress()
+        sc_location =  loaded_sample.getAddress()
 
     known_location =  scutils.get_current_sample()
     location = known_location if known_location else sc_location
@@ -152,26 +177,27 @@ def centring_started(method, *args):
     socketio.emit('sample_centring', msg, namespace='/hwr')
 
 
-def queue_execution_started(entry):
-    msg = {'Signal': qutils.queue_exec_state(),
-           'Message': 'Queue execution started',
-           'State': 1}
+def queue_execution_entry_finished(entry):
+    handle_auto_mount_next(entry)
+
+
+def queue_execution_started(entry, queue_state=None):
+    state = queue_state if queue_state else qutils.queue_exec_state()
+    msg = {'Signal': state, 'Message': 'Queue execution started'}
 
     safe_emit('queue', msg, namespace='/hwr')
 
 
-def queue_execution_finished(entry):
-    msg = {'Signal': qutils.queue_exec_state(),
-           'Message': 'Queue execution stopped',
-           'State': 1}
+def queue_execution_finished(entry, queue_state=None):
+    state = queue_state if queue_state else qutils.queue_exec_state()
+    msg = {'Signal': state, 'Message': 'Queue execution stopped'}
 
     safe_emit('queue', msg, namespace='/hwr')
 
 
 def queue_execution_failed(entry):    
     msg = {'Signal': qutils.queue_exec_state(),
-           'Message': 'Queue execution stopped',
-           'State': 2}
+           'Message': 'Queue execution stopped'}
 
     safe_emit('queue', msg, namespace='/hwr')
 
