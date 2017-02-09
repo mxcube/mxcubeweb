@@ -93,9 +93,19 @@ export default class TaskItem extends Component {
     this.deleteTask = this.deleteTask.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
     this.collapseTask = this.collapseTask.bind(this);
+    this.getResult = this.getResult.bind(this);
     this.state = {
       overInput: false
     };
+  }
+
+  getResult(state) {
+    if (state !== 2) {
+      return ('nothing yet');
+    }
+    return (
+      <a href={this.props.data.limstResultData}> ISPyB link</a>
+      );
   }
 
   toggleChecked() {
@@ -106,7 +116,8 @@ export default class TaskItem extends Component {
     this.props.collapseTask(this.props.sampleId, this.props.index);
   }
 
-  deleteTask() {
+  deleteTask(e) {
+    e.stopPropagation();
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
@@ -152,14 +163,23 @@ export default class TaskItem extends Component {
       typePrefix = 'L';
     }
 
+    let delTaskCSS = {
+      display: 'flex',
+      marginLeft: 'auto',
+      alignItems: 'center',
+      paddingLeft: '10px',
+      paddingRight: '10px'
+    };
 
     const element = (
       <div className="node node-sample" style={{ opacity }}>
-          <div className={taskCSS} onClick={this.collapseTask}>
-            <p className="node-name">
-              {`${typePrefix}${data.parameters.point} ${data.label}`}
-            </p>
-          </div>
+            <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
+              <p className="node-name" style={{ display: 'flex' }} >
+                {`${typePrefix}${data.parameters.point} ${data.label}`}
+              </p>
+              <p className="fa fa-trash" onClick={this.deleteTask} style={delTaskCSS} >
+              </p>
+            </div>
           <Collapse in={Boolean(show)}>
           <div className="task-body">
             <form>
@@ -196,10 +216,13 @@ export default class TaskItem extends Component {
                   resolution: {parameters.resolution},
                   Transmission: {`${parameters.transmission}%`}
                 </span>
+              <div>
+                <label>Results:&nbsp;</label>
+                <span className="task-result">
+                  {this.getResult(state)}
+                </span>
               </div>
-                <Button bsSize="sm" onClick={this.showForm}>Change</Button>
-                {this.deleteButton()}
-                <Button bsSize="sm" disabled={state !== 2}>Results</Button>
+              </div>
             </form>
           </div>
           </Collapse>
