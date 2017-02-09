@@ -15,10 +15,10 @@ export default class QueueControl extends React.Component {
         { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
         ],
         [QUEUE_STOPPED]: [
-        { text: 'Run Queue', class: 'btn-success', action: props.runQueue, key: 1 },
+        { text: 'Run', class: 'btn-success', action: props.runQueue, key: 1 },
         ],
         [QUEUE_PAUSED]: [
-        { text: 'Run Queue', class: 'btn-success', action: props.runQueue, key: 1 },
+        { text: 'Run', class: 'btn-success', action: props.runQueue, key: 1 },
         ]
       }
     };
