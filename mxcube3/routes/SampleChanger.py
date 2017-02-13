@@ -5,8 +5,10 @@ import signals
 from flask import Response, jsonify, request
 from mxcube3 import app as mxcube
 from . import limsutils
+from . import scutils
 
 from .qutils import UNCOLLECTED
+from .scutils import set_current_sample
 
 
 def init_signals():
@@ -100,52 +102,29 @@ def scan_location(loc):
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
 def mount_sample(loc):
     mxcube.sample_changer.load(loc)
+    set_current_sample(loc)
     return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
 def unmount_sample(loc):
     mxcube.sample_changer.unload(loc)
+    set_current_sample('')
     return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
-def mountSample():
-    sample = request.get_json()
-    
+def mount_sample_clean_up():
     try:
-        logging.getLogger('HWR').info('[SC] mounting %s (%r)', sample['location'], sample['sampleID'])
-
-        if not sample['location'] == 'Manual':
-            mxcube.sample_changer.load(sample['sampleID'], False)
-
-        mxcube.queue.mounted_sample = sample['sampleID']
+        scutils.mount_sample_clean_up(request.get_json())
     except Exception:
-        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         return Response(status=409)
-    else:       
-        # Clearing centered position
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
-
-        logging.getLogger('HWR').info('[SC] mounted %s' % sample)
-
+    else:
         return Response(status=200)
-
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount", methods=['POST'])
-def unmountSample(sample):
-    sample = request.get_json()
-
+def unmount_sample_clean_up():
     try:
-        if not sample['location'] == 'Manual':
-            mxcube.sample_changer.unload(sample['sampleID'], False)
-        mxcube.queue.mounted_sample = ''
-
-        #Remove Centring points
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
-
-        logging.getLogger('HWR').info('[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID'])
-        return Response(status=200)
+        scutils.unmount_sample_clean_up(request.get_json())
     except Exception:
-        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         return Response(status=409)
+    else:
+        return Response(status=200)

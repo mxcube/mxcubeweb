@@ -23,6 +23,7 @@ function mapStateToProps(state) {
     visibleList: state.queueGUI.visibleList,
     queueStatus: state.queue.queueStatus,
     queue: state.queue.queue,
+    autoMountNext: state.queue.autoMountNext,
     sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
@@ -70,11 +71,11 @@ export default class SampleQueueContainer extends React.Component {
       rootPath,
       displayData,
       visibleList,
-      loading
+      loading,
+      autoMountNext
     } = this.props;
     const {
       sendToggleCheckBox,
-      sendRunSample,
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
@@ -82,7 +83,10 @@ export default class SampleQueueContainer extends React.Component {
       changeTaskOrderAction,
       deleteTask,
       sendMountSample,
-      moveTask
+      moveTask,
+      setAutoMountSample,
+      sendRunSample,
+      sendClearQueue
     } = this.props.queueActions;
     const {
       collapseTask,
@@ -112,11 +116,13 @@ export default class SampleQueueContainer extends React.Component {
                 <QueueControl
                   ref="queueContainer"
                   historyLength={history.length}
+                  queueLength={queue.length}
                   todoLength={todo.length}
-                  currentNode={current.sampleID}
                   queueStatus={queueStatus}
                   runQueue={showConfirmCollectDialog}
                   stopQueue={sendStopQueue}
+                  setAutoMountSample={setAutoMountSample}
+                  autoMountNext={autoMountNext}
                 />
               <div className="m-tree queue-body">
                 <Nav
@@ -143,7 +149,6 @@ export default class SampleQueueContainer extends React.Component {
                   toggleCheckBox={sendToggleCheckBox}
                   checked={checked}
                   deleteTask={deleteTask}
-                  run={sendRunSample}
                   pause={sendPauseQueue}
                   unpause={sendUnpauseQueue}
                   stop={sendStopQueue}
@@ -153,9 +158,10 @@ export default class SampleQueueContainer extends React.Component {
                   rootPath={rootPath}
                   collapseTask={collapseTask}
                   displayData={displayData}
-                  mount={sendMountSample}
+                  runSample={sendRunSample}
                   todoList={todo}
                   moveTask={moveTask}
+                  sendClearQueue={sendClearQueue}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
