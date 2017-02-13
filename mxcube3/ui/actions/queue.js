@@ -24,6 +24,11 @@ export function addSamplesToQueueAction(samplesData) {
 }
 
 
+export function removeSamplesFromQueueAction(sampleIDList) {
+  return { type: 'REMOVE_SAMPLES_FROM_QUEUE', sampleIDList };
+}
+
+
 export function sendAddQueueItem(items) {
   return fetch('mxcube/api/v0.1/queue', {
     method: 'POST',
@@ -67,11 +72,13 @@ export function sendMountSample(sampleData) {
 
 export function addSamplesToQueue(sampleDataList) {
   return function (dispatch) {
+    dispatch(addSamplesToQueueAction(sampleDataList));
+
     sendAddQueueItem(sampleDataList).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to add sample'));
-      } else {
-        dispatch(addSamplesToQueueAction(sampleDataList));
+        const sampleIDList = sampleDataList.map((sampleData) => (sampleData.sampleID));
+        dispatch(removeSamplesFromQueueAction(sampleIDList));
       }
     });
   };
@@ -178,11 +185,6 @@ export function sendDeleteQueueItem(itemPosList) {
 
 export function setStatus(queueState) {
   return { type: 'SET_QUEUE_STATUS', queueState };
-}
-
-
-export function removeSamplesFromQueueAction(sampleIDList) {
-  return { type: 'REMOVE_SAMPLES_FROM_QUEUE', sampleIDList };
 }
 
 

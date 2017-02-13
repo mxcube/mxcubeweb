@@ -185,7 +185,7 @@ export default (state = INITIAL_STATE, action) => {
     }
     // Toggles a samples movable flag
     case 'TOGGLE_MOVABLE_SAMPLE': {
-      const moving = {};
+      const moving = { };
       moving[action.key] = (!state.moving[action.key]);
       return Object.assign({}, state, { moving });
     }
@@ -196,7 +196,7 @@ export default (state = INITIAL_STATE, action) => {
 
       for (const key of action.keys) {
         selectedItems[key] = action.selected;
-        movingItems[action.key] = (state.moving[action.key] && state.selected[action.key]);
+        movingItems[key] = (state.moving[key] && state.selected[key]);
       }
 
       return Object.assign({}, state, { selected: selectedItems, moving: movingItems });

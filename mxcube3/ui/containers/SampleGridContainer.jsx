@@ -8,8 +8,6 @@ import {
   enterExitStyle,
   easings,
   layout,
-  measureItems,
-  makeResponsive
 } from 'react-stonecutter';
 
 import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected } from '../constants';
@@ -36,10 +34,10 @@ class SampleGridContainer extends React.Component {
 
   constructor(props) {
     super(props);
+    this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-    this.onClickHandler = this.onClickHandler.bind(this);
     this.onContextMenu = this.onContextMenu.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
 
@@ -49,7 +47,7 @@ class SampleGridContainer extends React.Component {
     this.inQueueSampleID = this.inQueueSampleID.bind(this);
 
     this.getSampleItems = this.getSampleItems.bind(this);
-    this.selectItemUnderCusor = this.selectItemUnderCusor.bind(this);
+    this.selectItemUnderCursor = this.selectItemUnderCursor.bind(this);
     this.sampleItemPickButtonOnClickHandler = this.sampleItemPickButtonOnClickHandler.bind(this);
     this.sampleItemMoveButtonOnClickHandler = this.sampleItemMoveButtonOnClickHandler.bind(this);
     this.sampleItemOnMoveHandler = this.sampleItemOnMoveHandler.bind(this);
@@ -60,7 +58,8 @@ class SampleGridContainer extends React.Component {
     this.taskItemOnClickHandler = this.taskItemOnClickHandler.bind(this);
 
     this.showRubberBand = false;
-    this.sampleItems = [];
+    this.state = { sampleItems: this.getSampleItems(props) };
+    this.sampleItems = this.getSampleItems(props);
   }
 
 
@@ -71,27 +70,17 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  shouldComponentUpdate(nextProps) {
+    return this.props.queue.queue !== nextProps.queue.queue ||
+           Object.keys(this.props.sampleList) !== Object.keys(nextProps.sampleList) ||
+           this.props.order !== nextProps.order;
+  }
+
+
   componentWillUnmount() {
     document.removeEventListener('contextmenu', this.onContextMenu);
     document.removeEventListener('keydown', this.onKeyDown);
     document.removeEventListener('click', this.onClick);
-  }
-
-
-  /**
-   * Handles single item selection and hides context menu if its displayed
-   *
-   * @param {MouseEvent} e
-   */
-  onClickHandler(e) {
-    const contextMenu = document.getElementById('contextMenu');
-
-    // If context menu is displayed hide it otherwise select item under cursor
-    if (e.button !== 2 && contextMenu.style.display !== 'none') {
-      contextMenu.style.display = 'none';
-    } else {
-      this.selectItemUnderCusor(e);
-    }
   }
 
 
@@ -150,7 +139,18 @@ class SampleGridContainer extends React.Component {
 
     // If several samples selected call the handler, otherwise rely on
     // onClick handler to handle the click
-    if (selected.length > 1) { this.sampleGridItemsSelectedHandler(e, selected); }
+    if (selected.length > 1) {
+      this.sampleGridItemsSelectedHandler(e, selected);
+    } else {
+      const contextMenu = document.getElementById('contextMenu');
+
+      // If context menu is displayed hide it otherwise select item under cursor
+      if (e.button !== 2 && contextMenu.style.display !== 'none') {
+        contextMenu.style.display = 'none';
+      } else {
+        this.selectItemUnderCursor(e);
+      }
+    }
   }
 
 
@@ -181,7 +181,7 @@ class SampleGridContainer extends React.Component {
   onContextMenu(e) {
     let res = true;
 
-    this.selectItemUnderCusor(e);
+    this.selectItemUnderCursor(e);
 
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       document.getElementById('contextMenu').style.display = 'none';
@@ -209,25 +209,26 @@ class SampleGridContainer extends React.Component {
    *
    * return {array} array of SampleItems
    */
-  getSampleItems() {
+  getSampleItems(props) {
     const sampleItemList = [];
 
     const orderedList = [];
-    this.props.order.forEach(key => {
-      const sampleID = this.props.sampleList[key].sampleID;
-      if (this.props.queue.queue.includes(sampleID)) {
+    props.order.forEach(key => {
+      const sampleID = props.sampleList[key].sampleID;
+      if (props.queue.queue.includes(sampleID)) {
         orderedList.push(key);
       }
     });
 
-    this.props.order.forEach(key => {
-      const sample = this.props.sampleList[key];
-      const liClass = this.props.moving[key] ? 'samples-grid-li-mv' : 'samples-grid-li';
+    props.order.forEach(key => {
+      const sample = props.sampleList[key];
+      const liClass = props.moving[key] ? 'samples-grid-li-mv' : 'samples-grid-li';
 
       if (this.filter(key)) {
         sampleItemList.push(
           <li className={liClass} key={key}>
             <SampleGridItem
+              key={key}
               itemKey={key}
               pickButtonOnClickHandler={this.sampleItemPickButtonOnClickHandler}
               moveButtonOnClickHandler={this.sampleItemMoveButtonOnClickHandler}
@@ -235,20 +236,20 @@ class SampleGridContainer extends React.Component {
               allowedDirections={this.sampleItemCanMove(key)}
               sampleData={sample}
               queueOrder={orderedList.indexOf(key) + 1}
-              selected={this.props.selected[sample.sampleID]}
-              current={this.props.queue.current.sampleID === sample.sampleID}
-              picked={this.props.inQueue(sample.sampleID)}
-              moving={this.props.moving[key]}
+              selected={props.selected[sample.sampleID]}
+              current={props.queue.current.sampleID === sample.sampleID}
+              picked={props.inQueue(sample.sampleID)}
+              moving={props.moving[key]}
             >
               {sample.tasks.map((taskData, i) => (
-                 <TaskItem
-                   key={i}
-                   taskItemOnClick={this.taskItemOnClickHandler}
-                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
-                   taskData={taskData}
-                   taskIndex={i}
-                   rootPath={this.props.queue.rootPath}
-                 />))
+                <TaskItem
+                  key={i}
+                  taskItemOnClick={this.taskItemOnClickHandler}
+                  deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
+                  taskData={taskData}
+                  taskIndex={i}
+                  rootPath={props.queue.rootPath}
+                />))
               }
             </SampleGridItem>
           </li>
@@ -265,7 +266,7 @@ class SampleGridContainer extends React.Component {
    *
    * @param {MouseEvent} e
    */
-  selectItemUnderCusor(e) {
+  selectItemUnderCursor(e) {
     // Handling single item selection, create a syntheticElement to use for the
     // mouse cursor when doing the overlap detection, reusing the same
     // mechanism as for mutiple selection
@@ -293,7 +294,7 @@ class SampleGridContainer extends React.Component {
   gridDimension() {
     const colArray = [];
     const numItems = Object.keys(this.props.order).length;
-    const numFullCols = Math.floor(this.calcGridWidth() / SAMPLE_ITEM_WIDTH);
+    const numFullCols = Math.floor(this.calcGridWidth()[0] / SAMPLE_ITEM_WIDTH);
     const numFullRows = Math.floor(numItems / numFullCols);
     const itemsOnLastRow = numItems - (numFullRows * numFullCols);
 
@@ -330,7 +331,7 @@ class SampleGridContainer extends React.Component {
     // Caculating the actual grid size, with space between sample items;
     const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
 
-    return actualGridWidth;
+    return [actualGridWidth, numCols];
   }
 
 
@@ -391,13 +392,17 @@ class SampleGridContainer extends React.Component {
    */
   filter(key) {
     const sample = this.props.sampleList[key];
-    let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
-    sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
+    let fi = false;
 
-    let fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
+    if (sample) {
+      let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
+      sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
 
-    fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
-    fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
+      fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
+
+      fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
+      fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
+    }
 
     return fi;
   }
@@ -639,13 +644,11 @@ class SampleGridContainer extends React.Component {
 
 
   render() {
-    this.sampleItems = this.getSampleItems();
-    const Grid = makeResponsive(measureItems(CSSGrid), { maxWidth: this.calcGridWidth() });
+    this.sampleItems = this.getSampleItems(this.props);
 
     return (
       <div
         className="samples-grid"
-        onClick={this.onClickHandler}
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
@@ -669,8 +672,9 @@ class SampleGridContainer extends React.Component {
           </MenuItem>
         </ul>
         <div className="selection-rubber-band" id="selectionRubberBand" />
-        <Grid
+        <CSSGrid
           component="ul"
+          columns={this.calcGridWidth()[1]}
           columnWidth={SAMPLE_ITEM_WIDTH}
           gutterWidth={SAMPLE_ITEM_SPACE}
           gutterHeight={SAMPLE_ITEM_SPACE + 3}
@@ -679,11 +683,11 @@ class SampleGridContainer extends React.Component {
           enter={enterExitStyle.simple.enter}
           entered={enterExitStyle.simple.entered}
           exit={enterExitStyle.simple.exit}
-          duration={1000}
+          duration={500}
           easing={easings.quadOut}
         >
           {this.sampleItems}
-        </Grid>
+        </CSSGrid>
       </div>
     );
   }
