@@ -13,13 +13,13 @@ export default class QueueControl extends React.Component {
     this.state = {
       options: {
         [QUEUE_RUNNING]: [
-          { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
+        { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
         ],
         [QUEUE_STOPPED]: [
-          { text: 'Run', class: 'btn-success', action: props.runQueue, key: 1 },
+        { text: 'Run', class: 'btn-success', action: props.runQueue, key: 1 },
         ],
         [QUEUE_PAUSED]: [
-          { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
+        { text: 'Run', class: 'btn-success', action: props.runQueue, key: 1 },
         ]
       }
     };
@@ -36,7 +36,7 @@ export default class QueueControl extends React.Component {
         bsSize="sm"
         onClick={option.action}
         key={option.key}
-      >
+      > 
         {option.text}
       </Button>
     );

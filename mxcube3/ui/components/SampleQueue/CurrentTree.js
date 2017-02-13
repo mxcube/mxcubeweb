@@ -16,13 +16,13 @@ export default class CurrentTree extends React.Component {
     this.state = {
       options: {
         [QUEUE_RUNNING]: [
-          { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
+        { text: 'Pause', class: 'btn-warning pull-right', action: this.props.pause, key: 2 },
         ],
         [QUEUE_STOPPED]: [
-          { text: 'Next Sample', class: 'btn-primary pull-right', action: this.nextSample, key: 2 }
+        { text: 'Next Sample', class: 'btn-primary pull-right', action: this.nextSample, key: 2 }
         ],
         [QUEUE_PAUSED]: [
-          { text: 'Continue', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
+        { text: 'Unpause', class: 'btn-success pull-right', action: this.props.unpause, key: 2 }
         ],
         NoSampleMounted: [
           { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
@@ -87,9 +87,9 @@ export default class CurrentTree extends React.Component {
     return (
       <div>
           <div className="list-head">
-              {queueOptions.map((option) => this.renderOptions(option))}
               <p className="queue-root" onClick={this.collapse}>
                 { sampleId ? `Sample: ${sampleData.sampleID}` : 'No Sample Mounted'}
+                {queueOptions.map((option) => this.renderOptions(option))}
               </p>
               <hr className="queue-divider" />
           </div>
