@@ -14,17 +14,20 @@ from flask import jsonify
 from mock import Mock
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
-from . import limsutils
+from . import scutils
 
 # Important: same constants as in constants.js
-QUEUE_PAUSED = 'QueuePaused';
-QUEUE_RUNNING = 'QueueStarted';
-QUEUE_STOPPED = 'QueueStopped';
-SAMPLE_MOUNTED = 0x8;
+QUEUE_PAUSED = 'QueuePaused'
+QUEUE_RUNNING = 'QueueStarted'
+QUEUE_STOPPED = 'QueueStopped'
+QUEUE_FAILED = 'QueueFailed'
+
+SAMPLE_MOUNTED = 0x8
 COLLECTED = 0x4
 FAILED = 0x2
 RUNNING = 0x1
 UNCOLLECTED = 0x0
+
 
 def node_index(node):
     """
@@ -53,11 +56,11 @@ def node_index(node):
         task_groups = sample_model.get_children();
         group_list = [group.get_children() for group in task_groups]
         tlist = [task for task_list in group_list for task in task_list]
-        # there is probably a better fix...
+
         try:
             index = tlist.index(node)
         except Exception:
-            print 'node not in list: ', node
+            pass
 
     return {'sample': sample, 'idx': index, 'queue_id': node._node_id}
 
@@ -192,71 +195,22 @@ def get_node_state(node_id):
 
 def get_queue_state():
     """
-    Return the dictionary representation of the queue state plus some extra lists.
+    Return the dictionary representation of the current queue and its state
 
     :returns: dictionary on the form:
               {
-                "history": [],
-                "loaded": "1:01",
-                "sample_list": [ sampleID_1, sampleID_2 ...],
-                "queue": {sampleID_1: [task1, ... taskn]
-                        .
-                        .
-                        .
-                        sampleID_n: [task1, ... taskn] }
-                "sample_list": {......}
-               }
+                loaded: ID of currently loaded sample,
+                queue: same format as queue_to_dict() but without sample_order,
+                queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
+              }
     """
-    try:
-        samples_list_sc = mxcube.sample_changer.getSampleList()
-    except Exception:
-        # if no sample changer is used, or if it has a problem,
-        # set an empty list
-        samples_list_sc = []
-    
-    samples = {}
-
-    for s in samples_list_sc:
-        sample_dm = s.getID() or ""
-        sample_data = {"sampleID": s.getAddress(),
-                       "location": ":".join(map(str, s.getCoords())),
-                       "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
-                       "code": sample_dm,
-                       "type": "Sample"}
-
-        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-        samples.update({s.getAddress(): sample_data})
-
     queue = queue_to_dict()
-    try:
-        order = queue.pop("sample_order")
-    except Exception:
-        order = []
-        pass
+    queue_to_dict().pop("sample_order") if queue else queue
 
-    sample_list_ho = mxcube.queue.queue_hwobj._queue_entry_list
-    sample_list = {}
-    for sample in sample_list_ho:
-        sample_model = sample.get_data_model()
-        name = sample_model.loc_str
-
-        sample_data = {"sampleID": name,
-                       "location": "Manual" if sample_model.free_pin_mode else sample_model.loc_str,
-                       "sampleName": sample_model.get_name(),
-                       "type": "Sample",
-                       "proteinAcronym": sample_model.crystals[0].protein_acronym,
-                       "defaultPrefix": sample_model.get_name() + '-' + sample_model.crystals[0].protein_acronym
-                       }
-
-        sample_list.update({name: sample_data})
-
-    loaded = ''
-
-    res = {"sample_list": sample_list,
-           "loaded": loaded,
-           "queue": queue,
-           "queueStatus": queue_exec_state()
-           }
+    res = { "loaded": scutils.get_current_sample(),
+            "autoMountNext": get_auto_mount_sample(),
+            "queue": queue,
+            "queueStatus": queue_exec_state() }
 
     return res
 
@@ -422,18 +376,24 @@ def delete_entry(entry):
     mxcube.queue.del_child(model.get_parent(), model)
 
 
-def enable_entry(id, flag):
+def enable_entry(id_or_qentry, flag):
     """
     Helper function that sets the enabled flag to <flag> for the entry
-    that has a model with node id <id>. Sets enabled flag on both entry and
-    model.
+    and associated model. Takes either the model node id or the QueueEntry
+    object.
 
-    :param int id: Node id 
+    Sets enabled flag on both the entry and model.
+
+    :param object id_or_qentry: Node id of model or QueueEntry object
     :param bool flag: True for enabled False for disabled
     """
-    model, entry = get_entry(id)
-    entry.set_enabled(flag)
-    model.set_enabled(flag)
+    if isinstance(id_or_qentry, qe.BaseQueueEntry):
+        id_or_qentry.set_enabled(flag)
+        id_or_qentry.get_data_model().set_enabled(flag)
+    else:
+        model, entry = get_entry(id_or_qentry)
+        entry.set_enabled(flag)
+        model.set_enabled(flag)
 
 
 def swap_task_entry(sid, ti1, ti2):
@@ -809,6 +769,40 @@ def add_diffraction_plan(parent, child):
             socketio.emit('add_task', msg, namespace='/hwr')
 
 
+def execute_entry_with_id(sid, tindex = None):
+    """
+    Execute the entry at position (sampleID, task index) in queue
+    
+    :param str sid: sampleID
+    :param int tindex: task index of task within sample with id sampleID
+    """
+    current_queue = queue_to_dict()
+    mxcube.queue.queue_hwobj.set_pause(False)
+
+    if tindex in ['undefined', 'None', 'null', None]:
+        node_id = current_queue[sid]["queueID"]
+        
+        enable_sample_entries(current_queue["sample_order"], False)
+        enable_sample_entries([sid], True)
+
+        # The queue ignores empty samples (so does not run the mount defined by
+        # the sample task), so in order function as expected; just mount the
+        # sample
+        if (not len(current_queue[sid]["tasks"])) and \
+           sid != scutils.get_current_sample():
+
+            scutils.mount_sample_clean_up(current_queue[sid])
+        
+        mxcube.queue.queue_hwobj.execute()
+    else:
+        node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
+
+        node, entry = get_entry(node_id)
+        mxcube.queue.queue_hwobj._is_stopped = False
+        mxcube.queue.queue_hwobj._set_in_queue_flag()
+        mxcube.queue.queue_hwobj.execute_entry(entry)
+
+
 def init_signals(queue):
     """
     Initialize queue hwobj related signals.
@@ -832,4 +826,44 @@ def init_signals(queue):
     queue.queue_hwobj.connect("queue_execution_finished",
                               signals.queue_execution_finished)
 
+    queue.queue_hwobj.connect("queue_execute_entry_finished",
+                              signals.queue_execution_entry_finished)
+
     queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
+
+
+def enable_sample_entries(sample_id_list, flag):
+    current_queue = queue_to_dict()
+
+    for sample_id in sample_id_list:
+        sample_data = current_queue[sample_id]
+        enable_entry(sample_data["queueID"], flag)
+
+
+def set_auto_mount_sample(automount, current_sample=None):
+    """
+    Sets auto mount next flag, automatically mount next sample in queue
+    (True) or wait for user (False)
+    
+    :param bool automount: True auto-mount, False wait for user
+    """
+    mxcube.AUTO_MOUNT_SAMPLE = automount
+    current_queue = queue_to_dict()
+
+    sample = current_sample if current_sample else scutils.get_current_sample()
+
+    # If automount next is off, that is do not mount and run next
+    # sample, disable all entries except the current one
+    # If automount next is on, enable all
+    enable_sample_entries(current_queue["sample_order"], automount)
+
+    # No automount, enable the current entry if any
+    enable_sample_entries([sample], True)
+
+
+def get_auto_mount_sample():
+    """
+    :returns: Returns auto mount flag
+    :rtype: bool
+    """
+    return mxcube.AUTO_MOUNT_SAMPLE

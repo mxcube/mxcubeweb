@@ -116,6 +116,11 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
         app.queue = qutils.new_queue()
 
+        # SampleID of currently mounted sample
+        app.CURRENTLY_MOUNTED_SAMPLE = ''
+        app.AUTO_MOUNT_SAMPLE = False
+        app.AUTO_LOOP_CENTER = False
+
         try:
             SampleCentring.init_signals()
             SampleChanger.init_signals()

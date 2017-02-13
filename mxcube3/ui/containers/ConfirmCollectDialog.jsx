@@ -2,9 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Modal, Button, Table, OverlayTrigger, Popover } from 'react-bootstrap';
-import { sendRunQueue } from '../actions/queue';
+import { Modal, Button, Table, OverlayTrigger, Popover, Input } from 'react-bootstrap';
+import { sendRunQueue, sendRunSample, sendMountSample, setAutoMountSample } from '../actions/queue';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
+import { TASK_UNCOLLECTED } from '../constants';
 
 import './ConfirmCollectDialog.css';
 
@@ -18,6 +19,10 @@ export class ConfirmCollectDialog extends React.Component {
     this.taskTable = this.taskTable.bind(this);
     this.onResize = this.onResize.bind(this);
     this.resizeTable = this.resizeTable.bind(this);
+    this.autoLoopCentringOnClick = this.autoLoopCentringOnClick.bind(this);
+    this.onHide = this.onHide.bind(this);
+    this.collectText = this.collectText.bind(this);
+    this.tasksToCollect = this.tasksToCollect.bind(this);
   }
 
   componentDidMount() {
@@ -44,6 +49,11 @@ export class ConfirmCollectDialog extends React.Component {
 
   onResize() {
     this.resizeTable();
+  }
+
+  onHide() { }
+
+  autoLoopCentringOnClick() {
   }
 
   /**
@@ -80,6 +90,23 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   /**
+   * Returns tasks to collect
+   *
+   * @property {Object} sampleGrid
+   * @property {Object} queue
+   * @return {Array} {tasks}
+   */
+  tasksToCollect() {
+    // Flat array of all tasks
+    const tasks = [].concat.apply([],
+      Object.values(this.props.queue.queue).map((sampleID) => (
+        this.props.sampleGrid.sampleList[sampleID]
+      )).map((sample) => sample.tasks));
+
+    return tasks.filter((task) => (task.state === TASK_UNCOLLECTED));
+  }
+
+  /**
    * Returns collection summary, total number of samples and tasks in the queue
    *
    * @property {Object} sampleGrid
@@ -88,11 +115,20 @@ export class ConfirmCollectDialog extends React.Component {
    */
   collectionSummary() {
     const numSamples = this.props.queue.queue.length;
-    const numTasks = Object.values(this.props.sampleGrid.sampleList).filter((sample) => (
-      this.props.queue.queue.includes(sample.sampleID)
-    )).map((sample) => sample.tasks.length).reduce((sum, value) => sum + value, 0);
+    const numTasks = this.tasksToCollect().length;
 
     return { numSamples, numTasks };
+  }
+
+  collectText() {
+    const summary = this.collectionSummary();
+    let text = `Collecting ${summary.numTasks} tasks on ${summary.numSamples} samples`;
+
+    if (summary.numTasks === 0) {
+      text = `Collecting ${summary.numSamples} samples`;
+    }
+
+    return text;
   }
 
   /**
@@ -104,76 +140,78 @@ export class ConfirmCollectDialog extends React.Component {
    * @return {ReactDomNode} Table Markup
    */
   taskTable() {
-    const tasks = [].concat.apply([],
-      Object.values(this.props.queue.queue).map((sampleID) => (
-        this.props.sampleGrid.sampleList[sampleID]
-      )).map((sample) => sample.tasks));
+    const tasks = this.tasksToCollect();
+    const summary = this.collectionSummary();
+    let table = (<div />);
 
-    const table = (
-      <div className="scroll">
-      <Table striped bordered condensed hover>
-        <thead id="table-head">
-          <tr>
-            <th>Type</th>
-            <th>Sample</th>
-            <th>Path</th>
-            <th>Prefix</th>
-            <th># Images</th>
-          </tr>
-        </thead>
-        <tbody id="table-body">
-          {tasks.map((task) => (
-            <OverlayTrigger
-              bsClass="collect-confirm-dialog-overlay-trigger"
-              placement="bottom"
-              overlay={(
-              <Popover id="collect-confirm-dialog-popover" bsClass="blabl">
-                <Table striped bordered condensed hover>
-                  <thead>
-                    <tr>
-                      <th>Osc. start</th>
-                      <th>Osc. range</th>
-                      <th>Exp time</th>
-                      <th>Resolution</th>
-                      <th>Transmission</th>
-                      <th>Energy</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{task.parameters.osc_start}</td>
-                      <td>{task.parameters.osc_range}</td>
-                      <td>{task.parameters.os}</td>
-                      <td>{task.parameters.resolution}</td>
-                      <td>{task.parameters.transmission}</td>
-                      <td>{task.parameters.energy}</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Popover>)}
-            >
+    if (summary.numTasks > 0) {
+      table = (
+        <div className="scroll">
+        <Table striped bordered condensed hover>
+          <thead id="table-head">
             <tr>
-              <td>{task.label}</td>
-              <td>{task.sampleID}</td>
-              <td>{task.parameters.path}</td>
-              <td>{task.parameters.prefix}</td>
-              <td>{task.parameters.num_images}</td>
+              <th>Type</th>
+              <th>Sample</th>
+              <th>Path</th>
+              <th>Prefix</th>
+              <th># Images</th>
             </tr>
-          </OverlayTrigger>))}
-        </tbody>
-      </Table>
-      </div>
-    );
+          </thead>
+          <tbody id="table-body">
+            {tasks.map((task) => (
+              <OverlayTrigger
+                key={task.sampleID}
+                bsClass="collect-confirm-dialog-overlay-trigger"
+                placement="bottom"
+                overlay={(
+                <Popover id="collect-confirm-dialog-popover">
+                  <Table striped bordered condensed hover>
+                    <thead>
+                      <tr>
+                        <th>Osc. start</th>
+                        <th>Osc. range</th>
+                        <th>Exp time</th>
+                        <th>Resolution</th>
+                        <th>Transmission</th>
+                        <th>Energy</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{task.parameters.osc_start}</td>
+                        <td>{task.parameters.osc_range}</td>
+                        <td>{task.parameters.os}</td>
+                        <td>{task.parameters.resolution}</td>
+                        <td>{task.parameters.transmission}</td>
+                        <td>{task.parameters.energy}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </Popover>)}
+              >
+              <tr>
+                <td>{task.label}</td>
+                <td>{task.sampleID}</td>
+                <td>{task.parameters.path}</td>
+                <td>{task.parameters.prefix}</td>
+                <td>{task.parameters.num_images}</td>
+              </tr>
+            </OverlayTrigger>))}
+          </tbody>
+        </Table>
+        </div>
+      );
+    }
 
     return table;
   }
 
   render() {
-    const summary = this.collectionSummary();
     return (
       <Modal
         dialogClassName="collect-confirm-dialog"
         show={this.props.show}
+        onHide={this.onHide}
       >
         <Modal.Header>
           <Modal.Title>
@@ -182,8 +220,19 @@ export class ConfirmCollectDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            <b>{`Collecting ${summary.numTasks} tasks on ${summary.numSamples} samples`}</b>
+            <b>{this.collectText()}</b>
           </p>
+          <div style={ { marginLeft: '20px' } }>
+            <span>
+              <Input
+                type="checkbox"
+                name="autoLoopCentring"
+                onClick={this.autoLoopCentringOnClick}
+              />
+              Auto loop centring
+            </span>
+          </div>
+          <br />
           {this.taskTable()}
         </Modal.Body>
         <Modal.Footer>
@@ -205,7 +254,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(showConfirmCollectDialog.bind(this, false), dispatch),
-    sendRunQueue: bindActionCreators(sendRunQueue, dispatch)
+    sendRunQueue: bindActionCreators(sendRunQueue, dispatch),
+    sendRunSample: bindActionCreators(sendRunSample, dispatch),
+    sendMountSample: bindActionCreators(sendMountSample, dispatch),
+    setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch)
   };
 }
 

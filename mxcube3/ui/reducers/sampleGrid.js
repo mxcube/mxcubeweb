@@ -174,7 +174,13 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'SET_CURRENT_SAMPLE': {
       const sampleList = Object.assign({}, state.sampleList);
-      sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
+
+      // We might want to set current sample to be nothing in that case do
+      // do nothing.
+      if (action.sampleID) {
+        sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
+      }
+
       return Object.assign({}, state, { sampleList });
     }
     // Toggles a samples movable flag

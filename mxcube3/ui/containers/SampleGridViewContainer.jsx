@@ -417,7 +417,7 @@ class SampleGridViewContainer extends React.Component {
           style={{ transform: 'translateZ(1)', marginBottom: '5px' }}
           stickyStyle={{ padding: '10px' }}
         >
-          <div className="row">
+          <div className="row" style={{ marginTop: '1em' }}>
             <div style={{ paddingLeft: '0px' }} className="col-xs-10">
               <div className="form-inline">
                 <SplitButton
