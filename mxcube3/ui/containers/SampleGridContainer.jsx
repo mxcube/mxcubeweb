@@ -36,6 +36,7 @@ class SampleGridContainer extends React.Component {
 
   constructor(props) {
     super(props);
+    this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
@@ -68,6 +69,13 @@ class SampleGridContainer extends React.Component {
     document.addEventListener('contextmenu', this.onContextMenu, false);
     document.addEventListener('keydown', this.onKeyDown, false);
     document.addEventListener('click', this.onClick, false);
+  }
+
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.queue.queue !== nextProps.queue.queue ||
+           Object.keys(this.props.sampleList) !== Object.keys(nextProps.sampleList) ||
+           this.props.order !== nextProps.order;
   }
 
 
