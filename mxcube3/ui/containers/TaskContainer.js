@@ -51,7 +51,7 @@ class TaskContainer extends React.Component {
       this.props.addTask(this.props.sampleIds, parameters, runNow);
     } else {
       const { taskData, sampleIds } = this.props;
-      const taskIndex = this.props.queue[sampleIds].tasks.indexOf(taskData);
+      const taskIndex = this.props.sampleList[sampleIds].tasks.indexOf(taskData);
       this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
     }
   }
@@ -107,7 +107,7 @@ function mapStateToProps(state) {
   return {
     queue: state.queue.queue,
     sampleOrder: state.queue.sampleOrder,
-    sampleList: state.queue.sampleList,
+    sampleList: state.sampleGrid.sampleList,
     showForm: state.taskForm.showForm,
     taskData: state.taskForm.taskData,
     sampleIds: state.taskForm.sampleIds,
