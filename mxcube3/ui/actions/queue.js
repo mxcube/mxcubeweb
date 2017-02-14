@@ -417,7 +417,7 @@ export function addTask(sampleIDs, parameters, runNow) {
         } else {
           dispatch(addTaskAction(tasks));
           if (runNow) {
-            const taskIndex = state.queue.queue[sampleIDs[0]].tasks.length;
+            const taskIndex = state.sampleGrid.sampleList[sampleIDs[0]].tasks.length;
             dispatch(sendRunSample(sampleIDs[0], taskIndex));
           }
         }
@@ -436,8 +436,8 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 
 export function updateTask(sampleID, taskIndex, params, runNow) {
   return function (dispatch, getState) {
-    const { queue } = getState();
-    const taskData = { ...queue.queue[sampleID].tasks[taskIndex], parameters: params };
+    const { sampleGrid } = getState();
+    const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
     dispatch(queueLoading(true));
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
