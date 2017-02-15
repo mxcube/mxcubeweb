@@ -227,6 +227,11 @@ def _handle_dc(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
+    try:
+        limsres = mxcube.rest_lims.get_dc(node.id)
+    except:
+        limsres = ''
+
     res = {"label": "Data Collection",
            "type": "DataCollection",
            "parameters": parameters,
@@ -235,7 +240,7 @@ def _handle_dc(sample_id, node):
            "queueID": queueID,
            "checked": enabled,
            "state": state,
-           "limstResultData": mxcube.rest_lims.get_dc(node.id),
+           "limstResultData": limsres,
            }
 
     return res
