@@ -146,16 +146,6 @@ export default class SampleControls extends React.Component {
           <Button
             type="button"
             data-toggle="tooltip"
-            title="Start auto centring"
-            className="fa fa-arrows sample-controll"
-            onClick={this.props.sampleActions.sendStartAutoCentring}
-          />
-          <span className="sample-controll-label">Auto-Centring</span>
-          </li>
-          <li>
-          <Button
-            type="button"
-            data-toggle="tooltip"
             title="Start 3-click Centring"
             className="fa fa-circle-o-notch sample-controll"
             onClick={this.toggleCentring}
