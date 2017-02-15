@@ -205,7 +205,7 @@ def get_queue_state():
               }
     """
     queue = queue_to_dict()
-    queue_to_dict().pop("sample_order") if queue else queue
+    queue.pop("sample_order") if queue else queue
 
     res = { "loaded": scutils.get_current_sample(),
             "autoMountNext": get_auto_mount_sample(),
