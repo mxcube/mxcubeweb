@@ -250,7 +250,10 @@ def get_queue_state():
 
         sample_list.update({name: sample_data})
 
-    loaded = ''
+    try:
+        loaded = mxcube.queue.mounted_sample
+    except:
+        loaded = ''
 
     res = {"sample_list": sample_list,
            "loaded": loaded,
