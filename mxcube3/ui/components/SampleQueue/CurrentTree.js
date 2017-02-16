@@ -36,7 +36,8 @@ export default class CurrentTree extends React.Component {
 
   nextSample() {
     if (this.props.todoList[0]) {
-      this.props.runSample(this.props.todoList[0]);
+        this.props.mount(this.props.sampleList[this.props.todoList[0]]);
+        this.props.runSample(this.props.todoList[0]);
     }
   }
 

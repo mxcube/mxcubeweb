@@ -154,6 +154,7 @@ export default class SampleQueueContainer extends React.Component {
                   stop={sendStopQueue}
                   showForm={showForm}
                   unmount={sendUnmountSample}
+                  mount={sendMountSample}
                   queueStatus={queueStatus}
                   rootPath={rootPath}
                   collapseTask={collapseTask}
