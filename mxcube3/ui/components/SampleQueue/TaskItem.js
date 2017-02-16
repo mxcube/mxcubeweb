@@ -157,10 +157,10 @@ export default class TaskItem extends Component {
 
     let typePrefix = '';
 
-    if (data.type === 'DataCollection' || data.type === 'Characterisation') {
-      typePrefix = 'P';
-    } else {
+    if (data.parameters.helical) {
       typePrefix = 'L';
+    } else {
+      typePrefix = 'P';
     }
 
     let delTaskCSS = {
@@ -170,7 +170,6 @@ export default class TaskItem extends Component {
       paddingLeft: '10px',
       paddingRight: '10px'
     };
-
     const element = (
       <div className="node node-sample" style={{ opacity }}>
             <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
