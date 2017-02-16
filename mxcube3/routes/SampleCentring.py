@@ -11,6 +11,7 @@ import json
 import signals
 import PIL
 import cStringIO
+from . import scutils
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
@@ -575,6 +576,11 @@ def wait_for_centring_finishes(*args, **kwargs):
     Executed when a centring is finished. It updates the temporary
     centred point.
     """
+    # we do not send/save any centring sata if there is no sample
+    # to avoid the 2d centring when no sample is mounted
+    if scutils.get_current_sample() == '':
+        return
+
     motor_positions = mxcube.diffractometer.centringStatus["motors"]
     motor_positions.pop('zoom', None)
     motor_positions.pop('beam_y', None)
