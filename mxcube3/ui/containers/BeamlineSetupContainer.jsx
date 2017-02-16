@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
-import BeamlineActions from './BeamlineActionsContainer';
+import BeamlineActions from '../components/BeamlineActions/BeamlineActions';
 import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
 import MachInfo from '../components/MachInfo/MachInfo';
 import CryoInput from '../components/Cryo/CryoInput';
