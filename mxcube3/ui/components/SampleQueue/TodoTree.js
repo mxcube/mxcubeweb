@@ -1,5 +1,4 @@
 import React from 'react';
-import 'bootstrap-webpack';
 import './app.less';
 import { Button } from 'react-bootstrap';
 import { QUEUE_RUNNING } from '../../constants';

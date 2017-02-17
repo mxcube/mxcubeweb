@@ -1,7 +1,6 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 
 import PopInput from '../components/PopInput/PopInput';

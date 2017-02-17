@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import { Modal, Button } from 'react-bootstrap';
 import { showConnectionLostDialog } from '../actions/general';
 

@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
+import 'bootstrap/dist/css/bootstrap.css';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Overlay, Popover } from 'react-bootstrap';
 
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import './style.css';
 
 export default class UserMessage extends React.Component {

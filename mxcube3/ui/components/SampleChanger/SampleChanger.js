@@ -1,6 +1,5 @@
 import React from 'react';
 import { Panel, Button, OverlayTrigger, Tooltip, Glyphicon, ButtonToolbar } from 'react-bootstrap';
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import './SampleChanger.css';
 /* eslint-disable react/no-multi-comp */
 

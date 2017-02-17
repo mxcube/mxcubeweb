@@ -29,7 +29,6 @@
     "grunt": "0.4.5",
     "history": "1.17.x",
     "isomorphic-fetch": "^2.2.0",
-    "jquery": "^2.2.1",
     "lodash": "4.0.0",
     "react": "15.4.2",
     "react-bootstrap-switch": "^3.4.5",

@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
 class Master extends React.Component {
   getObservers() {
