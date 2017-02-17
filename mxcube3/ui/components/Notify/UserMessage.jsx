@@ -13,6 +13,11 @@ export default class UserMessage extends React.Component {
   _exclude(message) {
     let include = true;
 
+    // If modal window is shown, skip
+    if (document.getElementsByClassName("modal in").length > 0) {
+      include = false;
+    }
+
     // Message have expired, duration time passed, skip !
     if (message.exp < new Date().getTime()) {
       include = false;
