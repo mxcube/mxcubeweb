@@ -32,7 +32,7 @@ class Helical extends React.Component {
       'detector_mode',
       'space_group',
       'prefix',
-      'path',
+      'subdir',
       'type',
       'point',
       'label',
@@ -94,7 +94,7 @@ class Helical extends React.Component {
         prefix,
         run_number,
         beam_size,
-        path
+        subdir
       },
       rootPath
     } = this.props;
@@ -115,14 +115,14 @@ class Helical extends React.Component {
 
             <div className="form-group">
               <label className="col-sm-12 control-label">
-                Path: {`${rootPath}/${path.value}`}
+                Path: {`${rootPath}/${subdir.value}`}
               </label>
             </div>
 
             <div className="form-group">
               <label className="col-sm-2 control-label">Subdirectory</label>
               <div className="col-sm-4">
-                <input type="text" className="form-control" {...path} />
+                <input type="text" className="form-control" {...subdir} />
               </div>
             </div>
 
@@ -399,7 +399,7 @@ Helical = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
     'prefix',
     'run_number',
     'beam_size',
-    'path'
+    'subdir'
   ] // all the fields in your form
 },
 state => ({ // mapStateToProps

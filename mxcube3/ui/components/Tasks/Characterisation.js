@@ -32,7 +32,7 @@ class Characterisation extends React.Component {
       'space_group',
       'strategy_complexity',
       'prefix',
-      'path',
+      'subdir',
       'type',
       'point',
       'label',
@@ -97,7 +97,7 @@ class Characterisation extends React.Component {
         strategy_complexity,
         prefix,
         run_number,
-        path,
+        subdir,
         beam_size
       },
     rootPath
@@ -119,14 +119,14 @@ class Characterisation extends React.Component {
             <form className="form-horizontal">
              <div className="form-group">
               <label className="col-sm-12 control-label">
-                Path: {`${rootPath}/${path.value}`}
+                Path: {`${rootPath}/${subdir.value}`}
               </label>
             </div>
 
              <div className="form-group">
               <label className="col-sm-2 control-label">Subdirectory</label>
               <div className="col-sm-4">
-                <input type="text" className="form-control" {...path} />
+                <input type="text" className="form-control" {...subdir} />
               </div>
             </div>
 
@@ -421,7 +421,7 @@ Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
     'strategy_complexity',
     'prefix',
     'run_number',
-    'path',
+    'subdir',
     'beam_size'
   ] // all the fields in your form
 },
