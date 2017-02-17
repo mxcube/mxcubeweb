@@ -186,8 +186,8 @@ class SampleGridContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       document.getElementById('contextMenu').style.display = 'none';
     } else if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
-      document.getElementById('contextMenu').style.top = `${e.clientY - 52}px`;
-      document.getElementById('contextMenu').style.left = `${e.clientX - 65}px`;
+      document.getElementById('contextMenu').style.top = `${e.clientY - 132}px`;
+      document.getElementById('contextMenu').style.left = `${e.clientX - 2}px`;
       document.getElementById('contextMenu').style.display = 'block';
       res = false;
     } else {

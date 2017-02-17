@@ -4,7 +4,6 @@ import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
 import ErrorNotificationPanel from '../containers/ErrorNotificationPanel';
 import ResumeQueueDialog from '../containers/ResumeQueueDialog';
-import LoggerOverlayContainer from '../containers/LoggerOverlayContainer';
 import ConnectionLostDialog from '../containers/ConnectionLostDialog';
 import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
@@ -31,7 +30,6 @@ export default class Main extends React.Component {
             </div>
           </div>
         </div>
-        <LoggerOverlayContainer />
       </div>
     );
   }
