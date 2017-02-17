@@ -10,6 +10,7 @@ from mxcube3.routes import scutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
 
+from qutils import READY, RUNNING, FAILED
 
 def last_queue_node():
     node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
@@ -379,4 +380,28 @@ def mach_info_changed(values):
         socketio.emit("mach_info_changed", values, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+
+
+def beamline_action_start(name):
+    msg = { "name": name, "state": RUNNING }
+    try:
+        socketio.emit("beamline_action", msg, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
+
+
+def beamline_action_done(name, result):
+    msg = { "name": name, "state": READY, "data": result }
+    try:
+        socketio.emit("beamline_action", msg, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
+
+
+def beamline_action_failed(name):
+    msg = { "name": name, "state": FAILED }
+    try:
+        socketio.emit("beamline_action", msg, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
 

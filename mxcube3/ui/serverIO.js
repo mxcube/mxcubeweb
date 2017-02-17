@@ -12,6 +12,7 @@ import {
 import { setBeamlineAttrAction,
          setBeamlineMovAttrAction,
          setMachInfo } from './actions/beamline';
+import { setActionState } from './actions/beamlineActions';
 import { setStatus,
          addTaskResultAction,
          addTaskAction,
@@ -216,6 +217,10 @@ class ServerIO {
 
     this.hwrSocket.on('take_xtal_snapshot', (unused, cb) => {
       cb(window.takeSnapshot());
+    });
+
+    this.hwrSocket.on('beamline_action', (data) => {
+      this.dispatch(setActionState(data.name, data.state));
     });
   }
 }

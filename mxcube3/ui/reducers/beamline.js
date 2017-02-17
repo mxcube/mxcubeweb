@@ -1,4 +1,5 @@
 import { STATE } from '../actions/beamline';
+import { RUNNING } from '../constants';
 
 /**
  *  Initial redux state for beamline attributes, object containing each beamline
@@ -108,7 +109,9 @@ export const INITIAL_STATE = {
   },
   machinfo: { current: -1, message: '' },
   pixelsPerMm: 0,
-  zoom: 0
+  zoom: 0,
+  beamlineActionsList: [],
+  currentBeamlineAction: { show: false, messages: [] }
 };
 
 
@@ -189,12 +192,74 @@ export default (state = INITIAL_STATE, action) => {
         movables: { ...state.movables, ...action.data.beamlineSetup.movables },
         motorsLimits: { ...action.data.motorsLimits, ...action.data.beamlineSetup },
         pixelsPerMm: action.data.Camera.pixelsPerMm[0],
-        zoom: action.data.Motors.zoom.position
+        zoom: action.data.Motors.zoom.position,
+        beamlineActionsList: action.data.beamlineActionsList.slice(0)
       };
     case 'BL_MACH_INFO':
       return { ...state,
         machinfo: { ...state.machinfo, ...action.info },
       };
+    case 'ACTION_SET_STATE':
+      {
+        const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
+        const currentBeamlineAction = {};
+        state.beamlineActionsList.some((beamlineAction, i) => {
+          if (beamlineAction.name == action.cmdName) {
+            beamlineActionsList[i].state = action.state;
+            if (action.state === RUNNING) {
+              beamlineActionsList[i].messages = [];
+            }
+            Object.assign(currentBeamlineAction, state.currentBeamlineAction,
+                          JSON.parse(JSON.stringify(beamlineActionsList[i])));
+            return true;
+          }
+          return false;
+        });
+        return { ...state, beamlineActionsList, currentBeamlineAction }
+      }
+    case 'ACTION_SHOW_OUTPUT':
+      {
+        const currentBeamlineAction = {};
+        state.beamlineActionsList.some((beamlineAction) => {
+          if (beamlineAction.name === action.cmdName) {
+            Object.assign(currentBeamlineAction, JSON.parse(JSON.stringify(beamlineAction)),
+                          { show: true });
+            return true;
+          }
+          return false;
+        });
+        return { ...state, currentBeamlineAction }
+      }
+    case 'ACTION_HIDE_OUTPUT':
+      {
+        return { ...state,
+                 currentBeamlineAction:
+                   Object.assign({},
+                   JSON.parse(JSON.stringify(state.currentBeamlineAction)),
+                   { show: false })
+               }
+      }
+    case 'ADD_USER_MESSAGE':
+      {
+        if (state.currentBeamlineAction.state !== RUNNING) {
+          return state;
+        }
+
+        const cmdName = state.currentBeamlineAction.name;
+        const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
+        const currentBeamlineAction = {};
+        state.beamlineActionsList.some((beamlineAction, i) => {
+          if (beamlineAction.name == cmdName) {
+            beamlineActionsList[i].messages.push(action.message);
+            Object.assign(currentBeamlineAction, state.currentBeamlineAction,
+                          JSON.parse(JSON.stringify(beamlineActionsList[i])));
+            return true;
+          }
+          return false;
+        });
+
+        return { ...state, beamlineActionsList, currentBeamlineAction }
+      }
     default:
       return state;
   }

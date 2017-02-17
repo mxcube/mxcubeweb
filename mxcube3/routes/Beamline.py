@@ -1,7 +1,9 @@
+import sys
 import json
 import logging
 import signals
-from flask import Response, jsonify, request
+from flask import jsonify, request, make_response
+from qutils import READY, RUNNING
 
 from mxcube3 import app as mxcube
 
@@ -30,13 +32,36 @@ def init_signals():
         logging.getLogger('HWR').\
             error("error loading mach_info hwo is not defined (%s)" % str(ex))
 
+    try:
+        actions = mxcube.actions
+        if actions is not None:
+            cmds = actions.getCommands()
+            for cmd in cmds:
+                cmd.connectSignal("commandBeginWaitReply", signals.beamline_action_start)
+                cmd.connectSignal("commandReplyArrived", signals.beamline_action_done)
+                cmd.connectSignal("commandFailed", signals.beamline_action_failed)
+        else:
+            logging.getLogger('HWR').error("beamline_actions hardware object is not defined")
+    except Exception, ex:
+        logging.getLogger('HWR').\
+            exception("error connecting to beamline actions hardware object signals")
+
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():
     ho = BeamlineSetupMediator(mxcube.beamline)
     data = ho.dict_repr()
-    data.update({'path': mxcube.session.get_base_image_directory()})
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    actions = list()
+    try:
+        cmds = mxcube.actions.getCommands()
+    except Exception:
+        cmds = []
+    for cmd in cmds:
+        actions.append({ "name": cmd.name(), "username": cmd.userName(), "state": READY })
+    
+    data.update({'path': mxcube.session.get_base_image_directory(), 'actionsList': actions })
+    
+    return jsonify(data)
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=['GET'])
@@ -45,13 +70,66 @@ def beamline_abort_action(name):
     Aborts an action in progress.
 
     :param str name: Owner / Actuator of the process/action to abort
-    """
-    # This could be made to give access to arbitrary method of HO, possible
-    # security issues to be discussed.
-    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
-    ho.stop()
 
-    return Response('', status=200, mimetype='application/json')
+    Replies with status code 200 on success and 520 on exceptions.
+    """
+    try:
+        cmds = mxcube.actions.getCommands()
+    except Exception:
+        cmds = []
+    
+    for cmd in cmds:
+        if cmd.name() == name:
+            try:
+                cmd.abort()
+            except Exception:
+                err = sys.exc_info()[0]
+                return make_response(err, 520) 
+            else:
+                return jsonify({})
+   
+    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+
+    try:
+        ho.stop()
+    except Exception:
+        err = sys.exc_info()[0]
+        return make_response(err, 520)
+    else:
+        return jsonify({})
+
+
+@mxcube.route("/mxcube/api/v0.1/beamline/<name>/run", methods=['POST'])
+def beamline_run_action(name):
+    """
+    Starts a beamline action ; POST payload is a json-encoded object with 'parameters'
+    as a list of parameters
+
+    :param str name: action to run
+
+    Replies with status code 200 on success and 520 on exceptions.
+    """
+    try:
+      params = request.get_json()["parameters"]
+    except Exception:
+      params = []
+
+    try:
+        cmds = mxcube.actions.getCommands()
+    except Exception:
+        cmds = []
+
+    for cmd in cmds:
+        if cmd.name() == name:
+            try:
+                cmd(*params)
+            except Exception:
+                err = sys.exc_info()[0]
+                return make_response(err, 520)
+            else:
+                return jsonify({})
+    else:
+        return make_response("Action cannot run: command '%s` does not exist" % name, 520)
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['PUT'])
@@ -79,7 +157,7 @@ def beamline_set_attribute(name):
         data["msg"] = str(ex)
         result, code = json.dumps(data), 520
 
-    return Response(result, status=code, mimetype='application/json')
+    return jsonify(result)
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
@@ -105,7 +183,7 @@ def beamline_get_attribute(name):
         data["msg"] = str(ex)
         result, code = json.dumps(data), 520
 
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    return jsonify(data)
 
 
 @mxcube.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
@@ -119,7 +197,7 @@ def get_beam_info():
 
     if beam_info is None:
         logging.getLogger('HWR').error("beamInfo is not defined")
-        return Response(status=409)
+        return make_response("beamInfo is not defined", 409)
 
     try:
         beam_info_dict = beam_info.get_beam_info()
@@ -141,9 +219,7 @@ def get_beam_info():
                 'size_y': beam_info_dict.get("size_y"),
                 'apertureList': aperture_list,
                 'currentAperture': current_aperture})
-    resp = jsonify(ret)
-    resp.status_code = 200
-    return resp
+    return jsonify(ret)
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
@@ -153,7 +229,7 @@ def beamline_get_data_path():
     this is specific for each beamline.
     """
     data = mxcube.session.get_base_image_directory()
-    return Response(json.dumps(data), status=200, mimetype='application/json')
+    return jsonify(data)
 
 
 @mxcube.route("/mxcube/api/v0.1/machinfo/", methods=['GET'])
@@ -167,12 +243,8 @@ def mach_info_get():
     """
     try:
         values = mxcube.machinfo.get_values(False)
-        resp = jsonify({'values': values})
-        resp.status_code = 200
+        return jsonify({'values': values})
     except Exception as ex:
         logging.getLogger('HWR').info('[MACHINFO] Cannot read values ')
-        resp = Response()
-        resp.status_code = 409
-    
-    return resp
+        return make_response("Cannot read machine info values", 409)
 

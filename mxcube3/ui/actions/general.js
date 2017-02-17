@@ -162,8 +162,10 @@ export function getInitialState() {
       queue.then(parse).then(json => { state.queue = json; }).catch(notify),
       motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
       beamInfo.then(parse).then(json => { state.beamInfo = json; }).catch(notify),
-      beamlineSetup.then(parse).then(json => { state.beamlineSetup = json; return json;}).then(
-        json => { state.datapath = json.path; }).catch(notify),
+      beamlineSetup.then(parse).then(
+        json => { state.beamlineSetup = json; return json; }).then(
+        json => { state.datapath = json.path; return json; }).then(
+        json => { state.beamlineActionsList = json.actionsList.map(x => { x.messages=[]; return x }); }).catch(notify),
       sampleVideoInfo.then(parse).then(json => { state.Camera = json; }).catch(notify),
       diffractometerInfo.then(parse).then(json => { Object.assign(state, json); }).catch(notify),
       dcParameters.then(parse).then(

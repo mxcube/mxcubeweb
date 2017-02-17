@@ -27,7 +27,7 @@ COLLECTED = 0x4
 FAILED = 0x2
 RUNNING = 0x1
 UNCOLLECTED = 0x0
-
+READY = 0
 
 def node_index(node):
     """
