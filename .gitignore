@@ -63,3 +63,5 @@ npm-debug.log*
 .DS_Store
 /dump.rdb
 /supervisord.pid
+
+yarn.lock
