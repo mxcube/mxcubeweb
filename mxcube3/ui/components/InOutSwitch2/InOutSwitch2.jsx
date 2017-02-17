@@ -39,11 +39,13 @@ export default class InOutSwitch2 extends React.Component {
       btn = <Button block bsSize="small" onClick={this.setIn}>{this.props.onText}</Button>;
     }
 
+    const msgLabelStyle = { display: 'block', fontSize: '100%', borderRadius: '0px' };
+
     return (
         <Row>
           <Col xs={12}>
             <Label style={{ display: 'block', marginBottom: '3px' }}>{this.props.labelText}</Label>
-            <Label bsStyle={msgBgStyle} style={{ display: 'block', fontSize: '100%', borderRadius: '0px' }}>{this.props.data.msg}</Label>
+            <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data.msg}</Label>
             {btn}
           </Col>
         </Row>

@@ -70,13 +70,15 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   render() {
-    return (
-            <Row style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%)', borderBottom: '1px solid rgb(174, 165, 165)' }}>
+    return (<Row style={{
+      background: 'linear-gradient(to bottom, #ffffff 0%, #f6f6f6 47%, #ededed 100%)',
+      borderBottom: '1px solid rgb(174, 165, 165)' }}
+    >
               <Col sm={12}>
                 <Row style={{ display: 'flex', alignItems: 'center' }}>
                   <Col sm={2}>
                     <BeamlineActions actionsList={this.props.data.beamlineActionsList} />
-                  </Col> 
+                  </Col>
                   {this.createActuatorComponent()}
                   <Col sm={1}>
                     <PopInput
