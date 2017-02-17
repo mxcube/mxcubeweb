@@ -1,7 +1,5 @@
 import React from 'react';
-import { Button, ButtonGroup } from 'react-bootstrap';
-
-import './style.css';
+import { Row, Col, Label, Button } from 'react-bootstrap';
 
 
 export default class InOutSwitch2 extends React.Component {
@@ -27,52 +25,28 @@ export default class InOutSwitch2 extends React.Component {
 
 
   render() {
-    const isIn = this.props.data.state === 'in';
-
-    const inButtonStyle = isIn ? 'success' : 'default';
-    const outButtonStyle = isIn ? 'default' : 'success';
-    let msgBgStyle = 'input-bg-moving';
+    let msgBgStyle = 'warning';
     if (this.props.data.state === 'in') {
-      msgBgStyle = 'input-bg-ready';
+      msgBgStyle = 'success';
     } else if (this.props.data.state === 'out') {
-      msgBgStyle = 'input-bg-fault';
+      msgBgStyle = 'danger';
+    }
+
+    let btn = <Button block bsSize="small" disabled>---</Button>;
+    if (this.props.data.state === 'in') {
+      btn = <Button block bsSize="small" onClick={this.setOut}>{this.props.offText}</Button>;
+    } else if (this.props.data.state === 'out') {
+      btn = <Button block bsSize="small" onClick={this.setIn}>{this.props.onText}</Button>;
     }
 
     return (
-      <div>
-        <div className="row" style={{ paddingTop: '0em', padding: '0.5em' }}>
-          <div className="inout-label">
-            {this.props.labelText}:
-          </div>
-          <div className={`inout-switch-msg ${msgBgStyle}`}>
-            {this.props.data.msg}
-          </div>
-        </div>
-        <div className="row" style={{ 'text-align': 'center' }}>
-        <ButtonGroup>
-          <Button
-            className=""
-            bsStyle={inButtonStyle}
-            bsSize="small"
-            onClick={this.setIn}
-            active={isIn}
-            disabled={isIn}
-          >
-            {this.props.onText}
-          </Button>
-          <Button
-            bsStyle={outButtonStyle}
-            bsSize="small"
-            className=""
-            onClick={this.setOut}
-            active={!isIn}
-            disabled={!isIn}
-          >
-            {this.props.offText}
-          </Button>
-        </ButtonGroup>
-        </div>
-      </div>
+        <Row>
+          <Col xs={12}>
+            <Label style={{ display: 'block', marginBottom: '3px' }}>{this.props.labelText}</Label>
+            <Label bsStyle={msgBgStyle} style={{ display: 'block', fontSize: '100%', borderRadius: '0px' }}>{this.props.data.msg}</Label>
+            {btn}
+          </Col>
+        </Row>
     );
   }
 }

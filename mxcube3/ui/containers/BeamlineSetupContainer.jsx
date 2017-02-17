@@ -1,10 +1,9 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
-
+import { Row, Col } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
-import BeamlineActions from '../components/BeamlineActions/BeamlineActions';
+import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
 import MachInfo from '../components/MachInfo/MachInfo';
 import CryoInput from '../components/Cryo/CryoInput';
@@ -12,8 +11,6 @@ import CryoInput from '../components/Cryo/CryoInput';
 import { sendGetAllAttributes,
          sendSetAttribute,
          sendAbortCurrentAction } from '../actions/beamline';
-
-import './beamline_setup_container.css';
 
 
 class BeamlineSetupContainer extends React.Component {
@@ -56,7 +53,7 @@ class BeamlineSetupContainer extends React.Component {
     const acts = [];
     for (let key in this.props.data.actuators) {
       if (this.props.data.actuators.hasOwnProperty(key)) {
-        acts.push(<div className="list-head" style={{ paddingRight: '2em' }}>
+        acts.push(<Col sm={1}>
                       <InOutSwitch2
                         onText="Open"
                         offText="Close"
@@ -65,128 +62,104 @@ class BeamlineSetupContainer extends React.Component {
                         data= { this.props.data.actuators[key] }
                         onSave= { this.actuatorSaveHandler }
                       />
-                    </div>
+                  </Col>
               );
       }
     }
     return acts;
   }
-// <div className="m-tree" style={{ overflow: 'visible',
-                    // alignItems: 'center', display: 'flex' }}
-                  // >
+
   render() {
     return (
-        <div className="beamline-setup-container">
-          <div className="beamline-setup-content">
-            <div className="row" style={{ marginBottom: '1em' }}>
-              <div className="col-sm-12 topbar">
-                <div style={{ marginLeft: '0em', display: 'flex', alignItems: 'center' }}>
-                    <div className="list-head" >
-                      <BeamlineActions />
+            <Row style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%)', borderBottom: '1px solid rgb(174, 165, 165)' }}>
+              <Col sm={12}>
+                <Row style={{ display: 'flex', alignItems: 'center' }}>
+                  <Col sm={2}>
+                    <BeamlineActions actionsList={this.props.data.beamlineActionsList} />
+                  </Col> 
+                  {this.createActuatorComponent()}
+                  <Col sm={1}>
+                    <PopInput
+                      ref="energy"
+                      name="Energy"
+                      pkey="energy"
+                      suffix="keV"
+                      data= { this.props.data.movables.energy }
+                      onSave= { this.movableSaveHandler }
+                      onCancel= { this.onCancelHandler }
+                    />
+                    <PopInput
+                      ref="wavelength"
+                      name="Wavelength"
+                      pkey="wavelength"
+                      placement="left"
+                      suffix="&Aring;"
+                      data={this.props.data.movables.wavelength}
+                      onSave={this.movableSaveHandler}
+                      onCancel={this.onCancelHandler}
+                    />
+                  </Col>
+                  <Col sm={1}>
+                    <PopInput
+                      ref="resolution"
+                      name="Resolution"
+                      pkey="resolution"
+                      suffix="A"
+                      data={this.props.data.movables.resolution}
+                      onSave={this.movableSaveHandler}
+                      onCancel={this.onCancelHandler}
+                    />
+                    <PopInput
+                      ref="detdist"
+                      name="Detector"
+                      pkey="detdist"
+                      suffix="mm"
+                      data={this.props.data.movables.detdist}
+                      onSave={this.movableSaveHandler}
+                      onCancel={this.onCancelHandler}
+                    />
+                  </Col>
+                  <Col sm={1}>
+                    <PopInput
+                      ref="transmission"
+                      name="Transmission"
+                      pkey="transmission"
+                      suffix="%"
+                      data={this.props.data.movables.transmission}
+                      onSave={this.movableSaveHandler}
+                      onCancel={this.onCancelHandler}
+                    />
+                    <PopInput
+                      ref="flux"
+                      name="Flux"
+                      pkey="flux"
+                      suffix="p/s"
+                      data={this.props.data.movables.flux}
+                      onSave={this.movableSaveHandler}
+                      onCancel={this.onCancelHandler}
+                    />
+                  </Col>
+                  <Col sm={1}>
+                    <CryoInput
+                      ref="cryo"
+                      name="Cryo"
+                      pkey="cryo"
+                      suffix="K"
+                      data={this.props.data.cryo}
+                      onSave={this.movableSaveHandler}
+                      onCancel={this.onCancelHandler}
+                    />
+                  </Col>
+                  <Col sm={3}>
+                    <div className="pull-right">
+                      <MachInfo
+                        info={this.props.data.machinfo}
+                      />
                     </div>
-                </div>
-                <div style={{ paddingLeft: '1em', display: 'flex' }}>
-                {this.createActuatorComponent()}
-                </div>
-              <div style={{ paddingTop: '0em', marginLeft: '1em',
-                            display: 'flex', alignItems: 'center' }}
-              >
-                <div className="list-head" style={{ paddingRight: '0em' }}>
-                <PopInput
-                  ref="energy"
-                  name="Energy"
-                  pkey="energy"
-                  suffix="keV"
-                  data= { this.props.data.movables.energy }
-                  onSave= { this.movableSaveHandler }
-                  onCancel= { this.onCancelHandler }
-                />
-                <PopInput
-                  ref="wavelength"
-                  name="Wavelength"
-                  pkey="wavelength"
-                  placement="left"
-                  suffix="&Aring;"
-                  data={this.props.data.movables.wavelength}
-                  onSave={this.movableSaveHandler}
-                  onCancel={this.onCancelHandler}
-                />
-              </div>
-              </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em',
-                            display: 'flex', alignItems: 'center' }}
-              >
-                <div className="list-head" style={{ paddingRight: '0em' }}>
-                <PopInput
-                  ref="resolution"
-                  name="Resolution"
-                  pkey="resolution"
-                  suffix="A"
-                  data={this.props.data.movables.resolution}
-                  onSave={this.movableSaveHandler}
-                  onCancel={this.onCancelHandler}
-                />
-                <PopInput
-                  ref="detdist"
-                  name="Detector"
-                  pkey="detdist"
-                  suffix="mm"
-                  data={this.props.data.movables.detdist}
-                  onSave={this.movableSaveHandler}
-                  onCancel={this.onCancelHandler}
-                />
-              </div>
-              </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em',
-                            display: 'flex', alignItems: 'center' }}
-              >
-                <div className="list-head" style={{ paddingRight: '0em' }}>
-                <PopInput
-                  ref="transmission"
-                  name="Transmission"
-                  pkey="transmission"
-                  suffix="%"
-                  data={this.props.data.movables.transmission}
-                  onSave={this.movableSaveHandler}
-                  onCancel={this.onCancelHandler}
-                />
-                <PopInput
-                  ref="flux"
-                  name="Flux"
-                  pkey="flux"
-                  suffix="p/s"
-                  data={this.props.data.movables.flux}
-                  onSave={this.movableSaveHandler}
-                  onCancel={this.onCancelHandler}
-                />
-              </div>
-              </div>
-              <div style={{ paddingTop: '0em', marginLeft: '0em',
-                            display: 'flex', alignItems: 'center' }}
-              >
-                <div className="list-head" style={{ paddingLeft: '2em' }}>
-                <CryoInput
-                  ref="cryo"
-                  name="Cryo"
-                  pkey="cryo"
-                  suffix="K"
-                  data={this.props.data.cryo}
-                  onSave={this.movableSaveHandler}
-                  onCancel={this.onCancelHandler}
-                />
-              </div>
-              </div>
-              <div style={{ paddingTop: '0em', marginLeft: '1em', display: 'flex' }}>
-                <div className="list-head" style={{ alignItems: 'center', display: 'flex' }}>
-                  <MachInfo
-                    info={this.props.data.machinfo}
-                  />
-                </div>
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
+                  </Col>
+                </Row>
+            </Col>
+          </Row>
     );
   }
 }
@@ -194,7 +167,7 @@ class BeamlineSetupContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    data: state.beamline,
+    data: state.beamline
   };
 }
 
