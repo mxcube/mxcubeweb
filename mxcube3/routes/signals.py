@@ -373,13 +373,14 @@ def beam_changed(*args, **kwargs):
     try:
         socketio.emit('beam_changed', msg, namespace='/hwr')
     except Exception:
-        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+        logging.getLogger("HWR").exception('error sending message: %s' + str(msg))
+
 
 def mach_info_changed(values):
     try:
         socketio.emit("mach_info_changed", values, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+        logging.getLogger("HWR").exception('error sending message: %s' + str(msg))
 
 
 def beamline_action_start(name):

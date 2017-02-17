@@ -19,7 +19,7 @@ def init_signals():
             logging.getLogger('HWR').error("beam_info is not defined")
     except Exception, ex: 
         logging.getLogger('HWR').\
-            error("error loading beam_info hwo is not defined (%s)" % str(ex))
+            exception("error connecting to beamline_setup/beam_info hardware object signals")
 
     try: 
         machInfo = mxcube.beamline.getObjectByRole("mach_info")
@@ -30,7 +30,7 @@ def init_signals():
             logging.getLogger('HWR').error("mach_info is not defined")
     except Exception, ex: 
         logging.getLogger('HWR').\
-            error("error loading mach_info hwo is not defined (%s)" % str(ex))
+            exception("error connecting to beamline_setup/mach_info hardware object signals")
 
     try:
         actions = mxcube.actions
