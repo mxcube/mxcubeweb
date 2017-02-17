@@ -2,6 +2,7 @@
 }
 
 .samples-grid ul {
+  margin: 0px auto;
   list-style-type: none;
 }
 
@@ -10,8 +11,8 @@
   background-color: #F6F6F6;
   margin-left: auto; 
   margin-right: auto;
-  padding-left: 20px;
-  padding-right: 28px;
+  padding-left: 4em;
+  padding-right: 4em;
 }
 
 

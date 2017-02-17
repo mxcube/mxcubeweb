@@ -18,6 +18,8 @@ export class SampleGridItem extends React.Component {
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
     this.sampleItemOnClick = this.sampleItemOnClick.bind(this);
     this.moveButtonOnClick = this.moveButtonOnClick.bind(this);
+    this.pickButtonMouseUp = this.pickButtonMouseUp.bind(this);
+    this.pickButtonMouseDown = this.pickButtonMouseDown.bind(this);
 
     this.moveItem = this.moveItem.bind(this);
     this.moveItemUp = this.moveItemUp.bind(this);
@@ -49,6 +51,14 @@ export class SampleGridItem extends React.Component {
     }
   }
 
+  pickButtonMouseDown(e) {
+    e.stopPropagation();
+  }
+
+  pickButtonMouseUp(e) {
+    e.stopPropagation();
+  }
+
   moveItem(e, direction) {
     if (this.props.onMoveHandler) {
       this.props.onMoveHandler(e, this.props.sampleData.sampleID, direction);
@@ -72,6 +82,8 @@ export class SampleGridItem extends React.Component {
           bsStyle="default"
           bsSize="s"
           onClick={this.pickButtonOnClick}
+          onMouseUp={this.pickButtonMouseUp}
+          onMouseDown={this.pickButtonMouseDown}
           disabled={this.props.current}
         >
           <i className={iconClassName} />
