@@ -27,7 +27,6 @@ var config = {
         loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=stage-0,plugins[]=transform-decorators-legacy'],
         exclude: /node_modules/
         },
-        {test: /bootstrap\/js\//, loader: 'imports?jQuery=jquery' },
         {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
         {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
         {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },
@@ -42,11 +41,6 @@ var config = {
     ]
     },
     plugins: [
-    new webpack.ProvidePlugin({
-        $: "jquery",
-        jQuery: "jquery",
-        "window.jQuery": "jquery"
-    }),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': '"production"'

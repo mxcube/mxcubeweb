@@ -1,5 +1,4 @@
 import React from 'react';
-import 'bootstrap';
 import './app.less';
 import { ProgressBar, Button, Input } from 'react-bootstrap';
 import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED } from '../../constants';
@@ -36,7 +35,7 @@ export default class QueueControl extends React.Component {
         bsSize="sm"
         onClick={option.action}
         key={option.key}
-      > 
+      >
         {option.text}
       </Button>
     );

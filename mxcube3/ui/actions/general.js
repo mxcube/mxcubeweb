@@ -73,7 +73,7 @@ function notify(error) {
   console.error('REQUEST FAILED', error);
 }
 
-export function getInitialStatus() {
+export function getInitialState() {
   return function (dispatch) {
     const state = {};
 

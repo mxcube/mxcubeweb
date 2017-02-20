@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { showErrorPanel, setLoading, getInitialStatus } from './general';
+import { showErrorPanel, setLoading, getInitialState } from './general';
 import { sendClearQueue } from './queue';
 import { setMaster } from './remoteAccess';
 
@@ -34,7 +34,7 @@ export function getLoginInfo() {
 
             if (loginInfo.loginRes.Proposal) {
               dispatch(afterLogin(loginInfo.loginRes));
-              dispatch(getInitialStatus());
+              dispatch(getInitialState());
             }
           }, () => {
             throw new Error('Server connection problem (getLoginInfo)');

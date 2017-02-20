@@ -1,5 +1,4 @@
 import React from 'react';
-import 'bootstrap';
 import './app.less';
 import TaskItem from './TaskItem';
 import { Button } from 'react-bootstrap';

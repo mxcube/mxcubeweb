@@ -1,6 +1,5 @@
 import React from 'react';
 
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 
 import './style.css';

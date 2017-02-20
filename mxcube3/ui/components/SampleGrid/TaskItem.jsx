@@ -1,6 +1,5 @@
 import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
-import 'bootstrap-webpack!bootstrap-webpack/bootstrap.config.js';
 
 import './SampleGrid.css';
 
