@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { startAction, stopAction, showActionOutput, hideActionOutput } from '../actions/beamlineActions';
-import { Row, Col, Modal, MenuItem, DropdownButton, Button } from 'react-bootstrap';
+import { startAction, stopAction, showActionOutput, hideActionOutput, setArgumentValue } from '../actions/beamlineActions';
+import { Row, Col, Modal, MenuItem, DropdownButton, Button, Well, Input } from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
 import { RUNNING } from '../constants';
 
@@ -17,7 +17,20 @@ class BeamlineActionsContainer extends React.Component {
   }
 
   startAction(cmdName) {
-    this.props.startAction(cmdName, []);
+    const parameters = [];
+
+    this.props.actionsList.some((cmd) => {
+      if (cmd.name === cmdName) {
+        cmd.arguments.forEach((arg) => {
+          if (arg.type === 'float') { parameters.push(parseFloat(arg.value)); }
+          else { parameters.push(arg.value) };
+        });
+        return true;
+      }
+      return false;
+    }); 
+
+    this.props.startAction(cmdName, parameters);
   }
 
   stopAction(cmdName) {
@@ -33,6 +46,9 @@ class BeamlineActionsContainer extends React.Component {
   }
 
   render() {
+    const currentActionRunning = this.props.currentAction.state === RUNNING;
+    const currentActionName = this.props.currentAction.name;
+
     return (
       <Row>
         <Col xs={12}>
@@ -42,18 +58,19 @@ class BeamlineActionsContainer extends React.Component {
                const cmdUsername = cmd.username;
                const cmdState = cmd.state;
                let disabled = false;
-               if ((this.props.currentAction.state === RUNNING) &&
-                  (this.props.currentAction.name !== cmdName)) {
+               if (currentActionRunning && (currentActionName !== cmdName)) {
                  disabled = true;
                }
     
-               return (<MenuItem eventKey={i}>{cmdUsername}
+               return (
+                  <MenuItem eventKey={i}>{cmdUsername}
                   <BeamlineActionControl cmdName={cmdName}
                                          start={this.startAction}
                                          stop={this.stopAction}
                                          showOutput={this.showOutput}
                                          state={cmdState}
                                          disabled={disabled}
+                                         arguments={cmd.arguments}
                   />
                </MenuItem>);
              })}
@@ -66,16 +83,20 @@ class BeamlineActionsContainer extends React.Component {
           </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            {this.props.currentAction.messages.map(message => {
-              return <p>{message.message}</p>
+            {this.props.currentAction.arguments.map((arg, i) => {
+              return <Input label={arg.name} type="text" value={arg.value} disabled={currentActionRunning} onChange={(e) => { this.props.setArgumentValue(currentActionName, i, e.target.value) }}/>
             })}
+            { currentActionRunning ? <Button bsStyle='danger' onClick={ () => { this.stopAction(currentActionName) } }> Abort </Button> :
+              <Button disabled={currentActionRunning} bsStyle='primary' onClick={ () => { this.startAction(currentActionName) } }> Run </Button>}
+            <hr></hr>
+            { this.props.currentAction.messages.length > 0 ? (<Well>
+              {this.props.currentAction.messages.map(message => {
+                return <p>{message.message}</p>
+              })}
+            </Well>) : "" }
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.hideOutput}> Close window </Button>
-            { this.props.currentAction.state === RUNNING ?
-              <Button bsStyle='danger' onClick={ () => { this.stopAction(this.props.currentAction.name) } }> Abort </Button>
-              : <Button bsStyle='primary' onClick={ () => { this.startAction(this.props.currentAction.name) } }> Run </Button>
-            }
           </Modal.Footer>
         </Modal>
       </Row>
@@ -94,7 +115,8 @@ function mapDispatchToProps(dispatch) {
     startAction: bindActionCreators(startAction, dispatch),
     stopAction: bindActionCreators(stopAction, dispatch),
     showOutput: bindActionCreators(showActionOutput, dispatch),
-    hideOutput: bindActionCreators(hideActionOutput, dispatch)
+    hideOutput: bindActionCreators(hideActionOutput, dispatch),
+    setArgumentValue: bindActionCreators(setArgumentValue, dispatch)
   };
 }
 

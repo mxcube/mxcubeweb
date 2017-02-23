@@ -57,7 +57,14 @@ def beamline_get_all_attributes():
     except Exception:
         cmds = []
     for cmd in cmds:
-        actions.append({ "name": cmd.name(), "username": cmd.userName(), "state": READY })
+        args = []
+        for arg in cmd.getArguments():
+          argname = arg[0]; argtype = arg[1]
+          args.append({ "name": argname, "type": argtype })
+          if argtype == 'combo':
+            args[-1]["items"] = cmd.getComboArgumentItems(argname)
+         
+        actions.append({ "name": cmd.name(), "username": cmd.userName(), "state": READY, "arguments": args, "messages": [] })
     
     data.update({'path': mxcube.session.get_base_image_directory(), 'actionsList': actions })
     
@@ -96,6 +103,7 @@ def beamline_abort_action(name):
         err = sys.exc_info()[0]
         return make_response(err, 520)
     else:
+        logging.getLogger('user_level_log').error('Aborted by user.')
         return jsonify({})
 
 
@@ -122,6 +130,8 @@ def beamline_run_action(name):
     for cmd in cmds:
         if cmd.name() == name:
             try:
+                cmd.emit('commandBeginWaitReply', name)
+                logging.getLogger('user_level_log').info('Starting %s(%s)', cmd.userName(), ", ".join(map(str,params)))
                 cmd(*params)
             except Exception:
                 err = sys.exc_info()[0]

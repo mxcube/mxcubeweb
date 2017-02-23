@@ -1,5 +1,5 @@
 import { STATE } from '../actions/beamline';
-import { RUNNING } from '../constants';
+import { READY, RUNNING } from '../constants';
 
 /**
  *  Initial redux state for beamline attributes, object containing each beamline
@@ -111,7 +111,7 @@ export const INITIAL_STATE = {
   pixelsPerMm: 0,
   zoom: 0,
   beamlineActionsList: [],
-  currentBeamlineAction: { show: false, messages: [] }
+  currentBeamlineAction: { show: false, messages: [], arguments: [] }
 };
 
 
@@ -215,6 +215,22 @@ export default (state = INITIAL_STATE, action) => {
           }
           return false;
         });
+        return { ...state, beamlineActionsList, currentBeamlineAction }
+      }
+    case 'ACTION_SET_ARGUMENT':
+      {
+        const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
+        const currentBeamlineAction = {};
+        state.beamlineActionsList.some((beamlineAction, i) => {
+          if (beamlineAction.name == action.cmdName) {
+            beamlineActionsList[i].arguments[action.argIndex].value = action.value;
+            Object.assign(currentBeamlineAction, state.currentBeamlineAction,
+                          JSON.parse(JSON.stringify(beamlineActionsList[i])));
+            return true;
+          }
+          return false;
+        });
+
         return { ...state, beamlineActionsList, currentBeamlineAction }
       }
     case 'ACTION_SHOW_OUTPUT':

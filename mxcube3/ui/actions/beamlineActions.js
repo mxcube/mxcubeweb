@@ -14,7 +14,11 @@ export function hideActionOutput(cmdName) {
   return { type: 'ACTION_HIDE_OUTPUT', cmdName }
 }
 
-export function startAction(cmdName, parametersList) {
+export function setArgumentValue(cmdName, argIndex, value) {
+  return { type: 'ACTION_SET_ARGUMENT', cmdName, argIndex, value };
+}
+
+export function startAction(cmdName, parameters) {
   const url = `mxcube/api/v0.1/beamline/${cmdName}/run`;
 
   return (dispatch) => {
@@ -28,7 +32,7 @@ export function startAction(cmdName, parametersList) {
         'Content-type': 'application/json'
       },
       credentials: 'include',
-      body: JSON.stringify({ parameters: parametersList })
+      body: JSON.stringify({ parameters })
     }).then(checkStatus).then(parseJSON).then(data => { data })
     .catch((error) => {
        dispatch(setActionState(cmdName, READY));
