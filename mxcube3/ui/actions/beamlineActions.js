@@ -33,9 +33,7 @@ export function startAction(cmdName, parameters) {
       },
       credentials: 'include',
       body: JSON.stringify({ parameters })
-    }).then(checkStatus).then(parseJSON).then(data => { data })
-    .catch((error) => {
-       dispatch(setActionState(cmdName, READY));
+    }).then(checkStatus).then(parseJSON).catch((error) => {
        throw new Error(`GET ${url} failed ${error}`);
     });
   };
@@ -52,8 +50,7 @@ export function stopAction(cmdName) {
         'Content-type': 'application/json'
       },
       credentials: 'include'
-    }).then(checkStatus).then(parseJSON).then(data => { data }).
-    catch((error) => {
+    }).then(checkStatus).then(parseJSON).catch((error) => {
        throw new Error(`GET ${url} failed: ${error}`);
     });
   };
