@@ -186,14 +186,14 @@ export default (state = INITIAL_STATE, action) => {
                                  }
              };
     case 'SET_INITIAL_STATE':
-      return { ...state,
-        motors: { ...state.motors, ...action.data.Motors },
-        actuators: { ...state.actuators, ...action.data.beamlineSetup.actuators },
-        movables: { ...state.movables, ...action.data.beamlineSetup.movables },
-        motorsLimits: { ...action.data.motorsLimits, ...action.data.beamlineSetup },
+      return { ...INITIAL_STATE,  
+        motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
+        actuators: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.actuators },
+        movables: { ...INITIAL_STATE.movables, ...action.data.beamlineSetup.movables },
+        motorsLimits: { ...INITIAL_STATE.motorsLimits, ...action.data.motorsLimits, ...action.data.beamlineSetup },
         pixelsPerMm: action.data.Camera.pixelsPerMm[0],
         zoom: action.data.Motors.zoom.position,
-        beamlineActionsList: action.data.beamlineActionsList.slice(0)
+        beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0)
       };
     case 'BL_MACH_INFO':
       return { ...state,
