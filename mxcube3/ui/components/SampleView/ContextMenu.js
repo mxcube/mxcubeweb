@@ -4,6 +4,9 @@ export default class ContextMenu extends React.Component {
 
   constructor(props) {
     super(props);
+    this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
+    this.deleteGrid = this.deleteGrid.bind(this);
+
     this.state = {
       options: {
         SAVED: [
@@ -20,11 +23,18 @@ export default class ContextMenu extends React.Component {
         { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
         ],
         LINE: [
-        { text: 'Delete Line', action: () => this.removeLine(), key: 2 }
+        { text: 'Delete Line', action: () => this.removeLine(), key: 1 }
+        ],
+        GridGroup: [
+          { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
+        ],
+        GridGroupSaved: [
+          { text: 'Delete', action: () => this.deleteGrid(), key: 1 }
         ],
         NONE: [
-        { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
-        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 }
+          { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
+          { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
+          { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 }
         ]
       }
     };
@@ -89,6 +99,22 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.measureDistance(true);
   }
 
+  toggleDrawGrid() {
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.toggleDrawGrid();
+  }
+
+  deleteGrid() {
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.deleteGrid(this.props.shape.obj.id);
+  }
+
+  saveGrid() {
+    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.addGrid(this.props.shape.gridData);
+    this.props.sampleActions.toggleDrawGrid();
+  }
+
   createLine() {
     const { shape } = this.props;
     this.props.sampleActions.showContextMenu(false);
@@ -100,6 +126,7 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.deleteLine(this.props.shape.id);
   }
+
   hideContextMenu() {
     document.getElementById('contextMenu').style.display = 'none';
   }

@@ -24,7 +24,11 @@ const initialState = {
   beamShape: 'elipse',
   beamSize: { x: 0, y: 0 },
   cinema: false,
-  phaseList: []
+  phaseList: [],
+  drawGrid: false,
+  gridList: [],
+  gridCount: 0,
+  selectedGrids: []
 };
 
 export default (state = initialState, action) => {
@@ -60,6 +64,46 @@ export default (state = initialState, action) => {
     case 'ADD_LINE':
       {
         return { ...state, lines: [...state.lines, { p1: action.p1, p2: action.p2 }] };
+      }
+    case 'DRAW_GRID':
+      {
+        let selectedGrids = state.selectedGrids;
+        if (!state.drawGrid) { selectedGrids = []; }
+
+        return { ...state, drawGrid: !state.drawGrid, selectedGrids };
+      }
+    case 'ADD_GRID':
+      {
+        return { ...state,
+                 gridList: [...state.gridList, action.gridData],
+                 gridCount: state.gridCount + 1,
+                 selectedGrids: [action.gridData.id]
+               };
+      }
+    case 'DELETE_GRID':
+      {
+        return { ...state,
+                 gridList: state.gridList.filter((gridData) => (gridData.id !== action.id))
+        };
+      }
+    case 'SELECT_GRID':
+      {
+        return { ...state, selectedGrids: [action.id] };
+      }
+
+    case 'UPDATE_GRID':
+      {
+        const gridList = state.gridList.map((gridData) => {
+          let gd = gridData;
+
+          if (gridData.id === action.gridData.id) {
+            gd = { ...action.gridData };
+          }
+
+          return gd;
+        });
+
+        return { ...state, gridList };
       }
     case 'MEASURE_DISTANCE':
       {
@@ -119,10 +163,13 @@ export default (state = initialState, action) => {
       }
     case 'CLEAR_ALL':
       {
-        return Object.assign({},
-          state,
-          { lines: [], distancePoints: [], clickCentringPoints: [] }
-        );
+        return Object.assign({}, state,
+                             { lines: [],
+                               distancePoints: [],
+                               clickCentringPoints: [],
+                               gridList: [],
+                               gridCount: 0 }
+         );
       }
     case 'SET_INITIAL_STATE':
       {

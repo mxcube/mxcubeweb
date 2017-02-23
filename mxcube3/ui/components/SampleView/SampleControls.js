@@ -20,6 +20,7 @@ export default class SampleControls extends React.Component {
     this.toggleFrontLight = this.toggleLight.bind(this, 'FrontLight');
     this.toggleBackLight = this.toggleLight.bind(this, 'BackLight');
     this.toggleCentring = this.toggleCentring.bind(this);
+    this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
   }
 
   componentDidMount() {
@@ -45,6 +46,10 @@ export default class SampleControls extends React.Component {
 
   setApertureSize(option) {
     this.props.sampleActions.sendChangeAperture(option.target.value);
+  }
+
+  toggleDrawGrid() {
+    this.props.sampleActions.toggleDrawGrid();
   }
 
   doTakeSnapshot() {
@@ -146,11 +151,12 @@ export default class SampleControls extends React.Component {
           <Button
             type="button"
             data-toggle="tooltip"
-            title="Start auto centring"
-            className="fa fa-arrows sample-controll"
-            onClick={this.props.sampleActions.sendStartAutoCentring}
+            title="Draw grid"
+            className="fa fa-th sample-controll"
+            onClick={this.toggleDrawGrid}
+            active={this.props.drawGrid}
           />
-          <span className="sample-controll-label">Auto-Centring</span>
+          <span className="sample-controll-label">Draw grid</span>
           </li>
           <li>
           <Button

@@ -79,7 +79,6 @@ export function addCentringPoint(x, y) {
   };
 }
 
-
 export function addLine(p1, p2) {
   return {
     type: 'ADD_LINE', p1, p2
@@ -138,6 +137,33 @@ export function toggleCinema() {
   return {
     type: 'TOOGLE_CINEMA'
   };
+}
+
+export function toggleDrawGrid() {
+  return { type: 'DRAW_GRID' };
+}
+
+export function addGridAction(gridData) {
+  return { type: 'ADD_GRID', gridData };
+}
+
+export function addGrid(gridData) {
+  return function (dispatch, getState) {
+    const { sampleview } = getState();
+    dispatch(addGridAction({ ...gridData, id: sampleview.gridCount }));
+  };
+}
+
+export function deleteGrid(id) {
+  return { type: 'DELETE_GRID', id };
+}
+
+export function selectGrid(id) {
+  return { type: 'SELECT_GRID', id };
+}
+
+export function updateGrid(gridData) {
+  return { type: 'UPDATE_GRID', gridData };
 }
 
 export function sendStartClickCentring() {

@@ -1,6 +1,8 @@
 import './SampleView.css';
 import React from 'react';
+import { Input } from 'react-bootstrap';
 import { makePoints, makeLines, makeImageOverlay } from './shapes';
+import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import 'fabric';
 const fabric = window.fabric;
@@ -9,12 +11,25 @@ export default class SampleImage extends React.Component {
 
   constructor(props) {
     super(props);
+    this.onMouseUp = this.onMouseUp.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
     this.setImageRatio = this.setImageRatio.bind(this);
     this.setColorPoint = this.setColorPoint.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.keyUp = this.keyUp.bind(this);
+    this.setHCellSpacing = this.setHCellSpacing.bind(this);
+    this.setVCellSpacing = this.setVCellSpacing.bind(this);
+    this.gridCellSpacing = this.gridCellSpacing.bind(this);
+    this.saveGrid = this.saveGrid.bind(this);
+    this.configureGrid = this.configureGrid.bind(this);
+    this.selectedGrid = this.selectedGrid.bind(this);
     this.canvas = {};
     this.state = { keyPressed: null };
+    this.gridStarted = false;
+    this.girdOrigin = null;
+    this.lineGroup = null;
+
+    this.drawGridPlugin = new DrawGridPlugin();
   }
 
   componentDidMount() {
@@ -23,6 +38,8 @@ export default class SampleImage extends React.Component {
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', (option) => this.leftClick(option));
+    this.canvas.on('mouse:move', (options) => this.onMouseMove(options));
+    this.canvas.on('mouse:up', (options) => this.onMouseUp(options));
 
     // Render color of points
     this.canvas.on('before:selection:cleared', (o) => this.setColorPoint(o, false));
@@ -50,7 +67,10 @@ export default class SampleImage extends React.Component {
     if (nextProps.width !== width || nextProps.cinema !== cinema) {
       this.setImageRatio();
     }
-    this.renderSampleView(nextProps);
+  }
+
+  componentDidUpdate(prevProps) {
+    this.renderSampleView(prevProps);
   }
 
   componentWillUnmount() {
@@ -58,6 +78,14 @@ export default class SampleImage extends React.Component {
     document.removeEventListener('keydown', this.keyDown);
     document.removeEventListener('keyup', this.keyUp);
     window.removeEventListener('resize', this.setImageRatio);
+  }
+
+  onMouseMove(options) {
+    this.drawGridPlugin.update(this.canvas, options.e.layerX, options.e.layerY);
+  }
+
+  onMouseUp() {
+    this.drawGridPlugin.endDrawing(null, this.canvas);
   }
 
   setColorPoint(o, selection) {
@@ -88,11 +116,76 @@ export default class SampleImage extends React.Component {
         point.hasControls = false;
         point.strokeWidth = width;
       });
+    } else if (shape && shape.type === 'GridGroup') {
+      if (shape.id !== null) {
+        this.props.sampleActions.selectGrid(shape.id);
+      }
     }
   }
 
   setImageRatio() {
     this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
+  }
+
+  setVCellSpacing(e) {
+    let value = parseFloat(e.target.value);
+    if (isNaN(value)) { value = ''; }
+
+    const gridData = this.selectedGrid();
+
+    if (gridData) {
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, value);
+      this.props.sampleActions.updateGrid(gd);
+    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      this.drawGridPlugin.setCurrentCellSpace(null, value);
+      this.drawGridPlugin.repaint(this.canvas);
+    }
+  }
+
+  setHCellSpacing(e) {
+    let value = parseFloat(e.target.value);
+    if (isNaN(value)) { value = ''; }
+
+    const gridData = this.selectedGrid();
+
+    if (gridData) {
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, value, gridData.cellVSpace);
+      this.props.sampleActions.updateGrid(gd);
+    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      this.drawGridPlugin.setCurrentCellSpace(value, null);
+      this.drawGridPlugin.repaint(this.canvas);
+    }
+  }
+
+  selectedGrid() {
+    let gridData = null;
+
+    if (this.props.selectedGrids.length === 1) {
+      gridData = this.props.gridList.filter((gd) =>
+        this.props.selectedGrids[0] === gd.id)[0];
+    }
+
+    return gridData;
+  }
+
+  gridCellSpacing() {
+    let vSpace = 0;
+    let hSpace = 0;
+
+    if (this.props.selectedGrids.length === 1) {
+      const gridData = this.props.gridList.filter((gd) =>
+        this.props.selectedGrids[0] === gd.id)[0];
+
+      if (gridData) {
+        vSpace = gridData.cellVSpace;
+        hSpace = gridData.cellHSpace;
+      }
+    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      vSpace = this.drawGridPlugin.currentGridData().cellVSpace;
+      hSpace = this.drawGridPlugin.currentGridData().cellHSpace;
+    }
+
+    return [hSpace, vSpace];
   }
 
   keyDown(event) {
@@ -148,7 +241,19 @@ export default class SampleImage extends React.Component {
       if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
         objectFound = true;
         this.canvas.setActiveObject(obj);
-        showContextMenu(true, obj, obj.left, obj.top);
+
+        if (obj.type === 'GridGroup') {
+          let gridData = this.props.gridList.filter((gd) => gd.id === obj.id);
+
+          if (gridData.length > 0) {
+            showContextMenu(true, { type: 'GridGroupSaved', obj, gridData }, e.offsetX, e.offsetY);
+          } else {
+            gridData = this.drawGridPlugin.currentGridData();
+            showContextMenu(true, { type: 'GridGroup', obj, gridData }, e.offsetX, e.offsetY);
+          }
+        } else {
+          showContextMenu(true, obj, obj.left, obj.top);
+        }
       }
     });
 
@@ -193,19 +298,23 @@ export default class SampleImage extends React.Component {
   leftClick(option) {
     this.canvas.discardActiveGroup();
     let objectFound = false;
+
     if (option.target && option.target.type === 'group') {
       const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
+
       option.target.getObjects().forEach((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
         }
       });
     }
+
     if (objectFound) {
       option.target.getObjects().forEach((obj) => {
         const shape = obj;
         shape.active = true;
       });
+
       this.canvas.setActiveGroup(
         new fabric.Group(
           option.target.getObjects(),
@@ -221,15 +330,21 @@ export default class SampleImage extends React.Component {
       imageRatio,
       contextMenuVisible
     } = this.props;
+
     if (contextMenuVisible) {
       sampleActions.showContextMenu(false);
     }
+
     if (clickCentring) {
       sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     } else if (measureDistance) {
       sampleActions.addDistancePoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
+    } else if (this.props.drawGrid) {
+      this.drawGridPlugin.startDrawing(option, this.canvas);
+      this.showGridForm();
     }
   }
+
 
   wheel(e) {
     e.preventDefault();
@@ -264,6 +379,54 @@ export default class SampleImage extends React.Component {
         sendZoomPos(zoom - 1);
       }
     }
+  }
+
+  configureGrid() {
+    const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm / this.props.imageRatio;
+    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm / this.props.imageRatio;
+    this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
+
+    if (!this.props.drawGrid) {
+      this.hideGridForm();
+      this.drawGridPlugin.reset();
+    }
+  }
+
+  showGridForm() {
+    let left = null;
+    let top = null;
+
+    const gridData = this.selectedGrid();
+    const gridForm = document.getElementById('gridForm');
+
+    if (gridData) {
+      left = gridData.left;
+      top = gridData.top;
+    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      left = this.drawGridPlugin.currentGridData().left;
+      top = this.drawGridPlugin.currentGridData().top;
+    }
+
+    if (gridForm && left && top) {
+      gridForm.style.top = `${top - 70}px`;
+      gridForm.style.left = `${left + 15}px`;
+      gridForm.style.display = 'block';
+    } else {
+      this.hideGridForm();
+    }
+  }
+
+  hideGridForm() {
+    const gridForm = document.getElementById('gridForm');
+
+    if (gridForm) {
+      gridForm.style.display = 'none';
+    }
+  }
+
+  saveGrid() {
+    this.props.sampleActions.addGrid(this.drawGridPlugin.currentGridData());
+    this.props.sampleActions.toggleDrawGrid();
   }
 
   renderSampleView(nextProps) {
@@ -323,13 +486,54 @@ export default class SampleImage extends React.Component {
         }
       });
     }
+
+    if (!this.drawGridPlugin.drawing && this.drawGridPlugin.shapeGroup) {
+      this.canvas.add(this.drawGridPlugin.shapeGroup);
+    }
+
+    this.props.gridList.map((gd) => {
+      const gridData = { ...gd };
+      gridData.label = `Grid-${gd.id}`;
+
+      if (this.props.selectedGrids.includes(gridData.id)) {
+        gridData.selected = true;
+      }
+
+      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData).shapeGroup);
+    });
+
     this.canvas.renderAll();
   }
 
 
   render() {
+    this.configureGrid();
+    this.showGridForm();
+
     return (
       <div>
+        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001 }}>
+          <form className="form-inline" style={{ padding: '0em 1em' }}>
+            <Input
+              ref="hCellSpacing"
+              key="hCellSpacing"
+              style={{ width: '50px', marginRight: '1em' }}
+              label="H-Cell Spacing:"
+              type="text"
+              value={this.gridCellSpacing()[0]}
+              onChange={this.setHCellSpacing}
+            />
+            <Input
+              ref="vCellSpacing"
+              key="vCellSpacing"
+              style={{ width: '50px', marginRight: '1em' }}
+              label="V-Cell Spacing:"
+              type="text"
+              value={this.gridCellSpacing()[1]}
+              onChange={this.setVCellSpacing}
+            />
+          </form>
+        </div>
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">
             <SampleControls
