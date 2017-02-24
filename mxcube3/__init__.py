@@ -23,12 +23,16 @@ opt_parser.add_option("-l", "--log-file",
                       default='')
 opt_parser.add_option("-s", "--beamline-setup",
                       dest="beamline_setup",
-                      help="Beamline setup HWR file",
+                      help="Beamline setup HWR file, defaults to /beamline-setup",
                       default='/beamline-setup')
 opt_parser.add_option("-q", "--queue-model",
                       dest="queue_model",
-                      help="Queue model HWR file",
+                      help="Queue model HWR file, defaults to /queue-model",
                       default='/queue-model')
+opt_parser.add_option("-a", "--beamline-actions",
+                      dest="beamline_actions",
+                      help="Beamline actions (commands) HWR file, defaults to /beamcmds",
+                      default='/beamcmds')
 cmdline_options, args = opt_parser.parse_args()
 
 socketio = SocketIO()
@@ -115,6 +119,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
         app.queue = qutils.new_queue()
+        app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
 
         # SampleID of currently mounted sample
         app.CURRENTLY_MOUNTED_SAMPLE = ''

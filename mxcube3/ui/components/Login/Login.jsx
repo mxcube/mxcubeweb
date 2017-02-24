@@ -24,6 +24,7 @@ class Login extends React.Component {
     const fields = this.props.fields;
     this.props.signIn(fields.username.value, fields.password.value);
   }
+
   handleKeyPress(target) {
     if (target.charCode === 13) {
       this.signIn();
@@ -45,14 +46,14 @@ class Login extends React.Component {
             {(this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : '')}
             <div className="well well-left h5">
              <div>
-              <form className="form from-actions" bsStyle="inline" >
+              <form>
                 <Input
                   label="LoginID"
                   ref="proposal"
                   type="text"
                   name="proposal"
                   placeholder={loginInfo.loginType}
-                  {...username} required autofocus
+                  {...username} required autoFocus
                 />
                 <Input
                   label="Password"

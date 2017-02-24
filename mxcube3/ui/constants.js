@@ -16,6 +16,9 @@ export const TASK_COLLECT_FAILED = 0x2;
 export const TASK_RUNNING = 0x1;
 export const TASK_UNCOLLECTED = 0x0;
 
+export const READY = 0;
+export const RUNNING = 0x1;
+
 export function isCollected(task) {
   return task.state !== TASK_UNCOLLECTED;
 }
