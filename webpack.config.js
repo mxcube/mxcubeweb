@@ -12,65 +12,90 @@ var config = {
     publicPath: '' 
   },
   devServer: {
+    compress: true,
+    port: 8090,
+    host: "0.0.0.0",
+    contentBase: path.join(__dirname, "mxcube3/ui"),
     proxy: {
       '/mxcube/api/*': {
         target: backend_server,
-	xfwd: true
+	      xfwd: true
       },
       '/socket.io/*': {
         target: backend_server,
         ws: true,
-	xfwd: true
+	      xfwd: true
       },
     },
   },
   module: {
-	  preLoaders: [
+	  rules: [
 	    {
-		    test: /\.jsx?$/,
-		    loaders: ['eslint'],
-		    exclude: /node_modules/
-	    }
-	  ],
-	  loaders: [
+		    test: /\.js/,
+		    exclude: /node_modules/,
+        enforce: "pre",
+		    use:[
+          "babel-loader",
+          "eslint-loader"
+        ]
+	    },
 	    {  
 		    test: /\.css$/,
-		    loader: "style-loader!css-loader"
+        use: [
+          {
+		        loader: "style-loader"
+          },
+          {
+            loader: "css-loader",
+            options: {
+              modules: false
+            }
+          }
+        ]
 	    },
 	    {
 		    test: /\.less$/,
-		    loader: "style!css!less"
+        use: [
+          {
+		        loader: "style-loader"
+          },
+          { loader: "css-loader", 
+            options: { 
+              importLoaders: "1" 
+            } 
+          },
+          {
+            loader: "less-loader"
+          }
+        ]
 	    },
-	    {
-		    test: /\.jsx?$/,
-		    loaders: ['react-hot', 'babel-loader?presets[]=react,presets[]=es2015,presets[]=stage-0,plugins[]=transform-decorators-legacy'],
+      {
+        test: /\.jsx$/,
+        loader: "babel-loader",
 		    exclude: /node_modules/
-	    },
-	    {test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
-	    {test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
-	    {test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },
-	    {test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&mimetype=image/svg+xml" },
-	    {
-		    test: /\.(jpe?g|png|gif)$/i,
-		    loaders: [
-		      'url?limit=8192',
-		      'img'
-		    ]
-	    },
-	    
+      },
+      { 
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=[a-z0-9]\.[a-z0-9]\.[a-z0-9])?$/,
+        loader: 'url-loader?limit=100000'
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+          'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
+          'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
+        ]
+      }
 	  ]
   },
-  eslint: {
-	  configFile: '.eslintrc'
-  },
   externals: {
-  'guiConfig': JSON.stringify(require('./config.gui.prod.js'))
+    'guiConfig': JSON.stringify(require('./config.gui.prod.js'))
   },
   resolve: {
-    root: path.resolve(__dirname, 'mxcube3/ui'), 
-    extensions: ['', '.js', '.jsx']
+    modules: [ path.join(__dirname, "mxcube3/ui"), "node_modules" ],
+    extensions: ['.js', '.jsx']
   },
 }
 
 module.exports = config;
+
 

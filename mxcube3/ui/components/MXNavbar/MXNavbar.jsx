@@ -13,7 +13,7 @@ export default class MXNavbar extends React.Component {
     document.title = `MxCuBE-3 ${propInfo}`;
 
     return (
-      <Navbar inverse collapseOnSelect>
+      <Navbar inverse>
         <NavBrand>
           MXCuBE 3
         </NavBrand>

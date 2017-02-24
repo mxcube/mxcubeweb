@@ -50,11 +50,10 @@ var config = {
     externals: {
       'guiConfig': JSON.stringify(require('./config.gui.prod.js'))
     },
-    resolve: {
-    root: path.resolve(__dirname, 'mxcube3/ui'), 
+  resolve: {
+    modules: [ path.join(__dirname, "mxcube3/ui"), "node_modules" ],
     extensions: ['', '.js', '.jsx']
-    },
+  },
 }
 
 module.exports = config;
-

@@ -1,8 +1,9 @@
+import 'bootstrap/dist/css/bootstrap.css';
+
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
-import 'bootstrap/dist/css/bootstrap.css';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -18,9 +19,9 @@ import { persistStore, autoRehydrate } from 'redux-persist';
 import crosstabSync from 'redux-persist-crosstab';
 import rootReducer from './reducers';
 import { serverIO } from './serverIO';
-import 'font-awesome-webpack';
 import { getLoginInfo } from './actions/login';
-require('file?name=[name].[ext]!index.html');
+
+import 'font-awesome-webpack2';
 
 const store = createStore(rootReducer, applyMiddleware(thunk, createLogger()), autoRehydrate());
 
