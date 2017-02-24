@@ -93,7 +93,7 @@ def beamline_abort_action(name):
                 err = sys.exc_info()[0]
                 return make_response(err, 520) 
             else:
-                return jsonify({})
+                return make_response("", 200)
    
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
 
@@ -104,7 +104,7 @@ def beamline_abort_action(name):
         return make_response(err, 520)
     else:
         logging.getLogger('user_level_log').error('Aborted by user.')
-        return jsonify({})
+        return make_response("", 200)
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>/run", methods=['POST'])
@@ -137,7 +137,7 @@ def beamline_run_action(name):
                 err = sys.exc_info()[0]
                 return make_response(err, 520)
             else:
-                return jsonify({})
+                return make_response("", 200)
     else:
         return make_response("Action cannot run: command '%s` does not exist" % name, 520)
 
@@ -160,14 +160,16 @@ def beamline_set_attribute(name):
     try:
         ho.set(data["value"])
         data = ho.dict_repr()
-        result, code = json.dumps(data), 200
+        code = 200
     except Exception as ex:
         data["value"] = ho.get()
         data["state"] = "UNUSABLE"
         data["msg"] = str(ex)
-        result, code = json.dumps(data), 520
-
-    return jsonify(result)
+        code = 520
+ 
+    response = jsonify(data)
+    response.code = code
+    return response
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
@@ -187,13 +189,16 @@ def beamline_get_attribute(name):
 
     try:
         data = ho.dict_repr()
+        code = 200
     except Exception as ex:
         data["value"] = ""
         data["state"] = "UNUSABLE"
         data["msg"] = str(ex)
-        result, code = json.dumps(data), 520
-
-    return jsonify(data)
+        code = 520
+ 
+    response = jsonify(data)
+    response.code = code
+    return response
 
 
 @mxcube.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
@@ -207,7 +212,9 @@ def get_beam_info():
 
     if beam_info is None:
         logging.getLogger('HWR').error("beamInfo is not defined")
-        return make_response("beamInfo is not defined", 409)
+        response = jsonify({})
+        response.code = 409
+        return response
 
     try:
         beam_info_dict = beam_info.get_beam_info()
@@ -256,5 +263,7 @@ def mach_info_get():
         return jsonify({'values': values})
     except Exception as ex:
         logging.getLogger('HWR').info('[MACHINFO] Cannot read values ')
-        return make_response("Cannot read machine info values", 409)
+        response = jsonify({})
+        response.code = 409
+        return response
 
