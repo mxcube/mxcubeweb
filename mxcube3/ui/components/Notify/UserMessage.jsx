@@ -14,7 +14,7 @@ export default class UserMessage extends React.Component {
     let include = true;
 
     // If modal window is shown, skip
-    if (document.getElementsByClassName("modal in").length > 0) {
+    if (document.getElementsByClassName('modal in').length > 0) {
       include = false;
     }
 

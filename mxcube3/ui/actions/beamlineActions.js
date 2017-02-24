@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { READY, RUNNING } from '../constants';
+import { RUNNING } from '../constants';
 import { checkStatus, parseJSON } from '../requests';
 
 export function setActionState(cmdName, state) {
@@ -7,11 +7,11 @@ export function setActionState(cmdName, state) {
 }
 
 export function showActionOutput(cmdName) {
-  return { type: 'ACTION_SHOW_OUTPUT', cmdName }
+  return { type: 'ACTION_SHOW_OUTPUT', cmdName };
 }
 
 export function hideActionOutput(cmdName) {
-  return { type: 'ACTION_HIDE_OUTPUT', cmdName }
+  return { type: 'ACTION_HIDE_OUTPUT', cmdName };
 }
 
 export function setArgumentValue(cmdName, argIndex, value) {
@@ -34,7 +34,7 @@ export function startAction(cmdName, parameters) {
       credentials: 'include',
       body: JSON.stringify({ parameters })
     }).then(checkStatus).then(parseJSON).catch((error) => {
-       throw new Error(`GET ${url} failed ${error}`);
+      throw new Error(`GET ${url} failed ${error}`);
     });
   };
 }
@@ -51,7 +51,7 @@ export function stopAction(cmdName) {
       },
       credentials: 'include'
     }).then(checkStatus).then(parseJSON).catch((error) => {
-       throw new Error(`GET ${url} failed: ${error}`);
+      throw new Error(`GET ${url} failed: ${error}`);
     });
   };
 }

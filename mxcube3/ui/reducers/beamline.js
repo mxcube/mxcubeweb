@@ -1,5 +1,5 @@
 import { STATE } from '../actions/beamline';
-import { READY, RUNNING } from '../constants';
+import { RUNNING } from '../constants';
 
 /**
  *  Initial redux state for beamline attributes, object containing each beamline
@@ -186,11 +186,12 @@ export default (state = INITIAL_STATE, action) => {
                                  }
              };
     case 'SET_INITIAL_STATE':
-      return { ...INITIAL_STATE,  
+      return { ...INITIAL_STATE,
         motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
         actuators: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.actuators },
         movables: { ...INITIAL_STATE.movables, ...action.data.beamlineSetup.movables },
-        motorsLimits: { ...INITIAL_STATE.motorsLimits, ...action.data.motorsLimits, ...action.data.beamlineSetup },
+        motorsLimits: { ...INITIAL_STATE.motorsLimits,
+                        ...action.data.motorsLimits },
         pixelsPerMm: action.data.Camera.pixelsPerMm[0],
         zoom: action.data.Motors.zoom.position,
         beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0)
@@ -204,7 +205,7 @@ export default (state = INITIAL_STATE, action) => {
         const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
         const currentBeamlineAction = {};
         state.beamlineActionsList.some((beamlineAction, i) => {
-          if (beamlineAction.name == action.cmdName) {
+          if (beamlineAction.name === action.cmdName) {
             beamlineActionsList[i].state = action.state;
             if (action.state === RUNNING) {
               beamlineActionsList[i].messages = [];
@@ -215,14 +216,14 @@ export default (state = INITIAL_STATE, action) => {
           }
           return false;
         });
-        return { ...state, beamlineActionsList, currentBeamlineAction }
+        return { ...state, beamlineActionsList, currentBeamlineAction };
       }
     case 'ACTION_SET_ARGUMENT':
       {
         const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
         const currentBeamlineAction = {};
         state.beamlineActionsList.some((beamlineAction, i) => {
-          if (beamlineAction.name == action.cmdName) {
+          if (beamlineAction.name === action.cmdName) {
             beamlineActionsList[i].arguments[action.argIndex].value = action.value;
             Object.assign(currentBeamlineAction, state.currentBeamlineAction,
                           JSON.parse(JSON.stringify(beamlineActionsList[i])));
@@ -231,7 +232,7 @@ export default (state = INITIAL_STATE, action) => {
           return false;
         });
 
-        return { ...state, beamlineActionsList, currentBeamlineAction }
+        return { ...state, beamlineActionsList, currentBeamlineAction };
       }
     case 'ACTION_SHOW_OUTPUT':
       {
@@ -244,7 +245,7 @@ export default (state = INITIAL_STATE, action) => {
           }
           return false;
         });
-        return { ...state, currentBeamlineAction }
+        return { ...state, currentBeamlineAction };
       }
     case 'ACTION_HIDE_OUTPUT':
       {
@@ -253,7 +254,7 @@ export default (state = INITIAL_STATE, action) => {
                    Object.assign({},
                    JSON.parse(JSON.stringify(state.currentBeamlineAction)),
                    { show: false })
-               }
+               };
       }
     case 'ADD_USER_MESSAGE':
       {
@@ -265,7 +266,7 @@ export default (state = INITIAL_STATE, action) => {
         const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
         const currentBeamlineAction = {};
         state.beamlineActionsList.some((beamlineAction, i) => {
-          if (beamlineAction.name == cmdName) {
+          if (beamlineAction.name === cmdName) {
             beamlineActionsList[i].messages.push(action.message);
             Object.assign(currentBeamlineAction, state.currentBeamlineAction,
                           JSON.parse(JSON.stringify(beamlineActionsList[i])));
@@ -274,7 +275,7 @@ export default (state = INITIAL_STATE, action) => {
           return false;
         });
 
-        return { ...state, beamlineActionsList, currentBeamlineAction }
+        return { ...state, beamlineActionsList, currentBeamlineAction };
       }
     default:
       return state;
