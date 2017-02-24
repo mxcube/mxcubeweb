@@ -8,6 +8,9 @@ export default class MotorInput extends React.Component {
 
   constructor(props) {
     super(props);
+
+    this.state = { edited: false };
+
     this.handleKey = this.handleKey.bind(this);
     this.stopMotor = this.stopMotor.bind(this, props.motorName);
     this.stepIncrement = this.stepChange.bind(this, props.motorName, 1);
@@ -18,16 +21,22 @@ export default class MotorInput extends React.Component {
     if (nextProps.value !== this.props.value) {
       this.refs.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
       this.refs.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
+      this.setState({ edited: false });
     }
   }
 
   handleKey(e) {
     e.preventDefault();
     e.stopPropagation();
+
+    this.setState({ edited: true });
+
     if ([13, 38, 40].includes(e.keyCode) && this.props.state === 2) {
+      this.setState({ edited: false });
       this.props.save(e.target.name, e.target.valueAsNumber);
       this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     } else if (this.props.state === 4) {
+      this.setState({ edited: false });
       this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
   }
@@ -49,6 +58,7 @@ export default class MotorInput extends React.Component {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
     let inputCSS = cx('form-control rw-input', {
+      'input-bg-edited': this.state.edited,
       'input-bg-moving': this.props.state === 4 || this.props.state === 3,
       'input-bg-ready': this.props.state === 2,
       'input-bg-fault': this.props.state <= 1,
