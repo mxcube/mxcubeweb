@@ -9,8 +9,8 @@ import QueueManager
 from flask import Response, jsonify, request, session
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
-from . import qutils
-from . import scutils
+import qutils
+import scutils
 
 qm = QueueManager.QueueManager('Mxcube3')
 

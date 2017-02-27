@@ -54,9 +54,9 @@ export default class ContextMenu extends React.Component {
       modalName,
       [sampleID],
       { parameters:
-        { path: sampleData.sampleName,
-          ...defaultParameters[modalName.toLowerCase()],
-          prefix: sampleData.defaultPrefix
+        { ...defaultParameters[modalName.toLowerCase()],
+          prefix: sampleData.defaultPrefix,
+          subdir: sampleData.sampleName
         }
       },
       shape.id

@@ -219,11 +219,17 @@ def collect_oscillation_started(*args):
 
 
 def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params=None):
+    if mxcube.rest_lims:
+        limsres = mxcube.rest_lims.get_dc(node.id)
+    else:
+        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
+        limsres = ''
+
     msg = {'Signal': 'collectOscillationFailed',
            'Message': task_signals['collectOscillationFailed'],
-           'taskIndex' : last_queue_node()['idx'] ,
+           'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
-           'limstResultData': mxcube.rest_lims.get_dc(lims_id),
+           'limstResultData': limsres,
            'state': get_signal_result('collectOscillationFailed'),
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
@@ -235,12 +241,17 @@ def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params=Non
 
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     qutils.enable_entry(last_queue_node()['queue_id'], False)
-    
+    if mxcube.rest_lims:
+        limsres = mxcube.rest_lims.get_dc(node.id)
+    else:
+        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
+        limsres = ''
+
     msg = {'Signal': 'collectOscillationFinished',
            'Message': task_signals['collectOscillationFinished'],
-           'taskIndex': last_queue_node()['idx'] ,
+           'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
-           'limsResultData': mxcube.rest_lims.get_dc(lims_id),
+           'limsResultData': limsres,
            'state': 2,
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))

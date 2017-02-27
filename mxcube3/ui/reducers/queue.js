@@ -78,7 +78,7 @@ export default (state = initialState, action) => {
       {
         return {
           ...state,
-          rootPath: action.data.rootPath,
+          rootPath: action.data.beamlineSetup.path,
           queue: Object.keys(action.data.queue.queue),
           autoMountNext: action.data.queue.autoMountNext,
           current: { sampleID: action.data.queue.loaded,

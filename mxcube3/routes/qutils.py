@@ -205,7 +205,7 @@ def get_queue_state():
               }
     """
     queue = queue_to_dict()
-    queue_to_dict().pop("sample_order") if queue else queue
+    queue.pop("sample_order") if queue else queue
 
     res = { "loaded": scutils.get_current_sample(),
             "autoMountNext": get_auto_mount_sample(),
@@ -226,6 +226,13 @@ def _handle_dc(sample_id, node):
     parameters.pop('centred_position')
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
+    parameters['subdir'] = parameters['path'].split(mxcube.session.get_base_image_directory())[1][1:]
+
+    if mxcube.rest_lims:
+        limsres = mxcube.rest_lims.get_dc(node.id)
+    else:
+        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
+        limsres = ''
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -235,7 +242,7 @@ def _handle_dc(sample_id, node):
            "queueID": queueID,
            "checked": enabled,
            "state": state,
-           "limstResultData": mxcube.rest_lims.get_dc(node.id),
+           "limstResultData": limsres,
            }
 
     return res
@@ -537,11 +544,12 @@ def set_dc_params(model, entry, task_data):
     acq.path_template.base_prefix = params['prefix']
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
-                             params.get('path', ''))
+                             params.get('subdir', ''))
+
     acq.path_template.directory = full_path
 
     process_path = os.path.join(mxcube.session.get_base_process_directory(),
-                                params.get('path', ''))
+                                params.get('subdir', ''))
     acq.path_template.process_directory = process_path
 
     # If there is a centered position associated with this data collection, get
