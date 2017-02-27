@@ -227,9 +227,11 @@ def _handle_dc(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
     parameters['subdir'] = parameters['path'].split(mxcube.session.get_base_image_directory())[1][1:]
-    try:
+
+    if mxcube.rest_lims:
         limsres = mxcube.rest_lims.get_dc(node.id)
-    except:
+    else:
+        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
         limsres = ''
 
     res = {"label": "Data Collection",
