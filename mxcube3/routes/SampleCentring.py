@@ -11,7 +11,7 @@ import json
 import signals
 import PIL
 import cStringIO
-from . import scutils
+import scutils
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
