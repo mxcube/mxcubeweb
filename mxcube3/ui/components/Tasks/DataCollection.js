@@ -99,8 +99,6 @@ class DataCollection extends React.Component {
       },
       rootPath
     } = this.props;
-    console.log('******************')
-    console.log(this.props.values)
     // var subdir = {'value': 'sadfdsdsf'}
     return (
       <Modal show={this.props.show} onHide={this.props.hide}>

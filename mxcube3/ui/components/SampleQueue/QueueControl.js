@@ -36,7 +36,7 @@ export default class QueueControl extends React.Component {
         bsSize="sm"
         onClick={option.action}
         key={option.key}
-      > 
+      >
         {option.text}
       </Button>
     );
