@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, Input } from 'react-bootstrap';
+import { Modal, Button, FormControl } from 'react-bootstrap';
 import { requestControlResponse } from '../../actions/remoteAccess';
 
 export class PassControlDialog extends React.Component {
@@ -41,12 +41,12 @@ export class PassControlDialog extends React.Component {
   }
 
   accept() {
-    const message = this.refs.message.refs.input.value;
+    const message = this.message.value;
     this.props.requestControlResponse(true, message);
   }
 
   reject() {
-    const message = this.refs.message.refs.input.value;
+    const message = this.message.value;
     this.props.requestControlResponse(false, message);
   }
 
@@ -71,9 +71,8 @@ export class PassControlDialog extends React.Component {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Input
-            ref="message"
-            id="name"
+          <FormControl
+            ref={(ref)=>{ this.message=ref }}
             defaultValue="Here you go !"
             type="textarea"
             placeholder="Message"

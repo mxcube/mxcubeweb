@@ -97,9 +97,9 @@ export class PleaseWaitDialog extends React.Component {
 
   render() {
     return (
-      <Modal ref="modal" animation={false} show={this.props.loading} onHide={this.getHideFun}>
+      <Modal animation={false} show={this.props.loading} onHide={this.getHideFun}>
         {this.renderHeader()}
-        <Modal.Body closeButton>
+        <Modal.Body>
           {this.renderContent()}
         </Modal.Body>
         {this.renderFooter()}

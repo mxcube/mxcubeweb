@@ -11,10 +11,12 @@ export default class MXNavbar extends React.Component {
     document.title = `MxCuBE-3 ${propInfo}`;
 
     return (
-      <Navbar inverse>
-        <NavBrand>
-          MXCuBE 3
-        </NavBrand>
+      <Navbar inverse fixedTop>
+        <Navbar.Header>
+          <Navbar.Brand>
+            MXCuBE 3
+          </Navbar.Brand>
+        </Navbar.Header>
         <Nav>
           <LinkContainer to="/">
             <NavItem eventKey={1}>Sample Overview</NavItem>

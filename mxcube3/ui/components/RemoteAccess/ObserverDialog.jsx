@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, Input } from 'react-bootstrap';
+import { Modal, Button, FormControl } from 'react-bootstrap';
 import { showObserverDialog, setMaster } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
@@ -27,7 +27,7 @@ export class ObserverDialog extends React.Component {
   }
 
   accept() {
-    const name = this.refs.name.refs.input.value;
+    const name = this.name.value;
 
     if (name) {
       this.props.setMaster(false, name);
@@ -60,9 +60,8 @@ export class ObserverDialog extends React.Component {
           continue.
         </Modal.Body>
         <Modal.Footer>
-          <Input
-            ref="name"
-            id="name"
+          <FormControl
+            ref={(ref)=>{this.name=ref}}
             type="text"
             placeholder="Your name"
           />

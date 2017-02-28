@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { Input } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { makePoints, makeLines, makeImageOverlay } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
@@ -513,26 +513,26 @@ export default class SampleImage extends React.Component {
     return (
       <div>
         <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001 }}>
-          <form className="form-inline" style={{ padding: '0em 1em' }}>
-            <Input
-              ref="hCellSpacing"
-              key="hCellSpacing"
-              style={{ width: '50px', marginRight: '1em' }}
-              label="H-Cell Spacing:"
-              type="text"
-              value={this.gridCellSpacing()[0]}
-              onChange={this.setHCellSpacing}
-            />
-            <Input
-              ref="vCellSpacing"
-              key="vCellSpacing"
-              style={{ width: '50px', marginRight: '1em' }}
-              label="V-Cell Spacing:"
-              type="text"
-              value={this.gridCellSpacing()[1]}
-              onChange={this.setVCellSpacing}
-            />
-          </form>
+          <Form horizontal>
+            <FormGroup>
+              <ControlLabel>H-Cell Spacing:</ControlLabel>
+              <FormControl
+                style={{ width: '50px', marginRight: '1em' }}
+                type="text"
+                value={this.gridCellSpacing()[0]}
+                onChange={this.setHCellSpacing}
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>V-Cell Spacing:</ControlLabel>
+              <FormControl
+                style={{ width: '50px', marginRight: '1em' }}
+                type="text"
+                value={this.gridCellSpacing()[1]}
+                onChange={this.setVCellSpacing}
+              />
+            </FormGroup>
+          </Form>
         </div>
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">

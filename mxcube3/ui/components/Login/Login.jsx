@@ -1,7 +1,6 @@
 import React from 'react';
 import { withRouter } from "react-router";
-import { Input, ButtonInput, Alert } from 'react-bootstrap';
-import { reduxForm } from 'redux-form';
+import { Grid, Row, Col, FormGroup, FormControl, ControlLabel, Alert, Button } from 'react-bootstrap';
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
@@ -21,8 +20,9 @@ class LoginComponent extends React.Component {
 
   signIn() {
     this.props.setLoading(true);
-    const fields = this.props.fields;
-    this.props.signIn(fields.username.value, fields.password.value);
+    const username = this.loginID.value;
+    const password = this.password.value;
+    this.props.signIn(username, password);
   }
 
   handleKeyPress(target) {
@@ -32,61 +32,42 @@ class LoginComponent extends React.Component {
   }
 
   render() {
-    const { fields: { username, password } } = this.props;
     const loginInfo = this.props.loginInfo;
 
-    return (
-      <div className="container">
-        <div className="row row-centered">
-          <div>
-            <img src={logo} className="img-logo" alt="" />
-          </div>
-          <h3 >Welcome to {loginInfo.beamline_name} at {loginInfo.synchrotron_name}</h3>
-          <div className="col-md-5 col-centered">
-            {(this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : '')}
-            <div className="well well-left h5">
-             <div>
-              <form>
-                <Input
-                  label="LoginID"
-                  ref="proposal"
-                  type="text"
-                  name="proposal"
-                  placeholder={loginInfo.loginType}
-                  {...username} required autoFocus
-                />
-                <Input
-                  label="Password"
-                  ref="password"
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  {...password} required
-                  onKeyPress={this.handleKeyPress}
-                />{' '}
-                <ButtonInput
-                  id="submit"
-                  bsStyle="primary"
-                  value="Sign in"
-                  onClick={this.signIn}
-                />
-              </form>
-            </div>
-            </div>
-          <div className={this.props.loading ? '' : 'hidden'}>
-            <img src={loader} className="img-responsive" alt="" />
-          </div>
-          </div>
-        </div>
-      </div>
-          );
+    if (this.props.loading) {
+      return <img src={loader} className="centered" alt="" />
+    }
+
+    return (<Grid>
+        {(this.props.showError ? <Alert bsStyle="danger"><h4>Authentification invalide.</h4></Alert> : '')}
+        <Row>
+          <center>
+            <img src={logo} style={{ width: '192px', height: '248px', marginTop: '50px'}} />
+            <h3 style={{marginBottom: '15px'}}>Welcome to {loginInfo.beamline_name} at {loginInfo.synchrotron_name}</h3>
+          </center>
+        </Row>
+        <Row>
+          {(this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : '')}
+          <Col xs={4} xsOffset={4}>
+            <Row>
+              <Col xs={12}>
+                <FormGroup>
+                  <ControlLabel>LoginID</ControlLabel>                  
+                  <FormControl type="text" placeholder={loginInfo.loginType} autoFocus required inputRef={(ref)=>{this.loginID=ref}}/>
+                </FormGroup>
+                <FormGroup>
+                  <ControlLabel>Password</ControlLabel>
+                  <FormControl type="password" placeholder="Password" required inputRef={(ref)=>{this.password=ref}}/>
+                </FormGroup>
+                <Button block bsStyle="primary" onClick={this.signIn}>Sign in</Button>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Grid>);
   }
 }
 
 var Login = withRouter(LoginComponent);
-Login = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'loginForm',                           // a unique name for this form
-  fields: ['username', 'password'] // all the fields in your form
-})(Login);
 
 export default Login;

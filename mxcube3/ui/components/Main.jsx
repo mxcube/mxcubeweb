@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grid, Row, Col } from 'react-bootstrap';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
@@ -22,13 +23,9 @@ export default class Main extends React.Component {
         <PassControlDialog />
         <ConfirmCollectDialog />
         <MXNavbarContainer location={this.props.location} />
-        <div className="container-fluid o-wrapper" id="o-wrapper">
-          <div className="row">
-            <div className="col-xs-12 main-content">
-              {this.props.children}
-            </div>
-          </div>
-        </div>
+        <Grid fluid>
+            {this.props.children}
+        </Grid>
       </div>
     );
   }
