@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, IndexRoute } from 'react-router';
+import { Router, Route, hashHistory, IndexRoute } from 'react-router';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -37,7 +37,10 @@ function requireAuth(nextState, replace) {
   store.dispatch(getLoginInfo());
 
   if (!store.getState().login.loggedIn) {
-    replace(null, '/login');
+    replace({ 
+      pathname: '/login',
+      state: { nextPathname: nextState.location.pathname }
+    });
   }
 }
 
@@ -90,7 +93,8 @@ export default class App extends React.Component {
     if (! this.state.initialized) return <span>Loading...</span>;
 
     return (<Provider store={store}>
-            <Router>
+            <Router history={hashHistory}>
+              <Route path="/login" component={LoginContainer} />
               <Route path="/" component={Main} onEnter={requireAuth}>
                <IndexRoute component={SampleGridViewContainer} />
                <Route path="datacollection" component={SampleViewContainer} />
@@ -98,7 +102,6 @@ export default class App extends React.Component {
                <Route path="logging" component={LoggerContainer} />
                <Route path="remoteaccess" component={RemoteAccessContainer} />
               </Route>
-              <Route path="login" component={LoginContainer} />
             </Router>
           </Provider>);
   }

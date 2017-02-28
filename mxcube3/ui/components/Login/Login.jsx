@@ -1,11 +1,12 @@
 import React from 'react';
+import { withRouter } from "react-router";
 import { Input, ButtonInput, Alert } from 'react-bootstrap';
 import { reduxForm } from 'redux-form';
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
 
-class Login extends React.Component {
+class LoginComponent extends React.Component {
   constructor(props) {
     super(props);
     this.signIn = this.signIn.bind(this);
@@ -14,8 +15,7 @@ class Login extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.status.code === 'ok') {
-      window.location.assign('#datacollection');
-      this.props.setLoading(false);
+      this.props.router.push("/");
     }
   }
 
@@ -83,6 +83,7 @@ class Login extends React.Component {
   }
 }
 
+var Login = withRouter(LoginComponent);
 Login = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
   form: 'loginForm',                           // a unique name for this form
   fields: ['username', 'password'] // all the fields in your form
