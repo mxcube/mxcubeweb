@@ -79,8 +79,6 @@ export class SampleGridItem extends React.Component {
       >
         <button
           className="samples-grid-item-button"
-          bsStyle="default"
-          bsSize="s"
           onClick={this.pickButtonOnClick}
           onMouseUp={this.pickButtonMouseUp}
           onMouseDown={this.pickButtonMouseDown}
