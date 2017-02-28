@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 import validate from './validate';
@@ -6,8 +7,6 @@ import validate from './validate';
 /* eslint camelcase: 0 */
 
 class Characterisation extends React.Component {
-
-
   constructor(props) {
     super(props);
     this.runNow = this.handleSubmit.bind(this, true);
@@ -396,8 +395,8 @@ class Characterisation extends React.Component {
   }
 }
 
-Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'characterisation',                           // a unique name for this form
+Characterisation = reduxForm({
+  form: 'characterisation',
   validate,
   fields: [
     'num_images',
@@ -423,15 +422,19 @@ Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
     'run_number',
     'subdir',
     'beam_size'
-  ] // all the fields in your form
-},
-state => ({ // mapStateToProps
-  motorLimits: { ...state.beamline.motorsLimits },
-  acqParametersLimits: { ...state.taskForm.acqParametersLimits },
-  initialValues: {
-    ...state.taskForm.taskData.parameters,
-    beam_size: state.sampleview.currentAperture,
-  } // will pull state into form's initialValues
-}))(Characterisation);
+  ]
+})(Characterisation);
+
+Characterisation = connect(state => { return {
+   motorLimits: state.beamline.motorsLimits,
+   acqParametersLimits: state.taskForm.acqParametersLimits,
+   initialValues: {
+     ...state.taskForm.taskData.parameters,
+     beam_size: state.sampleview.currentAperture,
+     subdir: ""
+   }
+  }}
+)(Characterisation);
 
 export default Characterisation;
+

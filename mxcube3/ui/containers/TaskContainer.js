@@ -57,48 +57,51 @@ class TaskContainer extends React.Component {
   }
 
   render() {
-    return (
-      <div className="col-xs-12">
-        <Characterisation
+    if (this.props.showForm === 'Characterisation') {
+      return <Characterisation
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+          />
+    }
+
+    if (this.props.showForm === 'DataCollection') {
+        return <DataCollection
           addTask={this.addTask}
           pointID={this.props.pointID}
           taskData={this.props.taskData}
           hide={this.props.hideTaskParametersForm}
+          show={true}
           apertureList={this.props.apertureList}
-          show={this.props.showForm === 'Characterisation'}
           rootPath={this.props.path}
         />
-
-        <DataCollection
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          show={this.props.showForm === 'DataCollection'}
-          rootPath={this.props.path}
-        />
-
-        <Helical
+    }
+ 
+    if (this.props.showForm === 'Helical') {
+        return <Helical
           addTask={this.addTask}
           pointID={this.props.pointID}
           sampleIds={this.props.sampleIds}
           taskData={this.props.taskData}
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
-          show={this.props.showForm === 'Helical'}
           rootPath={this.props.path}
           lines={this.props.lines}
         />
+    }
 
-        <AddSample
+    if (this.props.showForm === 'AddSample') {
+        return <AddSample
           hide={this.props.hideTaskParametersForm}
-          show={this.props.showForm === 'AddSample'}
           addToQueue={this.addSampleToQueue}
           addAndMount={this.addSampleAndMount}
         />
-      </div>
-    );
+    }
+
+    return null;
   }
 }
 

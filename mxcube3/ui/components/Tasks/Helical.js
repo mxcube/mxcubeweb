@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Modal, Button } from 'react-bootstrap';
 import validate from './validate';
@@ -377,8 +378,8 @@ class Helical extends React.Component {
   }
 }
 
-Helical = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'helical',                           // a unique name for this form
+Helical = reduxForm({
+  form: 'helical',
   validate,
   fields: [
     'num_images',
@@ -400,15 +401,18 @@ Helical = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
     'run_number',
     'beam_size',
     'subdir'
-  ] // all the fields in your form
-},
-state => ({ // mapStateToProps
-  motorLimits: { ...state.beamline.motorsLimits },
-  acqParametersLimits: { ...state.taskForm.acqParametersLimits },
+  ]
+})(Helical);
+
+Helical = connect(state => ({ 
+  motorLimits: state.beamline.motorsLimits,
+  acqParametersLimits: state.taskForm.acqParametersLimits,
   initialValues: {
     ...state.taskForm.taskData.parameters,
-    beam_size: state.sampleview.currentAperture
-  } // will pull state into form's initialValues
+    beam_size: state.sampleview.currentAperture,
+    subdir: ""
+  }
 }))(Helical);
 
 export default Helical;
+

@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 
@@ -87,15 +88,14 @@ class AddSample extends React.Component {
   }
 }
 
-// THIS IS THE IMPORTANT PART!
 AddSample = reduxForm({
-  // A unique name for this form
   form: 'addsample',
-  // All the fields in your form
   fields: ['sampleName', 'proteinAcronym']
-},
-state => ({ // will pull state into form's initialValues
-  initialValues: { ...state.taskForm.taskData.parameters }
-}))(AddSample);
+})(AddSample);
+
+AddSample = connect(state => {
+    initialValues: state.taskForm.taskData.parameters
+  }
+)(AddSample);
 
 export default AddSample;
