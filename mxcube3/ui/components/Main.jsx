@@ -9,7 +9,6 @@ import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 
-import './Main.css';
 export default class Main extends React.Component {
   render() {
     return (

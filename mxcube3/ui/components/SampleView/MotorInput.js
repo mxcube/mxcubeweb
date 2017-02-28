@@ -3,6 +3,7 @@ import cx from 'classnames';
 import { Button } from 'react-bootstrap';
 import PopInput from '../PopInput/PopInput';
 import './motor.css';
+import '../input.css';
 
 export default class MotorInput extends React.Component {
 

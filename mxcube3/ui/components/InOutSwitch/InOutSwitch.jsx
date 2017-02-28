@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import './style.css';
+import '../input.css';
 
 
 export default class InOutSwitch extends React.Component {

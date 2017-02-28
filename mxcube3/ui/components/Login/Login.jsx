@@ -1,9 +1,9 @@
 import React from 'react';
 import { Input, ButtonInput, Alert } from 'react-bootstrap';
-import './Login.css';
 import { reduxForm } from 'redux-form';
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
+import './Login.css';
 
 class Login extends React.Component {
   constructor(props) {

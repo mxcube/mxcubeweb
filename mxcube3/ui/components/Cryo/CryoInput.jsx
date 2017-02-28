@@ -3,10 +3,10 @@ import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
-
 import DefaultInput from './DefaultInput';
 import DefaultBusy from './DefaultBusy';
 import './style.css';
+import '../input.css';
 
 
 /**

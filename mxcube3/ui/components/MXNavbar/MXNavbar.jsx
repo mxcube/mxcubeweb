@@ -1,8 +1,6 @@
 import React from 'react';
 import { Navbar, Nav, NavItem, NavBrand } from 'react-bootstrap';
 
-import './MXNavbar.css';
-
 export default class MXNavbar extends React.Component {
 
   render() {
