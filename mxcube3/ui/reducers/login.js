@@ -1,24 +1,23 @@
 const initialState = {
-  data: {},
-  status: {},
   loginInfo: {},
-  loggedIn: false
+  loggedIn: false,
+  data: {}
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'LOGIN':
-      {
-        if (action.status.code === 'error') {
-          return Object.assign({}, state, action, { loggedIn: false });
-        }
-        return Object.assign({}, state, action, { loggedIn: true });
-      }
     case 'SET_LOGIN_INFO':
       {
+        const data = action.loginInfo.loginRes;
+        let loggedIn = false;
+        if (Object.keys(data).length > 0) {
+          loggedIn = data.status.code === 'ok';
+        }
         return Object.assign({}, state,
           {
-            loginInfo: action.loginInfo
+            loginInfo: action.loginInfo,
+            loggedIn,
+            data
           });
       }
 

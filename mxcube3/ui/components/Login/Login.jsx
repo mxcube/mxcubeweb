@@ -1,27 +1,21 @@
 import React from 'react';
-import { withRouter } from "react-router";
 import { Grid, Row, Col, FormGroup, FormControl, ControlLabel, Alert, Button } from 'react-bootstrap';
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
 
-class LoginComponent extends React.Component {
+export default class LoginComponent extends React.Component {
   constructor(props) {
     super(props);
+
     this.signIn = this.signIn.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.status.code === 'ok') {
-      this.props.router.push("/");
-    }
-  }
-
   signIn() {
-    this.props.setLoading(true);
     const username = this.loginID.value;
     const password = this.password.value;
+    this.props.setLoading(true);
     this.props.signIn(username, password);
   }
 
@@ -32,10 +26,8 @@ class LoginComponent extends React.Component {
   }
 
   render() {
-    const loginInfo = this.props.loginInfo;
-
     if (this.props.loading) {
-      return <img src={loader} className="centered" alt="" />
+      return <img src={loader} className="centered" role="presentation" />
     }
 
     return (<Grid>
@@ -43,7 +35,7 @@ class LoginComponent extends React.Component {
         <Row>
           <center>
             <img src={logo} style={{ width: '192px', height: '248px', marginTop: '50px'}} />
-            <h3 style={{marginBottom: '15px'}}>Welcome to {loginInfo.beamline_name} at {loginInfo.synchrotron_name}</h3>
+            <h3 style={{marginBottom: '15px'}}>Welcome to XXX at YYY</h3>
           </center>
         </Row>
         <Row>
@@ -53,12 +45,20 @@ class LoginComponent extends React.Component {
               <Col xs={12}>
                 <FormGroup>
                   <ControlLabel>LoginID</ControlLabel>                  
-                  <FormControl type="text" placeholder={loginInfo.loginType} autoFocus required inputRef={(ref)=>{this.loginID=ref}}/>
+                  <FormControl type="text" placeholder="LoginID" autoFocus required inputRef={(ref)=>{this.loginID=ref}}/>
                 </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12}>
                 <FormGroup>
                   <ControlLabel>Password</ControlLabel>
-                  <FormControl type="password" placeholder="Password" required inputRef={(ref)=>{this.password=ref}}/>
+                  <FormControl type="password" placeholder="Password" required onKeyPress={this.handleKeyPress} inputRef={(ref)=>{this.password=ref}}/>
                 </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={12}>
                 <Button block bsStyle="primary" onClick={this.signIn}>Sign in</Button>
               </Col>
             </Row>
@@ -68,6 +68,3 @@ class LoginComponent extends React.Component {
   }
 }
 
-var Login = withRouter(LoginComponent);
-
-export default Login;

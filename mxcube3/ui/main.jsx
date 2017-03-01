@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, hashHistory, IndexRoute } from 'react-router';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -19,7 +19,7 @@ import { persistStore, autoRehydrate } from 'redux-persist';
 import crosstabSync from 'redux-persist-crosstab';
 import rootReducer from './reducers';
 import { serverIO } from './serverIO';
-import { getLoginInfo } from './actions/login';
+import { getLoginInfo, startSession } from './actions/login';
 
 import 'font-awesome-webpack2';
 
@@ -33,15 +33,18 @@ if (module.hot) {
   });
 }
 
-function requireAuth(nextState, replace) {
-  store.dispatch(getLoginInfo());
-
-  if (!store.getState().login.loggedIn) {
-    replace({ 
-      pathname: '/login',
-      state: { nextPathname: nextState.location.pathname }
-    });
-  }
+function requireAuth(nextState, replace, callback) {
+  let state = store.getState();
+  store.dispatch(getLoginInfo()).then(() => {
+    state = store.getState();
+    if (!state.login.loggedIn) {
+      replace('/login');
+      return callback();
+    } else {
+      store.dispatch(startSession());
+      return callback();
+    }
+  });
 }
 
 
@@ -93,7 +96,7 @@ export default class App extends React.Component {
     if (! this.state.initialized) return <span>Loading...</span>;
 
     return (<Provider store={store}>
-            <Router history={hashHistory}>
+            <Router history={browserHistory}>
               <Route path="/login" component={LoginContainer} />
               <Route path="/" component={Main} onEnter={requireAuth}>
                <IndexRoute component={SampleGridViewContainer} />
