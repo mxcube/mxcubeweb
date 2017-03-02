@@ -36,7 +36,9 @@ def login():
 
     if LOGGED_IN_USER is not None and LOGGED_IN_USER != loginID:
         data = {"code": "", "msg": "Another user is already logged in" }
-        return make_response(data, 409)
+        resp = jsonify(data);
+        resp.code = 409
+        return resp
 
     login_res = limsutils.lims_login(loginID, password)
 
@@ -60,8 +62,7 @@ def login():
         if not remote_access.MASTER:
             remote_access.set_master(session.sid)
 
-    return make_response(login_res['status']['code'], 200)
-
+    return jsonify(login_res['status'])
 
 @mxcube.route("/mxcube/api/v0.1/signout")
 def signout():

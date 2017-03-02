@@ -389,7 +389,7 @@ def mach_info_changed(values):
     try:
         socketio.emit("mach_info_changed", values, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").exception('error sending message: %s' + str(msg))
+        logging.getLogger("HWR").exception('error in mach_info_changed')
 
 
 def beamline_action_start(name):
