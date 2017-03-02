@@ -150,9 +150,9 @@ export default class TaskItem extends Component {
 
     let taskCSS = cx('task-head', {
       active: state === 1,
-      success: state === 2,
-      error: state === 3,
-      warning: state === 4
+      success: state === 4,
+      error: state === 2,
+      warning: state === 3
     });
 
     let typePrefix = '';

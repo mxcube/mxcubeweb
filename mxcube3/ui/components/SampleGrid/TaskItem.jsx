@@ -146,7 +146,7 @@ export class TaskItem extends React.Component {
 
     if (task.state === 1) {
       taskStatus = 'In progress';
-    } else if (task.state === 2) {
+    } else if (task.state === 4) {
       taskStatus = 'Collected';
     }
 
@@ -160,7 +160,11 @@ export class TaskItem extends React.Component {
 
     if (task.state === 1) {
       cls = 'btn-warning';
-    } else if (task.state === 2) {
+    } if (task.state === 2) {
+      cls = 'btn-danger';
+    } if (task.state === 3) {
+      cls = 'btn-danger';
+    } else if (task.state === 4) {
       cls = 'btn-success';
     }
 

@@ -75,13 +75,13 @@ def get_signal_result(signal):
             result = 1
     for sig in okSignals:
         if sig in signal:
-            result = 2
+            result = 4
     for sig in failedSignals:
         if sig in signal:
-            result = 3
+            result = 2
     for sig in warnSignals:
         if sig in signal:
-            result = 4
+            result = 3
 
     return result
 
@@ -247,7 +247,7 @@ def collect_oscillation_failed(owner=None, status=3, state=None, lims_id='', osc
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     qutils.enable_entry(last_queue_node()['queue_id'], False)
     if mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(node.id)
+        limsres = mxcube.rest_lims.get_dc(lims_id)
     else:
         logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
         limsres = ''
@@ -257,7 +257,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
            'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
            'limsResultData': limsres,
-           'state': 2,
+           'state': 4,
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -267,7 +267,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
 
 
 def collect_ended(owner, success, message):
-    state = 2 if success else 3
+    state = 4 if success else 3
 
     msg = {'Signal': 'collectOscillationFinished',
            'Message': message,
