@@ -72,6 +72,7 @@ def queue_stop():
         # TODO: if you now run the queue it will be enabled and run
         qe.get_data_model().set_executed(True)
         qe.get_data_model().set_enabled(False)
+        qe._execution_failed = True
 
         mxcube.queue.queue_hwobj._is_stopped = True
         signals.queue_execution_stopped()
