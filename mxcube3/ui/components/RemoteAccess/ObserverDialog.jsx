@@ -23,7 +23,9 @@ export class ObserverDialog extends React.Component {
   onHide() { }
 
   show() {
-    return !this.props.remoteAccess.observerName && !this.props.remoteAccess.master;
+    // we make an explicit test for 'false' here to prevent the dialog to be
+    // displayed when doing sign out, for example (master = null)
+    return !this.props.remoteAccess.observerName && this.props.remoteAccess.master === false;
   }
 
   accept() {
