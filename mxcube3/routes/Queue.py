@@ -40,7 +40,7 @@ def queue_start():
 
     except Exception as ex:
         signals.queue_execution_failed(ex)
-    
+
     logging.getLogger('HWR').info('[QUEUE] Queue started')
     return Response(status=200)
 
@@ -54,7 +54,29 @@ def queue_stop():
               200: On success
               409: Queue could not be stopped
     """
-    mxcube.queue.queue_hwobj.stop()
+
+    if mxcube.queue.queue_hwobj._root_task is not None:
+        mxcube.queue.queue_hwobj.stop()
+    else:
+        qe = mxcube.queue.queue_hwobj.get_current_entry()
+        # check if a node/tas is executing and stop that one
+        try:
+            qe.stop()
+        except Exception as ex:
+            print 'exception...', ex
+
+        logging.getLogger('user_level_log').info('Queue execution was aborted, ' + str(qe.get_data_model()))
+
+        mxcube.queue.queue_hwobj.set_pause(False)
+        # the next two is to avoid repeating the task
+        # TODO: if you now run the queue it will be enabled and run
+        qe.get_data_model().set_executed(True)
+        qe.get_data_model().set_enabled(False)
+
+        mxcube.queue.queue_hwobj._is_stopped = True
+        signals.queue_execution_stopped()
+        signals.collect_oscillation_failed()
+
     return Response(status=200)
 
 
