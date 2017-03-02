@@ -812,11 +812,11 @@ def execute_entry_with_id(sid, tindex=None):
         mxcube.queue.queue_hwobj._set_in_queue_flag()
         try:
             mxcube.queue.queue_hwobj.execute_entry(entry)
-            mxcube.queue.queue_hwobj.emit('queue_execution_finished', (None,))
         except:
             mxcube.queue.queue_hwobj.emit('queue_execution_failed', (None,))
         finally:
             mxcube.queue.queue_hwobj._running = False
+            mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
 
 
 def init_signals(queue):
