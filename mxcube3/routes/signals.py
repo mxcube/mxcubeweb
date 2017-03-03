@@ -196,7 +196,13 @@ def queue_execution_finished(entry, queue_state=None):
     safe_emit('queue', msg, namespace='/hwr')
 
 
-def queue_execution_failed(entry):    
+def queue_execution_stopped():
+    msg = {'Signal': 'QueueStopped', 'Message': 'Queue execution stopped'}
+
+    safe_emit('queue', msg, namespace='/hwr')
+
+
+def queue_execution_failed(entry):
     msg = {'Signal': qutils.queue_exec_state(),
            'Message': 'Queue execution stopped'}
 
@@ -218,11 +224,10 @@ def collect_oscillation_started(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_failed(owner, status, state, lims_id, osc_id, params=None):
-    if mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(node.id)
-    else:
-        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
+def collect_oscillation_failed(owner=None, status=3, state=None, lims_id='', osc_id=None, params=None):
+    try:
+        limsres = mxcube.rest_lims.get_dc(lims_id)
+    except:
         limsres = ''
 
     msg = {'Signal': 'collectOscillationFailed',
@@ -293,30 +298,23 @@ def task_event_callback(*args, **kwargs):
         safe_emit('task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
-    # try:
-    #     msg = {"message": sender + ':' + signal,
-    #            "severity": 'INFO',
-    #            "timestamp": time.asctime(),
-    #            "logger": 'HWR',
-    #            "stack_trace": ''}
-    #     socketio.emit('log_record', msg, namespace='/logging')
-    # except Exception:
-    #     logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
 def motor_position_callback(motor, pos):
-   socketio.emit('motor_position', { 'name': motor, 'position': pos }, namespace='/hwr')
+    socketio.emit('motor_position', {'name': motor, 'position': pos}, namespace='/hwr')
+
 
 def motor_state_callback(motor, state, sender=None, **kw):
     centred_positions = dict()
     for pos in mxcube.diffractometer.savedCentredPos:
         centred_positions.update({pos['posId']: pos})
-    
+
     if state == 2:
-      # READY
-      motor_position_callback(motor, sender.getPosition())
-        
-    socketio.emit('motor_state', { 'name': motor, 'state': state, 'centredPositions': centred_positions }, namespace='/hwr')
+        # READY
+        motor_position_callback(motor, sender.getPosition())
+
+    socketio.emit('motor_state', {'name': motor, 'state': state, 'centredPositions': centred_positions}, namespace='/hwr')
+
 
 def motor_event_callback(*args, **kwargs):
     # logging.getLogger('HWR').debug('[MOTOR CALLBACK]')

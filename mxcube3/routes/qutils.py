@@ -777,10 +777,10 @@ def add_diffraction_plan(parent, child):
             socketio.emit('add_task', msg, namespace='/hwr')
 
 
-def execute_entry_with_id(sid, tindex = None):
+def execute_entry_with_id(sid, tindex=None):
     """
     Execute the entry at position (sampleID, task index) in queue
-    
+
     :param str sid: sampleID
     :param int tindex: task index of task within sample with id sampleID
     """
@@ -789,7 +789,7 @@ def execute_entry_with_id(sid, tindex = None):
 
     if tindex in ['undefined', 'None', 'null', None]:
         node_id = current_queue[sid]["queueID"]
-        
+
         enable_sample_entries(current_queue["sample_order"], False)
         enable_sample_entries([sid], True)
 
@@ -800,15 +800,23 @@ def execute_entry_with_id(sid, tindex = None):
            sid != scutils.get_current_sample():
 
             scutils.mount_sample_clean_up(current_queue[sid])
-        
+
         mxcube.queue.queue_hwobj.execute()
     else:
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
         node, entry = get_entry(node_id)
+        mxcube.queue.queue_hwobj._running = True
+
         mxcube.queue.queue_hwobj._is_stopped = False
         mxcube.queue.queue_hwobj._set_in_queue_flag()
-        mxcube.queue.queue_hwobj.execute_entry(entry)
+        try:
+            mxcube.queue.queue_hwobj.execute_entry(entry)
+        except:
+            mxcube.queue.queue_hwobj.emit('queue_execution_failed', (None,))
+        finally:
+            mxcube.queue.queue_hwobj._running = False
+            mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
 
 
 def init_signals(queue):
@@ -832,6 +840,9 @@ def init_signals(queue):
                               signals.queue_execution_started)
 
     queue.queue_hwobj.connect("queue_execution_finished",
+                              signals.queue_execution_finished)
+
+    queue.queue_hwobj.connect("queue_stopped",
                               signals.queue_execution_finished)
 
     queue.queue_hwobj.connect("queue_execute_entry_finished",
