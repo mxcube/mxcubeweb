@@ -67,11 +67,11 @@ export const SelectField = ({propName, label, list, input, meta}) => (
 
 export const FieldsRow = ({ children }) => (
    <Row>
-     {children.map((child, i) => 
+     {children.length > 0 ? children.map((child, i) => 
        <Col key={i} xs={12/children.length}>
          {child}
        </Col>
-     )}
+     ) : null }
    </Row>
 );
 

@@ -59,6 +59,7 @@ class TaskContainer extends React.Component {
   render() {
     if (this.props.showForm === 'Characterisation') {
       return <Characterisation
+            show={true}
             addTask={this.addTask}
             pointID={this.props.pointID}
             taskData={this.props.taskData}
