@@ -1,7 +1,9 @@
 from __future__ import absolute_import
 from flask import Flask, request
-from flask.ext.socketio import SocketIO
-from flask.ext.session import Session
+#from flask.ext.socketio import SocketIO
+from flask_socketio import SocketIO
+#from flask.ext.session import Session
+from flask_session import Session
 from optparse import OptionParser
 import os
 import sys
@@ -12,11 +14,13 @@ import cPickle as pickle
 import gevent
 import traceback
 
+xml_path = os.environ.get("MXCUBE_XML_PATH","test/HardwareObjectsMockups.xml")
+
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
                       dest="hwr_directory",
                       help="Hardware Repository XML files path",
-                      default=os.path.join(os.path.join(os.path.dirname(__file__), os.pardir), 'test/HardwareObjectsMockup.xml/'))
+                      default=os.path.join(os.path.join(os.path.dirname(__file__), os.pardir), xml_path))
 opt_parser.add_option("-l", "--log-file",
                       dest="log_file",
                       help="Hardware Repository log file name",
