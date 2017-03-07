@@ -98,12 +98,13 @@ export default class App extends React.Component {
     return (<Provider store={store}>
             <Router history={browserHistory}>
               <Route path="/login" component={LoginContainer} />
-              <Route path="/" component={Main} onEnter={requireAuth}>
-               <IndexRoute component={SampleGridViewContainer} />
-               <Route path="datacollection" component={SampleViewContainer} />
-               <Route path="sampleChanger" component={SampleChangerContainer} />
-               <Route path="logging" component={LoggerContainer} />
-               <Route path="remoteaccess" component={RemoteAccessContainer} />
+              <Route path="/" component={Main} onEnter={requireAuth} >
+                <IndexRoute component={SampleViewContainer} />
+                <Route path="samplegrid" component={SampleGridViewContainer} />
+                <Route path="datacollection" component={SampleViewContainer} />
+                <Route path="samplechanger" component={SampleChangerContainer} />
+                <Route path="logging" component={LoggerContainer} />
+                <Route path="remoteaccess" component={RemoteAccessContainer} />
               </Route>
             </Router>
           </Provider>);

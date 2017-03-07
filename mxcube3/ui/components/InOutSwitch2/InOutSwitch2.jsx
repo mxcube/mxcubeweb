@@ -32,11 +32,11 @@ export default class InOutSwitch2 extends React.Component {
       msgBgStyle = 'danger';
     }
 
-    let btn = <Button block bsSize="small" disabled>---</Button>;
+    let btn = <Button block bsSize="xsmall" disabled>---</Button>;
     if (this.props.data.state === 'in') {
-      btn = <Button block bsSize="small" onClick={this.setOut}>{this.props.offText}</Button>;
+      btn = <Button block bsSize="xsmall" onClick={this.setOut}>{this.props.offText}</Button>;
     } else if (this.props.data.state === 'out') {
-      btn = <Button block bsSize="small" onClick={this.setIn}>{this.props.onText}</Button>;
+      btn = <Button block bsSize="xsmall" onClick={this.setIn}>{this.props.onText}</Button>;
     }
 
     const msgLabelStyle = { display: 'block', fontSize: '100%', borderRadius: '0px' };

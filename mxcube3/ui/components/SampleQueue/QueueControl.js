@@ -63,14 +63,14 @@ export default class QueueControl extends React.Component {
             <ProgressBar active now={progress} />
           </div>
         <div>
-              <Checkbox inline
+              <Checkbox
                 name="autoMountNext"
                 onClick={this.autoMountNextOnClick}
                 checked={this.props.autoMountNext}
               >
                 Automount next sample
               </Checkbox>
-              <Checkbox inline
+              <Checkbox
                 name="autoLoopCentring"
               >
                 Auto loop centring

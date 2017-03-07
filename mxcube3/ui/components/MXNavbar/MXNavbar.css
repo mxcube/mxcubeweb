@@ -1,0 +1,20 @@
+.navbar li {
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.navbar-brand { 
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.navbar-inverse {
+  box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.75);
+  background-color: #222222;
+}
+
+.navbar-inverse .navbar-nav > .active > a,
+.navbar-inverse .navbar-nav > .active > a:hover,
+.navbar-inverse .navbar-nav > .active > a:focus {
+  background-color: #222;
+}

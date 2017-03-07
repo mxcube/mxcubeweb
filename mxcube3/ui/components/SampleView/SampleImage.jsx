@@ -512,8 +512,8 @@ export default class SampleImage extends React.Component {
 
     return (
       <div>
-        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001 }}>
-          <Form horizontal>
+        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
+          <Form inline>
             <FormGroup>
               <ControlLabel>H-Cell Spacing:</ControlLabel>
               <FormControl
@@ -526,7 +526,7 @@ export default class SampleImage extends React.Component {
             <FormGroup>
               <ControlLabel>V-Cell Spacing:</ControlLabel>
               <FormControl
-                style={{ width: '50px', marginRight: '1em' }}
+                style={{ width: '50px'}}
                 type="text"
                 value={this.gridCellSpacing()[1]}
                 onChange={this.setVCellSpacing}

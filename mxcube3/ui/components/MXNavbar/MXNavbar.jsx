@@ -1,6 +1,8 @@
 import React from 'react';
-import { Navbar, Nav, NavItem, NavBrand } from 'react-bootstrap';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+import './MXNavbar.css';
+
 
 export default class MXNavbar extends React.Component {
   render() {
@@ -11,20 +13,20 @@ export default class MXNavbar extends React.Component {
     document.title = `MxCuBE-3 ${propInfo}`;
 
     return (
-      <Navbar inverse fixedTop>
+      <Navbar inverse fixedTop fluid>
         <Navbar.Header>
           <Navbar.Brand>
             MXCuBE 3
           </Navbar.Brand>
         </Navbar.Header>
-        <Nav>
-          <LinkContainer to="/">
+        <Nav style={{ marginLeft: '20em' }}>
+          <LinkContainer to="/samplegrid">
             <NavItem eventKey={1}>Sample Overview</NavItem>
           </LinkContainer>
           <LinkContainer to="/datacollection">
             <NavItem eventKey={2}>Data collection</NavItem>
           </LinkContainer>
-          <LinkContainer to="/sampleChanger">
+          <LinkContainer to="/samplechanger">
             <NavItem eventKey={3}>Sample Changer</NavItem>
           </LinkContainer>
           <LinkContainer to="/logging">
