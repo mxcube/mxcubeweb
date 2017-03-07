@@ -93,9 +93,8 @@ AddSample = reduxForm({
   fields: ['sampleName', 'proteinAcronym']
 })(AddSample);
 
-AddSample = connect(state => {
-    initialValues: state.taskForm.taskData.parameters
-  }
-)(AddSample);
+AddSample = connect(state => ({
+  initialValues: state.taskForm.taskData.parameters
+}))(AddSample);
 
 export default AddSample;

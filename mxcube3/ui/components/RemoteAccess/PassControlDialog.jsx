@@ -72,7 +72,7 @@ export class PassControlDialog extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <FormControl
-            ref={(ref)=>{ this.message=ref }}
+            ref={(ref) => { this.message = ref; }}
             defaultValue="Here you go !"
             type="textarea"
             placeholder="Message"

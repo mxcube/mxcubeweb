@@ -90,7 +90,6 @@ export default class SampleItem extends Component {
     this.deleteSample = () => this.props.deleteSample(this.props.id, this.props.sampleId);
   }
 
-  
 
   render() {
     const { text, isDragging, connectDragSource, connectDropTarget } = this.props;

@@ -37,8 +37,12 @@ export default class DefaultInput extends React.Component {
   render() {
     return (
       <Form inline onSubmit={this.submit}>
-        <FormControl ref={ ref => { this.input = ref }} type={this.props.dataType} style={{ width: this.props.inputSize }}
-          placeholder="" defaultValue={this.props.value}
+        <FormControl
+          ref={ ref => { this.input = ref; }}
+          type={this.props.dataType}
+          style={{ width: this.props.inputSize }}
+          placeholder=""
+          defaultValue={this.props.value}
         />
         <ButtonToolbar style={{ marginLeft: '0px' }} className="form-group editable-buttons">
           <Button bsStyle="primary" className="btn-sm" onClick={this.save}>

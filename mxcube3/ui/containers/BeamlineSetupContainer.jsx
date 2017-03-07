@@ -78,85 +78,85 @@ class BeamlineSetupContainer extends React.Component {
         borderBottom: '1px solid rgb(180,180,180)' }}
       >
         <Col sm={12}>
-          <Row style={{ display:'flex', alignItems: 'center' }}>
+          <Row style={{ display: 'flex', alignItems: 'center' }}>
             <Col sm={2}>
               <BeamlineActions actionsList={this.props.data.beamlineActionsList} />
             </Col>
               {this.createActuatorComponent()}
             <Col sm={5}>
-              <div style={{ display: 'inline', float: 'left'}}>
+              <div style={{ display: 'inline', float: 'left' }}>
                 <PopInput
-                    ref="energy"
-                    name="Energy"
-                    pkey="energy"
-                    suffix="keV"
-                    data= { this.props.data.movables.energy }
-                    onSave= { this.movableSaveHandler }
-                    onCancel= { this.onCancelHandler }
+                  ref="energy"
+                  name="Energy"
+                  pkey="energy"
+                  suffix="keV"
+                  data= { this.props.data.movables.energy }
+                  onSave= { this.movableSaveHandler }
+                  onCancel= { this.onCancelHandler }
                 />
-                <br/>
+                <br />
                 <PopInput
-                    ref="wavelength"
-                    name="Wavelength"
-                    pkey="wavelength"
-                    placement="left"
-                    suffix="&Aring;"
-                    data={this.props.data.movables.wavelength}
-                    onSave={this.movableSaveHandler}
-                    onCancel={this.onCancelHandler}
-                />
-              </div>
-              <div style={{ display: 'inline', float: 'left'}}>              
-                <PopInput
-                    ref="resolution"
-                    name="Resolution"
-                    pkey="resolution"
-                    suffix="A"
-                    data={this.props.data.movables.resolution}
-                    onSave={this.movableSaveHandler}
-                    onCancel={this.onCancelHandler}
-                />
-                <br/>
-                <PopInput
-                    ref="detdist"
-                    name="Detector"
-                    pkey="detdist"
-                    suffix="mm"
-                    data={this.props.data.movables.detdist}
-                    onSave={this.movableSaveHandler}
-                    onCancel={this.onCancelHandler}
+                  ref="wavelength"
+                  name="Wavelength"
+                  pkey="wavelength"
+                  placement="left"
+                  suffix="&Aring;"
+                  data={this.props.data.movables.wavelength}
+                  onSave={this.movableSaveHandler}
+                  onCancel={this.onCancelHandler}
                 />
               </div>
-              <div style={{ display: 'inline', float: 'left'}}>             
+              <div style={{ display: 'inline', float: 'left' }}>
                 <PopInput
-                    ref="transmission"
-                    name="Transmission"
-                    pkey="transmission"
-                    suffix="%"
-                    data={this.props.data.movables.transmission}
-                    onSave={this.movableSaveHandler}
-                    onCancel={this.onCancelHandler}
+                  ref="resolution"
+                  name="Resolution"
+                  pkey="resolution"
+                  suffix="A"
+                  data={this.props.data.movables.resolution}
+                  onSave={this.movableSaveHandler}
+                  onCancel={this.onCancelHandler}
                 />
-                <br/>
+                <br />
                 <PopInput
-                    ref="flux"
-                    name="Flux"
-                    pkey="flux"
-                    suffix="p/s"
-                    data={this.props.data.movables.flux}
-                    onSave={this.movableSaveHandler}
-                    onCancel={this.onCancelHandler}
+                  ref="detdist"
+                  name="Detector"
+                  pkey="detdist"
+                  suffix="mm"
+                  data={this.props.data.movables.detdist}
+                  onSave={this.movableSaveHandler}
+                  onCancel={this.onCancelHandler}
                 />
               </div>
-              <div style={{ display: 'inline', float: 'left'}}>
+              <div style={{ display: 'inline', float: 'left' }}>
+                <PopInput
+                  ref="transmission"
+                  name="Transmission"
+                  pkey="transmission"
+                  suffix="%"
+                  data={this.props.data.movables.transmission}
+                  onSave={this.movableSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+                <br />
+                <PopInput
+                  ref="flux"
+                  name="Flux"
+                  pkey="flux"
+                  suffix="p/s"
+                  data={this.props.data.movables.flux}
+                  onSave={this.movableSaveHandler}
+                  onCancel={this.onCancelHandler}
+                />
+              </div>
+              <div style={{ display: 'inline', float: 'left' }}>
                 <CryoInput
-                    ref="cryo"
-                    name="Cryo"
-                    pkey="cryo"
-                    suffix="K"
-                    data={this.props.data.cryo}
-                    onSave={this.movableSaveHandler}
-                    onCancel={this.onCancelHandler}
+                  ref="cryo"
+                  name="Cryo"
+                  pkey="cryo"
+                  suffix="K"
+                  data={this.props.data.cryo}
+                  onSave={this.movableSaveHandler}
+                  onCancel={this.onCancelHandler}
                 />
               </div>
             </Col>

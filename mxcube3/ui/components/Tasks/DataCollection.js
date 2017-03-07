@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { reduxForm, Field } from 'redux-form';
+import { reduxForm } from 'redux-form';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import validate from './validate';
-import { FieldsHeader, 
+import { FieldsHeader,
          StaticField,
          InputField,
          CheckboxField,
@@ -54,87 +54,95 @@ class DataCollection extends React.Component {
   }
 
   render() {
-    return <Modal show={this.props.show} onHide={this.props.hide}>
+    return (<Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Standard Data Collection</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FieldsHeader title="Data location"/>
+          <FieldsHeader title="Data location" />
           <Form horizontal>
-            <StaticField label="Path" data="xxx"/>
+            <StaticField label="Path" data="xxx" />
             <Row>
               <Col xs={6}>
-                <InputField propName="subdir" label="Subdirectory"/>
+                <InputField propName="subdir" label="Subdirectory" />
               </Col>
             </Row>
-            <StaticField label="Filename" data="xxx.yyy.zzz"/>
+            <StaticField label="Filename" data="xxx.yyy.zzz" />
             <FieldsRow>
-                <InputField propName="prefix" label="Prefix"/>
-                <InputField propName="run_number" label="Run number"/>
+                <InputField propName="prefix" label="Prefix" />
+                <InputField propName="run_number" label="Run number" />
             </FieldsRow>
           </Form>
 
-          <FieldsHeader title="Acquisition"/> 
+          <FieldsHeader title="Acquisition" />
           <Form horizontal>
             <FieldsRow>
-              <InputField propName="osc_range" label="Oscillation range"/>
-              <InputField propName="first_image" label="First image"/>
+              <InputField propName="osc_range" label="Oscillation range" />
+              <InputField propName="first_image" label="First image" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="osc_start" label="Oscillation start"/>
-              <InputField propName="num_images" label="Number of images"/>
+              <InputField propName="osc_start" label="Oscillation start" />
+              <InputField propName="num_images" label="Number of images" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" label="Exposure time (ms)"/>
-              <InputField propName="transmission" label="Transmission"/>
+              <InputField propName="exp_time" label="Exposure time (ms)" />
+              <InputField propName="transmission" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="energy" label="Energy"/>
-              <InputField propName="resolution" label="Resolution"/>
+              <InputField propName="energy" label="Energy" />
+              <InputField propName="resolution" label="Resolution" />
             </FieldsRow>
             <CollapsableRows>
               <FieldsRow>
-                <InputField propName="kappa" label="Kappa"/>
-                <InputField propName="kappa_phi" label="Phi"/>
+                <InputField propName="kappa" label="Kappa" />
+                <InputField propName="kappa_phi" label="Phi" />
               </FieldsRow>
               <FieldsRow>
-                <SelectField propName="beam_size" label="Beam size" list={this.props.apertureList}/>
-                <SelectField propName="detector_mode" label="Detector mode" list={["0", "C18", "C2"]}/>
+                <SelectField
+                  propName="beam_size"
+                  label="Beam size"
+                  list={this.props.apertureList}
+                />
+                <SelectField
+                  propName="detector_mode"
+                  label="Detector mode"
+                  list={['0', 'C18', 'C2']}
+                />
               </FieldsRow>
               <FieldsRow>
-                <CheckboxField propName="shutterless" label="Shutterless"/>
-                <CheckboxField propName="inverse_beam" label="Inverse beam"/>
+                <CheckboxField propName="shutterless" label="Shutterless" />
+                <CheckboxField propName="inverse_beam" label="Inverse beam" />
               </FieldsRow>
             </CollapsableRows>
           </Form>
- 
-          <FieldsHeader title="Processing"/> 
+
+          <FieldsHeader title="Processing" />
        </Modal.Body>
-      
-       { this.props.taskData.state ? "" :
-           <Modal.Footer> 
+
+       { this.props.taskData.state ? '' :
+           <Modal.Footer>
              <Button bsStyle="primary" disabled={this.props.invalid} onClick={this.handleSubmit}>
                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
              </Button>
            </Modal.Footer>
        }
-      </Modal>
+      </Modal>);
   }
 }
 
-DataCollection = reduxForm({ 
+DataCollection = reduxForm({
   form: 'datacollection',
   validate
 })(DataCollection);
 
 DataCollection = connect(state => ({
-   motorLimits: state.beamline.motorsLimits,
-   acqParametersLimits: state.taskForm.acqParametersLimits,
-   initialValues: {
-      ...state.taskForm.taskData.parameters,
-      beam_size: state.sampleview.currentAperture
-    }
-  })
+  motorLimits: state.beamline.motorsLimits,
+  acqParametersLimits: state.taskForm.acqParametersLimits,
+  initialValues: {
+    ...state.taskForm.taskData.parameters,
+    beam_size: state.sampleview.currentAperture
+  }
+})
 )(DataCollection);
 
 export default DataCollection;

@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { sendClearQueue } from './queue';
 import { setMaster } from './remoteAccess';
-import { browserHistory }  from 'react-router';
+import { browserHistory } from 'react-router';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -17,7 +17,7 @@ export function startSession() {
     dispatch(setMaster(loginInfo.master, loginInfo.observerName));
     dispatch(getInitialState());
     dispatch(setLoading(false));
-  }
+  };
 }
 
 export function getLoginInfo() {
@@ -56,12 +56,12 @@ export function signIn(proposal, password) {
     }).then(response => response.json()).then((res) => {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
-        browserHistory.push("/");
+        browserHistory.push('/');
       } else {
-        //const msg = res.msg;
+        // const msg = res.msg;
         dispatch(showErrorPanel(true));
         dispatch(setLoading(false));
-      }       
+      }
     }, () => {
       dispatch(showErrorPanel(true));
       dispatch(setLoading(false));
@@ -76,7 +76,7 @@ export function doSignOut() {
     }).then(() => {
       dispatch(signOut());
       dispatch(sendClearQueue());
-      browserHistory.push("/login");
+      browserHistory.push('/login');
     });
   };
 }

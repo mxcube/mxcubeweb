@@ -63,7 +63,7 @@ export class ObserverDialog extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <FormControl
-            ref={(ref)=>{this.name=ref}}
+            ref={(ref) => { this.name = ref; }}
             type="text"
             placeholder="Your name"
           />

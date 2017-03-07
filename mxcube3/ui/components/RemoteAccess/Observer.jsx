@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Form, ControlLabel, FormControl, Button } from 'react-bootstrap';
+import { Form, ControlLabel, FormControl, Button, FormGroup } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
 import { requestControl } from '../../actions/remoteAccess';
 
@@ -39,11 +39,11 @@ class Observer extends React.Component {
   }
 
   render() {
-    return  <Form>
+    return (<Form>
           <FormGroup>
             <ControlLabel>Name</ControlLabel>
             <FormControl
-              ref={(ref)=>{this.name = ref }}
+              ref={(ref) => {this.name = ref; }}
               type="text"
               defaultValue={this.getName()}
             />
@@ -51,7 +51,7 @@ class Observer extends React.Component {
           <FormGroup>
             <ControlLabel>Message</ControlLabel>
             <FormControl
-              ref={(ref)=>{this.message = ref}}
+              ref={(ref) => {this.message = ref;}}
               componentClass="textarea"
               defaultValue="Please give me control"
               rows="3"
@@ -62,7 +62,7 @@ class Observer extends React.Component {
             value="Ask for control"
             onClick={this.askForControl}
           />
-    </Form>
+    </Form>);
   }
 }
 

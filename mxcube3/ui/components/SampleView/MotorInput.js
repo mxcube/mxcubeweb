@@ -18,6 +18,7 @@ export default class MotorInput extends React.Component {
     this.stepDecrement = this.stepChange.bind(this, props.motorName, -1);
   }
 
+  /* eslint-enable react/no-set-state */
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
       this.refs.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
@@ -41,6 +42,7 @@ export default class MotorInput extends React.Component {
       this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
   }
+  /* eslint-enable react/no-set-state */
 
   stepChange(name, operator) {
     const { value, step } = this.props;

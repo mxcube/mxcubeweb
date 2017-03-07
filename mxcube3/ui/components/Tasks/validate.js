@@ -12,7 +12,8 @@ const validate = (values, props) => {
     errors.osc_start = 'field empty';
   }
 
-  if ((props.acqParametersLimits !== undefined) && (Object.keys(props.acqParametersLimits).length > 0)) {
+  if ((props.acqParametersLimits !== undefined) &&
+      (Object.keys(props.acqParametersLimits).length > 0)) {
     if (values.num_images === '' ||
       parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images) {
       errors.num_images = 'Number of images above the limit';

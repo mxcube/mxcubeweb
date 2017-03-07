@@ -224,7 +224,7 @@ export class ConfirmCollectDialog extends React.Component {
           </p>
           <div style={ { marginLeft: '20px' } }>
             <span>
-              <Checkbox 
+              <Checkbox
                 onClick={this.autoLoopCentringOnClick}
               />
               Auto loop centring

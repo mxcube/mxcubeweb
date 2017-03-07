@@ -107,7 +107,9 @@ export class SampleChangerTreeItem extends React.Component {
   }
 
   itemClicked() {
+    /* eslint-disable react/no-set-state */
     this.setState({ allow_control: !this.state.allow_control });
+    /* eslint-enable react/no-set-state */
   }
 
   loadSample() {

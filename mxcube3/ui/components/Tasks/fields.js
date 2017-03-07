@@ -2,11 +2,11 @@ import React from 'react';
 import { Field } from 'redux-form';
 import { Row,
          Col,
-         FormGroup, 
+         FormGroup,
          Checkbox,
          FormControl,
          ControlLabel,
-         Label, 
+         Label,
          Button } from 'react-bootstrap';
 
 export const FieldsHeader = ({ title }) => (
@@ -17,7 +17,7 @@ export const FieldsHeader = ({ title }) => (
   </Row>
 );
 
-export const StaticField = ({ label, data, input, meta }) => (
+export const StaticField = ({ label, data }) => (
   <Row>
     <Col xs={2} componentClass={ControlLabel}>{label}</Col>
     <Col xs={10}>
@@ -26,9 +26,9 @@ export const StaticField = ({ label, data, input, meta }) => (
   </Row>
 );
 
-export const InputField = ({propName, label, input, meta}) => (
+export const InputField = ({ propName, label }) => (
    <Field name={propName}
-              component={ (prop) => <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
+     component={ (prop) => <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
                   <Col xs={4} componentClass={ControlLabel}>{label}</Col>
                   <Col xs={8}>
                     <FormControl value={prop.input.value} onChange={prop.input.onChange} {...prop} />
@@ -38,9 +38,9 @@ export const InputField = ({propName, label, input, meta}) => (
    />
 );
 
-export const CheckboxField = ({propName, label, input, meta}) => (
+export const CheckboxField = ({ propName, label }) => (
    <Field name={propName}
-              component={ (prop) =>
+     component={ (prop) =>
                 <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
                   <Col xs={12}>
                     <Checkbox inline value={prop.input.value} onChange={prop.input.onChange} {...prop}>{label}</Checkbox>
@@ -50,9 +50,9 @@ export const CheckboxField = ({propName, label, input, meta}) => (
    />
 );
 
-export const SelectField = ({propName, label, list, input, meta}) => (
+export const SelectField = ({ propName, label, list }) => (
    <Field name={propName}
-              component={ (prop) =>
+     component={ (prop) =>
                 <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
                   <Col xs={4} componentClass={ControlLabel}>{label}</Col>
                   <Col xs={8}>
@@ -67,8 +67,8 @@ export const SelectField = ({propName, label, list, input, meta}) => (
 
 export const FieldsRow = ({ children }) => (
    <Row>
-     {children.length > 0 ? children.map((child, i) => 
-       <Col key={i} xs={12/children.length}>
+     {children.length > 0 ? children.map((child, i) =>
+       <Col key={i} xs={12 / children.length}>
          {child}
        </Col>
      ) : null }
@@ -79,18 +79,18 @@ export const FieldsRow = ({ children }) => (
 export class CollapsableRows extends React.Component {
   constructor(props) {
     super(props);
-   
-    this.state = { collapsed: true }
+
+    this.state = { collapsed: true };
   }
 
   render() {
     return (<div>
-      { this.state.collapsed ? "" : this.props.children }
+      { this.state.collapsed ? '' : this.props.children }
       <Row>
         <Col xs={12}>
           { this.state.collapsed ?
-            <Button bsStyle="link" className="pull-right" onClick={()=>{this.setState({ collapsed: false })}}>Show more</Button>
-          : <Button bsStyle="link" className="pull-right" onClick={()=>{this.setState({ collapsed: true })}}>Show less</Button> }
+            <Button bsStyle="link" className="pull-right" onClick={() => {this.setState({ collapsed: false });}}>Show more</Button>
+          : <Button bsStyle="link" className="pull-right" onClick={() => {this.setState({ collapsed: true });}}>Show less</Button> }
         </Col>
       </Row>
     </div>);

@@ -60,80 +60,95 @@ class Characterisation extends React.Component {
           <Modal.Title>Characterisation</Modal.Title>
         </Modal.Header>
           <Modal.Body>
-            <FieldsHeader title="Data location"/>
+            <FieldsHeader title="Data location" />
             <Form horizontal>
-              <StaticField label="Path" data={this.props.rootPath}/>
+              <StaticField label="Path" data={this.props.rootPath} />
               <Row>
                 <Col xs={6}>
-                  <InputField propName="subdir" label="Subdirectory"/>
+                  <InputField propName="subdir" label="Subdirectory" />
                 </Col>
               </Row>
-              <StaticField label="Filename" data="ref-xxx.yyy.zzz"/>
+              <StaticField label="Filename" data="ref-xxx.yyy.zzz" />
               <FieldsRow>
-                <InputField propName="prefix" label="Prefix"/>
-                <InputField propName="run_number" label="Run number"/>
+                <InputField propName="prefix" label="Prefix" />
+                <InputField propName="run_number" label="Run number" />
               </FieldsRow>
             </Form>
 
-            <FieldsHeader title="Acquisition"/>
+            <FieldsHeader title="Acquisition" />
             <Form horizontal>
               <FieldsRow>
-                <SelectField propName="num_images" label="Number of images" list={[1, 2, 4]}/>
-                <InputField propName="transmission" label="Transmission"/>
+                <SelectField propName="num_images" label="Number of images" list={[1, 2, 4]} />
+                <InputField propName="transmission" label="Transmission" />
               </FieldsRow>
-                <InputField propName="exp_time" label="Exposure time (ms)"/>
-                <SelectField propName="beam_size" label="Beam size" list={this.props.apertureList}/>
+                <InputField propName="exp_time" label="Exposure time (ms)" />
+                <SelectField
+                  propName="beam_size"
+                  label="Beam size"
+                  list={this.props.apertureList}
+                />
               <FieldsRow>
-                <InputField propName="osc_range" label="Oscillation range"/>
-                <InputField propName="resolution" label="Resolution (Å)"/>
+                <InputField propName="osc_range" label="Oscillation range" />
+                <InputField propName="resolution" label="Resolution (Å)" />
               </FieldsRow>
               <FieldsRow>
-                <InputField propName="osc_start" label="Oscillation start"/>
-                <InputField propName="energy" label="Energy (keV)"/>
+                <InputField propName="osc_start" label="Oscillation start" />
+                <InputField propName="energy" label="Energy (keV)" />
               </FieldsRow>
               <FieldsRow>
-                <InputField propName="energy" label="Energy"/>
+                <InputField propName="energy" label="Energy" />
               </FieldsRow>
               <CollapsableRows>
                 <FieldsRow>
-                  <InputField propName="kappa" label="Kappa"/>
-                  <InputField propName="kappa_phi" label="Phi"/>
+                  <InputField propName="kappa" label="Kappa" />
+                  <InputField propName="kappa_phi" label="Phi" />
                 </FieldsRow>
                 <FieldsRow>
-                  <SelectField propName="detector_mode" label="Detector mode" list={["0", "C18", "C2"]}/>
+                  <SelectField
+                    propName="detector_mode"
+                    label="Detector mode"
+                    list={['0', 'C18', 'C2']}
+                  />
                 </FieldsRow>
               </CollapsableRows>
             </Form>
 
-            <FieldsHeader title="Characterisation"/>
+            <FieldsHeader title="Characterisation" />
             <CollapsableRows>
               <Form horizontal>
                 <FieldsRow>
-                  <SelectField propName="strategy_complexity" label="Strategy complexity" list={["Single subwedge", "Multiple subwedge"]}/>
-                  <CheckboxField propName="account_rad_damage" label="Account for radiation damage"/>
+                  <SelectField
+                    propName="strategy_complexity"
+                    label="Strategy complexity"
+                    list={['Single subwedge', 'Multiple subwedge']}
+                  />
+                  <CheckboxField
+                    propName="account_rad_damage"
+                    label="Account for radiation damage"
+                  />
                 </FieldsRow>
                 <FieldsRow>
-                  <CheckboxField propName="opt_sad" label="Optimised SAD"/>
+                  <CheckboxField propName="opt_sad" label="Optimised SAD" />
                 </FieldsRow>
               </Form>
             </CollapsableRows>
 
-            <FieldsHeader title="Crystal"/>
+            <FieldsHeader title="Crystal" />
             <CollapsableRows>
               <Form horizontal>
                 <FieldsRow>
-                  <SelectField propName="space_group" label="Space group" list={["P1", "P211"]}/>
+                  <SelectField propName="space_group" label="Space group" list={['P1', 'P211']} />
                 </FieldsRow>
                 <FieldsRow>
-                  <InputField propName="min_crystal_vdim" label="Min"/>
-                  <InputField propName="max_crystal_vdim" label="Max"/>
-                  <InputField propName="min_crystal_vphi" label="&omega; at min"/>
-                  <InputField propName="max_crystal_vphi" label="&omega; at max"/>
+                  <InputField propName="min_crystal_vdim" label="Min" />
+                  <InputField propName="max_crystal_vdim" label="Max" />
+                  <InputField propName="min_crystal_vphi" label="&omega; at min" />
+                  <InputField propName="max_crystal_vphi" label="&omega; at max" />
                 </FieldsRow>
               </Form>
-            </CollapsableRows>  
+            </CollapsableRows>
          </Modal.Body>
-         { this.props.taskData.state ? "" :
+         { this.props.taskData.state ? '' :
            <Modal.Footer>
              <Button bsStyle="primary" disabled={this.props.invalid} onClick={this.handleSubmit}>
                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
@@ -149,14 +164,16 @@ Characterisation = reduxForm({
   validate
 })(Characterisation);
 
-Characterisation = connect(state => { return {
-   motorLimits: state.beamline.motorsLimits,
-   acqParametersLimits: state.taskForm.acqParametersLimits,
-   initialValues: {
-     ...state.taskForm.taskData.parameters,
-     beam_size: state.sampleview.currentAperture
-   }
-  }}
+Characterisation = connect(state => {
+  return {
+    motorLimits: state.beamline.motorsLimits,
+    acqParametersLimits: state.taskForm.acqParametersLimits,
+    initialValues: {
+        ...state.taskForm.taskData.parameters,
+      beam_size: state.sampleview.currentAperture
+    }
+  };
+}
 )(Characterisation);
 
 export default Characterisation;

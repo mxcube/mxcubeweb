@@ -24,7 +24,7 @@ export default class SampleImage extends React.Component {
     this.configureGrid = this.configureGrid.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
     this.canvas = {};
-    this.state = { keyPressed: null };
+    this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;
     this.lineGroup = null;
@@ -189,13 +189,13 @@ export default class SampleImage extends React.Component {
   }
 
   keyDown(event) {
-    if (!this.state.keyPressed) {
-      this.setState({ keyPressed: event.key });
+    if (!this._keyPressed) {
+      this._keyPressed = event.key;
     }
   }
 
   keyUp() {
-    this.setState({ keyPressed: null });
+    this._keyPressed = null;
   }
 
   goToBeam(e) {
@@ -351,7 +351,7 @@ export default class SampleImage extends React.Component {
     e.stopPropagation();
     const { sampleActions, motorSteps, zoom, motors } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
-    const keyPressed = this.state.keyPressed;
+    const keyPressed = this._keyPressed;
     if (keyPressed === 'r' && motors.phi.Status === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
@@ -526,7 +526,7 @@ export default class SampleImage extends React.Component {
             <FormGroup>
               <ControlLabel>V-Cell Spacing:</ControlLabel>
               <FormControl
-                style={{ width: '50px'}}
+                style={{ width: '50px' }}
                 type="text"
                 value={this.gridCellSpacing()[1]}
                 onChange={this.setVCellSpacing}

@@ -58,48 +58,48 @@ class TaskContainer extends React.Component {
 
   render() {
     if (this.props.showForm === 'Characterisation') {
-      return <Characterisation
-            show={true}
-            addTask={this.addTask}
-            pointID={this.props.pointID}
-            taskData={this.props.taskData}
-            hide={this.props.hideTaskParametersForm}
-            apertureList={this.props.apertureList}
-            rootPath={this.props.path}
-          />
+      return (<Characterisation
+        show
+        addTask={this.addTask}
+        pointID={this.props.pointID}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+      />);
     }
 
     if (this.props.showForm === 'DataCollection') {
-        return <DataCollection
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          show={true}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-        />
+      return (<DataCollection
+        addTask={this.addTask}
+        pointID={this.props.pointID}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        show
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+      />);
     }
- 
+
     if (this.props.showForm === 'Helical') {
-        return <Helical
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          sampleIds={this.props.sampleIds}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-          lines={this.props.lines}
-        />
+      return (<Helical
+        addTask={this.addTask}
+        pointID={this.props.pointID}
+        sampleIds={this.props.sampleIds}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+        lines={this.props.lines}
+      />);
     }
 
     if (this.props.showForm === 'AddSample') {
-        return <AddSample
-          hide={this.props.hideTaskParametersForm}
-          addToQueue={this.addSampleToQueue}
-          addAndMount={this.addSampleAndMount}
-        />
+      return (<AddSample
+        hide={this.props.hideTaskParametersForm}
+        addToQueue={this.addSampleToQueue}
+        addAndMount={this.addSampleAndMount}
+      />);
     }
 
     return null;
