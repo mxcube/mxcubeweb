@@ -62,8 +62,9 @@ class DataCollection extends React.Component {
           <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
+            <StaticField label="Filename" data={this.props.filename} />
             <Row>
-              <Col xs={12}>
+              <Col xs={12} style={{ marginTop: '10px' }}>
                 <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
@@ -75,7 +76,6 @@ class DataCollection extends React.Component {
                 <InputField propName="run_number" label="Run number" col1="4" col2="8" />
               </Col>
             </Row>
-            <StaticField label="Filename" data={this.props.filename} />
           </Form>
 
           <FieldsHeader title="Acquisition" />

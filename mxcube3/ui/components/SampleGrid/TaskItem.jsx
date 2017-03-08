@@ -209,8 +209,7 @@ export class TaskItem extends React.Component {
           placement={this.popoverPosition()}
           overlay={(
             <Popover
-              id={this.title()}
-              style={{ minWidth: '700px !important', paddingBottom: '1em' }}
+              id="taskSummaryPopover"
               title={(<b>{this.title()}</b>)}
             >
               {this.summary()}

@@ -18,9 +18,13 @@ export const FieldsHeader = ({ title }) => (
 );
 
 export const StaticField = ({ label, data }) => (
-    <FormGroup>
-      <Col xs={12} style={{ textAlign: 'left' }}>
-        <FormControl.Static><b>{label}:</b>{' '}{data}</FormControl.Static>
+    <FormGroup style={{ textAlign: 'left', marginBottom: '0px' }}>
+      <Col xs={12}>
+        <FormControl.Static
+          style={{ padding: '5px 0px', minHeight: '0px' }}
+        >
+          <b>{label}:</b>{' '}{data}
+        </FormControl.Static>
       </Col>
     </FormGroup>
 );
