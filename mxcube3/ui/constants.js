@@ -13,6 +13,7 @@ export const QUEUE_FAILED = 'QueueFailed';
 export const SAMPLE_MOUNTED = 0x8;
 export const TASK_COLLECTED = 0x4;
 export const TASK_COLLECT_FAILED = 0x2;
+export const TASK_COLLECT_WARNING = 0x3;
 export const TASK_RUNNING = 0x1;
 export const TASK_UNCOLLECTED = 0x0;
 

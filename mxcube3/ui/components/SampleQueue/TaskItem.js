@@ -3,7 +3,11 @@ import { Button, Collapse } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
 import cx from 'classnames';
-import { TASK_UNCOLLECTED } from '../../constants';
+import { TASK_UNCOLLECTED,
+         TASK_COLLECTED,
+         TASK_COLLECT_FAILED,
+         TASK_COLLECT_WARNING,
+         TASK_RUNNING } from '../../constants';
 
 const cardSource = {
   beginDrag(props) {
@@ -100,7 +104,7 @@ export default class TaskItem extends Component {
   }
 
   getResult(state) {
-    if (state !== 2) {
+    if (state !== TASK_COLLECTED) {
       return ('nothing yet');
     }
     return (
@@ -149,10 +153,10 @@ export default class TaskItem extends Component {
     const opacity = isDragging ? 0 : 1;
 
     let taskCSS = cx('task-head', {
-      active: state === 1,
-      success: state === 4,
-      error: state === 2,
-      warning: state === 3
+      active: state === TASK_RUNNING,
+      success: state === TASK_COLLECTED,
+      error: state === TASK_COLLECT_FAILED,
+      warning: state === TASK_COLLECT_WARNING
     });
 
     let typePrefix = '';

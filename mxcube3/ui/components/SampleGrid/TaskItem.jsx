@@ -2,6 +2,10 @@ import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import './SampleGrid.css';
+import { TASK_COLLECTED,
+         TASK_COLLECT_FAILED,
+         TASK_COLLECT_WARNING,
+         TASK_RUNNING } from '../../constants';
 
 export class TaskItem extends React.Component {
 
@@ -144,9 +148,9 @@ export class TaskItem extends React.Component {
     const point = task.parameters.point !== -1 ? ` at P-${task.parameters.point}` : '';
     let taskStatus = 'To be collected';
 
-    if (task.state === 1) {
+    if (task.state === TASK_RUNNING) {
       taskStatus = 'In progress';
-    } else if (task.state === 4) {
+    } else if (task.state === TASK_COLLECTED) {
       taskStatus = 'Collected';
     }
 
@@ -158,13 +162,13 @@ export class TaskItem extends React.Component {
 
     let cls = 'btn-primary';
 
-    if (task.state === 1) {
+    if (task.state === TASK_RUNNING) {
       cls = 'btn-warning';
-    } if (task.state === 2) {
+    } if (task.state === TASK_COLLECT_FAILED) {
       cls = 'btn-danger';
-    } if (task.state === 3) {
+    } if (task.state === TASK_COLLECT_WARNING) {
       cls = 'btn-danger';
-    } else if (task.state === 4) {
+    } else if (task.state === TASK_COLLECTED) {
       cls = 'btn-success';
     }
 

@@ -29,6 +29,12 @@ RUNNING = 0x1
 UNCOLLECTED = 0x0
 READY = 0
 
+TASK_COLLECTED = 4
+TASK_COLLECT_FAILED = 2
+TASK_COLLECT_WARNING = 3
+TASK_RUNNING = 1
+TASK_UNCOLLECTED = 0
+
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
