@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { reduxForm } from 'redux-form';
+import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader,
@@ -62,17 +62,21 @@ class Characterisation extends React.Component {
           <Modal.Body>
             <FieldsHeader title="Data location" />
             <Form horizontal>
-              <StaticField label="Path" data={this.props.rootPath} />
+              <StaticField label="Path" data={this.props.path} />
               <Row>
-                <Col xs={6}>
-                  <InputField propName="subdir" label="Subdirectory" />
+                <Col xs={12}>
+                  <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
                 </Col>
               </Row>
-              <StaticField label="Filename" data="ref-xxx.yyy.zzz" />
-              <FieldsRow>
-                <InputField propName="prefix" label="Prefix" />
-                <InputField propName="run_number" label="Run number" />
-              </FieldsRow>
+              <Row>
+                <Col xs={8}>
+                  <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+                </Col>
+                <Col xs={4}>
+                  <InputField propName="run_number" label="Run number" col1="4" col2="8" />
+                </Col>
+              </Row>
+              <StaticField label="Filename" data={this.props.filename} />
             </Form>
 
             <FieldsHeader title="Acquisition" />
@@ -81,12 +85,14 @@ class Characterisation extends React.Component {
                 <SelectField propName="num_images" label="Number of images" list={[1, 2, 4]} />
                 <InputField propName="transmission" label="Transmission" />
               </FieldsRow>
+              <FieldsRow>
                 <InputField propName="exp_time" label="Exposure time (ms)" />
                 <SelectField
                   propName="beam_size"
                   label="Beam size"
                   list={this.props.apertureList}
                 />
+              </FieldsRow>
               <FieldsRow>
                 <InputField propName="osc_range" label="Oscillation range" />
                 <InputField propName="resolution" label="Resolution (Å)" />
@@ -164,17 +170,24 @@ Characterisation = reduxForm({
   validate
 })(Characterisation);
 
+const selector = formValueSelector('characterisation');
+
 Characterisation = connect(state => {
+  const subdir = selector(state, 'subdir');
+  const prefix = selector(state, 'prefix');
+  const runNumber = selector(state, 'run_number');
+
   return {
+    path: `${state.queue.rootPath}/${subdir}`,
+    filename: `ref-${prefix}_${runNumber}.???`,
     motorLimits: state.beamline.motorsLimits,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
-        ...state.taskForm.taskData.parameters,
+      ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture
     }
   };
-}
-)(Characterisation);
+})(Characterisation);
 
 export default Characterisation;
 
