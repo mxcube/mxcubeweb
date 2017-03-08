@@ -10,9 +10,8 @@ from mxcube3.routes import scutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
 
-from qutils import READY, RUNNING, FAILED
-from qutils import (TASK_COLLECTED, TASK_COLLECT_FAILED, TASK_COLLECT_WARNING,
-                    TASK_RUNNING, TASK_UNCOLLECTED)
+from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED
+
 
 def last_queue_node():
     node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
@@ -74,16 +73,16 @@ def get_signal_result(signal):
     result = 0
     for sig in progressSignals:
         if sig in signal:
-            result = TASK_RUNNING
+            result = RUNNING
     for sig in okSignals:
         if sig in signal:
-            result = TASK_COLLECTED
+            result = COLLECTED
     for sig in failedSignals:
         if sig in signal:
-            result = TASK_COLLECT_FAILED
+            result = FAILED
     for sig in warnSignals:
         if sig in signal:
-            result = TASK_COLLECT_WARNING
+            result = WARNING
 
     return result
 
@@ -217,7 +216,7 @@ def collect_oscillation_started(*args):
            'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
            'state': get_signal_result('collectOscillationStarted'),
-           'progress': TASK_UNCOLLECTED}
+           'progress': UNCOLLECTED}
 
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -226,7 +225,7 @@ def collect_oscillation_started(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_failed(owner=None, status=TASK_COLLECT_FAILED, state=None, lims_id='', osc_id=None, params=None):
+def collect_oscillation_failed(owner=None, status=FAILED, state=None, lims_id='', osc_id=None, params=None):
     try:
         limsres = mxcube.rest_lims.get_dc(lims_id)
     except:
@@ -259,7 +258,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
            'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
            'limsResultData': limsres,
-           'state': TASK_COLLECTED,
+           'state': COLLECTED,
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -269,7 +268,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
 
 
 def collect_ended(owner, success, message):
-    state = TASK_COLLECTED if success else TASK_COLLECT_WARNING
+    state = COLLECTED if success else WARNING
 
     msg = {'Signal': 'collectOscillationFinished',
            'Message': message,
