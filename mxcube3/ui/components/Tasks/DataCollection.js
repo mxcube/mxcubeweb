@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { reduxForm } from 'redux-form';
+import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader,
@@ -61,17 +61,21 @@ class DataCollection extends React.Component {
         <Modal.Body>
           <FieldsHeader title="Data location" />
           <Form horizontal>
-            <StaticField label="Path" data="xxx" />
+            <StaticField label="Path" data={this.props.path} />
             <Row>
-              <Col xs={6}>
-                <InputField propName="subdir" label="Subdirectory" />
+              <Col xs={12}>
+                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
-            <StaticField label="Filename" data="xxx.yyy.zzz" />
-            <FieldsRow>
-                <InputField propName="prefix" label="Prefix" />
-                <InputField propName="run_number" label="Run number" />
-            </FieldsRow>
+            <Row>
+              <Col xs={8}>
+                <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+              </Col>
+              <Col xs={4}>
+                <InputField propName="run_number" label="Run number" col1="4" col2="8" />
+              </Col>
+            </Row>
+            <StaticField label="Filename" data={this.props.filename} />
           </Form>
 
           <FieldsHeader title="Acquisition" />
@@ -135,15 +139,24 @@ DataCollection = reduxForm({
   validate
 })(DataCollection);
 
-DataCollection = connect(state => ({
-  motorLimits: state.beamline.motorsLimits,
-  acqParametersLimits: state.taskForm.acqParametersLimits,
-  initialValues: {
-    ...state.taskForm.taskData.parameters,
-    beam_size: state.sampleview.currentAperture
-  }
-})
-)(DataCollection);
+const selector = formValueSelector('datacollection');
+
+DataCollection = connect(state => {
+  const subdir = selector(state, 'subdir');
+  const prefix = selector(state, 'prefix');
+  const runNumber = selector(state, 'run_number');
+
+  return {
+    path: `${state.queue.rootPath}/${subdir}`,
+    filename: `${prefix}_${runNumber}.???`,
+    motorLimits: state.beamline.motorsLimits,
+    acqParametersLimits: state.taskForm.acqParametersLimits,
+    initialValues: {
+      ...state.taskForm.taskData.parameters,
+      beam_size: state.sampleview.currentAperture
+    }
+  };
+})(DataCollection);
 
 export default DataCollection;
 
