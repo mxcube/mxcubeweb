@@ -16,6 +16,7 @@ var config = {
     port: 8090,
     host: "0.0.0.0",
     contentBase: path.join(__dirname, "mxcube3/ui"),
+    historyApiFallback: true,
     proxy: {
       '/mxcube/api/*': {
         target: backend_server,
