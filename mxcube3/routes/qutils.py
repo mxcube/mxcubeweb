@@ -24,10 +24,12 @@ QUEUE_FAILED = 'QueueFailed'
 
 SAMPLE_MOUNTED = 0x8
 COLLECTED = 0x4
+WARNING = 0x10 # or 3
 FAILED = 0x2
 RUNNING = 0x1
 UNCOLLECTED = 0x0
 READY = 0
+
 
 def node_index(node):
     """

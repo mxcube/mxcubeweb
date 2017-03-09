@@ -10,7 +10,8 @@ from mxcube3.routes import scutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
 
-from qutils import READY, RUNNING, FAILED
+from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED
+
 
 def last_queue_node():
     node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
@@ -72,16 +73,16 @@ def get_signal_result(signal):
     result = 0
     for sig in progressSignals:
         if sig in signal:
-            result = 1
+            result = RUNNING
     for sig in okSignals:
         if sig in signal:
-            result = 2
+            result = COLLECTED
     for sig in failedSignals:
         if sig in signal:
-            result = 3
+            result = FAILED
     for sig in warnSignals:
         if sig in signal:
-            result = 4
+            result = WARNING
 
     return result
 
@@ -103,7 +104,7 @@ def get_signal_progress(signal):
     return result
 
 
-def handle_auto_mount_next(entry):      
+def handle_auto_mount_next(entry):
     model = entry.get_data_model()
 
     if isinstance(model.get_parent(), qmo.TaskGroup):
@@ -135,11 +136,11 @@ def sc_state_changed(*args):
     if isinstance(loaded_sample, str):
         if not 'None' in loaded_sample:
             parts = map(int, loaded_sample.split(':'))
-            sc_location =  ":".join(["%s" % parts[0], '%0.2d' % parts[1]])
+            sc_location = ":".join(["%s" % parts[0], '%0.2d' % parts[1]])
     else:
-        sc_location =  loaded_sample.getAddress()
+        sc_location = loaded_sample.getAddress()
 
-    known_location =  scutils.get_current_sample()
+    known_location = scutils.get_current_sample()
     location = known_location if known_location else sc_location
 
     if location:
@@ -212,10 +213,10 @@ def queue_execution_failed(entry):
 def collect_oscillation_started(*args):
     msg = {'Signal': 'collectOscillationStarted',
            'Message': task_signals['collectOscillationStarted'],
-           'taskIndex': last_queue_node()['idx'] ,
+           'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
            'state': get_signal_result('collectOscillationStarted'),
-           'progress': 0}
+           'progress': UNCOLLECTED}
 
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -224,7 +225,7 @@ def collect_oscillation_started(*args):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_failed(owner=None, status=3, state=None, lims_id='', osc_id=None, params=None):
+def collect_oscillation_failed(owner=None, status=FAILED, state=None, lims_id='', osc_id=None, params=None):
     try:
         limsres = mxcube.rest_lims.get_dc(lims_id)
     except:
@@ -247,7 +248,7 @@ def collect_oscillation_failed(owner=None, status=3, state=None, lims_id='', osc
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     qutils.enable_entry(last_queue_node()['queue_id'], False)
     if mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(node.id)
+        limsres = mxcube.rest_lims.get_dc(lims_id)
     else:
         logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
         limsres = ''
@@ -257,7 +258,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
            'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
            'limsResultData': limsres,
-           'state': 2,
+           'state': COLLECTED,
            'progress': 100}
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     try:
@@ -267,11 +268,11 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
 
 
 def collect_ended(owner, success, message):
-    state = 2 if success else 3
+    state = COLLECTED if success else WARNING
 
     msg = {'Signal': 'collectOscillationFinished',
            'Message': message,
-           'taskIndex': last_queue_node()['idx'] ,
+           'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
            'state': state,
            'progress': 100}
@@ -289,7 +290,7 @@ def task_event_callback(*args, **kwargs):
 
     msg = {'Signal': kwargs['signal'],
            'Message': task_signals[kwargs['signal']],
-           'taskIndex': last_queue_node()['idx'] ,
+           'taskIndex': last_queue_node()['idx'],
            'sample': last_queue_node()['sample'],
            'state': get_signal_result(kwargs['signal']),
            'progress': get_signal_progress(kwargs['signal'])}
@@ -323,7 +324,7 @@ def motor_event_callback(*args, **kwargs):
     signal = kwargs['signal']
     sender = str(kwargs['sender'].__class__).split('.')[0]
 
-    motors_info = Utils.get_centring_motors_info() 
+    motors_info = Utils.get_centring_motors_info()
 
     motors_info.update(Utils.get_light_state_and_intensity())
 
@@ -345,16 +346,6 @@ def motor_event_callback(*args, **kwargs):
         socketio.emit('Motors', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
-
-    # try:
-    #     msg = {"message": sender + ':' + signal,
-    #            "severity": 'INFO',
-    #            "timestamp": time.asctime(),
-    #            "logger": 'HWR',
-    #            "stack_trace": ''}
-    #     socketio.emit('log_record', msg, namespace='/logging')
-    # except Exception:
-    #     logging.getLogger("HWR").error('error sending message: %s' + str(msg))
 
 
 def beam_changed(*args, **kwargs):
@@ -393,7 +384,7 @@ def mach_info_changed(values):
 
 
 def beamline_action_start(name):
-    msg = { "name": name, "state": RUNNING }
+    msg = {"name": name, "state": RUNNING}
     try:
         socketio.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
@@ -401,7 +392,7 @@ def beamline_action_start(name):
 
 
 def beamline_action_done(name, result):
-    msg = { "name": name, "state": READY, "data": result }
+    msg = {"name": name, "state": READY, "data": result}
     try:
         socketio.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
@@ -409,12 +400,12 @@ def beamline_action_done(name, result):
     else:
         logging.getLogger('user_level_log').info('%s done.', name)
 
+
 def beamline_action_failed(name):
-    msg = { "name": name, "state": FAILED }
+    msg = {"name": name, "state": FAILED}
     try:
         socketio.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
     else:
         logging.getLogger('user_level_log').error('Action %s failed !', name)
-
