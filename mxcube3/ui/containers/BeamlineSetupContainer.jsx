@@ -53,7 +53,7 @@ class BeamlineSetupContainer extends React.Component {
     const acts = [];
     for (let key in this.props.data.actuators) {
       if (this.props.data.actuators.hasOwnProperty(key)) {
-        acts.push(<Col sm={1}>
+        acts.push(<Col key={key} sm={1}>
                       <InOutSwitch2
                         onText="Open"
                         offText="Close"
@@ -86,7 +86,6 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={5}>
               <div style={{ display: 'inline', float: 'left' }}>
                 <PopInput
-                  ref="energy"
                   name="Energy"
                   pkey="energy"
                   suffix="keV"
@@ -96,7 +95,6 @@ class BeamlineSetupContainer extends React.Component {
                 />
                 <br />
                 <PopInput
-                  ref="wavelength"
                   name="Wavelength"
                   pkey="wavelength"
                   placement="left"
@@ -108,7 +106,6 @@ class BeamlineSetupContainer extends React.Component {
               </div>
               <div style={{ display: 'inline', float: 'left' }}>
                 <PopInput
-                  ref="resolution"
                   name="Resolution"
                   pkey="resolution"
                   suffix="A"
@@ -118,7 +115,6 @@ class BeamlineSetupContainer extends React.Component {
                 />
                 <br />
                 <PopInput
-                  ref="detdist"
                   name="Detector"
                   pkey="detdist"
                   suffix="mm"
@@ -129,7 +125,6 @@ class BeamlineSetupContainer extends React.Component {
               </div>
               <div style={{ display: 'inline', float: 'left' }}>
                 <PopInput
-                  ref="transmission"
                   name="Transmission"
                   pkey="transmission"
                   suffix="%"
@@ -139,7 +134,6 @@ class BeamlineSetupContainer extends React.Component {
                 />
                 <br />
                 <PopInput
-                  ref="flux"
                   name="Flux"
                   pkey="flux"
                   suffix="p/s"
@@ -150,7 +144,6 @@ class BeamlineSetupContainer extends React.Component {
               </div>
               <div style={{ display: 'inline', float: 'left' }}>
                 <CryoInput
-                  ref="cryo"
                   name="Cryo"
                   pkey="cryo"
                   suffix="K"

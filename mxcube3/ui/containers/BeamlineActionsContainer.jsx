@@ -59,7 +59,7 @@ class BeamlineActionsContainer extends React.Component {
     return (
       <Row>
         <Col xs={12}>
-            <DropdownButton title={'Beamline Actions'}>
+            <DropdownButton title={'Beamline Actions'} id="beamline-actions-dropdown">
              {this.props.actionsList.map((cmd, i) => {
                const cmdName = cmd.name;
                const cmdUsername = cmd.username;
@@ -70,7 +70,7 @@ class BeamlineActionsContainer extends React.Component {
                }
 
                return (
-                  <MenuItem eventKey={i}>{cmdUsername}
+                  <MenuItem eventKey={i} key={i}>{cmdUsername}
                   <BeamlineActionControl cmdName={cmdName}
                     start={this.startAction}
                     stop={this.stopAction}
