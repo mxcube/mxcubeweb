@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
@@ -358,7 +359,7 @@ class SampleGridViewContainer extends React.Component {
    * Start collection
    */
   startCollect() {
-    window.location = '#/datacollection';
+    this.props.router.push('datacollection');
     this.props.showConfirmCollectDialog();
   }
 
@@ -620,6 +621,8 @@ function mapDispatchToProps(dispatch) {
     showConfirmCollectDialog: bindActionCreators(showConfirmCollectDialog, dispatch)
   };
 }
+
+SampleGridViewContainer = withRouter(SampleGridViewContainer);
 
 export default connect(
   mapStateToProps,
