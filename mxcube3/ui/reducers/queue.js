@@ -16,7 +16,8 @@ export default (state = initialState, action) => {
       return Object.assign({}, initialState, { queue });
     }
     case 'CLEAR_QUEUE': {
-      return Object.assign({}, state, { queue: [] });
+      return Object.assign({}, state, { queue: initialState.queue,
+                                        current: initialState.current });
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
