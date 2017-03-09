@@ -6,7 +6,14 @@ import { startAction,
          showActionOutput,
          hideActionOutput,
          setArgumentValue } from '../actions/beamlineActions';
-import { Row, Col, Modal, MenuItem, DropdownButton, Button, Well, Input } from 'react-bootstrap';
+import { Row,
+         Col,
+         Modal,
+         MenuItem,
+         DropdownButton,
+         Button,
+         Well,
+         FormControl } from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
 import { RUNNING } from '../constants';
 
@@ -94,14 +101,21 @@ class BeamlineActionsContainer extends React.Component {
             </Modal.Header>
             <Modal.Body>
               { this.props.currentAction.arguments.map((arg, i) =>
-                <Input label={arg.name}
-                  type="text"
-                  value={arg.value}
-                  disabled={currentActionRunning}
-                  onChange={(e) => {
-                    this.props.setArgumentValue(currentActionName, i, e.target.value);
-                  }}
-                />)
+                <Row>
+                  <Col xs={2} component="ControlLabel">{arg.name}</Col>
+                  <Col xs={2}>
+                    <FormControl label={arg.name}
+                      type="text"
+                      value={arg.value}
+                      disabled={currentActionRunning}
+                      onChange={(e) => {
+                        this.props.setArgumentValue(currentActionName,
+                                                    i,
+                                                    e.target.value);
+                      }}
+                    />
+                  </Col>
+                </Row>)
               }
               { currentActionRunning ?
                 <Button bsStyle="danger"
