@@ -14,7 +14,6 @@ import { FieldsHeader,
 class Helical extends React.Component {
   constructor(props) {
     super(props);
-
     this.handleSubmit = this.handleSubmit.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
   }

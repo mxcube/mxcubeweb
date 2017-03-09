@@ -71,11 +71,11 @@ class TaskContainer extends React.Component {
 
     if (this.props.showForm === 'DataCollection') {
       return (<DataCollection
+        show
         addTask={this.addTask}
         pointID={this.props.pointID}
         taskData={this.props.taskData}
         hide={this.props.hideTaskParametersForm}
-        show
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
       />);
@@ -83,6 +83,7 @@ class TaskContainer extends React.Component {
 
     if (this.props.showForm === 'Helical') {
       return (<Helical
+        show
         addTask={this.addTask}
         pointID={this.props.pointID}
         sampleIds={this.props.sampleIds}
@@ -96,6 +97,7 @@ class TaskContainer extends React.Component {
 
     if (this.props.showForm === 'AddSample') {
       return (<AddSample
+        show
         hide={this.props.hideTaskParametersForm}
         addToQueue={this.addSampleToQueue}
         addAndMount={this.addSampleAndMount}
