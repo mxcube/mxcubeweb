@@ -59,9 +59,10 @@ class Observer extends React.Component {
           </FormGroup>
           <Button
             bsStyle="primary"
-            value="Ask for control"
             onClick={this.askForControl}
-          />
+          >
+            Ask for control
+          </Button>
     </Form>);
   }
 }
