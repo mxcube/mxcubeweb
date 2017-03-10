@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader,
          StaticField,
@@ -14,17 +14,21 @@ import { FieldsHeader,
 class Helical extends React.Component {
   constructor(props) {
     super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
+
+    this.submitAddToQueue = this.submitAddToQueue.bind(this);
+    this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
   }
 
-  handleSubmit() {
-    // took me 1 day to find I had to *make a call* at the end
-    this.props.handleSubmit(this.addToQueue)();
-    // -------------------------------------^^
+  submitAddToQueue() {
+    this.props.handleSubmit(this.addToQueue.bind(this, false))();
   }
 
-  addToQueue(params) {
+  submitRunNow() {
+    this.props.handleSubmit(this.addToQueue.bind(this, true))();
+  }
+
+  addToQueue(runNow, params) {
     const parameters = {
       ...params,
       type: 'DataCollection',
@@ -50,7 +54,7 @@ class Helical extends React.Component {
       'helical'
     ];
 
-    this.props.addTask(parameters, stringFields, false);
+    this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
@@ -123,12 +127,21 @@ class Helical extends React.Component {
 
           <FieldsHeader title="Processing" />
        </Modal.Body>
-
        { this.props.taskData.state ? '' :
            <Modal.Footer>
-             <Button bsStyle="primary" disabled={this.props.invalid} onClick={this.handleSubmit}>
-               {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-             </Button>
+             <ButtonToolbar className="pull-right">
+               <Button bsStyle="success"
+                 disabled={this.props.pointID === -1 || this.props.invalid}
+                 onClick={this.submitRunNow}
+               >
+                 Run Now
+               </Button>
+               <Button bsStyle="primary" disabled={this.props.invalid}
+                 onClick={this.submitAddToQueue}
+               >
+                 {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+               </Button>
+             </ButtonToolbar>
            </Modal.Footer>
        }
       </Modal>);
