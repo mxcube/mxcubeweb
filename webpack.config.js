@@ -30,21 +30,21 @@ var config = {
     },
   },
   module: {
-	  rules: [
-	    {
-		    test: /\.js/,
-		    exclude: /node_modules/,
+    rules: [
+      {
+	test: /\.js/,
+	exclude: /node_modules/,
         enforce: "pre",
-		    use:[
+	use:[
           "babel-loader",
           "eslint-loader"
         ]
-	    },
-	    {  
-		    test: /\.css$/,
+      },
+      {  
+	test: /\.css$/,
         use: [
           {
-		        loader: "style-loader"
+	    loader: "style-loader"
           },
           {
             loader: "css-loader",
@@ -53,12 +53,12 @@ var config = {
             }
           }
         ]
-	    },
-	    {
-		    test: /\.less$/,
+      },
+      {
+	test: /\.less$/,
         use: [
           {
-		        loader: "style-loader"
+	    loader: "style-loader"
           },
           { loader: "css-loader", 
             options: { 
@@ -69,11 +69,11 @@ var config = {
             loader: "less-loader"
           }
         ]
-	    },
+      },
       {
         test: /\.jsx$/,
         loader: "babel-loader",
-		    exclude: /node_modules/
+	exclude: /node_modules/
       },
       { 
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=[a-z0-9]\.[a-z0-9]\.[a-z0-9])?$/,
