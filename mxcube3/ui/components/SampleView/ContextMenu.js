@@ -6,37 +6,36 @@ export default class ContextMenu extends React.Component {
     super(props);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
     this.deleteGrid = this.deleteGrid.bind(this);
+    this.addWfMethodsToCtxMenu = this.addWfMethodsToCtxMenu.bind(this);
 
-    this.state = {
-      options: {
-        SAVED: [
+    this.options = {
+      SAVED: [
         { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 1 },
         { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 2 },
         { text: 'Go To Point', action: () => this.goToPoint(), key: 3 },
-        { text: 'Delete Point', action: () => this.removeObject(), key: 4 }
-        ],
-        TMP: [
+        { text: 'Delete Point', action: () => this.removeObject(), key: 4 },
+      ],
+      TMP: [
         { text: 'Save Point', action: () => this.savePoint(), key: 1 },
         { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
-        ],
-        GROUP: [
+      ],
+      GROUP: [
         { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
-        ],
-        LINE: [
+      ],
+      LINE: [
         { text: 'Delete Line', action: () => this.removeLine(), key: 1 }
-        ],
-        GridGroup: [
-          { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
-        ],
-        GridGroupSaved: [
-          { text: 'Delete', action: () => this.deleteGrid(), key: 1 }
-        ],
-        NONE: [
-          { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
-          { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
-          { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 }
-        ]
-      }
+      ],
+      GridGroup: [
+        { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
+      ],
+      GridGroupSaved: [
+        { text: 'Delete', action: () => this.deleteGrid(), key: 1 }
+      ],
+      NONE: [
+        { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
+        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
+        { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 }
+      ]
     };
   }
 
@@ -46,6 +45,39 @@ export default class ContextMenu extends React.Component {
     } else {
       this.hideContextMenu();
     }
+  }
+
+  addWfMethodsToCtxMenu() {
+    const workflowTasks = { point: [], line: [], grid: [], none: [] };
+
+    Object.values(this.props.workflows).forEach((wf) => {
+      if (wf.requires === 'point') {
+        workflowTasks.point.push({ text: wf.name,
+                                   action: this.startWorkflow(wf),
+                                   key: `wf-${wf.name}` });
+      } else if (wf.requires === 'line') {
+        workflowTasks.line.push({ text: wf.name,
+                                  action: this.startWorkflow(wf),
+                                  key: `wf-${wf.name}` });
+      } else if (wf.requires === 'grid') {
+        workflowTasks.grid.push({ text: wf.name,
+                                  action: this.startWorkflow(wf),
+                                  key: `wf-${wf.name}` });
+      } else if (wf.requires === '') {
+        workflowTasks.none.push({ text: wf.name,
+                                  action: this.startWorkflow(wf),
+                                  key: `wf-${wf.name}` });
+      }
+    });
+
+    this.options.SAVED = this.options.SAVED.concat(workflowTasks.point);
+    this.options.LINE = this.options.LINE.concat(workflowTasks.line);
+    this.options.GridGroupSaved = this.options.GridGroupSaved.concat(workflowTasks.grid);
+    this.options.NONE = this.options.NONE.concat(workflowTasks.none);
+  }
+
+  startWorkflow(wf) {
+    console.log(wf);
   }
 
   showModal(modalName) {
@@ -138,11 +170,13 @@ export default class ContextMenu extends React.Component {
   }
 
   render() {
+    this.addWfMethodsToCtxMenu();
+
     let optionList = [];
     if (this.props.sampleID !== undefined) {
-      optionList = this.state.options[this.props.shape.type].map(this.listOptions);
+      optionList = this.options[this.props.shape.type].map(this.listOptions);
     } else {
-      optionList = this.state.options.NONE.map(this.listOptions);
+      optionList = this.options.NONE.map(this.listOptions);
     }
     return (
       <ul id="contextMenu" className="dropdown-menu" role="menu">

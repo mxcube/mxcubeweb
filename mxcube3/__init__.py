@@ -96,7 +96,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
-                        lims, qutils)
+                        lims, qutils, workflow)
 
     ### Install server-side UI state storage
     from mxcube3 import state_storage
@@ -105,6 +105,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
+        app.workflow = app.beamline.getObjectByRole("workflow")
 
         Utils.enable_snapshots(app.collect)
 
@@ -125,6 +126,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.CURRENTLY_MOUNTED_SAMPLE = ''
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
+        app.CURRENT_WORKFLOW = None
 
         try:
             SampleCentring.init_signals()
