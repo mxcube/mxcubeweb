@@ -7,6 +7,11 @@ export function updateSampleList(sampleList, order) {
 }
 
 
+export function clearSampleGrid() {
+  return { type: 'CLEAR_SAMPLE_GRID' };
+}
+
+
 export function addSamplesToList(samplesData) {
   return function (dispatch, getState) {
     // find last manually mounted sample id

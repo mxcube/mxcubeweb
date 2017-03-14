@@ -226,6 +226,9 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList };
     }
+    case 'CLEAR_SAMPLE_GRID': {
+      return Object.assign({}, state, { ...INITIAL_STATE });
+    }
     case 'CLEAR_ALL': {
       return Object.assign({}, state, { ...INITIAL_STATE });
     }
