@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, Input } from 'react-bootstrap';
+import { Modal, Button, FormControl } from 'react-bootstrap';
 import { showObserverDialog, setMaster } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
@@ -23,11 +23,13 @@ export class ObserverDialog extends React.Component {
   onHide() { }
 
   show() {
-    return !this.props.remoteAccess.observerName && !this.props.remoteAccess.master;
+    // we make an explicit test for 'false' here to prevent the dialog to be
+    // displayed when doing sign out, for example (master = null)
+    return !this.props.remoteAccess.observerName && this.props.remoteAccess.master === false;
   }
 
   accept() {
-    const name = this.refs.name.refs.input.value;
+    const name = this.name.value;
 
     if (name) {
       this.props.setMaster(false, name);
@@ -60,9 +62,8 @@ export class ObserverDialog extends React.Component {
           continue.
         </Modal.Body>
         <Modal.Footer>
-          <Input
-            ref="name"
-            id="name"
+          <FormControl
+            inputRef={(ref) => { this.name = ref; }}
             type="text"
             placeholder="Your name"
           />

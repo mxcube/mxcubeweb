@@ -1,3 +1,13 @@
+.samples-grid-container {
+  margin-top: 1em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.samples-grid-container form {
+  display: inline;
+}
+
 .samples-grid{ 
 }
 
@@ -221,3 +231,8 @@
     box-shadow: none;
 }
 
+#taskSummaryPopover {
+  min-width: 700px !important;
+  max-width: 700px !important; 
+  padding-bottom: 1em;
+}

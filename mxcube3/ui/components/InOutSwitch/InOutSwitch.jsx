@@ -1,8 +1,8 @@
 import React from 'react';
-import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import './style.css';
+import '../input.css';
 
 
 export default class InOutSwitch extends React.Component {

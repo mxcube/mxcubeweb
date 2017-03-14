@@ -42,7 +42,7 @@ export function startAction(cmdName, parameters) {
 export function stopAction(cmdName) {
   const url = `mxcube/api/v0.1/beamline/${cmdName}/abort`;
 
-  return (dispatch) => {
+  return () => {
     fetch(url, {
       method: 'GET',
       headers: {

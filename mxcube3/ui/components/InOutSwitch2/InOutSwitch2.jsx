@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Label, Button } from 'react-bootstrap';
+import { Row, Col, Label, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 
 export default class InOutSwitch2 extends React.Component {
@@ -14,6 +14,8 @@ export default class InOutSwitch2 extends React.Component {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.pkey, 'in');
     }
+
+    this.refs.overlay.hide();
   }
 
 
@@ -21,6 +23,8 @@ export default class InOutSwitch2 extends React.Component {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.pkey, 'out');
     }
+
+    this.refs.overlay.hide();
   }
 
 
@@ -44,9 +48,22 @@ export default class InOutSwitch2 extends React.Component {
     return (
         <Row>
           <Col xs={12}>
-            <Label style={{ display: 'block', marginBottom: '3px' }}>{this.props.labelText}</Label>
-            <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data.msg}</Label>
-            {btn}
+            <OverlayTrigger
+              ref="overlay"
+              rootClose
+              trigger="click"
+              placement="bottom"
+              overlay={(<Popover>{btn}</Popover>)}
+            >
+              <div>
+                <Label
+                  style={{ display: 'block', marginBottom: '3px' }}
+                >
+                  {this.props.labelText}
+                </Label>
+                <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data.msg}</Label>
+              </div>
+            </OverlayTrigger>
           </Col>
         </Row>
     );

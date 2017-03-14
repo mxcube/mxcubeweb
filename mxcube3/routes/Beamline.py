@@ -90,7 +90,7 @@ def beamline_abort_action(name):
             try:
                 cmd.abort()
             except Exception:
-                err = sys.exc_info()[0]
+                err = str(sys.exc_info()[1])
                 return make_response(err, 520) 
             else:
                 return make_response("", 200)
@@ -100,7 +100,7 @@ def beamline_abort_action(name):
     try:
         ho.stop()
     except Exception:
-        err = sys.exc_info()[0]
+        err = str(sys.exc_info()[1])
         return make_response(err, 520)
     else:
         logging.getLogger('user_level_log').error('Aborted by user.')
@@ -134,7 +134,7 @@ def beamline_run_action(name):
                 logging.getLogger('user_level_log').info('Starting %s(%s)', cmd.userName(), ", ".join(map(str,params)))
                 cmd(*params)
             except Exception:
-                err = sys.exc_info()[0]
+                err = str(sys.exc_info()[1])
                 return make_response(err, 520)
             else:
                 return make_response("", 200)

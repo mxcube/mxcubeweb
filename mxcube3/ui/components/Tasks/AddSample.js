@@ -1,25 +1,29 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { Modal } from 'react-bootstrap';
+import { Modal, ButtonToolbar, Button, Form } from 'react-bootstrap';
+import { InputField, FieldsRow } from './fields';
 
 class AddSample extends React.Component {
   constructor(props) {
     super(props);
+
     this.addAndEnqueue = this.addAndEnqueue.bind(this);
     this.addAndMount = this.addAndMount.bind(this);
+    this._addAndEnqueue = this._addAndEnqueue.bind(this);
+    this._addAndMount = this._addAndMount.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.getDefaultSampleData = this.getDefaultSampleData.bind(this);
   }
 
+  getDefaultSampleData(params) {
+    let prefix = params.sampleName ? params.sampleName : 'noname';
 
-  getDefaultSampleData() {
-    let prefix = this.props.values.sampleName ? this.props.values.sampleName : 'noname';
-
-    if (this.props.values.proteinAcronym && this.props.values.sampleName) {
-      prefix += `-${this.props.values.proteinAcronym}`;
+    if (params.proteinAcronym && params.sampleName) {
+      prefix += `-${params.proteinAcronym}`;
     }
 
-    return { ...this.props.values,
+    return { ...params,
              type: 'Sample',
              defaultPrefix: prefix,
              location: 'Manual',
@@ -32,70 +36,61 @@ class AddSample extends React.Component {
     this.props.hide();
   }
 
+  _addAndEnqueue(params) {
+    const sampleData = this.getDefaultSampleData(params);
+    this.props.addToQueue(sampleData);
+    this.props.hide();
+  }
 
   addAndEnqueue() {
-    this.props.addToQueue(this.getDefaultSampleData());
-    this.props.hide();
+    this.props.handleSubmit(this._addAndEnqueue)();
   }
 
+  _addAndMount(params) {
+    const sampleData = this.getDefaultSampleData(params);
+    this.props.addAndMount(sampleData);
+    this.props.hide();
+  }
 
   addAndMount() {
-    this.props.addAndMount(this.getDefaultSampleData());
-    this.props.hide();
+    this.props.handleSubmit(this._addAndMount)();
   }
 
-
   render() {
-    const { fields: { sampleName, proteinAcronym } } = this.props;
     return (
       <Modal show={this.props.show} onHide={this.handleCancel}>
         <Modal.Header closeButton>
           <Modal.Title>Add Sample Manually</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form className="form-horizontal">
-            <div className="form-group">
-              <label className="col-sm-3 control-label">Sample Name:</label>
-                <div className="col-sm-3">
-                  <input type="text" className="form-control" {...sampleName} />
-                </div>
-              <label className="col-sm-3 control-label">Protein Acronym:</label>
-              <div className="col-sm-3">
-                <input type="text" className="form-control" {...proteinAcronym} />
-              </div>
-            </div>
-          </form>
+          <Form horizontal>
+            <FieldsRow>
+              <InputField propName="sampleName" label="Sample Name" col1="4" col2="8" />
+              <InputField propName="proteinAcronym" label="Protein Acronym" col1="4" col2="8" />
+            </FieldsRow>
+          </Form>
         </Modal.Body>
         <Modal.Footer>
-          <button
-            className="btn btn-primary"
-            type="button"
-            onClick={this.addAndEnqueue}
-          >
-            Add Sample
-          </button>
-          <button
-            className="btn btn-primary"
-            type="button"
-            onClick={this.addAndMount}
-          >
-            Add and mount sample
-          </button>
+          <ButtonToolbar className="pull-right">
+            <Button bsStyle="primary" onClick={this.addAndEnqueue}>
+              Add Sample
+            </Button>
+            <Button bsStyle="primary" onClick={this.addAndMount}>
+              Add and mount sample
+            </Button>
+          </ButtonToolbar>
         </Modal.Footer>
       </Modal>
     );
   }
 }
 
-// THIS IS THE IMPORTANT PART!
 AddSample = reduxForm({
-  // A unique name for this form
-  form: 'addsample',
-  // All the fields in your form
-  fields: ['sampleName', 'proteinAcronym']
-},
-state => ({ // will pull state into form's initialValues
-  initialValues: { ...state.taskForm.taskData.parameters }
-}))(AddSample);
+  form: 'addsample'
+})(AddSample);
+
+AddSample = connect(state =>
+  ({ initialValues: { ...state.taskForm.taskData.parameters } })
+)(AddSample);
 
 export default AddSample;

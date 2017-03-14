@@ -1,37 +1,7 @@
-.col-md-5 {
-    min-height: 2px;
-    padding-right: 10px;
-    padding-left: 10px;
-    width: 300px;
-    float: center;
-}
-.row-centered {
-    text-align:center;
-}
-.col-centered {
-    display:inline-block;
-    float:none;
-    /* reset the text-align */
-    text-align:center;
-    /* inline-block space fix */
-    margin-right:10px;
-    margin-left:10px;
-}
-.well-left {
-   text-align:left;
-}
-.img-responsive {
-   position: absolute;
-   width: 150px;
-   height: 150px;
-   top:0;
-}
-.img-logo {
-  position:center;
-  width: 78px;
-  height: 100px;
+.centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
-.well{
-  background-color: white;
-}

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Input, ButtonToolbar } from 'react-bootstrap';
+import { Form, Button, FormControl, ButtonToolbar } from 'react-bootstrap';
 
 import './style.css';
 
@@ -15,7 +15,7 @@ export default class DefaultInput extends React.Component {
 
 
   getValue() {
-    return this.refs.input.getValue();
+    return this.input.value;
   }
 
 
@@ -36,11 +36,15 @@ export default class DefaultInput extends React.Component {
 
   render() {
     return (
-      <form ref="popinput-form" className="form-inline" onSubmit={this.submit} noValidate>
-        <Input ref="input" type={this.props.dataType} style={{ width: this.props.inputSize }}
-          placeholder="" className="input-sm" defaultValue={this.props.value}
+      <Form inline onSubmit={this.submit}>
+        <FormControl
+          ref={ ref => { this.input = ref; }}
+          type={this.props.dataType}
+          style={{ width: this.props.inputSize }}
+          placeholder=""
+          defaultValue={this.props.value}
         />
-        <ButtonToolbar style={{ 'margin-left': '0px' }} className="form-group editable-buttons">
+        <ButtonToolbar style={{ marginLeft: '0px' }} className="form-group editable-buttons">
           <Button bsStyle="primary" className="btn-sm" onClick={this.save}>
             <i className="glyphicon glyphicon-ok" />
           </Button>
@@ -48,14 +52,13 @@ export default class DefaultInput extends React.Component {
             <i className="glyphicon glyphicon-remove" />
           </Button>
         </ButtonToolbar>
-      </form>
+      </Form>
     );
   }
 }
 
 
 DefaultInput.defaultProps = {
-  className: '',
   dataType: 'number',
   inputSize: '100px',
   value: 0,

@@ -28,3 +28,7 @@
 .value-label-enter-success{
   transition: background-color 1000ms ease-out;
 }
+
+.popinput-input-container {
+  display: inline;
+}

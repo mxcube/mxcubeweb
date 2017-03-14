@@ -174,11 +174,14 @@ export default class TaskItem extends Component {
       paddingLeft: '10px',
       paddingRight: '10px'
     };
+
+    const pointID = data.parameters.point;
+
     const element = (
       <div className="node node-sample" style={{ opacity }}>
             <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
               <p className="node-name" style={{ display: 'flex' }} >
-                {`${typePrefix}${data.parameters.point} ${data.label}`}
+                {`${typePrefix}${pointID >= 0 ? pointID : '?'} ${data.label}`}
               </p>
               <p className="fa fa-trash" onClick={this.deleteTask} style={delTaskCSS} >
               </p>

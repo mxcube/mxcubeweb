@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { Input } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { makePoints, makeLines, makeImageOverlay } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
@@ -24,7 +24,7 @@ export default class SampleImage extends React.Component {
     this.configureGrid = this.configureGrid.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
     this.canvas = {};
-    this.state = { keyPressed: null };
+    this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;
     this.lineGroup = null;
@@ -189,13 +189,13 @@ export default class SampleImage extends React.Component {
   }
 
   keyDown(event) {
-    if (!this.state.keyPressed) {
-      this.setState({ keyPressed: event.key });
+    if (!this._keyPressed) {
+      this._keyPressed = event.key;
     }
   }
 
   keyUp() {
-    this.setState({ keyPressed: null });
+    this._keyPressed = null;
   }
 
   goToBeam(e) {
@@ -351,7 +351,7 @@ export default class SampleImage extends React.Component {
     e.stopPropagation();
     const { sampleActions, motorSteps, zoom, motors } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
-    const keyPressed = this.state.keyPressed;
+    const keyPressed = this._keyPressed;
     if (keyPressed === 'r' && motors.phi.Status === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
@@ -512,27 +512,27 @@ export default class SampleImage extends React.Component {
 
     return (
       <div>
-        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001 }}>
-          <form className="form-inline" style={{ padding: '0em 1em' }}>
-            <Input
-              ref="hCellSpacing"
-              key="hCellSpacing"
-              style={{ width: '50px', marginRight: '1em' }}
-              label="H-Cell Spacing:"
-              type="text"
-              value={this.gridCellSpacing()[0]}
-              onChange={this.setHCellSpacing}
-            />
-            <Input
-              ref="vCellSpacing"
-              key="vCellSpacing"
-              style={{ width: '50px', marginRight: '1em' }}
-              label="V-Cell Spacing:"
-              type="text"
-              value={this.gridCellSpacing()[1]}
-              onChange={this.setVCellSpacing}
-            />
-          </form>
+        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
+          <Form inline>
+            <FormGroup>
+              <ControlLabel>H-Cell Spacing:</ControlLabel>
+              <FormControl
+                style={{ width: '50px', marginRight: '1em' }}
+                type="text"
+                value={this.gridCellSpacing()[0]}
+                onChange={this.setHCellSpacing}
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>V-Cell Spacing:</ControlLabel>
+              <FormControl
+                style={{ width: '50px' }}
+                type="text"
+                value={this.gridCellSpacing()[1]}
+                onChange={this.setVCellSpacing}
+              />
+            </FormGroup>
+          </Form>
         </div>
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">

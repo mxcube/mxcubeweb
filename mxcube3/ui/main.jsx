@@ -1,8 +1,9 @@
+import 'bootstrap/dist/css/bootstrap.css';
+
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, IndexRoute } from 'react-router';
-import 'bootstrap/dist/css/bootstrap.css';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -18,9 +19,9 @@ import { persistStore, autoRehydrate } from 'redux-persist';
 import crosstabSync from 'redux-persist-crosstab';
 import rootReducer from './reducers';
 import { serverIO } from './serverIO';
-import 'font-awesome-webpack';
-import { getLoginInfo } from './actions/login';
-require('file?name=[name].[ext]!index.html');
+import { getLoginInfo, startSession } from './actions/login';
+
+import 'font-awesome-webpack2';
 
 const store = createStore(rootReducer, applyMiddleware(thunk, createLogger()), autoRehydrate());
 
@@ -32,12 +33,17 @@ if (module.hot) {
   });
 }
 
-function requireAuth(nextState, replace) {
-  store.dispatch(getLoginInfo());
-
-  if (!store.getState().login.loggedIn) {
-    replace(null, '/login');
-  }
+function requireAuth(nextState, replace, callback) {
+  let state = store.getState();
+  store.dispatch(getLoginInfo()).then(() => {
+    state = store.getState();
+    if (!state.login.loggedIn) {
+      replace('/login');
+    } else {
+      store.dispatch(startSession());
+    }
+    return callback();
+  });
 }
 
 
@@ -76,7 +82,9 @@ export default class App extends React.Component {
              storage: new ServerStorage() },
              () => {
                serverIO.listen(store);
+               /* eslint-disable react/no-set-state */
                this.setState({ initialized: true });
+               /* eslint-enable react/no-set-state */
              }
     );
 
@@ -89,15 +97,16 @@ export default class App extends React.Component {
     if (! this.state.initialized) return <span>Loading...</span>;
 
     return (<Provider store={store}>
-            <Router>
-              <Route path="/" component={Main} onEnter={requireAuth}>
-               <IndexRoute component={SampleGridViewContainer} />
-               <Route path="datacollection" component={SampleViewContainer} />
-               <Route path="sampleChanger" component={SampleChangerContainer} />
-               <Route path="logging" component={LoggerContainer} />
-               <Route path="remoteaccess" component={RemoteAccessContainer} />
+            <Router history={browserHistory}>
+              <Route path="/login" component={LoginContainer} />
+              <Route path="/" component={Main} onEnter={requireAuth} >
+                <IndexRoute component={SampleViewContainer} />
+                <Route path="samplegrid" component={SampleGridViewContainer} />
+                <Route path="datacollection" component={SampleViewContainer} />
+                <Route path="samplechanger" component={SampleChangerContainer} />
+                <Route path="logging" component={LoggerContainer} />
+                <Route path="remoteaccess" component={RemoteAccessContainer} />
               </Route>
-              <Route path="login" component={LoginContainer} />
             </Router>
           </Provider>);
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Input, ButtonInput } from 'react-bootstrap';
+import { Form, ControlLabel, FormControl, Button, FormGroup } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
 import { requestControl } from '../../actions/remoteAccess';
 
@@ -10,10 +10,6 @@ class Observer extends React.Component {
     super(props);
     this.askForControl = this.askForControl.bind(this);
     this.cancelControlRequest = this.cancelControlRequest.bind(this);
-  }
-
-  componentDidUpdate() {
-    this.refs.name.refs.input.value = this.getName();
   }
 
   getName() {
@@ -32,8 +28,8 @@ class Observer extends React.Component {
     this.props.askForControlDialog(true, 'Asking for control',
                                    'Please wait while asking for control',
                                    true, this.cancelControlRequest);
-    const message = this.refs.message.refs.input.value;
-    const name = this.refs.name.refs.input.value;
+    const message = this.message.value;
+    const name = this.name.value;
 
     this.props.requestControl(true, message, name, this.props.login.loginInfo);
   }
@@ -43,33 +39,31 @@ class Observer extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <form className="col-md-5">
-          <Input
-            ref="name"
-            label="Name"
-            id="name"
-            type="text"
-            defaultValue={this.getName()}
-          />
-          <Input
-            ref="message"
-            label="Message"
-            id="message"
-            type="textarea"
-            defaultValue="Please give me control"
-            rows="3"
-          />
-          <ButtonInput
-            id="submit"
+    return (<Form>
+          <FormGroup>
+            <ControlLabel>Name</ControlLabel>
+            <FormControl
+              ref={(ref) => {this.name = ref; }}
+              type="text"
+              defaultValue={this.getName()}
+            />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Message</ControlLabel>
+            <FormControl
+              ref={(ref) => {this.message = ref;}}
+              componentClass="textarea"
+              defaultValue="Please give me control"
+              rows="3"
+            />
+          </FormGroup>
+          <Button
             bsStyle="primary"
-            value="Ask for control"
             onClick={this.askForControl}
-          />
-        </form>
-      </div>
-    );
+          >
+            Ask for control
+          </Button>
+    </Form>);
   }
 }
 

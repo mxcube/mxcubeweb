@@ -1,6 +1,4 @@
-
 import React from 'react';
-import 'react-bootstrap-switch/src/less/bootstrap3/build.less';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import './style.css';

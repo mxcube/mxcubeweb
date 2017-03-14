@@ -3,38 +3,11 @@ import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
-
 import DefaultInput from './DefaultInput';
 import DefaultBusy from './DefaultBusy';
 import './style.css';
+import '../input.css';
 
-
-/**
- * A simple "Popover Input" input control, the value is displayed as text and
- * the associated input is displayed in an overlay when the text is clicked.
- *
- * Valid react properties are:
- *
- *   dataType:   The data type of the value (the input will addapt
- *               accordingly)
- *   inputSize:  Input field size, with any html unit; px, em, rem ...
- *   pkey:       Key used when retreiving or sending data to server
- *   name:       Name displayed in label
- *   suffix:     Suffix to display after value
- *   data:       Object containing value, the current state of the value and
- *               a message describing the state. The object have the following
- *               format:
- *
- *                    data: {value: <value>, state: <state>, msg: <msg>}
- *
- *   title:      Title displayed at the top of popover
- *   placement:  Placement of Popover (left, right, bottom, top)
- *   onSave:     Callback called when user hits save button
- *   onCancel:   Callback called when user hits cancel button
- *
- * @class
- *
- */
 export default class CryoInput extends React.Component {
   constructor(props) {
     super(props);

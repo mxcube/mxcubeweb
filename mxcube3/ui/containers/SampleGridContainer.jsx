@@ -186,8 +186,8 @@ class SampleGridContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       document.getElementById('contextMenu').style.display = 'none';
     } else if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
-      document.getElementById('contextMenu').style.top = `${e.clientY - 132}px`;
-      document.getElementById('contextMenu').style.left = `${e.clientX - 2}px`;
+      document.getElementById('contextMenu').style.top = `${e.clientY}px`;
+      document.getElementById('contextMenu').style.left = `${e.clientX}px`;
       document.getElementById('contextMenu').style.display = 'block';
       res = false;
     } else {
@@ -294,7 +294,7 @@ class SampleGridContainer extends React.Component {
   gridDimension() {
     const colArray = [];
     const numItems = Object.keys(this.props.order).length;
-    const numFullCols = Math.floor(this.calcGridWidth()[0] / SAMPLE_ITEM_WIDTH);
+    const numFullCols = Math.floor(this.props.gridWidth[0] / SAMPLE_ITEM_WIDTH);
     const numFullRows = Math.floor(numItems / numFullCols);
     const itemsOnLastRow = numItems - (numFullRows * numFullCols);
 
@@ -307,31 +307,6 @@ class SampleGridContainer extends React.Component {
     }
 
     return colArray;
-  }
-
-
-  /**
-   * Calculates the grid width
-   *
-   * return {number} width in pixels
-   */
-  calcGridWidth() {
-    // We know that the side menu is fixed width 65px and that the padding from
-    // bootstrap is 15px so content starts at 80px;
-
-    // Get the viewportWidth
-    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-
-    // The full content width for this media (not forgeting the padding to the right 15px)
-    const fullContentWidth = viewportWidth - 80 - 15;
-
-    // Each sample item is 190px wide, calculate maximum number of items for each row
-    const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
-
-    // Caculating the actual grid size, with space between sample items;
-    const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
-
-    return [actualGridWidth, numCols];
   }
 
 
@@ -674,7 +649,7 @@ class SampleGridContainer extends React.Component {
         <div className="selection-rubber-band" id="selectionRubberBand" />
         <CSSGrid
           component="ul"
-          columns={this.calcGridWidth()[1]}
+          columns={this.props.gridWidth[1]}
           columnWidth={SAMPLE_ITEM_WIDTH}
           gutterWidth={SAMPLE_ITEM_SPACE}
           gutterHeight={SAMPLE_ITEM_SPACE + 3}

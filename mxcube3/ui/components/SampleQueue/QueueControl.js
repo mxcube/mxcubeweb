@@ -1,6 +1,6 @@
 import React from 'react';
 import './app.less';
-import { ProgressBar, Button, Input } from 'react-bootstrap';
+import { ProgressBar, Button, Checkbox } from 'react-bootstrap';
 import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED } from '../../constants';
 
 export default class QueueControl extends React.Component {
@@ -62,23 +62,19 @@ export default class QueueControl extends React.Component {
           <div className="right">
             <ProgressBar active now={progress} />
           </div>
-        <div style={ { marginLeft: '20px' } }>
-            <span>
-              <Input
-                type="checkbox"
+        <div>
+              <Checkbox
                 name="autoMountNext"
                 onClick={this.autoMountNextOnClick}
                 checked={this.props.autoMountNext}
-              />
-              Automount next sample
-            </span>
-            <span>
-              <Input
-                type="checkbox"
+              >
+                Automount next sample
+              </Checkbox>
+              <Checkbox
                 name="autoLoopCentring"
-              />
-              Auto loop centring
-            </span>
+              >
+                Auto loop centring
+              </Checkbox>
           </div>
         </div>
       </div>

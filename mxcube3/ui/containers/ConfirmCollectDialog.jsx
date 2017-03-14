@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Modal, Button, Table, OverlayTrigger, Popover, Input } from 'react-bootstrap';
+import { Modal, Button, Table, OverlayTrigger, Popover, Checkbox } from 'react-bootstrap';
 import { sendRunQueue, sendRunSample, sendMountSample, setAutoMountSample } from '../actions/queue';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import { TASK_UNCOLLECTED } from '../constants';
@@ -224,12 +224,9 @@ export class ConfirmCollectDialog extends React.Component {
           </p>
           <div style={ { marginLeft: '20px' } }>
             <span>
-              <Input
-                type="checkbox"
-                name="autoLoopCentring"
-                onClick={this.autoLoopCentringOnClick}
-              />
-              Auto loop centring
+              <Checkbox onClick={this.autoLoopCentringOnClick}>
+                Auto loop centring
+              </Checkbox>
             </span>
           </div>
           <br />

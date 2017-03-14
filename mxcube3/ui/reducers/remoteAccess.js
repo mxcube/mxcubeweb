@@ -1,5 +1,6 @@
 const initialState = {
-  master: false,
+  // the null value is used to distinguish between signed out (null) or logged in (true/false)
+  master: null,
   sid: null,
   observerName: null,
   requestingControl: false,

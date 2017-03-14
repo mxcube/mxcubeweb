@@ -1,10 +1,10 @@
 import React from 'react';
-import { Navbar, Nav, NavItem, NavBrand } from 'react-bootstrap';
-
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import './MXNavbar.css';
 
-export default class MXNavbar extends React.Component {
 
+export default class MXNavbar extends React.Component {
   render() {
     const proposal = this.props.userInfo.Proposal;
     const propInfo = (this.props.loggedIn ? `${proposal.title} - ${proposal.code}` : '');
@@ -13,22 +13,34 @@ export default class MXNavbar extends React.Component {
     document.title = `MxCuBE-3 ${propInfo}`;
 
     return (
-      <Navbar inverse collapseOnSelect>
-        <NavBrand>
-          MXCuBE 3
-        </NavBrand>
-        <Nav>
-          <NavItem eventKey={1} href="#/">Sample Overview</NavItem>
-          <NavItem eventKey={1} href="#/datacollection">Data collection</NavItem>
-          <NavItem eventKey={1} href="#/sampleChanger">Sample Changer</NavItem>
-          <NavItem eventKey={1} href="#/logging">System log</NavItem>
+      <Navbar inverse fixedTop fluid>
+        <Navbar.Header>
+          <Navbar.Brand>
+            MXCuBE 3
+          </Navbar.Brand>
+        </Navbar.Header>
+        <Nav style={{ marginLeft: '20em' }}>
+          <LinkContainer to="/samplegrid">
+            <NavItem eventKey={1}>Sample Overview</NavItem>
+          </LinkContainer>
+          <LinkContainer to="/datacollection">
+            <NavItem eventKey={2}>Data collection</NavItem>
+          </LinkContainer>
+          <LinkContainer to="/samplechanger">
+            <NavItem eventKey={3}>Sample Changer</NavItem>
+          </LinkContainer>
+          <LinkContainer to="/logging">
+            <NavItem eventKey={4}>System log</NavItem>
+          </LinkContainer>
         </Nav>
         <Nav pullRight>
-          <NavItem eventKey={1} onClick={this.props.reset} href="#">Reset session</NavItem>
-          <NavItem eventKey={1} href="#/remoteaccess">
-            <span style={ raStyle } className="fa fa-lg fa-universal-access" />
-          </NavItem>
-          <NavItem eventKey={1} onClick={this.props.signOut} href="#/login">
+          <NavItem eventKey={5} onClick={this.props.reset}>Reset session</NavItem>
+          <LinkContainer to="/remoteaccess">
+            <NavItem eventKey={6}>
+              <span style={ raStyle } className="fa fa-lg fa-universal-access" />
+            </NavItem>
+          </LinkContainer>
+          <NavItem eventKey={7} onClick={this.props.signOut}>
             <span className="fa fa-lg fa-sign-out" />
           </NavItem>
         </Nav>
@@ -36,3 +48,4 @@ export default class MXNavbar extends React.Component {
     );
   }
 }
+

@@ -1,23 +1,36 @@
 import React from 'react';
-import { reduxForm } from 'redux-form';
-import { Modal } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { reduxForm, formValueSelector } from 'redux-form';
+import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-
-/* eslint camelcase: 0 */
+import { FieldsHeader,
+         StaticField,
+         InputField,
+         CheckboxField,
+         SelectField,
+         FieldsRow,
+         CollapsableRows } from './fields';
 
 class Characterisation extends React.Component {
-
-
   constructor(props) {
     super(props);
-    this.runNow = this.handleSubmit.bind(this, true);
-    this.addToQueue = this.handleSubmit.bind(this, false);
-    this.inputCSS = this.inputCSS.bind(this);
+
+    this.submitAddToQueue = this.submitAddToQueue.bind(this);
+    this.submitRunNow = this.submitRunNow.bind(this);
+    this.addToQueue = this.addToQueue.bind(this);
   }
 
-  handleSubmit(runNow) {
+  submitAddToQueue() {
+    this.props.handleSubmit(this.addToQueue.bind(this, false))();
+  }
+
+  submitRunNow() {
+    this.props.handleSubmit(this.addToQueue.bind(this, true))();
+  }
+
+  addToQueue(runNow, params) {
     const parameters = {
-      ...this.props.values,
+      ...params,
       type: 'Characterisation',
       label: 'Characterisation',
       point: this.props.pointID,
@@ -43,395 +56,151 @@ class Characterisation extends React.Component {
     this.props.hide();
   }
 
-  inputCSS(field) {
-    let className;
-    if (this.props.fields[field].error) {
-      className = 'form-control warning';
-    } else {
-      className = 'form-control';
-    }
-    return className;
-  }
-
-  anyError() {
-    let err;
-    if (Object.keys(this.props.errors).length === 0) {
-      err = false;
-    } else {
-      err = true;
-    }
-    return err;
-  }
-
-  handleShowHide(e) {
-    const node = e.target;
-    if (node.innerHTML === 'Show More') {
-      node.innerHTML = 'Show Less';
-    } else {
-      node.innerHTML = 'Show More';
-    }
-  }
-
-
   render() {
-    const {
-      fields: {
-        num_images,
-        exp_time,
-        resolution,
-        osc_start,
-        energy,
-        osc_range,
-        transmission,
-        centringMethod,
-        detector_mode,
-        kappa,
-        kappa_phi,
-        account_rad_damage,
-        opt_sad,
-        space_group,
-        min_crystal_vdim,
-        max_crystal_vdim,
-        min_crystal_vphi,
-        max_crystal_vphi,
-        strategy_complexity,
-        prefix,
-        run_number,
-        subdir,
-        beam_size
-      },
-    rootPath
-    } = this.props;
-
     return (
       <Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Characterisation</Modal.Title>
         </Modal.Header>
           <Modal.Body>
+            <FieldsHeader title="Data location" />
+            <Form horizontal>
+              <StaticField label="Path" data={this.props.path} />
+              <StaticField label="Filename" data={this.props.filename} />
+              <Row>
+                <Col xs={12} style={{ marginTop: '10px' }}>
+                  <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
+                </Col>
+              </Row>
+              <Row>
+                <Col xs={8}>
+                  <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+                </Col>
+                <Col xs={4}>
+                  <InputField propName="run_number" label="Run number" col1="4" col2="8" />
+                </Col>
+              </Row>
+            </Form>
 
-            <div className="task-title-head">
-                <span className="task-title-body">
-                    Data location
-                </span>
-            </div>
+            <FieldsHeader title="Acquisition" />
+            <Form horizontal>
+              <FieldsRow>
+                <SelectField propName="num_images" label="Number of images" list={[1, 2, 4]} />
+                <InputField propName="transmission" label="Transmission" />
+              </FieldsRow>
+              <FieldsRow>
+                <InputField propName="exp_time" label="Exposure time (ms)" />
+                <SelectField
+                  propName="beam_size"
+                  label="Beam size"
+                  list={this.props.apertureList}
+                />
+              </FieldsRow>
+              <FieldsRow>
+                <InputField propName="osc_range" label="Oscillation range" />
+                <InputField propName="resolution" label="Resolution (Å)" />
+              </FieldsRow>
+              <FieldsRow>
+                <InputField propName="osc_start" label="Oscillation start" />
+                <InputField propName="energy" label="Energy (keV)" />
+              </FieldsRow>
+              <FieldsRow>
+                <InputField propName="energy" label="Energy" />
+              </FieldsRow>
+              <CollapsableRows>
+                <FieldsRow>
+                  <InputField propName="kappa" label="Kappa" />
+                  <InputField propName="kappa_phi" label="Phi" />
+                </FieldsRow>
+                <FieldsRow>
+                  <SelectField
+                    propName="detector_mode"
+                    label="Detector mode"
+                    list={['0', 'C18', 'C2']}
+                  />
+                </FieldsRow>
+              </CollapsableRows>
+            </Form>
 
-            <form className="form-horizontal">
-             <div className="form-group">
-              <label className="col-sm-12 control-label">
-                Path: {`${rootPath}/${subdir.value}`}
-              </label>
-            </div>
+            <FieldsHeader title="Characterisation" />
+            <CollapsableRows>
+              <Form horizontal>
+                <FieldsRow>
+                  <SelectField
+                    propName="strategy_complexity"
+                    label="Strategy complexity"
+                    list={['Single subwedge', 'Multiple subwedge']}
+                  />
+                  <CheckboxField
+                    propName="account_rad_damage"
+                    label="Account for radiation damage"
+                  />
+                </FieldsRow>
+                <FieldsRow>
+                  <CheckboxField propName="opt_sad" label="Optimised SAD" />
+                </FieldsRow>
+              </Form>
+            </CollapsableRows>
 
-             <div className="form-group">
-              <label className="col-sm-2 control-label">Subdirectory</label>
-              <div className="col-sm-4">
-                <input type="text" className="form-control" {...subdir} />
-              </div>
-            </div>
-
-            <div className="form-group">
-                <label className="col-sm-12 control-label">
-                  Filename: { `ref-${prefix.value}_${run_number.value}_xxxx.cbf`}
-                </label>
-            </div>
-
-            <div className="form-group">
-
-              <label className="col-sm-3 control-label">Prefix</label>
-              <div className="col-sm-3">
-                <input type="text" className="form-control" {...prefix} />
-              </div>
-
-              <label className="col-sm-3 control-label">Run number</label>
-              <div className="col-sm-3">
-                <input type="number" className="form-control" {...run_number} />
-              </div>
-            </div>
-
-            </form>
-
-            <div className="task-title-head">
-              <span className="task-title-body">
-                Acquisition
-              </span>
-            </div>
-            <form className="form-horizontal">
-
-            <div className="form-group">
-
-                <label className="col-sm-3 control-label">Number of images</label>
-                <div className="col-sm-3">
-                  <select className="form-control" {...num_images}>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="4">4</option>
-                  </select>
-                </div>
-
-                <label className="col-sm-3 control-label">Transmission (%)</label>
-                <div className="col-sm-3">
-                  <input type="number" className="form-control" {...transmission} />
-                </div>
-
-            </div>
-
-            <div className="form-group">
-
-              <label className="col-sm-3 control-label">Exposure time(ms)</label>
-              <div className="col-sm-3">
-                <input type="number" className={this.inputCSS('exp_time')} {...exp_time} />
-              </div>
-              <label className="col-sm-3 control-label">Beam size</label>
-              <div className="col-sm-3">
-                <select className="form-control" {...beam_size}>
-                  {this.props.apertureList.map((val, i) =>
-                    (<option key={i} value={val}>{val}</option>)
-                  )}
-                </select>
-              </div>
-
-            </div>
-
-            <div className="form-group">
-
-              <label className="col-sm-3 control-label">Oscillation range</label>
-              <div className="col-sm-3">
-                <input type="number" className={this.inputCSS('osc_range')} {...osc_range} />
-              </div>
-
-              <label className="col-sm-3 control-label">Resolution (Å)</label>
-              <div className="col-sm-3">
-                 <input type="number" className={this.inputCSS('resolution')} {...resolution} />
-              </div>
-
-            </div>
-
-
-            <div className="form-group">
-
-                <label className="col-sm-3 control-label">Oscillation start</label>
-                <div className="col-sm-3">
-                    <input type="number" className={this.inputCSS('osc_start')} {...osc_start} />
-                </div>
-
-                <label className="col-sm-3 control-label">Energy (KeV)</label>
-                <div className="col-sm-3">
-                    <input type="number" className={this.inputCSS('energy')} {...energy} />
-                </div>
-
-            </div>
-            <div className="collapse" id="acquisition">
-            <div className="form-group">
-
-                <label className="col-sm-3 control-label">Kappa</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...kappa} />
-                </div>
-
-                <label className="col-sm-3 control-label">Phi</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...kappa_phi} />
-                </div>
-
-            </div>
-            <div className="form-group">
-                <label className="col-sm-3 control-label">Detector mode</label>
-                <div className="col-sm-3">
-                     <select className="form-control" {...detector_mode}>
-                        <option value="1"></option>
-                        <option value="1">X</option>
-                        <option value="1">Y</option>
-                    </select>
-                </div>
-            </div>
-            </div>
-
-              <p className="text-right">
-                <a
-                  data-toggle="collapse"
-                  data-target="#acquisition"
-                  aria-expanded="false"
-                  aria-controls="acquisition"
-                  onClick={this.handleShowHide}
-                >
-                  Show More
-                </a>
-            </p>
-            <div className="task-title-head">
-                <span className="task-title-body">
-                    Characterisation
-                </span>
-            </div>
-            <div className="collapse" id="characterisation">
-            <div className="form-group">
-
-                <label className="col-sm-6 control-label">Strategy complexity</label>
-                <div className="col-sm-6">
-                     <select className="form-control" {...strategy_complexity}>
-                        <option value="1">Single subwedge</option>
-                        <option value="2">Multiple subwedge</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <div className="form-group">
-
-                <label className="col-sm-6 control-label">
-                    <input type="checkbox" {...account_rad_damage} />
-                     Account for radiation damage
-                </label>
-                <label className="col-sm-6 control-label">
-                    <input type="checkbox" {...opt_sad} />
-                     Optimised SAD
-                </label>
-
-            </div>
-            </div>
-             <p className="text-right">
-                <a
-                  data-toggle="collapse"
-                  data-target="#characterisation"
-                  aria-expanded="false"
-                  aria-controls="characterisation"
-                  onClick={this.handleShowHide}
-                >
-                  Show More
-                </a>
-            </p>
-            <div className="task-title-head">
-                <span className="task-title-body">
-                    Crystal
-                </span>
-            </div>
-          <div className="collapse" id="crystal">
-            <div className="form-group">
-
-                <label className="col-sm-6 control-label">Space group</label>
-                <div className="col-sm-6">
-                     <select className="form-control" {...space_group}>
-                        <option value="1"></option>
-                        <option value="1">X</option>
-                    </select>
-                </div>
-
-            </div>
-            <h6>Vertical crystal dimension(mm)</h6>
-            <div className="form-group">
-
-                <label className="col-sm-3 control-label">Min</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...min_crystal_vdim} />
-                </div>
-
-                <label className="col-sm-3 control-label">Max</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...max_crystal_vdim} />
-                </div>
-
-                <label className="col-sm-3 control-label">  &omega; at min</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...min_crystal_vphi} />
-                </div>
-
-                <label className="col-sm-3 control-label">  &omega; at max</label>
-                <div className="col-sm-3">
-                    <input type="number" className="form-control" {...max_crystal_vphi} />
-                </div>
-
-            </div>
-          </div>
-            <p className="text-right">
-                <a
-                  data-toggle="collapse"
-                  data-target="#crystal"
-                  aria-expanded="false"
-                  aria-controls="crystal"
-                  onClick={this.handleShowHide}
-                >
-                  Show More
-                </a>
-            </p>
-        </form>
-          </Modal.Body>
-          <Modal.Footer>
-        <div className={this.props.pointID === -1 ? 'pull-left' : 'hidden'}>
-          <label className="centring-method">
-            <input
-              type="radio" {...centringMethod}
-              value="lucid"
-              checked={centringMethod.value === 'lucid'}
-            />
-              Lucid Only
-          </label>
-          <label className="centring-method">
-            <input
-              type="radio" {...centringMethod}
-              value="xray"
-              checked={centringMethod.value === 'xray'}
-            />
-              X-ray Centring
-          </label>
-        </div>
-            <button
-              type="button"
-              className={this.props.pointID !== -1 ? 'btn btn-success' : 'hidden'}
-              disabled={this.anyError()}
-              onClick={this.runNow}
-            >
-              Run Now
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary"
-              disabled={this.anyError()}
-              onClick={this.addToQueue}
-            >
-              {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-            </button>
-        </Modal.Footer>
-      </Modal>
-        );
+            <FieldsHeader title="Crystal" />
+            <CollapsableRows>
+              <Form horizontal>
+                <FieldsRow>
+                  <SelectField propName="space_group" label="Space group" list={['P1', 'P211']} />
+                </FieldsRow>
+                <FieldsRow>
+                  <InputField propName="min_crystal_vdim" label="Min" />
+                  <InputField propName="max_crystal_vdim" label="Max" />
+                  <InputField propName="min_crystal_vphi" label="&omega; at min" />
+                  <InputField propName="max_crystal_vphi" label="&omega; at max" />
+                </FieldsRow>
+              </Form>
+            </CollapsableRows>
+         </Modal.Body>
+         { this.props.taskData.state ? '' :
+           <Modal.Footer>
+             <ButtonToolbar className="pull-right">
+               <Button bsStyle="success"
+                 disabled={this.props.pointID === -1 || this.props.invalid}
+                 onClick={this.submitRunNow}
+               >
+                 Run Now
+               </Button>
+               <Button bsStyle="primary" disabled={this.props.invalid}
+                 onClick={this.submitAddToQueue}
+               >
+                 {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+               </Button>
+             </ButtonToolbar>
+           </Modal.Footer>
+         }
+      </Modal>);
   }
 }
 
-Characterisation = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'characterisation',                           // a unique name for this form
-  validate,
-  fields: [
-    'num_images',
-    'exp_time',
-    'resolution',
-    'osc_start',
-    'energy',
-    'osc_range',
-    'transmission',
-    'centringMethod',
-    'detector_mode',
-    'kappa',
-    'kappa_phi',
-    'account_rad_damage',
-    'opt_sad',
-    'space_group',
-    'min_crystal_vdim',
-    'max_crystal_vdim',
-    'min_crystal_vphi',
-    'max_crystal_vphi',
-    'strategy_complexity',
-    'prefix',
-    'run_number',
-    'subdir',
-    'beam_size'
-  ] // all the fields in your form
-},
-state => ({ // mapStateToProps
-  motorLimits: { ...state.beamline.motorsLimits },
-  acqParametersLimits: { ...state.taskForm.acqParametersLimits },
-  initialValues: {
-    ...state.taskForm.taskData.parameters,
-    beam_size: state.sampleview.currentAperture,
-  } // will pull state into form's initialValues
-}))(Characterisation);
+Characterisation = reduxForm({
+  form: 'characterisation',
+  validate
+})(Characterisation);
+
+const selector = formValueSelector('characterisation');
+
+Characterisation = connect(state => {
+  const subdir = selector(state, 'subdir');
+  const prefix = selector(state, 'prefix');
+  const runNumber = selector(state, 'run_number');
+
+  return {
+    path: `${state.queue.rootPath}/${subdir}`,
+    filename: `ref-${prefix}_${runNumber}.???`,
+    motorLimits: state.beamline.motorsLimits,
+    acqParametersLimits: state.taskForm.acqParametersLimits,
+    initialValues: {
+      ...state.taskForm.taskData.parameters,
+      beam_size: state.sampleview.currentAperture
+    }
+  };
+})(Characterisation);
 
 export default Characterisation;
+
