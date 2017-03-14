@@ -19,7 +19,6 @@ const INITIAL_STATE = { selected: {},
                         sampleList: {},
                         order: [],
                         moving: {},
-                        contextMenu: {},
                         filterOptions: { text: '',
                                          inQueue: false,
                                          notInQueue: false,
@@ -205,11 +204,6 @@ export default (state = INITIAL_STATE, action) => {
       const selected = Object.assign({}, state.selected);
       selected[action.sampleID] = (!state.selected[action.sampleID]);
       return Object.assign({}, state, { selected });
-    }
-    case 'SAMPLE_GRID_CONTEXT_MENU': {
-      return Object.assign({}, state, { contextMenu: { x: action.x,
-                                                       y: action.y,
-                                                       show: action.show } });
     }
     case 'FILTER_SAMPLE_LIST': {
       const filterOptions = Object.assign({}, state.filterOptions, action.filterOptions);
