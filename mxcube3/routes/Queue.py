@@ -6,7 +6,7 @@ import queue_model_objects_v1 as qmo
 import queue_entry as qe
 import QueueManager
 
-from flask import Response, jsonify, request, session
+from flask import Response, jsonify, request, session, url_for, redirect
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 import qutils
@@ -460,6 +460,14 @@ def get_default_char_params():
     resp = jsonify(mxcube.beamline.get_default_characterisation_parameters().as_dict())
     resp.status_code = 200
     return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/char_result", methods=['GET'])
+def get_char_result():
+    """
+    returns the html result from a characterisation, stored locally
+    """
+    return redirect(url_for('static', filename='char/index.html'))
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])

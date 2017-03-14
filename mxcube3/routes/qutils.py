@@ -259,6 +259,12 @@ def _handle_char(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
+    if mxcube.rest_lims:
+	limsres = mxcube.rest_lims.get_dc(node.id)
+    else:
+        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
+        limsres = ''
+
     res = {"label": "Characterisation",
            "type": "Characterisation",
            "parameters": parameters,
@@ -267,7 +273,8 @@ def _handle_char(sample_id, node):
            "taskIndex": node_index(node)['idx'],
            "queueID": node._node_id,
            "checked": enabled,
-           "state": state
+           "state": state,
+	   "limsResultData": limsres
            }
 
     return res
