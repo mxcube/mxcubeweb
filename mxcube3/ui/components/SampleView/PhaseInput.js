@@ -20,7 +20,14 @@ export default class PhaseInput extends React.Component {
         onChange={this.sendPhase}
       >
         {this.props.phaseList.map((option) =>
-          (<option key={option} value={option}>{option}</option>)
+          (<option 
+            key={option} 
+            value={option}
+            selected={this.props.phase===option}
+           >
+            {option}
+           </option>
+          )
         )}
       </select>
       );

@@ -132,7 +132,7 @@ class ServerIO {
 
       if (record.state === 1 && !taskCollapsed) {
         this.dispatch(collapseTask(record.sample, record.taskIndex));
-      } else if (record.state === 2 && taskCollapsed) {
+      } else if (record.state >= 2 && taskCollapsed) {
         this.dispatch(collapseTask(record.sample, record.taskIndex));
       }
       this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state,
