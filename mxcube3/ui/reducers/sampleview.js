@@ -171,6 +171,16 @@ export default (state = initialState, action) => {
                                gridCount: 0 }
          );
       }
+    case 'CLEAR_QUEUE':
+      {
+        return Object.assign({}, state,
+                             { lines: [],
+                               distancePoints: [],
+                               clickCentringPoints: [],
+                               gridList: [],
+                               gridCount: 0 }
+         );
+      }
     case 'SET_INITIAL_STATE':
       {
         return {
