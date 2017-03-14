@@ -19,7 +19,6 @@ const INITIAL_STATE = { selected: {},
                         sampleList: {},
                         order: [],
                         moving: {},
-                        contextMenu: {},
                         filterOptions: { text: '',
                                          inQueue: false,
                                          notInQueue: false,
@@ -206,11 +205,6 @@ export default (state = INITIAL_STATE, action) => {
       selected[action.sampleID] = (!state.selected[action.sampleID]);
       return Object.assign({}, state, { selected });
     }
-    case 'SAMPLE_GRID_CONTEXT_MENU': {
-      return Object.assign({}, state, { contextMenu: { x: action.x,
-                                                       y: action.y,
-                                                       show: action.show } });
-    }
     case 'FILTER_SAMPLE_LIST': {
       const filterOptions = Object.assign({}, state.filterOptions, action.filterOptions);
       return Object.assign({}, state, { filterOptions });
@@ -225,6 +219,9 @@ export default (state = INITIAL_STATE, action) => {
       }
 
       return { ...state, sampleList };
+    }
+    case 'CLEAR_SAMPLE_GRID': {
+      return Object.assign({}, state, { ...INITIAL_STATE });
     }
     case 'CLEAR_ALL': {
       return Object.assign({}, state, { ...INITIAL_STATE });

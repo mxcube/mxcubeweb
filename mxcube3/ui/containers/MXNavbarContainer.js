@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import MXNavbar from '../components/MXNavbar/MXNavbar';
 import { doSignOut } from '../actions/login';
-import { sendClearQueue } from '../actions/queue';
 
 class MXNavbarContainer extends React.Component {
 
@@ -15,7 +13,6 @@ class MXNavbarContainer extends React.Component {
           loggedIn={this.props.loggedIn}
           location={this.props.location}
           setAutomatic={this.props.setAutomatic}
-          reset={this.props.reset}
           remoteAccessMaster={this.props.remoteAccessMaster}
         />
     );
@@ -33,8 +30,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    signOut: () => dispatch(doSignOut()),
-    reset: bindActionCreators(sendClearQueue, dispatch)
+    signOut: () => dispatch(doSignOut())
   };
 }
 

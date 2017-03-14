@@ -34,7 +34,6 @@ export default class MXNavbar extends React.Component {
           </LinkContainer>
         </Nav>
         <Nav pullRight>
-          <NavItem eventKey={5} onClick={this.props.reset}>Reset session</NavItem>
           <LinkContainer to="/remoteaccess">
             <NavItem eventKey={6}>
               <span style={ raStyle } className="fa fa-lg fa-universal-access" />

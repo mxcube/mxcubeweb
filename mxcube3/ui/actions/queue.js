@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { sendAbortCentring } from './sampleview';
-import { selectSamplesAction } from '../actions/sampleGrid';
+import { selectSamplesAction, clearSampleGrid } from '../actions/sampleGrid';
 import { TASK_UNCOLLECTED } from '../constants';
 
 export function queueLoading(loading) {
@@ -121,7 +121,8 @@ export function sendClearQueue(clearQueueOnly = false) {
         if (clearQueueOnly) {
           dispatch(clearQueue());
         } else {
-          dispatch(clearAll());
+          dispatch(clearQueue());
+          dispatch(clearSampleGrid());
         }
       }
     });
