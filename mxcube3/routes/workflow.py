@@ -8,7 +8,13 @@ def workflow():
     workflows = {}
 
     for wf in mxcube.workflow.get_available_workflows():
-        workflows[wf["name"]] = wf
+        # Rename name and path to wfname and wfpath in order to avoid name
+        # clashes
+        wf["wfname"] = wf.pop("name")
+        wf["wfpath"] = wf.pop("path")
+
+        workflows[wf["wfname"]] = wf
+
     
     return jsonify({"workflows": workflows})
 

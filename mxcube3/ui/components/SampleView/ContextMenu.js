@@ -6,9 +6,22 @@ export default class ContextMenu extends React.Component {
     super(props);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
     this.deleteGrid = this.deleteGrid.bind(this);
-    this.addWfMethodsToCtxMenu = this.addWfMethodsToCtxMenu.bind(this);
+    this.menuOptions = this.menuOptions.bind(this);
+    this.startWorkflow = this.startWorkflow.bind(this);
+  }
 
-    this.options = {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.show) {
+      this.showContextMenu(nextProps.x, nextProps.y);
+    } else {
+      this.hideContextMenu();
+    }
+  }
+
+  menuOptions() {
+    const workflowTasks = { point: [], line: [], grid: [], none: [] };
+
+    const options = {
       SAVED: [
         { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 1 },
         { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 2 },
@@ -37,56 +50,49 @@ export default class ContextMenu extends React.Component {
         { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 }
       ]
     };
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.show) {
-      this.showContextMenu(nextProps.x, nextProps.y);
-    } else {
-      this.hideContextMenu();
-    }
-  }
-
-  addWfMethodsToCtxMenu() {
-    const workflowTasks = { point: [], line: [], grid: [], none: [] };
 
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires === 'point') {
-        workflowTasks.point.push({ text: wf.name,
-                                   action: this.startWorkflow(wf),
-                                   key: `wf-${wf.name}` });
+        workflowTasks.point.push({ text: wf.wfname,
+                                   action: () => this.startWorkflow(wf),
+                                   key: `wf-${wf.wfname}` });
       } else if (wf.requires === 'line') {
-        workflowTasks.line.push({ text: wf.name,
-                                  action: this.startWorkflow(wf),
-                                  key: `wf-${wf.name}` });
+        workflowTasks.line.push({ text: wf.wfname,
+                                  action: () => this.startWorkflow(wf),
+                                  key: `wf-${wf.wfname}` });
       } else if (wf.requires === 'grid') {
-        workflowTasks.grid.push({ text: wf.name,
-                                  action: this.startWorkflow(wf),
-                                  key: `wf-${wf.name}` });
+        workflowTasks.grid.push({ text: wf.wfname,
+                                  action: () => this.startWorkflow(wf),
+                                  key: `wf-${wf.wfname}` });
       } else if (wf.requires === '') {
-        workflowTasks.none.push({ text: wf.name,
-                                  action: this.startWorkflow(wf),
-                                  key: `wf-${wf.name}` });
+        workflowTasks.none.push({ text: wf.wfname,
+                                  action: () => this.startWorkflow(wf),
+                                  key: `wf-${wf.wfname}` });
       }
     });
 
-    this.options.SAVED = this.options.SAVED.concat(workflowTasks.point);
-    this.options.LINE = this.options.LINE.concat(workflowTasks.line);
-    this.options.GridGroupSaved = this.options.GridGroupSaved.concat(workflowTasks.grid);
-    this.options.NONE = this.options.NONE.concat(workflowTasks.none);
+    options.SAVED = options.SAVED.concat(workflowTasks.point);
+    options.LINE = options.LINE.concat(workflowTasks.line);
+    options.GridGroupSaved = options.GridGroupSaved.concat(workflowTasks.grid);
+    options.NONE = options.NONE.concat(workflowTasks.none);
+
+    return options;
   }
 
   startWorkflow(wf) {
     console.log(wf);
+    this.showModal('Workflow', wf);
+    this.props.sampleActions.showContextMenu(false);
   }
 
-  showModal(modalName) {
+  showModal(modalName, wf = {}) {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
     this.props.showForm(
       modalName,
       [sampleID],
       { parameters:
         { ...defaultParameters[modalName.toLowerCase()],
+          ...wf,
           prefix: sampleData.defaultPrefix,
           subdir: sampleData.sampleName
         }
@@ -98,9 +104,13 @@ export default class ContextMenu extends React.Component {
   }
 
   showContextMenu(x, y) {
-    document.getElementById('contextMenu').style.top = `${y}px`;
-    document.getElementById('contextMenu').style.left = `${x + 15}px`;
-    document.getElementById('contextMenu').style.display = 'block';
+    const contextMenu = document.getElementById('contextMenu');
+
+    if (contextMenu) {
+      contextMenu.style.top = `${y}px`;
+      contextMenu.style.left = `${x + 15}px`;
+      contextMenu.style.display = 'block';
+    }
   }
 
   savePoint() {
@@ -170,13 +180,13 @@ export default class ContextMenu extends React.Component {
   }
 
   render() {
-    this.addWfMethodsToCtxMenu();
-
+    const menuOptions = this.menuOptions();
     let optionList = [];
+
     if (this.props.sampleID !== undefined) {
-      optionList = this.options[this.props.shape.type].map(this.listOptions);
+      optionList = menuOptions[this.props.shape.type].map(this.listOptions);
     } else {
-      optionList = this.options.NONE.map(this.listOptions);
+      optionList = menuOptions.NONE.map(this.listOptions);
     }
     return (
       <ul id="contextMenu" className="dropdown-menu" role="menu">

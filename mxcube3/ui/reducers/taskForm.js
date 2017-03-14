@@ -81,6 +81,10 @@ export default (state = initialState, action) => {
             helical: {
               run_number: 1,
               ...action.data.dcParameters,
+              ...state.defaultParameters.helical },
+            workflow: {
+              run_number: 1,
+              ...action.data.dcParameters,
               ...state.defaultParameters.helical }
           },
           acqParametersLimits: { ...action.data.acqParametersLimits }
