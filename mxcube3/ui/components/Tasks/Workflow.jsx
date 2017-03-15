@@ -26,7 +26,7 @@ class Workflow extends React.Component {
     const parameters = {
       ...params,
       type: 'Workflow',
-      label: 'workflow',
+      label: params.wfname,
       point: this.props.pointID
     };
 
@@ -49,7 +49,7 @@ class Workflow extends React.Component {
   render() {
     return (<Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>Workflow</Modal.Title>
+          <Modal.Title>{this.props.wfname}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
@@ -108,6 +108,7 @@ Workflow = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${runNumber}.???`,
+    wfname: state.taskForm.taskData.parameters.wfname,
     motorLimits: state.beamline.motorsLimits,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
