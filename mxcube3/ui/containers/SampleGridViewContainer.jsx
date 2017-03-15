@@ -3,6 +3,7 @@ import { withRouter } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
+import loader from '../img/loader.gif';
 
 import {
   Row, Col, Form,
@@ -473,6 +474,12 @@ class SampleGridViewContainer extends React.Component {
             show={this.props.showConfirmClearQueueDialog}
             hide={this.props.confirmClearQueueHide}
           />
+          {this.props.loading ?
+            <div className="center-in-box" style={{ zIndex: 1200 }} >
+                <img src={loader} className="img-responsive" alt="" />
+              </div>
+            : null
+          }
           <Sticky
             style={{ zIndex: 1000, transform: '' }}
             stickyStyle={{ zIndex: 1000,
@@ -596,6 +603,7 @@ function mapStateToProps(state) {
   return {
     loginData: state.login.data,
     queue: state.queue,
+    loading: state.queueGUI.loading,
     selected: state.sampleGrid.selected,
     sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
