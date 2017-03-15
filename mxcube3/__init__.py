@@ -103,6 +103,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
+        app.xml_rpc_server = hwr.getHardwareObject('xml-rpc-server')
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
         app.workflow = app.beamline.getObjectByRole("workflow")
