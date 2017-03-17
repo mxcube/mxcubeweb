@@ -24,6 +24,7 @@
     "font-awesome": "^4.4.0",
     "history": "1.17.x",
     "isomorphic-fetch": "^2.2.0",
+    "liform-react": "^0.5.15",
     "lodash": "^4.0.0",
     "react": "15.4.2",
     "react-bootstrap": "^0.30.7",

@@ -127,7 +127,6 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.CURRENTLY_MOUNTED_SAMPLE = ''
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
-        app.CURRENT_WORKFLOW = None
 
         try:
             SampleCentring.init_signals()

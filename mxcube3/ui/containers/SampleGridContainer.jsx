@@ -60,6 +60,7 @@ class SampleGridContainer extends React.Component {
     this.showRubberBand = false;
     this.state = { sampleItems: this.getSampleItems(props) };
     this.sampleItems = this.getSampleItems(props);
+    this.workflowMenuOptions = this.workflowMenuOptions.bind(this);
   }
 
 
@@ -618,6 +619,50 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  /**
+   * Returns menu options for workflow tasks
+   *
+   * @property {Object} workflows
+   *
+   * return {array} Array of <MenuItem>
+   */
+  workflowMenuOptions() {
+    const workflowTasks = { point: [], line: [], grid: [], samplegrid: [], none: [] };
+
+    Object.values(this.props.workflows).forEach((wf) => {
+      if (wf.requires === 'point') {
+        workflowTasks.point.push({ text: wf.wfname,
+                                   action: () => this.props.showWorkflowForm(wf),
+                                   key: `wf-${wf.wfname}` });
+      } else if (wf.requires === 'line') {
+        workflowTasks.line.push({ text: wf.wfname,
+                                  action: () => this.props.showWorkflowForm(wf),
+                                  key: `wf-${wf.wfname}` });
+      } else if (wf.requires === 'grid') {
+        workflowTasks.grid.push({ text: wf.wfname,
+                                  action: () => this.props.showWorkflowForm(wf),
+                                  key: `wf-${wf.wfname}` });
+      } else if (wf.requires === 'samplegrid') {
+        workflowTasks.samplegrid.push({ text: wf.wfname,
+                                        action: () => this.props.showWorkflowForm(wf),
+                                        key: `wf-${wf.wfname}` });
+      } else if (wf.requires === '') {
+        workflowTasks.none.push({ text: wf.wfname,
+                                  action: () => this.props.showWorkflowForm(wf),
+                                  key: `wf-${wf.wfname}` });
+      }
+    });
+
+    const menuItems = workflowTasks.samplegrid.map((wf) => (
+      <MenuItem eventKey={wf.key} onClick={wf.action}>
+        {wf.text}
+      </MenuItem>
+    ));
+
+    return menuItems;
+  }
+
+
   render() {
     this.sampleItems = this.getSampleItems(this.props);
 
@@ -640,6 +685,7 @@ class SampleGridContainer extends React.Component {
           <MenuItem eventKey="3" onClick={this.props.showCharacterisationForm}>
             Characterisation
           </MenuItem>
+          {this.workflowMenuOptions()}
           <MenuItem divider />
           <MenuItem header><span><Glyphicon glyph="minus" /> Remove </span></MenuItem>
           <MenuItem eventKey="1" onClick={this.props.removeSelectedSamples}>
@@ -678,6 +724,7 @@ class SampleGridContainer extends React.Component {
  */
 function mapStateToProps(state) {
   return {
+    workflows: state.workflow.workflows,
     queue: state.queue,
     selected: state.sampleGrid.selected,
     moving: state.sampleGrid.moving,

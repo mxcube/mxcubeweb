@@ -29,6 +29,8 @@ export class TaskItem extends React.Component {
       res = 'DC';
     } else if (type === 'Characterisation') {
       res = 'C';
+    } else if (type === 'Workflow') {
+      res = 'AS';
     }
 
     return res;

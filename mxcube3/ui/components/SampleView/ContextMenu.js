@@ -7,7 +7,6 @@ export default class ContextMenu extends React.Component {
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
     this.deleteGrid = this.deleteGrid.bind(this);
     this.menuOptions = this.menuOptions.bind(this);
-    this.startWorkflow = this.startWorkflow.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -54,19 +53,19 @@ export default class ContextMenu extends React.Component {
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires === 'point') {
         workflowTasks.point.push({ text: wf.wfname,
-                                   action: () => this.startWorkflow(wf),
+                                   action: () => this.showModal('Workflow', wf),
                                    key: `wf-${wf.wfname}` });
       } else if (wf.requires === 'line') {
         workflowTasks.line.push({ text: wf.wfname,
-                                  action: () => this.startWorkflow(wf),
+                                  action: () => this.showModal('Workflow', wf),
                                   key: `wf-${wf.wfname}` });
       } else if (wf.requires === 'grid') {
         workflowTasks.grid.push({ text: wf.wfname,
-                                  action: () => this.startWorkflow(wf),
+                                  action: () => this.showModal('Workflow', wf),
                                   key: `wf-${wf.wfname}` });
       } else if (wf.requires === '') {
         workflowTasks.none.push({ text: wf.wfname,
-                                  action: () => this.startWorkflow(wf),
+                                  action: () => this.showModal('Workflow', wf),
                                   key: `wf-${wf.wfname}` });
       }
     });
@@ -77,12 +76,6 @@ export default class ContextMenu extends React.Component {
     options.NONE = options.NONE.concat(workflowTasks.none);
 
     return options;
-  }
-
-  startWorkflow(wf) {
-    console.log(wf);
-    this.showModal('Workflow', wf);
-    this.props.sampleActions.showContextMenu(false);
   }
 
   showModal(modalName, wf = {}) {

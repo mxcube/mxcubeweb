@@ -25,7 +25,7 @@
   <workflow>
     <title>MXPressE</title>
     <path>MXPressE</path>
-    <requires></requires>
+    <requires>samplegrid</requires>
   </workflow>
   <workflow>
     <title>Mesh and collect</title>
@@ -40,11 +40,11 @@
   <workflow>
     <title>Distance calibration</title>
     <path>DistanceCalibration</path>
-    <requires></requires>
+    <requires>point</requires>
   </workflow>
   <workflow>
     <title>Trouble shooting</title>
     <path>TroubleShooting</path>
-    <requires></requires>
+    <requires>samplegrid</requires>
   </workflow>
 </object>

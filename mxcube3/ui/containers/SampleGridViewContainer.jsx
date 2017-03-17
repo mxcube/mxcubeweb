@@ -67,6 +67,8 @@ class SampleGridViewContainer extends React.Component {
     this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
     this.showCharacterisationForm = this.showTaskForm.bind(this, 'Characterisation');
     this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection');
+    this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection');
+    this.showWorkflowForm = this.showTaskForm.bind(this, 'Workflow');
     this.showAddSampleForm = this.showTaskForm.bind(this, 'AddSample');
     this.inQueue = this.inQueue.bind(this);
     this.inQueueDeleteElseAddSamples = this.inQueueDeleteElseAddSamples.bind(this);
@@ -163,7 +165,7 @@ class SampleGridViewContainer extends React.Component {
    * @property {Object} selected
    * @property {Object} sampleList
    */
-  showTaskForm(formName) {
+  showTaskForm(formName, wf = {}) {
     let prefix = '';
     let path = '';
 
@@ -174,7 +176,9 @@ class SampleGridViewContainer extends React.Component {
 
     const parameters = { parameters: {
       ...this.props.defaultParameters[formName.toLowerCase()],
-      prefix, path } };
+      ...wf,
+      prefix,
+      path } };
 
     const selected = [];
 
@@ -570,6 +574,7 @@ class SampleGridViewContainer extends React.Component {
             addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
             showCharacterisationForm={this.showCharacterisationForm}
             showDataCollectionForm={this.showDataCollectionForm}
+            showWorkflowForm={this.showWorkflowForm}
             addSamplesToQueue={this.addSamplesToQueue}
             inQueue={this.inQueue}
             inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}

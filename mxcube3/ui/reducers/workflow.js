@@ -13,6 +13,10 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state, { current: action.current });
       }
+    case 'SHOW_WORKFLOW_PARAMETERS_DIALOG':
+      {
+        return { ...state, formData: action.formData, showParametersDialog: action.show };
+      }
     case 'SET_INITIAL_STATE':
       {
         return { ...state, workflows: action.data.workflow.workflows };

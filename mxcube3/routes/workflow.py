@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from flask import Response, jsonify, request
 
@@ -19,26 +20,31 @@ def workflow():
     return jsonify({"workflows": workflows})
 
 
-
-@mxcube.route("/mxcube/api/v0.1/workflow/start", methods=['POST'])
-def workflow_start():
-    data = request.get_json()
-
-    try:
-         mxcube.workflow.start(data["path"])
-         mxcube.CURRENT_WORKFLOW = data
-    except:
-        return Response(status=409)
-    else:
-        return Response(status=200)
-
-
-@mxcube.route("/mxcube/api/v0.1/workflow/stop", methods=['POST'])
-def workflow_stop():
-    try:
-         mxcube.CURRENT_WORKFLOW = None
-         mxcube.workflow.abort()
-    except:
-        return Response(status=409)
-    else:
-        return Response(status=200)
+@mxcube.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=['GET'])
+def workflow_dialog(wf):
+    dialog = {
+        "properties": {
+            "name": {
+                "title":"Task name",
+                "type":"string",
+                "minLength": 2
+                },
+            "description": {
+                "title":"Description",
+                "type":"string",
+                "widget":"textarea"
+                },
+            "dueTo": {
+                "title":"Due to",
+                "type":"string",
+                "widget":"compatible-datetime",
+                "format":"date-time"
+                }
+            },
+        "required":["name"],
+        "dialogName": "Trouble shooting !"
+        }
+    
+    socketio.emit("workflowParametersDialog", dialog, namespace="/hwr")
+    
+    return Response(status=200)

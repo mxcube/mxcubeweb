@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
+
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';

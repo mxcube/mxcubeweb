@@ -9,6 +9,7 @@ import ConnectionLostDialog from '../containers/ConnectionLostDialog';
 import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
+import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 
 export default class Main extends React.Component {
   render() {
@@ -22,6 +23,7 @@ export default class Main extends React.Component {
         <ObserverDialog />
         <PassControlDialog />
         <ConfirmCollectDialog />
+        <WorkflowParametersDialog />
         <MXNavbarContainer location={this.props.location} />
         <Grid fluid>
             {this.props.children}
