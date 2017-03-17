@@ -20,6 +20,7 @@ def workflow():
     return jsonify({"workflows": workflows})
 
 
+# This route is only for testing
 @mxcube.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=['GET'])
 def workflow_dialog(wf):
     dialog = {
