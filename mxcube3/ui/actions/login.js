@@ -11,6 +11,55 @@ export function setLoginInfo(loginInfo) {
   };
 }
 
+export function showProposalsForm(formname) {
+  return {
+    type: 'SHOW_PROPOSALS_FORM',
+    name: formname,
+  };
+}
+
+export function hideProposalsForm() {
+  return {
+    type: 'HIDE_FORM'
+  };
+}
+
+export function selectProposal(prop) {
+  return {
+    type: 'SELECT_PROPOSAL',
+    proposal: prop,
+  };
+}
+
+export function postProposal(code) {
+  console.log('in sendSelectProposal')
+  return fetch('mxcube/api/v0.1/lims/proposal', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({ proposal_code: code })
+  })
+}
+
+export function sendSelectProposal(code) {
+  return function (dispatch) {
+    postProposal(code).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to select proposal'));
+        browserHistory.push('/login');
+      }
+      else {
+      browserHistory.push('/');
+      }
+    });
+  };
+}
+
+
+
 export function startSession() {
   return function (dispatch, getState) {
     const loginInfo = getState().login.loginInfo;
@@ -43,6 +92,7 @@ export function signOut() {
   return { type: 'SIGNOUT' };
 }
 
+
 export function signIn(proposal, password) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/login', {
@@ -56,7 +106,14 @@ export function signIn(proposal, password) {
     }).then(response => response.json()).then((res) => {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
-        browserHistory.push('/');
+        dispatch(setLoading(false));
+        dispatch(getLoginInfo()).then(() => {
+          dispatch(showProposalsForm('SelectProposals')).then(() => {
+           // browserHistory.push('/');
+          }
+          );
+        }
+        );
       } else {
         // const msg = res.msg;
         dispatch(showErrorPanel(true));
