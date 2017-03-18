@@ -10,6 +10,7 @@ import { Grid,
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
+import SelectProposal from './SelectProposal';
 
 export default class LoginComponent extends React.Component {
   constructor(props) {
@@ -44,6 +45,20 @@ export default class LoginComponent extends React.Component {
           </Alert>
           : ''
         }
+        { (this.props.showForm === 'SelectProposals') ?
+          <SelectProposal
+            show
+            hide={this.props.hideTaskParametersForm}
+            data={this.props.data}
+            selectedProposal={this.props.selectedProposal}
+            selectProposal={this.props.selectProposal}
+            sendSelectProposal={this.props.sendSelectProposal}
+            hide={this.props.hideProposalsForm}
+
+          />
+          : null
+        }
+
         <Row>
           <center>
             <img src={logo} role="presentation"
