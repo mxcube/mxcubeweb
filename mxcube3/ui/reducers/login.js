@@ -1,7 +1,9 @@
 const initialState = {
   loginInfo: {},
   loggedIn: false,
-  data: {}
+  data: {},
+  showForm: '',
+  selectedProposal: ''
 };
 
 export default (state = initialState, action) => {
@@ -20,7 +22,24 @@ export default (state = initialState, action) => {
             data
           });
       }
-
+    case 'SHOW_PROPOSALS_FORM':
+      {
+        return {
+          ...state,
+          showForm: action.name,
+        };
+      }
+    case 'SELECT_PROPOSAL':
+      {
+        return {
+          ...state,
+          selectedProposal: action.proposal,
+        };
+      }
+    case 'HIDE_FORM':
+      {
+        return { ...state, showForm: '' };
+      }
     default:
       return state;
   }
