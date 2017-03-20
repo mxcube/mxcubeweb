@@ -662,7 +662,7 @@ class ResolutionHOMediator(HOMediatorBase):
         e_min, e_max = energy_ho.limits()
 	
         limits = []
-        x = arange(float(e_min), float(e_max), 500)
+        x = arange(float(e_min), float(e_max), 0.5)
 
         radius = self._ho.det_radius
         det_dist = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('dtox')
