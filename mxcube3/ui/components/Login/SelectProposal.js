@@ -17,8 +17,6 @@ class SelectProposal extends React.Component {
   }
 
   sendProposal() {
-    console.log('asdasdasd')
-    console.log(this.props)
     this.props.sendSelectProposal(this.props.selectedProposal);
     this.props.hide();
   }
@@ -37,11 +35,11 @@ class SelectProposal extends React.Component {
       hideSelectColumn: true,
     };
 
-    const proposals = this.props.data.ProposalList.map((prop) => {
-      return { Code: prop.Proposal.code,
-               Person: prop.Person.familyName,
-               Session: prop.Session[0].startDate.split(' ')[0] };
-    });
+    const proposals = this.props.data.ProposalList.map((prop) => ({
+      Code: prop.Proposal.code,
+      Person: prop.Person.familyName,
+      Session: prop.Session[0].startDate.split(' ')[0]
+    }));
 
     return (
       <Modal show={this.props.show} onHide={this.handleCancel}>
@@ -51,7 +49,8 @@ class SelectProposal extends React.Component {
         <Modal.Body>
         <div>
         <BootstrapTable data={ proposals } bordered={ false } selectRow={ selectRowProp }>
-          <TableHeaderColumn dataField="Code" isKey editable={ false }>Proposal Code</TableHeaderColumn>
+          <TableHeaderColumn dataField="Code" isKey editable={ false }>Proposal Code
+          </TableHeaderColumn>
           <TableHeaderColumn dataField="Person" editable={ false }>Person</TableHeaderColumn>
           <TableHeaderColumn dataField="Session" editable={ false }>Session</TableHeaderColumn>
         </BootstrapTable>
@@ -59,7 +58,9 @@ class SelectProposal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar className="pull-rigth">
-            <Button bsStyle="primary" disabled={this.props.selectedProposal === ''} onClick={this.sendProposal}>
+            <Button bsStyle="primary" disabled={this.props.selectedProposal === ''}
+              onClick={this.sendProposal}
+            >
               Select Proposal
             </Button>
           </ButtonToolbar>

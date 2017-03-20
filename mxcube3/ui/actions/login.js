@@ -32,7 +32,6 @@ export function selectProposal(prop) {
 }
 
 export function postProposal(code) {
-  console.log('in sendSelectProposal')
   return fetch('mxcube/api/v0.1/lims/proposal', {
     method: 'POST',
     credentials: 'include',
@@ -41,7 +40,7 @@ export function postProposal(code) {
       'Content-type': 'application/json'
     },
     body: JSON.stringify({ proposal_code: code })
-  })
+  });
 }
 
 export function sendSelectProposal(code) {
@@ -50,15 +49,12 @@ export function sendSelectProposal(code) {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to select proposal'));
         browserHistory.push('/login');
-      }
-      else {
-      browserHistory.push('/');
+      } else {
+        browserHistory.push('/');
       }
     });
   };
 }
-
-
 
 export function startSession() {
   return function (dispatch, getState) {
