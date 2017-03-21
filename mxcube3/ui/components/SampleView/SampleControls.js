@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import MotorInput from './MotorInput';
 import PhaseInput from './PhaseInput';
 import 'fabric';
@@ -97,7 +97,7 @@ export default class SampleControls extends React.Component {
           phaseList={this.props.phaseList}
           sendPhase={this.props.sampleActions.sendCurrentPhase}
         />
-        <span className="sample-controll-label">Phase</span>
+      <span className="sample-controll-label">Phase</span>
       </li>);
     const motors = this.props.motors;
     return (
@@ -259,6 +259,43 @@ export default class SampleControls extends React.Component {
             <span className="sample-controll-label">Frontlight Controls</span>
             </li>
             {config.phaseControl ? phaseControl : null }
+            <li>
+              <DropdownButton
+                className="sample-controll"
+                bsStyle="default"
+                title={(<i className="fa fa-1x fa-video-camera" />)}
+                id={'video-size-dropdown'}
+              >
+                <MenuItem
+                  eventKey="1"
+                  onClick={() => this.props.sampleActions.setVideoSize(640)}
+                >
+                  640 (small)
+                </MenuItem>
+                <MenuItem
+                  eventKey="1"
+                  onClick={() => this.props.sampleActions.setVideoSize(960)}
+                >
+                  960 (Medium)
+                </MenuItem>
+                <MenuItem
+                  eventKey="2"
+                  onClick={() => this.props.sampleActions.setVideoSize(1280)}
+                >
+                  1280 (Large)
+                </MenuItem>
+                <MenuItem
+                  eventKey="3"
+                  onClick={() => {
+                    const size = document.getElementById('outsideWrapper').clientWidth;
+                    this.props.sampleActions.setVideoSize(size);
+                  }}
+                >
+                  Scale (As large as possible)
+                </MenuItem>
+              </DropdownButton>
+              <span className="sample-controll-label">Video size</span>
+            </li>
             </ul>
           </div>
         </div>
