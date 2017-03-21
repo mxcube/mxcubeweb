@@ -104,6 +104,13 @@ export function saveImageSize(width, height, pixelsPerMm) {
   };
 }
 
+export function setVideoSize(width) {
+  return function (dispatch) {
+    dispatch({ type: 'SET_VIDEO_SIZE', width });
+    dispatch(setImageRatio(width));
+  };
+}
+
 export function saveMotorPositions(data) {
   return {
     type: 'SAVE_MOTOR_POSITIONS', data

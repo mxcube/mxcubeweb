@@ -5,6 +5,7 @@ const initialState = {
   distancePoints: [],
   width: 659,
   height: 493,
+  videoSize: '960',
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,
@@ -97,6 +98,10 @@ export default (state = initialState, action) => {
     case 'SET_IMAGE_RATIO':
       {
         return { ...state, imageRatio: state.width / action.clientWidth };
+      }
+    case 'SET_VIDEO_SIZE':
+      {
+        return { ...state, videoSize: action.width };
       }
     case 'SET_APERTURE':
       {

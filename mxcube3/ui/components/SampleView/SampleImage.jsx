@@ -124,7 +124,7 @@ export default class SampleImage extends React.Component {
   }
 
   setImageRatio() {
-    this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
+    this.props.sampleActions.setImageRatio(this.props.videoSize);
   }
 
   setVCellSpacing(e) {
