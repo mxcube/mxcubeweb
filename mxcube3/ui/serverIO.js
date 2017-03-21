@@ -24,6 +24,8 @@ import { setLoading,
          addUserMessage,
          showConnectionLostDialog } from './actions/general';
 
+import { showWorkflowParametersDialog } from './actions/workflow';
+
 import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
 
 
@@ -191,6 +193,10 @@ class ServerIO {
 
     this.hwrSocket.on('observersChanged', (data) => {
       this.dispatch(setObservers(data));
+    });
+
+    this.hwrSocket.on('workflowParametersDialog', (data) => {
+      this.dispatch(showWorkflowParametersDialog(data));
     });
 
     this.hwrSocket.on('setMaster', (data) => {

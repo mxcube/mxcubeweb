@@ -45,6 +45,7 @@ class SampleViewContainer extends Component {
                   sampleData={this.props.sampleList[sampleID]}
                   defaultParameters={this.props.defaultParameters}
                   imageRatio={imageRatio}
+                  workflows={this.props.workflows}
                 />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
@@ -73,7 +74,8 @@ function mapStateToProps(state) {
     contextMenu: state.contextMenu,
     beamline: state.beamline,
     defaultParameters: state.taskForm.defaultParameters,
-    points: state.points
+    points: state.points,
+    workflows: state.workflow.workflows
   };
 }
 

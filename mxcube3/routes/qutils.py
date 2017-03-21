@@ -3,6 +3,7 @@ import os
 import json
 import cPickle as pickle
 import redis
+import itertools
 
 import Utils
 
@@ -233,7 +234,6 @@ def _handle_dc(sample_id, node):
     if mxcube.rest_lims:
         limsres = mxcube.rest_lims.get_dc(node.id)
     else:
-        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
         limsres = ''
 
     res = {"label": "Data Collection",
@@ -245,6 +245,24 @@ def _handle_dc(sample_id, node):
            "checked": enabled,
            "state": state,
            "limstResultData": limsres,
+           }
+
+    return res
+
+
+def _handle_wf(sample_id, node):
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+
+    res = {"label": "Workflow",
+           "type": "Workflow",
+           "name": node._type,
+           "parameters": node.path_template.as_dict(),
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "queueID": queueID,
+           "checked": enabled,
+           "state": state
            }
 
     return res
@@ -327,6 +345,7 @@ def queue_to_dict_rec(node):
     result = []
 
     for node in node.get_children():
+        print(node)
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]
@@ -339,6 +358,9 @@ def queue_to_dict_rec(node):
         elif isinstance(node, qmo.DataCollection):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_dc(sample_id, node))
+        elif isinstance(node, qmo.Workflow):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_wf(sample_id, node))
         else:
             result.extend(queue_to_dict_rec(node))
 
@@ -489,6 +511,8 @@ def queue_add_item(item_list):
             add_data_collection(sample_node_id, item)
         elif item_t == "Characterisation":
             add_characterisation(sample_node_id, item)
+        elif item_t == "Workflow":
+            add_workflow(sample_node_id, item)
 
 
 def add_sample(sample_id, item):
@@ -586,6 +610,50 @@ def set_dc_params(model, entry, task_data):
     entry.set_enabled(task_data['checked'])
 
 
+def set_wf_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the parameters for a workflow task.
+
+    :param WorkflowQueueModel: The model to set parameters of
+    :param GenericWorkflowQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    """
+    params = task_data['parameters']
+
+    model.path_template.set_from_dict(params)
+    model.path_template.base_prefix = params['prefix']
+    model.path_template.num_files = 0
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('subdir', ''))
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('subdir', ''))
+    model.path_template.process_directory = process_path
+
+    model.set_name("Workflow task")
+    model.set_type(params["wfname"])
+    
+    beamline_params = {}
+    beamline_params['directory'] = model.path_template.directory
+    beamline_params['prefix'] = model.path_template.get_prefix()
+    beamline_params['run_number'] = model.path_template.run_number
+    beamline_params['collection_software'] = 'MXCuBE - 3.0'
+    beamline_params['sample_node_id'] = sample_model._node_id
+    beamline_params['sample_lims_id'] = sample_model.lims_id
+    
+    params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
+    params_list.insert(0, params["wfpath"])
+    params_list.insert(0, 'modelpath')
+    
+    model.params_list = params_list
+
+    model.set_enabled(task_data['checked'])
+    entry.set_enabled(task_data['checked'])
+
+
 def set_char_params(model, entry, task_data):
     """
     Helper method that sets the characterisation parameters for a
@@ -614,6 +682,20 @@ def _create_dc(task):
     """
     dc_model = qmo.DataCollection()
     dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
+
+    return dc_model, dc_entry
+
+def _create_wf(task):
+    """
+    Creates a workflow model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    dc_model = qmo.Workflow()
+    dc_entry = qe.GenericWorkflowQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
 
@@ -694,6 +776,40 @@ def add_data_collection(node_id, task):
 
     return dc_model._node_id
 
+
+def add_workflow(node_id, task):
+    """
+    Adds a worklfow task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = get_entry(node_id)
+    wf_model, dc_entry = _create_wf(task)
+    set_wf_params(wf_model, dc_entry, task, sample_model)
+
+    pt = wf_model.path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    group_model = qmo.TaskGroup()
+
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, wf_model)
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(dc_entry)
+
+    return wf_model._node_id
 
 def new_queue():
     """

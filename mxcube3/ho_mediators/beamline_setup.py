@@ -33,6 +33,13 @@ class _BeamlineSetupMediator(object):
         self._bl = beamline_setup
         self._ho_dict = {}
 
+        workflow = self.getObjectByRole("workflow")
+
+        if workflow:
+            workflow.connect('parametersNeeded', self.wf_parameters_needed)
+
+    def wf_parameters_needed(params):
+        socketio.emit("workflowParametersDialog", params, namespace="/hwr")
 
     def getObjectByRole(self, name):
         try:

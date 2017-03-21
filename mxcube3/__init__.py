@@ -96,15 +96,17 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
-                        lims, qutils)
+                        lims, qutils, workflow)
 
     ### Install server-side UI state storage
     from mxcube3 import state_storage
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
+        app.xml_rpc_server = hwr.getHardwareObject('xml-rpc-server')
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
+        app.workflow = app.beamline.getObjectByRole("workflow")
 
         Utils.enable_snapshots(app.collect)
 

@@ -5,6 +5,7 @@ import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
 import Helical from '../components/Tasks/Helical';
 import AddSample from '../components/Tasks/AddSample';
+import Workflow from '../components/Tasks/Workflow';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 
@@ -104,6 +105,18 @@ class TaskContainer extends React.Component {
       />);
     }
 
+    if (this.props.showForm === 'Workflow') {
+      return (<Workflow
+        show
+        addTask={this.addTask}
+        pointID={this.props.pointID}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+      />);
+    }
+
     return null;
   }
 }
@@ -132,7 +145,7 @@ function mapDispatchToProps(dispatch) {
     addTask: bindActionCreators(addTask, dispatch),
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
     addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
-    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
+    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch)
   };
 }
 

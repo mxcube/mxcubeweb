@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <object class = "Session" role = "session">  
  <synchrotron_name>ESRF</synchrotron_name>
- <endstation_name>id30a3</endstation_name>
- <beamline_name>ID30A-3</beamline_name>
+ <endstation_name>linoscarsson</endstation_name>
+ <beamline_name>linoscarsson</beamline_name>
 
   <proposals>
     <proposal>

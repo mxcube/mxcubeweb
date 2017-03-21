@@ -157,6 +157,14 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
+    const workflow = fetch('mxcube/api/v0.1/workflow', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
 
     const pchains = [
       queue.then(parse).then(json => { state.queue = json; }).catch(notify),
@@ -174,7 +182,8 @@ export function getInitialState() {
       sampleChangerContents.then(parse).then(json => {
         state.sampleChangerContents = json;
       }).catch(notify),
-      observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify)
+      observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
+      workflow.then(parse).then(json => { state.workflow = json; }).catch(notify)
     ];
 
     Promise.all(pchains).then(() => {
