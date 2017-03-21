@@ -190,8 +190,7 @@ class SampleGridViewContainer extends React.Component {
 
     if (formName === 'AddSample') {
       this.props.showTaskParametersForm('AddSample');
-    }
-    else {
+    } else {
       this.props.showTaskParametersForm(formName, selected, parameters);
     }
   }
