@@ -20,6 +20,12 @@ def workflow():
     return jsonify({"workflows": workflows})
 
 
+@mxcube.route("/mxcube/api/v0.1/workflow", methods=['POST'])
+def sumbit_parameters():
+    data = request.get_json()
+    mxcube.workflow.set_values_map(data)
+
+
 # This route is only for testing
 @mxcube.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=['GET'])
 def workflow_dialog(wf):
