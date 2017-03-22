@@ -1,12 +1,9 @@
 import React from 'react';
-import { bindActionCreators, createStore, combineReducers, applyMiddleware } from 'redux';
+import { bindActionCreators, createStore, combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 import Liform from 'liform-react';
-import { autoRehydrate } from 'redux-persist';
-import createLogger from 'redux-logger';
-import thunk from 'redux-thunk';
 import { showWorkflowParametersDialog,
          workflowSubmitParameters } from '../actions/workflow';
 

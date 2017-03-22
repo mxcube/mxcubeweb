@@ -65,9 +65,8 @@ class SampleGridViewContainer extends React.Component {
     this.addSelectedSamplesToQueue = this.addSelectedSamplesToQueue.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
     this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
-    this.showCharacterisationForm = this.showTaskForm.bind(this, 'Characterisation');
-    this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection');
-    this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection');
+    this.showCharacterisationForm = this.showTaskForm.bind(this, 'Characterisation', {});
+    this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection', {});
     this.showWorkflowForm = this.showTaskForm.bind(this, 'Workflow');
     this.showAddSampleForm = this.showTaskForm.bind(this, 'AddSample');
     this.inQueue = this.inQueue.bind(this);
@@ -165,7 +164,7 @@ class SampleGridViewContainer extends React.Component {
    * @property {Object} selected
    * @property {Object} sampleList
    */
-  showTaskForm(formName, wf = {}) {
+  showTaskForm(formName, extraParams = {}) {
     let prefix = '';
     let path = '';
 
@@ -176,7 +175,7 @@ class SampleGridViewContainer extends React.Component {
 
     const parameters = { parameters: {
       ...this.props.defaultParameters[formName.toLowerCase()],
-      ...wf,
+      ...extraParams,
       prefix,
       path } };
 
@@ -478,7 +477,7 @@ class SampleGridViewContainer extends React.Component {
             message="This will remove all samples (and collections) from the grid,
                      are you sure you would like to continue ?"
             onOk={this.props.sendClearQueue}
-            show={this.props.showConfirmClearQueueDialog}
+            show={this.props.confirmClearQueueDialog}
             hide={this.props.confirmClearQueueHide}
           />
           <Sticky
@@ -609,7 +608,7 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
-    showConfirmClearQueueDialog: state.general.showConfirmClearQueueDialog
+    confirmClearQueueDialog: state.general.showConfirmClearQueueDialog
   };
 }
 

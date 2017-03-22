@@ -654,7 +654,7 @@ class SampleGridContainer extends React.Component {
     });
 
     const menuItems = workflowTasks.samplegrid.map((wf) => (
-      <MenuItem eventKey={wf.key} onClick={wf.action}>
+      <MenuItem eventKey={wf.key} onClick={wf.action} key={wf.key}>
         {wf.text}
       </MenuItem>
     ));
@@ -730,8 +730,7 @@ function mapStateToProps(state) {
     moving: state.sampleGrid.moving,
     sampleList: state.sampleGrid.sampleList,
     filterOptions: state.sampleGrid.filterOptions,
-    order: state.sampleGrid.order,
-    showConfirmActionDialog: state
+    order: state.sampleGrid.order
   };
 }
 
