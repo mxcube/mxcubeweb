@@ -72,6 +72,8 @@ export function sendMountSample(sampleData) {
 
 export function addSamplesToQueue(sampleDataList) {
   return function (dispatch) {
+    dispatch(queueLoading(true));
+
     dispatch(addSamplesToQueueAction(sampleDataList));
 
     sendAddQueueItem(sampleDataList).then((response) => {
@@ -80,6 +82,7 @@ export function addSamplesToQueue(sampleDataList) {
         const sampleIDList = sampleDataList.map((sampleData) => (sampleData.sampleID));
         dispatch(removeSamplesFromQueueAction(sampleIDList));
       }
+      dispatch(queueLoading(false));
     });
   };
 }
@@ -424,10 +427,9 @@ export function addTask(sampleIDs, parameters, runNow) {
             dispatch(sendRunSample(sampleIDs[0], taskIndex));
           }
         }
+        dispatch(queueLoading(false));
       });
     }
-
-    dispatch(queueLoading(false));
   };
 }
 
