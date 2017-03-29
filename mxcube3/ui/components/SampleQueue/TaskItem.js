@@ -199,7 +199,7 @@ export default class TaskItem extends Component {
                       onMouseLeave={() => this.setState({ overInput: false }) }
                       className="form-control"
                       readOnly
-                      value={`${rootPath}${data.parameters.path}`}
+                      value={`${rootPath}/${data.parameters.subdir}`}
                     />
                   </div>
                 <div className="col-sm-3">
