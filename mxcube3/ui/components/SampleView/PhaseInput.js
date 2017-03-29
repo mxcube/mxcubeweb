@@ -15,19 +15,19 @@ export default class PhaseInput extends React.Component {
   render() {
     return (
       <select
-        defaultValue={this.props.phase}
         className="form-control input-sm"
         onChange={this.sendPhase}
+        value={this.props.phase}
       >
         {this.props.phaseList.map((option) => (
           <option
             key={option}
             value={option}
-            selected={this.props.phase === option}
           >
-           {option}
-          </option>
-         ))}
+            {option}
+           </option>
+          )
+        )}
       </select>
       );
   }
