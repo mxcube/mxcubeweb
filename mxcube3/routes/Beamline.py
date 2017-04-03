@@ -95,7 +95,13 @@ def beamline_abort_action(name):
             else:
                 return make_response("", 200)
    
-    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    # This could be made to give access to arbitrary method of HO, possible
+    # security issues to be discussed.
+    if name.lower() == "detdist":
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("dtox")
+    else:
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    ho.stop()
 
     try:
         ho.stop()
@@ -155,21 +161,24 @@ def beamline_set_attribute(name):
     Replies with status code 200 on success and 520 on exceptions.
     """
     data = json.loads(request.data)
-    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    if name.lower() == "detdist":
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("dtox")
+    else:  
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    
+    res = ho.dict_repr()
 
     try:
         ho.set(data["value"])
-        data = ho.dict_repr()
-        code = 200
+        res = ho.dict_repr()
+        result, code = json.dumps(res), 200
     except Exception as ex:
-        data["value"] = ho.get()
-        data["state"] = "UNUSABLE"
-        data["msg"] = str(ex)
-        code = 520
- 
-    response = jsonify(data)
-    response.code = code
-    return response
+        res = ho.dict_repr()
+        res["value"] = ho.get()
+        res["state"] = "UNUSABLE"
+        res["msg"] = "submitted value out of limits"
+        result, code = json.dumps(res), 520
+    return Response(result, status=code, mimetype='application/json')
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
