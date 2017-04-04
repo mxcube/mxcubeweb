@@ -16,14 +16,20 @@ const validate = (values, props) => {
   const resMin = everpolate.linear(currEnergy, energies, limitsMin);
   const resMax = everpolate.linear(currEnergy, energies, limitsMax);
 
-  if (values.osc_range === '') {
-    errors.osc_range = 'field empty';
+  if (values.num_images === '' ||
+      parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images ||
+      parseInt(values.num_images, 10) < 1) {
+    errors.num_images = 'Number of out of the limit';
+  }
+  if (values.osc_range === '' || parseFloat(values.osc_range, 10) < 0) {
+    errors.osc_range = 'wrong value';
   }
   if (values.osc_start === '') {
     errors.osc_start = 'field empty';
   }
-  if (values.exp_time === '' || values.exp_time > props.acqParametersLimits.exposure_time) {
-    errors.exp_time = 'Exposure time above the limit';
+  if (values.exp_time === '' || values.exp_time > props.acqParametersLimits.exposure_time ||
+      parseFloat(values.exp_time, 10) < 0) {
+    errors.exp_time = 'Exposure out of the limit';
   }
   if (!(currRes > resMin && currRes < resMax)) {
     errors.resolution = 'Resolution outside working range';
