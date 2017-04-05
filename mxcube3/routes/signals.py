@@ -9,6 +9,7 @@ from mxcube3.routes import qutils
 from mxcube3.routes import scutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
+from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
 from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED
 
@@ -409,3 +410,11 @@ def beamline_action_failed(name):
         logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
     else:
         logging.getLogger('user_level_log').error('Action %s failed !', name)
+
+def safety_shutter_state_changed(values):
+    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("safety_shutter")
+    data = ho.dict_repr()
+    try:
+        socketio.emit("beamline_value_change", data, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: %s' + str(data))
