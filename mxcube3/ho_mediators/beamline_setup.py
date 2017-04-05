@@ -268,7 +268,7 @@ class EnergyHOMediator(HOMediatorBase):
         :rtype: float
         """
         try:
-            self._ho.start_move_energy(float(value))
+            self._ho.startMoveEnergy(float(value))
             res = self.get()
         except:
             raise
