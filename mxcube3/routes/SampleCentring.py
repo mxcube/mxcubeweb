@@ -9,6 +9,7 @@ import signals
 import PIL
 import cStringIO
 import scutils
+import videoutils
 
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
@@ -114,7 +115,6 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
         img = strbuf.getvalue()
 
     SAMPLE_IMAGE = img
-
     mxcube.diffractometer.camera.new_frame.set()
     mxcube.diffractometer.camera.new_frame.clear()
 
@@ -127,6 +127,7 @@ def stream_video(camera_hwobj):
     while True:
         try:
             camera_hwobj.new_frame.wait()
+            videoutils.write_to_video_device(mxcube.VIDEO_DEVICE, SAMPLE_IMAGE)
             yield 'Content-type: image/jpg\n\n' + SAMPLE_IMAGE + "\n--!>"
         except Exception:
             pass
@@ -581,3 +582,28 @@ def move_to_beam():
         # v <= 2.1
         mxcube.diffractometer.moveToBeam(click_position['x'], click_position['y'])
     return Response(status=200)
+
+
+def create_video_stream_fifo(path):
+    import os, tempfile, stat
+
+    tmpdir = tempfile.mkdtemp()
+    filename = os.path.join(tmpdir, 'myfifo')
+
+    print path
+
+    # If named PIPE does not already exist create it
+    if not stat.S_ISFIFO(os.stat(filename).st_mode):
+        try:
+            msg = "Creating named pipe (%s) for video stream" % filename
+            logging.getLogger('HWR').info(msg)
+            os.mkfifo(filename)
+        except OSError, e:
+            msg =  "Failed to create FIFO: %s" % filename
+            logging.getLogger('HWR').info(msg)
+
+            fifo = open(filename, 'w')
+
+def cleanup_video_stream_fifo():
+    os.remove(filename)
+    os.rmdir(tmpdir)
