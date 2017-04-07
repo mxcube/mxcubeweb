@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+until ffmpeg -f video4linux2 -i /dev/video0 -r 30  -f mpegts -codec:v mpeg1video  http://localhost:4041/video; do
+  sleep 1
+done
