@@ -87,7 +87,7 @@ export default class CurrentTree extends React.Component {
       <div>
           <div className="list-head">
               <p className="queue-root" onClick={this.collapse}>
-                { sampleId ? `Sample: ${sampleData.sampleID}` : 'No Sample Mounted'}
+                { sampleId ? `Sample: ${sampleData.sampleName} (${sampleData.proteinAcronym})` : 'No Sample Mounted'}
                 {queueOptions.map((option) => this.renderOptions(option))}
               </p>
               <hr className="queue-divider" />
