@@ -47,4 +47,9 @@
     <path>TroubleShooting</path>
     <requires>samplegrid</requires>
   </workflow>
+  <workflow>
+    <title>Trouble shooting Dialog</title>
+    <path>TroubleShootingWithDialog</path>
+    <requires>samplegrid</requires>
+  </workflow>
 </object>

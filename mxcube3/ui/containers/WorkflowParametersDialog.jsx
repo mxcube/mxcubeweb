@@ -4,19 +4,21 @@ import { connect, Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 import Liform from 'liform-react';
-import { showWorkflowParametersDialog } from '../actions/workflow';
+import { showWorkflowParametersDialog,
+         workflowSubmitParameters } from '../actions/workflow';
 
 class WorkflowParametersDialog extends React.Component {
   constructor(props) {
     super(props);
+    this.submitData = this.submitData.bind(this);
     const reducer = combineReducers({ form: formReducer });
     this.store = (window.devToolsExtension ?
                   window.devToolsExtension()(createStore) :
                   createStore)(reducer);
   }
 
-  showResults(/* values */) {
-    // window.alert(`You submitted:\n\n ${JSON.stringify(values, null, 2)}`);
+  submitData(values) {
+    this.props.workflowSubmitParameters(values);
     this.props.hide();
   }
 
@@ -31,7 +33,7 @@ class WorkflowParametersDialog extends React.Component {
     if (this.props.show && this.props.formData) {
       form = (
         <Provider store={this.store}>
-          <Liform schema={this.props.formData} onSubmit={this.showResults} />
+          <Liform schema={this.props.formData} onSubmit={this.submitData} />
         </Provider>
       );
 
@@ -65,6 +67,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(showWorkflowParametersDialog.bind(this, null, false), dispatch),
+    workflowSubmitParameters: bindActionCreators(workflowSubmitParameters, dispatch),
   };
 }
 
