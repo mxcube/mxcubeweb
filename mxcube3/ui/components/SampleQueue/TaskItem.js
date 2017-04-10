@@ -95,6 +95,7 @@ export default class TaskItem extends Component {
     super(props);
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
+    this.copyToClipboard = this.copyToClipboard.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
     this.collapseTask = this.collapseTask.bind(this);
     this.getResult = this.getResult.bind(this);
@@ -125,6 +126,12 @@ export default class TaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
+  copyToClipboard() {
+    const text = document.getElementById('file_path_input');
+    text.select();
+    document.execCommand('copy');
+  }
+
   deleteButton() {
     let content = (<Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>);
 
@@ -147,11 +154,9 @@ export default class TaskItem extends Component {
             isDragging,
             connectDragSource,
             connectDropTarget,
-            rootPath,
             show } = this.props;
     const parameters = data.parameters;
     const opacity = isDragging ? 0 : 1;
-
     let taskCSS = cx('task-head', {
       active: state === TASK_RUNNING,
       success: state === TASK_COLLECTED,
@@ -190,28 +195,22 @@ export default class TaskItem extends Component {
           <div className="task-body">
             <form>
               <div className="form-group row">
-                <label className="col-sm-9">File path:</label>
-                <label className="col-sm-3">Prefix:</label>
-                  <div className="col-sm-9">
+                <label className="col-sm-12">File path:</label>
+                <div className="col-sm-12" style={{ display: 'flex' }}>
                     <input
                       type="text"
                       onMouseEnter={() => this.setState({ overInput: true }) }
                       onMouseLeave={() => this.setState({ overInput: false }) }
                       className="form-control"
                       readOnly
-                      value={`${rootPath}/${data.parameters.subdir}`}
+                      value={`./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`}
+                      id="file_path_input"
                     />
-                  </div>
-                <div className="col-sm-3">
-                  <input
-                    type="text"
-                    onMouseEnter={() => this.setState({ overInput: true }) }
-                    onMouseLeave={() => this.setState({ overInput: false }) }
-                    className="form-control"
-                    readOnly
-                    value={data.parameters.prefix}
-                  />
-                </div>
+                    <p className="fa fa-clipboard" onClick={this.copyToClipboard}
+                      style={delTaskCSS}
+                    >
+                    </p>
+              </div>
               </div>
               <div className="task-information">
                 <label>Parameters summary:&nbsp;</label>
