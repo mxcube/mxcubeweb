@@ -130,6 +130,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.AUTO_LOOP_CENTER = False
 
         app.VIDEO_DEVICE = videoutils.open_video_device()
+        app.VIDEO_STREAM_PROCESS = None
 
         try:
             SampleCentring.init_signals()
