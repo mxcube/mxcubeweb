@@ -7,12 +7,14 @@ import copy
 import logging
 import gevent.event
 import os
+import sys
 import json
 import signals
 import PIL
 import cStringIO
 import scutils
 import videoutils
+import subprocess
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
@@ -112,16 +114,34 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     # to be able to handle data sent by hardware objects used in MxCuBE 2.x
     if not isinstance(img, str):
         rawdata = img.bits().asstring(img.numBytes())
-        strbuf = cStringIO.StringIO()
-        image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
-        (r, g, b, a) = image.split()
-        image = PIL.Image.merge('RGB', (b, g, r))
-        image.save(strbuf, "JPEG")
-        img = strbuf.getvalue()
+        img = rawdata
+        pixel_format = 'RGBX'
+        #strbuf = cStringIO.StringIO()
+        #image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
+        #(r, g, b, a) = image.split()
+        #image = PIL.Image.merge('RGB', (b, g, r))
+        #image.save(strbuf, "JPEG")
+        #img = strbuf.getvalue()
+    else:
+        pixel_format = 'RGB24'
+        if img[:10] == '\xff\xd8\xff\xe0\x00\x10JFIF':
+            # jpeg image
+            strbuf = cStringIO.StringIO(img)
+            img = PIL.Image.open(strbuf)
+            #img.convert('RGB')
+            img = img.tobytes()
+        else:
+            # supposedly img is RGB data
+            pass
 
     SAMPLE_IMAGE = img
     mxcube.diffractometer.camera.new_frame.set()
     mxcube.diffractometer.camera.new_frame.clear()
+    videoutils.write_to_video_device(mxcube.VIDEO_DEVICE, SAMPLE_IMAGE, pixel_format, width, height)
+
+    # start the streaming process
+    if not mxcube.VIDEO_STREAM_PROCESS or mxcube.VIDEO_STREAM_PROCESS.poll() is not None:
+        mxcube.VIDEO_STREAM_PROCESS = subprocess.Popen([sys.executable, os.path.join(os.path.dirname(__file__), "../video/video_streaming.py")])
 
 
 def stream_video(camera_hwobj):
@@ -132,7 +152,6 @@ def stream_video(camera_hwobj):
     while True:
         try:
             camera_hwobj.new_frame.wait()
-            videoutils.write_to_video_device(mxcube.VIDEO_DEVICE, SAMPLE_IMAGE)
             yield 'Content-type: image/jpg\n\n' + SAMPLE_IMAGE + "\n--!>"
         except Exception:
             pass
