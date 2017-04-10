@@ -4,7 +4,10 @@ import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { makePoints, makeLines, makeImageOverlay } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
-import jsmpeg from 'jsmpeg';
+
+const jsmpeg = require('./jsmpeg.min.js');
+
+
 import 'fabric';
 const fabric = window.fabric;
 
@@ -29,8 +32,8 @@ export default class SampleImage extends React.Component {
     this.gridStarted = false;
     this.girdOrigin = null;
     this.lineGroup = null;
-
     this.drawGridPlugin = new DrawGridPlugin();
+    this.player = null;
   }
 
   componentDidMount() {
@@ -63,7 +66,7 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keyup', this.keyUp, false);
 
     const canvas = document.getElementById('sample-img');
-    jsmpeg(`ws://${document.location.hostname}:4042/`, { canvas });
+    this.player = new jsmpeg.JSMpeg.Player(`ws://${document.location.hostname}:4042/`, { canvas });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -544,10 +547,7 @@ export default class SampleImage extends React.Component {
               {...this.props}
               canvas={this.canvas}
             />
-            <canvas
-              id="sample-img"
-              className="img"
-            />
+            <canvas id="sample-img" className="img" />
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>
