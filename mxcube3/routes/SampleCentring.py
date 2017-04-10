@@ -7,11 +7,14 @@ import copy
 import logging
 import gevent.event
 import os
+import sys
 import json
 import signals
 import PIL
 import cStringIO
 import scutils
+import videoutils
+import subprocess
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
@@ -90,7 +93,7 @@ def init_signals():
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
     mxcube.diffractometer.connect("centringStarted", signals.centring_started)
-    
+
 
 ############
 
@@ -101,6 +104,7 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     and set the gevent so the new image can be sent.
     """
     global SAMPLE_IMAGE
+
     for point in mxcube.diffractometer.savedCentredPos:
         pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(
             point['motor_positions'])
@@ -110,17 +114,34 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     # to be able to handle data sent by hardware objects used in MxCuBE 2.x
     if not isinstance(img, str):
         rawdata = img.bits().asstring(img.numBytes())
-        strbuf = cStringIO.StringIO()
-        image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
-        (r, g, b, a) = image.split()
-        image = PIL.Image.merge('RGB', (b, g, r))
-        image.save(strbuf, "JPEG")
-        img = strbuf.getvalue()
+        img = rawdata
+        pixel_format = 'RGBX'
+        #strbuf = cStringIO.StringIO()
+        #image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
+        #(r, g, b, a) = image.split()
+        #image = PIL.Image.merge('RGB', (b, g, r))
+        #image.save(strbuf, "JPEG")
+        #img = strbuf.getvalue()
+    else:
+        pixel_format = 'RGB24'
+        if img[:10] == '\xff\xd8\xff\xe0\x00\x10JFIF':
+            # jpeg image
+            strbuf = cStringIO.StringIO(img)
+            img = PIL.Image.open(strbuf)
+            #img.convert('RGB')
+            img = img.tobytes()
+        else:
+            # supposedly img is RGB data
+            pass
 
     SAMPLE_IMAGE = img
-
     mxcube.diffractometer.camera.new_frame.set()
     mxcube.diffractometer.camera.new_frame.clear()
+    videoutils.write_to_video_device(mxcube.VIDEO_DEVICE, SAMPLE_IMAGE, pixel_format, width, height)
+
+    # start the streaming process
+    if not mxcube.VIDEO_STREAM_PROCESS or mxcube.VIDEO_STREAM_PROCESS.poll() is not None:
+        mxcube.VIDEO_STREAM_PROCESS = subprocess.Popen([sys.executable, os.path.join(os.path.dirname(__file__), "../video/video_streaming.py")])
 
 
 def stream_video(camera_hwobj):
@@ -548,7 +569,7 @@ def click():
         :statuscode: 409: error
     """
     global CLICK_COUNT
-    
+
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)
@@ -653,3 +674,28 @@ def move_to_beam():
         # v <= 2.1
         mxcube.diffractometer.moveToBeam(click_position['x'], click_position['y'])
     return Response(status=200)
+
+
+def create_video_stream_fifo(path):
+    import os, tempfile, stat
+
+    tmpdir = tempfile.mkdtemp()
+    filename = os.path.join(tmpdir, 'myfifo')
+
+    print path
+
+    # If named PIPE does not already exist create it
+    if not stat.S_ISFIFO(os.stat(filename).st_mode):
+        try:
+            msg = "Creating named pipe (%s) for video stream" % filename
+            logging.getLogger('HWR').info(msg)
+            os.mkfifo(filename)
+        except OSError, e:
+            msg =  "Failed to create FIFO: %s" % filename
+            logging.getLogger('HWR').info(msg)
+
+            fifo = open(filename, 'w')
+
+def cleanup_video_stream_fifo():
+    os.remove(filename)
+    os.rmdir(tmpdir)

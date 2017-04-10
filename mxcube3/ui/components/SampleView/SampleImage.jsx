@@ -4,6 +4,10 @@ import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { makePoints, makeLines, makeImageOverlay } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
+
+const jsmpeg = require('./jsmpeg.min.js');
+
+
 import 'fabric';
 const fabric = window.fabric;
 
@@ -28,8 +32,8 @@ export default class SampleImage extends React.Component {
     this.gridStarted = false;
     this.girdOrigin = null;
     this.lineGroup = null;
-
     this.drawGridPlugin = new DrawGridPlugin();
+    this.player = null;
   }
 
   componentDidMount() {
@@ -60,6 +64,9 @@ export default class SampleImage extends React.Component {
     window.addEventListener('resize', this.setImageRatio);
     document.addEventListener('keydown', this.keyDown, false);
     document.addEventListener('keyup', this.keyUp, false);
+
+    const canvas = document.getElementById('sample-img');
+    this.player = new jsmpeg.JSMpeg.Player(`ws://${document.location.hostname}:4042/`, { canvas });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -124,7 +131,7 @@ export default class SampleImage extends React.Component {
   }
 
   setImageRatio() {
-    this.props.sampleActions.setImageRatio(document.getElementById('outsideWrapper').clientWidth);
+    this.props.sampleActions.setImageRatio(this.props.videoSize);
   }
 
   setVCellSpacing(e) {
@@ -540,12 +547,7 @@ export default class SampleImage extends React.Component {
               {...this.props}
               canvas={this.canvas}
             />
-            <img
-              id= "sample-img"
-              className="img"
-              src="/mxcube/api/v0.1/sampleview/camera/subscribe"
-              alt="SampleView"
-            />
+            <canvas id="sample-img" className="img" />
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>

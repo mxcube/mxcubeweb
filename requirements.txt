@@ -8,6 +8,8 @@ louie
 redis
 scipy
 mock
+pbr       # Depdency of mock, needs to be installed manualy (problem with mock package)
+funcsigs  # Depdency of mock, needs to be installed manualy (problem with mock package)
 jsonpickle
 pillow
 suds
@@ -15,3 +17,4 @@ python-ldap
 lxml
 numpy
 requests
+v4l2
