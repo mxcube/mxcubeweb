@@ -11,6 +11,10 @@ from logging.handlers import TimedRotatingFileHandler
 import cPickle as pickle
 import gevent
 import traceback
+import mock
+sys.modules["Qub"] = mock.Mock()
+sys.modules["Qub.CTools"] = mock.Mock()
+sys.modules["ShapeHistory"] = mock.MagicMock()
 
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
