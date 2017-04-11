@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-until node ./websocket-relay.js video 4041 4042; do
-  sleep 1
-done
