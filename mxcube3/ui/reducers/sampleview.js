@@ -5,7 +5,7 @@ const initialState = {
   distancePoints: [],
   width: 659,
   height: 493,
-  videoSize: '960',
+  videoSize: null,
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,

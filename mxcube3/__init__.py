@@ -37,6 +37,11 @@ opt_parser.add_option("-a", "--beamline-actions",
                       dest="beamline_actions",
                       help="Beamline actions (commands) HWR file, defaults to /beamcmds",
                       default='/beamcmds')
+opt_parser.add_option("-v", "--video-device",
+                      dest="video_device",
+                      help="Video device, defaults to /dev/video0",
+                      default='/dev/video0')
+
 cmdline_options, args = opt_parser.parse_args()
 
 socketio = SocketIO()
@@ -100,7 +105,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
-                        lims, qutils, workflow, videoutils)
+                        lims, qutils, workflow)
 
     ### Install server-side UI state storage
     from mxcube3 import state_storage
@@ -133,8 +138,9 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
 
-        app.VIDEO_DEVICE = videoutils.open_video_device()
-        app.VIDEO_STREAM_PROCESS = None
+        # set up streaming
+        from video import streaming
+        streaming.init(app.diffractometer.camera, cmdline_options.video_device)
 
         try:
             SampleCentring.init_signals()

@@ -66,7 +66,9 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keyup', this.keyUp, false);
 
     const canvas = document.getElementById('sample-img');
-    this.player = new jsmpeg.JSMpeg.Player(`ws://${document.location.hostname}:4042/`, { canvas });
+    this.player = new jsmpeg.JSMpeg.Player(`ws://${document.location.hostname}:4042/`,
+      { canvas, preserveDrawingBuffer: true });
+    this.player.play();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -131,7 +133,13 @@ export default class SampleImage extends React.Component {
   }
 
   setImageRatio() {
-    this.props.sampleActions.setImageRatio(this.props.videoSize);
+    let videoSize = this.props.videoSize;
+
+    if (videoSize === null) {
+      videoSize = document.getElementById('outsideWrapper').clientWidth;
+    }
+
+    this.props.sampleActions.setImageRatio(videoSize);
   }
 
   setVCellSpacing(e) {

@@ -82,20 +82,16 @@ def init_signals():
     except Exception:
         logging.getLogger('HWR').exception('[SAMPLEVIEW] back light error')
 
+    mxcube.diffractometer.connect("centringStarted", signals.centring_started)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful",
                                   wait_for_centring_finishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
                                   wait_for_centring_finishes)
-    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
-    mxcube.diffractometer.camera.connect("imageReceived",
-                                         new_sample_video_frame_received)
     mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
-    mxcube.diffractometer.connect("centringStarted", signals.centring_started)
-
-
-############
+    mxcube.diffractometer.camera.connect("imageReceived",
+                                         update_centred_positions)
 
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
@@ -601,28 +597,3 @@ def move_to_beam():
         # v <= 2.1
         mxcube.diffractometer.moveToBeam(click_position['x'], click_position['y'])
     return Response(status=200)
-
-
-def create_video_stream_fifo(path):
-    import os, tempfile, stat
-
-    tmpdir = tempfile.mkdtemp()
-    filename = os.path.join(tmpdir, 'myfifo')
-
-    print path
-
-    # If named PIPE does not already exist create it
-    if not stat.S_ISFIFO(os.stat(filename).st_mode):
-        try:
-            msg = "Creating named pipe (%s) for video stream" % filename
-            logging.getLogger('HWR').info(msg)
-            os.mkfifo(filename)
-        except OSError, e:
-            msg =  "Failed to create FIFO: %s" % filename
-            logging.getLogger('HWR').info(msg)
-
-            fifo = open(filename, 'w')
-
-def cleanup_video_stream_fifo():
-    os.remove(filename)
-    os.rmdir(tmpdir)
