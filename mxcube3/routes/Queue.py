@@ -444,6 +444,8 @@ def get_default_dc_params():
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
+            'helical': False,
+            'mesh': False
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })

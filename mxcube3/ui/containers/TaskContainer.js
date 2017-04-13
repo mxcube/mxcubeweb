@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
 import Helical from '../components/Tasks/Helical';
+import Mesh from '../components/Tasks/Mesh';
 import AddSample from '../components/Tasks/AddSample';
 import Workflow from '../components/Tasks/Workflow';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
@@ -96,6 +97,19 @@ class TaskContainer extends React.Component {
       />);
     }
 
+    if (this.props.showForm === 'Mesh') {
+      return (<Mesh
+        show
+        addTask={this.addTask}
+        pointID={this.props.pointID}
+        sampleIds={this.props.sampleIds}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+      />);
+    }
+
     if (this.props.showForm === 'AddSample') {
       return (<AddSample
         show
@@ -153,4 +167,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(TaskContainer);
-

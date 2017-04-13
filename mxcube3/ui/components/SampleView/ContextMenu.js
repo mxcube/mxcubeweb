@@ -20,36 +20,6 @@ export default class ContextMenu extends React.Component {
   menuOptions() {
     const workflowTasks = { point: [], line: [], grid: [], none: [] };
 
-    const options = {
-      SAVED: [
-        { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 1 },
-        { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 2 },
-        { text: 'Go To Point', action: () => this.goToPoint(), key: 3 },
-        { text: 'Delete Point', action: () => this.removeObject(), key: 4 },
-      ],
-      TMP: [
-        { text: 'Save Point', action: () => this.savePoint(), key: 1 },
-        { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
-      ],
-      GROUP: [
-        { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
-      ],
-      LINE: [
-        { text: 'Delete Line', action: () => this.removeLine(), key: 1 }
-      ],
-      GridGroup: [
-        { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
-      ],
-      GridGroupSaved: [
-        { text: 'Delete', action: () => this.deleteGrid(), key: 1 }
-      ],
-      NONE: [
-        { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
-        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
-        { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 }
-      ]
-    };
-
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires === 'point') {
         workflowTasks.point.push({ text: wf.wfname,
@@ -70,10 +40,45 @@ export default class ContextMenu extends React.Component {
       }
     });
 
-    options.SAVED = options.SAVED.concat(workflowTasks.point);
-    options.LINE = options.LINE.concat(workflowTasks.line);
-    options.GridGroupSaved = options.GridGroupSaved.concat(workflowTasks.grid);
-    options.NONE = options.NONE.concat(workflowTasks.none);
+    const options = {
+      SAVED: [
+        { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 1 },
+        { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 2 },
+        { text: 'Go To Point', action: () => this.goToPoint(), key: 4 },
+        { text: 'divider', key: 5 },
+        ...workflowTasks.point,
+        { text: 'divider', key: 6 },
+        { text: 'Delete Point', action: () => this.removeObject(), key: 7 },
+      ],
+      TMP: [
+        { text: 'Save Point', action: () => this.savePoint(), key: 1 },
+        { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
+      ],
+      GROUP: [
+        { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
+      ],
+      LINE: [
+        ...workflowTasks.line,
+        { text: 'divider', key: 6 },
+        { text: 'Delete Line', action: () => this.removeLine(), key: 1 }
+      ],
+      GridGroup: [
+        { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
+      ],
+      GridGroupSaved: [
+        { text: 'Mesh Scan', action: () => this.showModal('Mesh'), key: 1 },
+        { text: 'divider', key: 2 },
+        ...workflowTasks.grid,
+        { text: 'divider', key: 3 },
+        { text: 'Delete', action: () => this.deleteGrid(), key: 4 }
+      ],
+      NONE: [
+        { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
+        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
+        { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
+        ...workflowTasks.none
+      ]
+    };
 
     return options;
   }
@@ -167,9 +172,13 @@ export default class ContextMenu extends React.Component {
   }
 
   listOptions(type) {
-    return (
-      <li key={type.key}><a onClick={type.action}>{type.text}</a></li>
-    );
+    let el = (<li key={type.key}><a onClick={type.action}>{type.text}</a></li>);
+
+    if (type.text === 'divider') {
+      el = (<li className="divider" />);
+    }
+
+    return el;
   }
 
   render() {
