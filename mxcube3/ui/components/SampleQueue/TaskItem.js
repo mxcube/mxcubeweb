@@ -8,6 +8,7 @@ import { TASK_UNCOLLECTED,
          TASK_COLLECT_FAILED,
          TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
+const ClipboardButton = require('react-clipboard.js');
 
 const cardSource = {
   beginDrag(props) {
@@ -31,7 +32,6 @@ const cardTarget = {
   hover(props, monitor, component) {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
-
     // Don't replace items with themselves
     if (dragIndex === hoverIndex) {
       return;
@@ -95,10 +95,10 @@ export default class TaskItem extends Component {
     super(props);
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
-    this.copyToClipboard = this.copyToClipboard.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
     this.collapseTask = this.collapseTask.bind(this);
     this.getResult = this.getResult.bind(this);
+    this.getText = this.getText.bind(this);
     this.state = {
       overInput: false
     };
@@ -113,6 +113,12 @@ export default class TaskItem extends Component {
       );
   }
 
+  getText() {
+    const text = document.getElementById(this.props.data.parameters.type +
+     this.props.data.parameters.run_number);
+    return text.value;
+  }
+
   toggleChecked() {
     this.props.toggleChecked(this.props.sampleId, this.props.index);
   }
@@ -124,12 +130,6 @@ export default class TaskItem extends Component {
   deleteTask(e) {
     e.stopPropagation();
     this.props.deleteTask(this.props.sampleId, this.props.index);
-  }
-
-  copyToClipboard() {
-    const text = document.getElementById('file_path_input');
-    text.select();
-    document.execCommand('copy');
   }
 
   deleteButton() {
@@ -196,7 +196,7 @@ export default class TaskItem extends Component {
             <form>
               <div className="form-group row">
                 <label className="col-sm-12">File path:</label>
-                <div className="col-sm-12" style={{ display: 'flex' }}>
+                <div className="col-sm-12" style={{ display: 'flex' }} >
                     <input
                       type="text"
                       onMouseEnter={() => this.setState({ overInput: true }) }
@@ -204,12 +204,13 @@ export default class TaskItem extends Component {
                       className="form-control"
                       readOnly
                       value={`./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`}
-                      id="file_path_input"
+                      id={this.props.data.parameters.type + this.props.data.parameters.run_number}
                     />
-                    <p className="fa fa-clipboard" onClick={this.copyToClipboard}
-                      style={delTaskCSS}
+                    <ClipboardButton option-text={this.getText} button-title="I'm a tooltip"
+                      style={{ maxWidth: '30' }}
                     >
-                    </p>
+                      <img src="img/clippy.svg" width="15" alt="Copy to clipboard" />
+                    </ClipboardButton>
               </div>
               </div>
               <div className="task-information">
