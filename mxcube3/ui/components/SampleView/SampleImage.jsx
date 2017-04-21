@@ -135,7 +135,7 @@ export default class SampleImage extends React.Component {
 
     if (gridData) {
       const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, value);
-      this.props.sampleActions.updateGrid(gd);
+      this.props.sampleActions.sendUpdateShape(gd.id, gd);
     } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(null, value);
       this.drawGridPlugin.repaint(this.canvas);
@@ -150,7 +150,7 @@ export default class SampleImage extends React.Component {
 
     if (gridData) {
       const gd = this.drawGridPlugin.setCellSpace(gridData, true, value, gridData.cellVSpace);
-      this.props.sampleActions.updateGrid(gd);
+      this.props.sampleActions.sendUpdateShape(gd.id, gd);
     } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(value, null);
       this.drawGridPlugin.repaint(this.canvas);
@@ -161,8 +161,7 @@ export default class SampleImage extends React.Component {
     let gridData = null;
 
     if (this.props.selectedGrids.length === 1) {
-      gridData = this.props.gridList.filter((gd) =>
-        this.props.selectedGrids[0] === gd.id)[0];
+      gridData = this.props.grids[this.props.selectedGrids[0]];
     }
 
     return gridData;
@@ -173,8 +172,7 @@ export default class SampleImage extends React.Component {
     let hSpace = 0;
 
     if (this.props.selectedGrids.length === 1) {
-      const gridData = this.props.gridList.filter((gd) =>
-        this.props.selectedGrids[0] === gd.id)[0];
+      const gridData = this.props.grids[this.props.selectedGrids[0]];
 
       if (gridData) {
         vSpace = gridData.cellVSpace;
@@ -243,9 +241,9 @@ export default class SampleImage extends React.Component {
         this.canvas.setActiveObject(obj);
 
         if (obj.type === 'GridGroup') {
-          let gridData = this.props.gridList.filter((gd) => gd.id === obj.id);
+          let gridData = this.props.grids[this.props.selectedGrids[0]];
 
-          if (gridData.length > 0) {
+          if (gridData) {
             showContextMenu(true, { type: 'GridGroupSaved', obj, gridData }, e.offsetX, e.offsetY);
           } else {
             gridData = this.drawGridPlugin.currentGridData();
@@ -456,7 +454,7 @@ export default class SampleImage extends React.Component {
     ));
     const fabricSelectables = [
       ...makePoints(points, imageRatio),
-      ...makeLines(lines, points, imageRatio)
+      ...makeLines(lines, imageRatio)
     ];
     this.canvas.add(...fabricSelectables);
     if (group) {
@@ -466,7 +464,7 @@ export default class SampleImage extends React.Component {
         const shape = obj;
         if (groupIDs.includes(shape.id)) {
           selectedShapes.push(shape);
-          this.setColorPoint(shape);
+          // this.setColorPoint(shape);
           shape.active = true;
         }
       });
@@ -482,7 +480,7 @@ export default class SampleImage extends React.Component {
       fabricSelectables.forEach((shape) => {
         if (shape.id === selection.id) {
           this.canvas.setActiveObject(shape);
-          this.setColorPoint(shape);
+          // this.setColorPoint(shape);
         }
       });
     }
@@ -491,9 +489,9 @@ export default class SampleImage extends React.Component {
       this.canvas.add(this.drawGridPlugin.shapeGroup);
     }
 
-    this.props.gridList.map((gd) => {
+    Object.values(this.props.grids).map((gd) => {
       const gridData = { ...gd };
-      gridData.label = `Grid-${gd.id}`;
+      gridData.label = gd.name;
 
       if (this.props.selectedGrids.includes(gridData.id)) {
         gridData.selected = true;

@@ -133,7 +133,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const savedPoints = fetch('mxcube/api/v0.1/sampleview/centring', {
+    const savedShapes = fetch('mxcube/api/v0.1/sampleview/shapes', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -178,7 +178,7 @@ export function getInitialState() {
       dcParameters.then(parse).then(
         json => { state.dcParameters = json.acq_parameters; return json; }).then(
         json => { state.acqParametersLimits = json.limits; }).catch(notify),
-      savedPoints.then(parse).then(json => { state.points = json; }).catch(notify),
+      savedShapes.then(parse).then(json => {state.shapes = json.shapes;}).catch(notify),
       sampleChangerContents.then(parse).then(json => {
         state.sampleChangerContents = json;
       }).catch(notify),

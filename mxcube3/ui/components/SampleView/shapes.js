@@ -129,37 +129,40 @@ export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   ];
 }
 
-export function makePoint(x, y, id, color, type) {
-  const text = makeText(x + 10, y - 25, 14, color, `P${id}`);
+export function makePoint(x, y, id, color, type, name) {
+  const text = makeText(x + 10, y - 25, 14, color, name);
   const circle = makeCircle(x, y, true, 10, color, id, type, text);
-  return [
-    circle,
-    text
-  ];
+  return [circle, text];
 }
 
 export function makePoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
     if ({}.hasOwnProperty.call(points, id)) {
-      switch (points[id].type) {
+      const [x, y] = points[id].screenCoord;
+
+      switch (points[id].state) {
         case 'SAVED':
           fabricPoints.push(
-            ...makePoint(points[id].x / imageRatio,
-              points[id].y / imageRatio, id,
+            ...makePoint(
+              x / imageRatio,
+              y / imageRatio,
+              id,
               '#e4ff09',
-              'SAVED'
+              'SAVED',
+              points[id].name
             )
           );
           break;
         case 'TMP':
           fabricPoints.push(
             ...makePoint(
-              points[id].x / imageRatio,
-              points[id].y / imageRatio,
+              x / imageRatio,
+              y / imageRatio,
               id,
               'white',
-              'TMP'
+              'TMP',
+              points[id].name
             )
           );
           break;
@@ -171,8 +174,8 @@ export function makePoints(points, imageRatio) {
   return fabricPoints;
 }
 
-export function pointLine(x1, y1, x2, y2, color, width, selectable, id, cursor) {
-  const text = makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, `L${id}`);
+export function pointLine(x1, y1, x2, y2, color, width, selectable, id, name, cursor) {
+  const text = makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, name);
   const line = makeLine(x1, y1, x2, y2, color, width, selectable, id, cursor, text, 'LINE');
   return [
     text,
@@ -180,21 +183,22 @@ export function pointLine(x1, y1, x2, y2, color, width, selectable, id, cursor) 
   ];
 }
 
-
-export function makeLines(lines, points, imageRatio) {
+export function makeLines(lines, imageRatio) {
   const fabricLines = [];
-  lines.forEach((line, index) => {
-    const p1 = points[line.p1];
-    const p2 = points[line.p2];
+  Object.keys(lines).forEach((id) => {
+    const line = lines[id];
+    const [x1, y1, x2, y2] = line.screenCoord;
+
     fabricLines.push(...pointLine(
-      p1.x / imageRatio,
-      p1.y / imageRatio,
-      p2.x / imageRatio,
-      p2.y / imageRatio,
+      x1 / imageRatio,
+      y1 / imageRatio,
+      x2 / imageRatio,
+      y2 / imageRatio,
       'yellow',
       3,
       true,
-      index,
+      id,
+      line.name,
       'pointer'
     ));
   });

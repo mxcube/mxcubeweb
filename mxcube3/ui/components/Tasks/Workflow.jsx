@@ -28,7 +28,7 @@ class Workflow extends React.Component {
       ...params,
       type: 'Workflow',
       label: params.wfname,
-      point: this.props.pointID
+      shape: this.props.pointID
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -37,7 +37,7 @@ class Workflow extends React.Component {
       'prefix',
       'subdir',
       'type',
-      'point',
+      'shape',
       'label',
       'wfname',
       'wfpath'
@@ -120,4 +120,3 @@ Workflow = connect(state => {
 })(Workflow);
 
 export default Workflow;
-

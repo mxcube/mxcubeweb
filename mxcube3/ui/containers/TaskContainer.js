@@ -59,6 +59,19 @@ class TaskContainer extends React.Component {
   }
 
   render() {
+    const [points, lines, grids] = [{}, {}, {}];
+
+    Object.keys(this.props.shapes).forEach((key) => {
+      const shape = this.props.shapes[key];
+      if (shape.t === 'P') {
+        points[shape.id] = shape;
+      } else if (shape.t === 'L') {
+        lines[shape.id] = shape;
+      } else if (shape.t === 'G') {
+        grids[shape.id] = shape;
+      }
+    });
+
     if (this.props.showForm === 'Characterisation') {
       return (<Characterisation
         show
@@ -93,7 +106,7 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
-        lines={this.props.lines}
+        lines={lines}
       />);
     }
 
@@ -147,7 +160,7 @@ function mapStateToProps(state) {
     pointID: state.taskForm.pointID,
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath,
-    lines: state.sampleview.lines
+    shapes: state.shapes.shapes
   };
 }
 

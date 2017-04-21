@@ -1,8 +1,5 @@
 from flask import Response, jsonify, request
 
-from mxcube3 import app as mxcube
-from mxcube3.routes import Utils
-
 import copy
 import logging
 import gevent.event
@@ -13,6 +10,11 @@ import PIL
 import cStringIO
 import scutils
 
+from mxcube3 import app as mxcube
+from mxcube3.routes import Utils
+from mxcube3.routes.transportutils import to_camel, from_camel
+
+
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
 
@@ -22,8 +24,6 @@ def init_signals():
     Connect all the relevant hwobj signals with the corresponding
     callback method.
     """
-    mxcube.diffractometer.savedCentredPos = []
-    mxcube.diffractometer.savedCentredPosCount = 1
     for signal in signals.microdiffSignals:
         if signal in signals.task_signals:
             mxcube.diffractometer.connect(mxcube.diffractometer,
@@ -90,7 +90,7 @@ def init_signals():
     mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
     mxcube.diffractometer.connect("centringStarted", signals.centring_started)
-    
+
 
 ############
 
@@ -101,10 +101,6 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     and set the gevent so the new image can be sent.
     """
     global SAMPLE_IMAGE
-    for point in mxcube.diffractometer.savedCentredPos:
-        pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(
-            point['motor_positions'])
-        point.update({'x': pos_x, 'y': pos_y})
 
     # Assume that we are gettign a qimage if we are not getting a str,
     # to be able to handle data sent by hardware objects used in MxCuBE 2.x
@@ -146,7 +142,7 @@ def subscribe_to_camera():
                     mimetype='multipart/x-mixed-replace; boundary="!>"')
 
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
+@mxcube.route("/mxcube/ap i/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
 def unsubscribe_to_camera():
     """
     SampleCentring: unsubscribe from the camera streaming
@@ -192,156 +188,85 @@ def get_image_data():
     resp.status_code = 200
     return resp
 
-# ##----SAMPLE CENTRING----###
-# ###
-# To access parameters submitted in the URL (?key=value)
-# you can use the args attribute:
-# searchword = request.args.get('key', '')
 
-# ####  WORKING WITH CENTRING POSITIONS
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/centring/<centring_id>", methods=['GET'])
-def get_centring_with_id(centring_id):
-    """
-    Get centring point data of the given centred position
-        :parameter id: identifier of the stored centred position, integer
-        :response Content-type:application/json, example: {"motorPositions": {
-        "beam_x": 0.0, "beam_y": 0.0, "focus": -0.642, "kappa": null,
-        "kappa_phi": null, "phi": 5.314e-05, "phiy": -0.145, "phiz": 0.0768,
-        "sampx": -0.0918, "sampy": -0.0465, "zoom": 23487.5 }, "name": "pos1",
-        "posId": 1, "selected": true, "type": "SAVED",
-        "x": 200.641, "y": 288.197}
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    for cpos in mxcube.diffractometer.savedCentredPos:
-        if cpos['posId'] == int(centring_id):
-            resp = jsonify(cpos)
-            resp.status_code = 200
-            return resp
-    return Response(status=409)
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/centring/<posid>", methods=['POST'])
-def save_centring_with_id(posid):
-    """
-    Store the current temporary centring position in the server, a valid
-    centring has to be done before this call, otherwise there will not
-    be any temporary centred position.
-        :parameter posid: any integer, only here for consistency
-        :response Content-type: application/json, example: {"motorPositions":
-         {"beam_x": 0.0, "beam_y": 0.0, "focus": -0.642, "kappa": null,
-         "kappa_phi": null, "phi": 5.314e-05, "phiy": -0.145, "phiz": 0.0768,
-         "sampx": -0.0918, "sampy": -0.0465, "zoom": 23487.5 }, "name": "pos1",
-         "posId": 1, "selected": true, "type": "SAVED",
-         "x": 200.641, "y": 288.197}
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    # unselect the any previous point
-    for pos in mxcube.diffractometer.savedCentredPos:
-        pos.update({'selected': False})
-    # search for the temp point
-    for pos in mxcube.diffractometer.savedCentredPos:
-        if pos['type'] == 'TMP':
-            pos.update({'type': 'SAVED', 'selected': True})
-            resp = jsonify(pos)
-            resp.status_code = 200
-            return resp
-    return Response(status=409)
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/centring/<centring_id>", methods=['PUT'])
-def update_centring_with_id(centring_id):
-    """
-    Update the given centred position.
-        :parameter centring_id: centred position identifier, integer
-        :request Content-type: application/json, an object containing the
-        modified parameter(s)
-        :response Content-type: application/json, example: {"motorPositions":
-        {"beam_x": 0.0, "beam_y": 0.0, "focus": -0.642, "kappa": null,
-        "kappa_phi": null, "phi": 5.314e-05, "phiy": -0.145, "phiz": 0.0768,
-        "sampx": -0.0918, "sampy": -0.0465, "zoom": 23487.5 }, "name": "pos1",
-        "posId": 1, "selected": true, "type": "SAVED",
-        "x": 200.641, "y": 288.197}
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    params = request.data
-    params = json.loads(params)
-    for cpos in mxcube.diffractometer.savedCentredPos:
-        if cpos['posId'] == centring_id:
-            cpos.update(params)
-            resp = jsonify(cpos)
-            resp.status_code = 200
-            return resp
-    logging.getLogger('HWR').error('[SAMPLEVIEW] centring position could not'
-                                   'be retrieved, not found')
-    return Response(status=409)
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/centring/<posid>", methods=['DELETE'])
-def delete_centring_with_id(posid):
-    """
-    Delete the given centred position.
-        :parameter id: centred position identifier, integer
-        :response Content-type: application/json, deleted centred position,
-        example: {"motorPositions": {"beam_x": 0.0, "beam_y": 0.0,
-        "focus": -0.642, "kappa": null, "kappa_phi": null, "phi": 5.314e-05,
-        "phiy": -0.145, "phiz": 0.0768, "sampx": -0.0918, "sampy": -0.0465,
-        "zoom": 23487.5 }, "name": "pos1", "posId": 1, "selected": true,
-        "type": "SAVED", "x": 200.641, "y": 288.197}
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    for cpos in mxcube.diffractometer.savedCentredPos:
-        if cpos.get('posId') == int(posid):
-            mxcube.diffractometer.savedCentredPos.remove(cpos)
-            resp = jsonify(cpos)
-            resp.status_code = 200
-            return resp
-    logging.getLogger('HWR').error('[SAMPLEVIEW] centring position could'
-                                   'not be deleted, not found')
-    return Response(status=409)
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/centring/<centring_id>/moveto", methods=['PUT'])
-def move_to_centred_position(centring_id):
+@mxcube.route("/mxcube/api/v0.1/sampleview/centring/<point_id>/moveto", methods=['PUT'])
+def move_to_centred_position(point_id):
     """
     Move to the given centred position.
         :parameter id: centred position identifier, integer
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_positions = [d['motor_positions'] for d in mxcube.diffractometer.savedCentredPos if d.get('posId') == int(centring_id)]
-    if 'kappa' in motor_positions[0]:
-        motor_positions[0].pop('kappa')
-    if 'kappa_phi' in motor_positions[0]:
-        motor_positions[0].pop('kappa_phi')
-    mxcube.diffractometer.move_to_motors_positions(
-        copy.deepcopy(motor_positions[0]))
-    logging.getLogger('HWR.MX3').info('[Centring] moved to Centring Position')
-    return Response(status=200)
+    point = mxcube.shapes.get_shape('point_id')
+
+    if point:
+        motor_positions = point.get_centred_position().as_dict()
+        mxcube.diffractometer.move_to_motors_positions(motor_positions)
+        return Response(status=200)
+    else:
+        return Response(status=409)
 
 
-@mxcube.route("/mxcube/api/v0.1/sampleview/centring", methods=['GET'])
-def get_centring_positions():
+@mxcube.route("/mxcube/api/v0.1/sampleview/shapes", methods=['GET'])
+def get_shapes():
     """
     Retrieve all the stored centred positions.
         :response Content-type: application/json, the stored centred positions.
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    aux = {}
-    for pos in mxcube.diffractometer.savedCentredPos:
-        aux.update({pos['posId']: pos})
-        pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(
-            pos['motor_positions'])
-        aux[pos['posId']].update({'x': pos_x, 'y': pos_y})
-    resp = jsonify(aux)
+    shape_dict = {}
+
+    for shape in mxcube.shapes.get_shapes():
+        s = shape.as_dict()
+        shape_dict.update({shape.id: s})
+
+    resp = jsonify({"shapes": to_camel(shape_dict)})
     resp.status_code = 200
     return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/shapes", methods=['POST'])
+def update_shapes():
+    """
+    Retrieve all the stored centred positions.
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
+    """
+    resp = Response(status=409)
+    params = request.get_json()
+    shape_data = from_camel(params.get("shapeData", {}))
+
+    # Get the shape if already exists
+    shape = mxcube.shapes.get_shape(params["id"])
+
+    # If shape does not exist add it
+    if not shape:
+        refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
+        shape = mxcube.shapes.add_shape_from_refs(refs, t)
+
+    # shape will be none if creation failed, so we check if shape exists
+    # before setting additional parameters
+    if shape:
+        shape.update_from_dict(shape_data)
+        shape_dict = shape.as_dict()
+        resp = jsonify(to_camel(shape_dict))
+        resp.status_code = 200
+
+    return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=['DELETE'])
+def delete_shape(sid):
+    """
+    Retrieve all the stored centred positions.
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
+    """
+    mxcube.shapes.delete_shape(sid)
+    return Response(status=200)
 
 
 # ### WORKING WITH MOVEABLES
@@ -548,7 +473,7 @@ def click():
         :statuscode: 409: error
     """
     global CLICK_COUNT
-    
+
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)
@@ -571,53 +496,49 @@ def click():
         return Response(status=409)
 
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/cp_from_coord", methods=['POST'])
+def cp_from_coord():
+    """
+    Gets the centerd position for the passed coordinates
+        :response Content-type: application/json, centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
+    """
+    params = request.get_json()
+    x, y = params['x'], params['y']
+
+    try:
+        cp = mxcube.diffractometer.get_centred_point_from_coord(x, y)
+    except:
+        return Response(status=409)
+
+    return jsonify(cp), 200
+
+
 def wait_for_centring_finishes(*args, **kwargs):
     """
     Executed when a centring is finished. It updates the temporary
     centred point.
     """
-    # we do not send/save any centring sata if there is no sample
+    # we do not send/save any centring data if there is no sample
     # to avoid the 2d centring when no sample is mounted
     if scutils.get_current_sample() == '':
         return
     try:
         motor_positions = mxcube.diffractometer.centringStatus["motors"]
     except KeyError:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] Centring error, cannot retrieve motor positions.')
+        msg = "[SAMPLEVIEW] Centring error, cannot retrieve motor positions."
+        logging.getLogger('HWR').exception(msg)
         return
+
     motor_positions.pop('zoom', None)
     motor_positions.pop('beam_y', None)
     motor_positions.pop('beam_x', None)
-    pos_x, pos_y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
-    # only store one temp point so override if any
-    for pos in mxcube.diffractometer.savedCentredPos:
-        if pos['type'] == 'TMP':
-            index = mxcube.diffractometer.savedCentredPos.index(pos)
-            data = {'name': pos['name'],
-                    'posId': pos['posId'],
-                    'motor_positions': motor_positions,
-                    'selected': True,
-                    'type': 'TMP',
-                    'x': pos_x,
-                    'y': pos_y
-                    }
-            mxcube.diffractometer.savedCentredPos[index] = data
-            mxcube.diffractometer.emit('stateChanged', (True,))
-            return
 
-    # if no temp point found, let's create the first one
-    centred_pos_id = 'pos' + str(mxcube.diffractometer.savedCentredPosCount)
-    # pos1, pos2, ..., pos42
-    data = {'name': centred_pos_id,
-            'posId': mxcube.diffractometer.savedCentredPosCount,
-            'motor_positions': motor_positions,
-            'selected': True,
-            'type': 'TMP',
-            'x': pos_x,
-            'y': pos_y
-            }
-    mxcube.diffractometer.savedCentredPosCount += 1
-    mxcube.diffractometer.savedCentredPos.append(data)
+    x, y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
+    point = mxcube.shapes.add_shape_from_mpos([motor_positions], (x, y), "P")
+    point.state = "TMP"
+
     mxcube.diffractometer.emit('stateChanged', (True,))
 
 
