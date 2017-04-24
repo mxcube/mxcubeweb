@@ -20,7 +20,8 @@ const GridGroup = fabric.util.createClass(fabric.Group, {
  * @return {GridData} GridData object
  */
 function _GridData() {
-  return { top: null, left: null,
+  return { screenCoord: [0, 0],
+           top: null, left: null,
            width: null, height: null,
            cellWidth: null, cellHeight: null,
            cellVSpace: 0, cellHSpace: 0,
@@ -110,8 +111,8 @@ export default class DrawGridPlugin {
     if (!canvas.getActiveObject() && !this.drawing) {
       this.snapToGrid = snapToGrid;
       this.drawing = true;
-      this.gridData.top = options.e.layerY;
-      this.gridData.left = options.e.layerX;
+      this.gridData.screenCoord[0] = options.e.layerX;
+      this.gridData.screenCoord[1] = options.e.layerY;
     }
   }
 
@@ -124,13 +125,14 @@ export default class DrawGridPlugin {
    * @param {float} y - bottom y coordinate of grid, (mouse y position)
    */
   update(canvas, x, y) {
-    const validPosition = x > this.gridData.left && y > this.gridData.top;
+    const [left, top] = this.gridData.screenCoord;
+    const validPosition = x > left && y > top;
     const draw = this.drawing && validPosition;
     const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace;
     const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace;
 
-    let width = Math.abs(x - this.gridData.left);
-    let height = Math.abs(y - this.gridData.top);
+    let width = Math.abs(x - left);
+    let height = Math.abs(y - top);
 
     const numCols = Math.ceil(width / this.gridData.cellWidth);
     const numRows = Math.ceil(height / this.gridData.cellHeight);
@@ -179,6 +181,7 @@ export default class DrawGridPlugin {
    */
   shapeFromGridData(gd) {
     const gridData = { ...gd };
+    const [left, top] = gd.screenCoord;
     const shapes = [];
     const cellWidth = gridData.cellWidth;
     const cellHeight = gridData.cellHeight;
@@ -193,8 +196,8 @@ export default class DrawGridPlugin {
     if (cellWidth > 0 && cellHeight > 0) {
       for (let nw = 1; nw < gridData.numCols; nw++) {
         shapes.push(new fabric.Line(
-          [gridData.left + cellTW * nw, gridData.top,
-           gridData.left + cellTW * nw, gridData.top + gridData.height],
+          [left + cellTW * nw, top,
+           left + cellTW * nw, top + gridData.height],
           {
             strokeDashArray: strokeArray,
             stroke: color,
@@ -205,8 +208,8 @@ export default class DrawGridPlugin {
 
       for (let nh = 1; nh < gridData.numRows; nh++) {
         shapes.push(new fabric.Line(
-          [gridData.left, gridData.top + (cellTH) * nh,
-           gridData.left + gridData.width, gridData.top + (cellTH) * nh],
+          [left, top + (cellTH) * nh,
+           left + gridData.width, top + (cellTH) * nh],
           {
             strokeDashArray: strokeArray,
             stroke: color,
@@ -218,8 +221,8 @@ export default class DrawGridPlugin {
       for (let nw = 0; nw < gridData.numCols; nw++) {
         for (let nh = 0; nh < gridData.numRows; nh++) {
           shapes.push(new fabric.Ellipse({
-            left: gridData.left + gridData.cellHSpace / 2 + (cellTW) * nw,
-            top: gridData.top + gridData.cellVSpace / 2 + (cellTH) * nh,
+            left: left + gridData.cellHSpace / 2 + (cellTW) * nw,
+            top: top + gridData.cellVSpace / 2 + (cellTH) * nh,
             width: cellWidth,
             height: cellHeight,
             fill: 'rgba(0,0,100,0.2)',
@@ -236,8 +239,8 @@ export default class DrawGridPlugin {
                                             gridData.numRows, gridData.numCols);
 
           shapes.push(new fabric.Text(cellCount, {
-            left: gridData.left + gridData.cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
-            top: gridData.top + gridData.cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
+            left: left + gridData.cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
+            top: top + gridData.cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
             originX: 'center',
             originY: 'center',
             fill: 'rgba(0, 0, 200, 1)',
@@ -249,8 +252,8 @@ export default class DrawGridPlugin {
     }
 
     shapes.push(new fabric.Rect({
-      left: gridData.left,
-      top: gridData.top,
+      left,
+      top,
       width: gridData.width,
       height: gridData.height,
       fill: 'rgba(0,0,0,0)',
@@ -263,8 +266,8 @@ export default class DrawGridPlugin {
 
     if (gridData.label) {
       shapes.push(new fabric.Text(gridData.label, {
-        left: gridData.left + gridData.width,
-        top: gridData.top - 20,
+        left: left + gridData.width,
+        top: top - 20,
         fill: color,
         fontFamily: 'Helvetica',
         fontSize: 18

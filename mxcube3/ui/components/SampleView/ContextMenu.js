@@ -147,7 +147,7 @@ export default class ContextMenu extends React.Component {
 
   deleteGrid() {
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendDeleteShape(this.props.shape.obj.id);
+    this.props.sampleActions.sendDeleteShape(this.props.shape.id);
   }
 
   saveGrid() {

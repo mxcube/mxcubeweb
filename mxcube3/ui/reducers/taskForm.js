@@ -7,7 +7,8 @@ const initialState = {
   defaultParameters: {
     datacollection: {},
     characterisation: {},
-    helical: {}
+    helical: {},
+    mesh: {}
   }
 };
 
@@ -82,6 +83,10 @@ export default (state = initialState, action) => {
               run_number: 1,
               ...action.data.dcParameters,
               ...state.defaultParameters.helical },
+            mesh: {
+              run_number: 1,
+              ...action.data.dcParameters,
+              ...state.defaultParameters.helical },
             workflow: {
               run_number: 1,
               ...action.data.dcParameters,
@@ -94,4 +99,3 @@ export default (state = initialState, action) => {
       return state;
   }
 };
-

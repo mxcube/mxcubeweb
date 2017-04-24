@@ -35,6 +35,7 @@ class Mesh extends React.Component {
       label: 'Mesh',
       mesh: true,
       helical: false,
+      shape: this.props.pointID
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -49,7 +50,8 @@ class Mesh extends React.Component {
       'type',
       'point',
       'label',
-      'mesh'
+      'mesh',
+      'shape'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);

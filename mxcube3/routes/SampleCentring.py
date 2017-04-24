@@ -244,7 +244,14 @@ def update_shapes():
     # If shape does not exist add it
     if not shape:
         refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
-        shape = mxcube.shapes.add_shape_from_refs(refs, t)
+
+        # Shape does not have any refs, create a new Centered position
+        if not refs:
+            x, y = shape_data["screen_coord"]
+            mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y)
+            shape = mxcube.shapes.add_shape_from_mpos([mpos], (x, y), t)
+        else:
+            shape = mxcube.shapes.add_shape_from_refs(refs, t)
 
     # shape will be none if creation failed, so we check if shape exists
     # before setting additional parameters
