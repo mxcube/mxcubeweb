@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, Collapse } from 'react-bootstrap';
+import { Button, Collapse, FormControl } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
 import cx from 'classnames';
@@ -8,7 +8,7 @@ import { TASK_UNCOLLECTED,
          TASK_COLLECT_FAILED,
          TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
-const ClipboardButton = require('react-clipboard.js');
+import ClipboardButton from 'react-clipboard.js';
 
 const cardSource = {
   beginDrag(props) {
@@ -98,7 +98,6 @@ export default class TaskItem extends Component {
     this.toggleChecked = this.toggleChecked.bind(this);
     this.collapseTask = this.collapseTask.bind(this);
     this.getResult = this.getResult.bind(this);
-    this.getText = this.getText.bind(this);
     this.state = {
       overInput: false
     };
@@ -111,12 +110,6 @@ export default class TaskItem extends Component {
     return (
       <a href={this.props.data.limstResultData}> ISPyB link</a>
       );
-  }
-
-  getText() {
-    const text = document.getElementById(this.props.data.parameters.type +
-     this.props.data.parameters.run_number);
-    return text.value;
   }
 
   toggleChecked() {
@@ -182,6 +175,7 @@ export default class TaskItem extends Component {
 
     const pointID = data.parameters.point;
 
+    const value = `./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`;
     const element = (
       <div className="node node-sample" style={{ opacity }}>
             <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
@@ -197,21 +191,16 @@ export default class TaskItem extends Component {
               <div className="form-group row">
                 <label className="col-sm-12">File path:</label>
                 <div className="col-sm-12" style={{ display: 'flex' }} >
-                    <input
-                      type="text"
-                      onMouseEnter={() => this.setState({ overInput: true }) }
-                      onMouseLeave={() => this.setState({ overInput: false }) }
-                      className="form-control"
-                      readOnly
-                      value={`./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`}
-                      id={this.props.data.parameters.type + this.props.data.parameters.run_number}
-                    />
-                    <ClipboardButton option-text={this.getText} button-title="I'm a tooltip"
-                      style={{ maxWidth: '30' }}
-                    >
-                      <img src="img/clippy.svg" width="15" alt="Copy to clipboard" />
-                    </ClipboardButton>
-              </div>
+                  <FormControl
+                    readOnly
+                    type="text"
+                    defaultValue={value}
+                    ref={value}
+                  />
+                  <ClipboardButton data-clipboard-text={value} style={{ maxWidth: '30' }} >
+                    <img src="img/clippy.svg" width="15" alt="clipboard" />
+                  </ClipboardButton>
+                </div>
               </div>
               <div className="task-information">
                 <label>Parameters summary:&nbsp;</label>
