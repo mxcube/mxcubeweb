@@ -110,9 +110,7 @@ def mount_sample_clean_up(sample):
         raise
     else:
         # Clearing centered position
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
-
+        mxcube.shapes.clear_all()
         logging.getLogger('HWR').info('[SC] mounted %s' % sample)
 
 
@@ -120,11 +118,6 @@ def unmount_sample_clean_up(sample):
     try:
         if not sample['location'] == 'Manual':
             mxcube.sample_changer.unload(sample['sampleID'], False)
-        mxcube.queue.mounted_sample = ''
-
-        # Remove Centring points
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
 
         msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
         logging.getLogger('HWR').info(msg)
@@ -132,7 +125,11 @@ def unmount_sample_clean_up(sample):
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         raise
     else:
-         set_current_sample('')
+        mxcube.queue.mounted_sample = ''
+        set_current_sample('')
+        # Remove Centring points
+
+        mxcube.shapes.clear_all()
 
 
 # Important, patch queue_entry.mount_sample with the mount_sample defined above
