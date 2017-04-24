@@ -728,5 +728,4 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
 
     def state(self):
-	print self._ho.dtox.getState()
         return MOTOR_STATE.VALUE_TO_STR.get(self._ho.dtox.getState(), 0)
