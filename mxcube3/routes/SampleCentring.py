@@ -142,7 +142,7 @@ def subscribe_to_camera():
                     mimetype='multipart/x-mixed-replace; boundary="!>"')
 
 
-@mxcube.route("/mxcube/ap i/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
+@mxcube.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
 def unsubscribe_to_camera():
     """
     SampleCentring: unsubscribe from the camera streaming
