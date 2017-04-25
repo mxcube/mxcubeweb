@@ -79,27 +79,22 @@ export function addCentringPoint(x, y) {
   };
 }
 
-export function addLine(p1, p2) {
+
+export function addShape(shape) {
   return {
-    type: 'ADD_LINE', p1, p2
+    type: 'ADD_SHAPE', shape
   };
 }
 
-export function savePoint(point) {
+export function updateShape(shape) {
   return {
-    type: 'SAVE_POINT', point
+    type: 'UPDATE_SHAPE', shape
   };
 }
 
-export function deletePoint(id) {
+export function deleteShape(id) {
   return {
-    type: 'DELETE_POINT', id
-  };
-}
-
-export function deleteLine(id) {
-  return {
-    type: 'DELETE_LINE', id
+    type: 'DELETE_SHAPE', id
   };
 }
 
@@ -127,9 +122,9 @@ export function updateMotorState(name, value) {
   };
 }
 
-export function updatePointsPosition(points) {
+export function updatePointsPosition(shapes) {
   return {
-    type: 'UPDATE_POINTS_POSITION', points
+    type: 'UPDATE_SHAPE_POSITION', shapes
   };
 }
 
@@ -147,23 +142,8 @@ export function addGridAction(gridData) {
   return { type: 'ADD_GRID', gridData };
 }
 
-export function addGrid(gridData) {
-  return function (dispatch, getState) {
-    const { sampleview } = getState();
-    dispatch(addGridAction({ ...gridData, id: sampleview.gridCount }));
-  };
-}
-
-export function deleteGrid(id) {
-  return { type: 'DELETE_GRID', id };
-}
-
 export function selectGrid(id) {
   return { type: 'SELECT_GRID', id };
-}
-
-export function updateGrid(gridData) {
-  return { type: 'UPDATE_GRID', gridData };
 }
 
 export function sendStartClickCentring() {
@@ -261,29 +241,54 @@ export function sendStartAutoCentring() {
   };
 }
 
-export function sendSavePoint(id) {
+export function sendAddShape(shapeData = {}, successCb = null) {
   return function (dispatch) {
-    fetch(`/mxcube/api/v0.1/sampleview/centring/${id}`, {
+    fetch('/mxcube/api/v0.1/sampleview/shapes', {
       method: 'POST',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ id: -1, shapeData })
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to save point');
+        throw new Error('Server refused to add line');
       }
       return response.json();
     }).then((json) => {
-      dispatch(savePoint(json));
+      dispatch(addShape(json));
+      if (successCb !== null) {
+        successCb(json);
+      }
     });
   };
 }
 
-export function sendDeletePoint(id) {
+export function sendUpdateShape(id, shapeData) {
   return function (dispatch) {
-    fetch(`/mxcube/api/v0.1/sampleview/centring/${id}`, {
+    fetch('/mxcube/api/v0.1/sampleview/shapes', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ id, shapeData })
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused to add line');
+      }
+      return response.json();
+    }).then((json) => {
+      dispatch(updateShape(json));
+    });
+  };
+}
+
+export function sendDeleteShape(id) {
+  return function (dispatch) {
+    fetch(`/mxcube/api/v0.1/sampleview/shapes/${id}`, {
       method: 'DELETE',
       headers: {
         Accept: 'application/json',
@@ -291,11 +296,10 @@ export function sendDeletePoint(id) {
       }
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to delete point');
+        throw new Error('Server refused to delete line');
       }
-      return response.json();
     }).then(() => {
-      dispatch(deletePoint(id));
+      dispatch(deleteShape(id));
     });
   };
 }

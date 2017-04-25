@@ -3,7 +3,7 @@
   <bes_port>8100</bes_port>
   <object href="/session" role="session"/>
   <workflow>
-    <title>Mesh Scan</title>
+    <title>WF Mesh Scan</title>
     <path>MeshScan</path>
     <requires>grid</requires>
   </workflow>

@@ -20,36 +20,6 @@ export default class ContextMenu extends React.Component {
   menuOptions() {
     const workflowTasks = { point: [], line: [], grid: [], none: [] };
 
-    const options = {
-      SAVED: [
-        { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 1 },
-        { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 2 },
-        { text: 'Go To Point', action: () => this.goToPoint(), key: 3 },
-        { text: 'Delete Point', action: () => this.removeObject(), key: 4 },
-      ],
-      TMP: [
-        { text: 'Save Point', action: () => this.savePoint(), key: 1 },
-        { text: 'Delete Point', action: () => this.removeObject(), key: 2 }
-      ],
-      GROUP: [
-        { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
-      ],
-      LINE: [
-        { text: 'Delete Line', action: () => this.removeLine(), key: 1 }
-      ],
-      GridGroup: [
-        { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
-      ],
-      GridGroupSaved: [
-        { text: 'Delete', action: () => this.deleteGrid(), key: 1 }
-      ],
-      NONE: [
-        { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
-        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
-        { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 }
-      ]
-    };
-
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires === 'point') {
         workflowTasks.point.push({ text: wf.wfname,
@@ -70,16 +40,52 @@ export default class ContextMenu extends React.Component {
       }
     });
 
-    options.SAVED = options.SAVED.concat(workflowTasks.point);
-    options.LINE = options.LINE.concat(workflowTasks.line);
-    options.GridGroupSaved = options.GridGroupSaved.concat(workflowTasks.grid);
-    options.NONE = options.NONE.concat(workflowTasks.none);
+    const options = {
+      SAVED: [
+        { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
+        { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 2 },
+        { text: 'Go To Point', action: () => this.goToPoint(), key: 4 },
+        { text: 'divider', key: 5 },
+        ...workflowTasks.point,
+        { text: 'divider', key: 6 },
+        { text: 'Delete Point', action: () => this.removeShape(), key: 7 },
+      ],
+      TMP: [
+        { text: 'Save Point', action: () => this.savePoint(), key: 1 },
+        { text: 'Delete Point', action: () => this.removeShape(), key: 2 }
+      ],
+      GROUP: [
+        { text: 'Add Helical Scan', action: () => this.createLine(), key: 1 }
+      ],
+      LINE: [
+        ...workflowTasks.line,
+        { text: 'divider', key: 3 },
+        { text: 'Delete Line', action: () => this.removeShape(), key: 4 }
+      ],
+      GridGroup: [
+        { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
+      ],
+      GridGroupSaved: [
+        { text: 'Mesh Scan', action: () => this.showModal('Mesh'), key: 1 },
+        { text: 'divider', key: 2 },
+        ...workflowTasks.grid,
+        { text: 'divider', key: 3 },
+        { text: 'Delete', action: () => this.deleteGrid(), key: 4 }
+      ],
+      NONE: [
+        { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
+        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
+        { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
+        ...workflowTasks.none
+      ]
+    };
 
     return options;
   }
 
-  showModal(modalName, wf = {}) {
+  showModal(modalName, wf = {}, _shape = null) {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
+    const sid = _shape ? _shape.id : shape.id;
     this.props.showForm(
       modalName,
       [sampleID],
@@ -90,7 +96,7 @@ export default class ContextMenu extends React.Component {
           subdir: sampleData.sampleName
         }
       },
-      shape.id
+      sid
     );
     this.hideContextMenu();
     this.props.sampleActions.showContextMenu(false);
@@ -109,7 +115,7 @@ export default class ContextMenu extends React.Component {
   savePoint() {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.stopClickCentring();
-    this.props.sampleActions.sendSavePoint(this.props.shape.id);
+    this.props.sampleActions.sendUpdateShape(this.props.shape.id, { state: 'SAVED' });
     this.props.sampleActions.sendAcceptCentring();
   }
 
@@ -124,9 +130,9 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.sendGoToBeam(x * imageRatio, y * imageRatio);
   }
 
-  removeObject() {
+  removeShape() {
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendDeletePoint(this.props.shape.id);
+    this.props.sampleActions.sendDeleteShape(this.props.shape.id);
   }
 
   measureDistance() {
@@ -141,25 +147,20 @@ export default class ContextMenu extends React.Component {
 
   deleteGrid() {
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.deleteGrid(this.props.shape.obj.id);
+    this.props.sampleActions.sendDeleteShape(this.props.shape.id);
   }
 
   saveGrid() {
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.addGrid(this.props.shape.gridData);
+    this.props.sampleActions.sendAddShape({ t: 'G', ...this.props.shape.gridData });
     this.props.sampleActions.toggleDrawGrid();
   }
 
   createLine() {
     const { shape } = this.props;
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.addLine(shape.id.p1, shape.id.p2);
-    this.showModal('Helical');
-  }
-
-  removeLine() {
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.deleteLine(this.props.shape.id);
+    this.props.sampleActions.sendAddShape({ t: 'L', refs: [shape.id.p1, shape.id.p2] },
+      (s) => {this.showModal('Helical', {}, s);});
   }
 
   hideContextMenu() {
@@ -167,9 +168,13 @@ export default class ContextMenu extends React.Component {
   }
 
   listOptions(type) {
-    return (
-      <li key={type.key}><a onClick={type.action}>{type.text}</a></li>
-    );
+    let el = (<li key={type.key}><a onClick={type.action}>{type.text}</a></li>);
+
+    if (type.text === 'divider') {
+      el = (<li className="divider" />);
+    }
+
+    return el;
   }
 
   render() {

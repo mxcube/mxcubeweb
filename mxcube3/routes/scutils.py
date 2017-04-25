@@ -30,7 +30,7 @@ def mount_sample(beamline_setup_hwobj,
     holder_length = data_model.holder_length
 
     # This is a possible solution how to deal with two devices that
-    # can move sample on beam (sample changer, plate holder, in future 
+    # can move sample on beam (sample changer, plate holder, in future
     # also harvester)
     # TODO make sample_Changer_one, sample_changer_two
     if beamline_setup_hwobj.diffractometer_hwobj.in_plate_mode():
@@ -42,7 +42,7 @@ def mount_sample(beamline_setup_hwobj,
         if sample_mount_device.__TYPE__ in ['Marvin','CATS']:
             element = '%d:%02d' % loc
             sample_mount_device.load(sample=element, wait=True)
-        elif sample_mount_device.__TYPE__ == "PlateManipulator": 
+        elif sample_mount_device.__TYPE__ == "PlateManipulator":
             sample_mount_device.load_sample(sample_location=loc)
         else:
             if sample_mount_device.load_sample(holder_length, sample_location=loc, wait=True) == False:
@@ -59,7 +59,7 @@ def mount_sample(beamline_setup_hwobj,
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
         view.setText(1, "Sample loaded")
-        dm = beamline_setup_hwobj.diffractometer_hwobj 
+        dm = beamline_setup_hwobj.diffractometer_hwobj
         if dm is not None:
             try:
                 dm.connect("centringAccepted", centring_done_cb)
@@ -81,7 +81,7 @@ def mount_sample(beamline_setup_hwobj,
 
                 view.setText(1, "Centring !")
                 centring_result = async_result.get()
-                if centring_result['valid']: 
+                if centring_result['valid']:
                     view.setText(1, "Centring done !")
                     log.info("Centring saved")
                 else:
@@ -108,11 +108,9 @@ def mount_sample_clean_up(sample):
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         set_current_sample('')
         raise
-    else:       
+    else:
         # Clearing centered position
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
-
+        mxcube.shapes.clear_all()
         logging.getLogger('HWR').info('[SC] mounted %s' % sample)
 
 
@@ -120,11 +118,6 @@ def unmount_sample_clean_up(sample):
     try:
         if not sample['location'] == 'Manual':
             mxcube.sample_changer.unload(sample['sampleID'], False)
-        mxcube.queue.mounted_sample = ''
-
-        # Remove Centring points
-        mxcube.diffractometer.savedCentredPos = []
-        mxcube.diffractometer.savedCentredPosCount = 1
 
         msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
         logging.getLogger('HWR').info(msg)
@@ -132,7 +125,11 @@ def unmount_sample_clean_up(sample):
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         raise
     else:
-         set_current_sample('')
+        mxcube.queue.mounted_sample = ''
+        set_current_sample('')
+        # Remove Centring points
+
+        mxcube.shapes.clear_all()
 
 
 # Important, patch queue_entry.mount_sample with the mount_sample defined above

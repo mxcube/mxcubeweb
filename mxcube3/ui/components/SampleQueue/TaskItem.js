@@ -159,14 +159,6 @@ export default class TaskItem extends Component {
       warning: state === TASK_COLLECT_WARNING
     });
 
-    let typePrefix = '';
-
-    if (data.parameters.helical) {
-      typePrefix = 'L';
-    } else {
-      typePrefix = 'P';
-    }
-
     let delTaskCSS = {
       display: 'flex',
       marginLeft: 'auto',
@@ -175,13 +167,13 @@ export default class TaskItem extends Component {
       paddingRight: '10px'
     };
 
-    const pointID = data.parameters.point;
+    const pointID = data.parameters.shape;
 
     const element = (
       <div className="node node-sample" style={{ opacity }}>
             <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
               <p className="node-name" style={{ display: 'flex' }} >
-                {`${typePrefix}${pointID >= 0 ? pointID : '?'} ${data.label}`}
+                {`${pointID !== '' ? pointID : '?'} ${data.label}`}
               </p>
               <p className="fa fa-trash" onClick={this.deleteTask} style={delTaskCSS} >
               </p>

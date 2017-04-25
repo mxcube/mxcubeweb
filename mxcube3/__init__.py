@@ -107,6 +107,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
         app.workflow = app.beamline.getObjectByRole("workflow")
+        app.shapes = app.beamline.getObjectByRole("shape_history")
 
         Utils.enable_snapshots(app.collect)
 

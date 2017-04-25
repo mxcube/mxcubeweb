@@ -1,12 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { FieldsHeader, StaticField, InputField } from './fields';
+import { FieldsHeader,
+         StaticField,
+         InputField,
+         CheckboxField,
+         SelectField,
+         FieldsRow,
+         CollapsableRows } from './fields';
 
-class Workflow extends React.Component {
+class Mesh extends React.Component {
   constructor(props) {
     super(props);
 
@@ -26,21 +31,27 @@ class Workflow extends React.Component {
   addToQueue(runNow, params) {
     const parameters = {
       ...params,
-      type: 'Workflow',
-      label: params.wfname,
+      type: 'DataCollection',
+      label: 'Mesh',
+      mesh: true,
+      helical: false,
       shape: this.props.pointID
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
+      'shutterless',
+      'inverse_beam',
       'centringMethod',
+      'detector_mode',
+      'space_group',
       'prefix',
       'subdir',
       'type',
-      'shape',
+      'point',
       'label',
-      'wfname',
-      'wfpath'
+      'mesh',
+      'shape'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -50,15 +61,14 @@ class Workflow extends React.Component {
   render() {
     return (<Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.wfname}</Modal.Title>
+          <Modal.Title>Mesh Scan</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
-            <StaticField label="Filename" data={this.props.filename} />
             <Row>
-              <Col xs={12} style={{ marginTop: '10px' }}>
+              <Col xs={12}>
                 <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
@@ -70,9 +80,53 @@ class Workflow extends React.Component {
                 <InputField propName="run_number" label="Run number" col1="4" col2="8" />
               </Col>
             </Row>
+            <StaticField label="Filename" data={this.props.filename} />
           </Form>
-       </Modal.Body>
 
+          <FieldsHeader title="Acquisition" />
+          <Form horizontal>
+            <FieldsRow>
+              <InputField propName="osc_range" label="Oscillation range" />
+              <InputField propName="first_image" label="First image" />
+            </FieldsRow>
+            <FieldsRow>
+              <InputField propName="osc_start" label="Oscillation start" />
+              <InputField propName="num_images" label="Number of images" />
+            </FieldsRow>
+            <FieldsRow>
+              <InputField propName="exp_time" label="Exposure time (ms)" />
+              <InputField propName="transmission" label="Transmission" />
+            </FieldsRow>
+            <FieldsRow>
+              <InputField propName="energy" label="Energy" />
+              <InputField propName="resolution" label="Resolution" />
+            </FieldsRow>
+            <CollapsableRows>
+              <FieldsRow>
+                <InputField propName="kappa" label="Kappa" />
+                <InputField propName="kappa_phi" label="Phi" />
+              </FieldsRow>
+              <FieldsRow>
+                <SelectField
+                  propName="beam_size"
+                  label="Beam size"
+                  list={this.props.apertureList}
+                />
+                <SelectField
+                  propName="detector_mode"
+                  label="Detector mode"
+                  list={['0', 'C18', 'C2']}
+                />
+              </FieldsRow>
+              <FieldsRow>
+                <CheckboxField propName="shutterless" label="Shutterless" />
+                <CheckboxField propName="inverse_beam" label="Inverse beam" />
+              </FieldsRow>
+            </CollapsableRows>
+          </Form>
+
+          <FieldsHeader title="Processing" />
+       </Modal.Body>
        { this.props.taskData.state ? '' :
            <Modal.Footer>
              <ButtonToolbar className="pull-right">
@@ -94,14 +148,14 @@ class Workflow extends React.Component {
   }
 }
 
-Workflow = reduxForm({
-  form: 'workflow',
+Mesh = reduxForm({
+  form: 'mesh',
   validate
-})(Workflow);
+})(Mesh);
 
-const selector = formValueSelector('workflow');
+const selector = formValueSelector('helical');
 
-Workflow = connect(state => {
+Mesh = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
@@ -109,7 +163,6 @@ Workflow = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${runNumber}.???`,
-    wfname: state.taskForm.taskData.parameters.wfname,
     motorLimits: state.beamline.motorsLimits,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
@@ -117,6 +170,6 @@ Workflow = connect(state => {
       beam_size: state.sampleview.currentAperture
     }
   };
-})(Workflow);
+})(Mesh);
 
-export default Workflow;
+export default Mesh;

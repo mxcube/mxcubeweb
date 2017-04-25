@@ -11,6 +11,7 @@ from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
 
 from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED
+from mxcube3.routes.transportutils import to_camel, from_camel
 
 
 def last_queue_node():
@@ -31,7 +32,7 @@ beam_signals = ['beamPosChanged', 'beamInfoChanged']
 
 queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] # 'centringAllowed',
 microdiffSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted','centringAccepted','centringMoving',\
-                    'centringFailed', 'centringSuccessful', 'progressMessage', 'centringSnapshots', 'warning', 
+                    'centringFailed', 'centringSuccessful', 'progressMessage', 'centringSnapshots', 'warning',
                     'minidiffPhaseChanged', 'minidiffSampleIsLoadedChanged',\
                     'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged']
 
@@ -306,39 +307,40 @@ def motor_position_callback(motor, pos):
 
 
 def motor_state_callback(motor, state, sender=None, **kw):
-    centred_positions = dict()
-    for pos in mxcube.diffractometer.savedCentredPos:
-        centred_positions.update({pos['posId']: pos})
+    shape_dict = {}
+
+    for shape in mxcube.shapes.get_shapes():
+        shape.update_screen_position(mxcube.diffractometer.motor_positions_to_screen)
+        s = to_camel(shape.as_dict())
+        shape_dict.update({shape.id: s})
 
     if state == 2:
         # READY
         motor_position_callback(motor, sender.getPosition())
 
-    socketio.emit('motor_state', {'name': motor, 'state': state, 'centredPositions': centred_positions}, namespace='/hwr')
+    socketio.emit('motor_state', {'name': motor, 'state': state, 'centredPositions': shape_dict}, namespace='/hwr')
 
 
 def motor_event_callback(*args, **kwargs):
-    # logging.getLogger('HWR').debug('[MOTOR CALLBACK]')
-    # logging.getLogger("HWR").debug(kwargs)
-    # logging.getLogger("HWR").debug(args)
     signal = kwargs['signal']
     sender = str(kwargs['sender'].__class__).split('.')[0]
 
     motors_info = Utils.get_centring_motors_info()
-
     motors_info.update(Utils.get_light_state_and_intensity())
-
     motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
 
-    aux = {}
-    for pos in mxcube.diffractometer.savedCentredPos:
-            aux.update({pos['posId']: pos})
+    shape_dict = {}
+
+    for shape in mxcube.shapes.get_shapes():
+        shape.update_position(mxcube.diffractometer.motor_positions_to_screen)
+        s = to_camel(shape.as_dict())
+        shape_dict.update({shape.id: s})
 
     #  sending all motors position/status, and the current centred positions
     msg = {'Signal': signal,
            'Message': signal,
            'Motors': motors_info,
-           'CentredPositions': aux,
+           'CentredPositions': shape_dict,
            'Data': args[0] if len(args) == 1 else args}
     # logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
 

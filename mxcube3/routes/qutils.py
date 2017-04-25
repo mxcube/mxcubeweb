@@ -25,7 +25,7 @@ QUEUE_FAILED = 'QueueFailed'
 
 SAMPLE_MOUNTED = 0x8
 COLLECTED = 0x4
-WARNING = 0x10 # or 3
+WARNING = 0x10
 FAILED = 0x2
 RUNNING = 0x1
 UNCOLLECTED = 0x0
@@ -220,7 +220,7 @@ def get_queue_state():
 
 def _handle_dc(sample_id, node):
     parameters = node.as_dict()
-    parameters["point"] = node.get_point_index()
+    parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
 
     parameters.pop('sample')
@@ -270,7 +270,7 @@ def _handle_wf(sample_id, node):
 
 def _handle_char(sample_id, node):
     parameters = node.characterisation_parameters.as_dict()
-    parameters["point"] = node.get_point_index()
+    parameters["shape"] = node.get_point_index()
     refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
     parameters.update(refp)
 
@@ -374,7 +374,7 @@ def queue_exec_state():
               or QUEUE_RUNNING
 
     """
-    state = QUEUE_STOPPED 
+    state = QUEUE_STOPPED
 
     if mxcube.queue.queue_hwobj.is_paused():
         state = QUEUE_PAUSED
@@ -436,7 +436,7 @@ def swap_task_entry(sid, ti1, ti2):
     :param int ti1: Position of task1 (old position)
     :param int ti2: Position of task2 (new position)
     """
-    current_queue = queue_to_dict() 
+    current_queue = queue_to_dict()
 
     node_id = current_queue[sid]["queueID"]
     smodel, sentry = get_entry(node_id)
@@ -471,6 +471,7 @@ def move_task_entry(sid, ti1, ti2):
 
     # Swap queue entry order
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
+
 
 def queue_add_item(item_list):
     """
@@ -565,7 +566,6 @@ def set_dc_params(model, entry, task_data):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
-
     acq.path_template.set_from_dict(params)
     acq.path_template.base_prefix = params['prefix']
 
@@ -578,33 +578,29 @@ def set_dc_params(model, entry, task_data):
                                 params.get('subdir', ''))
     acq.path_template.process_directory = process_path
 
+    # MXCuBE3 specific shape attribute
+    model.shape = params["shape"]
+
     # If there is a centered position associated with this data collection, get
     # the necessary data for the position and pass it to the collection.
-    if params["point"]:
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos['posId'] == int(params['point']):
-                _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                _cpos.index = int(params['point'])
-                acq.acquisition_parameters.centred_position = _cpos
-
     if params["helical"]:
         model.experiment_type = qme.EXPERIMENT_TYPE.HELICAL
+        acq2 = qmo.Acquisition()
+        model.acquisitions.append(acq2)
 
-        if params["p1"]:
-            for cpos in mxcube.diffractometer.savedCentredPos:
-                if cpos['posId'] == int(params['p1']):
-                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                    _cpos.index = int(params['p1'])
-                    acq.acquisition_parameters.centred_position = _cpos
+        line = mxcube.shapes.get_shape(params["shape"])
+        p1, p2 = line.refs
+        p1, p2 = mxcube.shapes.get_shape(p1), mxcube.shapes.get_shape(p2)
+        cpos1 = p1.get_centred_position()
+        cpos2 = p2.get_centred_position()
 
-        if params["p2"]:
-            acq2 = qmo.Acquisition()
-            for cpos in mxcube.diffractometer.savedCentredPos:
-                if cpos['posId'] == int(params['p2']):
-                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                    _cpos.index = int(params['p2'])
-                    acq2.acquisition_parameters.centred_position = _cpos
-            model.acquisitions.append(acq2)
+        acq.acquisition_parameters.centred_position = cpos1
+        acq2.acquisition_parameters.centred_position = cpos2
+
+    elif params["shape"]:
+        point = mxcube.shapes.get_shape(params["shape"])
+        cpos = point.get_centred_position()
+        acq.acquisition_parameters.centred_position = cpos
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -635,7 +631,7 @@ def set_wf_params(model, entry, task_data, sample_model):
 
     model.set_name("Workflow task")
     model.set_type(params["wfname"])
-    
+
     beamline_params = {}
     beamline_params['directory'] = model.path_template.directory
     beamline_params['prefix'] = model.path_template.get_prefix()
@@ -644,11 +640,11 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params['sample_node_id'] = sample_model._node_id
     beamline_params['sample_lims_id'] = sample_model.lims_id
     beamline_params['beamline'] = mxcube.beamline.session_hwobj.beamline_name
-    
+
     params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
     params_list.insert(0, params["wfpath"])
     params_list.insert(0, 'modelpath')
-    
+
     model.params_list = params_list
 
     model.set_enabled(task_data['checked'])
@@ -668,6 +664,9 @@ def set_char_params(model, entry, task_data):
     set_dc_params(model.reference_image_collection, entry, task_data)
     model.characterisation_parameters.set_from_dict(params)
 
+    # MXCuBE3 specific shape attribute
+    model.shape = params["shape"]
+
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
 
@@ -685,6 +684,7 @@ def _create_dc(task):
     dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
+
 
 def _create_wf(task):
     """
@@ -829,10 +829,10 @@ def save_queue(session, redis=redis.Redis()):
 
     :param session: Session to save queue for
     :param redis: Redis database
-    
+
     """
     proposal_id = Utils._proposal_id(session)
-    
+
     if proposal_id is not None:
         # List of samples dicts (containing tasks) sample and tasks have same
         # order as the in queue HO
@@ -982,7 +982,7 @@ def set_auto_mount_sample(automount, current_sample=None):
     """
     Sets auto mount next flag, automatically mount next sample in queue
     (True) or wait for user (False)
-    
+
     :param bool automount: True auto-mount, False wait for user
     """
     mxcube.AUTO_MOUNT_SAMPLE = automount

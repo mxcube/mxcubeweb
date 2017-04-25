@@ -34,9 +34,7 @@ class Helical extends React.Component {
       type: 'DataCollection',
       label: 'Helical',
       helical: true,
-      point: this.props.lines.length - 1,
-      p1: this.props.pointID.p1,
-      p2: this.props.pointID.p2
+      shape: this.props.pointID,
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -49,9 +47,9 @@ class Helical extends React.Component {
       'prefix',
       'subdir',
       'type',
-      'point',
       'label',
-      'helical'
+      'helical',
+      'shape',
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -173,4 +171,3 @@ Helical = connect(state => {
 })(Helical);
 
 export default Helical;
-

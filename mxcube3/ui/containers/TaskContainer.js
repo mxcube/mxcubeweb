@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
 import Helical from '../components/Tasks/Helical';
+import Mesh from '../components/Tasks/Mesh';
 import AddSample from '../components/Tasks/AddSample';
 import Workflow from '../components/Tasks/Workflow';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
@@ -58,6 +59,19 @@ class TaskContainer extends React.Component {
   }
 
   render() {
+    const [points, lines, grids] = [{}, {}, {}];
+
+    Object.keys(this.props.shapes).forEach((key) => {
+      const shape = this.props.shapes[key];
+      if (shape.t === 'P') {
+        points[shape.id] = shape;
+      } else if (shape.t === 'L') {
+        lines[shape.id] = shape;
+      } else if (shape.t === 'G') {
+        grids[shape.id] = shape;
+      }
+    });
+
     if (this.props.showForm === 'Characterisation') {
       return (<Characterisation
         show
@@ -92,7 +106,20 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
-        lines={this.props.lines}
+        lines={lines}
+      />);
+    }
+
+    if (this.props.showForm === 'Mesh') {
+      return (<Mesh
+        show
+        addTask={this.addTask}
+        pointID={this.props.pointID}
+        sampleIds={this.props.sampleIds}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
       />);
     }
 
@@ -133,7 +160,7 @@ function mapStateToProps(state) {
     pointID: state.taskForm.pointID,
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath,
-    lines: state.sampleview.lines
+    shapes: state.shapes.shapes
   };
 }
 
@@ -153,4 +180,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(TaskContainer);
-

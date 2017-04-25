@@ -33,7 +33,7 @@ class Characterisation extends React.Component {
       ...params,
       type: 'Characterisation',
       label: 'Characterisation',
-      point: this.props.pointID,
+      shape: this.props.pointID,
       helical: false
     };
 
@@ -47,7 +47,7 @@ class Characterisation extends React.Component {
       'prefix',
       'subdir',
       'type',
-      'point',
+      'shape',
       'label',
       'helical'
     ];
@@ -203,4 +203,3 @@ Characterisation = connect(state => {
 })(Characterisation);
 
 export default Characterisation;
-
