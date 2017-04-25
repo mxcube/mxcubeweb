@@ -51,7 +51,7 @@ export default (state = initialState, action) => {
           }
         };
       }
-    case 'MOUNT_SAMPLE':
+    case 'SET_CURRENT_SAMPLE':
       {
         return {
           ...state,

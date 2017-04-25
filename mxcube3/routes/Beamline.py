@@ -46,6 +46,17 @@ def init_signals():
         logging.getLogger('HWR').\
             exception("error connecting to beamline actions hardware object signals")
 
+    try: 
+        safety_shutter = mxcube.beamline.getObjectByRole("safety_shutter")
+        if safety_shutter is not None:
+            safety_shutter.connect(safety_shutter, 'shutterStateChanged',
+                           signals.safety_shutter_state_changed)
+        else:
+            logging.getLogger('HWR').error("safety_shutter is not defined")
+    except Exception, ex: 
+        logging.getLogger('HWR').\
+            error("error loading safety_shutter hwo is not defined (%s)" % str(ex))
+
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():
@@ -95,7 +106,13 @@ def beamline_abort_action(name):
             else:
                 return make_response("", 200)
    
-    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    # This could be made to give access to arbitrary method of HO, possible
+    # security issues to be discussed.
+    if name.lower() == "detdist":
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("dtox")
+    else:
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    ho.stop()
 
     try:
         ho.stop()
@@ -155,21 +172,24 @@ def beamline_set_attribute(name):
     Replies with status code 200 on success and 520 on exceptions.
     """
     data = json.loads(request.data)
-    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
+    if name.lower() == "detdist":
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("dtox")
+    else:
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
 
     try:
         ho.set(data["value"])
-        data = ho.dict_repr()
-        code = 200
+        logging.getLogger('HWR').info("Setting bl attribute %s to %s" %(name, data["value"]))
+        res = ho.dict_repr()
+        result, code = json.dumps(res), 200
     except Exception as ex:
-        data["value"] = ho.get()
-        data["state"] = "UNUSABLE"
-        data["msg"] = str(ex)
-        code = 520
- 
-    response = jsonify(data)
-    response.code = code
-    return response
+        res = ho.dict_repr()
+        res["value"] = ho.get()
+        res["state"] = "UNUSABLE"
+        res["msg"] = "submitted value out of limits"
+        result, code = json.dumps(res), 520
+        logging.getLogger('HWR').error("Error setting bl attribute: " + str(ex))
+    return Response(result, status=code, mimetype='application/json')
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])

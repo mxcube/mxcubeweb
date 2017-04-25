@@ -11,6 +11,7 @@ import {
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setBeamlineMovAttrAction,
+         setBeamlineActAttrAction,
          setMachInfo } from './actions/beamline';
 import { setActionState } from './actions/beamlineActions';
 import { setStatus,
@@ -116,7 +117,7 @@ class ServerIO {
 
     this.hwrSocket.on('beamline_value_change', (data) => {
       if (data.type === 'actuator') {
-        void(0);
+        this.dispatch(setBeamlineActAttrAction(data));
       } else if (data.type === 'movable') {
         this.dispatch(setBeamlineMovAttrAction(data));
       } else {
