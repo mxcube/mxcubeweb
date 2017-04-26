@@ -481,7 +481,6 @@ export default class SampleImage extends React.Component {
         const shape = obj;
         if (groupIDs.includes(shape.id)) {
           selectedShapes.push(shape);
-          // this.setColorPoint(shape);
           shape.active = true;
         }
       });
@@ -497,7 +496,6 @@ export default class SampleImage extends React.Component {
       fabricSelectables.forEach((shape) => {
         if (shape.id === selection.id) {
           this.canvas.setActiveObject(shape);
-          // this.setColorPoint(shape);
         }
       });
     }

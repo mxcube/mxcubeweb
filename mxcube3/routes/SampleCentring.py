@@ -87,11 +87,6 @@ def init_signals():
                                   wait_for_centring_finishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
                                   wait_for_centring_finishes)
-    mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
-    mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
-
-    mxcube.diffractometer.camera.connect("imageReceived",
-                                         update_centred_positions)
 
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
@@ -197,9 +192,11 @@ def get_image_data():
         :statuscode: 409: error
     """
     data = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
-            'imageWidth': mxcube.diffractometer.image_width,
-            'imageHeight': mxcube.diffractometer.image_height,
-            }
+            'imageWidth': mxcube.diffractometer.camera.getWidth(),
+            'imageHeight': mxcube.diffractometer.camera.getHeight(),
+            'format': 'mpeg1',
+            'sourceIsScalable': True}
+
     resp = jsonify(data)
     resp.status_code = 200
     return resp
@@ -517,25 +514,6 @@ def click():
         return resp
     else:
         return Response(status=409)
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/cp_from_coord", methods=['POST'])
-def cp_from_coord():
-    """
-    Gets the centerd position for the passed coordinates
-        :response Content-type: application/json, centred positions.
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    params = request.get_json()
-    x, y = params['x'], params['y']
-
-    try:
-        cp = mxcube.diffractometer.get_centred_point_from_coord(x, y)
-    except:
-        return Response(status=409)
-
-    return jsonify(cp), 200
 
 
 def wait_for_centring_finishes(*args, **kwargs):
