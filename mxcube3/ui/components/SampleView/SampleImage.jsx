@@ -1,3 +1,5 @@
+
+
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
@@ -65,10 +67,16 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keydown', this.keyDown, false);
     document.addEventListener('keyup', this.keyUp, false);
 
-    const canvas = document.getElementById('sample-img');
-    this.player = new jsmpeg.JSMpeg.Player(`ws://${document.location.hostname}:4042/`,
-      { canvas, preserveDrawingBuffer: true });
-    this.player.play();
+    // Initialize JSMpeg for decoding the MPEG1 stream
+    if (this.props.videoFormat === 'MPEG1') {
+      const canvas = document.getElementById('sample-img');
+
+      if (canvas) {
+        this.player = new jsmpeg.JSMpeg.Player(`ws://${document.location.hostname}:4042/`,
+          { canvas, preserveDrawingBuffer: true });
+        this.player.play();
+      }
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -519,6 +527,24 @@ export default class SampleImage extends React.Component {
   }
 
 
+  createVideoPlayerContainer(format) {
+  // Default to MJPEG
+    let result = (
+      <img
+        id= "sample-img"
+        className="img"
+        src="/mxcube/api/v0.1/sampleview/camera/subscribe"
+        alt="SampleView"
+      />);
+
+    if (format === 'MPEG1') {
+      result = (<canvas id="sample-img" className="img" />);
+    }
+
+    return result;
+  }
+
+
   render() {
     this.configureGrid();
     this.showGridForm();
@@ -553,7 +579,7 @@ export default class SampleImage extends React.Component {
               {...this.props}
               canvas={this.canvas}
             />
-            <canvas id="sample-img" className="img" />
+            {this.createVideoPlayerContainer(this.props.videoFormat)}
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>

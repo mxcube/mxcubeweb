@@ -140,7 +140,14 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
         # set up streaming
         from video import streaming
-        streaming.init(app.diffractometer.camera, cmdline_options.video_device)
+
+        try:
+            streaming.init(app.diffractometer.camera, cmdline_options.video_device)
+        except RuntimeError as ex:
+            logging.getLogger('HWR').info(str(ex))
+            app.VIDEO_DEVICE = None
+        else:
+            app.VIDEO_DEVICE = cmdline_options.video_device
 
         try:
             SampleCentring.init_signals()

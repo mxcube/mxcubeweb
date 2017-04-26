@@ -25,9 +25,12 @@ def open_video_device(path="/dev/video0"):
         device = open(path, "wb", 0)
         VIDEO_DEVICE = device
     else:
-        msg = "Cannot open video device %s, path do not exist. \n" % path
-        msg += "Make sure that the kernel module v4l2loopback is installed."
+        msg = "Cannot open video device %s, path do not exist. " % path
+        msg += "Make sure that the kernel module v4l2loopback is installed (modprobe v4l2loopback). "
+        msg += "Falling back to MJPEG."
         raise RuntimeError(msg)
+
+    return VIDEO_DEVICE
 
 
 def initialize_video_device(pixel_format, width, height, channels):
@@ -86,7 +89,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
         # start the streaming process if not started or restart if terminated
         if not VIDEO_STREAM_PROCESS or VIDEO_STREAM_PROCESS.poll() is not None:
             sfpath = os.path.join(os.path.dirname(__file__), "streaming_processes.py")
-            VIDEO_STREAM_PROCESS = subprocess.Popen([sys.executable, sfpath])
+            VIDEO_STREAM_PROCESS = subprocess.Popen([sys.executable, sfpath, VIDEO_DEVICE.name])
 
 
 def tango_lima_video_plugin(camera, video_device):
@@ -120,13 +123,14 @@ def tango_lima_video_plugin(camera, video_device):
             camera._do_polling = types.MethodType(do_polling, camera)
 
 
-def init(camera, video_device):
+def init(camera, video_device_path):
     """
     Initialize video loopback device.
 
     :param HardwareObject camera:  Object providing frames to encode and stream
-    :param str video_device: Video loopback path
+    :param str video_device+_path: Video loopback path
     """
-    tango_lima_video_plugin(camera, video_device)
-    open_video_device(video_device)
+    tango_lima_video_plugin(camera, video_device_path)
+    video_device = open_video_device(video_device_path)
     camera.connect("imageReceived", new_frame_received)
+    return video_device

@@ -5,7 +5,7 @@ const initialState = {
   distancePoints: [],
   width: 659,
   height: 493,
-  videoSize: null,
+  videoFormat: 'MPEG1',
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,
@@ -148,6 +148,7 @@ export default (state = initialState, action) => {
           ...state,
           width: action.data.Camera.imageWidth,
           height: action.data.Camera.imageHeight,
+          videoFormat: action.data.Camera.format,
           apertureList: action.data.beamInfo.apertureList,
           currentAperture: action.data.beamInfo.currentAperture,
           beamPosition: action.data.beamInfo.position,
