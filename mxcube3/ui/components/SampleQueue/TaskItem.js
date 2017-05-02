@@ -9,6 +9,7 @@ import { TASK_UNCOLLECTED,
          TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
 import ClipboardButton from 'react-clipboard.js';
+import clippy from '../../img/clippy.png';
 
 const cardSource = {
   beginDrag(props) {
