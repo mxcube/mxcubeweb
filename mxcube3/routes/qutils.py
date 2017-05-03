@@ -597,7 +597,7 @@ def set_dc_params(model, entry, task_data):
         acq.acquisition_parameters.centred_position = cpos1
         acq2.acquisition_parameters.centred_position = cpos2
 
-    elif params["shape"]:
+    elif params["shape"] != -1:
         point = mxcube.shapes.get_shape(params["shape"])
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
