@@ -2,7 +2,7 @@ const everpolate = require('everpolate');
 
 const validate = (values, props) => {
   const errors = {};
-  if (!props.motorLimits.movables) {
+  if (!props.motorLimits) {
     // for some reason redux-form is loaded before the initial status @##@!
     return errors;
   }
