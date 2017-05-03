@@ -138,7 +138,7 @@ export function getInitialState() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-       'Content-type': 'application/json'
+        'Content-type': 'application/json'
       }
     });
     const savedShapes = fetch('mxcube/api/v0.1/sampleview/shapes', {
@@ -187,7 +187,7 @@ export function getInitialState() {
         json => { state.dcParameters = json.acq_parameters; return json; }).then(
         json => { state.acqParametersLimits = json.limits; }).catch(notify),
       charParameters.then(parse).then(
-        json => { state.charParameters = json.acq_parameters }).catch(notify),
+        json => { state.charParameters = json.acq_parameters; }).catch(notify),
       savedShapes.then(parse).then(json => {state.shapes = json.shapes;}).catch(notify),
       sampleChangerContents.then(parse).then(json => {
         state.sampleChangerContents = json;
