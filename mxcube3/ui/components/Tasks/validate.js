@@ -8,9 +8,9 @@ const validate = (values, props) => {
   }
   const currEnergy = parseFloat(values.energy);
   const currRes = parseFloat(values.resolution);
-  const energies = props.motorLimits.movables.resolution.limits.map(value => value[0]);
-  const limitsMin = props.motorLimits.movables.resolution.limits.map(value => value[1]);
-  const limitsMax = props.motorLimits.movables.resolution.limits.map(value => value[2]);
+  const energies = props.motorLimits.resolution.limits.map(value => value[0]);
+  const limitsMin = props.motorLimits.resolution.limits.map(value => value[1]);
+  const limitsMax = props.motorLimits.resolution.limits.map(value => value[2]);
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
   const resMin = everpolate.linear(currEnergy, energies, limitsMin);
@@ -34,8 +34,8 @@ const validate = (values, props) => {
   if (!(currRes > resMin && currRes < resMax)) {
     errors.resolution = 'Resolution outside working range';
   }
-  if (!(currEnergy > props.motorLimits.movables.energy.limits[0] &&
-        currEnergy < props.motorLimits.movables.energy.limits[1])) {
+  if (!(currEnergy > props.motorLimits.energy.limits[0] &&
+        currEnergy < props.motorLimits.energy.limits[1])) {
     errors.energy = 'Energy outside working range';
   }
   return errors;
