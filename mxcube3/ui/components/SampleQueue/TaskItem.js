@@ -191,7 +191,7 @@ export default class TaskItem extends Component {
                     ref={value}
                   />
                   <ClipboardButton data-clipboard-text={value} style={{ maxWidth: '30' }} >
-                    <img src="img/clippy.svg" width="15" alt="clipboard" />
+                    <img src={clippy} width="15" alt="clipboard" />
                   </ClipboardButton>
                 </div>
               </div>
