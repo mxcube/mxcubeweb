@@ -92,6 +92,16 @@ export default (state = INITIAL_STATE, action) => {
       });
       return Object.assign({}, state, { sampleList });
     }
+    case 'ADD_SAMPLES_TO_QUEUE': {
+      const sampleIDList = action.samplesData.map((s) => s.sampleID);
+      const sampleList = { ...state.sampleList };
+      sampleIDList.forEach((sampleID, i) => {
+        sampleList[sampleID].tasks.length > 0 ?
+          sampleList[sampleID].tasks.concat(action.samplesData[i].tasks) :
+          sampleList[sampleID].tasks = action.samplesData[i].tasks; });
+
+      return Object.assign({}, state, { sampleList });
+    }
     case 'ADD_TASK_RESULT': {
       const sampleList = {
         ...state.sampleList,
