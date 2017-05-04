@@ -698,13 +698,13 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
 
     def set(self, value):
-        self._ho.dtox.move(round(float(value), 3))
+        self._ho.move(round(float(value), 3))
         return self.get()
 
 
     def get(self):
         try:
-            detdist = self._ho.dtox.getPosition()
+            detdist = self._ho.getPosition()
             detdist = round(float(detdist), 3)
         except (TypeError, AttributeError):
             detdist = 0
@@ -717,15 +717,15 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         :returns: The detector distance limits.
         """
         try:
-            detdist_limits = self._ho.dtox.getLimits()
-        except (AttributeError, TypeError):
+            detdist_limits = self._ho.getLimits()
+        except (AttributeError, TypeError) as ex:
             raise ValueError("Could not get limits")
         return detdist_limits
 
 
     def stop(self):
-        self._ho.dtox.stop()
+        self._ho.stop()
 
 
     def state(self):
-        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.dtox.getState(), 0)
+        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
