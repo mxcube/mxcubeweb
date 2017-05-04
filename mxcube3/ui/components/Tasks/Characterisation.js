@@ -191,7 +191,7 @@ Characterisation = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `ref-${prefix}_${runNumber}.???`,
-    motorLimits: state.beamline.movables,
+    movables: state.beamline.movables,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,
