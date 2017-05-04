@@ -14,6 +14,7 @@
   "rules": {
     'react/prop-types': [0, { 'ignore': [], 'customValidators': [] }],
     'comma-dangle': [0, 'always-multiline'],
+    'no-unused-expressions': [1, { "allowTernary": true}],
     // "no-undef": 1,
     // "no-console": 1,
     // "no-debugger": 1,
