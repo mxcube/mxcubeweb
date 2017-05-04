@@ -112,7 +112,7 @@ export default class SampleControls extends React.Component {
                   <form>
                     <select
                       className="form-control"
-                      defaultValue={this.props.currentAperture}
+                      value={this.props.currentAperture}
                       onChange={this.setApertureSize}
                     >
                       {this.props.apertureList.map((val, i) =>

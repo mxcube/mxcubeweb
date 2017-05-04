@@ -104,9 +104,6 @@ class Characterisation extends React.Component {
                 <InputField propName="osc_start" label="Oscillation start" />
                 <InputField propName="energy" label="Energy (keV)" />
               </FieldsRow>
-              <FieldsRow>
-                <InputField propName="energy" label="Energy" />
-              </FieldsRow>
               <CollapsableRows>
                 <FieldsRow>
                   <InputField propName="kappa" label="Kappa" />
@@ -118,6 +115,7 @@ class Characterisation extends React.Component {
                     label="Detector mode"
                     list={['0', 'C18', 'C2']}
                   />
+                  <InputField propName="overlap" label="Overlap" />
                 </FieldsRow>
               </CollapsableRows>
             </Form>
@@ -193,7 +191,7 @@ Characterisation = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `ref-${prefix}_${runNumber}.???`,
-    motorLimits: state.beamline.motorsLimits,
+    movables: state.beamline.movables,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,

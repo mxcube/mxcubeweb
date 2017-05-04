@@ -110,7 +110,7 @@ Workflow = connect(state => {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${runNumber}.???`,
     wfname: state.taskForm.taskData.parameters.wfname,
-    motorLimits: state.beamline.motorsLimits,
+    movables: state.beamline.movables,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,
