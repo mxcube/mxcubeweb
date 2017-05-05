@@ -10,6 +10,7 @@ const initialState = {
   videoSizes: [],
   autoScale: true,
   imageRatio: 0,
+  pixelsPerMm: [0, 0],
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,

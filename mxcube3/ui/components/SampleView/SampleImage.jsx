@@ -561,7 +561,6 @@ export default class SampleImage extends React.Component {
     this.configureGrid();
     this.showGridForm();
 
-
     return (
       <div>
         <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
