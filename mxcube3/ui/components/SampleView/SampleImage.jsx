@@ -29,6 +29,7 @@ export default class SampleImage extends React.Component {
     this.saveGrid = this.saveGrid.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
+    this.initJSMpeg = this.initJSMpeg.bind(this);
     this.canvas = {};
     this._keyPressed = null;
     this.gridStarted = false;
@@ -67,27 +68,27 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keydown', this.keyDown, false);
     document.addEventListener('keyup', this.keyUp, false);
 
-    // Initialize JSMpeg for decoding the MPEG1 stream
-    if (this.props.videoFormat === 'MPEG1') {
-      const canvas = document.getElementById('sample-img');
-
-      if (canvas) {
-        this.player = new jsmpeg.JSMpeg.Player(`ws://${document.location.hostname}:4042/`,
-          { canvas, preserveDrawingBuffer: true });
-        this.player.play();
-      }
-    }
+    this.initJSMpeg();
   }
 
   componentWillReceiveProps(nextProps) {
     const { width, cinema } = this.props;
-    if (nextProps.width !== width || nextProps.cinema !== cinema) {
+    if (nextProps.width !== width || nextProps.cinema !== cinema ||
+        nextProps.autoScale && this.props.imageRatio !== nextProps.imageRatio) {
       this.setImageRatio();
     }
   }
 
   componentDidUpdate(prevProps) {
-    this.renderSampleView(prevProps);
+    // Initialize JSMpeg for decoding the MPEG1 stream
+    if (prevProps.videoFormat !== 'MPEG1') {
+      this.initJSMpeg();
+    }
+
+    if (this.props.width !== prevProps.width) {
+      this.initJSMpeg();
+    }
+    this.renderSampleView(this.props);
   }
 
   componentWillUnmount() {
@@ -141,13 +142,10 @@ export default class SampleImage extends React.Component {
   }
 
   setImageRatio() {
-    let videoSize = this.props.videoSize;
-
-    if (videoSize === null) {
-      videoSize = document.getElementById('outsideWrapper').clientWidth;
+    if (this.props.autoScale) {
+      const clientWidth = document.getElementById('outsideWrapper').clientWidth;
+      this.props.sampleActions.setImageRatio(clientWidth);
     }
-
-    this.props.sampleActions.setImageRatio(videoSize);
   }
 
   setVCellSpacing(e) {
@@ -405,8 +403,8 @@ export default class SampleImage extends React.Component {
   }
 
   configureGrid() {
-    const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm / this.props.imageRatio;
-    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm / this.props.imageRatio;
+    const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0] / this.props.imageRatio;
+    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[0] / this.props.imageRatio;
     this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
 
     if (!this.props.drawGrid) {
@@ -452,6 +450,39 @@ export default class SampleImage extends React.Component {
     this.props.sampleActions.toggleDrawGrid();
   }
 
+  createVideoPlayerContainer(format) {
+    // Default to MJPEG
+    let result = (
+      <img
+        id= "sample-img"
+        className="img"
+        src="/mxcube/api/v0.1/sampleview/camera/subscribe"
+        alt="SampleView"
+      />);
+
+    if (format === 'MPEG1') {
+      result = (<canvas id="sample-img" className="img" />);
+    }
+
+    return result;
+  }
+
+  initJSMpeg() {
+    const canvas = document.getElementById('sample-img');
+    const source = `ws://${document.location.hostname}:4042/`;
+
+    if (this.player) {
+      this.player.destroy();
+      this.player = null;
+    }
+
+    if (this.props.videoFormat === 'MPEG1' && canvas) {
+      this.player = new jsmpeg.JSMpeg.Player(source, {
+        canvas, decodeFirstFrame: true, preserveDrawingBuffer: true });
+      this.player.play();
+    }
+  }
+
   renderSampleView(nextProps) {
     const group = this.canvas.getActiveGroup();
     const selection = this.canvas.getActiveObject();
@@ -469,7 +500,7 @@ export default class SampleImage extends React.Component {
     this.drawCanvas(imageRatio);
     this.canvas.add(...makeImageOverlay(
       imageRatio,
-      pixelsPerMm,
+      pixelsPerMm[0],
       beamPosition,
       beamShape,
       beamSize,
@@ -526,28 +557,10 @@ export default class SampleImage extends React.Component {
     this.canvas.renderAll();
   }
 
-
-  createVideoPlayerContainer(format) {
-  // Default to MJPEG
-    let result = (
-      <img
-        id= "sample-img"
-        className="img"
-        src="/mxcube/api/v0.1/sampleview/camera/subscribe"
-        alt="SampleView"
-      />);
-
-    if (format === 'MPEG1') {
-      result = (<canvas id="sample-img" className="img" />);
-    }
-
-    return result;
-  }
-
-
   render() {
     this.configureGrid();
     this.showGridForm();
+
 
     return (
       <div>

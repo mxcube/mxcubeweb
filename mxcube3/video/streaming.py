@@ -3,11 +3,14 @@
 import cStringIO
 import fcntl
 import os
+import signal
 import struct
 import subprocess
 import sys
 import time
 import types
+import json
+
 
 import PIL
 import v4l2
@@ -15,6 +18,9 @@ import v4l2
 VIDEO_DEVICE = None
 VIDEO_STREAM_PROCESS = None
 VIDEO_INITIALIZED = False
+VIDEO_SIZE = "-1,-1"
+VIDEO_RESTART = False
+VIDEO_ORIGINAL_SIZE = 0,0
 
 
 def open_video_device(path="/dev/video0"):
@@ -52,6 +58,19 @@ def initialize_video_device(pixel_format, width, height, channels):
     return True
 
 
+def set_video_size(width=-1, height=-1):
+    global VIDEO_SIZE
+    global VIDEO_RESTART
+    VIDEO_SIZE = "%s,%s" % (width, height)
+    VIDEO_RESTART = True
+
+
+def video_size():
+    current_size = VIDEO_SIZE.split(",")
+    scale = float(current_size[0]) / VIDEO_ORIGINAL_SIZE[0]
+    return current_size + list((scale,))
+
+
 def new_frame_received(img, width, height, *args, **kwargs):
     """
     Executed when a new image is received, (new frame received callback).
@@ -61,6 +80,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
 
     global VIDEO_INITIALIZED
     global VIDEO_STREAM_PROCESS
+    global VIDEO_RESTART
 
     # Assume that we are getting a qimage if we are not getting a str,
     # to be able to handle data sent by hardware objects used in MxCuBE 2.x
@@ -86,10 +106,42 @@ def new_frame_received(img, width, height, *args, **kwargs):
 
         VIDEO_DEVICE.write(img)
 
+        if VIDEO_RESTART and VIDEO_STREAM_PROCESS:
+            os.system('pkill -TERM -P {pid}'.format(pid=VIDEO_STREAM_PROCESS.pid))
+            VIDEO_RESTART = False
+            VIDEO_STREAM_PROCESS = None
+
         # start the streaming process if not started or restart if terminated
         if not VIDEO_STREAM_PROCESS or VIDEO_STREAM_PROCESS.poll() is not None:
             sfpath = os.path.join(os.path.dirname(__file__), "streaming_processes.py")
-            VIDEO_STREAM_PROCESS = subprocess.Popen([sys.executable, sfpath, VIDEO_DEVICE.name])
+            VIDEO_STREAM_PROCESS = subprocess.Popen([sys.executable, sfpath, VIDEO_DEVICE.name, VIDEO_SIZE])
+
+
+def get_available_sizes(camera):
+    try:
+        w, h = camera.getWidth(), camera.getHeight()
+
+        # Calculate double size and half the size if MPEG stremaing is used
+        # otherwise just return the orignal size.
+        if VIDEO_STREAM_PROCESS:
+            dw, dh = w*2, h*2
+            hw, hh = w/2, h/2
+            video_sizes = [(hw, hh), (w, h), (dw, dh)]
+        else:
+            video_sizes = [(w, h)]
+
+    except (ValueError, AttributeError):
+        video_sizes = []
+
+    return video_sizes
+
+
+def set_initial_stream_size(camera, video_device_path):
+    global VIDEO_SIZE
+    global VIDEO_ORIGINAL_SIZE
+
+    VIDEO_ORIGINAL_SIZE = camera.getWidth(), camera.getHeight()
+    VIDEO_SIZE = "%s,%s" % VIDEO_ORIGINAL_SIZE
 
 
 def tango_lima_video_plugin(camera, video_device):
@@ -128,8 +180,9 @@ def init(camera, video_device_path):
     Initialize video loopback device.
 
     :param HardwareObject camera:  Object providing frames to encode and stream
-    :param str video_device+_path: Video loopback path
+    :param str video_device_path: Video loopback path
     """
+    set_initial_stream_size(camera, video_device_path)
     tango_lima_video_plugin(camera, video_device_path)
     video_device = open_video_device(video_device_path)
     camera.connect("imageReceived", new_frame_received)

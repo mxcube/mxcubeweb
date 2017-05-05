@@ -3,6 +3,7 @@ from flask import Flask, request
 from flask.ext.socketio import SocketIO
 from flask.ext.session import Session
 from optparse import OptionParser
+
 import os
 import sys
 import logging
@@ -138,8 +139,9 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
 
+
         # set up streaming
-        from video import streaming
+        from mxcube3.video import streaming
 
         try:
             streaming.init(app.diffractometer.camera, cmdline_options.video_device)

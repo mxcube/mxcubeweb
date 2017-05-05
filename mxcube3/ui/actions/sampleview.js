@@ -99,15 +99,41 @@ export function deleteShape(id) {
 }
 
 export function saveImageSize(width, height, pixelsPerMm) {
-  return {
-    type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm
-  };
+  return { type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm };
 }
 
-export function setVideoSize(width) {
-  return function (dispatch) {
-    dispatch({ type: 'SET_VIDEO_SIZE', width });
-    dispatch(setImageRatio(width));
+export function toggleAutoScale(width = 1) {
+  return { type: 'TOGGLE_AUTO_SCALE', width };
+}
+
+export function setVideoSize(width, height) {
+  return function (dispatch, getState) {
+    const { sampleview } = getState();
+
+    if (sampleview.sourceIsScalable) {
+      fetch('/mxcube/api/v0.1/sampleview/camera', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify({ width, height })
+      }).then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to add line');
+        }
+        return response.json();
+      }).then((json) => {
+        dispatch({
+          type: 'SAVE_IMAGE_SIZE',
+          width: json.imageWidth,
+          height: json.imageHeight,
+          pixelsPerMm: json.pixelsPerMm,
+          beamPosition: json.position
+        });
+      });
+    }
   };
 }
 

@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from flask import Response, jsonify, request
 
 import copy
@@ -6,15 +7,17 @@ import gevent.event
 import os
 import sys
 import json
-import signals
 import PIL
 import cStringIO
-import scutils
 import subprocess
 
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
 from mxcube3.routes.transportutils import to_camel, from_camel
+from mxcube3.routes import signals
+from mxcube3.routes import scutils
+from mxcube3.routes import beamlineutils
+from mxcube3.video import streaming
 
 
 SAMPLE_IMAGE = None
@@ -86,6 +89,9 @@ def init_signals():
                                   wait_for_centring_finishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
                                   wait_for_centring_finishes)
+
+#   camera = mxcube.diffractometer.camera
+#    streaming.set_video_size(camera.getWidth(), camera.getHeight())
 
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
@@ -183,16 +189,20 @@ def get_image_data():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    format = "MJPEG"
+    data = beamlineutils.get_viewport_info()
 
-    if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
-        format = "MPEG1"
+    resp = jsonify(data)
+    resp.status_code = 200
+    return resp
 
-    data = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
-            'imageWidth': mxcube.diffractometer.camera.getWidth(),
-            'imageHeight': mxcube.diffractometer.camera.getHeight(),
-            'format': format,
-            'sourceIsScalable': True}
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/camera", methods=['POST'])
+def set_image_size():
+    """
+    """
+    params = request.get_json()
+    streaming.set_video_size(params["width"], params["height"])
+    data = beamlineutils.get_viewport_info()
 
     resp = jsonify(data)
     resp.status_code = 200

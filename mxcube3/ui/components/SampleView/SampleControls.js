@@ -21,6 +21,7 @@ export default class SampleControls extends React.Component {
     this.toggleBackLight = this.toggleLight.bind(this, 'BackLight');
     this.toggleCentring = this.toggleCentring.bind(this);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
+    this.availableVideoSizes = this.availableVideoSizes.bind(this);
   }
 
   componentDidMount() {
@@ -87,6 +88,37 @@ export default class SampleControls extends React.Component {
     } else {
       this.props.sampleActions.sendLightOn(name.toLowerCase());
     }
+  }
+
+
+  availableVideoSizes() {
+    const items = this.props.videoSizes.map((size) => {
+      const sizeGClass = this.props.width === String(size[0]) ? 'fa-dot-circle-o' : 'fa-circle-o';
+
+      return (
+        <MenuItem
+          eventKey="1"
+          onClick={() => this.props.sampleActions.setVideoSize(size[0], size[1])}
+        >
+          <span className={`fa ${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
+        </MenuItem>
+      );
+    });
+
+    const autoScaleGClass = this.props.autoScale ? ' fa-check-square-o' : 'fa-square-o';
+
+    items.push((
+      <MenuItem
+        eventKey="3"
+        onClick={() => {
+          const clientWidth = document.getElementById('outsideWrapper').clientWidth;
+          this.props.sampleActions.toggleAutoScale(clientWidth);
+        }}
+      >
+        <span className={`fa ${autoScaleGClass}`} /> Auto Scale
+      </MenuItem>));
+
+    return items;
   }
 
   render() {
@@ -266,33 +298,7 @@ export default class SampleControls extends React.Component {
                 title={(<i className="fa fa-1x fa-video-camera" />)}
                 id={'video-size-dropdown'}
               >
-                <MenuItem
-                  eventKey="1"
-                  onClick={() => this.props.sampleActions.setVideoSize(640)}
-                >
-                  640 (small)
-                </MenuItem>
-                <MenuItem
-                  eventKey="1"
-                  onClick={() => this.props.sampleActions.setVideoSize(960)}
-                >
-                  960 (Medium)
-                </MenuItem>
-                <MenuItem
-                  eventKey="2"
-                  onClick={() => this.props.sampleActions.setVideoSize(1280)}
-                >
-                  1280 (Large)
-                </MenuItem>
-                <MenuItem
-                  eventKey="3"
-                  onClick={() => {
-                    const size = document.getElementById('outsideWrapper').clientWidth;
-                    this.props.sampleActions.setVideoSize(size);
-                  }}
-                >
-                  Scale (As large as possible)
-                </MenuItem>
+                {this.availableVideoSizes()}
               </DropdownButton>
               <span className="sample-controll-label">Video size</span>
             </li>
