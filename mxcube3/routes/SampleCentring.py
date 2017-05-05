@@ -1,18 +1,23 @@
+from __future__ import absolute_import
 from flask import Response, jsonify, request
 
 import copy
 import logging
 import gevent.event
 import os
+import sys
 import json
-import signals
 import PIL
 import cStringIO
-import scutils
+import subprocess
 
 from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
 from mxcube3.routes.transportutils import to_camel, from_camel
+from mxcube3.routes import signals
+from mxcube3.routes import scutils
+from mxcube3.routes import beamlineutils
+from mxcube3.video import streaming
 
 
 SAMPLE_IMAGE = None
@@ -79,20 +84,14 @@ def init_signals():
     except Exception:
         logging.getLogger('HWR').exception('[SAMPLEVIEW] back light error')
 
+    mxcube.diffractometer.connect("centringStarted", signals.centring_started)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful",
                                   wait_for_centring_finishes)
     mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
                                   wait_for_centring_finishes)
-    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
-    mxcube.diffractometer.camera.connect("imageReceived",
-                                         new_sample_video_frame_received)
-    mxcube.diffractometer.image_width = mxcube.diffractometer.camera.getWidth()
-    mxcube.diffractometer.image_height = mxcube.diffractometer.camera.getHeight()
 
-    mxcube.diffractometer.connect("centringStarted", signals.centring_started)
-
-
-############
+#   camera = mxcube.diffractometer.camera
+#    streaming.set_video_size(camera.getWidth(), camera.getHeight())
 
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
@@ -124,6 +123,16 @@ def stream_video(camera_hwobj):
     image. A HO is supplying that image
     """
     global SAMPLE_IMAGE
+
+    mxcube.diffractometer.camera.new_frame = gevent.event.Event()
+
+    try:
+        mxcube.diffractometer.camera.disconnect("imageReceived", new_sample_video_frame_received)
+    except KeyError:
+        pass
+
+    mxcube.diffractometer.camera.connect("imageReceived", new_sample_video_frame_received)
+
     while True:
         try:
             camera_hwobj.new_frame.wait()
@@ -180,10 +189,21 @@ def get_image_data():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    data = {'pixelsPerMm': mxcube.diffractometer.get_pixels_per_mm(),
-            'imageWidth': mxcube.diffractometer.image_width,
-            'imageHeight': mxcube.diffractometer.image_height,
-            }
+    data = beamlineutils.get_viewport_info()
+
+    resp = jsonify(data)
+    resp.status_code = 200
+    return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/camera", methods=['POST'])
+def set_image_size():
+    """
+    """
+    params = request.get_json()
+    streaming.set_video_size(params["width"], params["height"])
+    data = beamlineutils.get_viewport_info()
+
     resp = jsonify(data)
     resp.status_code = 200
     return resp
@@ -501,25 +521,6 @@ def click():
         return resp
     else:
         return Response(status=409)
-
-
-@mxcube.route("/mxcube/api/v0.1/sampleview/cp_from_coord", methods=['POST'])
-def cp_from_coord():
-    """
-    Gets the centerd position for the passed coordinates
-        :response Content-type: application/json, centred positions.
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    params = request.get_json()
-    x, y = params['x'], params['y']
-
-    try:
-        cp = mxcube.diffractometer.get_centred_point_from_coord(x, y)
-    except:
-        return Response(status=409)
-
-    return jsonify(cp), 200
 
 
 def wait_for_centring_finishes(*args, **kwargs):

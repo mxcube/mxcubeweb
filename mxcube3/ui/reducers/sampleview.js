@@ -5,6 +5,12 @@ const initialState = {
   distancePoints: [],
   width: 659,
   height: 493,
+  videoFormat: 'MJPEG',
+  sourceIsScalable: false,
+  videoSizes: [],
+  autoScale: true,
+  imageRatio: 0,
+  pixelsPerMm: [0, 0],
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,
@@ -15,7 +21,6 @@ const initialState = {
     kappaStep: 0.1,
     kappaphiStep: 0.1
   },
-  imageRatio: 0,
   apertureList: [],
   currentAperture: 0,
   currentPhase: '',
@@ -91,12 +96,22 @@ export default (state = initialState, action) => {
           ...state,
           width: action.width,
           height: action.height,
-          pixelsPerMm: action.pixelsPerMm
+          pixelsPerMm: action.pixelsPerMm,
+          beamPosition: action.beamPosition
         };
       }
     case 'SET_IMAGE_RATIO':
       {
         return { ...state, imageRatio: state.width / action.clientWidth };
+      }
+    case 'SET_VIDEO_SIZE':
+      {
+        return { ...state, videoSize: action.width };
+      }
+    case 'TOGGLE_AUTO_SCALE':
+      {
+        const imageRatio = state.autoScale ? 1 : state.width / action.width;
+        return { ...state, autoScale: !state.autoScale, imageRatio };
       }
     case 'SET_APERTURE':
       {
@@ -144,13 +159,17 @@ export default (state = initialState, action) => {
           ...state,
           width: action.data.Camera.imageWidth,
           height: action.data.Camera.imageHeight,
+          videoFormat: action.data.Camera.format,
+          videoSizes: action.data.Camera.videoSizes,
+          sourceIsScalable: action.data.Camera.sourceIsScalable,
           apertureList: action.data.beamInfo.apertureList,
           currentAperture: action.data.beamInfo.currentAperture,
           beamPosition: action.data.beamInfo.position,
           beamShape: action.data.beamInfo.shape,
           beamSize: { x: action.data.beamInfo.size_x, y: action.data.beamInfo.size_y },
           phaseList: action.data.phaseList,
-          currentPhase: action.data.currentPhase
+          currentPhase: action.data.currentPhase,
+          pixelsPerMm: action.data.Camera.pixelsPerMm
         };
       }
     default:

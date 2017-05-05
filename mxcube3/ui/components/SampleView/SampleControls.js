@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import MotorInput from './MotorInput';
 import PhaseInput from './PhaseInput';
 import 'fabric';
@@ -21,6 +21,7 @@ export default class SampleControls extends React.Component {
     this.toggleBackLight = this.toggleLight.bind(this, 'BackLight');
     this.toggleCentring = this.toggleCentring.bind(this);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
+    this.availableVideoSizes = this.availableVideoSizes.bind(this);
   }
 
   componentDidMount() {
@@ -89,6 +90,37 @@ export default class SampleControls extends React.Component {
     }
   }
 
+
+  availableVideoSizes() {
+    const items = this.props.videoSizes.map((size) => {
+      const sizeGClass = this.props.width === String(size[0]) ? 'fa-dot-circle-o' : 'fa-circle-o';
+
+      return (
+        <MenuItem
+          eventKey="1"
+          onClick={() => this.props.sampleActions.setVideoSize(size[0], size[1])}
+        >
+          <span className={`fa ${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
+        </MenuItem>
+      );
+    });
+
+    const autoScaleGClass = this.props.autoScale ? ' fa-check-square-o' : 'fa-square-o';
+
+    items.push((
+      <MenuItem
+        eventKey="3"
+        onClick={() => {
+          const clientWidth = document.getElementById('outsideWrapper').clientWidth;
+          this.props.sampleActions.toggleAutoScale(clientWidth);
+        }}
+      >
+        <span className={`fa ${autoScaleGClass}`} /> Auto Scale
+      </MenuItem>));
+
+    return items;
+  }
+
   render() {
     const phaseControl = (
       <li>
@@ -97,7 +129,7 @@ export default class SampleControls extends React.Component {
           phaseList={this.props.phaseList}
           sendPhase={this.props.sampleActions.sendCurrentPhase}
         />
-        <span className="sample-controll-label">Phase</span>
+      <span className="sample-controll-label">Phase</span>
       </li>);
     const motors = this.props.motors;
     return (
@@ -259,6 +291,17 @@ export default class SampleControls extends React.Component {
             <span className="sample-controll-label">Frontlight Controls</span>
             </li>
             {config.phaseControl ? phaseControl : null }
+            <li>
+              <DropdownButton
+                className="sample-controll"
+                bsStyle="default"
+                title={(<i className="fa fa-1x fa-video-camera" />)}
+                id={'video-size-dropdown'}
+              >
+                {this.availableVideoSizes()}
+              </DropdownButton>
+              <span className="sample-controll-label">Video size</span>
+            </li>
             </ul>
           </div>
         </div>

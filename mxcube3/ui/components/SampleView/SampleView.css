@@ -25,7 +25,6 @@
 
 .sample-controlls{
     z-index: 1000;
-    overflow: hidden;
     margin: auto;
     opacity: 0.4;
     border-radius: 3px;
@@ -35,6 +34,10 @@
 .sample-controlls:hover{
     opacity: 1;
     transition: opacity .3s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+}
+
+.sample-controlls li{
+    border: 0px !important;
 }
 
 .sample-controlls li{

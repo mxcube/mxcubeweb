@@ -8,27 +8,28 @@ from qutils import READY, RUNNING
 from mxcube3 import app as mxcube
 
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
+from mxcube3.routes import beamlineutils
 
 def init_signals():
-    try: 
+    try:
         beamInfo = mxcube.beamline.getObjectByRole("beam_info")
         if beamInfo is not None:
             for sig in signals.beam_signals:
                 beamInfo.connect(beamInfo, sig, signals.beam_changed)
         else:
             logging.getLogger('HWR').error("beam_info is not defined")
-    except Exception, ex: 
+    except Exception, ex:
         logging.getLogger('HWR').\
             exception("error connecting to beamline_setup/beam_info hardware object signals")
 
-    try: 
+    try:
         machInfo = mxcube.beamline.getObjectByRole("mach_info")
         if machInfo is not None:
             machInfo.connect(machInfo, 'machInfoChanged',
                            signals.mach_info_changed)
         else:
             logging.getLogger('HWR').error("mach_info is not defined")
-    except Exception, ex: 
+    except Exception, ex:
         logging.getLogger('HWR').\
             exception("error connecting to beamline_setup/mach_info hardware object signals")
 
@@ -46,14 +47,14 @@ def init_signals():
         logging.getLogger('HWR').\
             exception("error connecting to beamline actions hardware object signals")
 
-    try: 
+    try:
         safety_shutter = mxcube.beamline.getObjectByRole("safety_shutter")
         if safety_shutter is not None:
             safety_shutter.connect(safety_shutter, 'shutterStateChanged',
                            signals.safety_shutter_state_changed)
         else:
             logging.getLogger('HWR').error("safety_shutter is not defined")
-    except Exception, ex: 
+    except Exception, ex:
         logging.getLogger('HWR').\
             error("error loading safety_shutter hwo is not defined (%s)" % str(ex))
 
@@ -74,11 +75,11 @@ def beamline_get_all_attributes():
           args.append({ "name": argname, "type": argtype })
           if argtype == 'combo':
             args[-1]["items"] = cmd.getComboArgumentItems(argname)
-         
+
         actions.append({ "name": cmd.name(), "username": cmd.userName(), "state": READY, "arguments": args, "messages": [] })
-    
+
     data.update({'path': mxcube.session.get_base_image_directory(), 'actionsList': actions })
-    
+
     return jsonify(data)
 
 
@@ -95,17 +96,17 @@ def beamline_abort_action(name):
         cmds = mxcube.actions.getCommands()
     except Exception:
         cmds = []
-    
+
     for cmd in cmds:
         if cmd.name() == name:
             try:
                 cmd.abort()
             except Exception:
                 err = str(sys.exc_info()[1])
-                return make_response(err, 520) 
+                return make_response(err, 520)
             else:
                 return make_response("", 200)
-   
+
     # This could be made to give access to arbitrary method of HO, possible
     # security issues to be discussed.
     if name.lower() == "detdist":
@@ -215,7 +216,7 @@ def beamline_get_attribute(name):
         data["state"] = "UNUSABLE"
         data["msg"] = str(ex)
         code = 520
- 
+
     response = jsonify(data)
     response.code = code
     return response
@@ -223,39 +224,20 @@ def beamline_get_attribute(name):
 
 @mxcube.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
 def get_beam_info():
-    """Beam information: position,size,shape
+    """
+    Beam information: position,size,shape
     return_data={"position":,"shape":,"size_x":,"size_y":}
     """
-    ret = {}
+    beam_info_dict = beamlineutils.get_beam_info()
+    aperture_list, current_aperture = beamlineutils.get_aperture()
 
-    beam_info = mxcube.beamline.getObjectByRole("beam_info")
+    ret = {'position': beam_info_dict.get("position"),
+           'shape': beam_info_dict.get("shape"),
+           'size_x': beam_info_dict.get("size_x"),
+           'size_y': beam_info_dict.get("size_y"),
+           'apertureList': aperture_list,
+           'currentAperture': current_aperture}
 
-    if beam_info is None:
-        logging.getLogger('HWR').error("beamInfo is not defined")
-        response = jsonify({})
-        response.code = 409
-        return response
-
-    try:
-        beam_info_dict = beam_info.get_beam_info()
-    except Exception:
-        beam_info_dict = dict()
-
-    try:
-        aperture = mxcube.diffractometer.getObjectByRole('aperture')
-        aperture_list = aperture.getPredefinedPositionsList()
-        current_aperture = aperture.getCurrentPositionName()
-    except Exception:
-        logging.getLogger('HWR').exception('could not get all Aperture hwobj')
-        aperture_list = []
-        current_aperture = None
-
-    ret.update({'position': beam_info.get_beam_position(),
-                'shape': beam_info_dict.get("shape"),
-                'size_x': beam_info_dict.get("size_x"),
-                'size_y': beam_info_dict.get("size_y"),
-                'apertureList': aperture_list,
-                'currentAperture': current_aperture})
     return jsonify(ret)
 
 
@@ -276,7 +258,7 @@ def mach_info_get():
 
     :returns: Response object with values, status code set to:
               200: On success
-              409: Error getting information 
+              409: Error getting information
     """
     try:
         values = mxcube.machinfo.get_values(False)
@@ -286,4 +268,3 @@ def mach_info_get():
         response = jsonify({})
         response.code = 409
         return response
-

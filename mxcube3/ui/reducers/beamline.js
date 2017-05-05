@@ -108,7 +108,6 @@ export const INITIAL_STATE = {
     kappa_phi: { position: 0, Status: 0 }
   },
   machinfo: { current: -1, message: '' },
-  pixelsPerMm: 0,
   zoom: 0,
   beamlineActionsList: [],
   currentBeamlineAction: { show: false, messages: [], arguments: [] }
@@ -170,8 +169,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'SAVE_MOTOR_POSITIONS':
       return { ...state,
                 motors: { ...state.motors, ...action.data },
-                zoom: action.data.zoom.position,
-                pixelsPerMm: action.data.pixelsPerMm[0]
+                zoom: action.data.zoom.position
       };
     case 'SAVE_MOTOR_POSITION':
       return { ...state, motors: { ...state.motors, [action.name]:
@@ -192,7 +190,6 @@ export default (state = INITIAL_STATE, action) => {
         movables: { ...INITIAL_STATE.movables, ...action.data.beamlineSetup.movables },
         motorsLimits: { ...INITIAL_STATE.motorsLimits,
                         ...action.data.motorsLimits },
-        pixelsPerMm: action.data.Camera.pixelsPerMm[0],
         zoom: action.data.Motors.zoom.position,
         beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0)
       };
