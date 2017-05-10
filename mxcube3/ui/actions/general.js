@@ -133,7 +133,15 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const savedPoints = fetch('mxcube/api/v0.1/sampleview/centring', {
+    const charParameters = fetch('mxcube/api/v0.1/queue/char_acq', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    const savedShapes = fetch('mxcube/api/v0.1/sampleview/shapes', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -157,6 +165,14 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
+    const workflow = fetch('mxcube/api/v0.1/workflow', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
 
     const pchains = [
       queue.then(parse).then(json => { state.queue = json; }).catch(notify),
@@ -170,11 +186,14 @@ export function getInitialState() {
       dcParameters.then(parse).then(
         json => { state.dcParameters = json.acq_parameters; return json; }).then(
         json => { state.acqParametersLimits = json.limits; }).catch(notify),
-      savedPoints.then(parse).then(json => { state.points = json; }).catch(notify),
+      charParameters.then(parse).then(
+        json => { state.charParameters = json.acq_parameters; }).catch(notify),
+      savedShapes.then(parse).then(json => {state.shapes = json.shapes;}).catch(notify),
       sampleChangerContents.then(parse).then(json => {
         state.sampleChangerContents = json;
       }).catch(notify),
-      observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify)
+      observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
+      workflow.then(parse).then(json => { state.workflow = json; }).catch(notify)
     ];
 
     Promise.all(pchains).then(() => {

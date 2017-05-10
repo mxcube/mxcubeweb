@@ -11,7 +11,7 @@ import { FieldsHeader,
          FieldsRow,
          CollapsableRows } from './fields';
 
-class DataCollection extends React.Component {
+class Mesh extends React.Component {
   constructor(props) {
     super(props);
 
@@ -32,7 +32,8 @@ class DataCollection extends React.Component {
     const parameters = {
       ...params,
       type: 'DataCollection',
-      label: 'Data Collection',
+      label: 'Mesh',
+      mesh: true,
       helical: false,
       shape: this.props.pointID
     };
@@ -47,9 +48,10 @@ class DataCollection extends React.Component {
       'prefix',
       'subdir',
       'type',
-      'shape',
+      'point',
       'label',
-      'helical'
+      'mesh',
+      'shape'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -59,15 +61,14 @@ class DataCollection extends React.Component {
   render() {
     return (<Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>Standard Data Collection</Modal.Title>
+          <Modal.Title>Mesh Scan</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
-            <StaticField label="Filename" data={this.props.filename} />
             <Row>
-              <Col xs={12} style={{ marginTop: '10px' }}>
+              <Col xs={12}>
                 <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
@@ -79,6 +80,7 @@ class DataCollection extends React.Component {
                 <InputField propName="run_number" label="Run number" col1="4" col2="8" />
               </Col>
             </Row>
+            <StaticField label="Filename" data={this.props.filename} />
           </Form>
 
           <FieldsHeader title="Acquisition" />
@@ -125,7 +127,6 @@ class DataCollection extends React.Component {
 
           <FieldsHeader title="Processing" />
        </Modal.Body>
-
        { this.props.taskData.state ? '' :
            <Modal.Footer>
              <ButtonToolbar className="pull-right">
@@ -147,14 +148,14 @@ class DataCollection extends React.Component {
   }
 }
 
-DataCollection = reduxForm({
-  form: 'datacollection',
+Mesh = reduxForm({
+  form: 'mesh',
   validate
-})(DataCollection);
+})(Mesh);
 
-const selector = formValueSelector('datacollection');
+const selector = formValueSelector('helical');
 
-DataCollection = connect(state => {
+Mesh = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
@@ -169,6 +170,6 @@ DataCollection = connect(state => {
       beam_size: state.sampleview.currentAperture
     }
   };
-})(DataCollection);
+})(Mesh);
 
-export default DataCollection;
+export default Mesh;

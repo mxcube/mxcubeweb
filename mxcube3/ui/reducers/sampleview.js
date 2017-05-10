@@ -3,9 +3,14 @@ const initialState = {
   clickCentringPoints: [],
   measureDistance: false,
   distancePoints: [],
-  lines: [],
   width: 659,
   height: 493,
+  videoFormat: 'MJPEG',
+  sourceIsScalable: false,
+  videoSizes: [],
+  autoScale: true,
+  imageRatio: 0,
+  pixelsPerMm: [0, 0],
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,
@@ -16,7 +21,6 @@ const initialState = {
     kappaStep: 0.1,
     kappaphiStep: 0.1
   },
-  imageRatio: 0,
   apertureList: [],
   currentAperture: 0,
   currentPhase: '',
@@ -26,8 +30,6 @@ const initialState = {
   cinema: false,
   phaseList: [],
   drawGrid: false,
-  gridList: [],
-  gridCount: 0,
   selectedGrids: []
 };
 
@@ -61,10 +63,6 @@ export default (state = initialState, action) => {
             }
         );
       }
-    case 'ADD_LINE':
-      {
-        return { ...state, lines: [...state.lines, { p1: action.p1, p2: action.p2 }] };
-      }
     case 'DRAW_GRID':
       {
         let selectedGrids = state.selectedGrids;
@@ -72,38 +70,9 @@ export default (state = initialState, action) => {
 
         return { ...state, drawGrid: !state.drawGrid, selectedGrids };
       }
-    case 'ADD_GRID':
-      {
-        return { ...state,
-                 gridList: [...state.gridList, action.gridData],
-                 gridCount: state.gridCount + 1,
-                 selectedGrids: [action.gridData.id]
-               };
-      }
-    case 'DELETE_GRID':
-      {
-        return { ...state,
-                 gridList: state.gridList.filter((gridData) => (gridData.id !== action.id))
-        };
-      }
     case 'SELECT_GRID':
       {
         return { ...state, selectedGrids: [action.id] };
-      }
-
-    case 'UPDATE_GRID':
-      {
-        const gridList = state.gridList.map((gridData) => {
-          let gd = gridData;
-
-          if (gridData.id === action.gridData.id) {
-            gd = { ...action.gridData };
-          }
-
-          return gd;
-        });
-
-        return { ...state, gridList };
       }
     case 'MEASURE_DISTANCE':
       {
@@ -121,24 +90,28 @@ export default (state = initialState, action) => {
             }
         );
       }
-    case 'DELETE_LINE':
-      {
-        return { ...state,
-          lines: [...state.lines.slice(0, action.id), ...state.lines.slice(action.id + 1)]
-        };
-      }
     case 'SAVE_IMAGE_SIZE':
       {
         return {
           ...state,
           width: action.width,
           height: action.height,
-          pixelsPerMm: action.pixelsPerMm
+          pixelsPerMm: action.pixelsPerMm,
+          beamPosition: action.beamPosition
         };
       }
     case 'SET_IMAGE_RATIO':
       {
         return { ...state, imageRatio: state.width / action.clientWidth };
+      }
+    case 'SET_VIDEO_SIZE':
+      {
+        return { ...state, videoSize: action.width };
+      }
+    case 'TOGGLE_AUTO_SCALE':
+      {
+        const imageRatio = state.autoScale ? 1 : state.width / action.width;
+        return { ...state, autoScale: !state.autoScale, imageRatio };
       }
     case 'SET_APERTURE':
       {
@@ -150,7 +123,8 @@ export default (state = initialState, action) => {
           ...state,
           beamPosition: action.info.position,
           beamShape: action.info.shape,
-          beamSize: { x: action.info.size_x, y: action.info.size_y }
+          beamSize: { x: action.info.size_x, y: action.info.size_y },
+          currentAperture: action.info.size_x * 1000
         };
       }
     case 'SET_CURRENT_PHASE':
@@ -164,8 +138,7 @@ export default (state = initialState, action) => {
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state,
-                             { lines: [],
-                               distancePoints: [],
+                             { distancePoints: [],
                                clickCentringPoints: [],
                                gridList: [],
                                gridCount: 0 }
@@ -174,8 +147,7 @@ export default (state = initialState, action) => {
     case 'CLEAR_QUEUE':
       {
         return Object.assign({}, state,
-                             { lines: [],
-                               distancePoints: [],
+                             { distancePoints: [],
                                clickCentringPoints: [],
                                gridList: [],
                                gridCount: 0 }
@@ -187,6 +159,9 @@ export default (state = initialState, action) => {
           ...state,
           width: action.data.Camera.imageWidth,
           height: action.data.Camera.imageHeight,
+          videoFormat: action.data.Camera.format,
+          videoSizes: action.data.Camera.videoSizes,
+          sourceIsScalable: action.data.Camera.sourceIsScalable,
           apertureList: action.data.beamInfo.apertureList,
           currentAperture: action.data.beamInfo.currentAperture,
           beamPosition: action.data.beamInfo.position,
@@ -194,7 +169,7 @@ export default (state = initialState, action) => {
           beamSize: { x: action.data.beamInfo.size_x, y: action.data.beamInfo.size_y },
           phaseList: action.data.phaseList,
           currentPhase: action.data.currentPhase,
-          lines: []
+          pixelsPerMm: action.data.Camera.pixelsPerMm
         };
       }
     default:

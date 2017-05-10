@@ -196,7 +196,7 @@ input::-webkit-inner-spin-button {
     margin: auto;
 }
 
-.bs-glyphicons-list li {
+.bs-glyphicons-list>li {
     float: left;
     padding-left: 10px;
     padding-right: 10px;

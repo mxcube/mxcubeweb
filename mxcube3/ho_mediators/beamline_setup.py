@@ -33,6 +33,13 @@ class _BeamlineSetupMediator(object):
         self._bl = beamline_setup
         self._ho_dict = {}
 
+        workflow = self.getObjectByRole("workflow")
+
+        if workflow:
+            workflow.connect('parametersNeeded', self.wf_parameters_needed)
+
+    def wf_parameters_needed(self, params):
+        socketio.emit("workflowParametersDialog", params, namespace="/hwr")
 
     def getObjectByRole(self, name):
         try:
@@ -45,6 +52,8 @@ class _BeamlineSetupMediator(object):
 
         if name == "energy":
             return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
+        if name == "wavelength":
+            return self._ho_dict.setdefault(name, WavelengthHOMediator(ho, "wavelength"))
         elif name == "resolution":
             return self._ho_dict.setdefault(name, ResolutionHOMediator(ho, "resolution"))
         elif name == "transmission":
@@ -79,6 +88,11 @@ class _BeamlineSetupMediator(object):
         except Exception:
             logging.getLogger("HWR").exception("Failed to get energy info")
 
+        try:
+            wavelength = self.getObjectByRole("wavelength")
+            movables.update({"wavelength": wavelength.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get energy info")
         try:
             transmission = self.getObjectByRole("transmission")
             movables.update({"transmission": transmission.dict_repr()})
@@ -254,7 +268,7 @@ class EnergyHOMediator(HOMediatorBase):
         :rtype: float
         """
         try:
-            self._ho.start_move_energy(float(value))
+            self._ho.startMoveEnergy(float(value))
             res = self.get()
         except:
             raise
@@ -305,6 +319,77 @@ class EnergyHOMediator(HOMediatorBase):
 
         return energy_limits
 
+class WavelengthHOMediator(HOMediatorBase):
+    """
+    Mediator for wavelength Hardware Object, a web socket is used communicate
+    information on longer running processes.
+    """
+    def __init__(self, ho, name=''):
+        super(WavelengthHOMediator, self).__init__(ho, name)
+        ho.connect("energyChanged", self.value_change)
+
+
+    def set(self, value):
+        """
+        :param value: Value (castable to float) to set
+
+        :raises ValueError: When value for any reason can't be retrieved
+        :raises StopItteration: When a value change was interrupted
+                                (aborted or cancelled)
+
+        :returns: The actual value set
+        :rtype: float
+        """
+        try:
+            self._ho.move(float(value))
+            res = self.get()
+        except:
+            raise
+
+        return res
+
+
+    def get(self):
+        """
+        :returns: The value
+        :rtype: float
+        :raises ValueError: When value for any reason can't be retrieved
+        """
+        try:
+            wavelength = self._ho.getPosition()
+            wavelength = round(float(wavelength), 4)
+        except (AttributeError, TypeError):
+            raise ValueError("Could not get value")
+
+        return wavelength
+
+    def state(self):
+        state = MOTOR_STATE.READY
+
+        try:
+            state = self._ho.getState()
+        except:
+            pass
+
+        return state
+
+
+    def stop(self):
+        self._ho.stop()
+
+
+    def limits(self):
+        """
+        :returns: The limits.
+        """
+        try:
+            energy_limits = self._ho.getLimits()
+        except (AttributeError, TypeError):
+            energy_limits = (0, 50)
+            logging.getLogger("HWR").exception("Failed to get get object with role: %s" % name)
+            raise ValueError("Could not get limits")
+
+        return energy_limits
 
 class InOutHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
@@ -563,7 +648,7 @@ class ResolutionHOMediator(HOMediatorBase):
         current_wavelength = 12.3984 / energy
 
         try:
-            ttheta = math.atan(radius / dist)
+            ttheta = math.atan(radius / float(dist))
             if ttheta != 0:
                 return current_wavelength / (2 * math.sin(ttheta / 2))
             else:
@@ -575,8 +660,9 @@ class ResolutionHOMediator(HOMediatorBase):
     def get_lookup_limits(self):
         energy_ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('energy')
         e_min, e_max = energy_ho.limits()
+	
         limits = []
-        x = arange(e_min, e_max, 0.5)
+        x = arange(float(e_min), float(e_max), 0.5)
 
         radius = self._ho.det_radius
         det_dist = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('dtox')
@@ -612,13 +698,13 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
 
     def set(self, value):
-        self._ho.dtox.move(round(float(value), 3))
+        self._ho.move(round(float(value), 3))
         return self.get()
 
 
     def get(self):
         try:
-            detdist = self._ho.dtox.getPosition()
+            detdist = self._ho.getPosition()
             detdist = round(float(detdist), 3)
         except (TypeError, AttributeError):
             detdist = 0
@@ -632,9 +718,8 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         """
         try:
             detdist_limits = self._ho.getLimits()
-        except (AttributeError, TypeError):
+        except (AttributeError, TypeError) as ex:
             raise ValueError("Could not get limits")
-
         return detdist_limits
 
 

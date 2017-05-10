@@ -15,6 +15,18 @@ class SampleViewContainer extends Component {
     const { imageRatio, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleID = this.props.current.sampleID;
+    const [points, lines, grids] = [{}, {}, {}];
+
+    Object.keys(this.props.shapes).forEach((key) => {
+      const shape = this.props.shapes[key];
+      if (shape.t === 'P') {
+        points[shape.id] = shape;
+      } else if (shape.t === 'L') {
+        lines[shape.id] = shape;
+      } else if (shape.t === 'G') {
+        grids[shape.id] = shape;
+      }
+    });
 
     return (
         <div className="row">
@@ -45,13 +57,16 @@ class SampleViewContainer extends Component {
                   sampleData={this.props.sampleList[sampleID]}
                   defaultParameters={this.props.defaultParameters}
                   imageRatio={imageRatio}
+                  workflows={this.props.workflows}
                 />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   {...this.props.sampleViewState}
                   {...this.props.beamline}
                   contextMenuVisible={this.props.contextMenu.show}
-                  points={this.props.points.points}
+                  points={points}
+                  lines={lines}
+                  grids={grids}
                 />
               </div>
               <div className="col-xs-3" style={ { display: 'flex' } }>
@@ -73,7 +88,8 @@ function mapStateToProps(state) {
     contextMenu: state.contextMenu,
     beamline: state.beamline,
     defaultParameters: state.taskForm.defaultParameters,
-    points: state.points
+    shapes: state.shapes.shapes,
+    workflows: state.workflow.workflows
   };
 }
 

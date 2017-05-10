@@ -1,17 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
+
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { FieldsHeader,
-         StaticField,
-         InputField,
-         CheckboxField,
-         SelectField,
-         FieldsRow,
-         CollapsableRows } from './fields';
+import { FieldsHeader, StaticField, InputField } from './fields';
 
-class DataCollection extends React.Component {
+class Workflow extends React.Component {
   constructor(props) {
     super(props);
 
@@ -31,25 +26,21 @@ class DataCollection extends React.Component {
   addToQueue(runNow, params) {
     const parameters = {
       ...params,
-      type: 'DataCollection',
-      label: 'Data Collection',
-      helical: false,
+      type: 'Workflow',
+      label: params.wfname,
       shape: this.props.pointID
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
-      'shutterless',
-      'inverse_beam',
       'centringMethod',
-      'detector_mode',
-      'space_group',
       'prefix',
       'subdir',
       'type',
       'shape',
       'label',
-      'helical'
+      'wfname',
+      'wfpath'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -59,7 +50,7 @@ class DataCollection extends React.Component {
   render() {
     return (<Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>Standard Data Collection</Modal.Title>
+          <Modal.Title>{this.props.wfname}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
@@ -80,50 +71,6 @@ class DataCollection extends React.Component {
               </Col>
             </Row>
           </Form>
-
-          <FieldsHeader title="Acquisition" />
-          <Form horizontal>
-            <FieldsRow>
-              <InputField propName="osc_range" label="Oscillation range" />
-              <InputField propName="first_image" label="First image" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="osc_start" label="Oscillation start" />
-              <InputField propName="num_images" label="Number of images" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="exp_time" label="Exposure time (ms)" />
-              <InputField propName="transmission" label="Transmission" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="energy" label="Energy" />
-              <InputField propName="resolution" label="Resolution" />
-            </FieldsRow>
-            <CollapsableRows>
-              <FieldsRow>
-                <InputField propName="kappa" label="Kappa" />
-                <InputField propName="kappa_phi" label="Phi" />
-              </FieldsRow>
-              <FieldsRow>
-                <SelectField
-                  propName="beam_size"
-                  label="Beam size"
-                  list={this.props.apertureList}
-                />
-                <SelectField
-                  propName="detector_mode"
-                  label="Detector mode"
-                  list={['0', 'C18', 'C2']}
-                />
-              </FieldsRow>
-              <FieldsRow>
-                <CheckboxField propName="shutterless" label="Shutterless" />
-                <CheckboxField propName="inverse_beam" label="Inverse beam" />
-              </FieldsRow>
-            </CollapsableRows>
-          </Form>
-
-          <FieldsHeader title="Processing" />
        </Modal.Body>
 
        { this.props.taskData.state ? '' :
@@ -147,14 +94,14 @@ class DataCollection extends React.Component {
   }
 }
 
-DataCollection = reduxForm({
-  form: 'datacollection',
+Workflow = reduxForm({
+  form: 'workflow',
   validate
-})(DataCollection);
+})(Workflow);
 
-const selector = formValueSelector('datacollection');
+const selector = formValueSelector('workflow');
 
-DataCollection = connect(state => {
+Workflow = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
@@ -162,6 +109,7 @@ DataCollection = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${runNumber}.???`,
+    wfname: state.taskForm.taskData.parameters.wfname,
     movables: state.beamline.movables,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
@@ -169,6 +117,6 @@ DataCollection = connect(state => {
       beam_size: state.sampleview.currentAperture
     }
   };
-})(DataCollection);
+})(Workflow);
 
-export default DataCollection;
+export default Workflow;

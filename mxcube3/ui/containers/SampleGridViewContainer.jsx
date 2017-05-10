@@ -3,6 +3,7 @@ import { withRouter } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
+import loader from '../img/loader.gif';
 
 import {
   Row, Col, Form,
@@ -65,8 +66,9 @@ class SampleGridViewContainer extends React.Component {
     this.addSelectedSamplesToQueue = this.addSelectedSamplesToQueue.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
     this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
-    this.showCharacterisationForm = this.showTaskForm.bind(this, 'Characterisation');
-    this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection');
+    this.showCharacterisationForm = this.showTaskForm.bind(this, 'Characterisation', {});
+    this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection', {});
+    this.showWorkflowForm = this.showTaskForm.bind(this, 'Workflow');
     this.showAddSampleForm = this.showTaskForm.bind(this, 'AddSample');
     this.inQueue = this.inQueue.bind(this);
     this.inQueueDeleteElseAddSamples = this.inQueueDeleteElseAddSamples.bind(this);
@@ -163,7 +165,7 @@ class SampleGridViewContainer extends React.Component {
    * @property {Object} selected
    * @property {Object} sampleList
    */
-  showTaskForm(formName) {
+  showTaskForm(formName, extraParams = {}) {
     let prefix = '';
     let path = '';
 
@@ -174,7 +176,9 @@ class SampleGridViewContainer extends React.Component {
 
     const parameters = { parameters: {
       ...this.props.defaultParameters[formName.toLowerCase()],
-      prefix, path } };
+      ...extraParams,
+      prefix,
+      path } };
 
     const selected = [];
 
@@ -184,7 +188,11 @@ class SampleGridViewContainer extends React.Component {
       }
     }
 
-    this.props.showTaskParametersForm(formName, selected, parameters);
+    if (formName === 'AddSample') {
+      this.props.showTaskParametersForm('AddSample');
+    } else {
+      this.props.showTaskParametersForm(formName, selected, parameters);
+    }
   }
 
 
@@ -470,9 +478,15 @@ class SampleGridViewContainer extends React.Component {
             message="This will remove all samples (and collections) from the grid,
                      are you sure you would like to continue ?"
             onOk={this.props.sendClearQueue}
-            show={this.props.showConfirmClearQueueDialog}
+            show={this.props.confirmClearQueueDialog}
             hide={this.props.confirmClearQueueHide}
           />
+          {this.props.loading ?
+            <div className="center-in-box" style={{ zIndex: 1200 }} >
+                <img src={loader} className="img-responsive" alt="" width="430" />
+              </div>
+            : null
+          }
           <Sticky
             style={{ zIndex: 1000, transform: '' }}
             stickyStyle={{ zIndex: 1000,
@@ -570,6 +584,7 @@ class SampleGridViewContainer extends React.Component {
             addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
             showCharacterisationForm={this.showCharacterisationForm}
             showDataCollectionForm={this.showDataCollectionForm}
+            showWorkflowForm={this.showWorkflowForm}
             addSamplesToQueue={this.addSamplesToQueue}
             inQueue={this.inQueue}
             inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
@@ -596,11 +611,12 @@ function mapStateToProps(state) {
   return {
     loginData: state.login.data,
     queue: state.queue,
+    loading: state.queueGUI.loading,
     selected: state.sampleGrid.selected,
     sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
-    showConfirmClearQueueDialog: state.general.showConfirmClearQueueDialog
+    confirmClearQueueDialog: state.general.showConfirmClearQueueDialog
   };
 }
 
@@ -628,4 +644,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(SampleGridViewContainer);
-

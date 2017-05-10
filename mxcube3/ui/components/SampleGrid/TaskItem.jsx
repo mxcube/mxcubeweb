@@ -29,6 +29,8 @@ export class TaskItem extends React.Component {
       res = 'DC';
     } else if (type === 'Characterisation') {
       res = 'C';
+    } else if (type === 'Workflow') {
+      res = 'AS';
     }
 
     return res;
@@ -36,7 +38,7 @@ export class TaskItem extends React.Component {
 
   summary() {
     const task = this.props.taskData;
-    let filePath = `${this.props.rootPath}/${task.parameters.path}/${task.parameters.prefix}`;
+    let filePath = `${this.props.rootPath}/${task.parameters.subdir}/${task.parameters.prefix}`;
     filePath += `_${task.parameters.run_number}_xxxx.cbf`;
     return (
       <div>
@@ -218,6 +220,7 @@ export class TaskItem extends React.Component {
           overlay={(
             <Popover
               id="taskSummaryPopover"
+              style={{ minWidth: '700px', paddingBottom: '1em' }}
               title={(<b>{this.title()}</b>)}
             >
               {this.summary()}

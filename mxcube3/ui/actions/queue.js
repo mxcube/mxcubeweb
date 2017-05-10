@@ -72,14 +72,15 @@ export function sendMountSample(sampleData) {
 
 export function addSamplesToQueue(sampleDataList) {
   return function (dispatch) {
-    dispatch(addSamplesToQueueAction(sampleDataList));
+    dispatch(queueLoading(true));
 
     sendAddQueueItem(sampleDataList).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to add sample'));
-        const sampleIDList = sampleDataList.map((sampleData) => (sampleData.sampleID));
-        dispatch(removeSamplesFromQueueAction(sampleIDList));
+      } else {
+        dispatch(addSamplesToQueueAction(sampleDataList));
       }
+      dispatch(queueLoading(false));
     });
   };
 }
@@ -399,7 +400,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                      checked: true };
 
       if (!state.queue.queue.includes(sampleID)) {
-        const sample = state.sampleGrid.sampleList[sampleID];
+        const sample = Object.assign({}, state.sampleGrid.sampleList[sampleID]);
         sample.tasks = [task];
         samples.push(sample);
       } else {
@@ -424,10 +425,9 @@ export function addTask(sampleIDs, parameters, runNow) {
             dispatch(sendRunSample(sampleIDs[0], taskIndex));
           }
         }
+        dispatch(queueLoading(false));
       });
     }
-
-    dispatch(queueLoading(false));
   };
 }
 

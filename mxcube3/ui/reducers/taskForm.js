@@ -7,7 +7,8 @@ const initialState = {
   defaultParameters: {
     datacollection: {},
     characterisation: {},
-    helical: {}
+    helical: {},
+    mesh: {}
   }
 };
 
@@ -50,7 +51,7 @@ export default (state = initialState, action) => {
           }
         };
       }
-    case 'MOUNT_SAMPLE':
+    case 'SET_CURRENT_SAMPLE':
       {
         return {
           ...state,
@@ -76,9 +77,17 @@ export default (state = initialState, action) => {
               ...state.defaultParameters.datacollection },
             characterisation: {
               run_number: 1,
-              ...action.data.dcParameters,
+              ...action.data.charParameters,
               ...state.defaultParameters.characterisation },
             helical: {
+              run_number: 1,
+              ...action.data.dcParameters,
+              ...state.defaultParameters.helical },
+            mesh: {
+              run_number: 1,
+              ...action.data.dcParameters,
+              ...state.defaultParameters.helical },
+            workflow: {
               run_number: 1,
               ...action.data.dcParameters,
               ...state.defaultParameters.helical }
@@ -90,4 +99,3 @@ export default (state = initialState, action) => {
       return state;
   }
 };
-

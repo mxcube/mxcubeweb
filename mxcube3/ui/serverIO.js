@@ -11,6 +11,7 @@ import {
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setBeamlineMovAttrAction,
+         setBeamlineActAttrAction,
          setMachInfo } from './actions/beamline';
 import { setActionState } from './actions/beamlineActions';
 import { setStatus,
@@ -23,6 +24,8 @@ import { collapseTask,
 import { setLoading,
          addUserMessage,
          showConnectionLostDialog } from './actions/general';
+
+import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
 
@@ -114,7 +117,7 @@ class ServerIO {
 
     this.hwrSocket.on('beamline_value_change', (data) => {
       if (data.type === 'actuator') {
-        void(0);
+        this.dispatch(setBeamlineActAttrAction(data));
       } else if (data.type === 'movable') {
         this.dispatch(setBeamlineMovAttrAction(data));
       } else {
@@ -191,6 +194,10 @@ class ServerIO {
 
     this.hwrSocket.on('observersChanged', (data) => {
       this.dispatch(setObservers(data));
+    });
+
+    this.hwrSocket.on('workflowParametersDialog', (data) => {
+      this.dispatch(showWorkflowParametersDialog(data));
     });
 
     this.hwrSocket.on('setMaster', (data) => {

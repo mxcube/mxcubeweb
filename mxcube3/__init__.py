@@ -3,6 +3,7 @@ from flask import Flask, request
 from flask.ext.socketio import SocketIO
 from flask.ext.session import Session
 from optparse import OptionParser
+
 import os
 import sys
 import logging
@@ -11,6 +12,10 @@ from logging.handlers import TimedRotatingFileHandler
 import cPickle as pickle
 import gevent
 import traceback
+import mock
+sys.modules["Qub"] = mock.Mock()
+sys.modules["Qub.CTools"] = mock.Mock()
+sys.modules["ShapeHistory"] = mock.MagicMock()
 
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
@@ -33,6 +38,11 @@ opt_parser.add_option("-a", "--beamline-actions",
                       dest="beamline_actions",
                       help="Beamline actions (commands) HWR file, defaults to /beamcmds",
                       default='/beamcmds')
+opt_parser.add_option("-v", "--video-device",
+                      dest="video_device",
+                      help="Video device, defaults to /dev/video0",
+                      default='/dev/video0')
+
 cmdline_options, args = opt_parser.parse_args()
 
 socketio = SocketIO()
@@ -96,15 +106,18 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
-                        lims, qutils)
+                        lims, qutils, workflow)
 
     ### Install server-side UI state storage
     from mxcube3 import state_storage
 
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
+        app.xml_rpc_server = hwr.getHardwareObject('xml-rpc-server')
         app.session = app.beamline.getObjectByRole("session")
         app.collect = app.beamline.getObjectByRole("collect")
+        app.workflow = app.beamline.getObjectByRole("workflow")
+        app.shapes = app.beamline.getObjectByRole("shape_history")
 
         Utils.enable_snapshots(app.collect)
 
@@ -125,6 +138,18 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.CURRENTLY_MOUNTED_SAMPLE = ''
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
+
+
+        # set up streaming
+        from mxcube3.video import streaming
+
+        try:
+            streaming.init(app.diffractometer.camera, cmdline_options.video_device)
+        except RuntimeError as ex:
+            logging.getLogger('HWR').info(str(ex))
+            app.VIDEO_DEVICE = None
+        else:
+            app.VIDEO_DEVICE = cmdline_options.video_device
 
         try:
             SampleCentring.init_signals()

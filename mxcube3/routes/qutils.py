@@ -3,6 +3,7 @@ import os
 import json
 import cPickle as pickle
 import redis
+import itertools
 
 import Utils
 
@@ -24,7 +25,7 @@ QUEUE_FAILED = 'QueueFailed'
 
 SAMPLE_MOUNTED = 0x8
 COLLECTED = 0x4
-WARNING = 0x10 # or 3
+WARNING = 0x10
 FAILED = 0x2
 RUNNING = 0x1
 UNCOLLECTED = 0x0
@@ -219,7 +220,7 @@ def get_queue_state():
 
 def _handle_dc(sample_id, node):
     parameters = node.as_dict()
-    parameters["point"] = node.get_point_index()
+    parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
 
     parameters.pop('sample')
@@ -233,7 +234,6 @@ def _handle_dc(sample_id, node):
     if mxcube.rest_lims:
         limsres = mxcube.rest_lims.get_dc(node.id)
     else:
-        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
         limsres = ''
 
     res = {"label": "Data Collection",
@@ -250,9 +250,27 @@ def _handle_dc(sample_id, node):
     return res
 
 
+def _handle_wf(sample_id, node):
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+
+    res = {"label": "Workflow",
+           "type": "Workflow",
+           "name": node._type,
+           "parameters": node.path_template.as_dict(),
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "queueID": queueID,
+           "checked": enabled,
+           "state": state
+           }
+
+    return res
+
+
 def _handle_char(sample_id, node):
     parameters = node.characterisation_parameters.as_dict()
-    parameters["point"] = node.get_point_index()
+    parameters["shape"] = node.get_point_index()
     refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
     parameters.update(refp)
 
@@ -327,6 +345,7 @@ def queue_to_dict_rec(node):
     result = []
 
     for node in node.get_children():
+        print(node)
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]
@@ -339,6 +358,9 @@ def queue_to_dict_rec(node):
         elif isinstance(node, qmo.DataCollection):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_dc(sample_id, node))
+        elif isinstance(node, qmo.Workflow):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_wf(sample_id, node))
         else:
             result.extend(queue_to_dict_rec(node))
 
@@ -352,7 +374,7 @@ def queue_exec_state():
               or QUEUE_RUNNING
 
     """
-    state = QUEUE_STOPPED 
+    state = QUEUE_STOPPED
 
     if mxcube.queue.queue_hwobj.is_paused():
         state = QUEUE_PAUSED
@@ -414,7 +436,7 @@ def swap_task_entry(sid, ti1, ti2):
     :param int ti1: Position of task1 (old position)
     :param int ti2: Position of task2 (new position)
     """
-    current_queue = queue_to_dict() 
+    current_queue = queue_to_dict()
 
     node_id = current_queue[sid]["queueID"]
     smodel, sentry = get_entry(node_id)
@@ -449,6 +471,7 @@ def move_task_entry(sid, ti1, ti2):
 
     # Swap queue entry order
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
+
 
 def queue_add_item(item_list):
     """
@@ -489,6 +512,8 @@ def queue_add_item(item_list):
             add_data_collection(sample_node_id, item)
         elif item_t == "Characterisation":
             add_characterisation(sample_node_id, item)
+        elif item_t == "Workflow":
+            add_workflow(sample_node_id, item)
 
 
 def add_sample(sample_id, item):
@@ -541,7 +566,6 @@ def set_dc_params(model, entry, task_data):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
-
     acq.path_template.set_from_dict(params)
     acq.path_template.base_prefix = params['prefix']
 
@@ -554,33 +578,74 @@ def set_dc_params(model, entry, task_data):
                                 params.get('subdir', ''))
     acq.path_template.process_directory = process_path
 
+    # MXCuBE3 specific shape attribute
+    model.shape = params["shape"]
+
     # If there is a centered position associated with this data collection, get
     # the necessary data for the position and pass it to the collection.
-    if params["point"]:
-        for cpos in mxcube.diffractometer.savedCentredPos:
-            if cpos['posId'] == int(params['point']):
-                _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                _cpos.index = int(params['point'])
-                acq.acquisition_parameters.centred_position = _cpos
-
     if params["helical"]:
         model.experiment_type = qme.EXPERIMENT_TYPE.HELICAL
+        acq2 = qmo.Acquisition()
+        model.acquisitions.append(acq2)
 
-        if params["p1"]:
-            for cpos in mxcube.diffractometer.savedCentredPos:
-                if cpos['posId'] == int(params['p1']):
-                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                    _cpos.index = int(params['p1'])
-                    acq.acquisition_parameters.centred_position = _cpos
+        line = mxcube.shapes.get_shape(params["shape"])
+        p1, p2 = line.refs
+        p1, p2 = mxcube.shapes.get_shape(p1), mxcube.shapes.get_shape(p2)
+        cpos1 = p1.get_centred_position()
+        cpos2 = p2.get_centred_position()
 
-        if params["p2"]:
-            acq2 = qmo.Acquisition()
-            for cpos in mxcube.diffractometer.savedCentredPos:
-                if cpos['posId'] == int(params['p2']):
-                    _cpos = qmo.CentredPosition(cpos['motor_positions'])
-                    _cpos.index = int(params['p2'])
-                    acq2.acquisition_parameters.centred_position = _cpos
-            model.acquisitions.append(acq2)
+        acq.acquisition_parameters.centred_position = cpos1
+        acq2.acquisition_parameters.centred_position = cpos2
+
+    elif params["shape"] != -1:
+        point = mxcube.shapes.get_shape(params["shape"])
+        cpos = point.get_centred_position()
+        acq.acquisition_parameters.centred_position = cpos
+
+    model.set_enabled(task_data['checked'])
+    entry.set_enabled(task_data['checked'])
+
+
+def set_wf_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the parameters for a workflow task.
+
+    :param WorkflowQueueModel: The model to set parameters of
+    :param GenericWorkflowQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    """
+    params = task_data['parameters']
+
+    model.path_template.set_from_dict(params)
+    model.path_template.base_prefix = params['prefix']
+    model.path_template.num_files = 0
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('subdir', ''))
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('subdir', ''))
+    model.path_template.process_directory = process_path
+
+    model.set_name("Workflow task")
+    model.set_type(params["wfname"])
+
+    beamline_params = {}
+    beamline_params['directory'] = model.path_template.directory
+    beamline_params['prefix'] = model.path_template.get_prefix()
+    beamline_params['run_number'] = model.path_template.run_number
+    beamline_params['collection_software'] = 'MXCuBE - 3.0'
+    beamline_params['sample_node_id'] = sample_model._node_id
+    beamline_params['sample_lims_id'] = sample_model.lims_id
+    beamline_params['beamline'] = mxcube.beamline.session_hwobj.beamline_name
+
+    params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
+    params_list.insert(0, params["wfpath"])
+    params_list.insert(0, 'modelpath')
+
+    model.params_list = params_list
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -599,6 +664,9 @@ def set_char_params(model, entry, task_data):
     set_dc_params(model.reference_image_collection, entry, task_data)
     model.characterisation_parameters.set_from_dict(params)
 
+    # MXCuBE3 specific shape attribute
+    model.shape = params["shape"]
+
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
 
@@ -614,6 +682,21 @@ def _create_dc(task):
     """
     dc_model = qmo.DataCollection()
     dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
+
+    return dc_model, dc_entry
+
+
+def _create_wf(task):
+    """
+    Creates a workflow model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    dc_model = qmo.Workflow()
+    dc_entry = qe.GenericWorkflowQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
 
@@ -695,6 +778,40 @@ def add_data_collection(node_id, task):
     return dc_model._node_id
 
 
+def add_workflow(node_id, task):
+    """
+    Adds a worklfow task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = get_entry(node_id)
+    wf_model, dc_entry = _create_wf(task)
+    set_wf_params(wf_model, dc_entry, task, sample_model)
+
+    pt = wf_model.path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    group_model = qmo.TaskGroup()
+
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, wf_model)
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(dc_entry)
+
+    return wf_model._node_id
+
 def new_queue():
     """
     Creates a new queue
@@ -712,10 +829,10 @@ def save_queue(session, redis=redis.Redis()):
 
     :param session: Session to save queue for
     :param redis: Redis database
-    
+
     """
     proposal_id = Utils._proposal_id(session)
-    
+
     if proposal_id is not None:
         # List of samples dicts (containing tasks) sample and tasks have same
         # order as the in queue HO
@@ -865,7 +982,7 @@ def set_auto_mount_sample(automount, current_sample=None):
     """
     Sets auto mount next flag, automatically mount next sample in queue
     (True) or wait for user (False)
-    
+
     :param bool automount: True auto-mount, False wait for user
     """
     mxcube.AUTO_MOUNT_SAMPLE = automount

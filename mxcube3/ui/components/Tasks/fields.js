@@ -87,7 +87,10 @@ export const FieldsRow = ({ children }) => (
        <Col key={i} xs={12 / children.length}>
          {child}
        </Col>
-     ) : null }
+     ) : <Col key={ 1 } xs={ 6 } >
+          {children}
+         </Col>
+     }
    </Row>
 );
 

@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, Collapse } from 'react-bootstrap';
+import { Button, Collapse, FormControl } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
 import cx from 'classnames';
@@ -8,6 +8,8 @@ import { TASK_UNCOLLECTED,
          TASK_COLLECT_FAILED,
          TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
+import ClipboardButton from 'react-clipboard.js';
+import clippy from '../../img/clippy.png';
 
 const cardSource = {
   beginDrag(props) {
@@ -31,7 +33,6 @@ const cardTarget = {
   hover(props, monitor, component) {
     const dragIndex = monitor.getItem().index;
     const hoverIndex = props.index;
-
     // Don't replace items with themselves
     if (dragIndex === hoverIndex) {
       return;
@@ -147,25 +148,15 @@ export default class TaskItem extends Component {
             isDragging,
             connectDragSource,
             connectDropTarget,
-            rootPath,
             show } = this.props;
     const parameters = data.parameters;
     const opacity = isDragging ? 0 : 1;
-
     let taskCSS = cx('task-head', {
       active: state === TASK_RUNNING,
       success: state === TASK_COLLECTED,
       error: state === TASK_COLLECT_FAILED,
       warning: state === TASK_COLLECT_WARNING
     });
-
-    let typePrefix = '';
-
-    if (data.parameters.helical) {
-      typePrefix = 'L';
-    } else {
-      typePrefix = 'P';
-    }
 
     let delTaskCSS = {
       display: 'flex',
@@ -175,13 +166,14 @@ export default class TaskItem extends Component {
       paddingRight: '10px'
     };
 
-    const pointID = data.parameters.point;
+    const pointID = data.parameters.shape;
 
+    const value = `./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`;
     const element = (
       <div className="node node-sample" style={{ opacity }}>
             <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
               <p className="node-name" style={{ display: 'flex' }} >
-                {`${typePrefix}${pointID >= 0 ? pointID : '?'} ${data.label}`}
+                {`${pointID !== '' ? pointID : '?'} ${data.label}`}
               </p>
               <p className="fa fa-trash" onClick={this.deleteTask} style={delTaskCSS} >
               </p>
@@ -190,27 +182,17 @@ export default class TaskItem extends Component {
           <div className="task-body">
             <form>
               <div className="form-group row">
-                <label className="col-sm-9">File path:</label>
-                <label className="col-sm-3">Prefix:</label>
-                  <div className="col-sm-9">
-                    <input
-                      type="text"
-                      onMouseEnter={() => this.setState({ overInput: true }) }
-                      onMouseLeave={() => this.setState({ overInput: false }) }
-                      className="form-control"
-                      readOnly
-                      value={`${rootPath}${data.parameters.path}`}
-                    />
-                  </div>
-                <div className="col-sm-3">
-                  <input
-                    type="text"
-                    onMouseEnter={() => this.setState({ overInput: true }) }
-                    onMouseLeave={() => this.setState({ overInput: false }) }
-                    className="form-control"
+                <label className="col-sm-12">File path:</label>
+                <div className="col-sm-12" style={{ display: 'flex' }} >
+                  <FormControl
                     readOnly
-                    value={data.parameters.prefix}
+                    type="text"
+                    defaultValue={value}
+                    ref={value}
                   />
+                  <ClipboardButton data-clipboard-text={value} style={{ maxWidth: '30' }} >
+                    <img src={clippy} width="15" alt="clipboard" />
+                  </ClipboardButton>
                 </div>
               </div>
               <div className="task-information">
