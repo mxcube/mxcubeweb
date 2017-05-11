@@ -311,7 +311,7 @@ def motor_state_callback(motor, state, sender=None, **kw):
     shape_dict = {}
 
     for shape in mxcube.shapes.get_shapes():
-        shape.update_screen_position(mxcube.diffractometer.motor_positions_to_screen)
+        shape.update_position(mxcube.diffractometer.motor_positions_to_screen)
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})
 
