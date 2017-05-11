@@ -2,7 +2,7 @@ import sys
 import json
 import logging
 import signals
-from flask import jsonify, request, make_response
+from flask import Response, jsonify, request, make_response
 from qutils import READY, RUNNING
 
 from mxcube3 import app as mxcube
@@ -24,6 +24,7 @@ def init_signals():
 
     try:
         machInfo = mxcube.beamline.getObjectByRole("mach_info")
+
         if machInfo is not None:
             machInfo.connect(machInfo, 'machInfoChanged',
                            signals.mach_info_changed)
@@ -173,6 +174,7 @@ def beamline_set_attribute(name):
     Replies with status code 200 on success and 520 on exceptions.
     """
     data = json.loads(request.data)
+
     if name.lower() == "detdist":
         ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("dtox")
     else:

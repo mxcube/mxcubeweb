@@ -9,7 +9,6 @@ import { TASK_UNCOLLECTED,
          TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
 import ClipboardButton from 'react-clipboard.js';
-import clippy from '../../img/clippy.png';
 
 const cardSource = {
   beginDrag(props) {
@@ -191,7 +190,7 @@ export default class TaskItem extends Component {
                     ref={value}
                   />
                   <ClipboardButton data-clipboard-text={value} style={{ maxWidth: '30' }} >
-                    <img src={clippy} width="15" alt="clipboard" />
+                    <span className="fa fa-clipboard" />
                   </ClipboardButton>
                 </div>
               </div>
