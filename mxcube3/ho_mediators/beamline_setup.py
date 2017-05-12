@@ -728,7 +728,7 @@ class ResolutionHOMediator(HOMediatorBase):
 class DetectorDistanceHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
-        ho.connect("positionChanged", self.value_change)
+        #ho.connect("positionChanged", self.value_change)
 
 
     def set(self, value):
