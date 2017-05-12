@@ -136,7 +136,8 @@ export default class PopInput extends React.Component {
                     onCancel: this.cancel,
                     onSave: this.save };
 
-    let input = (<DefaultInput dataType={this.props.dataType} inputSize={this.props.inputSize} />);
+    let input = (
+      <DefaultInput ref="input" dataType={this.props.dataType} inputSize={this.props.inputSize} />);
 
     input = this.getChild('input') || input;
     input = React.cloneElement(input, props);
