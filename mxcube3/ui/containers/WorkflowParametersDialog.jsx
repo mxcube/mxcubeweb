@@ -30,10 +30,15 @@ class WorkflowParametersDialog extends React.Component {
     // we only create it when show is true and we have a schema to use.
     // The errors will otherwise prevent the dialog from beeing closed
     // properly.
+
     if (this.props.show && this.props.formData) {
       form = (
         <Provider store={this.store}>
-          <Liform schema={this.props.formData} onSubmit={this.submitData} />
+          <Liform
+            initialValues={this.props.formData.initialValues}
+            schema={this.props.formData}
+            onSubmit={this.submitData}
+          />
         </Provider>
       );
 
