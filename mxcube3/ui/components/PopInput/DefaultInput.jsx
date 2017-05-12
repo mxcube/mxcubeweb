@@ -8,14 +8,19 @@ export default class DefaultInput extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {value: this.props.value};
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
+    this.onChange = this.onChange.bind(this);
+  }
+  
+  onChange(event) {
+    this.setState({value: event.target.value});
   }
 
-
   getValue() {
-    return this.input.value;
+    return this.state.value;
   }
 
 
@@ -27,7 +32,6 @@ export default class DefaultInput extends React.Component {
   cancel() {
     this.props.onCancel();
   }
-
 
   submit(event) {
     this.props.onSubmit(event);
@@ -42,7 +46,8 @@ export default class DefaultInput extends React.Component {
           type={this.props.dataType}
           style={{ width: this.props.inputSize }}
           placeholder=""
-          defaultValue={this.props.value}
+          value={this.state.value}
+          onChange={this.onChange}
         />
         <ButtonToolbar style={{ marginLeft: '0px' }} className="form-group editable-buttons">
           <Button bsStyle="primary" className="btn-sm" onClick={this.save}>
