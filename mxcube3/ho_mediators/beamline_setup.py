@@ -396,6 +396,41 @@ class InOutHOMediator(HOMediatorBase):
         super(InOutHOMediator, self).__init__(ho, name)
         ho.connect("actuatorStateChanged", self.value_change)
 
+    def _get_state(self):
+
+        # Try to use the "native" HardwareObject getActuatorState API, try 
+        # the TangoShutter API if it fails, finally try a the third way getState
+        # used by for instance beamstops.
+        if hasattr(self._ho, "getActuatorState"):
+            state = self._ho.getActuatorState()
+        elif hasattr(self._ho, "state_value_str"):
+            state = self._ho.state_value_str
+        elif hasattr(self._ho, "getState"):
+            state = self._ho.getState()
+        else:
+            state = INOUT_STATE.UNDEFINED
+
+        return state
+
+    def _close(self):
+        # Try the three different variants of close, Actuator interface,
+        # shutter interface and beamstop moveToPosition interface.
+        if hasattr(self._ho, "actuatorIn"):
+            self._ho.actuatorIn()
+        elif hasattr(self._ho, "closeShutter"):
+            self._ho.closeShutter()
+        elif hasattr(self._ho, "moveToPosition"):
+            self._ho.moveToPosition("BEAM")
+
+    def _open(self):
+        # Try the three different variants of open (see _close and _get_state)
+        if hasattr(self._ho, "actuatorOut"):
+            self._ho.actuatorIn()
+        elif hasattr(self._ho, "openShutter"):
+            self._ho.closeShutter()
+        elif hasattr(self._ho, "moveToPosition"):
+            self._ho.moveToPosition("OFF")
+
     def set(self, state):
         if state == INOUT_STATE.IN:
             self._ho.actuatorIn()
@@ -404,19 +439,16 @@ class InOutHOMediator(HOMediatorBase):
 
 
     def get(self):
-        return INOUT_STATE.STR_TO_VALUE.get(self._ho.getActuatorState(), 2)
-
+        return INOUT_STATE.STR_TO_VALUE.get(self._get_state(), 2)
 
     def stop(self):
         self._ho.stop()
 
-
     def state(self):
-        return self._ho.getActuatorState()
-
+        return self._get_state()
 
     def msg(self):
-        state = self._ho.getActuatorState()
+        state = self._get_state()
         msg = "UNKNOWN"
 
         if state == INOUT_STATE.IN:
@@ -506,6 +538,8 @@ class TangoShutterHOMediator(HOMediatorBase):
                 }
 
         return data
+
+
 class BeamstopHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(BeamstopHOMediator, self).__init__(ho, name)
