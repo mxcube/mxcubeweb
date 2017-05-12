@@ -51,8 +51,7 @@ class Mesh extends React.Component {
       'point',
       'label',
       'mesh',
-      'shape'
-    ];
+      'shape'    ];
 
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
@@ -167,7 +166,13 @@ Mesh = connect(state => {
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,
-      beam_size: state.sampleview.currentAperture
+      beam_size: state.sampleview.currentAperture,
+      resolution: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.resolution :
+        state.beamline.movables.resolution.value),
+      energy: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.energy :
+        state.beamline.movables.energy.value)
     }
   };
 })(Mesh);
