@@ -8,15 +8,15 @@ export default class DefaultInput extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {value: this.props.value};
+    this.state = { value: this.props.value };
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
     this.onChange = this.onChange.bind(this);
   }
-  
+
   onChange(event) {
-    this.setState({value: event.target.value});
+    this.setState({ value: event.target.value });
   }
 
   getValue() {

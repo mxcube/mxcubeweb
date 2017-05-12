@@ -51,7 +51,8 @@ class Mesh extends React.Component {
       'point',
       'label',
       'mesh',
-      'shape'    ];
+      'shape'
+    ];
 
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
