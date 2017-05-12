@@ -184,15 +184,18 @@ def beamline_set_attribute(name):
         ho.set(data["value"])
         logging.getLogger('HWR').info("Setting bl attribute %s to %s" %(name, data["value"]))
         res = ho.dict_repr()
-        result, code = json.dumps(res), 200
+        code = 200
     except Exception as ex:
         res = ho.dict_repr()
         res["value"] = ho.get()
         res["state"] = "UNUSABLE"
         res["msg"] = "submitted value out of limits"
-        result, code = json.dumps(res), 520
+        code = 520
         logging.getLogger('HWR').error("Error setting bl attribute: " + str(ex))
-    return Response(result, status=code, mimetype='application/json')
+
+    response = jsonify(res)
+    response.code = code
+    return response
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
