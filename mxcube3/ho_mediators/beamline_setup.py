@@ -42,13 +42,13 @@ class _BeamlineSetupMediator(object):
         socketio.emit("workflowParametersDialog", params, namespace="/hwr")
 
     def getObjectByRole(self, name):
-        try:
+         try:
             if name == 'dtox':
-                ho = self._bl.getObjectByRole('resolution')  # we retrieve dtox through res_hwobj
+                ho = self._bl.getObjectByRole('resolution').getObjectByRole("dtox")
             else:
                 ho = self._bl.getObjectByRole(name.lower())
-        except Exception:
-            logging.getLogger("HWR").exception("Failed to get object with role: %s" % name)
+         except Exception:
+             logging.getLogger("HWR").exception("Failed to get object with role: %s" % name)
 
         if name == "energy":
             return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
