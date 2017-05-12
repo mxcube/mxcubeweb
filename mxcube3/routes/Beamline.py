@@ -122,7 +122,7 @@ def beamline_abort_action(name):
         err = str(sys.exc_info()[1])
         return make_response(err, 520)
     else:
-        logging.getLogger('user_level_log').error('Aborted by user.')
+        logging.getLogger('user_level_log').error('Aborting set on %s.' % name)
         return make_response("", 200)
 
 
