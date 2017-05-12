@@ -165,7 +165,13 @@ Helical = connect(state => {
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,
-      beam_size: state.sampleview.currentAperture
+      beam_size: state.sampleview.currentAperture,
+      resolution: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.resolution :
+        state.beamline.movables.resolution.value),
+      energy: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.energy :
+        state.beamline.movables.energy.value)
     }
   };
 })(Helical);
