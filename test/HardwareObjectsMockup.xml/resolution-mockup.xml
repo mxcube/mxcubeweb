@@ -1,3 +1,4 @@
 <device class = "ResolutionMockup">
   <username>Resolution</username>
+  <object hwrid="/dtox" role="dtox"/>
 </device>
