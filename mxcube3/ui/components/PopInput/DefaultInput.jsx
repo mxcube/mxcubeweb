@@ -1,5 +1,5 @@
 import React from 'react';
-
+import ReactDOM from 'react-dom';
 import { Form, Button, FormControl, ButtonToolbar } from 'react-bootstrap';
 
 import './style.css';
@@ -15,7 +15,8 @@ export default class DefaultInput extends React.Component {
 
 
   getValue() {
-    return this.refs.formControl.refs.input.value;
+    const input = ReactDOM.findDOMNode(this.refs.formControl);
+    return input.value;
   }
 
 
@@ -39,7 +40,8 @@ export default class DefaultInput extends React.Component {
       <Form inline onSubmit={this.submit}>
         <FormControl
           ref="formControl"
-          inputRef="input"
+          label="input"
+          inputRef={(ref) => {this.input = ref;}}
           type={this.props.dataType}
           style={{ width: this.props.inputSize }}
           placeholder=""

@@ -18,9 +18,8 @@ export default class DefaultInput extends React.Component {
   render() {
     return (
       <div>
-        <div className="popinput-input-busy">
-        </div>
-        <ButtonToolbar className="editable-buttons">
+        <div className="popinput-input-busy" />
+        <ButtonToolbar className="popinput-busy-buttonbar">
           <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
             <i className="glyphicon glyphicon-remove" />
           </Button>

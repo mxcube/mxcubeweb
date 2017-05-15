@@ -42,6 +42,7 @@ export default class PopInput extends React.Component {
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
+    this.onLinkClick = this.onLinkClick.bind(this);
   }
 
 
@@ -55,6 +56,12 @@ export default class PopInput extends React.Component {
         this.handleError(nextProps.data);
       }
     }
+  }
+
+
+  onLinkClick(e) {
+    this.refs.overlay.handleToggle();
+    e.preventDefault();
   }
 
 
@@ -190,7 +197,7 @@ export default class PopInput extends React.Component {
     }
 
     const popover = (
-      <Popover id={title} title={title}>
+      <Popover ref="popover" id={title} title={title}>
         <div className={`${inputVisibility} popinput-form-container`}>
           {this.inputComponent()}
         </div>
@@ -209,8 +216,14 @@ export default class PopInput extends React.Component {
           <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
             overlay={popover}
           >
-            <a ref="valueLabel" key="valueLabel" className={`${linkClass} ${stateClass}`}>
+            <a
+              ref="valueLabel"
+              onContextMenu={this.onLinkClick}
+              key="valueLabel"
+              className={`popinput-input-link ${linkClass} ${stateClass}`}
+            >
               {this.props.data.value} {this.props.suffix}
+              <span className="popinput-input-editicon fa fa-gear" />
             </a>
           </OverlayTrigger>
         </span>
