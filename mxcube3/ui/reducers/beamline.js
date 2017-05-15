@@ -12,42 +12,7 @@ import { RUNNING } from '../constants';
  *     msg:    arbitray message describing current state
  */
 export const INITIAL_STATE = {
-  movables: {
-    energy: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
-      name: 'energy',
-      value: '0',
-      state: STATE.IDLE,
-      msg: ''
-    },
-    resolution: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
-      name: 'resolution',
-      value: '0',
-      state: STATE.IDLE,
-      msg: ''
-    },
-    transmission: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
-      name: 'transmission',
-      value: '0',
-      state: STATE.IDLE,
-      msg: ''
-    }
-  },
-  actuators: {
+  attributes: {
     fast_shutter: {
       limits: [
         0,
@@ -91,7 +56,51 @@ export const INITIAL_STATE = {
       value: 'undefined',
       state: 'undefined',
       msg: 'UNKNOWN'
-    }
+    },
+    energy: {
+      limits: [
+        0,
+        1000,
+        0.1
+      ],
+      name: 'energy',
+      value: '0',
+      state: STATE.IDLE,
+      msg: ''
+    },
+    resolution: {
+      limits: [
+        0,
+        1000,
+        0.1
+      ],
+      name: 'resolution',
+      value: '0',
+      state: STATE.IDLE,
+      msg: ''
+    },
+    transmission: {
+      limits: [
+        0,
+        1000,
+        0.1
+      ],
+      name: 'transmission',
+      value: '0',
+      state: STATE.IDLE,
+      msg: ''
+    },
+    flux: {
+      limits: [
+        0,
+        1000,
+        0.1
+      ],
+      name: 'flux',
+      value: '0',
+      state: 'STATE.IDLE',
+      msg: 'UNKNOWN'
+    },
   },
   motors: {
     focus: { position: 0, Status: 0 },
@@ -122,41 +131,18 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, action.data);
 
     case 'BL_ATTR_SET':
-      data[action.data.name] = { name: action.data.name,
-                                 value: action.data.value,
-                                 state: action.data.state,
-                                 msg: action.data.msg };
-
-      return Object.assign({}, state, data);
-
-    case 'BL_ATTR_MOV_SET':
-      return { ...state, movables: { ...state.movables,
-                                    [action.data.name]: action.data
-                                   }
+      return { ...state, attributes: { ...state.attributes,
+                                       [action.data.name]: action.data
+                                     }
              };
-
-    case 'BL_ATTR_ACT_SET':
+    case 'BL_ACT_SET':
       return { ...state, actuators: { ...state.actuators,
                                     [action.data.name]: action.data
-                                   }
+                                    }
              };
-
     case 'BL_ATTR_SET_STATE':
       data = Object.assign({}, state);
-      data[action.data.name].state = action.data.state;
-
-      return data;
-
-    case 'BL_ATTR_MOV_SET_STATE':
-      data = Object.assign({}, state);
-      data.movables[action.data.name].state = action.data.state;
-
-      return data;
-
-    case 'BL_ATTR_ACT_SET_STATE':
-      data = Object.assign({}, state);
-      data.actuators[action.data.name].state = action.data.state;
-
+      data.attributes[action.data.name].state = action.data.state;
       return data;
 
     case 'SET_MOTOR_MOVING':
@@ -186,8 +172,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_INITIAL_STATE':
       return { ...INITIAL_STATE,
         motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
-        actuators: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.actuators },
-        movables: { ...INITIAL_STATE.movables, ...action.data.beamlineSetup.movables },
+        attributes: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.attributes },
         motorsLimits: { ...INITIAL_STATE.motorsLimits,
                         ...action.data.motorsLimits },
         zoom: action.data.Motors.zoom.position,

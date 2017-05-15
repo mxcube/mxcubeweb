@@ -36,18 +36,20 @@ class _BeamlineSetupMediator(object):
         workflow = self.getObjectByRole("workflow")
 
         if workflow:
-            workflow.connect('parametersNeeded', self.wf_parameters_needed)
+            workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
     def wf_parameters_needed(self, params):
         socketio.emit("workflowParametersDialog", params, namespace="/hwr")
 
     def getObjectByRole(self, name):
-         try:
-            if name == 'dtox':
-                ho = self._bl.getObjectByRole('resolution').getObjectByRole("dtox")
+        try:
+            if name == "dtox":
+                ho = self._bl.getObjectByRole("resolution").getObjectByRole("dtox")
+            elif name == "wavelength":
+                 ho = self._bl.getObjectByRole("energy")
             else:
                 ho = self._bl.getObjectByRole(name.lower())
-         except Exception:
+        except Exception:
              logging.getLogger("HWR").exception("Failed to get object with role: %s" % name)
 
         if name == "energy":
@@ -67,7 +69,7 @@ class _BeamlineSetupMediator(object):
         elif name == "capillary":
             return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
         elif name == "dtox":
-            return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "dtox"))
+            return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "detdist"))
         else:
             return ho
 
@@ -76,66 +78,71 @@ class _BeamlineSetupMediator(object):
         """
         :returns: Dictionary value-representation for each beamline attribute
         """
-#        capillary = self.getObjectByRole("capillary")
-
-        data = dict()
-        movables = dict()
-        actuators = dict()
+        attributes = {}
 
         try:
             energy = self.getObjectByRole("energy")
-            movables.update({"energy": energy.dict_repr()})
+            attributes.update({"energy": energy.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get energy info")
 
         try:
             wavelength = self.getObjectByRole("wavelength")
-            movables.update({"wavelength": wavelength.dict_repr()})
+            attributes.update({"wavelength": wavelength.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get energy info")
         try:
             transmission = self.getObjectByRole("transmission")
-            movables.update({"transmission": transmission.dict_repr()})
+            attributes.update({"transmission": transmission.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get transmission info")
 
         try:
             resolution = self.getObjectByRole("resolution")
-            movables.update({"resolution": resolution.dict_repr()})
+            attributes.update({"resolution": resolution.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get resolution info")
 
         try:
             fast_shutter = self.getObjectByRole("fast_shutter")
-            actuators.update({"fast_shutter": fast_shutter.dict_repr()})
+            attributes.update({"fast_shutter": fast_shutter.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get fast_shutter info")
 
         try:
             safety_shutter = self.getObjectByRole("safety_shutter")
-            actuators.update({"safety_shutter": safety_shutter.dict_repr()})
+            attributes.update({"safety_shutter": safety_shutter.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get safety_shutter info")
 
         try:
             beamstop = self.getObjectByRole("beamstop")
-            actuators.update({"beamstop": beamstop.dict_repr()})
+            attributes.update({"beamstop": beamstop.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get beamstop info")
 
         try:
             detdist = self.getObjectByRole("dtox")
-            movables.update({"detdist": detdist.dict_repr()})
+            attributes.update({"detdist": detdist.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get detdist info")
 
-        data.update({'movables': movables, 'actuators': actuators})
 
-        return data
+        # Flux hardcoded for now to be connected later
+        attributes.update({"flux": {"name": "flux",
+                                    "label": "Flux",
+                                    "value": 0,
+                                    "limits": [0, 1000, 0,1],
+                                    "state": "READY",
+                                    "msg": "",
+                                    "type": "FLOAT"}})
+
+        return {"attributes": attributes}
+
 
 
 class HOMediatorBase(object):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         """
         :param HardwareObject ho: Hardware object to mediate for.
         :returns: None
@@ -233,7 +240,7 @@ class HOMediatorBase(object):
                 "limits": self.limits(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "type": "movable"
+                "type": "FLOAT"
                 }
 
         return data
@@ -243,6 +250,8 @@ class HOMediatorBase(object):
         Signal handler to be used for sending values to the client via socketIO,
         data should normally be sent in the "hwr" namespace.
         """
+
+        print("Emitting beamline value change")
         socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
@@ -311,7 +320,7 @@ class EnergyHOMediator(HOMediatorBase):
         :returns: The energy limits.
         """
         try:
-            energy_limits = self._ho.getEnergyLimits()
+            energy_limits = self._ho.get_energy_limits()
         except (AttributeError, TypeError):
             energy_limits = (0, 50)
             logging.getLogger("HWR").exception("Failed to get get object with role: %s" % name)
@@ -341,13 +350,12 @@ class WavelengthHOMediator(HOMediatorBase):
         :rtype: float
         """
         try:
-            self._ho.move(float(value))
+            self._ho.start_move_energy(12.3984 / float(value))
             res = self.get()
         except:
             raise
 
         return res
-
 
     def get(self):
         """
@@ -356,7 +364,7 @@ class WavelengthHOMediator(HOMediatorBase):
         :raises ValueError: When value for any reason can't be retrieved
         """
         try:
-            wavelength = self._ho.getPosition()
+            wavelength = self._ho.getCurrentWavelength()
             wavelength = round(float(wavelength), 4)
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
@@ -383,10 +391,8 @@ class WavelengthHOMediator(HOMediatorBase):
         :returns: The limits.
         """
         try:
-            energy_limits = self._ho.getLimits()
+            energy_limits = self._ho.get_energy_limits()
         except (AttributeError, TypeError):
-            energy_limits = (0, 50)
-            logging.getLogger("HWR").exception("Failed to get get object with role: %s" % name)
             raise ValueError("Could not get limits")
 
         return energy_limits
@@ -398,7 +404,7 @@ class InOutHOMediator(HOMediatorBase):
 
     def _get_state(self):
 
-        # Try to use the "native" HardwareObject getActuatorState API, try 
+        # Try to use the "native" HardwareObject getActuatorState API, try
         # the TangoShutter API if it fails, finally try a the third way getState
         # used by for instance beamstops.
         if hasattr(self._ho, "getActuatorState"):
@@ -469,7 +475,7 @@ class InOutHOMediator(HOMediatorBase):
                 "state": self.state(),
                 "msg": self.msg(),
                 "commands": ["Open", "Close"],
-                "type": "actuator"
+                "type": "DUOSTATE"
                 }
 
         return data
@@ -534,7 +540,7 @@ class TangoShutterHOMediator(HOMediatorBase):
                 "state": self.state(),
                 "msg": self.msg(),
                 "commands": ["Open", "Close"],
-                "type": "actuator"
+                "type": "DUOSTATE"
                 }
 
         return data
@@ -598,7 +604,8 @@ class BeamstopHOMediator(HOMediatorBase):
                 "limits": self.limits(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "commands": ["In", "Out"]
+                "commands": ["In", "Out"],
+                "type": "DUOSTATE"
                 }
 
         return data
@@ -692,9 +699,10 @@ class ResolutionHOMediator(HOMediatorBase):
             return 0
 
     def get_lookup_limits(self):
+
         energy_ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('energy')
         e_min, e_max = energy_ho.limits()
-	
+
         limits = []
         x = arange(float(e_min), float(e_max), 0.5)
 
@@ -719,7 +727,7 @@ class ResolutionHOMediator(HOMediatorBase):
                 "value": self.get(),
                 "limits": self.get_lookup_limits(),
                 "state": self.state(),
-                "msg": self.msg(),
+                "msg": self.msg()
                 }
 
         return data
@@ -728,7 +736,7 @@ class ResolutionHOMediator(HOMediatorBase):
 class DetectorDistanceHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
-        #ho.connect("positionChanged", self.value_change)
+        ho.connect("positionChanged", self.value_change)
 
 
     def set(self, value):
@@ -754,6 +762,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
             detdist_limits = self._ho.getLimits()
         except (AttributeError, TypeError) as ex:
             raise ValueError("Could not get limits")
+
         return detdist_limits
 
 
