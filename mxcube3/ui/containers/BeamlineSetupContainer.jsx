@@ -143,7 +143,7 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={2}>
               <div className="pull-right">
                 <MachInfo
-                  info={this.props.data.machinfo}
+                  info={this.props.data.attributes.machinfo.value}
                 />
               </div>
             </Col>

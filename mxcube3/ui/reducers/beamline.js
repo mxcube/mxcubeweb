@@ -101,6 +101,13 @@ export const INITIAL_STATE = {
       state: 'STATE.IDLE',
       msg: 'UNKNOWN'
     },
+    machinfo: {
+      limits: [],
+      name: 'machinfo',
+      value: { current: -1, message: '', fillmode: '' },
+      state: 'STATE.IDLE',
+      msg: 'UNKNOWN'
+    },
   },
   motors: {
     focus: { position: 0, Status: 0 },
@@ -116,7 +123,6 @@ export const INITIAL_STATE = {
     kappa: { position: 0, Status: 0 },
     kappa_phi: { position: 0, Status: 0 }
   },
-  machinfo: { current: -1, message: '' },
   zoom: 0,
   beamlineActionsList: [],
   currentBeamlineAction: { show: false, messages: [], arguments: [] }

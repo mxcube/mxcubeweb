@@ -70,6 +70,8 @@ class _BeamlineSetupMediator(object):
             return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
         elif name == "dtox":
             return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "detdist"))
+        elif name == "mach_info":
+            return self._ho_dict.setdefault(name, MachineInfoHOMediator(ho, "machinfo"))
         else:
             return ho
 
@@ -126,6 +128,12 @@ class _BeamlineSetupMediator(object):
             attributes.update({"detdist": detdist.dict_repr()})
         except Exception:
             logging.getLogger("HWR").exception("Failed to get detdist info")
+
+        try:
+            machinfo = self.getObjectByRole("mach_info")
+            attributes.update({"machinfo": machinfo.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get mach_info info")
 
 
         # Flux hardcoded for now to be connected later
@@ -772,3 +780,41 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
     def state(self):
         return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
+
+
+class MachineInfoHOMediator(HOMediatorBase):
+    def __init__(self, ho, name=''):
+        super(MachineInfoHOMediator, self).__init__(ho, name)
+        ho.connect("valueChanged", self.value_change)
+
+
+    def set(self, value):
+        pass
+
+
+    def get(self):
+        value = {}
+
+        try:
+            value["current"] = "{:.1f}".format(round(float(self._ho.getCurrent()), 1))
+            value["message"] = self._ho.getMessage()
+            value["fillmode"] = self._ho.getFillMode()
+        except (TypeError, AttributeError):
+            value = {"current": -1, "message": "", "fillmode": ""}
+
+        return value
+
+
+    def limits(self):
+        """
+        :returns: The detector distance limits.
+        """
+        return []
+
+
+    def stop(self):
+        pass
+
+
+    def state(self):
+        pass

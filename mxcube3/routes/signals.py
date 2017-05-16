@@ -66,10 +66,6 @@ motor_signals = {
     'zoomMotorPredefinedPositionChanged': 'zoomMotorPredefinedPositionChanged',
 }
 
-mach_info_signals = {
-    'mach_info_changed':                 'mach_info_changed'
-}
-
 
 def get_signal_result(signal):
     result = 0
@@ -377,13 +373,6 @@ def beam_changed(*args, **kwargs):
         socketio.emit('beam_changed', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").exception('error sending message: %s' + str(msg))
-
-
-def mach_info_changed(values):
-    try:
-        socketio.emit("mach_info_changed", values, namespace="/hwr")
-    except Exception:
-        logging.getLogger("HWR").exception('error in mach_info_changed')
 
 
 def beamline_action_start(name):

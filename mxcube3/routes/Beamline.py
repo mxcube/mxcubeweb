@@ -254,22 +254,3 @@ def beamline_get_data_path():
     """
     data = mxcube.session.get_base_image_directory()
     return jsonify(data)
-
-
-@mxcube.route("/mxcube/api/v0.1/machinfo/", methods=['GET'])
-def mach_info_get():
-    """
-    Get machine information from machine control system
-
-    :returns: Response object with values, status code set to:
-              200: On success
-              409: Error getting information
-    """
-    try:
-        values = mxcube.machinfo.get_values(False)
-        return jsonify({'values': values})
-    except Exception as ex:
-        logging.getLogger('HWR').info('[MACHINFO] Cannot read values ')
-        response = jsonify({})
-        response.code = 409
-        return response
