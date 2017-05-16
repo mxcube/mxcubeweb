@@ -6,7 +6,6 @@ import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
 import MachInfo from '../components/MachInfo/MachInfo';
-import CryoInput from '../components/Cryo/CryoInput';
 
 import { sendGetAllAttributes,
          sendSetAttribute,
@@ -130,7 +129,7 @@ class BeamlineSetupContainer extends React.Component {
                 <span> <b> Flux:</b> {this.props.data.attributes.flux.value} p/s </span>
               </div>
               <div style={{ display: 'inline', float: 'left' }}>
-                <CryoInput
+                <PopInput
                   name="Cryo"
                   pkey="cryo"
                   suffix="K"
