@@ -120,7 +120,7 @@ export default class PopInput extends React.Component {
 
 
   cancel() {
-    if (this.props.onCancel !== undefined) {
+    if (this.props.onCancel !== undefined && this.isBusy()) {
       this.props.onCancel(this.props.pkey);
     }
 
