@@ -20,7 +20,7 @@ export default class DefaultInput extends React.Component {
       <div>
         <div className="popinput-input-busy" />
         <ButtonToolbar className="popinput-busy-buttonbar">
-          <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+          <Button bsStyle="danger" className="btn-sm" onClick={this.cancel}>
             <i className="glyphicon glyphicon-remove" />
           </Button>
         </ButtonToolbar>
