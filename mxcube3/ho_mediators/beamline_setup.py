@@ -157,6 +157,15 @@ class HOMediatorBase(object):
         """
         self._ho = ho
         self._name = name
+        self._precision = 1
+
+
+    def precision(self):
+        return self._precision
+
+
+    def step_size(self):
+        return math.pow(10, -self._precision)
 
 
     def __getattr__(self, attr):
@@ -248,7 +257,9 @@ class HOMediatorBase(object):
                 "limits": self.limits(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "type": "FLOAT"
+                "type": "FLOAT",
+                "precision": self.precision(),
+                "step": self.step_size()
                 }
 
         return data
@@ -270,6 +281,7 @@ class EnergyHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(EnergyHOMediator, self).__init__(ho, name)
         ho.connect("energyChanged", self.value_change)
+        self._precision = 4
 
 
     def set(self, value):
@@ -300,7 +312,8 @@ class EnergyHOMediator(HOMediatorBase):
         """
         try:
             energy = self._ho.getCurrentEnergy()
-            energy = "{:3.4f}".format(round(float(energy), 4))
+            energy = round(float(energy), self._precision)
+            energy = ("{:3.%sf}" % self._precision).format(energy)
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 
@@ -343,6 +356,7 @@ class WavelengthHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(WavelengthHOMediator, self).__init__(ho, name)
         ho.connect("energyChanged", self.value_change)
+        self._precision = 4
 
 
     def set(self, value):
@@ -372,7 +386,8 @@ class WavelengthHOMediator(HOMediatorBase):
         """
         try:
             wavelength = self._ho.getCurrentWavelength()
-            wavelength = "{:2.4f}".format(round(float(wavelength), 4))
+            wavelength = round(float(wavelength), self._precision)
+            wavelength = ("{:2.%sf}" % self._precision).format(wavelength)
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 
@@ -626,6 +641,7 @@ class TransmissionHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(TransmissionHOMediator, self).__init__(ho, name)
         ho.connect("attFactorChanged", self.value_change)
+        self._precision = 2
 
 
     def set(self, value):
@@ -640,7 +656,8 @@ class TransmissionHOMediator(HOMediatorBase):
     def get(self):
         try:
             transmission = self._ho.getAttFactor()
-            transmission = "{:3.2f}".format(round(float(transmission), 2))
+            transmission = round(float(transmission), self._precision)
+            transmission = ("{:3.%sf}" % self._precision).format(transmission)
         except (AttributeError, TypeError):
             transmission = 0
 
@@ -659,6 +676,7 @@ class ResolutionHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(ResolutionHOMediator, self).__init__(ho, name)
         ho.connect("valueChanged", self.value_change)
+        self._precision = 3
 
 
     def set(self, value):
@@ -669,7 +687,8 @@ class ResolutionHOMediator(HOMediatorBase):
     def get(self):
         try:
             resolution = self._ho.getPosition()
-            resolution = "{:2.3f}".format(round(float(resolution), 3))
+            resolution = round(float(resolution), self._precision)
+            resolution = ("{:2.%sf}" % self._precision).format(resolution)
         except (TypeError, AttributeError):
             resolution = 0
 
@@ -733,7 +752,9 @@ class ResolutionHOMediator(HOMediatorBase):
                 "value": self.get(),
                 "limits": self.get_lookup_limits(),
                 "state": self.state(),
-                "msg": self.msg()
+                "msg": self.msg(),
+                "precision": self.precision(),
+                "step": self.step_size()
                 }
 
         return data
@@ -743,6 +764,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
         #ho.connect("positionChanged", self.value_change)
+        self._precision = 3
 
 
     def set(self, value):
@@ -754,7 +776,8 @@ class DetectorDistanceHOMediator(HOMediatorBase):
     def get(self):
         try:
             detdist = self._ho.getPosition()
-            detdist = "{:4.3f}".format(round(float(detdist), 3))
+            detdist = round(float(detdist), self._precision)
+            detdist = ("{:4.%sf}" % self._precision).format(detdist)
         except (TypeError, AttributeError):
             detdist = 0
 
@@ -785,6 +808,7 @@ class MachineInfoHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(MachineInfoHOMediator, self).__init__(ho, name)
         ho.connect("valueChanged", self.value_change)
+        self._precision = 1
 
 
     def set(self, value):

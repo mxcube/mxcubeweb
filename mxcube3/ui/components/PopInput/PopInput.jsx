@@ -141,10 +141,18 @@ export default class PopInput extends React.Component {
                     ref: 'input',
                     onSubmit: this.submit,
                     onCancel: this.cancel,
-                    onSave: this.save };
+                    onSave: this.save,
+                    precision: this.props.data.precision,
+                    step: this.props.data.step };
 
     let input = (
-      <DefaultInput ref="input" dataType={this.props.dataType} inputSize={this.props.inputSize} />);
+      <DefaultInput
+        ref="input"
+        precision={this.props.precision}
+        step={this.props.data.step}
+        dataType={this.props.dataType}
+        inputSize={this.props.inputSize}
+      />);
 
     input = this.getChild('input') || input;
     input = React.cloneElement(input, props);
@@ -236,7 +244,7 @@ export default class PopInput extends React.Component {
 PopInput.defaultProps = {
   className: '',
   dataType: 'number',
-  inputSize: '100px',
+  inputSize: '110',
   name: '',
   title: '',
   suffix: '',

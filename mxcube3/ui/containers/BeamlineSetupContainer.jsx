@@ -82,7 +82,7 @@ class BeamlineSetupContainer extends React.Component {
                   name="Energy"
                   pkey="energy"
                   suffix="keV"
-                  data= { this.props.data.attributes.energy }
+                  data={ this.props.data.attributes.energy }
                   onSave= { this.setAttribute }
                   onCancel= { this.onCancelHandler }
                 />
