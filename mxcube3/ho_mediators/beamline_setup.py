@@ -269,7 +269,6 @@ class HOMediatorBase(object):
         Signal handler to be used for sending values to the client via socketIO,
         data should normally be sent in the "hwr" namespace.
         """
-        print("Emitting beamline value change")
         socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
