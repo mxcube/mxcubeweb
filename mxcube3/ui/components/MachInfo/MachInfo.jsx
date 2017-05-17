@@ -52,7 +52,7 @@ export default class MachInfo extends React.Component {
         <div className="current-label">
           {this.currentLabel}
           <span className="current-value">
-             {this.props.info.current} mA
+             {this.props.info.current}
           </span>
           <div className={`${msgBgStyle}`}>
              {this.props.info.message}

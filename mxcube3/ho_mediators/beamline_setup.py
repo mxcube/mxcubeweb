@@ -792,16 +792,39 @@ class MachineInfoHOMediator(HOMediatorBase):
 
 
     def get(self):
-        value = {}
+        return {"current": self.get_current(),
+                "message": self.get_message(),
+                "fillmode": self.get_fill_mode()}
 
+
+
+    def get_message(self):
         try:
-            value["current"] = "{:.1f}".format(round(float(self._ho.getCurrent()), 1))
-            value["message"] = self._ho.getMessage()
-            value["fillmode"] = self._ho.getFillMode()
+            message = self._ho.getMessage()
         except (TypeError, AttributeError):
-            value = {"current": -1, "message": "", "fillmode": ""}
+            message = ""
 
-        return value
+        return message
+
+
+    def get_current(self):
+        try:
+            current = self._ho.getCurrent()
+            current = current if isinstance(current, str) else \
+              "{:.1f} mA".format(round(float(self._ho.getCurrent()), 1))
+        except (TypeError, AttributeError):
+            current =  -1
+
+        return current
+
+
+    def get_fill_mode(self):
+        try:
+            fmode = self._ho.getFillMode()
+        except (TypeError, AttributeError):
+            fmode = ""
+
+        return fmode
 
 
     def limits(self):
