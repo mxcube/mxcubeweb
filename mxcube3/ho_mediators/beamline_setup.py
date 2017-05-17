@@ -44,9 +44,11 @@ class _BeamlineSetupMediator(object):
     def getObjectByRole(self, name):
         try:
             if name == "dtox":
-                ho = self._bl.getObjectByRole("resolution").getObjectByRole("dtox")
+                # Detector distance retrieved through resolution 
+                ho = self._bl.getObjectByRole("resolution")
             elif name == "wavelength":
-                 ho = self._bl.getObjectByRole("energy")
+                # Wavelength rerieved trhough energy
+                ho = self._bl.getObjectByRole("energy")
             else:
                 ho = self._bl.getObjectByRole(name.lower())
         except Exception:
@@ -418,6 +420,7 @@ class WavelengthHOMediator(HOMediatorBase):
 
         return energy_limits
 
+
 class InOutHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(InOutHOMediator, self).__init__(ho, name)
@@ -724,16 +727,15 @@ class ResolutionHOMediator(HOMediatorBase):
             return 0
 
     def get_lookup_limits(self):
-        energy_ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('energy')
-        e_min, e_max = energy_ho.limits()
+        e_min, e_max = self._ho.energy.getEnergyLimits()
 
         limits = []
         x = arange(float(e_min), float(e_max), 0.5)
 
         radius = self._ho.det_radius
-        det_dist = BeamlineSetupMediator(mxcube.beamline).getObjectByRole('dtox')
+        det_dist = self.dtox
 
-        pos_min, pos_max = det_dist.limits()
+        pos_min, pos_max = det_dist.getLimits()
 
         for energy in x:
             res_min, res_max = self._calc_res(radius, energy, pos_min),\
@@ -762,19 +764,18 @@ class ResolutionHOMediator(HOMediatorBase):
 class DetectorDistanceHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
-        #ho.connect("positionChanged", self.value_change)
+        ho.dtox.connect("positionChanged", self.value_change)    
         self._precision = 3
 
 
     def set(self, value):
-        self._ho.move(round(float(value), 3))
-        ho.disconnect("positionChanged", self.value_change)
+        self._ho.dtox.move(round(float(value), 3))
         return self.get()
 
 
     def get(self):
         try:
-            detdist = self._ho.getPosition()
+            detdist = self._ho.dtox.getPosition()
             detdist = round(float(detdist), self._precision)
             detdist = ("{:4.%sf}" % self._precision).format(detdist)
         except (TypeError, AttributeError):
@@ -788,7 +789,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         :returns: The detector distance limits.
         """
         try:
-            detdist_limits = self._ho.getLimits()
+            detdist_limits = self._ho.dtox.getLimits()
         except (AttributeError, TypeError) as ex:
             raise ValueError("Could not get limits")
 
@@ -796,11 +797,11 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
 
     def stop(self):
-        self._ho.stop()
+        self._ho.dtox.stop()
 
 
     def state(self):
-        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
+        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.dtox.getState(), "READY")
 
 
 class MachineInfoHOMediator(HOMediatorBase):
