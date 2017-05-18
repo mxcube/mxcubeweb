@@ -414,7 +414,7 @@ class WavelengthHOMediator(HOMediatorBase):
         :returns: The limits.
         """
         try:
-            energy_limits = self._ho.getEnergyLimits()
+            energy_limits = self._ho.getWavelengthLimits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
