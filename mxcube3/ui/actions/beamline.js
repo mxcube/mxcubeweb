@@ -23,14 +23,6 @@ export function setBeamlineAttrAction(data) {
   return { type: BL_ATTR_SET, data };
 }
 
-export function setBeamlineMovAttrAction(data) {
-  return { type: BL_ATTR_MOV_SET, data };
-}
-
-export function setBeamlineActAttrAction(data) {
-  return { type: BL_ATTR_ACT_SET, data };
-}
-
 export function getBeamlineAttrsAction(data) {
   return { type: BL_ATTR_GET_ALL, data };
 }
@@ -45,21 +37,6 @@ export function busyStateAction(name) {
     data: { name, state: STATE.BUSY }
   };
 }
-
-export function busyMovStateAction(name) {
-  return {
-    type: BL_ATTR_MOV_SET_STATE,
-    data: { name, state: STATE.BUSY }
-  };
-}
-
-export function busyActStateAction(name) {
-  return {
-    type: BL_ATTR_ACT_SET_STATE,
-    data: { name, state: STATE.BUSY }
-  };
-}
-
 
 export function sendGetAllAttributes() {
   const url = 'mxcube/api/v0.1/beamline';
@@ -82,17 +59,12 @@ export function sendGetAllAttributes() {
 }
 
 
-export function sendSetAttribute(name, value, type) {
+export function sendSetAttribute(name, value) {
   const url = `mxcube/api/v0.1/beamline/${name}`;
 
   return (dispatch) => {
-    if (type === 'movable') {
-      dispatch(busyMovStateAction(name));
-    } else if (type === 'actuator') {
-      dispatch(busyActStateAction(name));
-    } else {
-      dispatch(busyStateAction(name));
-    }
+    dispatch(busyStateAction(name));
+
     fetch(url, {
       method: 'PUT',
       headers: {
@@ -103,13 +75,7 @@ export function sendSetAttribute(name, value, type) {
       body: JSON.stringify({ name, value })
     }).then(response => response.json())
           .then(data => {
-            if (data.type === 'actuator') {
-              dispatch(setBeamlineActAttrAction(data));
-            } else if (data.type === 'movable') {
-              dispatch(setBeamlineMovAttrAction(data));
-            } else {
-              dispatch(setBeamlineAttrAction(data));
-            }
+            dispatch(setBeamlineAttrAction(data));
           }, () => {
             throw new Error(`PUT ${url} failed`);
           });
@@ -129,4 +95,3 @@ export function sendAbortCurrentAction(name) {
     });
   };
 }
-

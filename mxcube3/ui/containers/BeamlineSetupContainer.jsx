@@ -6,7 +6,6 @@ import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
 import MachInfo from '../components/MachInfo/MachInfo';
-import CryoInput from '../components/Cryo/CryoInput';
 
 import { sendGetAllAttributes,
          sendSetAttribute,
@@ -17,8 +16,7 @@ class BeamlineSetupContainer extends React.Component {
   constructor(props) {
     super(props);
     this.onSaveHandler = this.onSaveHandler.bind(this);
-    this.actuatorSaveHandler = this.actuatorSaveHandler.bind(this);
-    this.movableSaveHandler = this.movableSaveHandler.bind(this);
+    this.setAttribute = this.setAttribute.bind(this);
     this.onCancelHandler = this.onCancelHandler.bind(this);
     this.createActuatorComponent = this.createActuatorComponent.bind(this);
   }
@@ -39,28 +37,23 @@ class BeamlineSetupContainer extends React.Component {
   }
 
 
-  actuatorSaveHandler(name, value) {
-    this.props.setAttribute(name, value, 'actuator');
-  }
-
-
-  movableSaveHandler(name, value) {
-    this.props.setAttribute(name, value, 'movable');
+  setAttribute(name, value) {
+    this.props.setAttribute(name, value);
   }
 
 
   createActuatorComponent() {
     const acts = [];
-    for (let key in this.props.data.actuators) {
-      if (this.props.data.actuators.hasOwnProperty(key)) {
+    for (let key in this.props.data.attributes) {
+      if (this.props.data.attributes[key].type === 'DUOSTATE') {
         acts.push(<Col key={key} sm={1}>
                       <InOutSwitch2
-                        onText="Open"
-                        offText="Close"
-                        labelText={ this.props.data.actuators[key].label }
+                        onText={ this.props.data.attributes[key].commands[0] }
+                        offText={ this.props.data.attributes[key].commands[1] }
+                        labelText={ this.props.data.attributes[key].label }
                         pkey={ key }
-                        data={ this.props.data.actuators[key] }
-                        onSave={ this.actuatorSaveHandler }
+                        data={ this.props.data.attributes[key] }
+                        onSave={ this.setAttribute }
                       />
                   </Col>
               );
@@ -89,8 +82,8 @@ class BeamlineSetupContainer extends React.Component {
                   name="Energy"
                   pkey="energy"
                   suffix="keV"
-                  data= { this.props.data.movables.energy }
-                  onSave= { this.movableSaveHandler }
+                  data={ this.props.data.attributes.energy }
+                  onSave= { this.setAttribute }
                   onCancel= { this.onCancelHandler }
                 />
                 <br />
@@ -99,8 +92,8 @@ class BeamlineSetupContainer extends React.Component {
                   pkey="wavelength"
                   placement="left"
                   suffix="&Aring;"
-                  data={this.props.data.movables.wavelength}
-                  onSave={this.movableSaveHandler}
+                  data={this.props.data.attributes.wavelength}
+                  onSave={this.setAttribute}
                   onCancel={this.onCancelHandler}
                 />
               </div>
@@ -109,8 +102,8 @@ class BeamlineSetupContainer extends React.Component {
                   name="Resolution"
                   pkey="resolution"
                   suffix="A"
-                  data={this.props.data.movables.resolution}
-                  onSave={this.movableSaveHandler}
+                  data={this.props.data.attributes.resolution}
+                  onSave={this.setAttribute}
                   onCancel={this.onCancelHandler}
                 />
                 <br />
@@ -118,8 +111,8 @@ class BeamlineSetupContainer extends React.Component {
                   name="Detector"
                   pkey="detdist"
                   suffix="mm"
-                  data={this.props.data.movables.detdist}
-                  onSave={this.movableSaveHandler}
+                  data={this.props.data.attributes.detdist}
+                  onSave={this.setAttribute}
                   onCancel={this.onCancelHandler}
                 />
               </div>
@@ -128,27 +121,20 @@ class BeamlineSetupContainer extends React.Component {
                   name="Transmission"
                   pkey="transmission"
                   suffix="%"
-                  data={this.props.data.movables.transmission}
-                  onSave={this.movableSaveHandler}
+                  data={this.props.data.attributes.transmission}
+                  onSave={this.setAttribute}
                   onCancel={this.onCancelHandler}
                 />
                 <br />
-                <PopInput
-                  name="Flux"
-                  pkey="flux"
-                  suffix="p/s"
-                  data={this.props.data.movables.flux}
-                  onSave={this.movableSaveHandler}
-                  onCancel={this.onCancelHandler}
-                />
+                <span> <b> Flux:</b> {this.props.data.attributes.flux.value} p/s </span>
               </div>
               <div style={{ display: 'inline', float: 'left' }}>
-                <CryoInput
+                <PopInput
                   name="Cryo"
                   pkey="cryo"
                   suffix="K"
                   data={this.props.data.cryo}
-                  onSave={this.movableSaveHandler}
+                  onSave={this.setAttribute}
                   onCancel={this.onCancelHandler}
                 />
               </div>
@@ -156,7 +142,7 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={2}>
               <div className="pull-right">
                 <MachInfo
-                  info={this.props.data.machinfo}
+                  info={this.props.data.attributes.machinfo.value}
                 />
               </div>
             </Col>

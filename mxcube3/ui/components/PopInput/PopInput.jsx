@@ -42,6 +42,7 @@ export default class PopInput extends React.Component {
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
+    this.onLinkClick = this.onLinkClick.bind(this);
   }
 
 
@@ -55,6 +56,12 @@ export default class PopInput extends React.Component {
         this.handleError(nextProps.data);
       }
     }
+  }
+
+
+  onLinkClick(e) {
+    this.refs.overlay.handleToggle();
+    e.preventDefault();
   }
 
 
@@ -113,7 +120,7 @@ export default class PopInput extends React.Component {
 
 
   cancel() {
-    if (this.props.onCancel !== undefined) {
+    if (this.props.onCancel !== undefined && this.isBusy()) {
       this.props.onCancel(this.props.pkey);
     }
 
@@ -134,9 +141,18 @@ export default class PopInput extends React.Component {
                     ref: 'input',
                     onSubmit: this.submit,
                     onCancel: this.cancel,
-                    onSave: this.save };
+                    onSave: this.save,
+                    precision: this.props.data.precision,
+                    step: this.props.data.step };
 
-    let input = (<DefaultInput dataType={this.props.dataType} inputSize={this.props.inputSize} />);
+    let input = (
+      <DefaultInput
+        ref="input"
+        precision={this.props.precision}
+        step={this.props.data.step}
+        dataType={this.props.dataType}
+        inputSize={this.props.inputSize}
+      />);
 
     input = this.getChild('input') || input;
     input = React.cloneElement(input, props);
@@ -189,7 +205,7 @@ export default class PopInput extends React.Component {
     }
 
     const popover = (
-      <Popover id={title} title={title}>
+      <Popover ref="popover" id={title} title={title}>
         <div className={`${inputVisibility} popinput-form-container`}>
           {this.inputComponent()}
         </div>
@@ -208,8 +224,14 @@ export default class PopInput extends React.Component {
           <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
             overlay={popover}
           >
-            <a ref="valueLabel" key="valueLabel" className={`${linkClass} ${stateClass}`}>
+            <a
+              ref="valueLabel"
+              onContextMenu={this.onLinkClick}
+              key="valueLabel"
+              className={`popinput-input-link ${linkClass} ${stateClass}`}
+            >
               {this.props.data.value} {this.props.suffix}
+              <span className="popinput-input-editicon fa fa-gear" />
             </a>
           </OverlayTrigger>
         </span>
@@ -222,7 +244,7 @@ export default class PopInput extends React.Component {
 PopInput.defaultProps = {
   className: '',
   dataType: 'number',
-  inputSize: '100px',
+  inputSize: '110',
   name: '',
   title: '',
   suffix: '',

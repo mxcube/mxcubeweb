@@ -110,17 +110,16 @@ Workflow = connect(state => {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${runNumber}.???`,
     wfname: state.taskForm.taskData.parameters.wfname,
-    movables: state.beamline.movables,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.resolution :
-        state.beamline.movables.resolution.value),
+        state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.movables.energy.value)
+        state.beamline.attributes.energy.value)
     }
   };
 })(Workflow);

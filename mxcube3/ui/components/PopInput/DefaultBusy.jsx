@@ -4,7 +4,7 @@ import { Button, ButtonToolbar } from 'react-bootstrap';
 
 import './style.css';
 
-export default class DefaultInput extends React.Component {
+export default class DefaultBusy extends React.Component {
 
   constructor(props) {
     super(props);
@@ -18,10 +18,9 @@ export default class DefaultInput extends React.Component {
   render() {
     return (
       <div>
-        <div className="popinput-input-busy">
-        </div>
-        <ButtonToolbar className="editable-buttons">
-          <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+        <div className="popinput-input-busy" />
+        <ButtonToolbar className="popinput-busy-buttonbar">
+          <Button bsStyle="danger" className="btn-sm" onClick={this.cancel}>
             <i className="glyphicon glyphicon-remove" />
           </Button>
         </ButtonToolbar>
@@ -31,6 +30,6 @@ export default class DefaultInput extends React.Component {
 }
 
 
-DefaultInput.defaultProps = {
+DefaultBusy.defaultProps = {
   onCancel: undefined,
 };

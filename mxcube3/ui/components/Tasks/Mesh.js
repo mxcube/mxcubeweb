@@ -163,17 +163,16 @@ Mesh = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${runNumber}.???`,
-    movables: state.beamline.movables,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.resolution :
-        state.beamline.movables.resolution.value),
+        state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.movables.energy.value)
+        state.beamline.attributes.energy.value)
     }
   };
 })(Mesh);
