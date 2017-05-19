@@ -12,7 +12,7 @@ BEAMLINE_SETUP = None
 # Singleton like interface is needed to keep the same referance to the
 # mediator object and its corresponding hardware objects, so that the signal
 # system wont cleanup signal handlers. (PyDispatcher removes signal handlers
-# when a object is garabge collected)
+# when a object is garbage collected)
 def BeamlineSetupMediator(*args):
     global BEAMLINE_SETUP
 
@@ -24,10 +24,10 @@ def BeamlineSetupMediator(*args):
 
 class _BeamlineSetupMediator(object):
     """
-    Mediator between Beamline route and BeamlineSetup hardware object. Providing
-    missing functionality while the HardwareObjects are frozen. The
-    functionality should eventually be included in the hardware objects or other
-    suitable places once the UI part have stabilized.
+    Mediator between Beamline route and BeamlineSetup hardware object.
+    Providing missing functionality while the HardwareObjects are frozen. The
+    functionality should eventually be included in the hardware objects or
+    other suitable places once the UI part have stabilized.
     """
     def __init__(self, beamline_setup):
         self._bl = beamline_setup
@@ -44,7 +44,7 @@ class _BeamlineSetupMediator(object):
     def getObjectByRole(self, name):
         try:
             if name == "dtox":
-                # Detector distance retrieved through resolution 
+                # Detector distance retrieved through resolution
                 ho = self._bl.getObjectByRole("resolution")
             elif name == "wavelength":
                 # Wavelength rerieved trhough energy
@@ -52,7 +52,8 @@ class _BeamlineSetupMediator(object):
             else:
                 ho = self._bl.getObjectByRole(name.lower())
         except Exception:
-             logging.getLogger("HWR").exception("Failed to get object with role: %s" % name)
+            msg = "Failed to get object with role: %s" % name
+            logging.getLogger("HWR").exception(msg)
 
         if name == "energy":
             return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
@@ -76,7 +77,6 @@ class _BeamlineSetupMediator(object):
             return self._ho_dict.setdefault(name, MachineInfoHOMediator(ho, "machinfo"))
         else:
             return ho
-
 
     def dict_repr(self):
         """
@@ -137,12 +137,11 @@ class _BeamlineSetupMediator(object):
         except Exception:
             logging.getLogger("HWR").exception("Failed to get mach_info info")
 
-
         # Flux hardcoded for now to be connected later
         attributes.update({"flux": {"name": "flux",
                                     "label": "Flux",
                                     "value": 0,
-                                    "limits": [0, 1000, 0,1],
+                                    "limits": [0, 1000, 0, 1],
                                     "state": "READY",
                                     "msg": "",
                                     "type": "FLOAT"}})
@@ -161,21 +160,17 @@ class HOMediatorBase(object):
         self._name = name
         self._precision = 1
 
-
     def precision(self):
         return self._precision
 
-
     def step_size(self):
         return math.pow(10, -self._precision)
-
 
     def __getattr__(self, attr):
         if attr.startswith("__"):
             raise AttributeError(attr)
 
         return getattr(self._ho, attr)
-
 
     # Abstract method
     def set(self, value):
@@ -186,14 +181,13 @@ class HOMediatorBase(object):
 
         :raises ValueError: When conversion or treatment of value fails
         :raises StopItteration: When a value change was interrupted
-        (aborted or cancelled)
+        (aborted or canceled)
 
         :returns: The actual value set on the device
                   (not necessarily the one passed)
         :rtype: float
         """
         pass
-
 
     # Abstract method
     def get(self):
@@ -206,7 +200,6 @@ class HOMediatorBase(object):
         """
         pass
 
-
     # Abstract method
     def state(self):
         """
@@ -216,7 +209,6 @@ class HOMediatorBase(object):
         :rtype: str
         """
         return ""
-
 
     # Abstract method
     def stop(self):
@@ -228,7 +220,6 @@ class HOMediatorBase(object):
         """
         pass
 
-
     # Abstract method
     def limits(self):
         """
@@ -237,17 +228,15 @@ class HOMediatorBase(object):
         """
         return (0, 1, 1)
 
-
     # Abstract method
     def msg(self):
         """
-        :returns: Returns a message describing the current state, should be used
-                  to communicate details of the state to the user.
+        :returns: Returns a message describing the current state, should be 
+                  used to communicate details of the state to the user.
 
         :rtype: str
         """
         return ""
-
 
     def dict_repr(self):
         """
@@ -268,8 +257,8 @@ class HOMediatorBase(object):
 
     def value_change(self, *args):
         """
-        Signal handler to be used for sending values to the client via socketIO,
-        data should normally be sent in the "hwr" namespace.
+        Signal handler to be used for sending values to the client via 
+        socketIO, data should normally be sent in the "hwr" namespace.
         """
         socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
@@ -284,14 +273,13 @@ class EnergyHOMediator(HOMediatorBase):
         ho.connect("energyChanged", self.value_change)
         self._precision = 4
 
-
     def set(self, value):
         """
         :param value: Value (castable to float) to set
 
         :raises ValueError: When value for any reason can't be retrieved
         :raises StopItteration: When a value change was interrupted
-                                (aborted or cancelled)
+                                (aborted or canceled)
 
         :returns: The actual value set
         :rtype: float
@@ -303,7 +291,6 @@ class EnergyHOMediator(HOMediatorBase):
             raise
 
         return res
-
 
     def get(self):
         """
@@ -320,7 +307,6 @@ class EnergyHOMediator(HOMediatorBase):
 
         return energy
 
-
     def state(self):
         state = MOTOR_STATE.READY
 
@@ -331,10 +317,8 @@ class EnergyHOMediator(HOMediatorBase):
 
         return state
 
-
     def stop(self):
         self._ho.stop()
-
 
     def limits(self):
         """
@@ -344,7 +328,6 @@ class EnergyHOMediator(HOMediatorBase):
             energy_limits = self._ho.getEnergyLimits()
         except (AttributeError, TypeError):
             energy_limits = (0, 50)
-            logging.getLogger("HWR").exception("Failed to get get object with role: %s" % name)
             raise ValueError("Could not get limits")
 
         return energy_limits
@@ -404,10 +387,8 @@ class WavelengthHOMediator(HOMediatorBase):
 
         return state
 
-
     def stop(self):
         self._ho.stop()
-
 
     def limits(self):
         """
@@ -429,8 +410,8 @@ class InOutHOMediator(HOMediatorBase):
     def _get_state(self):
 
         # Try to use the "native" HardwareObject getActuatorState API, try
-        # the TangoShutter API if it fails, finally try a the third way getState
-        # used by for instance beamstops.
+        # the TangoShutter API if it fails, finally try a the third way
+        # getState used by for instance beamstops.
         if hasattr(self._ho, "getActuatorState"):
             state = self._ho.getActuatorState()
         elif hasattr(self._ho, "state_value_str"):
@@ -510,10 +491,8 @@ class TangoShutterHOMediator(HOMediatorBase):
         super(TangoShutterHOMediator, self).__init__(ho, name)
         ho.connect("shutterStateChanged", self.value_change)
 
-
     def __getattr__(self, attr):
         return getattr(self._ho, attr)
-
 
     def set(self, state):
         if state == INOUT_STATE.IN:
@@ -521,14 +500,11 @@ class TangoShutterHOMediator(HOMediatorBase):
         elif state == INOUT_STATE.OUT:
             self._ho.openShutter()
 
-
     def get(self):
         return 0
 
-
     def stop(self):
         self._ho.stop()
-
 
     def state(self):
         state = INOUT_STATE.UNDEFINED
@@ -540,7 +516,6 @@ class TangoShutterHOMediator(HOMediatorBase):
             state = INOUT_STATE.IN
 
         return state
-
 
     def msg(self):
         state = self._ho.getShutterState()
@@ -575,10 +550,8 @@ class BeamstopHOMediator(HOMediatorBase):
         super(BeamstopHOMediator, self).__init__(ho, name)
         ho.connect("stateChanged", self.value_change)
 
-
     def __getattr__(self, attr):
         return getattr(self._ho, attr)
-
 
     def set(self, state):
         if state == INOUT_STATE.IN:
@@ -586,14 +559,11 @@ class BeamstopHOMediator(HOMediatorBase):
         elif state == INOUT_STATE.OUT:
             self._ho.moveToPosition(state)
 
-
     def get(self):
         return 0
 
-
     def stop(self):
         self._ho.stop()
-
 
     def state(self):
         state = INOUT_STATE.UNDEFINED
@@ -605,7 +575,6 @@ class BeamstopHOMediator(HOMediatorBase):
             state = INOUT_STATE.IN
 
         return state
-
 
     def msg(self):
         state = self._ho.getPosition()
@@ -634,7 +603,6 @@ class BeamstopHOMediator(HOMediatorBase):
 
         return data
 
-
     def value_change(self, value):
         socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
@@ -645,7 +613,6 @@ class TransmissionHOMediator(HOMediatorBase):
         ho.connect("attFactorChanged", self.value_change)
         self._precision = 2
 
-
     def set(self, value):
         try:
             self._ho.set_value(round(float(value), 2))
@@ -653,7 +620,6 @@ class TransmissionHOMediator(HOMediatorBase):
             raise ValueError("Can't set transmission: %s" % str(ex))
 
         return self.get()
-
 
     def get(self):
         try:
@@ -665,10 +631,8 @@ class TransmissionHOMediator(HOMediatorBase):
 
         return transmission
 
-
     def stop(self):
         self._ho.stop()
-
 
     def state(self):
         return MOTOR_STATE.READY if self._ho.isReady() else MOTOR_STATE.MOVING
@@ -680,11 +644,9 @@ class ResolutionHOMediator(HOMediatorBase):
         ho.connect("valueChanged", self.value_change)
         self._precision = 3
 
-
     def set(self, value):
         self._ho.move(round(float(value), 3))
         return self.get()
-
 
     def get(self):
         try:
@@ -764,14 +726,14 @@ class ResolutionHOMediator(HOMediatorBase):
 class DetectorDistanceHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
-        ho.dtox.connect("positionChanged", self.value_change)    
-        self._precision = 3
+        ho.dtox.connect("positionChanged", self.value_change)
+        ho.dtox.connect("stateChanged", self.value_change)
 
+        self._precision = 3
 
     def set(self, value):
         self._ho.dtox.move(round(float(value), 3))
         return self.get()
-
 
     def get(self):
         try:
@@ -782,7 +744,6 @@ class DetectorDistanceHOMediator(HOMediatorBase):
             detdist = 0
 
         return detdist
-
 
     def limits(self):
         """
@@ -795,10 +756,8 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
         return detdist_limits
 
-
     def stop(self):
         self._ho.dtox.stop()
-
 
     def state(self):
         return MOTOR_STATE.VALUE_TO_STR.get(self._ho.dtox.getState(), "READY")
@@ -810,16 +769,13 @@ class MachineInfoHOMediator(HOMediatorBase):
         ho.connect("valueChanged", self.value_change)
         self._precision = 1
 
-
     def set(self, value):
         pass
-
 
     def get(self):
         return {"current": self.get_current(),
                 "message": self.get_message(),
                 "fillmode": self.get_fill_mode()}
-
 
 
     def get_message(self):
@@ -830,17 +786,15 @@ class MachineInfoHOMediator(HOMediatorBase):
 
         return message
 
-
     def get_current(self):
         try:
             current = self._ho.getCurrent()
             current = current if isinstance(current, str) else \
-              "{:.1f} mA".format(round(float(self._ho.getCurrent()), 1))
+                "{:.1f} mA".format(round(float(self._ho.getCurrent()), 1))
         except (TypeError, AttributeError):
-            current =  -1
+            current = -1
 
         return current
-
 
     def get_fill_mode(self):
         try:
@@ -850,17 +804,14 @@ class MachineInfoHOMediator(HOMediatorBase):
 
         return fmode
 
-
     def limits(self):
         """
         :returns: The detector distance limits.
         """
         return []
 
-
     def stop(self):
         pass
-
 
     def state(self):
         pass
