@@ -48,7 +48,7 @@ class SampleViewContainer extends Component {
                   stop={sendStopMotor}
                 />
                 </div>
-              <div className="col-xs-9">
+              <div className="col-xs-8">
                 <ContextMenu
                   {...this.props.contextMenu}
                   sampleActions={this.props.sampleViewActions}
