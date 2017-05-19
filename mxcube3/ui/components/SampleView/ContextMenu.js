@@ -46,7 +46,7 @@ export default class ContextMenu extends React.Component {
         { text: 'Go To Point', action: () => this.goToPoint(), key: 4 },
         { text: 'divider', key: 5 },
         ...workflowTasks.point,
-        { text: 'divider', key: 6 },
+        workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
         { text: 'Delete Point', action: () => this.removeShape(), key: 7 },
       ],
       TMP: [
@@ -58,7 +58,7 @@ export default class ContextMenu extends React.Component {
       ],
       LINE: [
         ...workflowTasks.line,
-        { text: 'divider', key: 3 },
+        workflowTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete Line', action: () => this.removeShape(), key: 4 }
       ],
       GridGroup: [
@@ -68,13 +68,14 @@ export default class ContextMenu extends React.Component {
         { text: 'Mesh Scan', action: () => this.showModal('Mesh'), key: 1 },
         { text: 'divider', key: 2 },
         ...workflowTasks.grid,
-        { text: 'divider', key: 3 },
+        workflowTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete', action: () => this.removeShape(), key: 4 }
       ],
       NONE: [
         { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
         { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
         { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
+        workflowTasks.grid.none > 0 ? { text: 'divider', key: 4 } : {},
         ...workflowTasks.none
       ]
     };
