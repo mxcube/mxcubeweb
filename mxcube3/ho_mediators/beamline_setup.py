@@ -679,7 +679,8 @@ class ResolutionHOMediator(HOMediatorBase):
         super(ResolutionHOMediator, self).__init__(ho, name)
         ho.connect("valueChanged", self.value_change)
         self._precision = 3
-
+        self._ho.energy_hwobj = self.getObjectByRole("energy")
+        self._ho.dtox = self.getObjectByRole("dtox")
 
     def set(self, value):
         self._ho.move(round(float(value), 3))
@@ -727,13 +728,13 @@ class ResolutionHOMediator(HOMediatorBase):
             return 0
 
     def get_lookup_limits(self):
-        e_min, e_max = self._ho.energy.getEnergyLimits()
+        e_min, e_max = self._ho.energy_hwobj.getEnergyLimits()
 
         limits = []
         x = arange(float(e_min), float(e_max), 0.5)
 
         radius = self._ho.det_radius
-        det_dist = self.dtox
+        det_dist = self._ho.dtox
 
         pos_min, pos_max = det_dist.getLimits()
 
