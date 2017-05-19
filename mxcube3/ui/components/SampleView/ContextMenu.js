@@ -5,7 +5,6 @@ export default class ContextMenu extends React.Component {
   constructor(props) {
     super(props);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
-    this.deleteGrid = this.deleteGrid.bind(this);
     this.menuOptions = this.menuOptions.bind(this);
   }
 
@@ -70,7 +69,7 @@ export default class ContextMenu extends React.Component {
         { text: 'divider', key: 2 },
         ...workflowTasks.grid,
         { text: 'divider', key: 3 },
-        { text: 'Delete', action: () => this.deleteGrid(), key: 4 }
+        { text: 'Delete', action: () => this.removeShape(), key: 4 }
       ],
       NONE: [
         { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
@@ -145,10 +144,6 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.toggleDrawGrid();
   }
 
-  deleteGrid() {
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendDeleteShape(this.props.shape.id);
-  }
 
   saveGrid() {
     this.props.sampleActions.showContextMenu(false);
