@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Modal, ButtonToolbar, Button, Form } from 'react-bootstrap';
 import { InputField, FieldsRow } from './fields';
+import validate from './validate_add_sample';
 
 class AddSample extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class AddSample extends React.Component {
     this._addAndMount = this._addAndMount.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.getDefaultSampleData = this.getDefaultSampleData.bind(this);
+    this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
   getDefaultSampleData(params) {
@@ -30,7 +32,6 @@ class AddSample extends React.Component {
              loadable: true,
              tasks: [] };
   }
-
 
   handleCancel() {
     this.props.hide();
@@ -56,6 +57,12 @@ class AddSample extends React.Component {
     this.props.handleSubmit(this._addAndMount)();
   }
 
+  handleKeyPress(target) {
+    if (target.charCode === 13) {
+      this.addAndMount();
+    }
+  }
+
   render() {
     return (
       <Modal show={this.props.show} onHide={this.handleCancel}>
@@ -65,17 +72,27 @@ class AddSample extends React.Component {
         <Modal.Body>
           <Form horizontal>
             <FieldsRow>
-              <InputField propName="sampleName" label="Sample Name" col1="4" col2="8" />
-              <InputField propName="proteinAcronym" label="Protein Acronym" col1="4" col2="8" />
+              <InputField propName="sampleName"
+                autoFocus
+                label="Sample Name"
+                inputRef={(input) => {this.sampleName = input;}}
+                col1="4" col2="8"
+              />
+              <InputField propName="proteinAcronym"
+                label="Protein Acronym"
+                inputRef={(input) => {this.proteinAcronym = input;}}
+                col1="4" col2="8"
+                onKeyPress={this.handleKeyPress}
+              />
             </FieldsRow>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar className="pull-right">
-            <Button bsStyle="primary" onClick={this.addAndEnqueue}>
+            <Button bsStyle="primary" disabled={this.props.invalid} onClick={this.addAndEnqueue}>
               Add Sample
             </Button>
-            <Button bsStyle="primary" onClick={this.addAndMount}>
+            <Button bsStyle="primary" disabled={this.props.invalid} onClick={this.addAndMount}>
               Add and mount sample
             </Button>
           </ButtonToolbar>
@@ -86,7 +103,8 @@ class AddSample extends React.Component {
 }
 
 AddSample = reduxForm({
-  form: 'addsample'
+  form: 'addsample',
+  validate
 })(AddSample);
 
 AddSample = connect(state =>
