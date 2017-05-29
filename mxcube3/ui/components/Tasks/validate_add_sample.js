@@ -1,7 +1,7 @@
 const validate = (values, props) => {
   const errors = {};
   if (!props) {
-    // for some reason redux-form is loaded before the initial status @##@!
+    // for some reason redux-form is loaded before the initial status
     return errors;
   }
   const name = values.sampleName ? values.sampleName : '';
