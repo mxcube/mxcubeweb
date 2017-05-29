@@ -159,10 +159,11 @@ Mesh = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
 
   return {
     path: `${state.queue.rootPath}/${subdir}`,
-    filename: `${prefix}_${runNumber}.???`,
+    filename: `${prefix}_${runNumber}${fileSuffix}`,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,

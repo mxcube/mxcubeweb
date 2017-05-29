@@ -135,15 +135,12 @@ def get_centring_motors_info():
     # the centring motors are: ["phi", "focus", "phiz", "phiy", "zoom", "sampx", "sampy", "kappa", "kappa_phi"]
     ret = dict()
     for name in mxcube.diffractometer.centring_motors_list:
-        print name
         motor_info = get_movable_state_and_position(name)
         if motor_info and motor_info[name]['position'] is not None:
             ret.update(motor_info)
-#        print ret
         motor_limits = get_movable_limits(name)
         if motor_limits and motor_limits[name]['limits'] is not None:
             ret[name].update(motor_limits[name])
-#        print ret
     return ret
 
 def _snapshot_received(snapshot_jpg):
