@@ -2,7 +2,7 @@ import sys
 import json
 import logging
 import signals
-from flask import jsonify, request, make_response
+from flask import Response, jsonify, request, make_response
 from qutils import READY, RUNNING
 
 from mxcube3 import app as mxcube
@@ -24,6 +24,7 @@ def init_signals():
 
     try:
         machInfo = mxcube.beamline.getObjectByRole("mach_info")
+
         if machInfo is not None:
             machInfo.connect(machInfo, 'machInfoChanged',
                            signals.mach_info_changed)
@@ -121,7 +122,7 @@ def beamline_abort_action(name):
         err = str(sys.exc_info()[1])
         return make_response(err, 520)
     else:
-        logging.getLogger('user_level_log').error('Aborted by user.')
+        logging.getLogger('user_level_log').error('Aborting set on %s.' % name)
         return make_response("", 200)
 
 
@@ -173,6 +174,7 @@ def beamline_set_attribute(name):
     Replies with status code 200 on success and 520 on exceptions.
     """
     data = json.loads(request.data)
+
     if name.lower() == "detdist":
         ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("dtox")
     else:
@@ -252,22 +254,3 @@ def beamline_get_data_path():
     """
     data = mxcube.session.get_base_image_directory()
     return jsonify(data)
-
-
-@mxcube.route("/mxcube/api/v0.1/machinfo/", methods=['GET'])
-def mach_info_get():
-    """
-    Get machine information from machine control system
-
-    :returns: Response object with values, status code set to:
-              200: On success
-              409: Error getting information
-    """
-    try:
-        values = mxcube.machinfo.get_values(False)
-        return jsonify({'values': values})
-    except Exception as ex:
-        logging.getLogger('HWR').info('[MACHINFO] Cannot read values ')
-        response = jsonify({})
-        response.code = 409
-        return response

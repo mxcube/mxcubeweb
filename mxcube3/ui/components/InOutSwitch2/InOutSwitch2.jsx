@@ -7,6 +7,13 @@ export default class InOutSwitch2 extends React.Component {
     super(props);
     this.setIn = this.setIn.bind(this);
     this.setOut = this.setOut.bind(this);
+    this.onRightLinkClick = this.onRightLinkClick.bind(this);
+  }
+
+
+  onRightLinkClick(e) {
+    this.refs.overlay.handleToggle();
+    e.preventDefault();
   }
 
 
@@ -55,7 +62,7 @@ export default class InOutSwitch2 extends React.Component {
               placement="bottom"
               overlay={(<Popover>{btn}</Popover>)}
             >
-              <div>
+              <div onContextMenu={this.onRightLinkClick}>
                 <Label
                   style={{ display: 'block', marginBottom: '3px' }}
                 >

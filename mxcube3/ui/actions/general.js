@@ -125,6 +125,14 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
+    const detectorInfo = fetch('mxcube/api/v0.1/detector', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
     const dcParameters = fetch('mxcube/api/v0.1/queue/dc', {
       method: 'GET',
       credentials: 'include',
@@ -183,6 +191,7 @@ export function getInitialState() {
         json => { state.datapath = json.path; return json; }).catch(notify),
       sampleVideoInfo.then(parse).then(json => { state.Camera = json; }).catch(notify),
       diffractometerInfo.then(parse).then(json => { Object.assign(state, json); }).catch(notify),
+      detectorInfo.then(parse).then(json => { state.detector = json; }).catch(notify),
       dcParameters.then(parse).then(
         json => { state.dcParameters = json.acq_parameters; return json; }).then(
         json => { state.acqParametersLimits = json.limits; }).catch(notify),

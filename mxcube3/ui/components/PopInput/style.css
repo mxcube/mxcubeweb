@@ -10,7 +10,9 @@
   min-width: 70px;
 }
 
-.popinput-input-loading{
+.popinput-busy-buttonbar{
+  display: inline-block;
+  float: right;
 }
 
 .popinput-input-busy{
@@ -21,7 +23,7 @@
 }
 
 .visibility-hidden{ 
-	visibility: hidden;
+  visibility: hidden;
   display: inline;
 }
 
@@ -31,4 +33,16 @@
 
 .popinput-input-container {
   display: inline;
+}
+
+
+.popinput-input-editicon {
+  visibility: hidden;
+  color: #999;
+  margin-right: 5px;
+}
+
+
+.popinput-input-link:hover > .popinput-input-editicon {
+  visibility: visible;
 }

@@ -54,7 +54,7 @@ export default class TodoTree extends React.Component {
                   </Button>
                 </div>
               </div>
-              <div className="col-xs-12 list-body todo-body">
+              <div className="list-body">
                 {list.map((key, id) => {
                   const sampleData = this.props.sampleList[key];
                   return (

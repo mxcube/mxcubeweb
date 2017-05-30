@@ -265,12 +265,12 @@ export default class SampleImage extends React.Component {
           let gridData = this.props.grids[this.props.selectedGrids[0]];
 
           if (gridData) {
-            showContextMenu(true,
-                            { type: 'GridGroupSaved', gridData, ...obj },
+            showContextMenu(true, { type: 'GridGroupSaved', gridData, id: gridData.id },
                             e.offsetX, e.offsetY);
           } else {
             gridData = this.drawGridPlugin.currentGridData();
-            showContextMenu(true, { type: 'GridGroup', gridData, ...obj }, e.offsetX, e.offsetY);
+            showContextMenu(true, { type: 'GridGroup', gridData, id: obj.id },
+                            e.offsetX, e.offsetY);
           }
         } else {
           showContextMenu(true, obj, obj.left, obj.top);

@@ -4,6 +4,7 @@ const initialState = {
   pointID: -1,
   showForm: '',
   path: '',
+  fileSuffix: '',
   defaultParameters: {
     datacollection: {},
     characterisation: {},
@@ -92,7 +93,8 @@ export default (state = initialState, action) => {
               ...action.data.dcParameters,
               ...state.defaultParameters.helical }
           },
-          acqParametersLimits: { ...action.data.acqParametersLimits }
+          acqParametersLimits: { ...action.data.acqParametersLimits },
+          fileSuffix: action.data.detector.fileSuffix
         };
       }
     default:
