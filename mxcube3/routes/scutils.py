@@ -101,7 +101,7 @@ def mount_sample_clean_up(sample):
         set_current_sample(sample['sampleID'])
 
         if not sample['location'] == 'Manual':
-            mxcube.sample_changer.load(sample['sampleID'], False)
+            mxcube.sample_changer.load(sample['sampleID'], wait=False)
 
         mxcube.queue.mounted_sample = sample['sampleID']
     except Exception:
@@ -117,7 +117,7 @@ def mount_sample_clean_up(sample):
 def unmount_sample_clean_up(sample):
     try:
         if not sample['location'] == 'Manual':
-            mxcube.sample_changer.unload(sample['sampleID'], False)
+            mxcube.sample_changer.unload(sample['sampleID'], wait=False)
 
         msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
         logging.getLogger('HWR').info(msg)

@@ -142,7 +142,8 @@ def sc_state_changed(*args):
     location = known_location if known_location else sc_location
 
     if location:
-        if new_state == SampleChangerState.Moving and old_state == None:
+        if new_state == SampleChangerState.Moving and ( old_state == None or
+           SampleChangerState.Ready ):
             msg = {'signal': 'loadingSample',
                    'location': location,
                    'message': 'Please wait, operating sample changer'}
@@ -158,7 +159,8 @@ def sc_state_changed(*args):
                    'message': 'Please wait, Unloading sample %s' % location}
 
         elif new_state == SampleChangerState.Ready and (old_state == None or
-             old_state == SampleChangerState.Loading):
+             old_state == SampleChangerState.Loading or
+             old_state == SampleChangerState.Moving):
 
             msg = {'signal': 'loadReady', 'location': location}
             scutils.set_current_sample(location)
