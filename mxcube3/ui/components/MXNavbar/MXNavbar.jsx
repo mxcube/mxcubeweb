@@ -5,6 +5,16 @@ import './MXNavbar.css';
 
 
 export default class MXNavbar extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.findProposal = this.findProposal.bind(this);
+  }
+
+  findProposal(prop) {
+    return prop.Proposal.number === this.props.selectedProposal;
+  }
+
   render() {
     const proposal = this.props.userInfo.ProposalList ?
         this.props.userInfo.ProposalList.find(this.findProposal) : '';

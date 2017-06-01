@@ -13,7 +13,7 @@ class SelectProposal extends React.Component {
   }
 
   onClickRow(event) {
-    this.props.selectProposal(event.Code);
+    this.props.selectProposal(event.Number);
   }
 
   sendProposal() {
@@ -34,9 +34,9 @@ class SelectProposal extends React.Component {
       clickToSelectAndEditCell: false,
       hideSelectColumn: true,
     };
-
+    console.log(this.props.data);
     const proposals = this.props.data.ProposalList.map((prop) => ({
-      Code: prop.Proposal.code,
+      Number: prop.Proposal.number,
       Person: prop.Person.familyName,
       Session: prop.Session[0].startDate.split(' ')[0]
     }));
@@ -49,7 +49,7 @@ class SelectProposal extends React.Component {
         <Modal.Body>
         <div>
         <BootstrapTable data={ proposals } bordered={ false } selectRow={ selectRowProp }>
-          <TableHeaderColumn dataField="Code" isKey editable={ false }>Proposal Code
+          <TableHeaderColumn dataField="Number" isKey editable={ false }>Proposal Number
           </TableHeaderColumn>
           <TableHeaderColumn dataField="Person" editable={ false }>Person</TableHeaderColumn>
           <TableHeaderColumn dataField="Session" editable={ false }>Session</TableHeaderColumn>
