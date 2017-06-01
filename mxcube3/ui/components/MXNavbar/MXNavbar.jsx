@@ -6,8 +6,10 @@ import './MXNavbar.css';
 
 export default class MXNavbar extends React.Component {
   render() {
-    const proposal = this.props.userInfo.Proposal;
-    const propInfo = (this.props.loggedIn ? `${proposal.title} - ${proposal.code}` : '');
+    const proposal = this.props.userInfo.ProposalList ?
+        this.props.userInfo.ProposalList.find(this.findProposal) : '';
+    const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
+        `Proposal: ${proposal.Proposal.number}` : '');
     const raStyle = (this.props.remoteAccessMaster ? { color: 'white' } : {});
 
     document.title = `MxCuBE-3 ${propInfo}`;
