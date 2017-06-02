@@ -66,10 +66,14 @@ export default class CurrentTree extends React.Component {
     let sampleData = {};
     let sampleTasks = [];
     let queueOptions = [];
+    let sampleName = '';
+    let proteinAcronym = '';
 
     if (sampleId) {
       sampleData = this.props.sampleList[sampleId];
-      sampleTasks = this.props.sampleList[sampleId].tasks;
+      sampleTasks = sampleData ? this.props.sampleList[sampleId].tasks : [];
+      sampleName = sampleData ? sampleData.sampleName : undefined;
+      proteinAcronym = sampleData ? sampleData.proteinAcronym : undefined;
 
       if (this.props.todoList.length === 0 && this.props.queueStatus === QUEUE_STOPPED) {
         queueOptions = this.state.options.LastSample;
@@ -83,15 +87,10 @@ export default class CurrentTree extends React.Component {
 
     if (! this.props.show) { return <div />; }
 
-    const {
-      sampleName,
-      proteinAcronym
-    } = sampleData;
-
     return (
       <div>
           <div className="list-head">
-              <p className="queue-root" onClick={this.collapse}>
+              <p className="queue-root">
                 { sampleId ? `Sample: ${sampleName} (${proteinAcronym})` : 'No Sample Mounted'}
                 {queueOptions.map((option) => this.renderOptions(option))}
               </p>

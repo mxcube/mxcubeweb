@@ -184,6 +184,8 @@ export default class TaskItem extends Component {
                 <label className="col-sm-12">File path:</label>
                 <div className="col-sm-12" style={{ display: 'flex' }} >
                   <FormControl
+                    onMouseEnter={() => this.setState({ overInput: true }) }
+                    onMouseLeave={() => this.setState({ overInput: false }) }
                     readOnly
                     type="text"
                     defaultValue={value}
