@@ -67,7 +67,7 @@ class Workflow extends React.Component {
                 <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
               </Col>
               <Col xs={4}>
-                <InputField propName="run_number" label="Run number" col1="4" col2="8" />
+                <InputField propName="run_number" disabled label="Run number" col1="4" col2="8" />
               </Col>
             </Row>
           </Form>
