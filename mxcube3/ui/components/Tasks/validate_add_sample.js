@@ -6,11 +6,12 @@ const validate = (values, props) => {
   }
   const name = values.sampleName ? values.sampleName : '';
   const acr = values.proteinAcronym ? values.proteinAcronym : '';
+  const regex = new RegExp(/\.|\*|\/|:|\\|\s/);
 
-  if (name.length === 0) {
+  if (name.length === 0 || regex.test(name)) {
     errors.sampleName = 'Missing sample name';
   }
-  if (acr.length === 0) {
+  if (acr.length === 0 || regex.test(acr)) {
     errors.proteinAcronym = 'Missing protein acronym';
   }
 
