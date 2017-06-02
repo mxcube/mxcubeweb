@@ -188,7 +188,7 @@ Characterisation = connect(state => {
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
-  const position = state.taskForm.pointID ? state.taskForm.pointID : 'PX';
+  const position = state.taskForm.pointID === '' ? state.taskForm.pointID : 'PX';
 
   return {
     path: `${state.queue.rootPath}/${subdir}`,
