@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-
+import { DraggableModal } from '../DraggableModal';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';
@@ -48,7 +48,7 @@ class Workflow extends React.Component {
   }
 
   render() {
-    return (<Modal show={this.props.show} onHide={this.props.hide}>
+    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>{this.props.wfname}</Modal.Title>
         </Modal.Header>
@@ -90,7 +90,7 @@ class Workflow extends React.Component {
              </ButtonToolbar>
            </Modal.Footer>
        }
-      </Modal>);
+      </DraggableModal>);
   }
 }
 

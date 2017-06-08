@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import { FieldsHeader,
          StaticField,
@@ -59,7 +60,7 @@ class Mesh extends React.Component {
   }
 
   render() {
-    return (<Modal show={this.props.show} onHide={this.props.hide}>
+    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Mesh Scan</Modal.Title>
         </Modal.Header>
@@ -144,7 +145,7 @@ class Mesh extends React.Component {
              </ButtonToolbar>
            </Modal.Footer>
        }
-      </Modal>);
+      </DraggableModal>);
   }
 }
 
