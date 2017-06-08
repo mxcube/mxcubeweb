@@ -38,6 +38,7 @@ const validate = (values, props) => {
         currEnergy < props.attributes.energy.limits[1])) {
     errors.energy = 'Energy outside working range';
   }
+  console.log(errors);
   return errors;
 };
 
