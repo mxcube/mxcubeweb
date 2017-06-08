@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import { FieldsHeader,
          StaticField,
@@ -57,7 +58,7 @@ class Helical extends React.Component {
   }
 
   render() {
-    return (<Modal show={this.props.show} onHide={this.props.hide}>
+    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Helical Data Collection</Modal.Title>
         </Modal.Header>
@@ -142,7 +143,7 @@ class Helical extends React.Component {
              </ButtonToolbar>
            </Modal.Footer>
        }
-      </Modal>);
+      </DraggableModal>);
   }
 }
 
