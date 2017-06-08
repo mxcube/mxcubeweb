@@ -159,7 +159,7 @@ class Characterisation extends React.Component {
            <Modal.Footer>
              <ButtonToolbar className="pull-right">
                <Button bsStyle="success"
-                 disabled={this.props.pointID === -1 || this.props.invalid}
+                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                  onClick={this.submitRunNow}
                >
                  Run Now

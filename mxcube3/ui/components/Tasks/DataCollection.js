@@ -57,6 +57,7 @@ class DataCollection extends React.Component {
   }
 
   render() {
+    console.log(this.props);
     return (<Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Standard Data Collection</Modal.Title>
@@ -130,7 +131,7 @@ class DataCollection extends React.Component {
            <Modal.Footer>
              <ButtonToolbar className="pull-right">
                <Button bsStyle="success"
-                 disabled={this.props.pointID === -1 || this.props.invalid}
+                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                  onClick={this.submitRunNow}
                >
                  Run Now
