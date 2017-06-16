@@ -45,7 +45,6 @@ def start(device, scale):
                                "-f", "mpegts",
                                "-an",
                                "-vcodec", "mpeg1video",
-                               "-muxdelay", "0.001",
                                "http://localhost:4041/video"])
 
     return relay, ffmpeg
