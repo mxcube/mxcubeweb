@@ -37,17 +37,17 @@ export default class InOutSwitch2 extends React.Component {
 
   render() {
     let msgBgStyle = 'warning';
-    if (this.props.data.state === 'in') {
+    if (this.props.data.state === 'out') {
       msgBgStyle = 'success';
-    } else if (this.props.data.state === 'out') {
+    } else if (this.props.data.state === 'in') {
       msgBgStyle = 'danger';
     }
 
     let btn = <Button block bsSize="small" disabled>---</Button>;
-    if (this.props.data.state === 'in') {
-      btn = <Button block bsSize="small" onClick={this.setOut}>{this.props.offText}</Button>;
-    } else if (this.props.data.state === 'out') {
-      btn = <Button block bsSize="small" onClick={this.setIn}>{this.props.onText}</Button>;
+    if (this.props.data.state === 'out') {
+      btn = <Button block bsSize="small" onClick={this.setIn}>{this.props.offText}</Button>;
+    } else if (this.props.data.state === 'in') {
+      btn = <Button block bsSize="small" onClick={this.setOut}>{this.props.onText}</Button>;
     }
 
     const msgLabelStyle = { display: 'block', fontSize: '100%', borderRadius: '0px' };
@@ -62,7 +62,8 @@ export default class InOutSwitch2 extends React.Component {
               placement="bottom"
               overlay={(<Popover>{btn}</Popover>)}
             >
-              <div onContextMenu={this.onRightLinkClick}>
+
+        <div onContextMenu={this.onRightLinkClick}>
                 <Label
                   style={{ display: 'block', marginBottom: '3px' }}
                 >
