@@ -1,15 +1,10 @@
 import React from 'react';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Label, Row, Col } from 'react-bootstrap';
 
 import './style.css';
 
 
 export default class MachInfo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.currentLabel = 'Current:';
-  }
-
   shouldComponentUpdate(nextProps) {
     return nextProps.info !== this.props.info;
   }
@@ -17,16 +12,16 @@ export default class MachInfo extends React.Component {
   render() {
     const tooltipTitle = 'Machine Status\n';
 
-    let msgBgStyle = 'machine-msg-normal';
+    let bsStyle = 'info';
     let msg = '';
     let propname = '';
     let propvalue = '';
     let popContent = '';
 
     if (this.props.info.attention === true) {
-      msgBgStyle = 'machine-msg-attention';
+      bsStyle = 'danger';
     } else {
-      msgBgStyle = 'machine-msg-normal';
+      bsStyle = 'info';
     }
 
     for (propname in this.props.info) {
@@ -47,19 +42,50 @@ export default class MachInfo extends React.Component {
     );
 
     return (
-      <div>
-        <OverlayTrigger placement="bottom" overlay={machinfoPop}>
-        <div className="current-label">
-          {this.currentLabel}
-          <span className="current-value">
-             {this.props.info.current}
-          </span>
-          <div className={`${msgBgStyle}`}>
-             {this.props.info.message}
-          </div>
-        </div>
-        </OverlayTrigger>
-      </div>
+       <Row>
+         <Col xs={6}>
+           <OverlayTrigger placement="bottom" overlay={machinfoPop}>
+             <span>
+               <div>
+                 <Label
+                   bsStyle="default"
+                   style={{ display: 'block', marginBottom: '3px' }}
+                 >
+                   Ring Current
+                 </Label>
+               </div>
+               <div>
+                 <Label
+                   bsStyle={bsStyle}
+                   style={{ display: 'block', fontSize: '100%', borderRadius: '0px' }}
+                 >
+                   {this.props.info.current}
+                 </Label>
+               </div>
+             </span>
+           </OverlayTrigger>
+         </Col>
+         <Col xs={6}>
+           <span>
+             <div>
+               <Label
+                 bsStyle="default"
+                 style={{ display: 'block', marginBottom: '3px' }}
+               >
+                 Flux
+               </Label>
+             </div>
+             <div>
+               <Label
+                 bsStyle={bsStyle}
+                 style={{ display: 'block', fontSize: '100%', borderRadius: '0px' }}
+               >
+                 {this.props.flux} p/s
+               </Label>
+             </div>
+           </span>
+         </Col>
+       </Row>
     );
   }
 }

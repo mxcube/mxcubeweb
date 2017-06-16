@@ -126,7 +126,6 @@ class BeamlineSetupContainer extends React.Component {
                   onCancel={this.onCancelHandler}
                 />
                 <br />
-                <span> <b> Flux:</b> {this.props.data.attributes.flux.value} p/s </span>
               </div>
               <div style={{ display: 'inline', float: 'left' }}>
                 <PopInput
@@ -140,9 +139,10 @@ class BeamlineSetupContainer extends React.Component {
               </div>
             </Col>
             <Col sm={2}>
-              <div className="pull-right">
+              <div>
                 <MachInfo
                   info={this.props.data.attributes.machinfo.value}
+                  flux={this.props.data.attributes.flux.value}
                 />
               </div>
             </Col>

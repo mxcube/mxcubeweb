@@ -137,6 +137,11 @@ class _BeamlineSetupMediator(object):
         except Exception:
             logging.getLogger("HWR").exception("Failed to get mach_info info")
 
+        try:
+            flux = self.getObjectByRole("flux")
+            attributes.update({"flux": flux.dict_repr()})
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get photon flux")
         # Flux hardcoded for now to be connected later
         attributes.update({"flux": {"name": "flux",
                                     "label": "Flux",
@@ -815,3 +820,42 @@ class MachineInfoHOMediator(HOMediatorBase):
 
     def state(self):
         pass
+
+
+class PhotonFluxHOMediator(HOMediatorBase):
+    def __init__(self, ho, name=''):
+        super(PhotonFluxHOMediator, self).__init__(ho, name)
+        ho.connect("valueChanged", self.value_change)
+        self._precision = 1
+
+    def set(self, value):
+        pass
+
+    def get(self):
+        return self._ho.current_flux
+
+    def message(self):
+        return ""
+
+    def limits(self):
+        """
+        :returns: The detector distance limits.
+        """
+        return []
+
+    def state(self):
+        return "READY"
+
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
+                "value": self.get(),
+                "limits": self.limits(),
+                "state":  self.state(),
+                "msg": self.message(),
+                "precision": self.precision()}
+
+        return data
