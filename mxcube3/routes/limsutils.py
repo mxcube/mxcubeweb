@@ -33,28 +33,25 @@ def lims_login(loginID, password):
         logging.getLogger('HWR').info('[LIMS-REST] Could not authenticate')
         return login_res
 
-    try:
-        mxcube.rest_lims.authenticate(loginID, password)
-        proplist = mxcube.rest_lims.get_proposals_by_user(loginID)
-
-        proposal_code = login_res['Proposal']['code']
-        proposal_number = login_res['Proposal']['number']
-
-        # Temporary fix until we have the user have the possibility to select
-        # proposal. If there is a proposal in the list use the first one,
-        # Otherwise use the one returned by db_connection.login
-        if proplist:
-            session_id = proplist[0]['Proposal']['number']
-        else:
-            session_id = login_res['session']['session']['sessionId']
-
-        mxcube.session.session_id = session_id
-        mxcube.session.proposal_code = proposal_code
-        mxcube.session.proposal_number = proposal_number
-    except:
-        logging.getLogger('HWR').info('[LIMS] Could not get LIMS session')
-
     return login_res
+
+
+def update_mxcube_session(login_id, login_res):
+    proplist = mxcube.rest_lims.get_proposals_by_user(login_id)
+    proposal_code = login_res['Proposal']['code']
+    proposal_number = login_res['Proposal']['number']
+
+    # Temporary fix until we have the user have the possibility to select
+    # proposal. If there is a proposal in the list use the first one,
+    # Otherwise use the one returned by db_connection.login
+    if proplist:
+        session_id = proplist[0]['Proposal']['number']
+    else:
+        session_id = login_res['session']['session']['sessionId']
+
+    mxcube.session.proposal_code = proposal_code
+    mxcube.session.proposal_number = proposal_number
+    mxcube.session.session_id = session_id
 
 
 def get_default_prefix(sample_data, generic_name):
