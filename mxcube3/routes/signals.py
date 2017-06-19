@@ -135,7 +135,7 @@ def sc_state_changed(*args):
         if not 'None' in loaded_sample:
             parts = map(int, loaded_sample.split(':'))
             sc_location = ":".join(["%s" % parts[0], '%0.2d' % parts[1]])
-    else:
+    elif loaded_sample:
         sc_location = loaded_sample.getAddress()
 
     known_location = scutils.get_current_sample()

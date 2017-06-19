@@ -121,12 +121,15 @@ def get_available_sizes(camera):
     try:
         w, h = camera.getWidth(), camera.getHeight()
 
+        # Some video decoders have difficulties to decode videos with odd image dimensions
+        # (JSMPEG beeing one of them) so we make sure that the size is even
+        w = w if w % 2 == 0 else w + 1
+        h = h if h % 2 == 0 else h + 1
+
         # Calculate double size and half the size if MPEG stremaing is used
         # otherwise just return the orignal size.
         if VIDEO_STREAM_PROCESS:
-            dw, dh = w*2, h*2
-            hw, hh = w/2, h/2
-            video_sizes = [(hw, hh), (w, h), (dw, dh)]
+            video_sizes = [(w, h), (w/2, h/2), (w/4, h/4)]
         else:
             video_sizes = [(w, h)]
 
@@ -140,7 +143,11 @@ def set_initial_stream_size(camera, video_device_path):
     global VIDEO_SIZE
     global VIDEO_ORIGINAL_SIZE
 
-    VIDEO_ORIGINAL_SIZE = camera.getWidth(), camera.getHeight()
+    w, h = camera.getWidth(), camera.getHeight()
+    w = w if w % 2 == 0 else w + 1
+    h = h if h % 2 == 0 else h + 1
+
+    VIDEO_ORIGINAL_SIZE = w, h
     VIDEO_SIZE = "%s,%s" % VIDEO_ORIGINAL_SIZE
 
 

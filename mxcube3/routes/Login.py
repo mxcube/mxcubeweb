@@ -106,16 +106,15 @@ def loginInfo():
        409: Error, could not log in
     """
     global LOGGED_IN_USER
-
     login_info = session.get("loginInfo")
 
     if login_info is not None:
-        loginID = login_info["loginID"]
+        login_id = login_info["loginID"]
 
-        if LOGGED_IN_USER is not None and LOGGED_IN_USER != loginID:
+        if LOGGED_IN_USER is not None and LOGGED_IN_USER != login_id:
             return make_response("", 409)
 
-        LOGGED_IN_USER = loginID
+        LOGGED_IN_USER = login_id
 
         if not remote_access.MASTER:
             remote_access.set_master(session.sid)
@@ -124,6 +123,7 @@ def loginInfo():
 
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
+    limsutils.update_mxcube_session(login_id, login_info)
 
     return jsonify(
         { "synchrotron_name": mxcube.session.synchrotron_name,

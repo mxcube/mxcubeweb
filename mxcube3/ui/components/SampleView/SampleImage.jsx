@@ -9,7 +9,6 @@ import SampleControls from './SampleControls';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
-
 import 'fabric';
 const fabric = window.fabric;
 
