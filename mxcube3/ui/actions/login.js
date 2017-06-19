@@ -77,6 +77,7 @@ export function getLoginInfo() {
     }).then(response => response.json())
           .then(loginInfo => {
             dispatch(setLoginInfo(loginInfo));
+            return loginInfo;
           }, () => {
             dispatch(showErrorPanel(true));
             dispatch(setLoading(false));
@@ -103,11 +104,16 @@ export function signIn(proposal, password) {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
         dispatch(setLoading(false));
-        dispatch(getLoginInfo()).then(() => {
-          dispatch(showProposalsForm('SelectProposals')).then(() => {
+        dispatch(getLoginInfo()).then(response => response).then((resp) => {
+          if (resp.loginType === 'User') {
+            dispatch(showProposalsForm('SelectProposals')).then(() => {
+              browserHistory.push('/');
+            }
+          );
+          } else {
+            dispatch(selectProposal(proposal));
             browserHistory.push('/');
           }
-          );
         }
         );
       } else {
