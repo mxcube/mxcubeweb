@@ -159,7 +159,7 @@ Helical = connect(state => {
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
-  const position = state.taskForm.pointID === '' ? state.taskForm.pointID : 'LX';
+  const position = state.taskForm.pointID === '' ? 'LX' : state.taskForm.pointID;
 
   return {
     path: `${state.queue.rootPath}/${subdir}`,
