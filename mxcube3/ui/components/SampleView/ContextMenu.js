@@ -61,11 +61,13 @@ export default class ContextMenu extends React.Component {
       GROUP: [
         { text: 'Add Datacollections', action: () => this.showModal('DataCollection'), key: 1 },
         { text: 'Add Characterisations', action: () => this.showModal('Characterisation'), key: 2 },
+        ...workflowTasks.point,
       ],
       HELICAL: [
         { text: 'Add Datacollections', action: () => this.showModal('DataCollection'), key: 1 },
         { text: 'Add Characterisations', action: () => this.showModal('Characterisation'), key: 2 },
-        { text: 'Add Helical Scan', action: () => this.createLine(), key: 3 }
+        { text: 'Add Helical Scan', action: () => this.createLine(), key: 3 },
+        ...workflowTasks.point,
       ],
       LINE: [
         ...workflowTasks.line,
