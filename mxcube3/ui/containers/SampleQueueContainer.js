@@ -86,7 +86,6 @@ export default class SampleQueueContainer extends React.Component {
       moveTask,
       setAutoMountSample,
       sendRunSample,
-      sendClearQueue
     } = this.props.queueActions;
     const {
       collapseTask,
@@ -111,6 +110,16 @@ export default class SampleQueueContainer extends React.Component {
       }
     }
 
+
+    let sampleName = '';
+    let proteinAcronym = '';
+
+    if (current.sampleID) {
+      const sampleData = sampleList[current.sampleID];
+      sampleName = sampleData ? sampleData.sampleName : '';
+      proteinAcronym = sampleData ? sampleData.proteinAcronym : '';
+    }
+
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
                 <QueueControl
@@ -123,6 +132,9 @@ export default class SampleQueueContainer extends React.Component {
                   stopQueue={sendStopQueue}
                   setAutoMountSample={setAutoMountSample}
                   autoMountNext={autoMountNext}
+                  mounted={current.sampleID}
+                  runSample={sendRunSample}
+                  todoList={todo}
                 />
               <div className="m-tree queue-body">
                 <Nav
@@ -131,8 +143,12 @@ export default class SampleQueueContainer extends React.Component {
                   activeKey={visibleList}
                   onSelect={this.handleSelect}
                 >
-                  <NavItem eventKey={'current'}>Current</NavItem>
-                  <NavItem eventKey={'todo'}>Upcoming</NavItem>
+                  <NavItem eventKey={'current'}>
+                    <b>
+                      { current.sampleID ? `Sample: ${sampleName} (${proteinAcronym})` : 'Current'}
+                    </b>
+                  </NavItem>
+                  <NavItem eventKey={'todo'}><b>Upcoming</b></NavItem>
                 </Nav>
                 {loading ?
                   <div className="center-in-box">
@@ -161,7 +177,6 @@ export default class SampleQueueContainer extends React.Component {
                   runSample={sendRunSample}
                   todoList={todo}
                   moveTask={moveTask}
-                  sendClearQueue={sendClearQueue}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
