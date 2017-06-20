@@ -34,7 +34,7 @@ export default (state = initialState, action) => {
         return { ...state, defaultParameters:
                  { ...state.defaultParameters, [type]: {
                    ...action.tasks[0].parameters, run_number:
-                   state.defaultParameters[type].run_number + 1
+                   state.defaultParameters[type].run_number + action.tasks.length
                  }
                }
              };
