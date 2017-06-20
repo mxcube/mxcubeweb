@@ -298,14 +298,26 @@ export default class SampleImage extends React.Component {
             { originX: 'center',
             originY: 'center' }
         ));
-        showContextMenu(true, {
-          type: 'GROUP',
-          id: {
-            p1: points[0].id,
-            p2: points[1].id
-          }
-        },
-        e.offsetX, e.offsetY);
+
+        const pointList = {};
+        points.map((point, index) => {
+          pointList[`p${index + 1}`] = point.id;
+          return pointList;
+        });
+
+        if (points.length === 2) {
+          showContextMenu(true, {
+            type: 'HELICAL',
+            id: pointList
+          },
+            e.offsetX, e.offsetY);
+        } else {
+          showContextMenu(true, {
+            type: 'GROUP',
+            id: pointList
+          },
+            e.offsetX, e.offsetY);
+        }
       }
     }
 
