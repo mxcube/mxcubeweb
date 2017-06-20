@@ -390,33 +390,44 @@ export function addTask(sampleIDs, parameters, runNow) {
     const state = getState();
     const tasks = [];
     const samples = [];
+    let shapes = [];
 
+    if (typeof parameters.shape === 'object') {
+      // multiple points p1, p2...
+      shapes = Object.values(parameters.shape);
+    } else {
+      shapes.push(parameters.shape);
+    }
+    shapes.sort();
     sampleIDs.forEach((sampleID) => {
-      const task = { type: parameters.type,
-                     label: parameters.label,
-                     state: TASK_UNCOLLECTED,
-                     sampleID,
-                     parameters,
-                     checked: true };
+      shapes.forEach((sh) => {
+        const pars = { ...parameters, shape: sh,
+                       run_number: shapes.indexOf(sh) + parameters.run_number };
+        const task = { type: pars.type,
+                       label: pars.label,
+                       state: TASK_UNCOLLECTED,
+                       sampleID,
+                       parameters: { ...pars },
+                       checked: true };
 
-      if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
-        dispatch(sendUpdateShape(task.parameters.shape, { state: 'SAVED' }));
-      }
-      if (state.shapes.shapes[task.parameters.shape].t === 'L') {
-        dispatch(sendUpdateShape(state.shapes.shapes[task.parameters.shape].refs[0],
-          { state: 'SAVED' }));
-        dispatch(sendUpdateShape(state.shapes.shapes[task.parameters.shape].refs[1],
-          { state: 'SAVED' }));
-      }
-      if (!state.queue.queue.includes(sampleID)) {
-        const sample = Object.assign({}, state.sampleGrid.sampleList[sampleID]);
-        sample.tasks = [task];
-        samples.push(sample);
-      } else {
-        tasks.push(task);
-      }
-    });
-
+        if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
+          dispatch(sendUpdateShape(task.parameters.shape, { state: 'SAVED' }));
+        }
+        if (state.shapes.shapes[task.parameters.shape].t === 'L') {
+          dispatch(sendUpdateShape(state.shapes.shapes[task.parameters.shape].refs[0],
+            { state: 'SAVED' }));
+          dispatch(sendUpdateShape(state.shapes.shapes[task.parameters.shape].refs[1],
+            { state: 'SAVED' }));
+        }
+        if (!state.queue.queue.includes(sampleID)) {
+          const sample = Object.assign({}, state.sampleGrid.sampleList[sampleID]);
+          sample.tasks = [task];
+          samples.push(sample);
+        } else {
+          tasks.push(task);
+        }
+      }); // shapes loop
+    }); // samples loop
     dispatch(queueLoading(true));
 
     if (samples.length) {
