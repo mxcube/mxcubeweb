@@ -34,7 +34,7 @@ export default (state = initialState, action) => {
         return { ...state, defaultParameters:
                  { ...state.defaultParameters, [type]: {
                    ...action.tasks[0].parameters, run_number:
-                   state.defaultParameters[type].run_number + 1
+                   state.defaultParameters[type].run_number + action.tasks.length
                  }
                }
              };
@@ -59,7 +59,9 @@ export default (state = initialState, action) => {
           defaultParameters: {
             datacollection: { ...state.defaultParameters.datacollection, run_number: 1 },
             characterisation: { ...state.defaultParameters.characterisation, run_number: 1 },
-            helical: { ...state.defaultParameters.helical, run_number: 1 }
+            helical: { ...state.defaultParameters.helical, run_number: 1 },
+            mesh: { ...state.defaultParameters.mesh, run_number: 1 },
+            workflow: { ...state.defaultParameters.workflow, run_number: 1 }
           }
         };
       }
@@ -87,11 +89,11 @@ export default (state = initialState, action) => {
             mesh: {
               run_number: 1,
               ...action.data.dcParameters,
-              ...state.defaultParameters.helical },
+              ...state.defaultParameters.mesh },
             workflow: {
               run_number: 1,
               ...action.data.dcParameters,
-              ...state.defaultParameters.helical }
+              ...state.defaultParameters.workflow }
           },
           acqParametersLimits: { ...action.data.acqParametersLimits },
           fileSuffix: action.data.detector.fileSuffix
