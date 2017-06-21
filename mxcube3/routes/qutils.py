@@ -253,11 +253,12 @@ def _handle_dc(sample_id, node):
 def _handle_wf(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
-
-    res = {"label": "Workflow",
+    parameters = node.parameters
+    parameters.update(node.path_template.as_dict())
+    res = {"label": parameters['label'],
            "type": "Workflow",
            "name": node._type,
-           "parameters": node.path_template.as_dict(),
+           "parameters": parameters,
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
@@ -345,7 +346,6 @@ def queue_to_dict_rec(node):
     result = []
 
     for node in node.get_children():
-        print(node)
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]
@@ -363,7 +363,6 @@ def queue_to_dict_rec(node):
             result.append(_handle_wf(sample_id, node))
         else:
             result.extend(queue_to_dict_rec(node))
-
 
     return result
 
@@ -615,7 +614,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     :param dict task_data: Dictionary with new parameters
     """
     params = task_data['parameters']
-
+    model.parameters = params
     model.path_template.set_from_dict(params)
     model.path_template.base_prefix = params['prefix']
     model.path_template.num_files = 0
