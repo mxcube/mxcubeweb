@@ -102,7 +102,7 @@ class BeamlineSetupContainer extends React.Component {
               <LabelPopInput
                 name="Resolution"
                 pkey="resolution"
-                suffix="A"
+                suffix="&Aring;"
                 data={this.props.data.attributes.resolution}
                 onSave={this.setAttribute}
                 onCancel={this.onCancelHandler}
