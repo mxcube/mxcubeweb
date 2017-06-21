@@ -3,7 +3,7 @@ const everpolate = require('everpolate');
 const validate = (values, props) => {
   const errors = {};
   if (!props.attributes) {
-    // for some reason redux-form is loaded before the initial status @##@!
+    // for some reason redux-form is loaded before the initial status
     return errors;
   }
   const currEnergy = parseFloat(values.energy);
@@ -38,6 +38,7 @@ const validate = (values, props) => {
         currEnergy < props.attributes.energy.limits[1])) {
     errors.energy = 'Energy outside working range';
   }
+  console.log(errors);
   return errors;
 };
 

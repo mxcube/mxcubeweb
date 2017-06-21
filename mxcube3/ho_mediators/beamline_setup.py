@@ -1,11 +1,19 @@
 # -*- coding: utf-8 -*-
+import logging
+import math
+
+import MicrodiffInOut
+import TangoShutter
+import MicrodiffBeamstop
+import MicrodiffInOutMockup
+import ShutterMockup
+
+from numpy import arange
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
 
-from .statedefs import (MOTOR_STATE, INOUT_STATE)
-import logging
-from numpy import arange
-import math
+from .statedefs import (MOTOR_STATE, INOUT_STATE, TANGO_SHUTTER_STATE,
+                        MICRODIFF_INOUT_STATE, BEAMSTOP_STATE)
 
 BEAMLINE_SETUP = None
 
@@ -64,17 +72,19 @@ class _BeamlineSetupMediator(object):
         elif name == "transmission":
             return self._ho_dict.setdefault(name, TransmissionHOMediator(ho, "transmission"))
         elif name == "fast_shutter":
-            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "fast_shutter"))
+            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "fast_shutter"))
         elif name == "safety_shutter":
-            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "safety_shutter"))
+            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "safety_shutter"))
         elif name == "beamstop":
-            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "beamstop"))
+            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "beamstop"))
         elif name == "capillary":
-            return self._ho_dict.setdefault(name, InOutHOMediator(ho, "capillary"))
+            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "capillary"))
         elif name == "dtox":
             return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "detdist"))
         elif name == "mach_info":
             return self._ho_dict.setdefault(name, MachineInfoHOMediator(ho, "machinfo"))
+        elif name == "flux":
+            return self._ho_dict.setdefault(name, PhotonFluxHOMediator(ho, "flux"))
         else:
             return ho
 
@@ -137,14 +147,12 @@ class _BeamlineSetupMediator(object):
         except Exception:
             logging.getLogger("HWR").exception("Failed to get mach_info info")
 
-        # Flux hardcoded for now to be connected later
-        attributes.update({"flux": {"name": "flux",
-                                    "label": "Flux",
-                                    "value": 0,
-                                    "limits": [0, 1000, 0, 1],
-                                    "state": "READY",
-                                    "msg": "",
-                                    "type": "FLOAT"}})
+        try:
+            flux = self.getObjectByRole("flux")
+            attributes.update({"flux": flux.dict_repr()})
+
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get photon flux")
 
         return {"attributes": attributes}
 
@@ -349,7 +357,7 @@ class WavelengthHOMediator(HOMediatorBase):
 
         :raises ValueError: When value for any reason can't be retrieved
         :raises StopItteration: When a value change was interrupted
-                                (aborted or cancelled)
+                                (aborted or canceled)
 
         :returns: The actual value set
         :rtype: float
@@ -402,52 +410,81 @@ class WavelengthHOMediator(HOMediatorBase):
         return energy_limits
 
 
-class InOutHOMediator(HOMediatorBase):
+class DuoStateHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
-        super(InOutHOMediator, self).__init__(ho, name)
-        ho.connect("actuatorStateChanged", self.value_change)
+        super(DuoStateHOMediator, self).__init__(ho, name)
+        self._connect_signals(ho)
+
+    def _connect_signals(self, ho):
+        if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
+            self.STATES = MICRODIFF_INOUT_STATE
+            ho.connect("actuatorStateChanged", self.value_change)
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
+             isinstance(self._ho, ShutterMockup.ShutterMockup):
+            self.STATES = TANGO_SHUTTER_STATE
+            ho.connect("shutterStateChanged", self.value_change)
+        elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
+            self.STATES = BEAMSTOP_STATE
+            ho.connect("positionReached", self.value_change)
+            ho.connect("noPosition", self.value_change)
+        elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
+            self.STATES = BEAMSTOP_STATE
+            ho.connect("actuatorStateChanged", self.value_change)
 
     def _get_state(self):
-
-        # Try to use the "native" HardwareObject getActuatorState API, try
-        # the TangoShutter API if it fails, finally try a the third way
-        # getState used by for instance beamstops.
-        if hasattr(self._ho, "getActuatorState"):
+        if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             state = self._ho.getActuatorState()
-        elif hasattr(self._ho, "state_value_str"):
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
+             isinstance(self._ho, ShutterMockup.ShutterMockup):
             state = self._ho.state_value_str
-        elif hasattr(self._ho, "getState"):
-            state = self._ho.getState()
-        else:
-            state = INOUT_STATE.UNDEFINED
+        elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
+            state = self._ho.getPosition()
+        elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
+            state = self._ho.getActuatorState()
+
+        state = self.STATES.TO_INOUT_STATE.get(state, INOUT_STATE.UNDEFINED)
 
         return state
 
-    def _close(self):
-        # Try the three different variants of close, Actuator interface,
-        # shutter interface and beamstop moveToPosition interface.
-        if hasattr(self._ho, "actuatorIn"):
-            self._ho.actuatorIn()
-        elif hasattr(self._ho, "closeShutter"):
+    def _close(self):        
+        if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
+            self._ho.actuatorOut()
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
+             isinstance(self._ho, ShutterMockup.ShutterMockup):
             self._ho.closeShutter()
-        elif hasattr(self._ho, "moveToPosition"):
-            self._ho.moveToPosition("BEAM")
+        elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
+            self._ho.moveToPosition("in")
+        elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
+            self._ho.actuatorIn()
 
     def _open(self):
-        # Try the three different variants of open (see _close and _get_state)
-        if hasattr(self._ho, "actuatorOut"):
+        if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorIn()
-        elif hasattr(self._ho, "openShutter"):
-            self._ho.closeShutter()
-        elif hasattr(self._ho, "moveToPosition"):
-            self._ho.moveToPosition("OFF")
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
+             isinstance(self._ho, ShutterMockup.ShutterMockup):
+            self._ho.openShutter()
+        elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
+            self._ho.moveToPosition("out")
+        elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
+            self._ho.actuatorOut()
+
+
+    def commands(self):
+        cmds = ["In", "Out"]
+
+        if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
+            cmds = ["Open", "Close"]
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
+             isinstance(self._ho, ShutterMockup.ShutterMockup):
+            cmds = ["Open", "Close"]
+
+        return cmds
 
     def set(self, state):
         if state == INOUT_STATE.IN:
-            self._ho.actuatorIn()
+            self._close()
         elif state == INOUT_STATE.OUT:
-            self._ho.actuatorOut()
-
+            self._open()
 
     def get(self):
         return INOUT_STATE.STR_TO_VALUE.get(self._get_state(), 2)
@@ -460,13 +497,7 @@ class InOutHOMediator(HOMediatorBase):
 
     def msg(self):
         state = self._get_state()
-        msg = "UNKNOWN"
-
-        if state == INOUT_STATE.IN:
-            msg = "OPENED"
-        elif state == INOUT_STATE.OUT:
-            msg = "CLOSED"
-
+        msg = self.STATES.STATE_TO_MSG_STR.get(state, "---")
         return msg
 
     def dict_repr(self):
@@ -479,132 +510,11 @@ class InOutHOMediator(HOMediatorBase):
                 "limits": self.limits(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "commands": ["Open", "Close"],
+                "commands": self.commands(),
                 "type": "DUOSTATE"
                 }
 
         return data
-
-
-class TangoShutterHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
-        super(TangoShutterHOMediator, self).__init__(ho, name)
-        ho.connect("shutterStateChanged", self.value_change)
-
-    def __getattr__(self, attr):
-        return getattr(self._ho, attr)
-
-    def set(self, state):
-        if state == INOUT_STATE.IN:
-            self._ho.closeShutter()
-        elif state == INOUT_STATE.OUT:
-            self._ho.openShutter()
-
-    def get(self):
-        return 0
-
-    def stop(self):
-        self._ho.stop()
-
-    def state(self):
-        state = INOUT_STATE.UNDEFINED
-        _state = self._ho.getShutterState()
-
-        if _state == "OPENED":
-            state = INOUT_STATE.OUT
-        elif _state == "CLOSED":
-            state = INOUT_STATE.IN
-
-        return state
-
-    def msg(self):
-        state = self._ho.getShutterState()
-        msg = "UNKNOWN"
-
-        if state == INOUT_STATE.IN:
-            msg = "IN"
-        elif state == INOUT_STATE.OUT:
-            msg = "OUT"
-
-        return msg
-
-    def dict_repr(self):
-        """
-        :returns: The dictionary representation of the hardware object.
-        """
-        data = {"name": self._name,
-                "label": self._name.replace('_', ' ').title(),
-                "value": self.get(),
-                "limits": self.limits(),
-                "state": self.state(),
-                "msg": self.msg(),
-                "commands": ["Open", "Close"],
-                "type": "DUOSTATE"
-                }
-
-        return data
-
-
-class BeamstopHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
-        super(BeamstopHOMediator, self).__init__(ho, name)
-        ho.connect("stateChanged", self.value_change)
-
-    def __getattr__(self, attr):
-        return getattr(self._ho, attr)
-
-    def set(self, state):
-        if state == INOUT_STATE.IN:
-            self._ho.moveToPosition(state)
-        elif state == INOUT_STATE.OUT:
-            self._ho.moveToPosition(state)
-
-    def get(self):
-        return 0
-
-    def stop(self):
-        self._ho.stop()
-
-    def state(self):
-        state = INOUT_STATE.UNDEFINED
-        _state = self._ho.getPosition()
-
-        if _state == INOUT_STATE.OUT:
-            state = INOUT_STATE.OUT
-        elif _state == INOUT_STATE.IN:
-            state = INOUT_STATE.IN
-
-        return state
-
-    def msg(self):
-        state = self._ho.getPosition()
-        msg = "UNKNOWN"
-
-        if state == INOUT_STATE.IN:
-            msg = "IN"
-        elif state == INOUT_STATE.OUT:
-            msg = "OUT"
-
-        return msg
-
-    def dict_repr(self):
-        """
-        :returns: The dictionary representation of the hardware object.
-        """
-        data = {"name": self._name,
-                "label": self._name.replace('_', ' ').title(),
-                "value": self.get(),
-                "limits": self.limits(),
-                "state": self.state(),
-                "msg": self.msg(),
-                "commands": ["In", "Out"],
-                "type": "DUOSTATE"
-                }
-
-        return data
-
-    def value_change(self, value):
-        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
 class TransmissionHOMediator(HOMediatorBase):
@@ -815,3 +725,52 @@ class MachineInfoHOMediator(HOMediatorBase):
 
     def state(self):
         pass
+
+
+class PhotonFluxHOMediator(HOMediatorBase):
+    def __init__(self, ho, name=''):
+        super(PhotonFluxHOMediator, self).__init__(ho, name)
+
+        try:
+            ho.connect("valueChanged", self.value_change)
+        except:
+            pass
+
+        self._precision = 1
+
+    def set(self, value):
+        pass
+
+    def get(self):
+        try:
+            value = self._ho.current_flux
+        except:
+            value = '0'
+
+        return value
+
+    def message(self):
+        return ""
+
+    def limits(self):
+        """
+        :returns: The detector distance limits.
+        """
+        return []
+
+    def state(self):
+        return "READY"
+
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
+                "value": self.get(),
+                "limits": self.limits(),
+                "state":  self.state(),
+                "msg": self.message(),
+                "precision": self.precision()}
+
+        return data

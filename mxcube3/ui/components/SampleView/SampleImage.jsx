@@ -9,7 +9,6 @@ import SampleControls from './SampleControls';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
-
 import 'fabric';
 const fabric = window.fabric;
 
@@ -421,8 +420,8 @@ export default class SampleImage extends React.Component {
     const gridForm = document.getElementById('gridForm');
 
     if (gridData) {
-      left = gridData.left;
-      top = gridData.top;
+      left = gridData.screenCoord[0];
+      top = gridData.screenCoord[1];
     } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
       left = this.drawGridPlugin.currentGridData().left;
       top = this.drawGridPlugin.currentGridData().top;

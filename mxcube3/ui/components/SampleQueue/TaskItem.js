@@ -138,7 +138,7 @@ export default class TaskItem extends Component {
   showForm() {
     const { data, sampleId } = this.props;
     const { type, parameters } = data;
-    this.props.showForm(type, sampleId, data, parameters.point);
+    this.props.showForm(type, sampleId, data, parameters.shape);
   }
 
   render() {
@@ -166,7 +166,6 @@ export default class TaskItem extends Component {
     };
 
     const pointID = data.parameters.shape;
-
     const value = `./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`;
     const element = (
       <div className="node node-sample" style={{ opacity }}>
@@ -184,6 +183,8 @@ export default class TaskItem extends Component {
                 <label className="col-sm-12">File path:</label>
                 <div className="col-sm-12" style={{ display: 'flex' }} >
                   <FormControl
+                    onMouseEnter={() => this.setState({ overInput: true }) }
+                    onMouseLeave={() => this.setState({ overInput: false }) }
                     readOnly
                     type="text"
                     defaultValue={value}

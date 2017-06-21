@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import { FieldsHeader,
          StaticField,
@@ -57,7 +58,7 @@ class Helical extends React.Component {
   }
 
   render() {
-    return (<Modal show={this.props.show} onHide={this.props.hide}>
+    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Helical Data Collection</Modal.Title>
         </Modal.Header>
@@ -75,7 +76,7 @@ class Helical extends React.Component {
                 <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
               </Col>
               <Col xs={4}>
-                <InputField propName="run_number" label="Run number" col1="4" col2="8" />
+                <InputField propName="run_number" disabled label="Run number" col1="4" col2="8" />
               </Col>
             </Row>
             <StaticField label="Filename" data={this.props.filename} />
@@ -129,7 +130,7 @@ class Helical extends React.Component {
            <Modal.Footer>
              <ButtonToolbar className="pull-right">
                <Button bsStyle="success"
-                 disabled={this.props.pointID === -1 || this.props.invalid}
+                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                  onClick={this.submitRunNow}
                >
                  Run Now
@@ -142,7 +143,7 @@ class Helical extends React.Component {
              </ButtonToolbar>
            </Modal.Footer>
        }
-      </Modal>);
+      </DraggableModal>);
   }
 }
 
@@ -158,10 +159,11 @@ Helical = connect(state => {
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
+  const position = state.taskForm.pointID === '' ? state.taskForm.pointID : 'LX';
 
   return {
     path: `${state.queue.rootPath}/${subdir}`,
-    filename: `${prefix}_${runNumber}${fileSuffix}`,
+    filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,

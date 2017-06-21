@@ -225,6 +225,8 @@ export default (state = INITIAL_STATE, action) => {
       for (const sampleID in action.data.queue.queue) {
         if (action.data.queue.queue.hasOwnProperty(sampleID)) {
           sampleList[sampleID] = action.data.queue.queue[sampleID];
+          const pref = `${sampleList[sampleID].sampleName}-${sampleList[sampleID].proteinAcronym}`;
+          sampleList[sampleID].defaultPrefix = pref;
         }
       }
 

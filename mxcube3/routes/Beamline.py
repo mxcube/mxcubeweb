@@ -21,19 +21,6 @@ def init_signals():
     except Exception, ex:
         logging.getLogger('HWR').\
             exception("error connecting to beamline_setup/beam_info hardware object signals")
-
-    try:
-        machInfo = mxcube.beamline.getObjectByRole("mach_info")
-
-        if machInfo is not None:
-            machInfo.connect(machInfo, 'machInfoChanged',
-                           signals.mach_info_changed)
-        else:
-            logging.getLogger('HWR').error("mach_info is not defined")
-    except Exception, ex:
-        logging.getLogger('HWR').\
-            exception("error connecting to beamline_setup/mach_info hardware object signals")
-
     try:
         actions = mxcube.actions
         if actions is not None:
