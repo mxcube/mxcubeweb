@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
-import { sendAbortCentring } from './sampleview';
+import { sendAbortCentring, sendUpdateShape } from './sampleview';
 import { selectSamplesAction, clearSampleGrid } from '../actions/sampleGrid';
 import { TASK_UNCOLLECTED } from '../constants';
 
@@ -399,6 +399,15 @@ export function addTask(sampleIDs, parameters, runNow) {
                      parameters,
                      checked: true };
 
+      if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
+        dispatch(sendUpdateShape(task.parameters.shape, { state: 'SAVED' }));
+      }
+      if (state.shapes.shapes[task.parameters.shape].t === 'L') {
+        dispatch(sendUpdateShape(state.shapes.shapes[task.parameters.shape].refs[0],
+          { state: 'SAVED' }));
+        dispatch(sendUpdateShape(state.shapes.shapes[task.parameters.shape].refs[1],
+          { state: 'SAVED' }));
+      }
       if (!state.queue.queue.includes(sampleID)) {
         const sample = Object.assign({}, state.sampleGrid.sampleList[sampleID]);
         sample.tasks = [task];
