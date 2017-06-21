@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Button, Collapse, FormControl } from 'react-bootstrap';
+import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
 import cx from 'classnames';
@@ -8,7 +8,6 @@ import { TASK_UNCOLLECTED,
          TASK_COLLECT_FAILED,
          TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
-import ClipboardButton from 'react-clipboard.js';
 
 const cardSource = {
   beginDrag(props) {
@@ -105,11 +104,11 @@ export default class TaskItem extends Component {
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return ('nothing yet');
+      return (<span></span>);
     }
     return (
       <a href={this.props.data.limstResultData}> ISPyB link</a>
-      );
+    );
   }
 
   toggleChecked() {
@@ -162,58 +161,93 @@ export default class TaskItem extends Component {
       marginLeft: 'auto',
       alignItems: 'center',
       paddingLeft: '10px',
-      paddingRight: '10px'
+      paddingRight: '10px',
+      color: '#d9534f',
+      cursor: 'pointer'
     };
 
     const pointID = data.parameters.shape;
     const value = `./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`;
+    const path = parameters.path ? parameters.path : '';
     const element = (
       <div className="node node-sample" style={{ opacity }}>
-            <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
-              <p className="node-name" style={{ display: 'flex' }} >
-                {`${pointID !== '' ? pointID : '?'} ${data.label}`}
-              </p>
-              <p className="fa fa-trash" onClick={this.deleteTask} style={delTaskCSS} >
-              </p>
-            </div>
-          <Collapse in={Boolean(show)}>
+        <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
+          <b>
+            <p className="node-name" style={{ display: 'flex' }} >
+              {`${pointID !== '' ? pointID : '?'} ${data.label}`}
+              <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
+                <ProgressBar style={{ marginBottom: '0px', height: '18px' }} active now="0" />
+            </span>
+            </p>
+          </b>
+          <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} />
+        </div>
+        <Collapse in={Boolean(show)}>
           <div className="task-body">
-            <form>
-              <div className="form-group row">
-                <label className="col-sm-12">File path:</label>
-                <div className="col-sm-12" style={{ display: 'flex' }} >
-                  <FormControl
-                    onMouseEnter={() => this.setState({ overInput: true }) }
-                    onMouseLeave={() => this.setState({ overInput: false }) }
-                    readOnly
-                    type="text"
-                    defaultValue={value}
-                    ref={value}
-                  />
-                  <ClipboardButton data-clipboard-text={value} style={{ maxWidth: '30' }} >
-                    <span className="fa fa-clipboard" />
-                  </ClipboardButton>
-                </div>
-              </div>
-              <div className="task-information">
-                <label>Parameters summary:&nbsp;</label>
-                <span className="task-parameters" onClick={this.showForm}>
-                  osc: {parameters.osc_range},
-                  exp.time: {`${parameters.exp_time * 1000} ms`},
-                  num.images: {parameters.num_images},
-                  resolution: {parameters.resolution},
-                  Transmission: {`${parameters.transmission}%`}
-                </span>
-              <div>
-                <label>Results:&nbsp;</label>
-                <span className="task-result">
-                  {this.getResult(state)}
-                </span>
-              </div>
-              </div>
-            </form>
+            <div style={ { borderLeft: '1px solid #DDD',
+                           borderRight: '1px solid #DDD',
+                           padding: '0.5em' } }
+            >
+              <b>Path:</b>
+              <OverlayTrigger
+                trigger="click"
+                placement="top"
+                rootClose
+                overlay={(<Popover style={{ maxWidth: '600px', width: 'auto' }}>
+                            <input
+                              type="text"
+                              onFocus={(e) => {e.target.select();}}
+                              value={path}
+                              size={path.length + 10}
+                            />
+                          </Popover>)}
+              >
+                <a>
+                  { value }
+                </a>
+              </OverlayTrigger>
+            </div>
+            <Table
+              striped
+              condensed
+              bordered
+              hover
+              onClick={this.showForm}
+              style={{ fontSize: 'smaller', marginBottom: '0px' }}
+              className="task-parameters-table"
+            >
+              <thead>
+                <tr>
+                  <th>Start &deg; </th>
+                  <th>Osc. &deg; </th>
+                  <th># Img</th>
+                  <th>t (ms)</th>
+                  <th>T (%)</th>
+                  <th>Res. (&Aring;)</th>
+                  <th>E (KeV)</th>
+                  <th>&phi; &deg;</th>
+                  <th>&kappa; &deg;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><a>{parameters.osc_start}</a></td>
+                  <td><a>{parameters.osc_range}</a></td>
+                  <td><a>{parameters.exp_time * 1000}</a></td>
+                  <td><a>{parameters.num_images}</a></td>
+                  <td><a>{parameters.resolution}</a></td>
+                  <td><a>{parameters.transmission}</a></td>
+                  <td><a>{parameters.energy}</a></td>
+                  <td><a>{parameters.kappa_phi}</a></td>
+                  <td><a>{parameters.kappa}</a></td>
+                </tr>
+              </tbody>
+            </Table>
+            <div>
+              {this.getResult(state)}
+            </div>
           </div>
-          </Collapse>
+        </Collapse>
       </div>
       );
     if (this.state.overInput) {

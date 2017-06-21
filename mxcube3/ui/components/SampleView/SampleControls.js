@@ -254,7 +254,7 @@ export default class SampleControls extends React.Component {
               onClick={this.toggleBackLight}
               active={motors.BackLightSwitch.Status === 1}
             />
-            <div style={{ display: 'inline-block', width: '100px !important' }}>
+            <div style={{ display: 'inline-block', width: '75px' }}>
               <MotorInput
                 className="motor-input-sm"
                 title="BackLight"
@@ -277,7 +277,7 @@ export default class SampleControls extends React.Component {
               onClick={this.toggleFrontLight}
               active={motors.FrontLightSwitch.Status === 1}
             />
-            <div style={{ display: 'inline-block', width: '100px !important' }}>
+            <div style={{ display: 'inline-block', width: '75px' }}>
               <MotorInput
                 title="FrontLight"
                 save={this.props.sampleActions.sendMotorPosition}

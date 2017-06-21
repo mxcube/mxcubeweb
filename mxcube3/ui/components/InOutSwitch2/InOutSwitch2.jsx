@@ -50,7 +50,8 @@ export default class InOutSwitch2 extends React.Component {
       btn = <Button block bsSize="small" onClick={this.setOut}>{this.props.onText}</Button>;
     }
 
-    const msgLabelStyle = { display: 'block', fontSize: '100%', borderRadius: '0px' };
+    const msgLabelStyle = { display: 'block', fontSize: '100%',
+                            borderRadius: '0px', color: '#000' };
 
     return (
         <Row>
@@ -62,8 +63,7 @@ export default class InOutSwitch2 extends React.Component {
               placement="bottom"
               overlay={(<Popover>{btn}</Popover>)}
             >
-
-        <div onContextMenu={this.onRightLinkClick}>
+              <div onContextMenu={this.onRightLinkClick}>
                 <Label
                   style={{ display: 'block', marginBottom: '3px' }}
                 >
