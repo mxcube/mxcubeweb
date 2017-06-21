@@ -125,7 +125,6 @@ def loginInfo():
 
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
-    limsutils.update_mxcube_session(login_id, login_info)
 
     res = {"synchrotron_name": mxcube.session.synchrotron_name,
            "beamline_name": mxcube.session.beamline_name,
