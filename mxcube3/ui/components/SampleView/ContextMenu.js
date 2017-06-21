@@ -91,7 +91,6 @@ export default class ContextMenu extends React.Component {
   showModal(modalName, wf = {}, _shape = null) {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
     const sid = _shape ? _shape.id : shape.id;
-    console.log('showign modal with sid: ', sid);
     this.props.showForm(
       modalName,
       [sampleID],
