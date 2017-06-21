@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import StringIO
+import logging
 
-from flask import jsonify, Response, send_file
+from flask import jsonify, Response, send_file, request
 from mxcube3 import app as mxcube
 from . import limsutils
+
 
 @mxcube.route("/mxcube/api/v0.1/lims/samples/<proposal_id>")
 def proposal_samples(proposal_id):
@@ -16,7 +18,7 @@ def proposal_samples(proposal_id):
         sample_info["limsID"] = sample_info.pop("sampleId")
         sample_info["limsLink"] = mxcube.rest_lims.sample_link()
         sample_info["defaultPrefix"] = limsutils.get_default_prefix(sample_info, False)
-        
+
         try:
             basket = int(sample_info["containerSampleChangerLocation"])
         except (TypeError, ValueError):
@@ -34,7 +36,7 @@ def proposal_samples(proposal_id):
 def get_dc_thumbnail(image_id):
     fname, data = mxcube.rest_lims.get_dc_thumbnail(image_id)
     data = StringIO.StringIO(data)
-    data.seek(0)    
+    data.seek(0)
     return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
@@ -42,3 +44,26 @@ def get_dc_thumbnail(image_id):
 def get_dc(dc_id):
     data = mxcube.rest_lims.get_dc_(dc_id)
     return jsonify(data)
+
+
+@mxcube.route("/mxcube/api/v0.1/lims/proposal", methods=['POST'])
+def set_proposal():
+    """
+    Set the selected proposal.
+    """
+    content = request.get_json()
+    proposal_number = content['proposal_number']
+    limsutils.select_proposal(proposal_number)
+    logging.getLogger('user_log').info('[LIMS] Proposal selected.')
+
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/lims/proposal", methods=['GET'])
+def get_proposal():
+    """
+    Return the currently selected proposal. (The proposal list is part of the login_res)
+    """
+    proposal_info = limsutils.get_proposal_info(mxcube.session.proposal_code)
+
+    return jsonify({"Proposal": proposal_info})

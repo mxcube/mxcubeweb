@@ -9,6 +9,7 @@ from mxcube3 import socketio
 
 LOGGED_IN_USER = None
 
+
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
     """
@@ -35,8 +36,8 @@ def login():
     password = content['password']
 
     if LOGGED_IN_USER is not None and LOGGED_IN_USER != loginID:
-        data = {"code": "", "msg": "Another user is already logged in" }
-        resp = jsonify(data);
+        data = {"code": "", "msg": "Another user is already logged in"}
+        resp = jsonify(data)
         resp.code = 409
         return resp
 
@@ -55,14 +56,15 @@ def login():
 
         # For the moment not loading queue from persistent storage (redis),
         # uncomment to enable loading.
-        #qutils.load_queue(session)
-        #logging.getLogger('HWR').info('Loaded queue')
+        # qutils.load_queue(session)
+        # logging.getLogger('HWR').info('Loaded queue')
         logging.getLogger('HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
 
         if not remote_access.MASTER:
             remote_access.set_master(session.sid)
 
     return jsonify(login_res['status'])
+
 
 @mxcube.route("/mxcube/api/v0.1/signout")
 def signout():
@@ -78,7 +80,7 @@ def signout():
     if remote_access.is_master(session.sid):
         state_storage.flush()
         remote_access.flush()
-        
+
     session.clear()
 
     return make_response("", 200)
@@ -125,16 +127,21 @@ def loginInfo():
     login_info = limsutils.convert_to_dict(login_info)
     limsutils.update_mxcube_session(login_id, login_info)
 
-    return jsonify(
-        { "synchrotron_name": mxcube.session.synchrotron_name,
-          "beamline_name": mxcube.session.beamline_name,
-          "loginType": mxcube.db_connection.loginType.title(),
-          "loginRes": login_info,
-          "queue": qutils.queue_to_dict(),
-          "master": remote_access.is_master(session.sid),
-          "observerName": remote_access.observer_name()
-        }
-    )
+    res = {"synchrotron_name": mxcube.session.synchrotron_name,
+           "beamline_name": mxcube.session.beamline_name,
+           "loginType": mxcube.db_connection.loginType.title(),
+           "loginRes": login_info,
+           "queue": qutils.queue_to_dict(),
+           "master": remote_access.is_master(session.sid),
+           "observerName": remote_access.observer_name()
+           }
+
+    if res["loginType"].lower() != 'user':
+        # autoselect proposal
+        limsutils.select_proposal(LOGGED_IN_USER)
+        logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
+
+    return jsonify(res)
 
 
 @mxcube.route("/mxcube/api/v0.1/login/request_control", methods=["POST"])
@@ -154,9 +161,9 @@ def request_control():
     remote_access.OBSERVERS[remote_addr]["name"] = data["name"]
     remote_access.OBSERVERS[remote_addr]["requestsControl"] = True
     remote_access.OBSERVERS[remote_addr]["message"] = data["message"]
-    
+
     data = remote_access.OBSERVERS.values()
-   
+
     socketio.emit("observersChanged", data, namespace='/hwr')
 
     return make_response("", 200)
@@ -165,18 +172,18 @@ def request_control():
 @mxcube.route("/mxcube/api/v0.1/login/observers", methods=["GET"])
 def observers():
     """
-    """    
+    """
     data = {'observers': remote_access.OBSERVERS.values(),
             'sid': session.sid,
             'master': remote_access.is_master(session.sid),
             'observerName': remote_access.observer_name()}
-    
+
     return jsonify(data=data)
 
 
 def observer_requesting_control():
     observer = None
-    
+
     for o in remote_access.OBSERVERS.values():
         if o["requestsControl"]:
             observer = o

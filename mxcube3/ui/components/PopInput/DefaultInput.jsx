@@ -15,7 +15,6 @@ export default class DefaultInput extends React.Component {
     this.stepDecrement = this.stepChange.bind(this, props.motorName, -1);
   }
 
-
   getValue() {
     const input = ReactDOM.findDOMNode(this.refs.formControl);
     return input.value;
@@ -38,7 +37,6 @@ export default class DefaultInput extends React.Component {
   cancel() {
     this.props.onCancel();
   }
-
 
   submit(event) {
     this.props.onSubmit(event);

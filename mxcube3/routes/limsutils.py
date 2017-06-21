@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import types
+import sys
 import logging
+import copy
 
 import queue_model_objects_v1 as qmo
 
@@ -22,36 +24,81 @@ def lims_login(loginID, password):
     login_res = {}
 
     try:
-        login_res = mxcube.db_connection.login(loginID, password)
-    except:
-        logging.getLogger('HWR').info('[LIMS] Could not login to LIMS')
-        return login_res
-
-    try:
         mxcube.rest_lims.authenticate(loginID, password)
     except:
-        logging.getLogger('HWR').info('[LIMS-REST] Could not authenticate')
-        return login_res
+        logging.getLogger('HWR').error('[LIMS-REST] Could not authenticate')
+        return dict({'status': {'code': '0'}})
+
+    if mxcube.db_connection.loginType.lower() == 'user':
+        # soap will autocreate a session if empty, this is the only reason for this
+        # login_res = mxcube.db_connection.login(loginID, password)
+        # the rest interface does not create session, but the soap login only returns one proposal
+        # if we auth by username we need all the associated proposals for later select
+
+        try:
+            proposals = mxcube.db_connection.get_proposals_by_user(loginID)
+            mxcube.session.proposal_list = proposals
+        except:
+            logging.getLogger('HWR').error('[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
+            return dict({'status': {'code': '0'}})
+        for prop in proposals:
+            todays_session = mxcube.db_connection.get_todays_session(prop)
+            prop['Session'] = todays_session
+        login_res['ProposalList'] = proposals
+        login_res['status'] = {"code": "ok", "msg": "Successful login"}
+
+    else:
+        try:
+            login_res = mxcube.db_connection.login(loginID, password)
+        except:
+            logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
+            return dict({'status': {'code': '0'}})
+
+        mxcube.session.proposal_list = [copy.deepcopy(login_res)]
+        login_res['ProposalList'] = [login_res['Proposal']]
+        login_res.pop('Proposal')
+
+    logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
 
     return login_res
 
 
-def update_mxcube_session(login_id, login_res):
-    proplist = mxcube.rest_lims.get_proposals_by_user(login_id)
-    proposal_code = login_res['Proposal']['code']
-    proposal_number = login_res['Proposal']['number']
+def get_proposal_info(proposal_number):
+    """
+    Search for the given proposal in the proposal list.
+    """
+    for prop in mxcube.session.proposal_list:
+        if prop.get('Proposal').get('number', '') == proposal_number:
+            return prop
+    return {}
 
-    # Temporary fix until we have the user have the possibility to select
-    # proposal. If there is a proposal in the list use the first one,
-    # Otherwise use the one returned by db_connection.login
-    if proplist:
-        session_id = proplist[0]['Proposal']['number']
+
+def select_proposal(proposal_number):
+    proposal_info = get_proposal_info(proposal_number)
+    logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal_number)
+
+    if proposal_info:
+        mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
+        mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
+        # in this case I assume single session
+        # 'Session' vs 'session', soap, rest and mockups compatibility
+        if proposal_info.has_key('Session'):
+            mxcube.session.session_id = proposal_info.get('Session').get('session').get
+            ('sessionId')
+        else:
+            mxcube.session.session_id = proposal_info.get('session').get('session')[0]['sessionId']
+
+        if hasattr(mxcube.session, 'prepare_directories'):
+            try:
+                logging.getLogger('HWR').info('[LIMS] Creating data directories for proposal %s'
+                                              % proposal_number)
+                mxcube.session.prepare_directories(proposal_info)
+            except:
+                logging.getLogger('HWR').info('[LIMS] Error creating data directories, %s'
+                                              % sys.exc_info()[1])
+        return True
     else:
-        session_id = login_res['session']['session']['sessionId']
-
-    mxcube.session.proposal_code = proposal_code
-    mxcube.session.proposal_number = proposal_number
-    mxcube.session.session_id = session_id
+        return False
 
 
 def get_default_prefix(sample_data, generic_name):
@@ -78,7 +125,6 @@ def convert_to_dict(ispyb_object):
                 val = [convert_to_dict(x)
                         if type(x) == types.InstanceType else x
                         for x in val]
-
             elif type(val) == types.DictType:
                 val = dict([(k, convert_to_dict(x)
                             if type(x) == types.InstanceType else x)

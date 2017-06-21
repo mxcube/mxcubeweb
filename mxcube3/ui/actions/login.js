@@ -11,6 +11,51 @@ export function setLoginInfo(loginInfo) {
   };
 }
 
+export function showProposalsForm(formname) {
+  return {
+    type: 'SHOW_PROPOSALS_FORM',
+    name: formname,
+  };
+}
+
+export function hideProposalsForm() {
+  return {
+    type: 'HIDE_FORM'
+  };
+}
+
+export function selectProposal(prop) {
+  return {
+    type: 'SELECT_PROPOSAL',
+    proposal: prop,
+  };
+}
+
+export function postProposal(number) {
+  return fetch('mxcube/api/v0.1/lims/proposal', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({ proposal_number: number })
+  });
+}
+
+export function sendSelectProposal(number) {
+  return function (dispatch) {
+    postProposal(number).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to select proposal'));
+        browserHistory.push('/login');
+      } else {
+        browserHistory.push('/');
+      }
+    });
+  };
+}
+
 export function startSession() {
   return function (dispatch, getState) {
     const loginInfo = getState().login.loginInfo;
@@ -32,6 +77,7 @@ export function getLoginInfo() {
     }).then(response => response.json())
           .then(loginInfo => {
             dispatch(setLoginInfo(loginInfo));
+            return loginInfo;
           }, () => {
             dispatch(showErrorPanel(true));
             dispatch(setLoading(false));
@@ -42,6 +88,7 @@ export function getLoginInfo() {
 export function signOut() {
   return { type: 'SIGNOUT' };
 }
+
 
 export function signIn(proposal, password) {
   return function (dispatch) {
@@ -56,7 +103,19 @@ export function signIn(proposal, password) {
     }).then(response => response.json()).then((res) => {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
-        browserHistory.push('/');
+        dispatch(setLoading(false));
+        dispatch(getLoginInfo()).then(response => response).then((resp) => {
+          if (resp.loginType === 'User') {
+            dispatch(showProposalsForm('SelectProposals')).then(() => {
+              browserHistory.push('/');
+            }
+          );
+          } else {
+            dispatch(selectProposal(proposal));
+            browserHistory.push('/');
+          }
+        }
+        );
       } else {
         // const msg = res.msg;
         dispatch(showErrorPanel(true));
