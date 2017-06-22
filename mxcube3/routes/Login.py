@@ -138,6 +138,7 @@ def loginInfo():
     if res["loginType"].lower() != 'user':
         # autoselect proposal
         limsutils.select_proposal(LOGGED_IN_USER)
+        res["selectedProposal"] = LOGGED_IN_USER
         logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
 
     return jsonify(res)
