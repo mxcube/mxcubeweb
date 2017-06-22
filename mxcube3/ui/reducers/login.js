@@ -18,6 +18,7 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
           {
             loginInfo: action.loginInfo,
+            selectedProposal: action.loginInfo.selectedProposal,
             loggedIn,
             data
           });
