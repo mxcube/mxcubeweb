@@ -167,6 +167,10 @@ export function toggleCinema() {
   };
 }
 
+export function setGridOverlay(level) {
+  return { type: 'SET_GRID_OVERLAY', level };
+}
+
 export function toggleDrawGrid() {
   return { type: 'DRAW_GRID' };
 }
@@ -286,7 +290,7 @@ export function sendAddShape(shapeData = {}, successCb = null) {
       body: JSON.stringify({ id: -1, shapeData })
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to add line');
+        throw new Error('Server refused to add shape');
       }
       return response.json();
     }).then((json) => {
@@ -310,7 +314,7 @@ export function sendUpdateShape(id, shapeData) {
       body: JSON.stringify({ id, shapeData })
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to add line');
+        throw new Error('Server refused to update shape');
       }
       return response.json();
     }).then((json) => {

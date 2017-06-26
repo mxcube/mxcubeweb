@@ -27,7 +27,8 @@ function _GridData() {
            cellVSpace: 0, cellHSpace: 0,
            numCols: null, numRows: null,
            label: 'Grid', cellCountFun: 'zig-zag',
-           selected: false, id: null };
+           selected: false, id: null,
+           overlayLevel: 1 };
 }
 
 
@@ -44,6 +45,8 @@ export default class DrawGridPlugin {
     this.reset = this.reset.bind(this);
     this.snapToGrid = true;
 
+    this.heatMapColorforValue = this.heatMapColorforValue.bind(this);
+    this.initializeCellFilling = this.initializeCellFilling.bind(this);
     this.drawing = false;
     this.shapeGroup = null;
     this.gridData = _GridData();
@@ -98,6 +101,12 @@ export default class DrawGridPlugin {
     this.gridData = this.setCellSpace(this.gridData, this.snapToGrid, hSpace, vSpace);
   }
 
+  setGridOverlay(gd, level) {
+    const gridData = { ...gd };
+    gridData.overlayLevel = level;
+    this.gridData = gridData;
+    return gridData;
+  }
 
   /**
    * Sart drawing grid
@@ -160,7 +169,6 @@ export default class DrawGridPlugin {
    */
   repaint(canvas) {
     const shape = this.shapeFromGridData(this.gridData);
-
     if (this.shapeGroup) {
       canvas.remove(this.shapeGroup);
     }
@@ -168,10 +176,42 @@ export default class DrawGridPlugin {
     this.shapeGroup = shape.shapeGroup;
     this.gridData = shape.gridData;
     canvas.add(this.shapeGroup);
-
     canvas.renderAll();
   }
 
+  heatMapColorforValue(gd, value) {
+    const h = (1.0 - value) * 240;
+    return `hsla(${h}, 100%, 50%, ${gd.overlayLevel})`;
+    // return 'hsla(' + h + ', 100%, 50%, '+ gd.overlayLevel +')';
+  }
+
+  initializeCellFilling(col, row) {
+    const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill('rgba(0,0,100,0.2)'));
+    return cellfillingMatrix;
+  }
+
+  cellFillingFromData(gd, col, row) {
+    /**
+    * Creates the heatmap data for later fill grid cells
+    * @param {GridData} gd
+    * @param 2d array data
+    */
+    const data = Array(col).fill().map(() => Array(row).fill());
+    for (let nw = 0; nw < col; nw++) {
+      for (let nh = 0; nh < row; nh++) {
+        data[nw][nh] = Math.random();
+      }
+    }
+
+    const fillingMatrix = this.initializeCellFilling(col, row);
+
+    for (let nw = 0; nw < col; nw++) {
+      for (let nh = 0; nh < row; nh++) {
+        fillingMatrix[nw][nh] = this.heatMapColorforValue(gd, data[nw][nh]);
+      }
+    }
+    return fillingMatrix;
+  }
 
   /**
    * Creates a Fabric GridGroup shape from a GridData object
@@ -186,12 +226,13 @@ export default class DrawGridPlugin {
     const cellWidth = gridData.cellWidth;
     const cellHeight = gridData.cellHeight;
 
+    const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
+
     const cellTW = cellWidth + gridData.cellHSpace;
     const cellTH = cellHeight + gridData.cellVSpace;
 
     const color = gridData.selected ? 'rgba(0,255,0,1)' : 'rgba(0,0,100,0.8)';
     const strokeArray = gridData.selected ? [] : [5, 5];
-
 
     if (cellWidth > 0 && cellHeight > 0) {
       for (let nw = 1; nw < gridData.numCols; nw++) {
@@ -225,7 +266,7 @@ export default class DrawGridPlugin {
             top: top + gridData.cellVSpace / 2 + (cellTH) * nh,
             width: cellWidth,
             height: cellHeight,
-            fill: 'rgba(0,0,100,0.2)',
+            fill: fillingMatrix[nw][nh],
             stroke: 'rgba(0,0,0,0)',
             hasControls: false,
             selectable: false,
