@@ -44,6 +44,7 @@ def lims_login(loginID, password):
         for prop in proposals:
             todays_session = mxcube.db_connection.get_todays_session(prop)
             prop['Session'] = todays_session
+
         login_res['ProposalList'] = proposals
         login_res['status'] = {"code": "ok", "msg": "Successful login"}
 
@@ -63,35 +64,33 @@ def lims_login(loginID, password):
     return login_res
 
 
-def get_proposal_info(proposal_number):
+def get_proposal_info(proposal):
     """
     Search for the given proposal in the proposal list.
     """
     for prop in mxcube.session.proposal_list:
-        if prop.get('Proposal').get('number', '') == proposal_number:
+        _p = "%s%s" % (prop.get('Proposal').get('code', ''),
+                       prop.get('Proposal').get('number', ''))
+
+        if  _p == proposal:
             return prop
+
     return {}
 
 
-def select_proposal(proposal_number):
-    proposal_info = get_proposal_info(proposal_number)
-    logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal_number)
+def select_proposal(proposal):
+    proposal_info = get_proposal_info(proposal)
+    logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal)
 
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
         mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
-        # in this case I assume single session
-        # 'Session' vs 'session', soap, rest and mockups compatibility
-        if proposal_info.has_key('Session'):
-            mxcube.session.session_id = proposal_info.get('Session').get('session').get
-            ('sessionId')
-        else:
-            mxcube.session.session_id = proposal_info.get('session').get('session')[0]['sessionId']
+        mxcube.session.session_id = proposal_info.get('session').get('session')['sessionId']
 
         if hasattr(mxcube.session, 'prepare_directories'):
             try:
                 logging.getLogger('HWR').info('[LIMS] Creating data directories for proposal %s'
-                                              % proposal_number)
+                                              % proposal)
                 mxcube.session.prepare_directories(proposal_info)
             except:
                 logging.getLogger('HWR').info('[LIMS] Error creating data directories, %s'

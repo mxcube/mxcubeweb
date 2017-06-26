@@ -12,29 +12,15 @@ export default class MXNavbar extends React.Component {
   }
 
   findProposal(prop) {
-    let resp = false;
-    // the next lines for the mismatch between mockups and real ispyb
-    if (prop.hasOwnProperty('Proposal')) {
-      resp = prop.Proposal.number === this.props.selectedProposal;
-    } else if (prop.hasOwnProperty('number')) {
-      resp = prop.number === this.props.selectedProposal;
-    }
-    return resp;
+    return `${prop.code}${prop.number}` === this.props.selectedProposal;
   }
 
   render() {
-    let propInfo = '';
+    const raStyle = (this.props.remoteAccessMaster ? { color: 'white' } : {});
     const proposal = this.props.userInfo.ProposalList ?
         this.props.userInfo.ProposalList.find(this.findProposal) : '';
-    // the next lines for the mismatch between mockups and real ispyb
-    if (proposal.hasOwnProperty('Proposal')) {
-      propInfo = (this.props.loggedIn && this.props.selectedProposal ?
-        `Proposal: ${proposal.Proposal.number}` : '');
-    } else if (proposal.hasOwnProperty('number')) {
-      propInfo = (this.props.loggedIn && this.props.selectedProposal ?
+    const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
         `Proposal: ${proposal.number}` : '');
-    }
-    const raStyle = (this.props.remoteAccessMaster ? { color: 'white' } : {});
 
     document.title = `MxCuBE-3 ${propInfo}`;
 
