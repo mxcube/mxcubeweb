@@ -45,19 +45,20 @@ def lims_login(loginID, password):
             todays_session = mxcube.db_connection.get_todays_session(prop)
             prop['Session'] = todays_session
 
-        login_res['ProposalList'] = proposals
+        login_res['proposalList'] = proposals
         login_res['status'] = {"code": "ok", "msg": "Successful login"}
 
     else:
         try:
             login_res = mxcube.db_connection.login(loginID, password)
+            login_res = mxcube.db_connection.get_proposal(
+                login_res['Proposal']['code'], login_res['Proposal']['number'])
         except:
             logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
             return dict({'status': {'code': '0'}})
 
-        mxcube.session.proposal_list = [copy.deepcopy(login_res)]
-        login_res['ProposalList'] = [login_res['Proposal']]
-        login_res.pop('Proposal')
+        mxcube.session.proposal_list = [login_res]
+        login_res['proposalList'] = [login_res['Proposal']]
 
     logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
 
@@ -85,7 +86,7 @@ def select_proposal(proposal):
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
         mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
-        mxcube.session.session_id = proposal_info.get('session').get('session')['sessionId']
+        mxcube.session.session_id = proposal_info.get('Session')[0].get('sessionId')
 
         if hasattr(mxcube.session, 'prepare_directories'):
             try:
