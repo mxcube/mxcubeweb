@@ -3,6 +3,7 @@ import { Panel, Button, DropdownButton, Glyphicon, } from 'react-bootstrap';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 
 import './SampleChanger.css';
+import '../context-menu-style.css';
 /* eslint-disable react/no-multi-comp */
 
 export class SampleChangerTree extends React.Component {
