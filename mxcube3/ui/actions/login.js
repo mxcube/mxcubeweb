@@ -103,7 +103,6 @@ export function signIn(proposal, password) {
     }).then(response => response.json()).then((res) => {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
-        dispatch(setLoading(false));
         dispatch(getLoginInfo()).then(response => response).then((resp) => {
           if (resp.loginType === 'User') {
             dispatch(showProposalsForm('SelectProposals')).then(() => {
