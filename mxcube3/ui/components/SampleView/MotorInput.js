@@ -73,8 +73,11 @@ export default class MotorInput extends React.Component {
     return (
         <div className="motor-input-container">
           <p className="motor-name">{this.props.label}</p>
-          <form className="inline form-inline form-group" onSubmit={this.handleKey} noValidate>
-            <div className="rw-widget rw-numberpicker">
+          <form className="form-group" onSubmit={this.handleKey} noValidate>
+            <div
+              className="rw-widget rw-numberpicker rw-widget-no-right-border"
+              style={ { width: '90px', display: 'inline-block' } }
+            >
               <span className="rw-select">
                 <button
                   type="button"
@@ -104,20 +107,31 @@ export default class MotorInput extends React.Component {
                 disabled={this.props.state !== 2}
               />
             </div>
-            <span>
-              {this.props.saveStep ?
-              <PopInput
-                className="step-size"
-                name="Step size" pkey={`${motorName.toLowerCase()}Step`}
-                data={data} onSave={this.props.saveStep} suffix={suffix}
-              />
-              : null
+            <span
+              className="rw-widget-right-border"
+              style={{
+                width: '34px',
+                height: '34px',
+                position: 'absolute',
+                display: 'inline-flex',
+                alignItems: 'center',
+                textAlign: 'center',
+                fontSize: '12px' }}
+            >
+              {(this.props.saveStep && this.props.state === 2) ?
+               <PopInput
+                 pkey={`${motorName.toLowerCase()}Step`}
+                 data={data}
+                 onSave={this.props.saveStep}
+                 suffix={suffix}
+                 style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
+               />
+               : null
               }
-            </span>
-            <span>
-              {this.props.state === 4 ?
+              {this.props.state !== 2 ?
                 <Button
-                  className="btn-xs motor-abort"
+                  style={{ width: '100%', height: '100%', display: 'block' }}
+                  className="btn-xs motor-abort rw-widget-no-left-border"
                   bsStyle="danger"
                   disabled={this.props.state !== 4}
                   onClick={this.stopMotor}
@@ -125,9 +139,8 @@ export default class MotorInput extends React.Component {
                   <i className="glyphicon glyphicon-remove" />
                 </Button>
                 : null
-               }
-             </span>
-
+              }
+            </span>
           </form>
         </div>
       );
