@@ -95,10 +95,11 @@ export default class TaskItem extends Component {
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
-    this.collapseTask = this.collapseTask.bind(this);
+    this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.getResult = this.getResult.bind(this);
     this.state = {
-      overInput: false
+      overInput: false,
+      selected: false
     };
   }
 
@@ -115,14 +116,15 @@ export default class TaskItem extends Component {
     this.props.toggleChecked(this.props.sampleId, this.props.index);
   }
 
-  collapseTask() {
-    this.props.collapseTask(this.props.sampleId, this.props.index);
+  taskHeaderOnClick(e) {
+    this.props.taskHeaderOnClickHandler(e, this.props.index);
   }
 
   deleteTask(e) {
     e.stopPropagation();
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
+
 
   deleteButton() {
     let content = (<Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>);
@@ -166,18 +168,24 @@ export default class TaskItem extends Component {
       cursor: 'pointer'
     };
 
+    taskCSS = this.props.selected ? `${taskCSS} task-head-selected` : taskCSS;
+
     const pointID = data.parameters.shape;
     const value = `./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`;
     const path = parameters.path ? parameters.path : '';
     const element = (
       <div className="node node-sample" style={{ opacity }}>
-        <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
+        <div
+          className={taskCSS}
+          style={{ display: 'flex' }}
+          onClick={this.taskHeaderOnClick}
+        >
           <b>
             <p className="node-name" style={{ display: 'flex' }} >
               {`${pointID !== '' ? pointID : '?'} ${data.label}`}
               <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
                 <ProgressBar style={{ marginBottom: '0px', height: '18px' }} active now="0" />
-            </span>
+              </span>
             </p>
           </b>
           <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} />
