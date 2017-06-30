@@ -188,7 +188,9 @@ export default class TaskItem extends Component {
               </span>
             </p>
           </b>
-          <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} />
+            { state === TASK_UNCOLLECTED ?
+              <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
+            }
         </div>
         <Collapse in={Boolean(show)}>
           <div className="task-body">
