@@ -397,7 +397,7 @@ export default class DrawGridPlugin {
    * @param {String} mode - method to use one of ['zig-zag', 'left-to-right']
    * @param {Number} currentRow - Row currently at
    * @param {Number} currentCol - Column currently at
-   * @param {Number} numRows - Total numver of rows in grid
+   * @param {Number} numRows - Total number of rows in grid
    * @param {Number} numCols - Total number of columns in grid
    *
    * @return {String} - index
@@ -407,6 +407,8 @@ export default class DrawGridPlugin {
 
     if (mode === 'zig-zag') {
       count = this.zigZagCellCount(currentRow, currentCol, numRows, numCols);
+    } else if (mode === 'inverse-zig-zag') {
+      count = this.inverseZigZagCellCount(currentRow, currentCol, numRows, numCols);
     } else {
       count = this.leftRightCellCount(currentRow, currentCol, numRows, numCols);
     }
@@ -434,4 +436,35 @@ export default class DrawGridPlugin {
   leftRightCellCount(currentRow, currentCol, numRows, numCols) {
     return (currentRow + 1) + currentCol * numCols;
   }
+
+
+  /**
+   * inverse bottom up indexing of cells (see countCells for doc)
+   * 9 6 3
+   * 8 5 2
+   * 7 4 1
+   */
+  inverseBottomUp(currentRow, currentCol, numRows, numCols) {
+    let cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
+
+    return cellCount;
+  }
+
+
+  /**
+   * inverse zig-zag indexing of cells (see countCells for doc)
+   * 9 4 3
+   * 8 5 2
+   * 7 6 1
+   */
+  inverseZigZagCellCount(currentRow, currentCol, numRows, numCols) {
+    let cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
+
+    if (currentRow != (numCols - 1) && (numCols - currentRow + 1) % 2 != 0) {
+      cellCount = (numRows * numCols) - (currentRow * numRows) + currentCol - numRows + 1;
+    }
+    return cellCount;
+  }
+
+
 }
