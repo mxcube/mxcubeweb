@@ -2,7 +2,7 @@ import 'fabric';
 const fabric = window.fabric;
 
 /**
- * Fabric Shape for drawing grid (defined by GridData)
+ * Fabric Shape for d§wing grid (defined by GridData)
  */
 const GridGroup = fabric.util.createClass(fabric.Group, {
   type: 'GridGroup',
@@ -28,7 +28,8 @@ function _GridData() {
            numCols: null, numRows: null,
            label: 'Grid', cellCountFun: 'zig-zag',
            selected: false, id: null,
-           overlayLevel: 1 };
+           overlayLevel: 0.2, result: null,
+           imageRatio: 1 };
 }
 
 
@@ -40,6 +41,7 @@ export default class DrawGridPlugin {
     this.repaint = this.repaint.bind(this);
     this.currentGridData = this.currentGridData.bind(this);
     this.currentShape = this.currentShape.bind(this);
+    this.setImageRatio = this.setImageRatio.bind(this);
     this.setCellSize = this.setCellSize.bind(this);
     this.shapeFromGridData = this.shapeFromGridData.bind(this);
     this.reset = this.reset.bind(this);
@@ -50,6 +52,12 @@ export default class DrawGridPlugin {
     this.drawing = false;
     this.shapeGroup = null;
     this.gridData = _GridData();
+  }
+
+  setImageRatio(imageRatio) {
+    this.gridData.imageRatio = imageRatio;
+
+    return this.gridData;
   }
 
   /**
@@ -104,7 +112,12 @@ export default class DrawGridPlugin {
   setGridOverlay(gd, level) {
     const gridData = { ...gd };
     gridData.overlayLevel = level;
-    this.gridData = gridData;
+    return gridData;
+  }
+
+  setGridResult(gd, result) {
+    const gridData = { ...gd };
+    gridData.result = result;
     return gridData;
   }
 
@@ -133,12 +146,12 @@ export default class DrawGridPlugin {
    * @param {float} x - bottom x coordinate of grid, (mouse x position)
    * @param {float} y - bottom y coordinate of grid, (mouse y position)
    */
-  update(canvas, x, y) {
+  update(canvas, x, y, imageRatio) {
     const [left, top] = this.gridData.screenCoord;
     const validPosition = x > left && y > top;
     const draw = this.drawing && validPosition;
-    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace;
-    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace;
+    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace * imageRatio;
+    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace * imageRatio;
 
     let width = Math.abs(x - left);
     let height = Math.abs(y - top);
@@ -185,8 +198,10 @@ export default class DrawGridPlugin {
     // return 'hsla(' + h + ', 100%, 50%, '+ gd.overlayLevel +')';
   }
 
-  initializeCellFilling(col, row) {
-    const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill('rgba(0,0,100,0.2)'));
+  initializeCellFilling(gd, col, row) {
+    // const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill('rgba(0,0,100,1)'));
+    const fill = `hsla(240,100%,20%, ${gd.overlayLevel}`;
+    const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill(fill));
     return cellfillingMatrix;
   }
 
@@ -197,17 +212,20 @@ export default class DrawGridPlugin {
     * @param 2d array data
     */
     const data = Array(col).fill().map(() => Array(row).fill());
+
     for (let nw = 0; nw < col; nw++) {
       for (let nh = 0; nh < row; nh++) {
         data[nw][nh] = Math.random();
       }
     }
 
-    const fillingMatrix = this.initializeCellFilling(col, row);
-
-    for (let nw = 0; nw < col; nw++) {
-      for (let nh = 0; nh < row; nh++) {
-        fillingMatrix[nw][nh] = this.heatMapColorforValue(gd, data[nw][nh]);
+    const fillingMatrix = this.initializeCellFilling(gd, col, row);
+    // if gd.result contains data remove the if to see the heat map
+    if (typeof gd.result !== 'undefined' && gd.result !== null) {
+      for (let nw = 0; nw < col; nw++) {
+        for (let nh = 0; nh < row; nh++) {
+          fillingMatrix[nw][nh] = this.heatMapColorforValue(gd, gd.result[nw][nh]);
+        }
       }
     }
     return fillingMatrix;
@@ -219,17 +237,19 @@ export default class DrawGridPlugin {
    * @param {GridData} gd
    * @return {Object} {shapeGroup, gridData}
    */
-  shapeFromGridData(gd) {
+  shapeFromGridData(gd, imageRatio = 1) {
     const gridData = { ...gd };
-    const [left, top] = gd.screenCoord;
+    let [left, top] = gd.screenCoord;
+    left = left / imageRatio;
+    top = top / imageRatio;
     const shapes = [];
-    const cellWidth = gridData.cellWidth;
-    const cellHeight = gridData.cellHeight;
+    const cellWidth = (gridData.cellWidth) / imageRatio;
+    const cellHeight = (gridData.cellHeight) / imageRatio;
 
     const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
 
-    const cellTW = cellWidth + gridData.cellHSpace;
-    const cellTH = cellHeight + gridData.cellVSpace;
+    const cellTW = cellWidth + (gridData.cellHSpace / imageRatio);
+    const cellTH = cellHeight + (gridData.cellVSpace / imageRatio);
 
     const color = gridData.selected ? 'rgba(0,255,0,1)' : 'rgba(0,0,100,0.8)';
     const strokeArray = gridData.selected ? [] : [5, 5];
@@ -238,7 +258,7 @@ export default class DrawGridPlugin {
       for (let nw = 1; nw < gridData.numCols; nw++) {
         shapes.push(new fabric.Line(
           [left + cellTW * nw, top,
-           left + cellTW * nw, top + gridData.height],
+           left + cellTW * nw, top + gridData.height / imageRatio],
           {
             strokeDashArray: strokeArray,
             stroke: color,
@@ -250,7 +270,7 @@ export default class DrawGridPlugin {
       for (let nh = 1; nh < gridData.numRows; nh++) {
         shapes.push(new fabric.Line(
           [left, top + (cellTH) * nh,
-           left + gridData.width, top + (cellTH) * nh],
+           left + gridData.width / imageRatio, top + (cellTH) * nh],
           {
             strokeDashArray: strokeArray,
             stroke: color,
@@ -295,8 +315,8 @@ export default class DrawGridPlugin {
     shapes.push(new fabric.Rect({
       left,
       top,
-      width: gridData.width,
-      height: gridData.height,
+      width: gridData.width / imageRatio,
+      height: gridData.height / imageRatio,
       fill: 'rgba(0,0,0,0)',
       strokeDashArray: strokeArray,
       stroke: color,
@@ -307,7 +327,7 @@ export default class DrawGridPlugin {
 
     if (gridData.label) {
       shapes.push(new fabric.Text(gridData.label, {
-        left: left + gridData.width,
+        left: left + gridData.width / imageRatio,
         top: top - 20,
         fill: color,
         fontFamily: 'Helvetica',

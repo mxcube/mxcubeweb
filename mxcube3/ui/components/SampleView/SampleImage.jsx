@@ -100,7 +100,11 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
-    this.drawGridPlugin.update(this.canvas, options.e.layerX, options.e.layerY);
+    this.drawGridPlugin.update(this.canvas,
+                               options.e.layerX,
+                               options.e.layerY,
+                               this.props.imageRatio
+                               );
   }
 
   onMouseUp() {
@@ -589,8 +593,9 @@ export default class SampleImage extends React.Component {
       if (this.props.selectedGrids.includes(gridData.id)) {
         gridData.selected = true;
       }
-
-      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData).shapeGroup);
+      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData,
+                                                                   this.props.imageRatio
+                                                                  ).shapeGroup);
     });
 
     this.canvas.renderAll();
