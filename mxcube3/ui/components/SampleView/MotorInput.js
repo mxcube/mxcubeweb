@@ -116,7 +116,8 @@ export default class MotorInput extends React.Component {
                 display: 'inline-flex',
                 alignItems: 'center',
                 textAlign: 'center',
-                fontSize: '12px' }}
+                fontSize: '12px',
+                backgroundColor: '#EAEAEA' }}
             >
               {(this.props.saveStep && this.props.state === 2) ?
                <PopInput
