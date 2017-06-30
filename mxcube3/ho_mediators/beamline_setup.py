@@ -453,7 +453,7 @@ class DuoStateHOMediator(HOMediatorBase):
              isinstance(self._ho, ShutterMockup.ShutterMockup):
             self._ho.closeShutter()
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
-            self._ho.moveToPosition("in")
+            self._ho.moveToPosition("out")
         elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
             self._ho.actuatorIn()
 
@@ -464,7 +464,7 @@ class DuoStateHOMediator(HOMediatorBase):
              isinstance(self._ho, ShutterMockup.ShutterMockup):
             self._ho.openShutter()
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
-            self._ho.moveToPosition("out")
+            self._ho.moveToPosition("in")
         elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
             self._ho.actuatorOut()
 

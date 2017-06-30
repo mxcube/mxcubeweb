@@ -53,7 +53,7 @@ class TANGO_SHUTTER_STATE:
 
 class MICRODIFF_INOUT_STATE:
     """
-    State mapping for TangoShuter.TangoShutter
+    State mapping for MicrodiffInOut
     """
     TO_INOUT_STATE = {"in": INOUT_STATE.OUT,
                       "out": INOUT_STATE.IN}
@@ -66,8 +66,8 @@ class BEAMSTOP_STATE:
     """
     State mapping for Beamstop
     """
-    TO_INOUT_STATE = {"in": INOUT_STATE.IN,
-                      "out": INOUT_STATE.OUT}
+    TO_INOUT_STATE = {"in": INOUT_STATE.OUT,
+                      "out": INOUT_STATE.IN}
 
     STATE_TO_MSG_STR = {INOUT_STATE.OUT: "IN",
                         INOUT_STATE.IN: "OUT"}
