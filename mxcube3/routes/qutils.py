@@ -4,6 +4,7 @@ import json
 import cPickle as pickle
 import redis
 import itertools
+import xml.etree.ElementTree as et
 
 import Utils
 
@@ -56,7 +57,7 @@ def node_index(node):
     elif node.get_parent():
         sample_model = node.get_parent().get_parent()
         sample = sample_model.loc_str
-        task_groups = sample_model.get_children();
+        task_groups = sample_model.get_children()
         group_list = [group.get_children() for group in task_groups]
         tlist = [task for task_list in group_list for task in task_list]
 
@@ -666,6 +667,21 @@ def set_char_params(model, entry, task_data):
     params = task_data['parameters']
     set_dc_params(model.reference_image_collection, entry, task_data)
     model.characterisation_parameters.set_from_dict(params)
+
+    # Set default characterisation values taken from ednadefaults for
+    # those values that are no used in the UI.
+
+    defaults = et.fromstring(mxcube.beamline.getObjectByRole("data_analysis").
+                             edna_default_input)
+
+    model.characterisation_parameters.aimed_i_sigma = float(defaults.find(
+        ".diffractionPlan/aimedIOverSigmaAtHighestResolution/value").text)
+
+    model.characterisation_parameters.aimed_completness = float(defaults.find(
+        ".diffractionPlan/aimedCompleteness/value").text)
+
+    model.characterisation_parameters.aimed_resolution = float(defaults.find(
+        ".diffractionPlan/aimedResolution/value").text)
 
     # MXCuBE3 specific shape attribute
     model.shape = params["shape"]
