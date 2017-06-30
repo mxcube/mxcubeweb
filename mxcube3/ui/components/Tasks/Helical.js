@@ -36,6 +36,7 @@ class Helical extends React.Component {
       label: 'Helical',
       helical: true,
       shape: this.props.pointID,
+      suffix: this.props.suffix
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -51,6 +52,7 @@ class Helical extends React.Component {
       'label',
       'helical',
       'shape',
+      'suffix'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -158,13 +160,14 @@ Helical = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
-  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '.cbf';
   const position = state.taskForm.pointID === '' ? 'LX' : state.taskForm.pointID;
 
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,

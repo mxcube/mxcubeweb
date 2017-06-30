@@ -35,7 +35,8 @@ class DataCollection extends React.Component {
       type: 'DataCollection',
       label: 'Data Collection',
       helical: false,
-      shape: this.props.pointID
+      shape: this.props.pointID,
+      suffix: this.props.suffix
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -50,7 +51,8 @@ class DataCollection extends React.Component {
       'type',
       'shape',
       'label',
-      'helical'
+      'helical',
+      'suffix'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -159,7 +161,7 @@ DataCollection = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
-  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
     const vals = Object.values(position).sort();
@@ -170,6 +172,7 @@ DataCollection = connect(state => {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
