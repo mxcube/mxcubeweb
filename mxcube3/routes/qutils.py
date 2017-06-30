@@ -566,6 +566,8 @@ def set_dc_params(model, entry, task_data):
     acq.acquisition_parameters.set_from_dict(params)
 
     acq.path_template.set_from_dict(params)
+    acq.path_template.precision = '0' + mxcube.session["file_info"].\
+        getProperty("precision")
     acq.path_template.base_prefix = params['prefix']
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
@@ -618,6 +620,8 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.set_from_dict(params)
     model.path_template.base_prefix = params['prefix']
     model.path_template.num_files = 0
+    model.path_template.precision = '0' + mxcube.session["file_info"].\
+        getProperty("precision")
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
                              params.get('subdir', ''))
