@@ -126,7 +126,7 @@ def get_available_sizes(camera):
         w = w if w % 2 == 0 else w + 1
         h = h if h % 2 == 0 else h + 1
 
-        # Calculate double size and half the size if MPEG stremaing is used
+        # Calculate half the size and quarter of the size if MPEG streaming is used
         # otherwise just return the orignal size.
         if VIDEO_STREAM_PROCESS:
             video_sizes = [(w, h), (w/2, h/2), (w/4, h/4)]
