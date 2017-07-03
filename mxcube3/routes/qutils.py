@@ -167,29 +167,32 @@ def queue_to_json_response(node=None):
 
 def get_node_state(node_id):
     """
-    Get the satus af the given node.
+    Get the state of the given node.
 
-    :param TaskNode node: Node to get status for
+    :param TaskNode node: Node to get state for
 
     :returns: tuple containing (enabled, state)
-            where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
+              where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
     try:
         node, entry = get_entry(node_id)
     except:
         return (1, 0)
+
     executed = node.is_executed()
     enabled = node.is_enabled()
     failed = entry._execution_failed
 
     curr_entry = mxcube.queue.queue_hwobj.get_current_entry()
+    running = mxcube.queue.queue_hwobj.is_executing and \
+              (curr_entry == entry or curr_entry == entry._parent_container)
 
     if failed:
         state = FAILED
     elif executed:
         state = COLLECTED
-    elif mxcube.queue.queue_hwobj.is_executing and (curr_entry == entry or curr_entry == entry._parent_container):
+    elif running:
         state = RUNNING
     else:
         state = UNCOLLECTED
