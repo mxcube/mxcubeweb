@@ -423,6 +423,8 @@ export function addTask(sampleIDs, parameters, runNow) {
           }
         }
 
+        // If a task is added on a sample that is not in the queue, add the sample
+        // to the queue.
         if (!state.queue.queue.includes(sampleID)) {
           const sample = Object.assign({}, state.sampleGrid.sampleList[sampleID]);
           sample.tasks = [task];
