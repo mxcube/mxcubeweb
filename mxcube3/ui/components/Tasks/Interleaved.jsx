@@ -27,8 +27,10 @@ class Interleaved extends React.Component {
     const parameters = {
       ...params,
       type: 'Interleaved',
-      shape: this.props.pointID,
-      suffix: this.props.suffix
+      shape: this.props.shapeId,
+      suffix: this.props.suffix,
+      taskList: this.props.taskList,
+      taskIndexList: this.props.taskIndexList
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -98,7 +100,7 @@ class Interleaved extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.tasks.map((task, i) => (
+                {this.props.taskList.map((task, i) => (
                   <tr>
                     <td>{i}</td>
                     <td>{task.parameters.osc_start}</td>
@@ -150,22 +152,24 @@ Interleaved = connect(state => {
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
-  const position = state.taskForm.pointID === '' ? state.taskForm.pointID : 'PX';
+  const shapeId = state.taskForm.pointID;
 
   return {
     path: `${state.queue.rootPath}/${subdir}`,
-    filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
+    filename: `${prefix}_${runNumber}${fileSuffix}`,
     acqParametersLimits: state.taskForm.acqParametersLimits,
-    tasks: state.taskForm.taskData.parameters.tasks,
+    taskList: state.taskForm.taskData.parameters.taskList,
+    taskIndexList: state.taskForm.taskData.parameters.tasksIndexList,
+    shapeId,
     suffix: fileSuffix,
     initialValues: {
-      ...state.taskForm.taskData.parameters.tasks[0].parameters,
+      ...state.taskForm.taskData.parameters.taskList[0].parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.tasks[0].parameters.resolution :
+        state.taskForm.taskData.parameters.taskList[0].parameters.resolution :
         state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.tasks[0].parameters.energy :
+        state.taskForm.taskData.parameters.taskList[0].parameters.energy :
         state.beamline.attributes.energy.value)
     }
   };
