@@ -35,6 +35,7 @@ class Characterisation extends React.Component {
       type: 'Characterisation',
       label: 'Characterisation',
       shape: this.props.pointID,
+      suffix: this.props.suffix,
       helical: false
     };
 
@@ -46,6 +47,7 @@ class Characterisation extends React.Component {
       'space_group',
       'strategy_complexity',
       'prefix',
+      'suffix',
       'subdir',
       'type',
       'shape',
@@ -188,7 +190,7 @@ Characterisation = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
-  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
     const vals = Object.values(position).sort();
@@ -198,6 +200,7 @@ Characterisation = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
+    suffix: fileSuffix,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,

@@ -23,7 +23,7 @@
   <!-- Software (abstract) concepts -->
   <object href="/shape-history" role="shape_history"/>
   <object href="/ednaparams" role="workflow"/>
-  <!--object href="/edna_config" role="data_analysis"/> -->
+  <object href="/data-analysis" role="data_analysis"/>
   <!--<object href="/workflow-mockup" role="workflow"/> -->
  
   <!-- Procedures and routines -->

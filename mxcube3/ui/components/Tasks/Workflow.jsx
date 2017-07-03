@@ -28,7 +28,8 @@ class Workflow extends React.Component {
       ...params,
       type: 'Workflow',
       label: params.wfname,
-      shape: this.props.pointID
+      shape: this.props.pointID,
+      suffix: this.props.suffix
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -40,7 +41,8 @@ class Workflow extends React.Component {
       'shape',
       'label',
       'wfname',
-      'wfpath'
+      'wfpath',
+      'suffix'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -105,7 +107,7 @@ Workflow = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
-  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
     const vals = Object.values(position).sort();
@@ -117,6 +119,7 @@ Workflow = connect(state => {
     filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
     wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,

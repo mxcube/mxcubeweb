@@ -27,7 +27,8 @@ class Interleaved extends React.Component {
     const parameters = {
       ...params,
       type: 'Interleaved',
-      shape: this.props.pointID
+      shape: this.props.pointID,
+      suffix: this.props.suffix
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -38,6 +39,8 @@ class Interleaved extends React.Component {
       'type',
       'shape',
       'label',
+      'suffix'
+
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -146,6 +149,7 @@ Interleaved = connect(state => {
   const subdir = selector(state, 'subdir');
   const prefix = selector(state, 'prefix');
   const runNumber = selector(state, 'run_number');
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
   const position = state.taskForm.pointID === '' ? state.taskForm.pointID : 'PX';
 
@@ -154,6 +158,7 @@ Interleaved = connect(state => {
     filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     tasks: state.taskForm.taskData.parameters.tasks,
+    suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters.tasks[0].parameters,
       beam_size: state.sampleview.currentAperture,
