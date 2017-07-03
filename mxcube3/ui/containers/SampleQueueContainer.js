@@ -117,7 +117,7 @@ export default class SampleQueueContainer extends React.Component {
     if (current.sampleID) {
       const sampleData = sampleList[current.sampleID];
       sampleName = sampleData ? sampleData.sampleName : '';
-      proteinAcronym = sampleData ? sampleData.proteinAcronym : '';
+      proteinAcronym = sampleData ? `(${sampleData.proteinAcronym})` : '';
     }
 
     return (
@@ -145,7 +145,7 @@ export default class SampleQueueContainer extends React.Component {
                 >
                   <NavItem eventKey={'current'}>
                     <b>
-                      { current.sampleID ? `Sample: ${sampleName} (${proteinAcronym})` : 'Current'}
+                      { current.sampleID ? `Sample: ${sampleName} ${proteinAcronym}` : 'Current'}
                     </b>
                   </NavItem>
                   <NavItem eventKey={'todo'}><b>Upcoming</b></NavItem>

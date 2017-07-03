@@ -7,6 +7,7 @@ import Helical from '../components/Tasks/Helical';
 import Mesh from '../components/Tasks/Mesh';
 import AddSample from '../components/Tasks/AddSample';
 import Workflow from '../components/Tasks/Workflow';
+import Interleaved from '../components/Tasks/Interleaved';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 
@@ -137,6 +138,16 @@ class TaskContainer extends React.Component {
         show
         addTask={this.addTask}
         pointID={this.props.pointID}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+      />);
+    }
+
+    if (this.props.showForm === 'Interleaved') {
+      return (<Interleaved
+        show
         taskData={this.props.taskData}
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}

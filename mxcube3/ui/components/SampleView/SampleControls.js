@@ -1,7 +1,6 @@
 import './SampleView.css';
 import React from 'react';
 import { OverlayTrigger, Popover, Button, DropdownButton, MenuItem } from 'react-bootstrap';
-import MotorInput from './MotorInput';
 import PhaseInput from './PhaseInput';
 import 'fabric';
 import config from 'guiConfig';
@@ -28,11 +27,6 @@ export default class SampleControls extends React.Component {
     window.takeSnapshot = this.doTakeSnapshot;
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.zoom !== this.props.zoom) {
-      this.refs.zoomSlider.value = nextProps.zoom;
-    }
-  }
 
   setZoom(option) {
     const currentZoom = this.props.zoom;
@@ -97,6 +91,7 @@ export default class SampleControls extends React.Component {
 
       return (
         <MenuItem
+          key={`${size[0]} x ${size[1]}`}
           eventKey="1"
           onClick={() => this.props.sampleActions.setVideoSize(size[0], size[1])}
         >
@@ -110,6 +105,7 @@ export default class SampleControls extends React.Component {
     items.push((
       <MenuItem
         eventKey="3"
+        key="auto scale"
         onClick={() => {
           const clientWidth = document.getElementById('outsideWrapper').clientWidth;
           this.props.sampleActions.toggleAutoScale(clientWidth);
@@ -201,52 +197,53 @@ export default class SampleControls extends React.Component {
           />
           <span className="sample-controll-label">3-click Centring</span>
           </li>
+          <OverlayTrigger trigger="click" rootClose placement="bottom"
+            overlay={(
+              <span className="slider-overlay">
+                1
+                <input
+                  style={{ top: '20px' }}
+                  className="bar"
+                  type="range"
+                  id="zoom-control"
+                  min="1" max="10"
+                  step="1"
+                  defaultValue={this.props.zoom}
+                  onMouseUp={this.setZoom}
+                  list="volsettings"
+                  name="zoomSlider"
+                />
+                10
+              </span>)}
+          >
+
           <li>
-          <Button
-            type="button"
-            data-toggle="tooltip"
-            title="Zoom out"
-            className="fa fa-search-minus sample-controll"
-            onClick={this.setZoom}
-            name="zoomOut"
-          />
-          <input
-            className="bar"
-            type="range"
-            id="zoom-control"
-            min="1" max="10"
-            step="1"
-            defaultValue={this.props.zoom}
-            onMouseUp={this.setZoom}
-            list="volsettings"
-            ref="zoomSlider"
-            name="zoomSlider"
-          />
-            <datalist id="volsettings">
-                <option>0</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
-            </datalist>
             <Button
               type="button"
               data-toggle="tooltip"
-              title="Zoom in"
-              className="fa fa-search-plus sample-controll"
-              onClick={this.setZoom}
-              name="zoomIn"
+              title="Zoom in/out"
+              className="fa fa-search sample-controll"
+              name="zoomOut"
             />
-            <span className="sample-controll-label">Zoom Controls</span>
-            </li>
-            <li>
+            <datalist id="volsettings">
+              <option>0</option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+              <option>7</option>
+              <option>8</option>
+              <option>9</option>
+              <option>10</option>
+            </datalist>
+            <span className="sample-controll-label">Zoom</span>
+           </li>
+           </OverlayTrigger>
+           <li>
             <Button
+              style={{ paddingRight: '0px' }}
               type="button"
               data-toggle="tooltip"
               title="Backlight On/Off"
@@ -254,41 +251,62 @@ export default class SampleControls extends React.Component {
               onClick={this.toggleBackLight}
               active={motors.BackLightSwitch.Status === 1}
             />
-            <div style={{ display: 'inline-block', width: '75px' }}>
-              <MotorInput
-                className="motor-input-sm"
-                title="BackLight"
-                save={this.props.sampleActions.sendMotorPosition}
-                value={motors.BackLight.position}
-                motorName="BackLight"
-                step="0.1"
-                decimalPoints="2"
-                state={motors.BackLight.Status}
-              />
-            </div>
-            <span className="sample-controll-label">Backlight Controls</span>
-            </li>
-            <li>
+            <OverlayTrigger trigger="click" rootClose placement="bottom"
+              overlay={(
+                <span className="slider-overlay" style={{ marginTop: '20px' }}>
+                  <input
+                    style={{ top: '20px' }}
+                    className="bar"
+                    type="range"
+                    step="0.1"
+                    min="0" max="1"
+                    defaultValue={motors.BackLight.position}
+                    onMouseUp={(e) =>
+                      this.props.sampleActions.sendMotorPosition('BackLight', e.target.value)}
+                    name="backlightSlider"
+                  />
+                </span>)}
+            >
             <Button
               type="button"
+              style={{ paddingLeft: '0px' }}
+              className="fa fa-sort-desc sample-controll sample-controll-small"
+            />
+            </OverlayTrigger>
+            <span className="sample-controll-label">Backlight</span>
+            </li>
+           <li>
+            <Button
+              style={{ paddingRight: '0px' }}
+              type="button"
               data-toggle="tooltip"
-              title="Frontlight On/Off"
+              title="Front On/Off"
               className="fa fa-lightbulb-o sample-controll"
               onClick={this.toggleFrontLight}
               active={motors.FrontLightSwitch.Status === 1}
             />
-            <div style={{ display: 'inline-block', width: '75px' }}>
-              <MotorInput
-                title="FrontLight"
-                save={this.props.sampleActions.sendMotorPosition}
-                value={motors.FrontLight.position}
-                motorName="FrontLight"
-                step="0.1"
-                decimalPoints="2"
-                state={motors.FrontLight.Status}
-              />
-            </div>
-            <span className="sample-controll-label">Frontlight Controls</span>
+            <OverlayTrigger trigger="click" rootClose placement="bottom"
+              overlay={(
+                <span className="slider-overlay" style={{ marginTop: '20px' }}>
+                  <input
+                    className="bar"
+                    type="range"
+                    step="0.1"
+                    min="0" max="1"
+                    defaultValue={motors.FrontLight.position}
+                    onMouseUp={(e) =>
+                      this.props.sampleActions.sendMotorPosition('FrontLight', e.target.value)}
+                    name="frontLightSlider"
+                  />
+                </span>)}
+            >
+            <Button
+              type="button"
+              style={{ paddingLeft: '0px', fontSize: '1.5em' }}
+              className="fa fa-sort-desc sample-controll sample-controll-small"
+            />
+            </OverlayTrigger>
+            <span className="sample-controll-label">Frontlight</span>
             </li>
             {config.phaseControl ? phaseControl : null }
             <li>
