@@ -62,8 +62,6 @@
 #zoom-control{
     display: inline;
     width: auto;
-    position: relative;
-    top: 3px;
 }
 
 .camera-controll{
@@ -131,6 +129,10 @@
     color: #33BEFF !important;
     background-color: transparent !important;
     padding-bottom: 0px !important;
+}
+
+.sample-controll-small{
+    font-size: 1.5em !important;
 }
 
 .sample-controll-label {
@@ -202,4 +204,13 @@
 
 .list-head .btn-sm{
     border-radius: 0px;
+}
+
+.slider-overlay {
+    position: absolute;
+    z-index: 1001;
+    background-color: rgba(0,0,0,0.5);
+    color: rgb(255,255,255);
+    border-radius: 4px;
+    padding: 0.2em;
 }

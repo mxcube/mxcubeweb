@@ -61,7 +61,7 @@ export default class InOutSwitch2 extends React.Component {
               rootClose
               trigger="click"
               placement="bottom"
-              overlay={(<Popover>{btn}</Popover>)}
+              overlay={(<Popover id={`${this.props.labelText} popover`}>{btn}</Popover>)}
             >
               <div onContextMenu={this.onRightLinkClick}>
                 <Label
