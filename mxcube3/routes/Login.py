@@ -110,6 +110,9 @@ def loginInfo():
     global LOGGED_IN_USER
     login_info = session.get("loginInfo")
 
+    # Quick fix for now, speak with Mikel for a better fix.
+    mxcube.session.proposal_list = []
+
     if login_info is not None:
         login_id = login_info["loginID"]
 
