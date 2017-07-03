@@ -838,6 +838,8 @@ def new_queue():
     """
     queue = pickle.loads(mxcube.empty_queue)
     init_signals(queue)
+    mxcube.xml_rpc_server.queue_hwobj = queue.queue_hwobj
+    mxcube.xml_rpc_server.queue_model_hwobj = queue
     return queue
 
 
