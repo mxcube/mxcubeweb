@@ -29,12 +29,14 @@ export default class CurrentTree extends React.Component {
   }
 
   showInterleavedDialog() {
-    const tasks = Object.keys(this.state.selected).map((taskIdx) => (
+    const taskList = Object.keys(this.state.selected).map((taskIdx) => (
       this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)]
     ));
 
-    this.props.showForm('Interleaved', [this.props.mounted],
-                        { parameters: { tasks } });
+    this.props.showForm('Interleaved',
+                        [this.props.mounted],
+                        { parameters: { taskIndexList: this.state.selected, taskList } },
+                        -1);
   }
 
   selectTask(index) {
