@@ -596,6 +596,17 @@ def set_dc_params(model, entry, task_data):
         acq.acquisition_parameters.centred_position = cpos1
         acq2.acquisition_parameters.centred_position = cpos2
 
+    elif params["mesh"]:
+        grid = mxcube.shapes.get_shape(params["shape"])
+
+        acq.acquisition_parameters.mesh_range = grid.get_grid_range()
+        acq.acquisition_parameters.centred_position = grid.get_centred_position()
+        acq.acquisition_parameters.mesh_steps = grid.get_num_lines()
+        acq.acquisition_parameters.num_images = task_data['parameters']['num_images']
+
+        model.experiment_type = qme.EXPERIMENT_TYPE.MESH
+        model.set_requires_centring(False)
+
     elif params["shape"] != -1:
         point = mxcube.shapes.get_shape(params["shape"])
         cpos = point.get_centred_position()
