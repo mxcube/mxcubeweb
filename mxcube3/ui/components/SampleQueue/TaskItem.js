@@ -107,6 +107,7 @@ export default class TaskItem extends Component {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
+
     return (
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
@@ -236,8 +237,8 @@ export default class TaskItem extends Component {
                 <tr>
                   <th>Start &deg; </th>
                   <th>Osc. &deg; </th>
-                  <th># Img</th>
                   <th>t (ms)</th>
+                  <th># Img</th>
                   <th>T (%)</th>
                   <th>Res. (&Aring;)</th>
                   <th>E (KeV)</th>
