@@ -445,7 +445,7 @@ export default class DrawGridPlugin {
    * 7 4 1
    */
   inverseBottomUp(currentRow, currentCol, numRows, numCols) {
-    let cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
+    const cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
 
     return cellCount;
   }
@@ -460,7 +460,7 @@ export default class DrawGridPlugin {
   inverseZigZagCellCount(currentRow, currentCol, numRows, numCols) {
     let cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
 
-    if (currentRow != (numCols - 1) && (numCols - currentRow + 1) % 2 != 0) {
+    if (currentRow !== (numCols - 1) && (numCols - currentRow + 1) % 2 !== 0) {
       cellCount = (numRows * numCols) - (currentRow * numRows) + currentCol - numRows + 1;
     }
     return cellCount;
