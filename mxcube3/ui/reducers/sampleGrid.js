@@ -12,7 +12,6 @@
 *
 *  filterText: Current filter text
 */
-import update from 'react/lib/update';
 import { SAMPLE_MOUNTED, TASK_UNCOLLECTED } from '../constants';
 
 const INITIAL_STATE = { selected: {},
@@ -173,11 +172,11 @@ export default (state = INITIAL_STATE, action) => {
     case 'CHANGE_TASK_ORDER': {
       const sampleList = Object.assign({}, state.sampleList);
 
-      sampleList[action.sampleId].tasks = update(state.sampleList[action.sampleId].tasks, {
-        $splice: [[action.oldIndex, 1],
-                  [action.newIndex, 0,
-                   state.sampleList[action.sampleId].tasks[action.oldIndex]]]
-      });
+      const task = sampleList[action.sampleId].tasks[action.oldIndex];
+      const tempTask = sampleList[action.sampleId].tasks[action.newIndex];
+
+      sampleList[action.sampleId].tasks[action.newIndex] = task;
+      sampleList[action.sampleId].tasks[action.oldIndex] = tempTask;
 
       return { ...state, sampleList };
     }

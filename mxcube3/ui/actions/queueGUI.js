@@ -20,6 +20,13 @@ export function collapseTask(sampleID, taskIndex) {
 }
 
 
+export function selectTask(sampleID, taskIndex) {
+  return {
+    type: 'SELECT_TASK', sampleID, taskIndex
+  };
+}
+
+
 export function showResumeQueueDialog(show = true) {
   return {
     type: 'SHOW_RESUME_QUEUE_DIALOG', show

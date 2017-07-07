@@ -28,7 +28,6 @@ export default (state = initialState, action) => {
         ...state,
         queueStatus: action.queueState
       };
-
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
       const queue = state.queue.filter((value) => !action.sampleIDList.includes(value));
 

@@ -1,4 +1,3 @@
-import update from 'react/lib/update';
 import { omit } from 'lodash/object';
 
 const initialState = {
@@ -103,15 +102,20 @@ export default (state = initialState, action) => {
 
       return { ...state, displayData };
     }
+    case 'SELECT_TASK': {
+      const displayData = Object.assign({}, state.displayData);
+      displayData[action.sampleID].tasks[action.taskIndex].selected ^= true;
+
+      return { ...state, displayData };
+    }
     case 'CHANGE_TASK_ORDER': {
       const displayData = Object.assign({}, state.displayData);
 
-      displayData[action.sampleId].tasks = update(state.displayData[action.sampleId].tasks,
-        {
-          $splice: [[action.oldIndex, 1],
-          [action.newIndex, 0,
-          state.displayData[action.sampleId].tasks[action.oldIndex]]]
-        });
+      const task = state.displayData[action.sampleId].tasks[action.oldIndex];
+      const tempTask = displayData[action.sampleId].tasks[action.newIndex];
+
+      displayData[action.sampleId].tasks[action.newIndex] = task;
+      displayData[action.sampleId].tasks[action.oldIndex] = tempTask;
 
       return { ...state, displayData };
     }
