@@ -12,8 +12,35 @@ export default class CurrentTree extends React.Component {
     this.taskHeaderOnClickHandler = this.taskHeaderOnClickHandler.bind(this);
     this.selectTask = this.selectTask.bind(this);
     this.showInterleavedDialog = this.showInterleavedDialog.bind(this);
+    this.interleavedAvailable = this.interleavedAvailable.bind(this);
+  }
 
-    this.state = { selected: {} };
+  interleavedAvailable() {
+    let available = false;
+    const taskList = this.props.mounted ? this.props.displayData[this.props.mounted].tasks : [];
+    const selectedTasks = [];
+
+    taskList.forEach((task, taskIdx) => {
+      if (task.selected) {
+        const tData = this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)];
+
+        if (tData) {
+          selectedTasks.push(tData);
+        }
+      }
+    });
+
+    // Interleaved is only available if more than one DataCollection task is selected
+    available = selectedTasks.length > 1;
+
+    // Available if more than one item selected and only DataCollection tasks are selected.
+    selectedTasks.forEach((task) => {
+      if (task.type !== 'DataCollection') {
+        available = false;
+      }
+    });
+
+    return available;
   }
 
   moveCard(dragIndex, hoverIndex) {
@@ -29,20 +56,24 @@ export default class CurrentTree extends React.Component {
   }
 
   showInterleavedDialog() {
-    const taskList = Object.keys(this.state.selected).map((taskIdx) => (
-      this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)]
-    ));
+    const wedges = [];
+    const taskIndexList = [];
+
+    Object.values(this.props.displayData[this.props.mounted].tasks).forEach((task, taskIdx) => {
+      if (task.selected) {
+        wedges.push(this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)]);
+        taskIndexList.push(taskIdx);
+      }
+    });
 
     this.props.showForm('Interleaved',
                         [this.props.mounted],
-                        { parameters: { taskIndexList: this.state.selected, taskList } },
+                        { parameters: { taskIndexList, wedges } },
                         -1);
   }
 
   selectTask(index) {
-    /* eslint-disable react/no-set-state */
-    this.setState({ selected: { ...this.state.selected, [index]: !this.state.selected[index] } });
-    /* eslint-enable react/no-set-state */
+    this.props.selectTask(this.props.mounted, index);
   }
 
   render() {
@@ -62,7 +93,15 @@ export default class CurrentTree extends React.Component {
         <ContextMenuTrigger id="currentSampleQueueContextMenu">
         <div style={{ top: 'initial' }} className="list-body">
             {sampleTasks.map((taskData, i) => {
-              const key = taskData.label + taskData.parameters.run_number;
+              let runNumber = null;
+
+              if (taskData.type === 'Interleaved') {
+                runNumber = taskData.parameters.wedges[0].parameters.run_number;
+              } else {
+                runNumber = taskData.parameters.run_number;
+              }
+
+              const key = taskData.label + runNumber;
 
               const task =
                 (<TaskItem
@@ -73,7 +112,7 @@ export default class CurrentTree extends React.Component {
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   sampleId={sampleData.sampleID}
-                  selected={this.state.selected[i]}
+                  selected={this.props.displayData[taskData.sampleID].tasks[i].selected}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
@@ -88,7 +127,7 @@ export default class CurrentTree extends React.Component {
         </div>
         </ContextMenuTrigger>
         <ContextMenu id="currentSampleQueueContextMenu">
-          <MenuItem onClick={this.showInterleavedDialog}>
+          <MenuItem onClick={this.showInterleavedDialog} disabled={!this.interleavedAvailable()}>
             Create interleaved data collection
           </MenuItem>
           <MenuItem>
