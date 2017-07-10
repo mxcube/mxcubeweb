@@ -6,6 +6,72 @@ import { Modal, Button, Form, Row, Col, ButtonToolbar, Table } from 'react-boots
 import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';
 
+
+const wedgeColorTable = {
+  0: 'rgba(175,238,238, 0.1)',
+  1: 'rgba(238,232,170, 0.2)',
+  2: 'rgba(0,206,209, 0.1)',
+  3: 'rgba(255,218,185, 0.2)',
+  4: 'rgba(95,158,160, 0.1)',
+  5: 'rgba(255,228,181, 0.2)',
+};
+
+
+function getSubWedges(swNumImg, wedgeList) {
+  const subWedges = {};
+  subWedges.swSizes = [];
+  subWedges.numWedges = wedgeList.length;
+
+  wedgeList.forEach((wedge, wedgeIdx) => {
+    const swSize = wedge.parameters.num_images / swNumImg;
+    const wedgeSize = wedge.parameters.osc_range * wedge.parameters.num_images;
+    const swSizeDeg = wedgeSize / swSize;
+
+    subWedges[wedgeIdx] = [];
+    subWedges.swSizes.push(swSizeDeg);
+
+    for (let _swSizeDeg = 0; _swSizeDeg < wedgeSize; _swSizeDeg = _swSizeDeg + swSizeDeg) {
+      const subWedge = { ...wedge, parameters: { ...wedge.parameters } };
+
+      subWedge.parameters.osc_start = (_swSizeDeg + wedge.parameters.osc_start).toPrecision(4);
+      subWedge.parameters.osc_range = wedge.parameters.osc_range;
+      subWedge.parameters.num_images = swNumImg;
+      subWedges[wedgeIdx].push(subWedge);
+      subWedge.wedge = wedgeIdx;
+    }
+
+    if (wedgeSize % swSizeDeg) {
+      const subWedge = { ...wedge, parameters: { ...wedge.parameters } };
+      const numSubWedges = wedge.parameters.num_images / swNumImg;
+
+      subWedge.parameters.osc_start = (swSizeDeg * numSubWedges +
+                                       wedge.parameters.osc_start).toPrecision(4);
+      subWedge.parameters.osc_range = wedge.parameters.osc_range;
+      subWedge.parameters.num_images = swNumImg;
+      subWedges[wedgeIdx].push(subWedge);
+      subWedge.wedge = wedgeIdx;
+    }
+  });
+
+  return subWedges;
+}
+
+function interleave(subWedgeObject) {
+  const swList = [];
+  // Assume that all wedges are divided into the same number of sub-wedges
+  const numSubWedges = subWedgeObject[0].length;
+
+  for (let swIndex = 0; swIndex < numSubWedges; swIndex++) {
+    for (let wedgeIndex = 0; wedgeIndex < subWedgeObject.numWedges; wedgeIndex++) {
+      swList.push(subWedgeObject[wedgeIndex][swIndex]);
+      swList[swList.length - 1].swIndex = `${wedgeIndex + 1}:${swIndex + 1}`;
+    }
+  }
+
+  return swList;
+}
+
+
 class Interleaved extends React.Component {
   constructor(props) {
     super(props);
@@ -27,8 +93,12 @@ class Interleaved extends React.Component {
     const parameters = {
       ...params,
       type: 'Interleaved',
-      shape: this.props.pointID,
-      suffix: this.props.suffix
+      label: 'Interleaved',
+      shape: this.props.shapeId,
+      suffix: this.props.suffix,
+      taskIndexList: this.props.taskIndexList,
+      swNumImages: this.props.subWedgeSize,
+      wedges: this.props.wedges
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -39,8 +109,9 @@ class Interleaved extends React.Component {
       'type',
       'shape',
       'label',
-      'suffix'
-
+      'suffix',
+      'taskIndexList',
+      'wedges'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -48,6 +119,10 @@ class Interleaved extends React.Component {
   }
 
   render() {
+    const params = this.props.wedges[0].parameters;
+    const wedgeNumImages = params.num_images;
+    const wedgeSize = params.osc_range * params.num_images;
+
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Interleaved data collection</Modal.Title>
@@ -55,26 +130,6 @@ class Interleaved extends React.Component {
         <Modal.Body>
           <FieldsHeader title="Data location" />
           <Form horizontal>
-            <StaticField label="Path" data={this.props.path} />
-            <StaticField label="Filename" data={this.props.filename} />
-            <Row>
-              <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={8}>
-                <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
-              </Col>
-              <Col xs={4}>
-                <InputField propName="run_number" disabled label="Run number" col1="4" col2="8" />
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={4}>
-                <InputField propName="delta_phi" label="&Delta; osc" col1="6" col2="6" />
-              </Col>
-            </Row>
             <Table
               striped
               condensed
@@ -86,6 +141,64 @@ class Interleaved extends React.Component {
               <thead>
                 <tr>
                   <th>Wedge </th>
+                  <th>Path </th>
+                </tr>
+              </thead>
+              <tbody>
+            {this.props.wedges.map((task, i) => {
+              const p = task.parameters;
+              const filename = `${p.prefix}_${p.run_number}.${this.props.suffix}`;
+
+              return (
+                <tr style={{ backgroundColor: wedgeColorTable[i] }}>
+                  <td>{i + 1}</td>
+                  <td>{task.parameters.path}/{filename}</td>
+                </tr>);
+            })}
+              </tbody>
+            </Table>
+            <br />
+            <br />
+            <FieldsHeader title="Interleaved parameters" />
+            <Row>
+              <Col xs={6}>
+                <StaticField label="Wedge size" data={(<span> {wedgeSize} &deg; </span>)} />
+              </Col>
+              <Col xs={6}>
+                <StaticField
+                  label="No of images per wedge"
+                  data={(<span> {wedgeNumImages} </span>)}
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={6} style={{ marginTop: '10px' }}>
+                <InputField
+                  propName="subWedgeSize"
+                  label="Sub wedge size: (images)"
+                  col1="6"
+                  col2="4"
+                />
+              </Col>
+              <Col xs={6} style={{ marginTop: '10px' }}>
+                <StaticField
+                  label="Sub wedge size"
+                  data={(<span> {this.props.subWedgeObject.swSizes[0]} &deg;</span>)}
+                />
+              </Col>
+            </Row>
+            <div style={{ overflowY: 'scroll', height: '400px' }}>
+            <Table
+              striped
+              condensed
+              bordered
+              hover
+              style={{ fontSize: 'smaller', marginBottom: '0px' }}
+              className="task-parameters-table"
+            >
+              <thead>
+                <tr>
+                  <th>Subwedge </th>
                   <th>Start &deg; </th>
                   <th>Osc. &deg; </th>
                   <th># Img</th>
@@ -98,15 +211,15 @@ class Interleaved extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.tasks.map((task, i) => (
-                  <tr>
-                    <td>{i}</td>
+                {interleave(this.props.subWedgeObject).map((task) => (
+                  <tr style={{ backgroundColor: wedgeColorTable[task.wedge] }}>
+                    <td>{task.swIndex}</td>
                     <td>{task.parameters.osc_start}</td>
                     <td>{task.parameters.osc_range}</td>
-                    <td>{task.parameters.exp_time * 1000}</td>
                     <td>{task.parameters.num_images}</td>
-                    <td>{task.parameters.resolution}</td>
+                    <td>{task.parameters.exp_time}</td>
                     <td>{task.parameters.transmission}</td>
+                    <td>{task.parameters.resolution}</td>
                     <td>{task.parameters.energy}</td>
                     <td>{task.parameters.kappa_phi}</td>
                     <td>{task.parameters.kappa}</td>
@@ -114,6 +227,7 @@ class Interleaved extends React.Component {
                 ))}
               </tbody>
             </Table>
+            </div>
           </Form>
        </Modal.Body>
 
@@ -146,27 +260,21 @@ Interleaved = reduxForm({
 const selector = formValueSelector('workflow');
 
 Interleaved = connect(state => {
-  const subdir = selector(state, 'subdir');
-  const prefix = selector(state, 'prefix');
-  const runNumber = selector(state, 'run_number');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
-  const position = state.taskForm.pointID === '' ? state.taskForm.pointID : 'PX';
+  const shapeId = state.taskForm.pointID;
+  const subWedgeSize = selector(state, 'subWedgeSize');
+  const wedges = state.taskForm.taskData.parameters.wedges;
 
   return {
-    path: `${state.queue.rootPath}/${subdir}`,
-    filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
     acqParametersLimits: state.taskForm.acqParametersLimits,
-    tasks: state.taskForm.taskData.parameters.tasks,
+    wedges,
+    taskIndexList: state.taskForm.taskData.parameters.taskIndexList,
+    subWedgeObject: getSubWedges(subWedgeSize || 10, wedges),
+    shapeId,
     suffix: fileSuffix,
+    subWedgeSize,
     initialValues: {
-      ...state.taskForm.taskData.parameters.tasks[0].parameters,
-      beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.tasks[0].parameters.resolution :
-        state.beamline.attributes.resolution.value),
-      energy: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.tasks[0].parameters.energy :
-        state.beamline.attributes.energy.value)
+      subWedgeSize: state.taskForm.defaultParameters.interleaved.subWedgeSize
     }
   };
 })(Interleaved);

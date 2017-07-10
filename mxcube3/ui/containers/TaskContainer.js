@@ -148,6 +148,7 @@ class TaskContainer extends React.Component {
     if (this.props.showForm === 'Interleaved') {
       return (<Interleaved
         show
+        addTask={this.addTask}
         taskData={this.props.taskData}
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}

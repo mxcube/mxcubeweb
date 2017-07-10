@@ -90,7 +90,8 @@ export default class SampleQueueContainer extends React.Component {
     const {
       collapseTask,
       collapseSample,
-      showConfirmCollectDialog
+      showConfirmCollectDialog,
+      selectTask
     } = this.props.queueGUIActions;
 
     // go through the queue, check if sample has been collected or not
@@ -173,6 +174,7 @@ export default class SampleQueueContainer extends React.Component {
                   queueStatus={queueStatus}
                   rootPath={rootPath}
                   collapseTask={collapseTask}
+                  selectTask={selectTask}
                   displayData={displayData}
                   runSample={sendRunSample}
                   todoList={todo}

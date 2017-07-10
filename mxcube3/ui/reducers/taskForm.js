@@ -9,7 +9,8 @@ const initialState = {
     datacollection: {},
     characterisation: {},
     helical: {},
-    mesh: {}
+    mesh: {},
+    interleaved: { subWedgeSize: 10 }
   }
 };
 
@@ -61,7 +62,8 @@ export default (state = initialState, action) => {
             characterisation: { ...state.defaultParameters.characterisation, run_number: 1 },
             helical: { ...state.defaultParameters.helical, run_number: 1 },
             mesh: { ...state.defaultParameters.mesh, run_number: 1 },
-            workflow: { ...state.defaultParameters.workflow, run_number: 1 }
+            workflow: { ...state.defaultParameters.workflow, run_number: 1 },
+            interleaved: { ...state.defaultParameters.interleaved, run_number: 1 }
           }
         };
       }
@@ -93,7 +95,10 @@ export default (state = initialState, action) => {
             workflow: {
               run_number: 1,
               ...action.data.dcParameters,
-              ...state.defaultParameters.workflow }
+              ...state.defaultParameters.workflow },
+            interleaved: {
+              run_number: 1,
+              ...state.defaultParameters.interleaved }
           },
           acqParametersLimits: { ...action.data.acqParametersLimits },
           fileSuffix: action.data.detector.fileSuffix

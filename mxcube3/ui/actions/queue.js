@@ -423,6 +423,8 @@ export function addTask(sampleIDs, parameters, runNow) {
           }
         }
 
+        // If a task is added on a sample that is not in the queue, add the sample
+        // to the queue.
         if (!state.queue.queue.includes(sampleID)) {
           const sample = Object.assign({}, state.sampleGrid.sampleList[sampleID]);
           sample.tasks = [task];
@@ -445,6 +447,24 @@ export function addTask(sampleIDs, parameters, runNow) {
           dispatch(showErrorPanel(true, 'The task could not be added to the server'));
         } else {
           dispatch(addTaskAction(tasks));
+
+          tasks.forEach((task) => {
+            if (task.type === 'Interleaved') {
+              const sampleID = task.parameters.wedges[0].sampleID;
+              const tindexList = task.parameters.taskIndexList;
+              const interlevedTaskIndex = state.sampleGrid.sampleList[sampleID].tasks.length;
+
+              dispatch(changeTaskOrderAction(sampleID, interlevedTaskIndex, tindexList[0]));
+              tindexList[0] = interlevedTaskIndex;
+
+              tindexList.sort((a, b) => (b - a));
+
+              tindexList.forEach((tindex) => {
+                dispatch(removeTaskAction(sampleID, tindex));
+              });
+            }
+          });
+
           if (runNow) {
             const taskIndex = state.sampleGrid.sampleList[sampleIDs[0]].tasks.length;
             dispatch(sendRunSample(sampleIDs[0], taskIndex));

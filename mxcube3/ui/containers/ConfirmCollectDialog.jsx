@@ -158,45 +158,53 @@ export class ConfirmCollectDialog extends React.Component {
             </tr>
           </thead>
           <tbody id="table-body">
-            {tasks.map((task) => (
-              <OverlayTrigger
-                key={task.sampleID}
-                bsClass="collect-confirm-dialog-overlay-trigger"
-                placement="bottom"
-                overlay={(
-                <Popover id="collect-confirm-dialog-popover">
-                  <Table striped bordered condensed hover>
-                    <thead>
-                      <tr>
-                        <th>Osc. start</th>
-                        <th>Osc. range</th>
-                        <th>Exp time</th>
-                        <th>Resolution</th>
-                        <th>Transmission</th>
-                        <th>Energy</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{task.parameters.osc_start}</td>
-                        <td>{task.parameters.osc_range}</td>
-                        <td>{task.parameters.os}</td>
-                        <td>{task.parameters.resolution}</td>
-                        <td>{task.parameters.transmission}</td>
-                        <td>{task.parameters.energy}</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </Popover>)}
-              >
-              <tr>
-                <td>{task.label}</td>
-                <td>{task.sampleID}</td>
-                <td>{task.parameters.path}</td>
-                <td>{task.parameters.prefix}</td>
-                <td>{task.parameters.num_images}</td>
-              </tr>
-            </OverlayTrigger>))}
+            {tasks.map((task) => {
+              let parameters = task.parameters;
+
+              if (task.type === 'Interleaved') {
+                parameters = task.parameters.wedges[0].parameters;
+              }
+
+              return (
+                <OverlayTrigger
+                  key={task.sampleID}
+                  bsClass="collect-confirm-dialog-overlay-trigger"
+                  placement="bottom"
+                  overlay={(
+                    <Popover id="collect-confirm-dialog-popover">
+                      <Table striped bordered condensed hover>
+                        <thead>
+                          <tr>
+                            <th>Osc. start</th>
+                            <th>Osc. range</th>
+                            <th>Exp time</th>
+                            <th>Resolution</th>
+                            <th>Transmission</th>
+                            <th>Energy</th>
+                          </tr>
+                        </thead>
+                      <tbody>
+                        <tr>
+                          <td>{parameters.osc_start}</td>
+                          <td>{parameters.osc_range}</td>
+                          <td>{parameters.os}</td>
+                          <td>{parameters.resolution}</td>
+                          <td>{parameters.transmission}</td>
+                          <td>{parameters.energy}</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </Popover>)}
+                >
+                  <tr>
+                    <td>{task.label}</td>
+                    <td>{task.sampleID}</td>
+                    <td>{parameters.path}</td>
+                    <td>{parameters.prefix}</td>
+                    <td>{parameters.num_images}</td>
+                  </tr>
+                </OverlayTrigger>
+             );})}
           </tbody>
         </Table>
         </div>

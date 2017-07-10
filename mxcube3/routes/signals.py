@@ -179,8 +179,24 @@ def centring_started(method, *args):
     socketio.emit('sample_centring', msg, namespace='/hwr')
 
 
+def get_task_state(entry):
+    _, state = qutils.get_node_state(entry.get_data_model()._node_id)
+    node_index = qutils.node_index(entry.get_data_model())
+
+    msg = {'Signal': '',
+           'Message': '',
+           'taskIndex': node_index['idx'],
+           'sample': node_index['sample'],
+           'state': state,
+           'limstResultData': '',
+           'progress': state}
+
+    return msg
+
+
 def queue_execution_entry_finished(entry):
     handle_auto_mount_next(entry)
+    safe_emit('task', get_task_state(entry), namespace='/hwr')
 
 
 def queue_execution_started(entry, queue_state=None):
@@ -188,6 +204,11 @@ def queue_execution_started(entry, queue_state=None):
     msg = {'Signal': state, 'Message': 'Queue execution started'}
 
     safe_emit('queue', msg, namespace='/hwr')
+
+    task_state = get_task_state(entry)
+    task_state['state'] = RUNNING
+
+    safe_emit('task', task_state, namespace='/hwr')
 
 
 def queue_execution_finished(entry, queue_state=None):
