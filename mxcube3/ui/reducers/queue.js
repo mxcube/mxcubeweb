@@ -11,9 +11,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_QUEUE': {
-      const queue = {};
-      action.queue.forEach(sample => { queue[sample.sampleID] = sample; });
-      return Object.assign({}, initialState, { queue });
+      return Object.assign({}, { ...state, queue: Object.keys(action.queue) });
     }
     case 'CLEAR_QUEUE': {
       return Object.assign({}, state, { queue: initialState.queue,

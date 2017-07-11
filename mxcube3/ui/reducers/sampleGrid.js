@@ -28,6 +28,9 @@ const INITIAL_STATE = { selected: {},
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case 'SET_QUEUE': {
+      return { ...state, sampleList: Object.assign(state.sampleList, action.queue) };
+    }
     // Set the list of samples (sampleList), clearing any existing list
     case 'UPDATE_SAMPLE_LIST': {
       const sampleList = { ...state.sampleList };

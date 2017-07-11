@@ -18,6 +18,15 @@ export function setQueueAction(queue) {
   return { type: 'SET_QUEUE', queue };
 }
 
+export function setQueue(queue) {
+  const q = queue;
+  delete q.sample_order;
+
+  return function (dispatch) {
+    dispatch(setQueueAction(q));
+  };
+}
+
 
 export function addSamplesToQueueAction(samplesData) {
   return { type: 'ADD_SAMPLES_TO_QUEUE', samplesData };
@@ -77,11 +86,12 @@ export function addSamplesToQueue(sampleDataList) {
     sendAddQueueItem(sampleDataList).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to add sample'));
-      } else {
-        dispatch(addSamplesToQueueAction(sampleDataList));
       }
-      dispatch(queueLoading(false));
-    });
+
+      return response.json();
+    }).then((data) => {
+      dispatch(setQueue(data));
+    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
 }
 
@@ -91,12 +101,14 @@ export function addSampleAndMount(sampleData) {
     sendAddQueueItem([sampleData]).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to add sample'));
-      } else {
-        dispatch(addSamplesToQueueAction([sampleData]));
-        dispatch(selectSamplesAction([sampleData.sampleID]));
-        dispatch(sendMountSample(sampleData));
       }
-    });
+
+      return response.json();
+    }).then((data) => {
+      dispatch(setQueue(data));
+      dispatch(selectSamplesAction([sampleData.sampleID]));
+      dispatch(sendMountSample(sampleData));
+    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
 }
 
@@ -125,34 +137,6 @@ export function sendClearQueue(clearQueueOnly = false) {
           dispatch(clearQueue());
           dispatch(clearSampleGrid());
         }
-      }
-    });
-  };
-}
-
-
-function sendSetQueue(queue) {
-  return fetch('mxcube/api/v0.1/queue', {
-    method: 'PUT',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json'
-    },
-    body: JSON.stringify(queue)
-  });
-}
-
-
-export function setQueue(queueSamples, queueSamplesOrder) {
-  const queue = queueSamplesOrder.map(key => queueSamples[key]);
-
-  return function (dispatch) {
-    return sendSetQueue(queue).then(response => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to set queue');
-      } else {
-        dispatch(setQueueAction(queue));
       }
     });
   };
@@ -231,11 +215,13 @@ export function sendMoveTask(sampleID, oldIndex, newIndex) {
 export function moveTask(sampleID, oldIndex, newIndex) {
   return function (dispatch) {
     dispatch(queueLoading(true));
+
     sendMoveTask(sampleID, oldIndex, newIndex).then((response) => {
       if (response.status >= 400) {
         dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
         dispatch(showErrorPanel(true, 'Could not move task'));
       }
+
       dispatch(queueLoading(false));
     });
   };
@@ -356,23 +342,26 @@ export function sendRunSample(sampleID, taskIndex) {
 }
 
 
-export function removeTaskAction(sampleID, taskIndex) {
-  return { type: 'REMOVE_TASK', sampleID, taskIndex };
+export function removeTaskAction(sampleID, taskIndex, queueID = null) {
+  return { type: 'REMOVE_TASK', sampleID, taskIndex, queueID };
 }
 
 
 export function deleteTask(sampleID, taskIndex) {
   return function (dispatch, getState) {
     const state = getState();
+    const task = state.sampleGrid.sampleList[sampleID].tasks[taskIndex];
 
-    if (state.sampleGrid.sampleList[sampleID].tasks[taskIndex].state === TASK_UNCOLLECTED) {
+    if (task.state === TASK_UNCOLLECTED) {
       dispatch(queueLoading(true));
+
       sendDeleteQueueItem([[sampleID, taskIndex]]).then((response) => {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, 'Server refused to delete task'));
         } else {
-          dispatch(removeTaskAction(sampleID, taskIndex));
+          dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
         }
+
         dispatch(queueLoading(false));
       });
     }
@@ -441,38 +430,18 @@ export function addTask(sampleIDs, parameters, runNow) {
       dispatch(addSamplesToQueue(samples));
     }
 
-    if (tasks.length) {
-      sendAddQueueItem(tasks).then((response) => {
-        if (response.status >= 400) {
-          dispatch(showErrorPanel(true, 'The task could not be added to the server'));
-        } else {
-          dispatch(addTaskAction(tasks));
-
-          tasks.forEach((task) => {
-            if (task.type === 'Interleaved') {
-              const sampleID = task.parameters.wedges[0].sampleID;
-              const tindexList = task.parameters.taskIndexList;
-              const interlevedTaskIndex = state.sampleGrid.sampleList[sampleID].tasks.length;
-
-              dispatch(changeTaskOrderAction(sampleID, interlevedTaskIndex, tindexList[0]));
-              tindexList[0] = interlevedTaskIndex;
-
-              tindexList.sort((a, b) => (b - a));
-
-              tindexList.forEach((tindex) => {
-                dispatch(removeTaskAction(sampleID, tindex));
-              });
-            }
-          });
-
-          if (runNow) {
-            const taskIndex = state.sampleGrid.sampleList[sampleIDs[0]].tasks.length;
-            dispatch(sendRunSample(sampleIDs[0], taskIndex));
-          }
-        }
-        dispatch(queueLoading(false));
-      });
-    }
+    sendAddQueueItem(tasks).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'The task could not be added to the server'));
+      }
+      return response.json();
+    }).then((data) => {
+      dispatch(setQueue(data));
+      if (runNow) {
+        const taskIndex = state.sampleGrid.sampleList[sampleIDs[0]].tasks.length;
+        dispatch(sendRunSample(sampleIDs[0], taskIndex));
+      }
+    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
 }
 
@@ -487,6 +456,7 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
     const { sampleGrid } = getState();
     const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
     dispatch(queueLoading(true));
+
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
@@ -496,8 +466,7 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
           dispatch(sendRunSample(sampleID, taskIndex));
         }
       }
-      dispatch(queueLoading(false));
-    });
+    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
 }
 
@@ -563,9 +532,7 @@ export function deleteSamplesFromQueue(sampleIDList) {
       } else {
         dispatch(removeSamplesFromQueueAction(sampleIDList));
       }
-
-      dispatch(queueLoading(false));
-    });
+    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
 }
 
