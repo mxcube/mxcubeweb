@@ -17,6 +17,7 @@ from mock import Mock
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from . import scutils
+from . import limsutils
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = 'QueuePaused'
@@ -346,15 +347,21 @@ def _handle_sample(node):
     else:
         state = UNCOLLECTED
 
-    return {node.loc_str: {'sampleID': node.loc_str,
-                           'queueID': node._node_id,
-                           'location': location,
-                           'sampleName': node.get_name(),
-                           'proteinAcronym': node.crystals[0].protein_acronym,
-                           'type': 'Sample',
-                           'checked': enabled,
-                           'state': state,
-                           'tasks': queue_to_dict_rec(node)}}
+    sample = {node.loc_str: {'sampleID': node.loc_str,
+                             'queueID': node._node_id,
+                             'code': node.code,
+                             'location': location,
+                             'sampleName': node.get_name(),
+                             'proteinAcronym': node.crystals[0].protein_acronym,
+                             'type': 'Sample',
+                             'checked': enabled,
+                             'state': state,
+                             'tasks': queue_to_dict_rec(node)}}
+
+    sample[node.loc_str]["defaultPrefix"] = limsutils.\
+        get_default_prefix(sample[node.loc_str], False)
+
+    return sample
 
 
 def queue_to_dict_rec(node):
