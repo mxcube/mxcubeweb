@@ -146,8 +146,7 @@ class Interleaved extends React.Component {
               </thead>
               <tbody>
             {this.props.wedges.map((task, i) => {
-              const p = task.parameters;
-              const filename = `${p.prefix}_${p.run_number}.${this.props.suffix}`;
+              const filename = task.parameters.fileName;
 
               return (
                 <tr style={{ backgroundColor: wedgeColorTable[i] }}>
