@@ -232,7 +232,7 @@ def queue_add_item():
 
             # Swap first "wedge task" and the actual interleaved collection
             # so that the interleaved task is the first task
-            qutils.move_task_entry(sid, interleaved_tindex, tindex_list[0])
+            qutils.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
 
             # We remove the swapped wedge index from the list, (now pointing
             # at the interleaved collection) and add its new position
