@@ -141,7 +141,7 @@ class Interleaved extends React.Component {
               <thead>
                 <tr>
                   <th>Wedge </th>
-                  <th>Path </th>
+                  <th width="0">Path </th>
                 </tr>
               </thead>
               <tbody>

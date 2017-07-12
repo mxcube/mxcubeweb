@@ -10,18 +10,17 @@ export default class CurrentTree extends React.Component {
     super(props);
     this.moveCard = this.moveCard.bind(this);
     this.taskHeaderOnClickHandler = this.taskHeaderOnClickHandler.bind(this);
-    this.selectTask = this.selectTask.bind(this);
     this.showInterleavedDialog = this.showInterleavedDialog.bind(this);
     this.interleavedAvailable = this.interleavedAvailable.bind(this);
   }
 
   interleavedAvailable() {
     let available = false;
-    const taskList = this.props.mounted ? this.props.displayData[this.props.mounted].tasks : [];
+    const taskList = this.props.mounted ? this.props.sampleList[this.props.mounted].tasks : [];
     const selectedTasks = [];
 
     taskList.forEach((task, taskIdx) => {
-      if (task.selected) {
+      if (this.props.displayData[task.queueID].selected) {
         const tData = this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)];
 
         if (tData) {
@@ -48,10 +47,11 @@ export default class CurrentTree extends React.Component {
   }
 
   taskHeaderOnClickHandler(e, index) {
+    const task = this.props.sampleList[this.props.mounted].tasks[index];
     if (!e.ctrlKey) {
-      this.props.collapseTask(this.props.mounted, index);
+      this.props.collapseItem(task.queueID);
     } else {
-      this.selectTask(index);
+      this.props.selectItem(task.queueID);
     }
   }
 
@@ -59,8 +59,8 @@ export default class CurrentTree extends React.Component {
     const wedges = [];
     const taskIndexList = [];
 
-    Object.values(this.props.displayData[this.props.mounted].tasks).forEach((task, taskIdx) => {
-      if (task.selected) {
+    Object.values(this.props.sampleList[this.props.mounted].tasks).forEach((task, taskIdx) => {
+      if (this.props.displayData[task.queueID].selected) {
         wedges.push(this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)]);
         taskIndexList.push(taskIdx);
       }
@@ -70,10 +70,6 @@ export default class CurrentTree extends React.Component {
                         [this.props.mounted],
                         { parameters: { taskIndexList, wedges } },
                         -1);
-  }
-
-  selectTask(index) {
-    this.props.selectTask(this.props.mounted, index);
   }
 
   render() {
@@ -93,32 +89,22 @@ export default class CurrentTree extends React.Component {
         <ContextMenuTrigger id="currentSampleQueueContextMenu">
         <div style={{ top: 'initial' }} className="list-body">
             {sampleTasks.map((taskData, i) => {
-              let runNumber = null;
-
-              if (taskData.type === 'Interleaved') {
-                runNumber = taskData.parameters.wedges[0].parameters.run_number;
-              } else {
-                runNumber = taskData.parameters.run_number;
-              }
-
-              const key = taskData.label + runNumber;
-
               const task =
                 (<TaskItem
-                  key={key}
+                  key={taskData.queueID}
                   index={i}
-                  id={key}
+                  id={taskData.queueID}
                   data={taskData}
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   sampleId={sampleData.sampleID}
-                  selected={this.props.displayData[taskData.sampleID].tasks[i].selected}
+                  selected={this.props.displayData[taskData.queueID].selected}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   rootPath={this.props.rootPath}
                   taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                   state={this.props.sampleList[taskData.sampleID].tasks[i].state}
-                  show={this.props.displayData[taskData.sampleID].tasks[i].collapsed}
+                  show={this.props.displayData[taskData.queueID].collapsed}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                 />);
