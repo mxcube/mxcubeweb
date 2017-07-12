@@ -240,9 +240,19 @@ def _handle_dc(sample_id, node):
     parameters.pop('acquisitions')
     parameters.pop('acq_parameters')
     parameters.pop('centred_position')
+
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
-    parameters['subdir'] = parameters['path'].split(mxcube.session.get_base_image_directory())[1][1:]
+    parameters['subdir'] = parameters['path'].\
+        split(mxcube.session.get_base_image_directory())[1][1:]
+
+    pt = node.acquisitions[0].path_template
+
+    parameters['fileName'] = pt.get_image_file_name().\
+        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+
+    parameters['fullPath'] = os.path.join(parameters['path'],
+                                          parameters['fileName'])
 
     if mxcube.rest_lims:
         limsres = mxcube.rest_lims.get_dc(node.id)
@@ -552,7 +562,7 @@ def queue_add_item(item_list):
 
     Each item (dictionary) describes either a sample or a task.
     """
-    
+
     for item in item_list:
         item_t = item["type"]
         current_queue = queue_to_dict()
@@ -630,9 +640,13 @@ def set_dc_params(model, entry, task_data):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+
     acq.path_template.set_from_dict(params)
+    acq.path_template.suffix = ftype
     acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
-        getProperty("precision"))
+        getProperty("precision", 4))
     acq.path_template.base_prefix = params['prefix']
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
@@ -667,6 +681,9 @@ def set_dc_params(model, entry, task_data):
         point = mxcube.shapes.get_shape(params["shape"])
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
+
+    acq.path_template.run_number = mxcube.queue.\
+        get_next_run_number(acq.path_template)
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -798,6 +815,7 @@ def add_characterisation(node_id, task):
     params = task['parameters']
 
     refdc_model, refdc_entry = _create_dc(task)
+    refdc_model.acquisitions[0].path_template.reference_image_prefix = 'ref'
     refdc_model.set_name('refdc')
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
@@ -916,13 +934,16 @@ def add_interleaved(node_id, task):
     group_entry.set_enabled(True)
     sample_entry.enqueue(group_entry)
     mxcube.queue.add_child(sample_model, group_model)
-    
+
+    wc = 0
+
     for wedge in task['parameters']['wedges']:
+        wc = wc + 1
         dc_model, dc_entry = _create_dc(wedge)
         set_dc_params(dc_model, dc_entry, wedge)
+        dc_model.acquisitions[0].path_template.wedge_prefix = "wedge-%s" % wc
         mxcube.queue.add_child(group_model, dc_model)
         group_entry.enqueue(dc_entry)
-
 
     return group_model._node_id
 

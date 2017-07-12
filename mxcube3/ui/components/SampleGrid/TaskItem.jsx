@@ -38,8 +38,7 @@ export class TaskItem extends React.Component {
 
   summary() {
     const task = this.props.taskData;
-    let filePath = `${this.props.rootPath}/${task.parameters.subdir}/${task.parameters.prefix}`;
-    filePath += `_${task.parameters.run_number}_xxxx.cbf`;
+    let filePath = this.props.taskData.parameters.fullPath;
     return (
       <div>
         <div className="row">

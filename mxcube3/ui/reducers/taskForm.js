@@ -34,8 +34,7 @@ export default (state = initialState, action) => {
         }
         return { ...state, defaultParameters:
                  { ...state.defaultParameters, [type]: {
-                   ...action.tasks[0].parameters, run_number:
-                   state.defaultParameters[type].run_number + action.tasks.length
+                   ...action.tasks[0].parameters
                  }
                }
              };
@@ -47,8 +46,7 @@ export default (state = initialState, action) => {
           defaultParameters: {
             ...state.defaultParameters,
             [action.taskData.parameters.type.toLowerCase()]: {
-              ...action.taskData.parameters, run_number:
-             state.defaultParameters[action.taskData.parameters.type.toLowerCase()].run_number
+              ...action.taskData.parameters
             }
           }
         };
@@ -58,12 +56,12 @@ export default (state = initialState, action) => {
         return {
           ...state,
           defaultParameters: {
-            datacollection: { ...state.defaultParameters.datacollection, run_number: 1 },
-            characterisation: { ...state.defaultParameters.characterisation, run_number: 1 },
-            helical: { ...state.defaultParameters.helical, run_number: 1 },
-            mesh: { ...state.defaultParameters.mesh, run_number: 1 },
-            workflow: { ...state.defaultParameters.workflow, run_number: 1 },
-            interleaved: { ...state.defaultParameters.interleaved, run_number: 1 }
+            datacollection: { ...state.defaultParameters.datacollection },
+            characterisation: { ...state.defaultParameters.characterisation },
+            helical: { ...state.defaultParameters.helical },
+            mesh: { ...state.defaultParameters.mesh },
+            workflow: { ...state.defaultParameters.workflow },
+            interleaved: { ...state.defaultParameters.interleaved }
           }
         };
       }
@@ -77,27 +75,21 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             datacollection: {
-              run_number: 1,
               ...action.data.dcParameters,
               ...state.defaultParameters.datacollection },
             characterisation: {
-              run_number: 1,
               ...action.data.charParameters,
               ...state.defaultParameters.characterisation },
             helical: {
-              run_number: 1,
               ...action.data.dcParameters,
               ...state.defaultParameters.helical },
             mesh: {
-              run_number: 1,
               ...action.data.dcParameters,
               ...state.defaultParameters.mesh },
             workflow: {
-              run_number: 1,
               ...action.data.dcParameters,
               ...state.defaultParameters.workflow },
             interleaved: {
-              run_number: 1,
               ...state.defaultParameters.interleaved }
           },
           acqParametersLimits: { ...action.data.acqParametersLimits },

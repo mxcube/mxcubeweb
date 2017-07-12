@@ -163,7 +163,7 @@ export default class TaskItem extends Component {
 
   wedgePath(wedge) {
     const parameters = wedge.parameters;
-    const value = `./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`;
+    const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
 
     return (

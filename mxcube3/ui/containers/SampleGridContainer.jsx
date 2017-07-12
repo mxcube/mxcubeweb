@@ -248,7 +248,6 @@ class SampleGridContainer extends React.Component {
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
-                  rootPath={props.queue.rootPath}
                 />))
               }
             </SampleGridItem>

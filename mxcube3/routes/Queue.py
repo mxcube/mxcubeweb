@@ -443,6 +443,11 @@ def get_default_dc_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+    n = int(mxcube.session["file_info"].getProperty("precision", 4))
+    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
+
     resp = jsonify({
         'acq_parameters': {
             'first_image': acq_parameters.first_image,
@@ -464,7 +469,8 @@ def get_default_dc_params():
             'skip_existing_images': False,
             'take_snapshots': True,
             'helical': False,
-            'mesh': False
+            'mesh': False,
+            'fileNameTemplate': template
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -480,6 +486,10 @@ def get_default_char_acq_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_char_acq_parameters()
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+    n = int(mxcube.session["file_info"].getProperty("precision", 4))
+    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     resp = jsonify({
         'acq_parameters': {
@@ -501,6 +511,7 @@ def get_default_char_acq_params():
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
+            'fileNameTemplate': template
         },
         })
 
