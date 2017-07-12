@@ -30,25 +30,13 @@ def last_queue_node():
     return res
 
 
-collect_osc_signals = ['collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
 beam_signals = ['beamPosChanged', 'beamInfoChanged']
 
-queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] # 'centringAllowed',
-microdiffSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted','centringAccepted','centringMoving',\
-                    'centringFailed', 'centringSuccessful', 'progressMessage', 'centringSnapshots', 'warning',
-                    'minidiffPhaseChanged', 'minidiffSampleIsLoadedChanged',\
-                    'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged']
-
-okSignals = ['Successful', 'Finished', 'finished', 'Ended', 'Accepted']
-failedSignals = ['Failed', 'Invalid']
-progressSignals = ['Started', 'Ready', 'paused', 'stopped',
-                   'Moving', 'progress', 'centringAllowed']
-warnSignals = ['warning']
-
-error_signals = {}
-logging_signals = {}
-samplechanger_signals = {}
-moveables_signals = {}
+microdiffSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted',
+                    'centringAccepted','centringMoving', 'centringFailed', 'centringSuccessful',
+                    'progressMessage', 'centringSnapshots', 'warning', 'minidiffPhaseChanged',
+                    'minidiffSampleIsLoadedChanged', 'zoomMotorPredefinedPositionChanged',
+                    'minidiffTransferModeChanged']
 
 task_signals = {  # missing egyscan, xrf, etc...
     'collectStarted':               'Data collection has started',
@@ -70,24 +58,6 @@ motor_signals = {
 }
 
 
-def get_signal_result(signal):
-    result = 0
-    for sig in progressSignals:
-        if sig in signal:
-            result = RUNNING
-    for sig in okSignals:
-        if sig in signal:
-            result = COLLECTED
-    for sig in failedSignals:
-        if sig in signal:
-            result = FAILED
-    for sig in warnSignals:
-        if sig in signal:
-            result = WARNING
-
-    return result
-
-
 def handle_auto_mount_next(entry):
     model = entry.get_data_model()
 
@@ -98,15 +68,13 @@ def handle_auto_mount_next(entry):
         tgroup_list = entry.get_data_model().get_parent().get_children()
 
         try:
-            last_group_entry = tgroup_list.index(tgroup) == (len(tgroup_list) - 1)
+            last_gentry = tgroup_list.index(tgroup) == (len(tgroup_list) - 1)
         except ValueError:
-            last_group_entry = None
+            last_gentry = None
 
-        if not auto_mount and last_group_entry:
+        if not auto_mount and last_gentry:
             msg = "Not mounting next sample automatically (Auto mount next)"
             logging.getLogger('user_level_log').info(msg)
-#            mxcube.queue.queue_hwobj.set_pause(True)
-#            mxcube.queue.queue_hwobj.stop()
 
 
 def sc_state_changed(*args):
@@ -224,13 +192,12 @@ def collect_oscillation_started(*args):
     node = last_queue_node()
 
     if not qutils.is_interleaved(node["node"]):
-
         msg = {'Signal': 'collectOscillationStarted',
                'Message': task_signals['collectOscillationStarted'],
                'taskIndex': node['idx'],
                'queueID': node['queue_id'],
                'sample': node['sample'],
-               'state': get_signal_result('collectOscillationStarted'),
+               'state': RUNNING,
                'progress': 0}
 
         logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
@@ -261,7 +228,8 @@ def collect_image_taken(frame):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_failed(owner=None, status=FAILED, state=None, lims_id='', osc_id=None, params=None):
+def collect_oscillation_failed(owner=None, status=FAILED, state=None,
+                               lims_id='', osc_id=None, params=None):
     node = last_queue_node()
 
     if not qutils.is_interleaved(node["node"]):
@@ -276,7 +244,7 @@ def collect_oscillation_failed(owner=None, status=FAILED, state=None, lims_id=''
                    'queueID': node['queue_id'],
                    'sample': node['sample'],
                    'limstResultData': limsres,
-                   'state': get_signal_result('collectOscillationFailed'),
+                   'state': FAILED,
                    'progress': 0}
 
             logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
@@ -291,7 +259,6 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     node = last_queue_node()
 
     if not qutils.is_interleaved(node["node"]):
-
         qutils.enable_entry(node['queue_id'], False)
 
         if mxcube.rest_lims:
@@ -321,7 +288,6 @@ def collect_ended(owner, success, message):
     node = last_queue_node()
 
     if not qutils.is_interleaved(node["node"]):
-
         state = COLLECTED if success else WARNING
 
         msg = {'Signal': 'collectOscillationFinished',
@@ -350,7 +316,7 @@ def collect_started(*args, **kwargs):
                'taskIndex': last_queue_node()['idx'],
                'queueID': last_queue_node()['queue_id'],
                'sample': last_queue_node()['sample'],
-               'state': get_signal_result(kwargs['signal']),
+               'state': RUNNING,
                'progress': 0}
 
         logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
@@ -377,7 +343,10 @@ def motor_state_callback(motor, state, sender=None, **kw):
         # READY
         motor_position_callback(motor, sender.getPosition())
 
-    socketio.emit('motor_state', {'name': motor, 'state': state, 'centredPositions': shape_dict}, namespace='/hwr')
+    socketio.emit('motor_state', {'name': motor,
+                                  'state': state,
+                                  'centredPositions': shape_dict},
+                  namespace='/hwr')
 
 
 def motor_event_callback(*args, **kwargs):
