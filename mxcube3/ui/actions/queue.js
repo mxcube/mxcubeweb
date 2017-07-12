@@ -460,11 +460,13 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
     sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
-      } else {
-        dispatch(updateTaskAction(sampleID, taskIndex, taskData));
-        if (runNow) {
-          dispatch(sendRunSample(sampleID, taskIndex));
-        }
+      }
+      return response.json();
+    }).then((data) => {
+      dispatch(updateTaskAction(sampleID, taskIndex, data));
+
+      if (runNow) {
+        dispatch(sendRunSample(sampleID, taskIndex));
       }
     }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
