@@ -60,8 +60,6 @@ def node_index(node):
         task_groups = sample_model.get_children()
         group_list = [group.get_children() for group in task_groups]
 
-        #tlist = [task for task_list in group_list for task in task_list]
-
         tlist = []
 
         for group in task_groups:
@@ -1081,15 +1079,18 @@ def init_signals(queue):
     """
     import signals
 
-    for signal in signals.collect_signals:
-        mxcube.collect.connect(mxcube.collect, signal,
-                               signals.task_event_callback)
+    mxcube.collect.connect(mxcube.collect, "collectStarted",
+                           signals.collect_started)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationStarted',
                            signals.collect_oscillation_started)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFailed',
                            signals.collect_oscillation_failed)
+    mxcube.collect.connect(mxcube.collect, 'collectImageTaken',
+                           signals.collect_image_taken)
+
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
+
     queue.connect(queue, 'child_added', add_diffraction_plan)
 
     queue.queue_hwobj.connect("queue_execute_started",
@@ -1142,3 +1143,39 @@ def get_auto_mount_sample():
     :rtype: bool
     """
     return mxcube.AUTO_MOUNT_SAMPLE
+
+
+def get_task_progress(node, frame):
+    node_list = node.get_parent().get_children()
+
+    if isinstance(node, qmo.TaskGroup):
+        node_list = node.get_children()
+
+    total = 0
+    offset = 0
+
+    if is_interleaved(node):
+        model, entry = get_entry(node._node_id)
+        num_entries = len(entry.interleave_sw_list)
+        total += float(node.interleave_num_images) * num_entries
+
+        for child in node_list:
+            offset += child.acquisitions[0].acquisition_parameters.first_image
+
+    elif isinstance(node, qmo.Characterisation):
+        dc = node.reference_image_collection
+        total = float(dc.acquisitions[0].acquisition_parameters.num_images) * 2
+    else:
+        total = float(node.acquisitions[0].acquisition_parameters.num_images)
+
+    if node.is_executed():
+        progress = 1
+    else:
+        progress = (frame + 1 + offset) / total
+
+    return progress
+
+
+def is_interleaved(node):
+    return hasattr(node, "interleave_num_images") and \
+        node.interleave_num_images > 0

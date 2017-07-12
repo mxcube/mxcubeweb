@@ -30,12 +30,8 @@ def init_signals():
     callback method.
     """
     for signal in signals.microdiffSignals:
-        if signal in signals.task_signals:
-            mxcube.diffractometer.connect(mxcube.diffractometer,
-                                          signal, signals.task_event_callback)
-        else:
-            mxcube.diffractometer.connect(mxcube.diffractometer, signal,
-                                          signals.motor_event_callback)
+        mxcube.diffractometer.connect(mxcube.diffractometer, signal,
+                                      signals.motor_event_callback)
     for motor in mxcube.diffractometer.centring_motors_list:
         @Utils.RateLimited(3)
         def pos_cb(pos, motor=motor.lower(), **kw):

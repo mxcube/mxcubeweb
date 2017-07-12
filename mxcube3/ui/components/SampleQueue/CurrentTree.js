@@ -104,6 +104,7 @@ export default class CurrentTree extends React.Component {
                   taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                   state={this.props.sampleList[taskData.sampleID].tasks[i].state}
                   show={this.props.displayData[taskData.queueID].collapsed}
+                  progress={this.props.displayData[taskData.queueID].progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                 />);
