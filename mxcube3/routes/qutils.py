@@ -1107,6 +1107,15 @@ def init_signals(queue):
 
     queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
 
+    queue.queue_hwobj.connect("queue_interleaved_started",
+                              signals.queue_interleaved_started)
+
+    queue.queue_hwobj.connect("queue_interleaved_finished",
+                              signals.queue_interleaved_finished)
+
+    queue.queue_hwobj.connect('queue_interleaved_sw_done',
+                              signals.queue_interleaved_sw_done)
+
 
 def enable_sample_entries(sample_id_list, flag):
     current_queue = queue_to_dict()
@@ -1145,33 +1154,20 @@ def get_auto_mount_sample():
     return mxcube.AUTO_MOUNT_SAMPLE
 
 
-def get_task_progress(node, frame):
-    node_list = node.get_parent().get_children()
-
-    if isinstance(node, qmo.TaskGroup):
-        node_list = node.get_children()
-
-    total = 0
-    offset = 0
-
-    if is_interleaved(node):
-        model, entry = get_entry(node._node_id)
-        num_entries = len(entry.interleave_sw_list)
-        total += float(node.interleave_num_images) * num_entries
-
-        for child in node_list:
-            offset += child.acquisitions[0].acquisition_parameters.first_image
-
-    elif isinstance(node, qmo.Characterisation):
-        dc = node.reference_image_collection
-        total = float(dc.acquisitions[0].acquisition_parameters.num_images) * 2
-    else:
-        total = float(node.acquisitions[0].acquisition_parameters.num_images)
+def get_task_progress(node, pdata):
+    progress = 0
 
     if node.is_executed():
         progress = 1
+    elif is_interleaved(node):
+        progress = (pdata["current_idx"] + 1) * pdata["sw_size"] / float(pdata["nitems"] * pdata["sw_size"])
+    elif isinstance(node, qmo.Characterisation):
+        dc = node.reference_image_collection
+        total = float(dc.acquisitions[0].acquisition_parameters.num_images) * 2
+        progress = pdata / total
     else:
-        progress = (frame + 1 + offset) / total
+        total = float(node.acquisitions[0].acquisition_parameters.num_images)
+        progress = pdata / total
 
     return progress
 

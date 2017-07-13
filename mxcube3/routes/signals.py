@@ -210,22 +210,24 @@ def collect_oscillation_started(*args):
 
 def collect_image_taken(frame):
     node = last_queue_node()
-    progress = qutils.get_task_progress(last_queue_node()['node'], frame)
 
-    msg = {'Signal': 'collectImageTaken',
-           'Message': task_signals['collectImageTaken'],
-           'taskIndex': node['idx'],
-           'queueID': node['queue_id'],
-           'sample': node['sample'],
-           'state': RUNNING if progress < 1 else COLLECTED,
-           'progress': progress}
+    if not qutils.is_interleaved(node["node"]):
+        progress = qutils.get_task_progress(last_queue_node()['node'], frame)
 
-    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+        msg = {'Signal': 'collectImageTaken',
+               'Message': task_signals['collectImageTaken'],
+               'taskIndex': node['idx'],
+               'queueID': node['queue_id'],
+               'sample': node['sample'],
+               'state': RUNNING if progress < 1 else COLLECTED,
+               'progress': progress}
 
-    try:
-        safe_emit('task', msg, namespace='/hwr')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+        logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+        try:
+            safe_emit('task', msg, namespace='/hwr')
+        except Exception:
+            logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
 def collect_oscillation_failed(owner=None, status=FAILED, state=None,
@@ -325,6 +327,65 @@ def collect_started(*args, **kwargs):
             safe_emit('task', msg, namespace='/hwr')
         except Exception:
             logging.getLogger("HWR").error('error sending message: ' + str(msg))
+
+
+def queue_interleaved_started():
+    node = last_queue_node()
+
+    msg = {'Signal': "queue_interleaved_started",
+           'Message': "Interleaved collection started",
+           'taskIndex': node['idx'],
+           'queueID': node['queue_id'],
+           'sample': node['sample'],
+           'state': RUNNING,
+           'progress': 0}
+
+    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+    try:
+        safe_emit('task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+
+
+def queue_interleaved_finished():
+    node = last_queue_node()
+
+    msg = {'Signal': "queue_interleaved_finished",
+           'Message': "Interleaved collection ended",
+           'taskIndex': node['idx'],
+           'queueID': node['queue_id'],
+           'sample': node['sample'],
+           'state': COLLECTED,
+           'progress': 1}
+
+    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+    try:
+        safe_emit('task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+
+
+def queue_interleaved_sw_done(data):
+    node = last_queue_node()
+    progress = qutils.get_task_progress(node["node"], data)
+
+    msg = {'Signal': 'collectImageTaken',
+           'Message': task_signals['collectImageTaken'],
+           'taskIndex': node['idx'],
+           'queueID': node['queue_id'],
+           'sample': node['sample'],
+           'state': RUNNING if progress < 1 else COLLECTED,
+           'progress': progress}
+
+    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+    try:
+        safe_emit('task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+
 
 
 def motor_position_callback(motor, pos):
