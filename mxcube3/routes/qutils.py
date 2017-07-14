@@ -98,8 +98,8 @@ def queue_to_dict(node=None):
     """
     Returns the dictionary representation of the queue
 
-    :param TaskNode node: Node to get representation for, queue root used if
-                          nothing is passed.
+    :param TaskNode node: list of Node objects to get representation for,
+                          queue root used if nothing is passed.
 
     :returns: dictionary on the form:
               { sampleID_1:{ sampleID_1: sid_1,
@@ -129,8 +129,8 @@ def queue_to_json(node=None):
     """
     Returns the json representation of the queue
 
-    :param TaskNode node: Node to get representation for, queue root used if
-                          nothing is passed.
+    :param TaskNode node: list of Node objects to get representation for,
+                          queue root used if nothing is passed.
 
     :returns: json str on the form:
               [ { sampleID_1: sid_1,
@@ -162,8 +162,8 @@ def queue_to_json_response(node=None):
     Returns the http json response object with the json representation of the
     queue as data.
 
-    :param TaskNode node: Node to get representation for, queue root used if
-                          nothing is passed.
+    :param TaskNode node: list of Node objects to get representation for,
+                          queue root used if nothing is passed.
 
     :returns: Flask Response object
     """
@@ -395,7 +395,12 @@ def queue_to_dict_rec(node):
     """
     result = []
 
-    for node in node.get_children():
+    if isinstance(node, list):
+        node_list = node
+    else:
+        node_list = node.get_children()
+
+    for node in node_list:
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]

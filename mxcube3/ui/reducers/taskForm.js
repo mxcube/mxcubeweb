@@ -45,7 +45,7 @@ export default (state = initialState, action) => {
           ...state,
           defaultParameters: {
             ...state.defaultParameters,
-            [action.taskData.parameters.type.toLowerCase()]: {
+            [action.taskData.type.toLowerCase()]: {
               ...action.taskData.parameters
             }
           }

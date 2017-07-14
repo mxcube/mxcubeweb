@@ -272,7 +272,11 @@ def queue_update_item(sid, tindex):
         qutils.set_char_params(model, entry, data)
 
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    return Response(status=200)
+
+    resp = qutils.queue_to_json_response([model])
+    resp.status_code = 200
+
+    return resp
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/delete", methods=['POST'])
