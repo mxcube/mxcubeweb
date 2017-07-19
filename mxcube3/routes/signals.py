@@ -24,29 +24,19 @@ def last_queue_node():
         parent = node.get_parent()
         node = parent._children[0]
 
-    return qutils.node_index(node)
+    res = qutils.node_index(node)
+    res["node"] = node
+
+    return res
 
 
-collect_signals = ['collectStarted', 'testSignal', 'warning']
-collect_osc_signals = ['collectOscillationStarted', 'collectOscillationFailed', 'collectOscillationFinished']
 beam_signals = ['beamPosChanged', 'beamInfoChanged']
 
-queueSignals = ['queue_execution_finished', 'queue_paused', 'queue_stopped', 'testSignal', 'warning'] # 'centringAllowed',
-microdiffSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted','centringAccepted','centringMoving',\
-                    'centringFailed', 'centringSuccessful', 'progressMessage', 'centringSnapshots', 'warning',
-                    'minidiffPhaseChanged', 'minidiffSampleIsLoadedChanged',\
-                    'zoomMotorPredefinedPositionChanged', 'minidiffTransferModeChanged']
-
-okSignals = ['Successful', 'Finished', 'finished', 'Ended', 'Accepted']
-failedSignals = ['Failed', 'Invalid']
-progressSignals = ['Started', 'Ready', 'paused', 'stopped',
-                   'Moving', 'progress', 'centringAllowed']
-warnSignals = ['warning']
-
-error_signals = {}
-logging_signals = {}
-samplechanger_signals = {}
-moveables_signals = {}
+microdiffSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted',
+                    'centringAccepted','centringMoving', 'centringFailed', 'centringSuccessful',
+                    'progressMessage', 'centringSnapshots', 'warning', 'minidiffPhaseChanged',
+                    'minidiffSampleIsLoadedChanged', 'zoomMotorPredefinedPositionChanged',
+                    'minidiffTransferModeChanged']
 
 task_signals = {  # missing egyscan, xrf, etc...
     'collectStarted':               'Data collection has started',
@@ -55,7 +45,8 @@ task_signals = {  # missing egyscan, xrf, etc...
     'collectOscillationFinished':   'Data collection oscillacion has finished',
     'collectEnded':                 'Data collection has finished',
     'warning':                      'Data collection finished with a warning',
-    'collect_finished':             'Data collection has finished'
+    'collect_finished':             'Data collection has finished',
+    'collectImageTaken':            'Image acquired'
 }
 
 motor_signals = {
@@ -67,41 +58,6 @@ motor_signals = {
 }
 
 
-def get_signal_result(signal):
-    result = 0
-    for sig in progressSignals:
-        if sig in signal:
-            result = RUNNING
-    for sig in okSignals:
-        if sig in signal:
-            result = COLLECTED
-    for sig in failedSignals:
-        if sig in signal:
-            result = FAILED
-    for sig in warnSignals:
-        if sig in signal:
-            result = WARNING
-
-    return result
-
-
-def get_signal_progress(signal):
-    result = 0
-    for sig in progressSignals:
-        if sig in signal:
-            result = 50
-    for sig in okSignals:
-        if sig in signal:
-            result = 100
-    for sig in failedSignals:
-        if sig in signal:
-            result = 100
-    for sig in warnSignals:
-        if sig in signal:
-            result = 100
-    return result
-
-
 def handle_auto_mount_next(entry):
     model = entry.get_data_model()
 
@@ -110,13 +66,15 @@ def handle_auto_mount_next(entry):
         auto_mount = qutils.get_auto_mount_sample()
         tgroup = entry.get_data_model()
         tgroup_list = entry.get_data_model().get_parent().get_children()
-        last_group_entry = tgroup_list.index(tgroup) == (len(tgroup_list) - 1)
 
-        if not auto_mount and last_group_entry:
+        try:
+            last_gentry = tgroup_list.index(tgroup) == (len(tgroup_list) - 1)
+        except ValueError:
+            last_gentry = None
+
+        if not auto_mount and last_gentry:
             msg = "Not mounting next sample automatically (Auto mount next)"
             logging.getLogger('user_level_log').info(msg)
-#            mxcube.queue.queue_hwobj.set_pause(True)
-#            mxcube.queue.queue_hwobj.stop()
 
 
 def sc_state_changed(*args):
@@ -180,23 +138,27 @@ def centring_started(method, *args):
 
 
 def get_task_state(entry):
+
     _, state = qutils.get_node_state(entry.get_data_model()._node_id)
     node_index = qutils.node_index(entry.get_data_model())
 
     msg = {'Signal': '',
            'Message': '',
            'taskIndex': node_index['idx'],
+           'queueID': last_queue_node()['queue_id'],
            'sample': node_index['sample'],
            'state': state,
            'limstResultData': '',
-           'progress': state}
+           'progress': 1}
 
     return msg
 
 
 def queue_execution_entry_finished(entry):
     handle_auto_mount_next(entry)
-    safe_emit('task', get_task_state(entry), namespace='/hwr')
+
+    if not qutils.is_interleaved(entry.get_data_model()):
+        safe_emit('task', get_task_state(entry), namespace='/hwr')
 
 
 def queue_execution_started(entry, queue_state=None):
@@ -204,11 +166,6 @@ def queue_execution_started(entry, queue_state=None):
     msg = {'Signal': state, 'Message': 'Queue execution started'}
 
     safe_emit('queue', msg, namespace='/hwr')
-
-    task_state = get_task_state(entry)
-    task_state['state'] = RUNNING
-
-    safe_emit('task', task_state, namespace='/hwr')
 
 
 def queue_execution_finished(entry, queue_state=None):
@@ -232,94 +189,142 @@ def queue_execution_failed(entry):
 
 
 def collect_oscillation_started(*args):
-    msg = {'Signal': 'collectOscillationStarted',
-           'Message': task_signals['collectOscillationStarted'],
-           'taskIndex': last_queue_node()['idx'],
-           'sample': last_queue_node()['sample'],
-           'state': get_signal_result('collectOscillationStarted'),
-           'progress': UNCOLLECTED}
+    node = last_queue_node()
+
+    if not qutils.is_interleaved(node["node"]):
+        msg = {'Signal': 'collectOscillationStarted',
+               'Message': task_signals['collectOscillationStarted'],
+               'taskIndex': node['idx'],
+               'queueID': node['queue_id'],
+               'sample': node['sample'],
+               'state': RUNNING,
+               'progress': 0}
+
+        logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+        try:
+            safe_emit('task', msg, namespace='/hwr')
+        except Exception:
+            logging.getLogger("HWR").error('error sending message: ' + str(msg))
+
+
+def collect_image_taken(frame):
+    node = last_queue_node()
+    progress = qutils.get_task_progress(last_queue_node()['node'], frame)
+
+    msg = {'Signal': 'collectImageTaken',
+           'Message': task_signals['collectImageTaken'],
+           'taskIndex': node['idx'],
+           'queueID': node['queue_id'],
+           'sample': node['sample'],
+           'state': RUNNING if progress < 1 else COLLECTED,
+           'progress': progress}
 
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
     try:
         safe_emit('task', msg, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def collect_oscillation_failed(owner=None, status=FAILED, state=None, lims_id='', osc_id=None, params=None):
-    try:
-        limsres = mxcube.rest_lims.get_dc(lims_id)
-    except:
-        limsres = ''
+def collect_oscillation_failed(owner=None, status=FAILED, state=None,
+                               lims_id='', osc_id=None, params=None):
+    node = last_queue_node()
 
-    msg = {'Signal': 'collectOscillationFailed',
-           'Message': task_signals['collectOscillationFailed'],
-           'taskIndex': last_queue_node()['idx'],
-           'sample': last_queue_node()['sample'],
-           'limstResultData': limsres,
-           'state': get_signal_result('collectOscillationFailed'),
-           'progress': 100}
-    logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
-    try:
-        safe_emit('task', msg, namespace='/hwr')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+    if not qutils.is_interleaved(node["node"]):
+        try:
+            limsres = mxcube.rest_lims.get_dc(lims_id)
+        except:
+            limsres = ''
+
+            msg = {'Signal': 'collectOscillationFailed',
+                   'Message': task_signals['collectOscillationFailed'],
+                   'taskIndex': node['idx'],
+                   'queueID': node['queue_id'],
+                   'sample': node['sample'],
+                   'limstResultData': limsres,
+                   'state': FAILED,
+                   'progress': 0}
+
+            logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
+
+            try:
+                safe_emit('task', msg, namespace='/hwr')
+            except Exception:
+                logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
-    qutils.enable_entry(last_queue_node()['queue_id'], False)
-    if mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(lims_id)
-    else:
-        logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
-        limsres = ''
+    node = last_queue_node()
 
-    msg = {'Signal': 'collectOscillationFinished',
-           'Message': task_signals['collectOscillationFinished'],
-           'taskIndex': last_queue_node()['idx'],
-           'sample': last_queue_node()['sample'],
-           'limsResultData': limsres,
-           'state': COLLECTED,
-           'progress': 100}
-    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
-    try:
-        safe_emit('task', msg, namespace='/hwr')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+    if not qutils.is_interleaved(node["node"]):
+        qutils.enable_entry(node['queue_id'], False)
+
+        if mxcube.rest_lims:
+            limsres = mxcube.rest_lims.get_dc(lims_id)
+        else:
+            logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
+            limsres = ''
+
+        msg = {'Signal': 'collectOscillationFinished',
+               'Message': task_signals['collectOscillationFinished'],
+               'taskIndex': node['idx'],
+               'queueID': node['queue_id'],
+               'sample': node['sample'],
+               'limsResultData': limsres,
+               'state': COLLECTED,
+               'progress': 1}
+
+        logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+        try:
+            safe_emit('task', msg, namespace='/hwr')
+        except Exception:
+            logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
 def collect_ended(owner, success, message):
-    state = COLLECTED if success else WARNING
+    node = last_queue_node()
 
-    msg = {'Signal': 'collectOscillationFinished',
-           'Message': message,
-           'taskIndex': last_queue_node()['idx'],
-           'sample': last_queue_node()['sample'],
-           'state': state,
-           'progress': 100}
-    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
-    try:
-        safe_emit('task', msg, namespace='/hwr')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+    if not qutils.is_interleaved(node["node"]):
+        state = COLLECTED if success else WARNING
+
+        msg = {'Signal': 'collectOscillationFinished',
+               'Message': message,
+               'taskIndex': node['idx'],
+               'queueID': node['queue_id'],
+               'sample': node['sample'],
+               'state': state,
+               'progress': 1}
+
+        logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+        try:
+            safe_emit('task', msg, namespace='/hwr')
+        except Exception:
+            logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-def task_event_callback(*args, **kwargs):
-    logging.getLogger('HWR').debug('[TASK CALLBACK]')
-    logging.getLogger("HWR").debug(kwargs)
-    logging.getLogger("HWR").debug(args)
+def collect_started(*args, **kwargs):
+    node = last_queue_node()
 
-    msg = {'Signal': kwargs['signal'],
-           'Message': task_signals[kwargs['signal']],
-           'taskIndex': last_queue_node()['idx'],
-           'sample': last_queue_node()['sample'],
-           'state': get_signal_result(kwargs['signal']),
-           'progress': get_signal_progress(kwargs['signal'])}
-    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
-    try:
-        safe_emit('task', msg, namespace='/hwr')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: ' + str(msg))
+    if not qutils.is_interleaved(node["node"]):
+
+        msg = {'Signal': kwargs['signal'],
+               'Message': task_signals[kwargs['signal']],
+               'taskIndex': last_queue_node()['idx'],
+               'queueID': last_queue_node()['queue_id'],
+               'sample': last_queue_node()['sample'],
+               'state': RUNNING,
+               'progress': 0}
+
+        logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+
+        try:
+            safe_emit('task', msg, namespace='/hwr')
+        except Exception:
+            logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
 def motor_position_callback(motor, pos):
@@ -338,7 +343,10 @@ def motor_state_callback(motor, state, sender=None, **kw):
         # READY
         motor_position_callback(motor, sender.getPosition())
 
-    socketio.emit('motor_state', {'name': motor, 'state': state, 'centredPositions': shape_dict}, namespace='/hwr')
+    socketio.emit('motor_state', {'name': motor,
+                                  'state': state,
+                                  'centredPositions': shape_dict},
+                  namespace='/hwr')
 
 
 def motor_event_callback(*args, **kwargs):

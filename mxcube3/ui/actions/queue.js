@@ -473,8 +473,8 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
 }
 
 
-export function addTaskResultAction(sampleID, taskIndex, state, progress, limsResultData) {
-  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress, limsResultData };
+export function addTaskResultAction(sampleID, taskIndex, state, progress, limsResultData, queueID) {
+  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress, limsResultData, queueID };
 }
 
 

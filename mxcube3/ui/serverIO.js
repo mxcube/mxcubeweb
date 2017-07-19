@@ -17,7 +17,7 @@ import { setStatus,
          addTaskAction,
          sendStopQueue,
          setCurrentSample } from './actions/queue';
-import { collapseTask,
+import { collapseItem,
          showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading,
          addUserMessage,
@@ -122,16 +122,19 @@ class ServerIO {
         callback();
       }
 
-      const sampleDisplayData = store.getState().queueGUI.displayData[record.sample];
-      const taskCollapsed = sampleDisplayData.tasks[record.taskIndex].collapsed;
+      // The currnet node might not be a task, in that case ignore it
+      if (store.getState().queueGUI.displayData[record.queueID] && record.taskIndex !== null) {
+        const taskCollapsed = store.getState().queueGUI.displayData[record.queueID].collapsed;
 
-      if (record.state === 1 && !taskCollapsed) {
-        this.dispatch(collapseTask(record.sample, record.taskIndex));
-      } else if (record.state >= 2 && taskCollapsed) {
-        this.dispatch(collapseTask(record.sample, record.taskIndex));
+        if (record.state === 1 && !taskCollapsed) {
+          this.dispatch(collapseItem(record.queueID));
+        } else if (record.state >= 2 && taskCollapsed) {
+          this.dispatch(collapseItem(record.queueID));
+        }
+
+        this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state,
+                                          record.progress, record.limsResultData, record.queueID));
       }
-      this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state,
-                                        record.progress, record.limsResultData));
     });
 
     this.hwrSocket.on('add_task', (record, callback) => {

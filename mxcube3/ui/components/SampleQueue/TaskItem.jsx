@@ -2,11 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
-import cx from 'classnames';
 import { TASK_UNCOLLECTED,
          TASK_COLLECTED,
          TASK_COLLECT_FAILED,
-         TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
 
 const cardSource = {
@@ -220,12 +218,6 @@ export default class TaskItem extends Component {
     }
 
     const opacity = isDragging ? 0 : 1;
-    let taskCSS = cx('task-head', {
-      active: state === TASK_RUNNING,
-      success: state === TASK_COLLECTED,
-      error: state === TASK_COLLECT_FAILED,
-      warning: state === TASK_COLLECT_WARNING
-    });
 
     let delTaskCSS = {
       display: 'flex',
@@ -237,7 +229,17 @@ export default class TaskItem extends Component {
       cursor: 'pointer'
     };
 
-    taskCSS = this.props.selected ? `${taskCSS} task-head-selected` : taskCSS;
+    const taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
+
+    let pbarBsStyle = '';
+
+    if (state === TASK_RUNNING) {
+      pbarBsStyle = '';
+    } else if (state === TASK_COLLECTED) {
+      pbarBsStyle = 'success';
+    } else if (state === TASK_COLLECT_FAILED) {
+      pbarBsStyle = 'danger';
+    }
 
     const element = (
       <div className="node node-sample" style={{ opacity }}>
@@ -250,7 +252,16 @@ export default class TaskItem extends Component {
             <p className="node-name" style={{ display: 'flex' }} >
               {this.pointIDString(wedges)} {data.label}
               <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
-                <ProgressBar style={{ marginBottom: '0px', height: '18px' }} active now="0" />
+                <ProgressBar
+                  bsStyle={pbarBsStyle}
+                  striped
+                  style={{ marginBottom: '0px', height: '18px' }}
+                  min="0"
+                  max="1"
+                  active={ this.props.progress < 1 }
+                  label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+                  now={this.props.progress}
+                />
               </span>
             </p>
           </b>
