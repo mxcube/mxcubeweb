@@ -126,7 +126,6 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'ADD_TASKS': {
       const sampleList = { ...state.sampleList };
-
       action.tasks.forEach((t) => {
         const task = { ...t, state: 0 };
 

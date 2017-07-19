@@ -122,7 +122,7 @@ class ServerIO {
         callback();
       }
 
-      // The currnet node might not be a task, in that case ignore it
+      // The current node might not be a task, in that case ignore it
       if (store.getState().queueGUI.displayData[record.queueID] && record.taskIndex !== null) {
         const taskCollapsed = store.getState().queueGUI.displayData[record.queueID].collapsed;
 
@@ -142,7 +142,7 @@ class ServerIO {
         callback();
       }
 
-      this.dispatch(addTaskAction(record));
+      this.dispatch(addTaskAction(record.tasks));
     });
 
     this.hwrSocket.on('queue', (record, callback) => {

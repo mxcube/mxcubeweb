@@ -57,10 +57,9 @@ export default (state = initialState, action) => {
       const displayData = { ...state.displayData };
 
       action.tasks.forEach((task) => {
-        displayData[task.sampleID] = {
-          ...displayData[task.sampleID],
-          tasks: [...displayData[task.sampleID].tasks, { collapsed: false }]
-        };
+        displayData[task.queueID] = { collapsed: false,
+                                      selected: false,
+                                      progress: 0 };
       });
 
       return Object.assign({}, state, { displayData });
