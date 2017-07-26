@@ -264,7 +264,7 @@ def update_shapes():
         # Shape does not have any refs, create a new Centered position
         if not refs:
             x, y = shape_data["screen_coord"]
-            mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y)
+            mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y, return_by_names=True)
             shape = mxcube.shapes.add_shape_from_mpos([mpos], (x, y), t)
         else:
             shape = mxcube.shapes.add_shape_from_refs(refs, t)
