@@ -215,8 +215,7 @@ class SampleGridContainer extends React.Component {
 
     const orderedList = [];
     props.order.forEach(key => {
-      const sampleID = props.sampleList[key].sampleID;
-      if (props.queue.queue.includes(sampleID)) {
+      if (props.queue.queue.includes(key)) {
         orderedList.push(key);
       }
     });
@@ -249,7 +248,6 @@ class SampleGridContainer extends React.Component {
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
-                  rootPath={props.queue.rootPath}
                 />))
               }
             </SampleGridItem>

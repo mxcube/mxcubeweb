@@ -6,16 +6,16 @@ export function showList(listName) {
 }
 
 
-export function collapseSample(sampleID) {
+export function collapseItem(queueID) {
   return {
-    type: 'COLLAPSE_SAMPLE', sampleID
+    type: 'COLLAPSE_ITEM', queueID
   };
 }
 
 
-export function collapseTask(sampleID, taskIndex) {
+export function selectItem(queueID) {
   return {
-    type: 'COLLAPSE_TASK', sampleID, taskIndex
+    type: 'SELECT_ITEM', queueID
   };
 }
 

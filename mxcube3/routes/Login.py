@@ -135,7 +135,7 @@ def loginInfo():
            "observerName": remote_access.observer_name()
            }
 
-    if res["loginType"].lower() != 'user':
+    if res["loginType"].lower() != 'user' and login_info:
         # autoselect proposal
         limsutils.select_proposal(LOGGED_IN_USER)
         res["selectedProposal"] = LOGGED_IN_USER

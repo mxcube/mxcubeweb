@@ -28,7 +28,8 @@ class Workflow extends React.Component {
       ...params,
       type: 'Workflow',
       label: params.wfname,
-      shape: this.props.pointID
+      shape: this.props.pointID,
+      suffix: this.props.suffix
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -40,7 +41,8 @@ class Workflow extends React.Component {
       'shape',
       'label',
       'wfname',
-      'wfpath'
+      'wfpath',
+      'suffix'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -66,9 +68,17 @@ class Workflow extends React.Component {
               <Col xs={8}>
                 <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
               </Col>
-              <Col xs={4}>
-                <InputField propName="run_number" disabled label="Run number" col1="4" col2="8" />
-              </Col>
+              {this.props.taskData.sampleID ?
+                (<Col xs={4}>
+                  <InputField
+                    propName="run_number"
+                    disabled
+                    label="Run number"
+                    col1="4"
+                    col2="8"
+                  />
+                </Col>)
+              : null}
             </Row>
           </Form>
        </Modal.Body>
@@ -103,20 +113,40 @@ const selector = formValueSelector('workflow');
 
 Workflow = connect(state => {
   const subdir = selector(state, 'subdir');
-  const prefix = selector(state, 'prefix');
-  const runNumber = selector(state, 'run_number');
-  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
     const vals = Object.values(position).sort();
     position = `[${vals}]`;
   }
 
+  let fname = '';
+
+  if (state.taskForm.taskData.sampleID) {
+    fname = state.taskForm.taskData.parameters.fileName;
+  } else {
+    // Try to call eval on the file name template, just return the template
+    // itself if it fails. Disable eslint since prefix and runNumber are unused
+    // by the rest of the code, but possible used in the template. All variables
+    // that are to be used in the template should be defined in the try.
+    try {
+      /*eslint-disable */
+      const prefix = selector(state, 'prefix');
+      const position = state.taskForm.pointID === '' ? 'GX' : state.taskForm.pointID;
+
+      fname = eval(state.taskForm.taskData.parameters.fileNameTemplate);
+      /*eslint-enable */
+    } catch (e) {
+      fname = state.taskForm.taskData.parameters.fileNameTemplate;
+    }
+  }
+
   return {
     path: `${state.queue.rootPath}/${subdir}`,
-    filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
+    filename: fname,
     wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,

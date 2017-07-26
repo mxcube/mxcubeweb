@@ -2,11 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
 import { findDOMNode } from 'react-dom';
 import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
-import cx from 'classnames';
 import { TASK_UNCOLLECTED,
          TASK_COLLECTED,
          TASK_COLLECT_FAILED,
-         TASK_COLLECT_WARNING,
          TASK_RUNNING } from '../../constants';
 
 const cardSource = {
@@ -95,10 +93,11 @@ export default class TaskItem extends Component {
     this.showForm = this.showForm.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
-    this.collapseTask = this.collapseTask.bind(this);
+    this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.getResult = this.getResult.bind(this);
     this.state = {
-      overInput: false
+      overInput: false,
+      selected: false
     };
   }
 
@@ -106,8 +105,15 @@ export default class TaskItem extends Component {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
+
     return (
-      <a href={this.props.data.limstResultData}> ISPyB link</a>
+      <div style={ { borderLeft: '1px solid #DDD',
+                     borderRight: '1px solid #DDD',
+                     borderBottom: '1px solid #DDD',
+                     padding: '0.5em' } }
+      >
+        <a href={this.props.data.limstResultData}> ISPyB link</a>
+      </div>
     );
   }
 
@@ -115,14 +121,15 @@ export default class TaskItem extends Component {
     this.props.toggleChecked(this.props.sampleId, this.props.index);
   }
 
-  collapseTask() {
-    this.props.collapseTask(this.props.sampleId, this.props.index);
+  taskHeaderOnClick(e) {
+    this.props.taskHeaderOnClickHandler(e, this.props.index);
   }
 
   deleteTask(e) {
     e.stopPropagation();
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
+
 
   deleteButton() {
     let content = (<Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>);
@@ -140,6 +147,60 @@ export default class TaskItem extends Component {
     this.props.showForm(type, sampleId, data, parameters.shape);
   }
 
+  pointIDString(wedges) {
+    let res = '';
+
+    wedges.forEach((wedge) => {
+      if (res.indexOf(`${wedge.parameters.shape}`) < 0) {
+        res += `${wedge.parameters.shape} `;
+      }
+    });
+
+    return res;
+  }
+
+  wedgePath(wedge) {
+    const parameters = wedge.parameters;
+    const value = parameters.fileName;
+    const path = parameters.path ? parameters.path : '';
+
+    return (
+      <OverlayTrigger
+        trigger="click"
+        placement="top"
+        rootClose
+        overlay={(<Popover style={{ maxWidth: '600px', width: 'auto' }}>
+                    <input
+                      type="text"
+                      onFocus={(e) => {e.target.select();}}
+                      value={path}
+                      size={path.length + 10}
+                    />
+                  </Popover>)}
+      >
+        <a>
+          { value }
+        </a>
+      </OverlayTrigger>);
+  }
+
+  wedgeParameters(wedge) {
+    const parameters = wedge.parameters;
+
+    return (
+      <tr>
+        <td><a>{parameters.osc_start}</a></td>
+        <td><a>{parameters.osc_range}</a></td>
+        <td><a>{parameters.exp_time}</a></td>
+        <td><a>{parameters.num_images}</a></td>
+        <td><a>{parameters.transmission}</a></td>
+        <td><a>{parameters.resolution}</a></td>
+        <td><a>{parameters.energy}</a></td>
+        <td><a>{parameters.kappa_phi}</a></td>
+        <td><a>{parameters.kappa}</a></td>
+      </tr>);
+  }
+
   render() {
     const { state,
             data,
@@ -147,14 +208,16 @@ export default class TaskItem extends Component {
             connectDragSource,
             connectDropTarget,
             show } = this.props;
-    const parameters = data.parameters;
+
+    let wedges = [];
+
+    if (data.type === 'Interleaved') {
+      wedges = data.parameters.wedges;
+    } else {
+      wedges = [data];
+    }
+
     const opacity = isDragging ? 0 : 1;
-    let taskCSS = cx('task-head', {
-      active: state === TASK_RUNNING,
-      success: state === TASK_COLLECTED,
-      error: state === TASK_COLLECT_FAILED,
-      warning: state === TASK_COLLECT_WARNING
-    });
 
     let delTaskCSS = {
       display: 'flex',
@@ -166,86 +229,91 @@ export default class TaskItem extends Component {
       cursor: 'pointer'
     };
 
-    const pointID = data.parameters.shape;
-    const value = `./${parameters.subdir}/${parameters.prefix}-${parameters.run_number}`;
-    const path = parameters.path ? parameters.path : '';
+    const taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
+
+    let pbarBsStyle = '';
+
+    if (state === TASK_RUNNING) {
+      pbarBsStyle = '';
+    } else if (state === TASK_COLLECTED) {
+      pbarBsStyle = 'success';
+    } else if (state === TASK_COLLECT_FAILED) {
+      pbarBsStyle = 'danger';
+    }
+
     const element = (
       <div className="node node-sample" style={{ opacity }}>
-        <div className={taskCSS} style={{ display: 'flex' }} onClick={this.collapseTask} >
+        <div
+          className={taskCSS}
+          style={{ display: 'flex' }}
+          onClick={this.taskHeaderOnClick}
+        >
           <b>
             <p className="node-name" style={{ display: 'flex' }} >
-              {`${pointID !== '' ? pointID : '?'} ${data.label}`}
+              {this.pointIDString(wedges)} {data.label}
               <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
-                <ProgressBar style={{ marginBottom: '0px', height: '18px' }} active now="0" />
-            </span>
+                <ProgressBar
+                  bsStyle={pbarBsStyle}
+                  striped
+                  style={{ marginBottom: '0px', height: '18px' }}
+                  min="0"
+                  max="1"
+                  active={ this.props.progress < 1 }
+                  label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+                  now={this.props.progress}
+                />
+              </span>
             </p>
           </b>
-          <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} />
+            { state === TASK_UNCOLLECTED ?
+              <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
+            }
         </div>
         <Collapse in={Boolean(show)}>
           <div className="task-body">
-            <div style={ { borderLeft: '1px solid #DDD',
-                           borderRight: '1px solid #DDD',
-                           padding: '0.5em' } }
-            >
-              <b>Path:</b>
-              <OverlayTrigger
-                trigger="click"
-                placement="top"
-                rootClose
-                overlay={(<Popover style={{ maxWidth: '600px', width: 'auto' }}>
-                            <input
-                              type="text"
-                              onFocus={(e) => {e.target.select();}}
-                              value={path}
-                              size={path.length + 10}
-                            />
-                          </Popover>)}
+            { wedges.map((wedge, i) => {
+              const padding = i > 0 ? '1em' : '0em';
+              return (
+              <div>
+              <div style={ { borderLeft: '1px solid #DDD',
+                             borderRight: '1px solid #DDD',
+                             paddingTop: padding } }
               >
-                <a>
-                  { value }
-                </a>
-              </OverlayTrigger>
-            </div>
-            <Table
-              striped
-              condensed
-              bordered
-              hover
-              onClick={this.showForm}
-              style={{ fontSize: 'smaller', marginBottom: '0px' }}
-              className="task-parameters-table"
-            >
-              <thead>
-                <tr>
-                  <th>Start &deg; </th>
-                  <th>Osc. &deg; </th>
-                  <th># Img</th>
-                  <th>t (ms)</th>
-                  <th>T (%)</th>
-                  <th>Res. (&Aring;)</th>
-                  <th>E (KeV)</th>
-                  <th>&phi; &deg;</th>
-                  <th>&kappa; &deg;</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><a>{parameters.osc_start}</a></td>
-                  <td><a>{parameters.osc_range}</a></td>
-                  <td><a>{parameters.exp_time * 1000}</a></td>
-                  <td><a>{parameters.num_images}</a></td>
-                  <td><a>{parameters.resolution}</a></td>
-                  <td><a>{parameters.transmission}</a></td>
-                  <td><a>{parameters.energy}</a></td>
-                  <td><a>{parameters.kappa_phi}</a></td>
-                  <td><a>{parameters.kappa}</a></td>
-                </tr>
-              </tbody>
-            </Table>
-            <div>
-              {this.getResult(state)}
-            </div>
+                <div style={ { borderTop: '1px solid #DDD',
+                               padding: '0.5em' } }
+                >
+                  <b>Path:</b> { this.wedgePath(wedge) }
+                </div>
+              </div>
+              <Table
+                striped
+                condensed
+                bordered
+                hover
+                onClick={this.showForm}
+                style={{ fontSize: 'smaller', marginBottom: '0px' }}
+                className="task-parameters-table"
+              >
+                <thead>
+                  <tr>
+                    <th>Start &deg; </th>
+                    <th>Osc. &deg; </th>
+                    <th>t (ms)</th>
+                    <th># Img</th>
+                    <th>T (%)</th>
+                    <th>Res. (&Aring;)</th>
+                    <th>E (KeV)</th>
+                    <th>&phi; &deg;</th>
+                    <th>&kappa; &deg;</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.wedgeParameters(wedge)}
+                </tbody>
+              </Table>
+              </div>);
+            })}
+            {this.getResult(state)}
           </div>
         </Collapse>
       </div>

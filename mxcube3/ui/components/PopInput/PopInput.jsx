@@ -216,10 +216,12 @@ export default class PopInput extends React.Component {
       </Popover>);
 
     return (
-      <div className={`${this.props.className} popinput-input-container`}>
-        <span className={`popinput-input-label ${this.props.ref}`}>
-          {this.props.name}:
-        </span>
+      <div style={this.props.style} className={`${this.props.className} popinput-input-container`}>
+        { this.props.name ?
+          <span className={`popinput-input-label ${this.props.ref}`}>
+            {this.props.name}:
+          </span> : null
+        }
         <span className={`popinput-input-value ${this.props.pkey}`}>
           <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
             overlay={popover}
@@ -231,7 +233,6 @@ export default class PopInput extends React.Component {
               className={`popinput-input-link ${linkClass} ${stateClass}`}
             >
               {this.props.data.value} {this.props.suffix}
-              <span className="popinput-input-editicon fa fa-gear" />
             </a>
           </OverlayTrigger>
         </span>
@@ -249,6 +250,7 @@ PopInput.defaultProps = {
   title: '',
   suffix: '',
   value: 0,
+  style: {},
   placement: 'right',
   pkey: undefined,
   onSave: undefined,

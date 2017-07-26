@@ -12,7 +12,6 @@
 *
 *  filterText: Current filter text
 */
-import update from 'react/lib/update';
 import { SAMPLE_MOUNTED, TASK_UNCOLLECTED } from '../constants';
 
 const INITIAL_STATE = { selected: {},
@@ -29,6 +28,9 @@ const INITIAL_STATE = { selected: {},
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
+    case 'SET_QUEUE': {
+      return { ...state, sampleList: Object.assign(state.sampleList, action.queue) };
+    }
     // Set the list of samples (sampleList), clearing any existing list
     case 'UPDATE_SAMPLE_LIST': {
       const sampleList = { ...state.sampleList };
@@ -124,7 +126,6 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'ADD_TASKS': {
       const sampleList = { ...state.sampleList };
-
       action.tasks.forEach((t) => {
         const task = { ...t, state: 0 };
 
@@ -173,11 +174,11 @@ export default (state = INITIAL_STATE, action) => {
     case 'CHANGE_TASK_ORDER': {
       const sampleList = Object.assign({}, state.sampleList);
 
-      sampleList[action.sampleId].tasks = update(state.sampleList[action.sampleId].tasks, {
-        $splice: [[action.oldIndex, 1],
-                  [action.newIndex, 0,
-                   state.sampleList[action.sampleId].tasks[action.oldIndex]]]
-      });
+      const task = sampleList[action.sampleId].tasks[action.oldIndex];
+      const tempTask = sampleList[action.sampleId].tasks[action.newIndex];
+
+      sampleList[action.sampleId].tasks[action.newIndex] = task;
+      sampleList[action.sampleId].tasks[action.oldIndex] = tempTask;
 
       return { ...state, sampleList };
     }

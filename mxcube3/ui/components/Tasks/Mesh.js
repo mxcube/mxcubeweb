@@ -36,7 +36,7 @@ class Mesh extends React.Component {
       label: 'Mesh',
       mesh: true,
       helical: false,
-      shape: this.props.pointID
+      shape: this.props.pointID,
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -52,7 +52,7 @@ class Mesh extends React.Component {
       'point',
       'label',
       'mesh',
-      'shape'
+      'shape',
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -76,10 +76,18 @@ class Mesh extends React.Component {
             <Row>
               <Col xs={8}>
                 <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
-              </Col>
-              <Col xs={4}>
-                <InputField propName="run_number" disabled label="Run number" col1="4" col2="8" />
-              </Col>
+            </Col>
+            {this.props.taskData.sampleID ?
+              (<Col xs={4}>
+                <InputField
+                  propName="run_number"
+                  disabled
+                  label="Run number"
+                  col1="4"
+                  col2="8"
+                />
+              </Col>)
+            : null}
             </Row>
             <StaticField label="Filename" data={this.props.filename} />
           </Form>
@@ -158,14 +166,31 @@ const selector = formValueSelector('helical');
 
 Mesh = connect(state => {
   const subdir = selector(state, 'subdir');
-  const prefix = selector(state, 'prefix');
-  const runNumber = selector(state, 'run_number');
-  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : '_????.cbf';
-  const position = state.taskForm.pointID === '' ? 'GX' : state.taskForm.pointID;
+
+  let fname = '';
+
+  if (state.taskForm.taskData.sampleID) {
+    fname = state.taskForm.taskData.parameters.fileName;
+  } else {
+    // Try to call eval on the file name template, just return the template
+    // itself if it fails. Disable eslint since prefix and runNumber are unused
+    // by the rest of the code, but possible used in the template. All variables
+    // that are to be used in the template should be defined in the try.
+    try {
+      /*eslint-disable */
+      const prefix = selector(state, 'prefix');
+      const position = state.taskForm.pointID === '' ? 'GX' : state.taskForm.pointID;
+
+      fname = eval(state.taskForm.taskData.parameters.fileNameTemplate);
+      /*eslint-enable */
+    } catch (e) {
+      fname = state.taskForm.taskData.parameters.fileNameTemplate;
+    }
+  }
 
   return {
     path: `${state.queue.rootPath}/${subdir}`,
-    filename: `${prefix}_${position}_${runNumber}${fileSuffix}`,
+    filename: fname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     initialValues: {
       ...state.taskForm.taskData.parameters,

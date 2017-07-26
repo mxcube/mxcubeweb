@@ -88,9 +88,9 @@ export default class SampleQueueContainer extends React.Component {
       sendRunSample,
     } = this.props.queueActions;
     const {
-      collapseTask,
-      collapseSample,
-      showConfirmCollectDialog
+      collapseItem,
+      showConfirmCollectDialog,
+      selectItem
     } = this.props.queueGUIActions;
 
     // go through the queue, check if sample has been collected or not
@@ -117,7 +117,7 @@ export default class SampleQueueContainer extends React.Component {
     if (current.sampleID) {
       const sampleData = sampleList[current.sampleID];
       sampleName = sampleData ? sampleData.sampleName : '';
-      proteinAcronym = sampleData ? sampleData.proteinAcronym : '';
+      proteinAcronym = sampleData ? `(${sampleData.proteinAcronym})` : '';
     }
 
     return (
@@ -145,7 +145,7 @@ export default class SampleQueueContainer extends React.Component {
                 >
                   <NavItem eventKey={'current'}>
                     <b>
-                      { current.sampleID ? `Sample: ${sampleName} (${proteinAcronym})` : 'Current'}
+                      { current.sampleID ? `Sample: ${sampleName} ${proteinAcronym}` : 'Current'}
                     </b>
                   </NavItem>
                   <NavItem eventKey={'todo'}><b>Upcoming</b></NavItem>
@@ -172,7 +172,8 @@ export default class SampleQueueContainer extends React.Component {
                   unmount={sendUnmountSample}
                   queueStatus={queueStatus}
                   rootPath={rootPath}
-                  collapseTask={collapseTask}
+                  collapseItem={collapseItem}
+                  selectItem={selectItem}
                   displayData={displayData}
                   runSample={sendRunSample}
                   todoList={todo}
@@ -183,7 +184,7 @@ export default class SampleQueueContainer extends React.Component {
                   list={todo}
                   queue={queue}
                   sampleList={sampleList}
-                  collapseSample={collapseSample}
+                  collapseItem={collapseItem}
                   displayData={displayData}
                   mount={sendMountSample}
                   showForm={showForm}

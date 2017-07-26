@@ -38,6 +38,7 @@ def start(device, scale):
 
     scale = "scale=w=%s:h=%s:force_original_aspect_ratio=decrease" % scale
 
+    FNULL = open(os.devnull, 'w')
     ffmpeg = subprocess.Popen(["ffmpeg",
                                "-f", "v4l2",
                                "-i", device,
@@ -45,7 +46,9 @@ def start(device, scale):
                                "-f", "mpegts",
                                "-an",
                                "-vcodec", "mpeg1video",
-                               "http://localhost:4041/video"])
+                               "http://localhost:4041/video"],
+                              stdout=FNULL,
+                              stderr=subprocess.STDOUT)
 
     return relay, ffmpeg
 

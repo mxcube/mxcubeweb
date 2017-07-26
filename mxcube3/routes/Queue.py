@@ -214,9 +214,44 @@ def set_queue():
 
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
-     qutils.queue_add_item(request.get_json())
-     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-     return Response(status=200)
+    tasks = request.get_json()
+    qutils.queue_add_item(tasks)
+
+    # Handling interleaved data collections, swap interleave task with
+    # the first of the data collections that are used as wedges, and then
+    # remove all collections that were used as wedges
+    for task in tasks:
+        current_queue = qutils.queue_to_dict()
+
+        if task["type"] == "Interleaved" and task["parameters"]["taskIndexList"]:
+            sid = task["sampleID"]
+            interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
+
+            tindex_list = task["parameters"]["taskIndexList"]
+            tindex_list.sort()
+
+            # Swap first "wedge task" and the actual interleaved collection
+            # so that the interleaved task is the first task
+            qutils.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
+
+            # We remove the swapped wedge index from the list, (now pointing
+            # at the interleaved collection) and add its new position
+            # (last task item) to the list.
+            tindex_list = tindex_list[1:]
+            tindex_list.append(interleaved_tindex)
+
+            # The delete operation can be done all in one call if we make sure
+            # that we remove the items starting from the end (not altering
+            # previous indices)
+            for ti in reversed(tindex_list):
+                qutils.delete_entry_at([[sid, int(ti)]])
+
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+
+    resp = qutils.queue_to_json_response()
+    resp.status_code = 200
+
+    return resp
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>", methods=['POST'])
@@ -237,29 +272,17 @@ def queue_update_item(sid, tindex):
         qutils.set_char_params(model, entry, data)
 
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    return Response(status=200)
+
+    resp = qutils.queue_to_json_response([model])
+    resp.status_code = 200
+
+    return resp
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/delete", methods=['POST'])
 def queue_delete_item():
     item_pos_list = request.get_json()
-    current_queue = qutils.queue_to_dict() 
-
-    for (sid, tindex) in item_pos_list:
-        if tindex in ['undefined', None]:
-            node_id = current_queue[sid]["queueID"]
-            model, entry = qutils.get_entry(node_id)
-        else:
-            node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
-            model, entry = qutils.get_entry(node_id)
-
-            # Get the TaskGroup of the item, there is currently only one
-            # task per TaskGroup so we have to remove the entire TaskGroup
-            # with its task.
-            entry = entry.get_container()
-
-        qutils.delete_entry(entry)
-
+    qutils.delete_entry_at(item_pos_list)
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200)
 
@@ -268,7 +291,7 @@ def queue_delete_item():
 def queue_swap_task_item(sid, ti1, ti2):
     qutils.swap_task_entry(sid, int(ti1), int(ti2))
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-    return Response(status=200) 
+    return Response(status=200)
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/move", methods=['POST'])
@@ -424,6 +447,11 @@ def get_default_dc_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+    n = int(mxcube.session["file_info"].getProperty("precision", 4))
+    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
+
     resp = jsonify({
         'acq_parameters': {
             'first_image': acq_parameters.first_image,
@@ -445,7 +473,8 @@ def get_default_dc_params():
             'skip_existing_images': False,
             'take_snapshots': True,
             'helical': False,
-            'mesh': False
+            'mesh': False,
+            'fileNameTemplate': template
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -461,6 +490,10 @@ def get_default_char_acq_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_char_acq_parameters()
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+    n = int(mxcube.session["file_info"].getProperty("precision", 4))
+    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     resp = jsonify({
         'acq_parameters': {
@@ -482,6 +515,7 @@ def get_default_char_acq_params():
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
+            'fileNameTemplate': template
         },
         })
 

@@ -188,7 +188,6 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.toggleDrawGrid();
   }
 
-
   saveGrid() {
     this.props.sampleActions.showContextMenu(false);
 

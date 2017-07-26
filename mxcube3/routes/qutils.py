@@ -4,6 +4,7 @@ import json
 import cPickle as pickle
 import redis
 import itertools
+import xml.etree.ElementTree as et
 
 import Utils
 
@@ -16,6 +17,7 @@ from mock import Mock
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
 from . import scutils
+from . import limsutils
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = 'QueuePaused'
@@ -30,6 +32,8 @@ FAILED = 0x2
 RUNNING = 0x1
 UNCOLLECTED = 0x0
 READY = 0
+
+ORIGIN_MX3 = "MX3"
 
 
 def node_index(node):
@@ -48,17 +52,23 @@ def node_index(node):
     elif isinstance(node, qmo.Sample):
         sample = node.loc_str
     # TaskGroup just return the sampleID
-    elif isinstance(node, qmo.TaskGroup):
-        sample_loc, idx = node.get_parent().loc_str, None
-    # All other TaskNodes are considered "leaf tasks", only return if they have
-    # a parent (Which is not the case for reference collections, which are
-    # orphans)
     elif node.get_parent():
-        sample_model = node.get_parent().get_parent()
+        if isinstance(node, qmo.TaskGroup):
+            sample_model = node.get_parent()
+        else:
+            sample_model = node.get_parent().get_parent()
+
         sample = sample_model.loc_str
-        task_groups = sample_model.get_children();
+        task_groups = sample_model.get_children()
         group_list = [group.get_children() for group in task_groups]
-        tlist = [task for task_list in group_list for task in task_list]
+
+        tlist = []
+
+        for group in task_groups:
+            if group.interleave_num_images:
+                tlist.append(group)
+            else:
+                tlist.extend(group.get_children())
 
         try:
             index = tlist.index(node)
@@ -88,8 +98,8 @@ def queue_to_dict(node=None):
     """
     Returns the dictionary representation of the queue
 
-    :param TaskNode node: Node to get representation for, queue root used if
-                          nothing is passed.
+    :param TaskNode node: list of Node objects to get representation for,
+                          queue root used if nothing is passed.
 
     :returns: dictionary on the form:
               { sampleID_1:{ sampleID_1: sid_1,
@@ -119,8 +129,8 @@ def queue_to_json(node=None):
     """
     Returns the json representation of the queue
 
-    :param TaskNode node: Node to get representation for, queue root used if
-                          nothing is passed.
+    :param TaskNode node: list of Node objects to get representation for,
+                          queue root used if nothing is passed.
 
     :returns: json str on the form:
               [ { sampleID_1: sid_1,
@@ -152,8 +162,8 @@ def queue_to_json_response(node=None):
     Returns the http json response object with the json representation of the
     queue as data.
 
-    :param TaskNode node: Node to get representation for, queue root used if
-                          nothing is passed.
+    :param TaskNode node: list of Node objects to get representation for,
+                          queue root used if nothing is passed.
 
     :returns: Flask Response object
     """
@@ -166,29 +176,32 @@ def queue_to_json_response(node=None):
 
 def get_node_state(node_id):
     """
-    Get the satus af the given node.
+    Get the state of the given node.
 
-    :param TaskNode node: Node to get status for
+    :param TaskNode node: Node to get state for
 
     :returns: tuple containing (enabled, state)
-            where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
+              where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
     try:
         node, entry = get_entry(node_id)
     except:
         return (1, 0)
+
     executed = node.is_executed()
     enabled = node.is_enabled()
     failed = entry._execution_failed
 
     curr_entry = mxcube.queue.queue_hwobj.get_current_entry()
+    running = mxcube.queue.queue_hwobj.is_executing and \
+              (curr_entry == entry or curr_entry == entry._parent_container)
 
     if failed:
         state = FAILED
     elif executed:
         state = COLLECTED
-    elif mxcube.queue.queue_hwobj.is_executing and (curr_entry == entry or curr_entry == entry._parent_container):
+    elif running:
         state = RUNNING
     else:
         state = UNCOLLECTED
@@ -227,9 +240,19 @@ def _handle_dc(sample_id, node):
     parameters.pop('acquisitions')
     parameters.pop('acq_parameters')
     parameters.pop('centred_position')
+
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
-    parameters['subdir'] = parameters['path'].split(mxcube.session.get_base_image_directory())[1][1:]
+    parameters['subdir'] = parameters['path'].\
+        split(mxcube.session.get_base_image_directory())[1][1:]
+
+    pt = node.acquisitions[0].path_template
+
+    parameters['fileName'] = pt.get_image_file_name().\
+        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+
+    parameters['fullPath'] = os.path.join(parameters['path'],
+                                          parameters['fileName'])
 
     if mxcube.rest_lims:
         limsres = mxcube.rest_lims.get_dc(node.id)
@@ -242,7 +265,7 @@ def _handle_dc(sample_id, node):
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
-           "checked": enabled,
+           "checked": node.is_enabled(),
            "state": state,
            "limstResultData": limsres,
            }
@@ -262,7 +285,7 @@ def _handle_wf(sample_id, node):
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
-           "checked": enabled,
+           "checked": node.is_enabled(),
            "state": state
            }
 
@@ -285,24 +308,43 @@ def _handle_char(sample_id, node):
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": node._node_id,
-           "checked": enabled,
            "state": state
            }
 
     return res
 
 
+def _handle_interleaved(sample_id, node):
+    wedges = []
+
+    for child in node.get_children():
+        wedges.append(_handle_dc(sample_id, child))
+
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+
+    res = {"label": "Interleaved",
+           "type": "Interleaved",
+           "parameters": {"wedges": wedges,
+                          "subWedgeSize": node.interleave_num_images},
+           "checked": node.is_enabled(),
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "queueID": node._node_id,
+           "state": state
+           }
+
+    return res
+
 def _handle_sample(node):
     location = 'Manual' if node.free_pin_mode else node.loc_str
     enabled, state = get_node_state(node._node_id)
-
-    children = node.get_children()
-
     children_states = []
-    for child in children:
-        child = child.get_children()[0]  # assuming on task on each task group
-        child_enabled, child_state = get_node_state(child._node_id)
-        children_states.append(child_state)
+
+    for child in node.get_children():
+        for _c in child.get_children():
+            child_enabled, child_state = get_node_state(_c._node_id)
+            children_states.append(child_state)
 
     if RUNNING in children_states:
         state = RUNNING & SAMPLE_MOUNTED
@@ -313,15 +355,21 @@ def _handle_sample(node):
     else:
         state = UNCOLLECTED
 
-    return {node.loc_str: {'sampleID': node.loc_str,
-                           'queueID': node._node_id,
-                           'location': location,
-                           'sampleName': node.get_name(),
-                           'proteinAcronym': node.crystals[0].protein_acronym,
-                           'type': 'Sample',
-                           'checked': enabled,
-                           'state': state,
-                           'tasks': queue_to_dict_rec(node)}}
+    sample = {node.loc_str: {'sampleID': node.loc_str,
+                             'queueID': node._node_id,
+                             'code': node.code,
+                             'location': location,
+                             'sampleName': node.get_name(),
+                             'proteinAcronym': node.crystals[0].protein_acronym,
+                             'type': 'Sample',
+                             'checked': enabled,
+                             'state': state,
+                             'tasks': queue_to_dict_rec(node)}}
+
+    sample[node.loc_str]["defaultPrefix"] = limsutils.\
+        get_default_prefix(sample[node.loc_str], False)
+
+    return sample
 
 
 def queue_to_dict_rec(node):
@@ -345,7 +393,12 @@ def queue_to_dict_rec(node):
     """
     result = []
 
-    for node in node.get_children():
+    if isinstance(node, list):
+        node_list = node
+    else:
+        node_list = node.get_children()
+
+    for node in node_list:
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{'sample_order': []}]
@@ -356,11 +409,14 @@ def queue_to_dict_rec(node):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_char(sample_id, node))
         elif isinstance(node, qmo.DataCollection):
-            sample_id = node.get_parent().get_parent().loc_str
+            sample_id = node_index(node)['sample']
             result.append(_handle_dc(sample_id, node))
         elif isinstance(node, qmo.Workflow):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_wf(sample_id, node))
+        elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
+            sample_id = node.get_parent().loc_str
+            result.append(_handle_interleaved(sample_id, node))
         else:
             result.extend(queue_to_dict_rec(node))
 
@@ -404,6 +460,26 @@ def delete_entry(entry):
     parent_entry.dequeue(entry)
     model = entry.get_data_model()
     mxcube.queue.del_child(model.get_parent(), model)
+
+
+def delete_entry_at(item_pos_list):
+    current_queue = queue_to_dict()
+
+    for (sid, tindex) in item_pos_list:
+        if tindex in ['undefined', None]:
+            node_id = current_queue[sid]["queueID"]
+            model, entry = get_entry(node_id)
+        else:
+            node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
+            model, entry = get_entry(node_id)
+
+            # Get the TaskGroup of the item, there is currently only one
+            # task per TaskGroup so we have to remove the entire TaskGroup
+            # with its task.
+            if not isinstance(entry, qe.TaskGroupQueueEntry):
+                entry = entry.get_container()
+
+        delete_entry(entry)
 
 
 def enable_entry(id_or_qentry, flag):
@@ -513,6 +589,8 @@ def queue_add_item(item_list):
             add_characterisation(sample_node_id, item)
         elif item_t == "Workflow":
             add_workflow(sample_node_id, item)
+        elif item_t == "Interleaved":
+            add_interleaved(sample_node_id, item)
 
 
 def add_sample(sample_id, item):
@@ -531,6 +609,7 @@ def add_sample(sample_id, item):
             raise Exception(msg)
 
     sample_model = qmo.Sample()
+    sample_model.set_origin(ORIGIN_MX3)
 
     # We should really use sample_id instead of loc_str
     sample_model.loc_str = sample_id
@@ -565,7 +644,13 @@ def set_dc_params(model, entry, task_data):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+
     acq.path_template.set_from_dict(params)
+    acq.path_template.suffix = ftype
+    acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
+        getProperty("precision", 4))
     acq.path_template.base_prefix = params['prefix']
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
@@ -612,6 +697,9 @@ def set_dc_params(model, entry, task_data):
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
+    acq.path_template.run_number = mxcube.queue.\
+        get_next_run_number(acq.path_template)
+
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
 
@@ -629,6 +717,8 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.set_from_dict(params)
     model.path_template.base_prefix = params['prefix']
     model.path_template.num_files = 0
+    model.path_template.precision = '0' +str(mxcube.session["file_info"].\
+        getProperty("precision"))
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
                              params.get('subdir', ''))
@@ -674,6 +764,21 @@ def set_char_params(model, entry, task_data):
     set_dc_params(model.reference_image_collection, entry, task_data)
     model.characterisation_parameters.set_from_dict(params)
 
+    # Set default characterisation values taken from ednadefaults for
+    # those values that are no used in the UI.
+
+    defaults = et.fromstring(mxcube.beamline.getObjectByRole("data_analysis").
+                             edna_default_input)
+
+    model.characterisation_parameters.aimed_i_sigma = float(defaults.find(
+        ".diffractionPlan/aimedIOverSigmaAtHighestResolution/value").text)
+
+    model.characterisation_parameters.aimed_completness = float(defaults.find(
+        ".diffractionPlan/aimedCompleteness/value").text)
+
+    model.characterisation_parameters.aimed_resolution = float(defaults.find(
+        ".diffractionPlan/aimedResolution/value").text)
+
     # MXCuBE3 specific shape attribute
     model.shape = params["shape"]
 
@@ -691,6 +796,7 @@ def _create_dc(task):
     :rtype: Tuple
     """
     dc_model = qmo.DataCollection()
+    dc_model.set_origin(ORIGIN_MX3)
     dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
@@ -706,6 +812,7 @@ def _create_wf(task):
     :rtype: Tuple
     """
     dc_model = qmo.Workflow()
+    dc_model.set_origin(ORIGIN_MX3)
     dc_entry = qe.GenericWorkflowQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
@@ -725,10 +832,12 @@ def add_characterisation(node_id, task):
     params = task['parameters']
 
     refdc_model, refdc_entry = _create_dc(task)
+    refdc_model.acquisitions[0].path_template.reference_image_prefix = 'ref'
     refdc_model.set_name('refdc')
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
     char_model = qmo.Characterisation(refdc_model, char_params)
+    char_model.set_origin(ORIGIN_MX3)
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
     char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters
@@ -738,6 +847,7 @@ def add_characterisation(node_id, task):
     # and its reference collection and one for the resulting diffraction plans.
     # But we only create a reference group if there is a result !
     refgroup_model = qmo.TaskGroup()
+    refgroup_model.set_origin(ORIGIN_MX3)
 
     mxcube.queue.add_child(sample_model, refgroup_model)
     mxcube.queue.add_child(refgroup_model, char_model)
@@ -775,7 +885,7 @@ def add_data_collection(node_id, task):
         raise Exception(msg)
 
     group_model = qmo.TaskGroup()
-
+    group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
     mxcube.queue.add_child(sample_model, group_model)
     mxcube.queue.add_child(group_model, dc_model)
@@ -810,7 +920,7 @@ def add_workflow(node_id, task):
         raise Exception(msg)
 
     group_model = qmo.TaskGroup()
-
+    group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
     mxcube.queue.add_child(sample_model, group_model)
     mxcube.queue.add_child(group_model, wf_model)
@@ -822,6 +932,42 @@ def add_workflow(node_id, task):
 
     return wf_model._node_id
 
+
+def add_interleaved(node_id, task):
+    """
+    Adds a interleaved data collection task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = get_entry(node_id)
+
+    group_model = qmo.TaskGroup()
+    group_model.set_origin(ORIGIN_MX3)
+    group_model.set_enabled(True)
+    group_model.interleave_num_images = task['parameters']['swNumImages']
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    mxcube.queue.add_child(sample_model, group_model)
+
+    wc = 0
+
+    for wedge in task['parameters']['wedges']:
+        wc = wc + 1
+        dc_model, dc_entry = _create_dc(wedge)
+        set_dc_params(dc_model, dc_entry, wedge)
+        dc_model.acquisitions[0].path_template.wedge_prefix = "wedge-%s" % wc
+        mxcube.queue.add_child(group_model, dc_model)
+        group_entry.enqueue(dc_entry)
+
+    return group_model._node_id
+
+
 def new_queue():
     """
     Creates a new queue
@@ -829,6 +975,8 @@ def new_queue():
     """
     queue = pickle.loads(mxcube.empty_queue)
     init_signals(queue)
+    mxcube.xml_rpc_server.queue_hwobj = queue.queue_hwobj
+    mxcube.xml_rpc_server.queue_model_hwobj = queue
     return queue
 
 
@@ -865,45 +1013,43 @@ def load_queue(session, redis=redis.Redis()):
         load_queue_from_dict(queue)
 
 
-def add_diffraction_plan(parent, child):
+def queue_model_child_added(parent, child):
     """
-    Listen to the addition of elements to the queue ('child_added')
-    and if it is a diff plan create the appropiate queue entry and
-    emit a socketio signal.
-    This is to overcome the fact that the Characterisation entry only
-    creates the model of the diff plan.
+    Listen to the addition of elements to the queue model ('child_added').
+    Add the corresponding entries to the queue if they are not already
+    added. Handels for instance the addition of referance collections for
+    characterisations and workflows.
     """
-    if isinstance(child, qmo.DataCollection):
-        parent_model, parent_entry = get_entry(parent._node_id)
-        # the parent
+    parent_model, parent_entry = get_entry(parent._node_id)
+    model, entry = get_entry(child._node_id)
 
-        if 'Diffraction plan' in parent_model.get_name():
-            # name example string 'Diffraction plan - 3'
-            # Then we do know that we need to add the entry here, Create a
-            # new entry for the new child, in this case a data collection
+    # Origin is ORIGIN_MX3 if task comes from MXCuBE-3
+    if model.get_origin() != ORIGIN_MX3:
+
+        # If origin is set get the originating entry and model and
+        # handle accordingly
+        if model.get_origin():
+            origin_model, origin_entry = get_entry(model.get_origin())
+
+            if isinstance(origin_model, qmo.Characterisation):
+                # Handle characterization specific logic here
+                print("CHARACTERIZATION")
+
+        # To handle results from characterization, make this elif
+        if isinstance(child, qmo.DataCollection):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
-            dcg_entry = qe.TaskGroupQueueEntry(Mock(), parent)
-
-            parent.set_enabled(True)
-            dcg_entry.set_enabled(True)
 
             child.set_enabled(True)
             dc_entry.set_enabled(True)
+            parent_entry.enqueue(dc_entry)
+            sample = parent.get_parent()
 
-            sample = parent.get_parent()  # mxcube.queue.get_model_root()
-            sample_model, sample_entry = get_entry(sample._node_id)
-            # TODO: check if the parent entry exits in case multiple diff plans
-            sample_entry.enqueue(dcg_entry)
-
-            # Add the entry to the newly created task group, brother to the
-            # characterisation
-            dcg_entry.enqueue(dc_entry)
-
-            msg = _handle_dc(sample._node_id, child)
-            msg['parameters']['typePrefix'] = 'P'
-            # TODO: add saved centring pos id, centred_position is removed in
-            # _handle_dc
-            socketio.emit('add_task', msg, namespace='/hwr')
+            task = _handle_dc(sample._node_id, child)
+            socketio.emit('add_task', {"tasks": [task]}, namespace='/hwr')
+        elif isinstance(child, qmo.TaskGroup):
+            dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
+            dcg_entry.set_enabled(True)
+            parent_entry.enqueue(dcg_entry)
 
 
 def execute_entry_with_id(sid, tindex=None):
@@ -954,16 +1100,19 @@ def init_signals(queue):
     """
     import signals
 
-    for signal in signals.collect_signals:
-        mxcube.collect.connect(mxcube.collect, signal,
-                               signals.task_event_callback)
+    mxcube.collect.connect(mxcube.collect, "collectStarted",
+                           signals.collect_started)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationStarted',
                            signals.collect_oscillation_started)
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFailed',
                            signals.collect_oscillation_failed)
+    mxcube.collect.connect(mxcube.collect, 'collectImageTaken',
+                           signals.collect_image_taken)
+
     mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
                            signals.collect_oscillation_finished)
-    queue.connect(queue, 'child_added', add_diffraction_plan)
+
+    queue.connect(queue, 'child_added', queue_model_child_added)
 
     queue.queue_hwobj.connect("queue_execute_started",
                               signals.queue_execution_started)
@@ -978,6 +1127,15 @@ def init_signals(queue):
                               signals.queue_execution_entry_finished)
 
     queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
+
+    queue.queue_hwobj.connect("queue_interleaved_started",
+                              signals.queue_interleaved_started)
+
+    queue.queue_hwobj.connect("queue_interleaved_finished",
+                              signals.queue_interleaved_finished)
+
+    queue.queue_hwobj.connect('queue_interleaved_sw_done',
+                              signals.queue_interleaved_sw_done)
 
 
 def enable_sample_entries(sample_id_list, flag):
@@ -1015,3 +1173,26 @@ def get_auto_mount_sample():
     :rtype: bool
     """
     return mxcube.AUTO_MOUNT_SAMPLE
+
+
+def get_task_progress(node, pdata):
+    progress = 0
+
+    if node.is_executed():
+        progress = 1
+    elif is_interleaved(node):
+        progress = (pdata["current_idx"] + 1) * pdata["sw_size"] / float(pdata["nitems"] * pdata["sw_size"])
+    elif isinstance(node, qmo.Characterisation):
+        dc = node.reference_image_collection
+        total = float(dc.acquisitions[0].acquisition_parameters.num_images) * 2
+        progress = pdata / total
+    else:
+        total = float(node.acquisitions[0].acquisition_parameters.num_images)
+        progress = pdata / total
+
+    return progress
+
+
+def is_interleaved(node):
+    return hasattr(node, "interleave_num_images") and \
+        node.interleave_num_images > 0

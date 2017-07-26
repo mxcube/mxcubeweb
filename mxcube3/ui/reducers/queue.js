@@ -11,9 +11,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_QUEUE': {
-      const queue = {};
-      action.queue.forEach(sample => { queue[sample.sampleID] = sample; });
-      return Object.assign({}, initialState, { queue });
+      return Object.assign({}, { ...state, queue: Object.keys(action.queue) });
     }
     case 'CLEAR_QUEUE': {
       return Object.assign({}, state, { queue: initialState.queue,
@@ -28,7 +26,6 @@ export default (state = initialState, action) => {
         ...state,
         queueStatus: action.queueState
       };
-
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
       const queue = state.queue.filter((value) => !action.sampleIDList.includes(value));
 
