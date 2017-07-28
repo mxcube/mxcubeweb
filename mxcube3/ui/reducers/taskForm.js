@@ -85,7 +85,7 @@ export default (state = initialState, action) => {
               ...state.defaultParameters.helical },
             mesh: {
               ...action.data.dcParameters,
-              ...state.defaultParameters.mesh },
+              ...action.data.meshParameters },
             workflow: {
               ...action.data.dcParameters,
               ...state.defaultParameters.workflow },

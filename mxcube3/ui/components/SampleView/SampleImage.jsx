@@ -449,6 +449,7 @@ export default class SampleImage extends React.Component {
     const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0] / this.props.imageRatio;
     const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[0] / this.props.imageRatio;
     this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
+    this.drawGridPlugin.setCellCounting(this.props.cellCounting);
 
     if (!this.props.drawGrid) {
       this.hideGridForm();

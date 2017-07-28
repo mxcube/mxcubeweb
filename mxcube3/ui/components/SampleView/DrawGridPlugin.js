@@ -26,7 +26,7 @@ function _GridData() {
            cellWidth: null, cellHeight: null,
            cellVSpace: 0, cellHSpace: 0,
            numCols: null, numRows: null,
-           label: 'Grid', cellCountFun: 'zig-zag',
+           label: 'Grid', cellCountFun: null,
            selected: false, id: null,
            overlayLevel: 0.2, result: null,
            imageRatio: 1 };
@@ -46,12 +46,20 @@ export default class DrawGridPlugin {
     this.shapeFromGridData = this.shapeFromGridData.bind(this);
     this.reset = this.reset.bind(this);
     this.snapToGrid = true;
-
     this.heatMapColorforValue = this.heatMapColorforValue.bind(this);
     this.initializeCellFilling = this.initializeCellFilling.bind(this);
     this.drawing = false;
     this.shapeGroup = null;
     this.gridData = _GridData();
+  }
+
+  /**
+   * Sets cell couting method: 'zig-zag', 'inverse-zig-zag'
+   *
+   * @param {float} cellCounting
+   */
+  setCellCounting(cellCounting) {
+    this.gridData.cellCountFun = cellCounting;
   }
 
   setImageRatio(imageRatio) {
