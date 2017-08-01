@@ -100,11 +100,27 @@ export default class ContextMenu extends React.Component {
   showModal(modalName, wf = {}, _shape = null) {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
     const sid = _shape ? _shape.id : shape.id;
+    const cellCount = shape.gridData ? defaultParameters[modalName.toLowerCase()].cell_counting
+      : 'None';
+
+    let aux;
+
+    if (shape.gridData) {
+      if (cellCount === 'zig-zag') {
+        aux = shape.gridData.numCols;
+      } else {
+        aux = shape.gridData.numRows;
+      }
+    } else {
+      aux = defaultParameters[modalName.toLowerCase()].num_images;
+    }
+
     this.props.showForm(
       modalName,
       [sampleID],
       { parameters:
         { ...defaultParameters[modalName.toLowerCase()],
+          num_images: aux,
           ...wf,
           prefix: sampleData.defaultPrefix,
           subdir: sampleData.sampleName
