@@ -95,15 +95,15 @@ class Mesh extends React.Component {
           <FieldsHeader title="Acquisition" />
           <Form horizontal>
             <FieldsRow>
-              <InputField propName="osc_range" label="Oscillation range" />
+              <InputField propName="osc_range" label="Oscillation range per image" />
               <InputField propName="first_image" label="First image" />
             </FieldsRow>
             <FieldsRow>
               <InputField propName="osc_start" label="Oscillation start" />
-              <InputField propName="num_images" label="Number of images" />
+              <InputField propName="num_images" label="Number of images per line" disabled />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" label="Exposure time (ms)" />
+              <InputField propName="exp_time" label="Exposure time per image(ms)" />
               <InputField propName="transmission" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
@@ -129,7 +129,6 @@ class Mesh extends React.Component {
               </FieldsRow>
               <FieldsRow>
                 <CheckboxField propName="shutterless" label="Shutterless" />
-                <CheckboxField propName="inverse_beam" label="Inverse beam" />
               </FieldsRow>
             </CollapsableRows>
           </Form>
@@ -200,7 +199,7 @@ Mesh = connect(state => {
         state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value)
+        state.beamline.attributes.energy.value),
     }
   };
 })(Mesh);
