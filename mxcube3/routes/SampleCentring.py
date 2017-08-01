@@ -264,8 +264,14 @@ def update_shapes():
         # Shape does not have any refs, create a new Centered position
         if not refs:
             x, y = shape_data["screen_coord"]
+            # coords for the center of the grid
+            x_c = x + (shape_data['num_cols'] / 2.0) * shape_data['cell_width']
+            y_c = x + (shape_data['num_rows'] / 2.0) * shape_data['cell_height']
+
             mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y, return_by_names=True)
-            shape = mxcube.shapes.add_shape_from_mpos([mpos], (x, y), t)
+            # MD3 needs the center of the grid instead of the top left corner
+            center_positions = mxcube.diffractometer.get_centred_point_from_coord(x_c, y_c, return_by_names=True)
+            shape = mxcube.shapes.add_shape_from_mpos([mpos, center_positions], (x, y), t)
         else:
             shape = mxcube.shapes.add_shape_from_refs(refs, t)
 
