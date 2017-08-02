@@ -26,7 +26,6 @@ export default class SampleImage extends React.Component {
     this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.gridCellSpacing = this.gridCellSpacing.bind(this);
     this.setGridOverlay = this.setGridOverlay.bind(this);
-    this.getGridOverlay = this.getGridOverlay.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
@@ -188,7 +187,6 @@ export default class SampleImage extends React.Component {
               min="0" max="1"
               step="0.05"
               defaultValue={this.getGridOverlay()}
-              onMouseUp={this.setGridOverlay}
               onChange={this.setGridOverlay}
               ref="overlaySlider"
               name="overlaySlider"
@@ -234,11 +232,13 @@ export default class SampleImage extends React.Component {
     let value = parseFloat(e.target.value);
     if (isNaN(value)) { value = '1'; }
     const gridData = this.selectedGrid();
-
     if (gridData) {
       const gd = this.drawGridPlugin.setGridOverlay(gridData, value);
+      this.props.sampleActions.setOverlay(value);
       this.drawGridPlugin.repaint(this.canvas);
-      this.props.sampleActions.sendUpdateShape(gd.id, gd);
+      // Note: I am missing sth, next line needed for update the state and triggering
+      // the component rendering, this.props.sampleActions.setOverlay alone not doing that
+      this.props.sampleActions.updateShape(gd.id, gd);
     }
   }
 

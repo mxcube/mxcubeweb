@@ -28,7 +28,7 @@ function _GridData() {
            numCols: null, numRows: null,
            label: 'Grid', cellCountFun: null,
            selected: false, id: null,
-           overlayLevel: 0.2, result: null,
+           result: null,
            imageRatio: 1 };
 }
 
@@ -50,6 +50,7 @@ export default class DrawGridPlugin {
     this.initializeCellFilling = this.initializeCellFilling.bind(this);
     this.drawing = false;
     this.shapeGroup = null;
+    this.overlayLevel = 0.2;
     this.gridData = _GridData();
   }
 
@@ -118,9 +119,8 @@ export default class DrawGridPlugin {
   }
 
   setGridOverlay(gd, level) {
-    const gridData = { ...gd };
-    gridData.overlayLevel = level;
-    return gridData;
+    this.overlayLevel = level;
+    return gd;
   }
 
   setGridResult(gd, result) {
@@ -202,13 +202,14 @@ export default class DrawGridPlugin {
 
   heatMapColorforValue(gd, value) {
     const h = (1.0 - value) * 240;
-    return `hsla(${h}, 100%, 50%, ${gd.overlayLevel})`;
+    return `hsla(${h}, 100%, 50%, ${this.overlayLevel})`;
     // return 'hsla(' + h + ', 100%, 50%, '+ gd.overlayLevel +')';
   }
 
   initializeCellFilling(gd, col, row) {
     // const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill('rgba(0,0,100,1)'));
-    const fill = `hsla(240,100%,20%, ${gd.overlayLevel}`;
+    const level = this.overlayLevel ? this.overlayLevel : 0.2;
+    const fill = `hsla(240,100%,20%, ${level}`;
     const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill(fill));
     return cellfillingMatrix;
   }
