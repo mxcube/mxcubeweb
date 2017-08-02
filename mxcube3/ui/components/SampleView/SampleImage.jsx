@@ -31,6 +31,7 @@ export default class SampleImage extends React.Component {
     this.configureGrid = this.configureGrid.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
     this.initJSMpeg = this.initJSMpeg.bind(this);
+    this.getGridForm = this.getGridForm.bind(this);
     this.canvas = {};
     this._keyPressed = null;
     this.gridStarted = false;
@@ -151,6 +152,52 @@ export default class SampleImage extends React.Component {
       const clientWidth = document.getElementById('outsideWrapper').clientWidth;
       this.props.sampleActions.setImageRatio(clientWidth);
     }
+  }
+
+  getGridForm() {
+    let cellSpacingChoice = this.props.cellSpacing;
+
+    cellSpacingChoice = (cellSpacingChoice !== 'None' && cellSpacingChoice !== undefined) ?
+      cellSpacingChoice.charAt(0).toUpperCase() + cellSpacingChoice.slice(1) : cellSpacingChoice;
+
+    const spacingDiv = (cellSpacingChoice !== 'None' && cellSpacingChoice !== undefined) ? (
+        <FormGroup>
+          <ControlLabel>{cellSpacingChoice} Spacing:</ControlLabel>
+          <FormControl
+            style={{ width: '50px', marginRight: '1em' }}
+            type="text"
+            value={cellSpacingChoice === 'Horizontal' ?
+              this.gridCellSpacing()[0] : this.gridCellSpacing()[1]}
+            onChange={cellSpacingChoice === 'Horizontal' ?
+              this.setHCellSpacing : this.setVCellSpacing}
+          />
+        </FormGroup>
+      ) : ('');
+
+    const gridForm = (
+        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
+          <Form inline>
+            { spacingDiv }
+            <FormGroup>
+            <ControlLabel>Overlay: </ControlLabel>
+            <FormControl
+              style={{ width: '100px', padding: '0', marginLeft: '10px' }}
+              className="bar"
+              type="range"
+              id="overlay-control"
+              min="0" max="1"
+              step="0.05"
+              defaultValue={this.getGridOverlay()}
+              onMouseUp={this.setGridOverlay}
+              onChange={this.setGridOverlay}
+              ref="overlaySlider"
+              name="overlaySlider"
+            />
+            </FormGroup>
+          </Form>
+        </div>);
+
+    return gridForm;
   }
 
   setVCellSpacing(e) {
@@ -607,44 +654,7 @@ export default class SampleImage extends React.Component {
     this.showGridForm();
     return (
       <div>
-        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
-          <Form inline>
-            <FormGroup>
-              <ControlLabel>H-Cell Spacing:</ControlLabel>
-              <FormControl
-                style={{ width: '50px', marginRight: '1em' }}
-                type="text"
-                value={this.gridCellSpacing()[0]}
-                onChange={this.setHCellSpacing}
-              />
-            </FormGroup>
-            <FormGroup>
-              <ControlLabel>V-Cell Spacing:</ControlLabel>
-              <FormControl
-                style={{ width: '50px', marginRight: '1em' }}
-                type="text"
-                value={this.gridCellSpacing()[1]}
-                onChange={this.setVCellSpacing}
-              />
-            </FormGroup>
-            <FormGroup>
-            <ControlLabel>Overlay: </ControlLabel>
-            <FormControl
-              style={{ width: '100px', padding: '0', marginLeft: '10px' }}
-              className="bar"
-              type="range"
-              id="overlay-control"
-              min="0" max="1"
-              step="0.05"
-              defaultValue={this.getGridOverlay()}
-              onMouseUp={this.setGridOverlay}
-              onChange={this.setGridOverlay}
-              ref="overlaySlider"
-              name="overlaySlider"
-            />
-            </FormGroup>
-          </Form>
-        </div>
+        {this.getGridForm()}
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">
             <SampleControls

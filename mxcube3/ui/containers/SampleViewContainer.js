@@ -68,6 +68,7 @@ class SampleViewContainer extends Component {
                   lines={lines}
                   grids={grids}
                   cellCounting={this.props.cellCounting}
+                  cellSpacing={this.props.cellSpacing}
                 />
               </div>
               <div className="col-xs-3" style={ { display: 'flex' } }>
@@ -91,7 +92,8 @@ function mapStateToProps(state) {
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
     workflows: state.workflow.workflows,
-    cellCounting: state.taskForm.defaultParameters.mesh.cell_counting
+    cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
+    cellSpacing: state.taskForm.defaultParameters.mesh.cell_spacing,
   };
 }
 
