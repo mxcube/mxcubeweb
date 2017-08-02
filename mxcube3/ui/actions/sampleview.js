@@ -25,6 +25,12 @@ export function setImageRatio(clientWidth) {
   };
 }
 
+export function setOverlay(level) {
+  return {
+    type: 'SET_OVERLAY', level
+  };
+}
+
 export function setAperture(size) {
   return {
     type: 'SET_APERTURE', size
