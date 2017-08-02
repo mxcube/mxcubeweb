@@ -537,7 +537,7 @@ def get_default_mesh_params():
     """
     returns the default values for a mesh.
     """
-    acq_parameters = mxcube.beamline.get_default_mesh_parameters()
+    acq_parameters = mxcube.beamline.get_default_acquisition_parameters('default_mesh_values')
     resp = jsonify({
         'acq_parameters': {
             'first_image': acq_parameters.first_image,
@@ -558,7 +558,9 @@ def get_default_mesh_params():
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
-            'cell_counting': acq_parameters.cell_counting
+            'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'None'),
+            'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
+
         },
         })    
     resp.status_code = 200
