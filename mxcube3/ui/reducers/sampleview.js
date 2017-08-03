@@ -159,8 +159,7 @@ export default (state = initialState, action) => {
       {
         return {
           ...action.payload.sampleview,
-          imageRatio: state.imageRatio,
-          autoScale: state.autoScale
+          ...state,
         };
       }
     case 'SET_INITIAL_STATE':
