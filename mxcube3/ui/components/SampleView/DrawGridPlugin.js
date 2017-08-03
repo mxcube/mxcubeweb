@@ -28,8 +28,7 @@ function _GridData() {
            numCols: null, numRows: null,
            label: 'Grid', cellCountFun: null,
            selected: false, id: null,
-           result: null,
-           imageRatio: 1 };
+           result: null };
 }
 
 
@@ -51,6 +50,7 @@ export default class DrawGridPlugin {
     this.drawing = false;
     this.shapeGroup = null;
     this.overlayLevel = 0.2;
+    this.imageRatio = 1;
     this.gridData = _GridData();
   }
 
@@ -64,7 +64,7 @@ export default class DrawGridPlugin {
   }
 
   setImageRatio(imageRatio) {
-    this.gridData.imageRatio = imageRatio;
+    this.imageRatio = imageRatio;
 
     return this.gridData;
   }

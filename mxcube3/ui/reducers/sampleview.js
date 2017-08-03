@@ -1,3 +1,5 @@
+import { REHYDRATE } from 'redux-persist/constants';
+
 const initialState = {
   clickCentring: false,
   clickCentringPoints: [],
@@ -152,6 +154,14 @@ export default (state = initialState, action) => {
                                gridList: [],
                                gridCount: 0 }
          );
+      }
+    case REHYDRATE:
+      {
+        return {
+          ...action.payload.sampleview,
+          imageRatio: state.imageRatio,
+          autoScale: state.autoScale
+        };
       }
     case 'SET_INITIAL_STATE':
       {
