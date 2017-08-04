@@ -8,6 +8,7 @@ import {
   setCurrentPhase,
   setBeamInfo,
   startClickCentring,
+  updateShape,
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setMachInfo } from './actions/beamline';
@@ -115,6 +116,11 @@ class ServerIO {
 
     this.hwrSocket.on('beamline_value_change', (data) => {
       this.dispatch(setBeamlineAttrAction(data));
+    });
+
+    this.hwrSocket.on('grid_result_available', (data) => {
+      console.log('grid_result_available... ', data);
+      this.dispatch(updateShape(data.shape));
     });
 
     this.hwrSocket.on('task', (record, callback) => {

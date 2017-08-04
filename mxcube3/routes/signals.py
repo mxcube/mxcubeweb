@@ -329,6 +329,10 @@ def collect_started(*args, **kwargs):
             logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
+def grid_result_available(shape):
+    socketio.emit('grid_result_available', {'shape': shape}, namespace='/hwr')
+
+
 def queue_interleaved_started():
     node = last_queue_node()
 
