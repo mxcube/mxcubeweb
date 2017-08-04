@@ -177,6 +177,10 @@ export function setGridOverlay(level) {
   return { type: 'SET_GRID_OVERLAY', level };
 }
 
+export function showHeatmap(value) {
+  return { type: 'SHOW_HEAT_MAP', value };
+}
+
 export function toggleDrawGrid() {
   return { type: 'DRAW_GRID' };
 }
