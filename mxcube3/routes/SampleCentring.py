@@ -242,6 +242,36 @@ def get_shapes():
     return resp
 
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=['GET'])
+def get_shape_with_sid(sid):
+    """
+    Retrieve all the stored centred positions.
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
+    """
+    shape = mxcube.shapes.get_shape(sid).as_dict()
+
+
+    resp = jsonify({"shape": to_camel(shape)})
+    resp.status_code = 200
+    return resp
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=['GET'])
+def shape_mock_result(sid):
+    shape = mxcube.shapes.get_shape(sid)
+
+    from random import random
+
+    res = map(lambda x: map(lambda y: random(), range(shape.num_rows)), range(shape.num_cols))
+
+    mxcube.shapes.set_grid_data(sid, res)
+
+    signals.grid_result_available(to_camel(shape.as_dict()))
+
+    return Response(status=200)
+
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/shapes", methods=['POST'])
 def update_shapes():
     """
