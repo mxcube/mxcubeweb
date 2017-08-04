@@ -165,6 +165,38 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
+    const loadedSample = fetch('mxcube/api/v0.1/sample_changer/loaded_sample', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    const sampleChangerState = fetch('mxcube/api/v0.1/sample_changer/state', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    const sampleChangerCommands = fetch('mxcube/api/v0.1/sample_changer/get_maintenance_cmds', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    const sampleChangerGlobalState = fetch('mxcube/api/v0.1/sample_changer/get_global_state', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
     const observers = fetch('mxcube/api/v0.1/login/observers', {
       method: 'GET',
       credentials: 'include',
@@ -201,9 +233,23 @@ export function getInitialState() {
       sampleChangerContents.then(parse).then(json => {
         state.sampleChangerContents = json;
       }).catch(notify),
+      loadedSample.then(parse).then(json => {
+        state.loadedSample = json;
+      }).catch(notify),
+      sampleChangerState.then(parse).then(json => {
+        state.sampleChangerState = json;
+      }).catch(notify),
+      sampleChangerCommands.then(parse).then(json => {
+        state.sampleChangerCommands = json;
+      }).catch(notify),
+      sampleChangerGlobalState.then(parse).then(json => {
+        state.sampleChangerGlobalState = json;
+      }).catch(notify),
       observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
       workflow.then(parse).then(json => { state.workflow = json; }).catch(notify)
     ];
+
+    console.log('init-state', state.sampleChangerState);
 
     Promise.all(pchains).then(() => {
       dispatch(setInitialState(state));

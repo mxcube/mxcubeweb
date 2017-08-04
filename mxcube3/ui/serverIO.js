@@ -27,6 +27,11 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
 
+import { setSCState,
+         setLoadedSample,
+         setSCGlobalState,
+         updateSCContents } from './actions/sampleChanger';
+
 
 class ServerIO {
 
@@ -154,6 +159,11 @@ class ServerIO {
     });
 
     this.hwrSocket.on('sc', (record) => {
+      this.dispatch(setLoading((record.signal === 'operatingSampleChanger'),
+                               'Sample changer in operation',
+                               record.message, true, () => (this.dispatch(sendStopQueue()))));
+                               // record.message, true, () => (this.dispatch(abortSC()))));
+
       this.dispatch(setLoading((record.signal === 'loadingSample' ||
                                 record.signal === 'loadedSample'),
                                `Loading sample ${record.location}`,
@@ -223,6 +233,22 @@ class ServerIO {
 
     this.hwrSocket.on('beamline_action', (data) => {
       this.dispatch(setActionState(data.name, data.state));
+    });
+
+    this.hwrSocket.on('sc_state', (state) => {
+      this.dispatch(setSCState(state));
+    });
+
+    this.hwrSocket.on('loaded_sample_changed', (data) => {
+      this.dispatch(setLoadedSample(data));
+    });
+
+    this.hwrSocket.on('sc_maintenance_update', (data) => {
+      this.dispatch(setSCGlobalState(data));
+    });
+
+    this.hwrSocket.on('sc_contents_update', () => {
+      this.dispatch(updateSCContents());
     });
   }
 }

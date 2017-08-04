@@ -7,13 +7,18 @@ from mxcube3 import app as mxcube
 from . import limsutils
 from . import scutils
 
-from .qutils import UNCOLLECTED
+from .qutils import UNCOLLECTED, SAMPLE_MOUNTED
 from .scutils import set_current_sample
 
 
 def init_signals():
     """Initialize hwobj signals."""
     mxcube.sample_changer.connect('stateChanged', signals.sc_state_changed)
+    mxcube.sample_changer.connect('loadedSampleChanged', signals.loaded_sample_changed)
+    mxcube.sample_changer.connect('contentsUpdated', signals.sc_contents_update)
+
+    if mxcube.sc_maintenance is not None:
+        mxcube.sc_maintenance.connect('globalStateChanged', signals.sc_maintenance_update)
 
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
@@ -24,6 +29,12 @@ def get_samples_list():
     order = []
 
     for s in samples_list:
+        if not s.isPresent():
+            continue
+        if s.isLoaded():
+            state = SAMPLE_MOUNTED
+        else:
+            state = UNCOLLECTED
         sample_dm = s.getID() or ""
         coords = s.getCoords()
         sample_data = {"sampleID": s.getAddress(),
@@ -31,7 +42,7 @@ def get_samples_list():
                        "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
                        "code": sample_dm,
                        "loadable": True,
-                       "state": UNCOLLECTED,
+                       "state": state,
                        "tasks": [],
                        "type": "Sample"}
         order.append(coords)
@@ -45,6 +56,25 @@ def get_samples_list():
     order.sort()
 
     return jsonify({ 'sampleList': samples, 'sampleOrder': [samplesByCoords[coords] for coords in order] })
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/state", methods=['GET'])
+def get_sc_state():
+    state = mxcube.sample_changer.getStatus().upper()
+    
+    return jsonify({'state': state})
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/loaded_sample", methods=['GET'])
+def get_loaded_sample():
+    sample = mxcube.sample_changer.getLoadedSample()
+
+    if sample is not None:
+       address = sample.getAddress()
+       barcode = sample.getID()
+    else:
+       address = ''
+       barcode = ''
+    
+    return jsonify({'address': address, 'barcode': barcode})
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
 def get_sc_contents():
@@ -68,7 +98,7 @@ def get_sc_contents():
         return ""
 
     def _addElement(parent, element):
-        new_element = { "name": element.getAddress(),
+        new_element = { "name": element.getAddress(), 
                         "status": _getElementStatus(element),
                         "id":_getElementID(element),
                         "selected": element.isSelected() }
@@ -84,7 +114,8 @@ def get_sc_contents():
     contents = { "name": root_name }
 
     for element in mxcube.sample_changer.getComponents():
-        _addElement(contents, element)
+        if element.isPresent():
+           _addElement(contents, element)
 
     return jsonify(contents)
 
@@ -111,6 +142,12 @@ def unmount_sample(loc):
     set_current_sample('')
     return get_sc_contents()
 
+@mxcube.route("/mxcube/api/v0.1/sample_changer/unmount_current/", methods=['GET'])
+def unmount_current():
+    mxcube.sample_changer.unload()
+    set_current_sample('')
+    return get_sc_contents()
+
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
 def mount_sample_clean_up():
     try:
@@ -128,3 +165,46 @@ def unmount_sample_clean_up():
         return Response(status=409)
     else:
         return Response(status=200)
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/get_maintenance_cmds", methods=['GET'])
+def get_maintenance_cmds():
+    try:
+        if mxcube.sc_maintenance is not None:
+            ret = mxcube.sc_maintenance.get_cmd_info()
+        else:
+            ret = "SC maintenance controller not defined"
+    except Exception, exc:
+        print("There was an exception %s" % str(exc))
+        return Response(status=409)
+    else:
+        return jsonify(cmds=ret)
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/get_global_state", methods=['GET'])
+def get_global_state():
+    try:
+        if mxcube.sc_maintenance is not None:
+            ret = mxcube.sc_maintenance.get_global_state()
+            state, cmdstate, msg = ret
+            print("Command returns %s" % str(ret))
+        else:
+            print("No SC maintenance controller")
+            return jsonify(ret) 
+    except Exception, exc:
+        print("There was an exception %s" % str(exc))
+        return Response(status=409)
+    else:
+        return jsonify(state=state, commands_state=cmdstate, message=msg)
+
+@mxcube.route("/mxcube/api/v0.1/sample_changer/send_command/<cmdparts>", methods=['GET'])
+def send_command(cmdparts):
+    print("Sending command to sample changer: %s" % (cmdparts, ))
+    try:
+        ret = mxcube.sc_maintenance.send_command(cmdparts)
+    except Exception, exc:
+        msg = str(exc);
+        msg = msg.replace("\n", " - ")
+        return 'Cannot execute command', 406, {'Content-Type': 'application/json',
+                                                'message': msg,
+                                                }
+    else:
+        return jsonify(response=ret)

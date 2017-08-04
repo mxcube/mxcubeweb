@@ -130,9 +130,11 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.db_connection = app.beamline.getObjectByRole("lims_client")
         app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
         app.sample_changer = app.beamline.getObjectByRole("sample_changer")
+        app.sc_maintenance = app.beamline.getObjectByRole("sample_changer_maintenance")
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
         app.queue = qutils.new_queue()
         app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
+
 
         # SampleID of currently mounted sample
         app.CURRENTLY_MOUNTED_SAMPLE = ''

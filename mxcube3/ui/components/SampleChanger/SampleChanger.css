@@ -45,3 +45,21 @@
 .custom-btn-color:hover {
   color: hsl(0,0%,0%) !important;
 }
+
+.scMessage {
+  background-color: white;
+  color: blue;
+  text-weight: bold;
+  font-size: 16px;
+  align: center;
+}
+
+.abortButton {
+  background-color: #ffdddd;
+  font-weight: bold;
+}
+
+.actionHeader {
+  background-color: #eeeeee;
+  text-align: center;
+}
