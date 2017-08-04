@@ -68,16 +68,16 @@ def mount_sample(beamline_setup_hwobj,
                 if centring_method == CENTRING_METHOD.MANUAL:
                     log.warning("Manual centring used, waiting for" +\
                                 " user to center sample")
-                    dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
                 elif centring_method == CENTRING_METHOD.LOOP:
-                    dm.startCentringMethod(dm.C3D_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
                     log.warning("Centring in progress. Please save" +\
                                 " the suggested centring or re-center")
                 elif centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
                     log.info("Centring sample, please wait.")
-                    dm.startCentringMethod(dm.C3D_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
                 else:
-                    dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
 
                 view.setText(1, "Centring !")
                 centring_result = async_result.get()
@@ -90,6 +90,8 @@ def mount_sample(beamline_setup_hwobj,
                     else:
                         raise RuntimeError("Could not center sample")
             except:
+                import traceback
+                log.info(" centrong did not pass %s" % traceback.format_exc())
                 pass
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
