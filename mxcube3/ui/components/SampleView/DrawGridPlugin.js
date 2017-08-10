@@ -2,7 +2,7 @@ import 'fabric';
 const fabric = window.fabric;
 
 /**
- * Fabric Shape for d§wing grid (defined by GridData)
+ * Fabric Shape for drawing grid (defined by GridData)
  */
 const GridGroup = fabric.util.createClass(fabric.Group, {
   type: 'GridGroup',

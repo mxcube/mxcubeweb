@@ -119,7 +119,6 @@ class ServerIO {
     });
 
     this.hwrSocket.on('grid_result_available', (data) => {
-      console.log('grid_result_available... ', data);
       this.dispatch(updateShape(data.shape));
     });
 

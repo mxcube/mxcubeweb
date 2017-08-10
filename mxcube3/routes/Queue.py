@@ -558,7 +558,7 @@ def get_default_mesh_params():
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
-            'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'None'),
+            'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
             'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
 
         },

@@ -245,17 +245,21 @@ def get_shapes():
 @mxcube.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=['GET'])
 def get_shape_with_sid(sid):
     """
-    Retrieve all the stored centred positions.
+    Retrieve requested shape information.
         :response Content-type: application/json, the stored centred positions.
         :statuscode: 200: no error
-        :statuscode: 409: error
+        :statuscode: 409: shape not found
     """
-    shape = mxcube.shapes.get_shape(sid).as_dict()
+    shape = mxcube.shapes.get_shape(sid)
 
+    if shape is not None:
+        shape = shape.as_dict()
+        resp = jsonify({"shape": to_camel(shape)})
+        resp.status_code = 200
+        return resp
+    else:
+        return Response(status=409)
 
-    resp = jsonify({"shape": to_camel(shape)})
-    resp.status_code = 200
-    return resp
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=['GET'])
 def shape_mock_result(sid):
@@ -275,7 +279,8 @@ def shape_mock_result(sid):
 @mxcube.route("/mxcube/api/v0.1/sampleview/shapes", methods=['POST'])
 def update_shapes():
     """
-    Retrieve all the stored centred positions.
+    Update shape information.
+        :parameter shape_data: dict with shape information (id, type, ...)
         :response Content-type: application/json, the stored centred positions.
         :statuscode: 200: no error
         :statuscode: 409: error

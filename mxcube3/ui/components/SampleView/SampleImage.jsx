@@ -525,15 +525,8 @@ export default class SampleImage extends React.Component {
 
   updateGridResults() {
     const gd = this.selectedGrid();
-
-    console.log('updating grid result... ', this.props);
-    console.log('selected grid... ', gd);
-    console.log(this.drawGridPlugin);
-    // console.log('configure grid... ', this.props.grids[gd.id]);
-
     if (gd) {
       this.drawGridPlugin.setGridResult(gd.result);
-      console.log('result updated');
     }
   }
 
@@ -570,7 +563,6 @@ export default class SampleImage extends React.Component {
   }
 
   saveGrid() {
-    console.log('save grid');
     this.drawGridPlugin.initializeGridResult();
     this.props.sampleActions.addGrid(this.drawGridPlugin.currentGridData());
     this.props.sampleActions.toggleDrawGrid();
