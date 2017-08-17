@@ -79,7 +79,7 @@ export default class ContextMenu extends React.Component {
       ],
       GridGroupSaved: [
         { text: 'Mesh Scan', action: () => this.showModal('Mesh'), key: 1 },
-        { text: 'Collection in this cell', action: () => this.createCollectionOnCell(), key: 5 },
+        { text: 'Centring Point on cell', action: () => this.createCollectionOnCell(), key: 5 },
         { text: 'divider', key: 2 },
         ...workflowTasks.grid,
         workflowTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
