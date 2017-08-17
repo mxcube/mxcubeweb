@@ -53,7 +53,6 @@ export default class DrawGridPlugin {
     this.shapeGroup = null;
     this.overlayLevel = 0.2;
     this.imageRatio = 1;
-    this.heatmapEnabled = false;
     this.gridData = _GridData();
   }
 
@@ -124,10 +123,6 @@ export default class DrawGridPlugin {
   setGridOverlay(gd, level) {
     this.overlayLevel = level;
     return gd;
-  }
-
-  showHeatmap(value) {
-    this.heatmapEnabled = value;
   }
 
   initializeGridResult(gridData) {
@@ -216,10 +211,8 @@ export default class DrawGridPlugin {
   heatMapColorforValue(gd, value) {
     const h = (1.0 - value) * 240;
     const dataFill = `hsla(${h}, 100%, 50%, ${this.overlayLevel})`;
-    const emptyFill = 'rgba(0, 0, 0, 0)';
-    const fill = this.heatmapEnabled ? dataFill : emptyFill;
 
-    return fill;
+    return dataFill;
   }
 
   setResulOnCell(col, row, val) {

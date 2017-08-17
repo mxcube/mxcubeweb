@@ -2,7 +2,7 @@
 
 import './SampleView.css';
 import React from 'react';
-import { Form, FormGroup, FormControl, ControlLabel, Checkbox } from 'react-bootstrap';
+import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { makePoints, makeLines, makeImageOverlay } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
@@ -26,7 +26,6 @@ export default class SampleImage extends React.Component {
     this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.gridCellSpacing = this.gridCellSpacing.bind(this);
     this.setGridOverlay = this.setGridOverlay.bind(this);
-    this.showHeatmap = this.showHeatmap.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
     this.updateGridResults = this.updateGridResults.bind(this);
@@ -193,11 +192,6 @@ export default class SampleImage extends React.Component {
               ref="overlaySlider"
               name="overlaySlider"
             />
-            <ControlLabel>Heatmap: </ControlLabel>
-            <Checkbox
-              style={{ padding: '0', marginLeft: '10px' }}
-              onClick={this.showHeatmap}
-            />
             </FormGroup>
           </Form>
         </div>);
@@ -263,17 +257,6 @@ export default class SampleImage extends React.Component {
     return overlay;
   }
 
-  showHeatmap(e) {
-    const gridData = this.selectedGrid();
-    if (gridData) {
-      this.drawGridPlugin.showHeatmap(e.target.checked);
-      this.props.sampleActions.showHeatmap(e.target.checked);
-
-      // Note: I am missing sth, next line needed for update the state and triggering
-      // the component rendering, this.props.sampleActions.setOverlay alone not doing that
-      this.props.sampleActions.updateShape(gridData);
-    }
-  }
 
   gridCellSpacing() {
     let vSpace = 0;

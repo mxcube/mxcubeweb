@@ -26,10 +26,6 @@ export default (state = initialState, action) => {
       {
         return { ...state, overlayLevel: action.level };
       }
-    case 'SHOW_HEAT_MAP':
-      {
-        return { ...state, showHeatmap: action.value };
-      }
     case 'SET_CURRENT_SAMPLE':
       {
         return initialState;
