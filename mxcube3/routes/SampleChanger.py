@@ -7,7 +7,7 @@ from mxcube3 import app as mxcube
 from . import limsutils
 from . import scutils
 
-from .qutils import UNCOLLECTED, SAMPLE_MOUNTED
+from .qutils import UNCOLLECTED, SAMPLE_MOUNTED, COLLECTED
 from .scutils import set_current_sample
 
 
@@ -75,6 +75,8 @@ def get_samples_list():
             continue
         if s.isLoaded():
             state = SAMPLE_MOUNTED
+        elif s.hasBeenLoaded():
+            state.COLLECTED
         else:
             state = UNCOLLECTED
         sample_dm = s.getID() or ""
