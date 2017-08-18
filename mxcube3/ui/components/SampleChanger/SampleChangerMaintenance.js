@@ -76,9 +76,17 @@ export default class SampleChangerMaintenance extends React.Component {
     const groups = [];
     let msg = '';
 
-    for (const cmdgrp of this.props.commands.cmds) {
-      groups.push(this.buildActionGroup(cmdgrp));
+    if (this.props.commands.cmds !== 'SC maintenance controller not defined') {
+      for (const cmdgrp of this.props.commands.cmds) {
+        groups.push(this.buildActionGroup(cmdgrp));
+      }
+    } else {
+      return (
+        <div>
+        </div>
+        );
     }
+
 
     if (this.props.message !== '') {
       msg = this.props.message;
