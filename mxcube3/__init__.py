@@ -161,7 +161,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         except Exception:
             sys.excepthook(*sys.exc_info())
 
-        logging.getLogger("HWR").info("Mxcube3 server initialized, it took %.1f seconds" % (time.time() - t0))
+        logging.getLogger("HWR").info("MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0))
     # starting from here, requests can be received by server;
     # however, objects are not all initialized, so requests can return errors
     # TODO: synchronize web UI with server operation status
