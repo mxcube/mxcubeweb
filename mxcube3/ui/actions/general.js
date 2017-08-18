@@ -157,39 +157,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const sampleChangerContents = fetch('mxcube/api/v0.1/sample_changer/contents', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    });
-    const loadedSample = fetch('mxcube/api/v0.1/sample_changer/loaded_sample', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    });
-    const sampleChangerState = fetch('mxcube/api/v0.1/sample_changer/state', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    });
-    const sampleChangerCommands = fetch('mxcube/api/v0.1/sample_changer/get_maintenance_cmds', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    });
-    const sampleChangerGlobalState = fetch('mxcube/api/v0.1/sample_changer/get_global_state', {
+    const sampleChangerInitialState = fetch('mxcube/api/v0.1/sample_changer/get_initial_state', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -230,26 +198,15 @@ export function getInitialState() {
       charParameters.then(parse).then(
         json => { state.charParameters = json.acq_parameters; }).catch(notify),
       savedShapes.then(parse).then(json => {state.shapes = json.shapes;}).catch(notify),
-      sampleChangerContents.then(parse).then(json => {
-        state.sampleChangerContents = json;
-      }).catch(notify),
-      loadedSample.then(parse).then(json => {
-        state.loadedSample = json;
-      }).catch(notify),
-      sampleChangerState.then(parse).then(json => {
-        state.sampleChangerState = json;
-      }).catch(notify),
-      sampleChangerCommands.then(parse).then(json => {
-        state.sampleChangerCommands = json;
-      }).catch(notify),
-      sampleChangerGlobalState.then(parse).then(json => {
-        state.sampleChangerGlobalState = json;
-      }).catch(notify),
+      sampleChangerInitialState.then(parse).then(
+        json => { state.sampleChangerState = { state: json.state }; return json; }).then(
+        json => { state.sampleChangerContents = json.contents; return json; }).then(
+        json => { state.loadedSample = json.loaded_sample; return json; }).then(
+        json => { state.sampleChangerCommands = json.cmds; return json; }).then(
+        json => { state.sampleChangerGlobalState = json.global_state; return json; }).catch(notify),
       observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
       workflow.then(parse).then(json => { state.workflow = json; }).catch(notify)
     ];
-
-    console.log('init-state', state.sampleChangerState);
 
     Promise.all(pchains).then(() => {
       dispatch(setInitialState(state));
