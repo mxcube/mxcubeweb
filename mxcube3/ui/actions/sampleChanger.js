@@ -36,7 +36,6 @@ export function refresh() {
       credentials: 'include'
     }).then(response => {
       if (response.status >= 400) {
-        // dispatch(setSCState('ERROR'));
         throw new Error('Error refreshing sample changer contents');
       }
 
@@ -52,7 +51,6 @@ export function refresh() {
       credentials: 'include'
     }).then(response => {
       if (response.status >= 400) {
-        // dispatch(setSCState('ERROR'));
         throw new Error('Error refreshing sample changer contents');
       }
 
@@ -63,8 +61,6 @@ export function refresh() {
 
 export function select(address) {
   return function (dispatch) {
-    // dispatch(setSCState('MOVING'));
-
     fetch(`mxcube/api/v0.1/sample_changer/select/${address}`, {
       method: 'GET',
       headers: {
@@ -74,21 +70,16 @@ export function select(address) {
       credentials: 'include'
     }).then(response => {
       if (response.status >= 400) {
-        // dispatch(setSCState('ERROR'));
         throw new Error(`Error while selecting sample changer container @ ${address}`);
       }
 
       response.json().then(contents => { dispatch(setContents(contents)); });
-
-      // dispatch(setSCState('READY'));
     });
   };
 }
 
 export function scan(address) {
   return function (dispatch) {
-    // dispatch(setSCState('MOVING'));
-
     fetch(`mxcube/api/v0.1/sample_changer/scan/${address}`, {
       method: 'GET',
       headers: {
@@ -98,21 +89,16 @@ export function scan(address) {
       credentials: 'include'
     }).then(response => {
       if (response.status >= 400) {
-        // dispatch(setSCState('ERROR'));
         throw new Error(`Error while scanning sample changer @ ${address}`);
       }
 
       response.json().then(contents => { dispatch(setContents(contents)); });
-
-      // dispatch(setSCState('READY'));
     });
   };
 }
 
 export function loadSample(address) {
   return function (dispatch) {
-    // dispatch(setSCState('MOVING'));
-
     fetch(`mxcube/api/v0.1/sample_changer/mount/${address}`, {
       method: 'GET',
       headers: {
@@ -122,13 +108,10 @@ export function loadSample(address) {
       credentials: 'include'
     }).then(response => {
       if (response.status >= 400) {
-        // dispatch(setSCState('ERROR'));
         throw new Error(`Error while  sample loading sample @ ${address}`);
       }
 
       response.json().then(contents => { dispatch(setContents(contents)); });
-
-      // dispatch(setSCState('READY'));
     });
   };
 }
@@ -142,8 +125,6 @@ export function unloadSample(address) {
     url = 'mxcube/api/v0.1/sample_changer/unmount_current';
   }
   return function (dispatch) {
-    // dispatch(setSCState('MOVING'));
-
     fetch(url, {
       method: 'GET',
       headers: {
@@ -153,13 +134,10 @@ export function unloadSample(address) {
       credentials: 'include'
     }).then(response => {
       if (response.status >= 400) {
-        // dispatch(setSCState('ERROR'));
         throw new Error(`Error while  sample unloading sample @ ${address}`);
       }
 
       response.json().then(contents => { dispatch(setContents(contents)); });
-
-      // dispatch(setSCState('READY'));
     });
   };
 }

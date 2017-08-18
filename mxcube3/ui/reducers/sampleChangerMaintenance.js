@@ -4,7 +4,6 @@ const INITIAL_STATE = { global_state: {}, commands: {}, commands_state: {}, mess
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'SET_INITIAL_STATE': {
-      console.log('sc_maint', action.data.sampleChangerGlobalState);
       return {
         ...state,
         commands: action.data.sampleChangerCommands,
