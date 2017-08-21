@@ -111,7 +111,8 @@ export function loadSample(address) {
         throw new Error(`Error while  sample loading sample @ ${address}`);
       }
 
-      response.json().then(contents => { dispatch(setContents(contents)); });
+      response.json().then(contents => { dispatch(setContents(contents)); }
+                           ).then(dispatch(refresh()));
     });
   };
 }
@@ -137,7 +138,8 @@ export function unloadSample(address) {
         throw new Error(`Error while  sample unloading sample @ ${address}`);
       }
 
-      response.json().then(contents => { dispatch(setContents(contents)); });
+      response.json().then(contents => { dispatch(setContents(contents)); }
+                           ).then(dispatch(refresh()));
     });
   };
 }

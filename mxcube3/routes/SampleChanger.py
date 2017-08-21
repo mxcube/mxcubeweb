@@ -137,21 +137,23 @@ def scan_location(loc):
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
 def mount_sample(loc):
+    scutils.set_sample_to_be_mounted(loc)
     mxcube.sample_changer.load(loc)
     set_current_sample(loc)
-    return get_sc_contents()
+
+    return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
 def unmount_sample(loc):
-    mxcube.sample_changer.unload(loc)
+    mxcube.sample_changer.unload(loc, wait=True)
     set_current_sample('')
-    return get_sc_contents()
+    return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount_current/", methods=['GET'])
 def unmount_current():
-    mxcube.sample_changer.unload()
+    mxcube.sample_changer.unload(None, wait=True)
     set_current_sample('')
-    return get_sc_contents()
+    return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
 def mount_sample_clean_up():

@@ -107,14 +107,16 @@ def sc_state_changed(*args):
 
     elif new_state in [SampleChangerState.Loading, SampleChangerState.Unloading]:
         if new_state == SampleChangerState.Loading:
+            location = scutils.get_sample_to_be_mounted()
             message = 'Please wait, Loading sample %s' % location
+            signal = 'loadingSample'
         elif new_state == SampleChangerState.Unloading:
+            signal = 'unLoadingSample'
             message = 'Please wait, Unloading sample' 
 
-        msg = {'signal': 'loadingSample',
+        msg = {'signal': signal,
                'location': location,
                'message': message}
-
     else:
         # make sure operation is finished in any other case
         if location: 
@@ -136,6 +138,7 @@ def loaded_sample_changed(sample):
         barcode = sample.getID()
     else:
         address = ''
+        barcode = ''
 
     logging.getLogger("HWR").info('loaded sample changed now is: ' + address)
 

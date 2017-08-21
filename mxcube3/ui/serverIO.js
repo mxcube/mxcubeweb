@@ -159,17 +159,18 @@ class ServerIO {
     });
 
     this.hwrSocket.on('sc', (record) => {
-      this.dispatch(setLoading((record.signal === 'operatingSampleChanger'),
-                               'Sample changer in operation',
-                               record.message, true, () => (this.dispatch(sendStopQueue()))));
-                               // record.message, true, () => (this.dispatch(abortSC()))));
-
-      this.dispatch(setLoading((record.signal === 'loadingSample' ||
-                                record.signal === 'loadedSample'),
-                               `Loading sample ${record.location}`,
-                               record.message, true, () => (this.dispatch(sendStopQueue()))));
-
-      if (record.signal === 'loadReady') {
+      if (record.signal === 'operatingSampleChanger') {
+        this.dispatch(setLoading(true, 'Sample changer in operation',
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+      } else if ((record.signal === 'loadingSample' || record.signal === 'loadedSample')) {
+        this.dispatch(setLoading(true, `Loading sample ${record.location}`,
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+      } else if (record.signal === 'unLoadingSample' || record.signal === 'unLoadedSample') {
+        this.dispatch(setLoading(true, `Unloading sample ${record.location}`,
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+      } else if (record.signal === 'loadReady') {
+        this.dispatch(setLoading(false, 'SC Ready',
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
         this.dispatch(setCurrentSample(record.location));
       }
     });

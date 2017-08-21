@@ -15,6 +15,11 @@ def set_current_sample(sample_id):
 def get_current_sample():
     return mxcube.CURRENTLY_MOUNTED_SAMPLE
 
+def set_sample_to_be_mounted(loc):
+    mxcube.SAMPLE_TO_BE_MOUNTED = loc
+
+def get_sample_to_be_mounted():
+    return mxcube.SAMPLE_TO_BE_MOUNTED
 
 def mount_sample(beamline_setup_hwobj,
                  view, data_model,
