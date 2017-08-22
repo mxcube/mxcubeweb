@@ -148,7 +148,7 @@ export default class SampleQueueContainer extends React.Component {
                       { current.sampleID ? `Sample: ${sampleName} ${proteinAcronym}` : 'Current'}
                     </b>
                   </NavItem>
-                  <NavItem eventKey={'todo'}><b>Upcoming</b></NavItem>
+                  <NavItem eventKey={'todo'}><b>Upcoming ({todo.length})</b></NavItem>
                 </Nav>
                 {loading ?
                   <div className="center-in-box">
