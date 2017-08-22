@@ -48,8 +48,7 @@ install_debian_deps() {
 }
 
 install_python_deps() {
-  command cd "$(mxcube_install_dir)"
-  pip2.7 install -r requirements.txt
+  command pip2.7 install -r requirements.txt
 }
 
 install_node() {
@@ -58,9 +57,8 @@ install_node() {
   export NVM_DIR="$HOME/.nvm"
   source "$NVM_DIR/nvm.sh"
   source "$NVM_DIR/bash_completion"
-  nvm install --lts
-  command cd "$(mxcube_install_dir)"
-  npm install
+  command nvm install --lts
+  command npm install
 }
 
 mxcube_download
