@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Glyphicon, MenuItem } from 'react-bootstrap';
@@ -16,7 +17,7 @@ import { toggleMovableAction,
          selectSamplesAction,
          setSampleOrderAction } from '../actions/sampleGrid';
 
-import { deleteTask } from '../actions/queue';
+import { deleteTask, sendMountSample } from '../actions/queue';
 
 import { showTaskForm } from '../actions/taskForm';
 
@@ -61,6 +62,7 @@ class SampleGridContainer extends React.Component {
     this.state = { sampleItems: this.getSampleItems(props) };
     this.sampleItems = this.getSampleItems(props);
     this.workflowMenuOptions = this.workflowMenuOptions.bind(this);
+    this.mountAndCollect = this.mountAndCollect.bind(this);
   }
 
 
@@ -661,6 +663,25 @@ class SampleGridContainer extends React.Component {
   }
 
 
+  mountAndCollect() {
+    let sampleData = null;
+
+    // If several samples selected mount the first one and add the others to the queue
+    this.props.order.some((sampleID) => {
+      if (this.props.selected[sampleID]) {
+        sampleData = this.props.sampleList[sampleID];
+      }
+      return this.props.selected[sampleID] === true;
+    });
+
+    if (sampleData) {
+      this.props.sendMountSample(sampleData);
+      this.props.addSelectedSamplesToQueue();
+      this.props.router.push('datacollection');
+    }
+  }
+
+
   render() {
     this.sampleItems = this.getSampleItems(this.props);
 
@@ -674,6 +695,9 @@ class SampleGridContainer extends React.Component {
         <ul id="contextMenu" style={{ display: 'none' }} className="dropdown-menu" role="menu">
           <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
             <span><Glyphicon glyph="unchecked" /> En-queue Sample </span>
+          </MenuItem>
+          <MenuItem eventKey="2" onClick={this.mountAndCollect}>
+            <span><Glyphicon glyph="screenshot" /> Mount and collect</span>
           </MenuItem>
           <MenuItem divider />
           <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>
@@ -737,10 +761,13 @@ function mapDispatchToProps(dispatch) {
     setSampleOrderAction: (order) => dispatch(setSampleOrderAction(order)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
+    sendMountSample: bindActionCreators(sendMountSample, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
   };
 }
+
+SampleGridContainer = withRouter(SampleGridContainer);
 
 export default connect(
   mapStateToProps,
