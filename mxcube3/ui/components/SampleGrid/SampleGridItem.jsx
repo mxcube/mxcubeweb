@@ -106,20 +106,6 @@ export class SampleGridItem extends React.Component {
       </OverlayTrigger>
      );
 
-    const collectButton = (
-      <OverlayTrigger
-        placement="top"
-        overlay={(<Tooltip id="mount-and-collect" >Mount and collect THIS sample now</Tooltip>)}
-      >
-        <button
-          className="samples-grid-item-button"
-          onClick={ () => { location.href = '#/datacollection'; } }
-        >
-          <i className="glyphicon glyphicon-screenshot" />
-        </button>
-      </OverlayTrigger>
-    );
-
     let content = (
       <div className="samples-item-controls-container">
       {pickButton}
@@ -131,7 +117,6 @@ export class SampleGridItem extends React.Component {
         <div className="samples-item-controls-container">
           {pickButton}
           {moveButton}
-          {collectButton}
         </div>
       );
     }
