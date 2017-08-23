@@ -1,90 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
-import { findDOMNode } from 'react-dom';
-import { DragSource as dragSource, DropTarget as dropTarget } from 'react-dnd';
+import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,
          TASK_COLLECTED,
          TASK_COLLECT_FAILED,
          TASK_RUNNING } from '../../constants';
 
-const cardSource = {
-  beginDrag(props) {
-    return {
-      id: props.id,
-      index: props.index,
-      startIndex: props.index
-    };
-  },
-  endDrag(props, monitor) {
-    props.moveTask(props.sampleId, monitor.getItem().startIndex, props.index);
-    return {
-      id: props.id,
-      index: props.index
-    };
-  }
-};
-
-const cardTarget = {
-
-  hover(props, monitor, component) {
-    const dragIndex = monitor.getItem().index;
-    const hoverIndex = props.index;
-    // Don't replace items with themselves
-    if (dragIndex === hoverIndex) {
-      return;
-    }
-
-    // Determine rectangle on screen
-    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
-
-    // Get vertical middle
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-    // Determine mouse position
-    const clientOffset = monitor.getClientOffset();
-
-    // Get pixels to the top
-    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-
-    // Only perform the move when the mouse has crossed half of the items height
-    // When dragging downwards, only move when the cursor is below 50%
-    // When dragging upwards, only move when the cursor is above 50%
-
-    // Dragging downwards
-    if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      return;
-    }
-
-    // Dragging upwards
-    if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      return;
-    }
-
-    // Time to actually perform the action
-    props.moveCard(dragIndex, hoverIndex);
-
-    // Note: we're mutating the monitor item here!
-    // Generally it's better to avoid mutations,
-    // but it's good here for the sake of performance
-    // to avoid expensive index searches.
-    monitor.getItem().index = hoverIndex; // eslint-disable-line no-param-reassign
-  }
-};
-
-@dropTarget('task', cardTarget, connect => ({
-  connectDropTarget: connect.dropTarget(),
-}))
-@dragSource('task', cardSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging()
-}))
 export default class TaskItem extends Component {
   static propTypes = {
-    connectDragSource: PropTypes.func.isRequired,
-    connectDropTarget: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    isDragging: PropTypes.bool.isRequired,
     moveCard: PropTypes.func.isRequired
   };
 
@@ -174,7 +99,7 @@ export default class TaskItem extends Component {
         trigger="click"
         placement="top"
         rootClose
-        overlay={(<Popover style={{ maxWidth: '600px', width: 'auto' }}>
+        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '600px', width: 'auto' }}>
                     <input
                       type="text"
                       onFocus={(e) => {e.target.select();}}
@@ -209,9 +134,6 @@ export default class TaskItem extends Component {
   render() {
     const { state,
             data,
-            isDragging,
-            connectDragSource,
-            connectDropTarget,
             show } = this.props;
 
     let wedges = [];
@@ -222,7 +144,6 @@ export default class TaskItem extends Component {
       wedges = [data];
     }
 
-    const opacity = isDragging ? 0 : 1;
 
     let delTaskCSS = {
       display: 'flex',
@@ -236,18 +157,19 @@ export default class TaskItem extends Component {
 
     const taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
 
-    let pbarBsStyle = '';
+    let pbarBsStyle = 'info';
 
     if (state === TASK_RUNNING) {
-      pbarBsStyle = '';
+      pbarBsStyle = 'info';
     } else if (state === TASK_COLLECTED) {
       pbarBsStyle = 'success';
     } else if (state === TASK_COLLECT_FAILED) {
       pbarBsStyle = 'danger';
     }
 
-    const element = (
-      <div className="node node-sample" style={{ opacity }}>
+    return (
+      <div className="node node-sample">
+      <ContextMenuTrigger id="currentSampleQueueContextMenu">
         <div
           className={taskCSS}
           style={{ display: 'flex' }}
@@ -255,21 +177,21 @@ export default class TaskItem extends Component {
           onContextMenu={this.taskHeaderOnContextMenu}
         >
           <b>
-            <p className="node-name" style={{ display: 'flex' }} >
+            <span className="node-name" style={{ display: 'flex' }} >
               {this.pointIDString(wedges)} {data.label}
               <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
                 <ProgressBar
                   bsStyle={pbarBsStyle}
                   striped
                   style={{ marginBottom: '0px', height: '18px' }}
-                  min="0"
-                  max="1"
+                  min={0}
+                  max={1}
                   active={ this.props.progress < 1 }
                   label={ `${(this.props.progress * 100).toPrecision(3)} %` }
                   now={this.props.progress}
                 />
               </span>
-            </p>
+            </span>
           </b>
             { state === TASK_UNCOLLECTED ?
               <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
@@ -280,7 +202,7 @@ export default class TaskItem extends Component {
             { wedges.map((wedge, i) => {
               const padding = i > 0 ? '1em' : '0em';
               return (
-              <div>
+              <div key={`wedge-${i}`}>
               <div style={ { borderLeft: '1px solid #DDD',
                              borderRight: '1px solid #DDD',
                              paddingTop: padding } }
@@ -322,11 +244,7 @@ export default class TaskItem extends Component {
             {this.getResult(state)}
           </div>
         </Collapse>
-      </div>
-      );
-    if (this.state.overInput) {
-      return element;
-    }
-    return connectDragSource(connectDropTarget(element));
+      </ContextMenuTrigger>
+      </div>);
   }
 }
