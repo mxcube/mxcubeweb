@@ -127,7 +127,9 @@ export default class SampleControls extends React.Component {
         />
       <span className="sample-controll-label">Phase</span>
       </li>);
+
     const motors = this.props.motors;
+
     return (
       <div style={ { display: 'flex', position: 'absolute', width: '100%', zIndex: 1000 } } >
         <div className="sample-controlls text-center" >
@@ -208,7 +210,8 @@ export default class SampleControls extends React.Component {
                   id="zoom-control"
                   min="1" max="10"
                   step="1"
-                  defaultValue={this.props.zoom}
+                  defaultValue={motors.zoom}
+                  disabled={motors.zoom.Status !== 2}
                   onMouseUp={this.setZoom}
                   list="volsettings"
                   name="zoomSlider"
@@ -261,6 +264,7 @@ export default class SampleControls extends React.Component {
                     step="0.1"
                     min="0" max="1"
                     defaultValue={motors.BackLight.position}
+                    disabled={motors.BackLight.Status !== 2}
                     onMouseUp={(e) =>
                       this.props.sampleActions.sendMotorPosition('BackLight', e.target.value)}
                     name="backlightSlider"
@@ -294,6 +298,7 @@ export default class SampleControls extends React.Component {
                     step="0.1"
                     min="0" max="1"
                     defaultValue={motors.FrontLight.position}
+                    disabled={motors.FrontLight.Status !== 2}
                     onMouseUp={(e) =>
                       this.props.sampleActions.sendMotorPosition('FrontLight', e.target.value)}
                     name="frontLightSlider"
