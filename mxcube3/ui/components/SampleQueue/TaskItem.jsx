@@ -94,6 +94,7 @@ export default class TaskItem extends Component {
     this.deleteTask = this.deleteTask.bind(this);
     this.toggleChecked = this.toggleChecked.bind(this);
     this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
+    this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
     this.state = {
       overInput: false,
@@ -123,6 +124,10 @@ export default class TaskItem extends Component {
 
   taskHeaderOnClick(e) {
     this.props.taskHeaderOnClickHandler(e, this.props.index);
+  }
+
+  taskHeaderOnContextMenu(e) {
+    this.props.taskHeaderOnContextMenuHandler(e, this.props.index);
   }
 
   deleteTask(e) {
@@ -247,6 +252,7 @@ export default class TaskItem extends Component {
           className={taskCSS}
           style={{ display: 'flex' }}
           onClick={this.taskHeaderOnClick}
+          onContextMenu={this.taskHeaderOnContextMenu}
         >
           <b>
             <p className="node-name" style={{ display: 'flex' }} >

@@ -82,6 +82,7 @@ export default class SampleQueueContainer extends React.Component {
       sendUnmountSample,
       changeTaskOrderAction,
       deleteTask,
+      addTask,
       sendMountSample,
       moveTask,
       setAutoMountSample,
@@ -178,6 +179,7 @@ export default class SampleQueueContainer extends React.Component {
                   runSample={sendRunSample}
                   todoList={todo}
                   moveTask={moveTask}
+                  addTask={addTask}
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
