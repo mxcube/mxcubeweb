@@ -222,9 +222,9 @@ def queue_add_item():
     # remove all collections that were used as wedges
     for task in tasks:
         current_queue = qutils.queue_to_dict()
-        tindex_list = task["parameters"].get("taskIndexList", False)
 
-        if task["type"] == "Interleaved" and tindex_list:
+        if task["type"] == "Interleaved" and \
+           task["parameters"].get("taskIndexList", False):
             sid = task["sampleID"]
             interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
 
