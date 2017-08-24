@@ -1042,9 +1042,9 @@ def queue_model_child_added(parent, child):
         if isinstance(child, qmo.DataCollection):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
 
-            child.set_enabled(True)
-            dc_entry.set_enabled(True)
+            enable_entry(dc_entry, True)
             parent_entry.enqueue(dc_entry)
+            enable_entry(parent_entry, True)
             sample = parent.get_parent()
 
             task = _handle_dc(sample._node_id, child)
