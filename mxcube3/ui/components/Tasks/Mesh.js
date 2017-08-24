@@ -1,7 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import { Modal,
+         Button,
+         Form,
+         Row,
+         Col,
+         ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import { FieldsHeader,
@@ -10,7 +15,8 @@ import { FieldsHeader,
          CheckboxField,
          SelectField,
          FieldsRow,
-         CollapsableRows } from './fields';
+         CollapsableRows,
+         DisplayField } from './fields';
 
 class Mesh extends React.Component {
   constructor(props) {
@@ -58,7 +64,6 @@ class Mesh extends React.Component {
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
-
   render() {
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
@@ -100,7 +105,9 @@ class Mesh extends React.Component {
             </FieldsRow>
             <FieldsRow>
               <InputField propName="osc_start" label="Oscillation start" />
-              <InputField propName="num_images" label="Number of images per line" disabled />
+              <DisplayField label="Total number of images"
+                value={this.props.taskData.parameters.cell_count}
+              />
             </FieldsRow>
             <FieldsRow>
               <InputField propName="exp_time" label="Exposure time per image(ms)" />

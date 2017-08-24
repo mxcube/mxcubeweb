@@ -123,7 +123,8 @@ export default class ContextMenu extends React.Component {
           num_images: aux,
           ...wf,
           prefix: sampleData.defaultPrefix,
-          subdir: sampleData.sampleName
+          subdir: sampleData.sampleName,
+          cell_count: shape.gridData.numCols * shape.gridData.numRows
         }
       },
       sid

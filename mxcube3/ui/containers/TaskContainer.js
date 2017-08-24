@@ -121,6 +121,7 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
+        cellCount={this.props.cellCount}
       />);
     }
 
