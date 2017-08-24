@@ -305,7 +305,7 @@ def update_shapes():
             if t == 'G':
                 # coords for the center of the grid
                 x_c = x + (shape_data['num_cols'] / 2.0) * shape_data['cell_width']
-                y_c = x + (shape_data['num_rows'] / 2.0) * shape_data['cell_height']
+                y_c = y + (shape_data['num_rows'] / 2.0) * shape_data['cell_height']
                 center_positions = mxcube.diffractometer.get_centred_point_from_coord(x_c, y_c, return_by_names=True)
                 pos.append(center_positions)
             shape = mxcube.shapes.add_shape_from_mpos(pos, (x, y), t)
