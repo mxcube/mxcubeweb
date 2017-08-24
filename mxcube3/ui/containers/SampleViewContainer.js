@@ -8,6 +8,7 @@ import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
+import { QUEUE_RUNNING } from '../constants';
 
 class SampleViewContainer extends Component {
 
@@ -28,6 +29,7 @@ class SampleViewContainer extends Component {
       }
     });
 
+
     return (
         <div className="row">
         <div className="col-xs-12">
@@ -44,6 +46,8 @@ class SampleViewContainer extends Component {
                   save={sendMotorPosition}
                   saveStep={setStepSize}
                   motors={this.props.beamline.motors}
+                  motorsDisabled={ this.props.beamline.motorInputDisable ||
+                                   this.props.queueState === QUEUE_RUNNING }
                   steps={motorSteps}
                   stop={sendStopMotor}
                 />
@@ -84,6 +88,7 @@ function mapStateToProps(state) {
   return {
     sampleList: state.sampleGrid.sampleList,
     current: state.queue.current,
+    queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     beamline: state.beamline,

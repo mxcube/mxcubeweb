@@ -82,7 +82,7 @@ export default class MotorInput extends React.Component {
                 <button
                   type="button"
                   className="rw-btn"
-                  disabled={this.props.state !== 2}
+                  disabled={this.props.state !== 2 || this.props.disabled}
                   onClick={this.stepIncrement}
                 >
                   <i aria-hidden="true" className="rw-i rw-i-caret-up"></i>
@@ -90,7 +90,7 @@ export default class MotorInput extends React.Component {
                 <button
                   type="button"
                   className="rw-btn"
-                  disabled={this.props.state !== 2}
+                  disabled={this.props.state !== 2 || this.props.disabled}
                   onClick={this.stepDecrement}
                 >
                   <i aria-hidden="true" className="rw-i rw-i-caret-down"></i>
@@ -104,7 +104,7 @@ export default class MotorInput extends React.Component {
                 step={step}
                 defaultValue={valueCropped}
                 name={motorName}
-                disabled={this.props.state !== 2}
+                disabled={this.props.state !== 2 || this.props.disabled}
               />
             </div>
             <span
@@ -134,7 +134,6 @@ export default class MotorInput extends React.Component {
                   style={{ width: '100%', height: '100%', display: 'block' }}
                   className="btn-xs motor-abort rw-widget-no-left-border"
                   bsStyle="danger"
-                  disabled={this.props.state !== 4}
                   onClick={this.stopMotor}
                 >
                   <i className="glyphicon glyphicon-remove" />

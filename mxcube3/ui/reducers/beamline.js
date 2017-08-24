@@ -121,11 +121,13 @@ export const INITIAL_STATE = {
     BackLightSwitch: { position: 0, Status: 0 },
     FrontLightSwitch: { position: 0, Status: 0 },
     kappa: { position: 0, Status: 0 },
-    kappa_phi: { position: 0, Status: 0 }
+    kappa_phi: { position: 0, Status: 0 },
+    zoom: { position: 0, Status: 0 }
   },
   zoom: 0,
   beamlineActionsList: [],
-  currentBeamlineAction: { show: false, messages: [], arguments: [] }
+  currentBeamlineAction: { show: false, messages: [], arguments: [] },
+  motorInputDisable: false
 };
 
 
@@ -152,11 +154,14 @@ export default (state = INITIAL_STATE, action) => {
       return data;
 
     case 'SET_MOTOR_MOVING':
-      return { ...state, motors: { ...state.motors, [action.name.toLowerCase()]:
+      return { ...state,
+               motorInputDisable: true,
+               motors: { ...state.motors, [action.name.toLowerCase()]:
                                    { ...state.motors[action.name.toLowerCase()],
                                      Status: action.status
                                    }
-      } };
+                       }
+             };
 
     case 'SAVE_MOTOR_POSITIONS':
       return { ...state,
@@ -170,10 +175,12 @@ export default (state = INITIAL_STATE, action) => {
                                  }
              };
     case 'UPDATE_MOTOR_STATE':
-      return { ...state, motors: { ...state.motors, [action.name]:
+      return { ...state,
+               motorInputDisable: action.value !== 2,
+               motors: { ...state.motors, [action.name]:
                                    { position: state.motors[action.name].position,
                                      Status: action.value }
-                                 }
+                       }
              };
     case 'SET_INITIAL_STATE':
       return { ...INITIAL_STATE,

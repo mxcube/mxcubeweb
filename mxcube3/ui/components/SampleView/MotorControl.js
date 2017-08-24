@@ -34,6 +34,7 @@ export default class MotorControl extends React.Component {
                 decimalPoints="2"
                 state={phi.Status}
                 stop={stop}
+                disabled={this.props.motorsDisabled}
               />
             </div>
 
@@ -49,6 +50,7 @@ export default class MotorControl extends React.Component {
                 decimalPoints="2"
                 state={kappa.Status}
                 stop={stop}
+                disabled={this.props.motorsDisabled}
               />
             </div>
 
@@ -64,6 +66,7 @@ export default class MotorControl extends React.Component {
                 decimalPoints="2"
                 state={kappa_phi.Status}
                 stop={stop}
+                disabled={this.props.motorsDisabled}
               />
             </div>
 
@@ -79,6 +82,7 @@ export default class MotorControl extends React.Component {
                 decimalPoints="2"
                 state={phiy.Status}
                 stop={stop}
+                disabled={this.props.motorsDisabled}
               />
             </div>
 
@@ -94,6 +98,7 @@ export default class MotorControl extends React.Component {
                 decimalPoints="2"
                 state={phiz.Status}
                 stop={stop}
+                disabled={this.props.motorsDisabled}
               />
             </div>
 
@@ -109,6 +114,7 @@ export default class MotorControl extends React.Component {
                 decimalPoints="2"
                 state={focus.Status}
                 stop={stop}
+                disabled={this.props.motorsDisabled}
               />
             </div>
 
@@ -124,6 +130,7 @@ export default class MotorControl extends React.Component {
                 decimalPoints="2"
                 state={sampx.Status}
                 stop={stop}
+                disabled={this.props.motorsDisabled}
               />
             </div>
 
@@ -139,6 +146,7 @@ export default class MotorControl extends React.Component {
                  decimalPoints="2"
                  state={sampy.Status}
                  stop={stop}
+                 disabled={this.props.motorsDisabled}
                />
             </div>
           </div>
