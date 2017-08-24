@@ -134,7 +134,6 @@ export default class MotorInput extends React.Component {
                   style={{ width: '100%', height: '100%', display: 'block' }}
                   className="btn-xs motor-abort rw-widget-no-left-border"
                   bsStyle="danger"
-                  disabled={this.props.state !== 4 || this.props.disabled}
                   onClick={this.stopMotor}
                 >
                   <i className="glyphicon glyphicon-remove" />
