@@ -76,7 +76,8 @@
     <number_of_images>1</number_of_images>
     <detector_mode>1</detector_mode>
     <cell_counting>inverse-zig-zag</cell_counting>
-    <cell_spacing>vertical</cell_spacing>
+    <cell_spacing>vertical,horizontal</cell_spacing>
+    <mesh_center>top-left</mesh_center>
   </default_mesh_values>
 
    <!-- Limit values for an acquisition -->
