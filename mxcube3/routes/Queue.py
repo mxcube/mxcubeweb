@@ -223,7 +223,8 @@ def queue_add_item():
     for task in tasks:
         current_queue = qutils.queue_to_dict()
 
-        if task["type"] == "Interleaved" and task["parameters"]["taskIndexList"]:
+        if task["type"] == "Interleaved" and \
+           task["parameters"].get("taskIndexList", False):
             sid = task["sampleID"]
             interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
 

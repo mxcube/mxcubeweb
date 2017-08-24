@@ -326,7 +326,7 @@ def _handle_interleaved(sample_id, node):
     res = {"label": "Interleaved",
            "type": "Interleaved",
            "parameters": {"wedges": wedges,
-                          "subWedgeSize": node.interleave_num_images},
+                          "swNumImages": node.interleave_num_images},
            "checked": node.is_enabled(),
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
