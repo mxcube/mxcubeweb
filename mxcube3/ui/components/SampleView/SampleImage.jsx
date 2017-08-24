@@ -155,24 +155,30 @@ export default class SampleImage extends React.Component {
   }
 
   getGridForm() {
-    let cellSpacingChoice = this.props.cellSpacing;
+    let spacingDiv = [];
+    if (this.props.cellSpacing !== 'None' && this.props.cellSpacing !== undefined) {
+      let cellSpacingChoiceArray = this.props.cellSpacing.split(',');
 
-    cellSpacingChoice = (cellSpacingChoice !== 'None' && cellSpacingChoice !== undefined) ?
-      cellSpacingChoice.charAt(0).toUpperCase() + cellSpacingChoice.slice(1) : cellSpacingChoice;
+      cellSpacingChoiceArray = cellSpacingChoiceArray.map((choice) =>
+        choice.charAt(0).toUpperCase() + choice.slice(1)
+      );
 
-    const spacingDiv = (cellSpacingChoice !== 'None' && cellSpacingChoice !== undefined) ? (
-        <FormGroup>
-          <ControlLabel>{cellSpacingChoice} Spacing:</ControlLabel>
-          <FormControl
-            style={{ width: '50px', marginRight: '1em' }}
-            type="text"
-            value={cellSpacingChoice === 'Horizontal' ?
-              this.gridCellSpacing()[0] : this.gridCellSpacing()[1]}
-            onChange={cellSpacingChoice === 'Horizontal' ?
-              this.setHCellSpacing : this.setVCellSpacing}
-          />
-        </FormGroup>
-      ) : ('');
+      spacingDiv = cellSpacingChoiceArray.map((choice) =>
+        (
+          <FormGroup>
+            <ControlLabel>{choice} Spacing:</ControlLabel>
+            <FormControl
+              style={{ width: '50px', marginRight: '1em' }}
+              type="text"
+              value={choice === 'Horizontal' ?
+                this.gridCellSpacing()[0] : this.gridCellSpacing()[1]}
+              onChange={choice === 'Horizontal' ?
+                this.setHCellSpacing : this.setVCellSpacing}
+            />
+          </FormGroup>
+        )
+      );
+    }
 
     const gridForm = (
         <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
