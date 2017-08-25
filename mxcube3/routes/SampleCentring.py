@@ -301,7 +301,7 @@ def update_shapes():
             x, y = shape_data["screen_coord"]
             mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y, return_by_names=True)
             pos.append(mpos)
-            # MD3 needs the center of the grid instead of the top left corner
+            # We also store the center of the grid
             if t == 'G':
                 # coords for the center of the grid
                 x_c = x + (shape_data['num_cols'] / 2.0) * shape_data['cell_width']
