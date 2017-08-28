@@ -36,6 +36,13 @@ class Mesh extends React.Component {
   }
 
   addToQueue(runNow, params) {
+    let aux = params.num_images;
+    if (params.cell_counting === 'zig-zag') {
+      aux = params.numCols;
+    } else {
+      aux = params.numRows;
+    }
+
     const parameters = {
       ...params,
       type: 'DataCollection',
@@ -43,6 +50,7 @@ class Mesh extends React.Component {
       mesh: true,
       helical: false,
       shape: this.props.pointID,
+      num_images: aux
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
