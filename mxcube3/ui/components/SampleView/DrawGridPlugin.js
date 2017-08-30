@@ -172,8 +172,8 @@ export default class DrawGridPlugin {
     const [left, top] = this.gridData.screenCoord;
     const validPosition = x > left && y > top;
     const draw = this.drawing && validPosition;
-    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace * imageRatio;
-    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace * imageRatio;
+    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace / imageRatio;
+    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace / imageRatio;
 
     let width = Math.abs(x - left);
     let height = Math.abs(y - top);
