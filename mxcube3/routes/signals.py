@@ -433,9 +433,9 @@ def motor_event_callback(*args, **kwargs):
     msg = {'Signal': signal,
            'Message': signal,
            'Motors': motors_info,
-           'CentredPositions': shape_dict,
+           'centredPositions': shape_dict,
            'Data': args[0] if len(args) == 1 else args}
-    # logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+    #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
 
     try:
         socketio.emit('Motors', msg, namespace='/hwr')
