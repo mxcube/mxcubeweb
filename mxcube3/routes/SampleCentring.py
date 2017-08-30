@@ -289,6 +289,7 @@ def update_shapes():
     params = request.get_json()
     shape_data = from_camel(params.get("shapeData", {}))
     pos = []
+
     # Get the shape if already exists
     shape = mxcube.shapes.get_shape(params["id"])
 
@@ -296,6 +297,12 @@ def update_shapes():
     if not shape:
         refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
 
+        # Store pixels per mm for third party software, to facilitate 
+        # certain calculations 
+        shape_data["pixels_per_mm"] =  mxcube.diffractometer.get_pixels_per_mm()
+        shape_data["beam_pos"] = (mxcube.diffractometer.getBeamPosX(),
+                                  mxcube.diffractometer.getBeamPosY())
+        
         # Shape does not have any refs, create a new Centered position
         if not refs:
             x, y = shape_data["screen_coord"]
@@ -594,7 +601,7 @@ def accept_centring():
     """
     Accept the centring position.
     """
-    mxcube.diffractometer.acceptCentring()
+    mxcube.diffractometer.saveCurrentPos() #acceptCentring()
     return Response(status=200)
 
 
