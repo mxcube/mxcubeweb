@@ -45,7 +45,7 @@ export default class DrawGridPlugin {
     this.shapeFromGridData = this.shapeFromGridData.bind(this);
     this.reset = this.reset.bind(this);
     this.snapToGrid = true;
-    this.heatMapColorforValue = this.heatMapColorforValue.bind(this);
+    this.heatMapColorForValue = this.heatMapColorForValue.bind(this);
     this.initializeCellFilling = this.initializeCellFilling.bind(this);
     this.initializeGridResult = this.initializeGridResult.bind(this);
     this.setGridResult = this.setGridResult.bind(this);
@@ -128,7 +128,13 @@ export default class DrawGridPlugin {
   initializeGridResult(gridData) {
     const col = gridData.numCols;
     const row = gridData.numRows;
-    const cellResultMatrix = Array(col).fill().map(() => Array(row).fill(0));
+    const cellResultMatrix = [];
+
+    for (let c = 0; c < col; c++) {
+      for (let r = 0; r < row; c++) {
+        cellResultMatrix.append([0, [0, 0, 0]]);
+      }
+    }
 
     return cellResultMatrix;
   }
@@ -208,10 +214,9 @@ export default class DrawGridPlugin {
     canvas.renderAll();
   }
 
-  heatMapColorforValue(gd, value) {
-    const h = (1.0 - value) * 240;
-    const dataFill = `hsla(${h}, 100%, 50%, ${this.overlayLevel})`;
-
+  heatMapColorForValue(gd, value) {
+    let dataFill = `rgba(${parseInt(value[0], 10)}, ${parseInt(value[1], 10)},`;
+    dataFill += `${parseInt(value[2], 10)}, ${this.overlayLevel})`;
     return dataFill;
   }
 
@@ -223,8 +228,7 @@ export default class DrawGridPlugin {
 
   initializeCellFilling(gd, col, row) {
     const level = this.overlayLevel ? this.overlayLevel : 0.2;
-    const fill = `hsla(240,100%,20%, ${level}`;
-
+    const fill = `rgba(0, 0, 200, ${level}`;
     const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill(fill));
     return cellfillingMatrix;
   }
@@ -246,9 +250,10 @@ export default class DrawGridPlugin {
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
     if (typeof gd.result !== 'undefined' && gd.result !== null) {
-      for (let nw = 0; nw < col; nw++) {
-        for (let nh = 0; nh < row; nh++) {
-          fillingMatrix[nw][nh] = this.heatMapColorforValue(gd, gd.result[nw][nh]);
+      for (let nh = 0; nh < row; nh++) {
+        for (let nw = 0; nw < col; nw++) {
+          const index = nw + nh * col + 1;
+          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, gd.result[index][1]);
         }
       }
     }
@@ -269,9 +274,6 @@ export default class DrawGridPlugin {
     const shapes = [];
     const cellWidth = (gridData.cellWidth) / imageRatio;
     const cellHeight = (gridData.cellHeight) / imageRatio;
-    // if (!gridData.result) {
-    //   gridData.result = this.initializeGridResult(gridData);
-    // }
     const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
 
     const cellTW = cellWidth + (gridData.cellHSpace / imageRatio);
