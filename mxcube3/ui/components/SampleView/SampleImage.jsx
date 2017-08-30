@@ -502,7 +502,7 @@ export default class SampleImage extends React.Component {
 
   configureGrid() {
     const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0] / this.props.imageRatio;
-    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[0] / this.props.imageRatio;
+    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[1] / this.props.imageRatio;
     this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
     this.drawGridPlugin.setCellCounting(this.props.cellCounting);
 
@@ -527,8 +527,8 @@ export default class SampleImage extends React.Component {
     const gridForm = document.getElementById('gridForm');
 
     if (gridData) {
-      left = gridData.screenCoord[0];
-      top = gridData.screenCoord[1];
+      left = gridData.screenCoord[0] / this.props.imageRatio;
+      top = gridData.screenCoord[1] / this.props.imageRatio;
     } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
       left = this.drawGridPlugin.currentGridData().left;
       top = this.drawGridPlugin.currentGridData().top;
@@ -607,7 +607,7 @@ export default class SampleImage extends React.Component {
     this.drawCanvas(imageRatio);
     this.canvas.add(...makeImageOverlay(
       imageRatio,
-      pixelsPerMm[0],
+      pixelsPerMm,
       beamPosition,
       beamShape,
       beamSize,
@@ -616,7 +616,7 @@ export default class SampleImage extends React.Component {
       this.canvas
     ));
     const fabricSelectables = [
-      ...makePoints(points, imageRatio),
+      ...makePoints(points, 1.0),
       ...makeLines(lines, imageRatio)
     ];
     this.canvas.add(...fabricSelectables);
