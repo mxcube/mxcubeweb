@@ -109,9 +109,9 @@ export default class ContextMenu extends React.Component {
           ...wf,
           prefix: sampleData.defaultPrefix,
           subdir: sampleData.sampleName,
-          cell_count: shape.gridData.numCols * shape.gridData.numRows,
-          numRows: shape.gridData.numRows,
-          numCols: shape.gridData.numCols
+          cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
+          numRows: shape.gridData ? shape.gridData.numRows : 0,
+          numCols: shape.gridData ? shape.gridData.numCols : 0
         }
       },
       sid
