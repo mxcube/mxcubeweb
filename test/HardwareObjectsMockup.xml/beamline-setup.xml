@@ -64,6 +64,22 @@
     <detector_mode>1</detector_mode>
   </default_characterisation_values>
 
+  <!-- Default values for a mesh -->
+  <default_mesh_values>
+    <exposure_time>10</exposure_time>
+    <start_angle>0.0</start_angle>
+    <range>10</range>
+    <number_of_passes>1</number_of_passes>
+    <start_image_number>1</start_image_number>
+    <run_number>1</run_number>
+    <overlap>0</overlap>
+    <number_of_images>1</number_of_images>
+    <detector_mode>1</detector_mode>
+    <cell_counting>inverse-zig-zag</cell_counting>
+    <cell_spacing>vertical,horizontal</cell_spacing>
+    <mesh_center>top-left</mesh_center>
+  </default_mesh_values>
+
    <!-- Limit values for an acquisition -->
   <acquisition_limit_values>
     <exposure_time>500</exposure_time>

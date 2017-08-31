@@ -22,6 +22,10 @@ export default (state = initialState, action) => {
       {
         return { ...state, shapes: omit(state.shapes, action.id) };
       }
+    case 'SET_OVERLAY':
+      {
+        return { ...state, overlayLevel: action.level };
+      }
     case 'SET_CURRENT_SAMPLE':
       {
         return initialState;

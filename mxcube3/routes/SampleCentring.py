@@ -242,10 +242,45 @@ def get_shapes():
     return resp
 
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=['GET'])
+def get_shape_with_sid(sid):
+    """
+    Retrieve requested shape information.
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: shape not found
+    """
+    shape = mxcube.shapes.get_shape(sid)
+
+    if shape is not None:
+        shape = shape.as_dict()
+        resp = jsonify({"shape": to_camel(shape)})
+        resp.status_code = 200
+        return resp
+    else:
+        return Response(status=409)
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=['GET'])
+def shape_mock_result(sid):
+    shape = mxcube.shapes.get_shape(sid)
+
+    from random import random
+
+    res = map(lambda x: map(lambda y: random(), range(shape.num_rows)), range(shape.num_cols))
+
+    mxcube.shapes.set_grid_data(sid, res)
+
+    signals.grid_result_available(to_camel(shape.as_dict()))
+
+    return Response(status=200)
+
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/shapes", methods=['POST'])
 def update_shapes():
     """
-    Retrieve all the stored centred positions.
+    Update shape information.
+        :parameter shape_data: dict with shape information (id, type, ...)
         :response Content-type: application/json, the stored centred positions.
         :statuscode: 200: no error
         :statuscode: 409: error
@@ -253,7 +288,7 @@ def update_shapes():
     resp = Response(status=409)
     params = request.get_json()
     shape_data = from_camel(params.get("shapeData", {}))
-
+    pos = []
     # Get the shape if already exists
     shape = mxcube.shapes.get_shape(params["id"])
 
@@ -264,8 +299,16 @@ def update_shapes():
         # Shape does not have any refs, create a new Centered position
         if not refs:
             x, y = shape_data["screen_coord"]
-            mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y)
-            shape = mxcube.shapes.add_shape_from_mpos([mpos], (x, y), t)
+            mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y, return_by_names=True)
+            pos.append(mpos)
+            # We also store the center of the grid
+            if t == 'G':
+                # coords for the center of the grid
+                x_c = x + (shape_data['num_cols'] / 2.0) * shape_data['cell_width']
+                y_c = y + (shape_data['num_rows'] / 2.0) * shape_data['cell_height']
+                center_positions = mxcube.diffractometer.get_centred_point_from_coord(x_c, y_c, return_by_names=True)
+                pos.append(center_positions)
+            shape = mxcube.shapes.add_shape_from_mpos(pos, (x, y), t)
         else:
             shape = mxcube.shapes.add_shape_from_refs(refs, t)
 

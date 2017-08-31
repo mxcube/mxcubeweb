@@ -681,6 +681,20 @@ def set_dc_params(model, entry, task_data):
         acq.acquisition_parameters.centred_position = cpos1
         acq2.acquisition_parameters.centred_position = cpos2
 
+    elif params.get("mesh", False):
+        grid = mxcube.shapes.get_shape(params["shape"])
+        acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
+        mesh_center = mxcube.beamline['default_mesh_values'].getProperty('mesh_center', 'top-left')
+        if mesh_center == 'top-left':
+            acq.acquisition_parameters.centred_position = grid.get_centred_positions()[0]
+        else:
+            acq.acquisition_parameters.centred_position = grid.get_centred_positions()[1]
+        acq.acquisition_parameters.mesh_steps = grid.get_num_lines()
+        acq.acquisition_parameters.num_images = task_data['parameters']['num_images']
+
+        model.experiment_type = qme.EXPERIMENT_TYPE.MESH
+        model.set_requires_centring(False)
+
     elif params["shape"] != -1:
         point = mxcube.shapes.get_shape(params["shape"])
         cpos = point.get_centred_position()

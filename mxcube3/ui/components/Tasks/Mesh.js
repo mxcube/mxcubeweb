@@ -1,7 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import { Modal,
+         Button,
+         Form,
+         Row,
+         Col,
+         ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import { FieldsHeader,
@@ -10,7 +15,8 @@ import { FieldsHeader,
          CheckboxField,
          SelectField,
          FieldsRow,
-         CollapsableRows } from './fields';
+         CollapsableRows,
+         DisplayField } from './fields';
 
 class Mesh extends React.Component {
   constructor(props) {
@@ -30,6 +36,13 @@ class Mesh extends React.Component {
   }
 
   addToQueue(runNow, params) {
+    let aux = params.num_images;
+    if (params.cell_counting === 'zig-zag') {
+      aux = params.numCols;
+    } else {
+      aux = params.numRows;
+    }
+
     const parameters = {
       ...params,
       type: 'DataCollection',
@@ -37,6 +50,7 @@ class Mesh extends React.Component {
       mesh: true,
       helical: false,
       shape: this.props.pointID,
+      num_images: aux
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -58,7 +72,6 @@ class Mesh extends React.Component {
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
-
   render() {
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
@@ -95,15 +108,17 @@ class Mesh extends React.Component {
           <FieldsHeader title="Acquisition" />
           <Form horizontal>
             <FieldsRow>
-              <InputField propName="osc_range" label="Oscillation range" />
+              <InputField propName="osc_range" label="Oscillation range per image" />
               <InputField propName="first_image" label="First image" />
             </FieldsRow>
             <FieldsRow>
               <InputField propName="osc_start" label="Oscillation start" />
-              <InputField propName="num_images" label="Number of images" />
+              <DisplayField label="Total number of images"
+                value={this.props.taskData.parameters.cell_count}
+              />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" label="Exposure time (ms)" />
+              <InputField propName="exp_time" label="Exposure time per image(ms)" />
               <InputField propName="transmission" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
@@ -129,7 +144,6 @@ class Mesh extends React.Component {
               </FieldsRow>
               <FieldsRow>
                 <CheckboxField propName="shutterless" label="Shutterless" />
-                <CheckboxField propName="inverse_beam" label="Inverse beam" />
               </FieldsRow>
             </CollapsableRows>
           </Form>
@@ -200,7 +214,7 @@ Mesh = connect(state => {
         state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value)
+        state.beamline.attributes.energy.value),
     }
   };
 })(Mesh);

@@ -25,10 +25,13 @@ export default class SampleImage extends React.Component {
     this.setHCellSpacing = this.setHCellSpacing.bind(this);
     this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.gridCellSpacing = this.gridCellSpacing.bind(this);
+    this.setGridOverlay = this.setGridOverlay.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
+    this.updateGridResults = this.updateGridResults.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
     this.initJSMpeg = this.initJSMpeg.bind(this);
+    this.getGridForm = this.getGridForm.bind(this);
     this.canvas = {};
     this._keyPressed = null;
     this.gridStarted = false;
@@ -98,7 +101,11 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
-    this.drawGridPlugin.update(this.canvas, options.e.layerX, options.e.layerY);
+    this.drawGridPlugin.update(this.canvas,
+                               options.e.layerX,
+                               options.e.layerY,
+                               this.props.imageRatio
+                               );
   }
 
   onMouseUp() {
@@ -147,6 +154,57 @@ export default class SampleImage extends React.Component {
     }
   }
 
+  getGridForm() {
+    let spacingDiv = [];
+    if (this.props.cellSpacing !== 'None' && this.props.cellSpacing !== undefined) {
+      let cellSpacingChoiceArray = this.props.cellSpacing.split(',');
+
+      cellSpacingChoiceArray = cellSpacingChoiceArray.map((choice) =>
+        choice.charAt(0).toUpperCase() + choice.slice(1)
+      );
+
+      spacingDiv = cellSpacingChoiceArray.map((choice) =>
+        (
+          <FormGroup>
+            <ControlLabel>{choice} Spacing:</ControlLabel>
+            <FormControl
+              style={{ width: '50px', marginRight: '1em' }}
+              type="text"
+              value={choice === 'Horizontal' ?
+                this.gridCellSpacing()[0] : this.gridCellSpacing()[1]}
+              onChange={choice === 'Horizontal' ?
+                this.setHCellSpacing : this.setVCellSpacing}
+            />
+          </FormGroup>
+        )
+      );
+    }
+
+    const gridForm = (
+        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
+          <Form inline>
+            { spacingDiv }
+            <FormGroup>
+            <ControlLabel>Overlay: </ControlLabel>
+            <FormControl
+              style={{ width: '100px', padding: '0', marginLeft: '10px', marginRight: '1em' }}
+              className="bar"
+              type="range"
+              id="overlay-control"
+              min="0" max="1"
+              step="0.05"
+              defaultValue={this.getGridOverlay()}
+              onChange={this.setGridOverlay}
+              ref="overlaySlider"
+              name="overlaySlider"
+            />
+            </FormGroup>
+          </Form>
+        </div>);
+
+    return gridForm;
+  }
+
   setVCellSpacing(e) {
     let value = parseFloat(e.target.value);
     if (isNaN(value)) { value = ''; }
@@ -177,15 +235,34 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  selectedGrid() {
-    let gridData = null;
+  setGridOverlay(e) {
+    let value = parseFloat(e.target.value);
+    if (isNaN(value)) { value = '1'; }
+    const gridData = this.selectedGrid();
+    if (gridData) {
+      const gd = this.drawGridPlugin.setGridOverlay(gridData, value);
+      this.props.sampleActions.setOverlay(value);
+      this.drawGridPlugin.repaint(this.canvas);
+      // Note: I am missing sth, next line needed for update the state and triggering
+      // the component rendering, this.props.sampleActions.setOverlay alone not doing that
+      this.props.sampleActions.updateShape(gd);
+    }
+  }
 
+  getGridOverlay() {
+    let overlay = 1.0;
     if (this.props.selectedGrids.length === 1) {
-      gridData = this.props.grids[this.props.selectedGrids[0]];
+      const gridData = this.selectedGrid();
+      if (gridData) {
+        overlay = gridData.overlayLevel;
+      }
+    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      overlay = 1;
     }
 
-    return gridData;
+    return overlay;
   }
+
 
   gridCellSpacing() {
     let vSpace = 0;
@@ -204,6 +281,16 @@ export default class SampleImage extends React.Component {
     }
 
     return [hSpace, vSpace];
+  }
+
+  selectedGrid() {
+    let gridData = null;
+
+    if (this.props.selectedGrids.length === 1) {
+      gridData = this.props.grids[this.props.selectedGrids[0]];
+    }
+
+    return gridData;
   }
 
   keyDown(event) {
@@ -417,10 +504,18 @@ export default class SampleImage extends React.Component {
     const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0] / this.props.imageRatio;
     const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[0] / this.props.imageRatio;
     this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
+    this.drawGridPlugin.setCellCounting(this.props.cellCounting);
 
     if (!this.props.drawGrid) {
       this.hideGridForm();
       this.drawGridPlugin.reset();
+    }
+  }
+
+  updateGridResults() {
+    const gd = this.selectedGrid();
+    if (gd) {
+      this.drawGridPlugin.setGridResult(gd.result);
     }
   }
 
@@ -440,8 +535,8 @@ export default class SampleImage extends React.Component {
     }
 
     if (gridForm && left && top) {
-      gridForm.style.top = `${top - 70}px`;
-      gridForm.style.left = `${left + 15}px`;
+      gridForm.style.top = `${(top - 70) / this.props.imageRatio}px`;
+      gridForm.style.left = `${(left + 15) / this.props.imageRatio}px`;
       gridForm.style.display = 'block';
     } else {
       this.hideGridForm();
@@ -457,6 +552,7 @@ export default class SampleImage extends React.Component {
   }
 
   saveGrid() {
+    this.drawGridPlugin.initializeGridResult();
     this.props.sampleActions.addGrid(this.drawGridPlugin.currentGridData());
     this.props.sampleActions.toggleDrawGrid();
   }
@@ -561,8 +657,9 @@ export default class SampleImage extends React.Component {
       if (this.props.selectedGrids.includes(gridData.id)) {
         gridData.selected = true;
       }
-
-      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData).shapeGroup);
+      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData,
+                                                                   this.props.imageRatio
+                                                                  ).shapeGroup);
     });
 
     this.canvas.renderAll();
@@ -571,31 +668,10 @@ export default class SampleImage extends React.Component {
   render() {
     this.configureGrid();
     this.showGridForm();
-
+    this.updateGridResults();
     return (
       <div>
-        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
-          <Form inline>
-            <FormGroup>
-              <ControlLabel>H-Cell Spacing:</ControlLabel>
-              <FormControl
-                style={{ width: '50px', marginRight: '1em' }}
-                type="text"
-                value={this.gridCellSpacing()[0]}
-                onChange={this.setHCellSpacing}
-              />
-            </FormGroup>
-            <FormGroup>
-              <ControlLabel>V-Cell Spacing:</ControlLabel>
-              <FormControl
-                style={{ width: '50px' }}
-                type="text"
-                value={this.gridCellSpacing()[1]}
-                onChange={this.setVCellSpacing}
-              />
-            </FormGroup>
-          </Form>
-        </div>
+        {this.getGridForm()}
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">
             <SampleControls

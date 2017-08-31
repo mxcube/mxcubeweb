@@ -47,6 +47,17 @@ export const InputField = (prop) => (
    />
 );
 
+export const DisplayField = ({ label, value }) => (
+      <FormGroup>
+        <Col className="col-xs-8 control-label" style={{ textAlign: 'left' }}>
+           <b> {label} </b>
+        </Col>
+        <Col className="col-xs-4">
+          <FormControl value={value} readOnly />
+        </Col>
+      </FormGroup>
+);
+
 export const CheckboxField = ({ propName, label }) => (
    <Field name={propName}
      component={ (prop) =>
