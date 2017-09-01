@@ -17,7 +17,8 @@ import { setStatus,
          addTaskResultAction,
          addTaskAction,
          sendStopQueue,
-         setCurrentSample } from './actions/queue';
+         setCurrentSample,
+         addDiffractionPlanAction } from './actions/queue';
 import { collapseItem,
          showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading,
@@ -148,6 +149,13 @@ class ServerIO {
       }
 
       this.dispatch(addTaskAction(record.tasks));
+    });
+
+    this.hwrSocket.on('add_diff_plan', (record, callback) => {
+      if (callback) {
+        callback();
+      }
+      this.dispatch(addDiffractionPlanAction(record.tasks));
     });
 
     this.hwrSocket.on('queue', (record, callback) => {
