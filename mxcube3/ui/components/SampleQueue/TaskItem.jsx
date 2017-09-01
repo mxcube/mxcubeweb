@@ -21,6 +21,7 @@ export default class TaskItem extends Component {
     this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
+    this.showDiffPlan = this.showDiffPlan.bind(this);
     this.state = {
       overInput: false,
       selected: false
@@ -43,6 +44,27 @@ export default class TaskItem extends Component {
     );
   }
 
+  getDiffPlan(data) {
+    let diffPlan = [];
+    if (data.hasOwnProperty('diffractionPlan')) {
+      if (Object.keys(data.diffractionPlan).length !== 0) {
+        // it can be empty
+        diffPlan = (
+          <div>
+            <b>Diffraction plan available</b>
+             <i className="fa fa-plus-circle" onClick={this.showDiffPlan} />
+          </div>
+          );
+      }
+    }
+    return diffPlan;
+  }
+
+  showDiffPlan() {
+    const { data, sampleId } = this.props;
+    const { type, parameters } = data.diffractionPlan;
+    this.props.showForm(type, sampleId, data.diffractionPlan, parameters.shape);
+  }
   toggleChecked() {
     this.props.toggleChecked(this.props.sampleId, this.props.index);
   }
@@ -242,6 +264,7 @@ export default class TaskItem extends Component {
               </div>);
             })}
             {this.getResult(state)}
+            {this.getDiffPlan(data)}
           </div>
         </Collapse>
       </ContextMenuTrigger>
