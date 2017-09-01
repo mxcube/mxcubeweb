@@ -170,7 +170,51 @@ export default (state = INITIAL_STATE, action) => {
 
       return Object.assign({}, state, { sampleList });
     }
+    case 'ADD_DIFF_PLAN': {
+      // Similar as ADD_TASKS but we link the char task with the diff plan dc
+      // Can we expect more than one dc as diff plan?
+      const sampleList = { ...state.sampleList };
+      action.tasks.forEach((t) => {
+        const task = { ...t, state: 0 };
+        const originID = task.originID;
+        // first we find which char task is the origin
+        /* eslint-disable no-param-reassign */
+        sampleList[task.sampleID].tasks.forEach((tt) => {
+          if (tt.queueID === originID && tt.type === 'Characterisation') {
+            tt.diffractionPlanID = task.queueID;
+            tt.diffractionPlan = task;
+          }
+        });
+        /* eslint-enable no-param-reassign */
+        if (task.parameters.prefix === '') {
+          task.parameters.prefix = sampleList[task.sampleID].defaultPrefix;
+        }
+        sampleList[task.sampleID] = {
+          ...sampleList[task.sampleID],
+          tasks: [...sampleList[task.sampleID].tasks],
+          state: TASK_UNCOLLECTED
+        };
+      });
 
+      return Object.assign({}, state, { sampleList });
+    }
+    case 'ACCEPT_DIFF_PLAN': {
+      const task = Object.assign({}, action.task);
+
+      task.isDiffractionPlan = false;
+      const sampleList = { ...state.sampleList };
+
+      if (task.parameters.prefix === '') {
+        task.parameters.prefix = sampleList[task.sampleID].defaultPrefix;
+      }
+      sampleList[task.sampleID] = {
+        ...sampleList[task.sampleID],
+        tasks: [...sampleList[task.sampleID].tasks, task],
+        state: TASK_UNCOLLECTED
+      };
+
+      return Object.assign({}, state, { sampleList });
+    }
     case 'CHANGE_TASK_ORDER': {
       const sampleList = Object.assign({}, state.sampleList);
 

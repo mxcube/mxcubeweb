@@ -64,6 +64,15 @@ export default (state = initialState, action) => {
 
       return Object.assign({}, state, { displayData });
     }
+    case 'ACCEPT_DIFF_PLAN': {
+      const displayData = { ...state.displayData };
+
+      displayData[action.task.queueID] = { collapsed: false,
+                                    selected: false,
+                                    progress: 0 };
+
+      return Object.assign({}, state, { displayData });
+    }
     case 'ADD_TASK_RESULT': {
       const displayData = {
         ...state.displayData,
