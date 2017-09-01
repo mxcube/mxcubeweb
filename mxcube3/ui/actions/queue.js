@@ -373,6 +373,20 @@ export function addTaskAction(tasks) {
   return { type: 'ADD_TASKS', tasks };
 }
 
+export function addDiffractionPlanAction(tasks) {
+  return { type: 'ADD_DIFF_PLAN', tasks };
+}
+
+export function acceptDiffractionPlanAction(task) {
+  return { type: 'ACCEPT_DIFF_PLAN', task };
+}
+
+export function acceptDiffractionPlan(task) {
+  return function (dispatch) {
+    // dispatch(sendToggleCheckBox(sampleID, taskID));
+    dispatch(acceptDiffractionPlanAction(task));
+  };
+}
 
 export function addTask(sampleIDs, parameters, runNow) {
   return function (dispatch, getState) {
