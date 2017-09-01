@@ -301,6 +301,7 @@ def _handle_char(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
+    originID, task = _handle_diffraction_plan(node)
     res = {"label": "Characterisation",
            "type": "Characterisation",
            "parameters": parameters,
@@ -308,11 +309,19 @@ def _handle_char(sample_id, node):
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": node._node_id,
-           "state": state
+           "state": state,
+           "diffractionPlan": task,
+           "diffractionPlanID": originID
            }
 
     return res
 
+def _handle_diffraction_plan(node):
+    originID, task = mxcube.queue.diffraction_plan
+    task['isDiffractionPlan'] = True
+    if node._node_id == originID:
+        return (originID, task)
+    return (-1, {})
 
 def _handle_interleaved(sample_id, node):
     wedges = []
@@ -977,6 +986,7 @@ def new_queue():
     :returns: MxCuBE QueueModel Object
     """
     queue = pickle.loads(mxcube.empty_queue)
+    queue.diffraction_plan = (-1, {})
     init_signals(queue)
     mxcube.xml_rpc_server.queue_hwobj = queue.queue_hwobj
     mxcube.xml_rpc_server.queue_model_hwobj = queue
@@ -1024,22 +1034,31 @@ def queue_model_child_added(parent, child):
     characterisations and workflows.
     """
     parent_model, parent_entry = get_entry(parent._node_id)
-    model, entry = get_entry(child._node_id)
+    child_model, child_entry = get_entry(child._node_id)
 
     # Origin is ORIGIN_MX3 if task comes from MXCuBE-3
-    if model.get_origin() != ORIGIN_MX3:
-
+    if child_model.get_origin() != ORIGIN_MX3:
         # If origin is set get the originating entry and model and
         # handle accordingly
-        if model.get_origin():
-            origin_model, origin_entry = get_entry(model.get_origin())
+        if child_model.get_origin():
+            origin_model, origin_entry = get_entry(child_model.get_origin())
 
-            if isinstance(origin_model, qmo.Characterisation):
-                # Handle characterization specific logic here
-                print("CHARACTERIZATION")
+        # we do not want to process when TaskGroup (get_name contains 'Diffraction Plan')
+        # is added, but when a dc_entry is added to such TaskGroup
+        # the origin of the task group is the char node, but not for the dc_entry
+        if isinstance(child, qmo.DataCollection) and isinstance(origin_model, qmo.Characterisation):
+            # This is the addition of the TaskGroup
+            dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
+            child.set_enabled(True)
+            dc_entry.set_enabled(True)
+            parent_entry.enqueue(dc_entry)
+            sample = parent.get_parent()
+            task = _handle_dc(sample._node_id, child)
+            task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
+            mxcube.queue.diffraction_plan = (origin_model._node_id, task)
+            socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
-        # To handle results from characterization, make this elif
-        if isinstance(child, qmo.DataCollection):
+        elif isinstance(child, qmo.DataCollection) and not isinstance(origin_model, qmo.Characterisation):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
 
             child.set_enabled(True)
@@ -1049,6 +1068,7 @@ def queue_model_child_added(parent, child):
 
             task = _handle_dc(sample._node_id, child)
             socketio.emit('add_task', {"tasks": [task]}, namespace='/hwr')
+
         elif isinstance(child, qmo.TaskGroup):
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
             dcg_entry.set_enabled(True)

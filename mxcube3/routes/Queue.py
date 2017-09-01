@@ -301,7 +301,6 @@ def queue_move_task_item(sid, ti1, ti2):
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200)
 
-   
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
 def update_sample(sample_id):
@@ -640,5 +639,73 @@ def set_autmount():
 
     resp = jsonify({'automount': automount})
     resp.status_code = 200
-    
+
     return resp
+
+@mxcube.route("/mxcube/api/v0.1/queue/mock/diff_plan/<sid>", methods=["GET"])
+def create_diff_plan(sid):
+    '''Juts for creating a diff plan as if it were created by edna and so on.
+    '''
+    from mock import Mock
+
+
+    acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+    n = int(mxcube.session["file_info"].getProperty("precision", 4))
+    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
+
+    task = { 'parameters': {
+            'first_image': acq_parameters.first_image,
+            'num_images': 111,
+            'osc_start': acq_parameters.osc_start,
+            'osc_range': 42,
+            'kappa': acq_parameters.kappa,
+            'kappa_phi': acq_parameters.kappa_phi,
+            'overlap': acq_parameters.overlap,
+            'exp_time': 456,
+            'num_passes': acq_parameters.num_passes,
+            'resolution': acq_parameters.resolution,
+            'energy': acq_parameters.energy,
+            'transmission': acq_parameters.transmission,
+            'shutterless': acq_parameters.shutterless,
+            'detector_mode': acq_parameters.detector_mode,
+            'inverse_beam': False,
+            'take_dark_current': True,
+            'skip_existing_images': False,
+            'take_snapshots': True,
+            'helical': False,
+            'mesh': False,
+            'fileNameTemplate': template,
+            'prefix': 'foo',
+            'shape': 'P1'#-1
+        },
+        'checked': {True}
+    }
+
+    sample_model, sample_entry = qutils.get_entry(sid)
+    dc_model, dc_entry = qutils._create_dc(task)
+    qutils.set_dc_params(dc_model, dc_entry, task)
+    pt = dc_model.acquisitions[0].path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    group_model = qmo.TaskGroup()
+    group_model.set_name('Diffraction plan')
+    group_model.set_origin(3)
+    group_model.set_enabled(False)
+
+    dc_model.set_origin(3)
+    dc_model.set_enabled(False)
+    mxcube.queue.add_child(sample_model, group_model)  # we should ignore this signal
+    mxcube.queue.add_child(group_model, dc_model)  # and catch this one
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(False)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(dc_entry)
+
+    return Response(status=200)
