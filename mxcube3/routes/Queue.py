@@ -325,7 +325,7 @@ def update_sample(sample_id):
         # TODO: update here the model with the new 'params'
         # missing lines...
         sample_entry.set_data_model(sample_node)
-        #qutils.save_queue(session)
+        # qutils.save_queue(session)
         logging.getLogger('HWR').info('[QUEUE] sample updated')
         resp = jsonify({'QueueId': node_id})
         resp.status_code = 200
@@ -337,6 +337,7 @@ def update_sample(sample_id):
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<node_id>/accept", methods=['POST'])
 def accept_diff_plan(sid, node_id):
+    qutils.enable_entry(mxcube.queue.diffraction_plan[int(node_id)]['queueID'], True)
     mxcube.queue.diffraction_plan[int(node_id)]['diffractionPlanAccepted'] = True
     return Response(status=200)
 

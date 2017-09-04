@@ -317,13 +317,22 @@ def _handle_char(sample_id, node):
     return res
 
 def _handle_diffraction_plan(node):
-    originID, task = mxcube.queue.diffraction_plan
+    k = mxcube.queue.diffraction_plan.keys()
+    if len(k) == 0:
+        return (-1, {})
+    else:
+        task = mxcube.queue.diffraction_plan.get(node._node_id)
+        if task == None:
+            return (-1, {})
+
+        originID = task['originID']
 
     if not task.has_key('isDiffractionPlan'):
         task['isDiffractionPlan'] = True
         task['diffractionPlanAccepted'] = False
     if node._node_id == originID:
         return (originID, task)
+
     return (-1, {})
 
 def _handle_interleaved(sample_id, node):
@@ -989,7 +998,8 @@ def new_queue():
     :returns: MxCuBE QueueModel Object
     """
     queue = pickle.loads(mxcube.empty_queue)
-    queue.diffraction_plan = (-1, {})
+    queue.diffraction_plan = {}
+
     init_signals(queue)
     mxcube.xml_rpc_server.queue_hwobj = queue.queue_hwobj
     mxcube.xml_rpc_server.queue_model_hwobj = queue
@@ -1052,13 +1062,13 @@ def queue_model_child_added(parent, child):
         if isinstance(child, qmo.DataCollection) and isinstance(origin_model, qmo.Characterisation):
             # This is the addition of the TaskGroup
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
-            child.set_enabled(True)
-            dc_entry.set_enabled(True)
+            child.set_enabled(False)
+            dc_entry.set_enabled(False)
             parent_entry.enqueue(dc_entry)
             sample = parent.get_parent()
             task = _handle_dc(sample._node_id, child)
             task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id, 'diffractionPlanAccepted': False})
-            mxcube.queue.diffraction_plan = (origin_model._node_id, task)
+            mxcube.queue.diffraction_plan.update({origin_model._node_id: task})
             socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
         elif isinstance(child, qmo.DataCollection) and not isinstance(origin_model, qmo.Characterisation):
