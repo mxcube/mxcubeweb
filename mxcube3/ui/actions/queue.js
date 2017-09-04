@@ -381,10 +381,30 @@ export function acceptDiffractionPlanAction(task) {
   return { type: 'ACCEPT_DIFF_PLAN', task };
 }
 
+export function sendAcceptDiffractionPlan(task) {
+  const sampleID = task.sampleID;
+  const taskID = task.originID;
+  return function () {
+    fetch(`mxcube/api/v0.1/queue/${sampleID}/${taskID}/accept`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused to accept diffracion plan');
+      }
+    });
+  };
+}
+
 export function acceptDiffractionPlan(task) {
   return function (dispatch) {
     // dispatch(sendToggleCheckBox(sampleID, taskID));
     dispatch(acceptDiffractionPlanAction(task));
+    dispatch(sendAcceptDiffractionPlan(task));
   };
 }
 

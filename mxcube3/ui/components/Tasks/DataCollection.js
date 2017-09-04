@@ -106,10 +106,17 @@ class DataCollection extends React.Component {
     );
   }
 
-  showFooter(isdiffplan) {
+  showFooter() {
+    const isDiffractionPlan = this.props.taskData.isDiffractionPlan;
+    const diffPlanAccepted = this.props.taskData.diffractionPlanAccepted;
     let foot = '';
-    if (isdiffplan) {
-      foot = this.showDPFooter();
+
+    if (isDiffractionPlan) {
+      if (diffPlanAccepted) {
+        foot = '';
+      } else {
+        foot = this.showDPFooter();
+      }
     } else {
       foot = this.showDCFooter();
     }
@@ -194,7 +201,7 @@ class DataCollection extends React.Component {
           <FieldsHeader title="Processing" />
        </Modal.Body>
 
-       { this.props.taskData.state ? '' : this.showFooter(this.props.taskData.isDiffractionPlan) }
+       { this.props.taskData.state ? '' : this.showFooter() }
 
       </DraggableModal>);
   }

@@ -335,6 +335,11 @@ def update_sample(sample_id):
         return Response(status=409)
 
 
+@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<node_id>/accept", methods=['POST'])
+def accept_diff_plan(sid, node_id):
+    mxcube.queue.diffraction_plan[int(node_id)]['diffractionPlanAccepted'] = True
+    return Response(status=200)
+
 @mxcube.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=['PUT'])
 def toggle_node(node_id):
     '''
@@ -707,5 +712,6 @@ def create_diff_plan(sid):
     group_entry.set_enabled(False)
     sample_entry.enqueue(group_entry)
     group_entry.enqueue(dc_entry)
+
 
     return Response(status=200)

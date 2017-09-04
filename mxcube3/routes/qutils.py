@@ -318,7 +318,10 @@ def _handle_char(sample_id, node):
 
 def _handle_diffraction_plan(node):
     originID, task = mxcube.queue.diffraction_plan
-    task['isDiffractionPlan'] = True
+
+    if not task.has_key('isDiffractionPlan'):
+        task['isDiffractionPlan'] = True
+        task['diffractionPlanAccepted'] = False
     if node._node_id == originID:
         return (originID, task)
     return (-1, {})
@@ -1054,7 +1057,7 @@ def queue_model_child_added(parent, child):
             parent_entry.enqueue(dc_entry)
             sample = parent.get_parent()
             task = _handle_dc(sample._node_id, child)
-            task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
+            task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id, 'diffractionPlanAccepted': False})
             mxcube.queue.diffraction_plan = (origin_model._node_id, task)
             socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
