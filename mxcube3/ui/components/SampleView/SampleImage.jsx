@@ -616,7 +616,7 @@ export default class SampleImage extends React.Component {
       this.canvas
     ));
     const fabricSelectables = [
-      ...makePoints(points, 1.0),
+      ...makePoints(points, imageRatio),
       ...makeLines(lines, imageRatio)
     ];
     this.canvas.add(...fabricSelectables);
