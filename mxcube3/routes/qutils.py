@@ -1043,15 +1043,15 @@ def queue_model_child_added(parent, child):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
 
             enable_entry(dc_entry, True)
-            parent_entry.enqueue(dc_entry)
             enable_entry(parent_entry, True)
+            parent_entry.enqueue(dc_entry)
             sample = parent.get_parent()
 
             task = _handle_dc(sample._node_id, child)
             socketio.emit('add_task', {"tasks": [task]}, namespace='/hwr')
         elif isinstance(child, qmo.TaskGroup):
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
-            dcg_entry.set_enabled(True)
+            enable_entry(dcg_entry, True)
             parent_entry.enqueue(dcg_entry)
 
 
