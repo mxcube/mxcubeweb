@@ -30,7 +30,40 @@ class DataCollection extends React.Component {
   }
 
   submitAcceptDiffractionPlan() {
-    this.props.handleSubmit(this.props.acceptDiffractionPlan.bind(this, this.props.taskData))();
+    this.props.handleSubmit(this.acceptDiffractionPlanCb.bind(this, false))();
+  }
+
+  acceptDiffractionPlanCb(runNow, params) {
+    const pars = {
+      ...this.props.taskData,
+      parameters: { ...params },
+    };
+
+    // Form gives us all parameter values in strings so we need to transform numbers back
+    const stringFields = [
+      'shutterless',
+      'inverse_beam',
+      'centringMethod',
+      'detector_mode',
+      'space_group',
+      'prefix',
+      'subdir',
+      'type',
+      'shape',
+      'label',
+      'helical',
+      'isDiffractionPlan',
+    ];
+
+    for (const key in pars) {
+      if (pars.parameters.hasOwnProperty(key)
+          && stringFields.indexOf(key) === -1
+          && pars.parameters[key]) {
+        pars.parameters[key] = Number(pars.parameters[key]);
+      }
+    }
+
+    this.props.acceptDiffractionPlan(pars);
     this.props.hide();
   }
 

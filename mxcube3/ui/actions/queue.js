@@ -373,6 +373,32 @@ export function addTaskAction(tasks) {
   return { type: 'ADD_TASKS', tasks };
 }
 
+export function updateTaskAction(sampleID, taskIndex, taskData) {
+  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
+}
+
+
+export function updateTask(sampleID, taskIndex, params, runNow) {
+  return function (dispatch, getState) {
+    const { sampleGrid } = getState();
+    const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
+    dispatch(queueLoading(true));
+
+    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
+      }
+      return response.json();
+    }).then((data) => {
+      dispatch(updateTaskAction(sampleID, taskIndex, data));
+
+      if (runNow) {
+        dispatch(sendRunSample(sampleID, taskIndex));
+      }
+    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+  };
+}
+
 export function addDiffractionPlanAction(tasks) {
   return { type: 'ADD_DIFF_PLAN', tasks };
 }
@@ -400,11 +426,11 @@ export function sendAcceptDiffractionPlan(task) {
   };
 }
 
-export function acceptDiffractionPlan(task) {
+export function acceptDiffractionPlan(parameters) {
   return function (dispatch) {
-    // dispatch(sendToggleCheckBox(sampleID, taskID));
-    dispatch(acceptDiffractionPlanAction(task));
-    dispatch(sendAcceptDiffractionPlan(task));
+    dispatch(acceptDiffractionPlanAction(parameters));
+    dispatch(updateTask(parameters.sampleID, parameters.taskIndex, parameters.parameters, false));
+    dispatch(sendAcceptDiffractionPlan(parameters));
   };
 }
 
@@ -474,33 +500,6 @@ export function addTask(sampleIDs, parameters, runNow) {
       if (runNow) {
         const taskIndex = data[sampleIDs[0]].tasks[data[sampleIDs[0]].tasks.length - 1].taskIndex;
         dispatch(sendRunSample(sampleIDs[0], taskIndex));
-      }
-    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
-  };
-}
-
-
-export function updateTaskAction(sampleID, taskIndex, taskData) {
-  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
-}
-
-
-export function updateTask(sampleID, taskIndex, params, runNow) {
-  return function (dispatch, getState) {
-    const { sampleGrid } = getState();
-    const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
-    dispatch(queueLoading(true));
-
-    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
-      }
-      return response.json();
-    }).then((data) => {
-      dispatch(updateTaskAction(sampleID, taskIndex, data));
-
-      if (runNow) {
-        dispatch(sendRunSample(sampleID, taskIndex));
       }
     }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
