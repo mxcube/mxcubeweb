@@ -1,9 +1,9 @@
-gevent==1.0.2
-flask==0.10.1
-flask-socketio==2.2
-Flask-Session
-gevent-websocket==0.9.3
-python-socketio==1.1
+gevent==1.2.2
+flask==0.12.2
+flask-socketio==2.9.2
+gevent-websocket==0.10.1
+Flask-Session==0.3.1
+python-socketio==1.8.0
 louie
 redis
 scipy

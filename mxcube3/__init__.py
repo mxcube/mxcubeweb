@@ -1,7 +1,7 @@
 from __future__ import absolute_import
-from flask import Flask, request
-from flask.ext.socketio import SocketIO
-from flask.ext.session import Session
+from flask import Flask, request, session
+from flask_socketio import SocketIO
+from flask_session import Session
 from optparse import OptionParser
 
 import os
@@ -48,7 +48,6 @@ cmdline_options, args = opt_parser.parse_args()
 
 t0 = time.time()
 
-socketio = SocketIO()
 app = Flask(__name__, static_url_path='')
 app.config['SESSION_TYPE'] = "redis"
 app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
@@ -61,7 +60,8 @@ app.register_error_handler(Exception, exception_handler)
 sess = Session()
 sess.init_app(app)
 app.debug = False
-# this line important for socketio msg, otherwise no msg is sent...
+
+socketio = SocketIO(manage_session=False)
 socketio.init_app(app)
 
 # the following test prevents Flask from initializing twice
