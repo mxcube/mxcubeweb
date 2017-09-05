@@ -535,8 +535,8 @@ export default class SampleImage extends React.Component {
     }
 
     if (gridForm && left && top) {
-      gridForm.style.top = `${(top - 70) / this.props.imageRatio}px`;
-      gridForm.style.left = `${(left + 15) / this.props.imageRatio}px`;
+      gridForm.style.top = `${(top - 70)}px`;
+      gridForm.style.left = `${(left + 15)}px`;
       gridForm.style.display = 'block';
     } else {
       this.hideGridForm();
