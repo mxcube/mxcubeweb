@@ -39,12 +39,6 @@ export default class LoginComponent extends React.Component {
     }
 
     return (<Grid>
-        { this.props.showError ?
-          <Alert bsStyle="danger">
-            <h4>Authentification invalide.</h4>
-          </Alert>
-          : ''
-        }
         { (this.props.showForm === 'SelectProposals') ?
           <SelectProposal
             show
