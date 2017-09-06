@@ -601,7 +601,7 @@ def accept_centring():
     """
     Accept the centring position.
     """
-    mxcube.diffractometer.saveCurrentPos() #acceptCentring()
+    mxcube.diffractometer.acceptCentring()
     return Response(status=200)
 
 
