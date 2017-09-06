@@ -20,7 +20,7 @@ function mapStateToProps(state) {
   return {
     loading: state.general.loading,
     showError: state.general.showErrorPanel,
-    showForm: state.login.showForm,
+    showProposalsForm: state.login.showProposalsForm,
     data: state.login.data,
     selectedProposal: state.login.selectedProposal
   };

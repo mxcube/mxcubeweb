@@ -11,16 +11,15 @@ export function setLoginInfo(loginInfo) {
   };
 }
 
-export function showProposalsForm(formname) {
+export function showProposalsForm() {
   return {
     type: 'SHOW_PROPOSALS_FORM',
-    name: formname,
   };
 }
 
 export function hideProposalsForm() {
   return {
-    type: 'HIDE_FORM'
+    type: 'HIDE_PROPOSALS_FORM'
   };
 }
 
