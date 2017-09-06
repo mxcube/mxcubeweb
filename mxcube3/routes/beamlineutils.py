@@ -72,7 +72,6 @@ def get_viewport_info():
     video_sizes = streaming.get_available_sizes(mxcube.diffractometer.camera)
     width, height, scale = streaming.video_size()
     pixelsPerMm = mxcube.diffractometer.get_pixels_per_mm()
-    pixelsPerMm = pixelsPerMm[0] * scale, pixelsPerMm[1] * scale
 
     beam_info_dict = get_beam_info()
 

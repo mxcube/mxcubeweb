@@ -87,7 +87,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('Motors', (record) => {
-      this.dispatch(updatePointsPosition(record.CentredPositions));
+      this.dispatch(updatePointsPosition(record.centredPositions));
       this.dispatch(saveMotorPositions(record.Motors));
       switch (record.Signal) {
         case 'minidiffPhaseChanged':

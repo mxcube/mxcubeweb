@@ -264,14 +264,17 @@ def get_shape_with_sid(sid):
 @mxcube.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=['GET'])
 def shape_mock_result(sid):
     shape = mxcube.shapes.get_shape(sid)
+    res = {}
 
-    from random import random
+    if shape:
+        from random import random
 
-    res = map(lambda x: map(lambda y: random(), range(shape.num_rows)), range(shape.num_cols))
+        for i in range(1, shape.num_rows*shape.num_cols + 1):
+            res[i] = [i, [int(random() * 255), int(random() * 255),
+                          int(random() * 255), int(random())]]
 
-    mxcube.shapes.set_grid_data(sid, res)
-
-    signals.grid_result_available(to_camel(shape.as_dict()))
+        mxcube.shapes.set_grid_data(sid, res)
+        signals.grid_result_available(to_camel(shape.as_dict()))
 
     return Response(status=200)
 
@@ -289,6 +292,7 @@ def update_shapes():
     params = request.get_json()
     shape_data = from_camel(params.get("shapeData", {}))
     pos = []
+
     # Get the shape if already exists
     shape = mxcube.shapes.get_shape(params["id"])
 
@@ -296,6 +300,12 @@ def update_shapes():
     if not shape:
         refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
 
+        # Store pixels per mm for third party software, to facilitate 
+        # certain calculations 
+        shape_data["pixels_per_mm"] =  mxcube.diffractometer.get_pixels_per_mm()
+        shape_data["beam_pos"] = (mxcube.diffractometer.getBeamPosX(),
+                                  mxcube.diffractometer.getBeamPosY())
+        
         # Shape does not have any refs, create a new Centered position
         if not refs:
             x, y = shape_data["screen_coord"]
