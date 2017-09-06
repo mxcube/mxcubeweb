@@ -62,7 +62,7 @@ export default class LoginComponent extends React.Component {
           </center>
         </Row>
         <Row>
-          {(this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : null )}
+          {this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : null}
           <Col xs={4} xsOffset={4}>
             <Row>
               <Col xs={12}>
