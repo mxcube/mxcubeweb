@@ -45,3 +45,8 @@
 .popinput-input-link:hover > .popinput-input-editicon {
   visibility: visible;
 }
+
+.editable-click {
+  cursor: pointer;
+}
+
