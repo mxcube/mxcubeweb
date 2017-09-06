@@ -264,14 +264,17 @@ def get_shape_with_sid(sid):
 @mxcube.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=['GET'])
 def shape_mock_result(sid):
     shape = mxcube.shapes.get_shape(sid)
+    res = {}
 
-    from random import random
+    if shape:
+        from random import random
 
-    res = map(lambda x: map(lambda y: random(), range(shape.num_rows)), range(shape.num_cols))
+        for i in range(1, shape.num_rows*shape.num_cols + 1):
+            res[i] = [i, [int(random() * 255), int(random() * 255),
+                          int(random() * 255), int(random())]]
 
-    mxcube.shapes.set_grid_data(sid, res)
-
-    signals.grid_result_available(to_camel(shape.as_dict()))
+        mxcube.shapes.set_grid_data(sid, res)
+        signals.grid_result_available(to_camel(shape.as_dict()))
 
     return Response(status=200)
 
