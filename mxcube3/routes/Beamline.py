@@ -43,8 +43,7 @@ def init_signals():
         else:
             logging.getLogger('HWR').error("safety_shutter is not defined")
     except Exception, ex:
-        logging.getLogger('HWR').\
-            error("error loading safety_shutter hwo is not defined (%s)" % str(ex))
+        logging.getLogger('HWR').error("error loading safety_shutter hwo: %s" % str(ex))
 
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
