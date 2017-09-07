@@ -296,6 +296,7 @@ def _handle_char(sample_id, node):
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
     refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
+
     parameters.update(refp)
 
     queueID = node._node_id
@@ -644,7 +645,7 @@ def set_dc_params(model, entry, task_data):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
-    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
 
     acq.path_template.set_from_dict(params)
