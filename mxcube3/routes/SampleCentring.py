@@ -29,65 +29,48 @@ def init_signals():
     Connect all the relevant hwobj signals with the corresponding
     callback method.
     """
-    for signal in signals.microdiffSignals:
-        mxcube.diffractometer.connect(mxcube.diffractometer, signal,
-                                      signals.motor_event_callback)
-    for motor in mxcube.diffractometer.centring_motors_list:
+    dm = mxcube.diffractometer
+
+    for motor in dm.centring_motors_list:
         @Utils.RateLimited(3)
-        def pos_cb(pos, motor=motor.lower(), **kw):
-          signals.motor_position_callback(motor, pos)
+        def pos_cb(pos, motor=motor, **kw):
+            movable = Utils.get_movable_state_and_position(motor)[motor]
+            signals.motor_position_callback(movable)
 
-        def state_cb(state, motor=motor.lower(), **kw):
-          signals.motor_state_callback(motor, state, **kw)
+        def state_cb(state, motor=motor, **kw):
+            movable = Utils.get_movable_state_and_position(motor)[motor]
+            signals.motor_state_callback(movable, **kw)
 
-        setattr(mxcube.diffractometer, "_%s_pos_callback" % motor, pos_cb)
-        setattr(mxcube.diffractometer, "_%s_state_callback" % motor, state_cb)
-        mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
-                                      "positionChanged",
-                                      pos_cb)
-        mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
-                                      "stateChanged",
-                                      state_cb) #signals.motor_event_callback)
-    try:
-        frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-        frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged',
-                                 signals.motor_event_callback)
-        if hasattr(frontlight_hwobj, "getActuatorState"):
-            frontlight_hwobj.connect(frontlight_hwobj, 'actuatorStateChanged',
-                                     signals.motor_event_callback)
-        else:
-            frontlightswitch_hwobj = mxcube.diffractometer.getObjectByRole(
-                'frontlightswitch')
-            frontlightswitch_hwobj.connect(frontlightswitch_hwobj,
-                                           'actuatorStateChanged',
-                                           signals.motor_event_callback)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] frontlight error')
+        setattr(dm, "_%s_pos_callback" % motor, pos_cb)
+        setattr(dm, "_%s_state_callback" % motor, state_cb)
+        dm.connect(dm.getObjectByRole(motor), "positionChanged", pos_cb)
+        dm.connect(dm.getObjectByRole(motor), "stateChanged", state_cb)
 
-    try:
-        backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-        backlight_hwobj.connect(backlight_hwobj, 'positionChanged',
-                                signals.motor_event_callback)
-        if hasattr(backlight_hwobj, "getActuatorState"):
-            backlight_hwobj.connect(backlight_hwobj, 'actuatorStateChanged',
-                                    signals.motor_event_callback)
-        else:
-            backlightswitch_hwobj = mxcube.diffractometer.getObjectByRole(
-                'backlightswitch')
-            backlightswitch_hwobj.connect(backlightswitch_hwobj,
-                                          'actuatorStateChanged',
-                                          signals.motor_event_callback)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] back light error')
+    for motor in  ['FrontLight', 'BackLight']:
+        def state_cb(state, motor=motor, **kw):
+            movable = Utils.get_movable_state_and_position(motor)
+            signals.motor_state_callback(movable[motor], **kw)
+            signals.motor_state_callback(movable[motor + "Switch"], **kw)
 
-    mxcube.diffractometer.connect("centringStarted", signals.centring_started)
-    mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful",
-                                  wait_for_centring_finishes)
-    mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
-                                  wait_for_centring_finishes)
+        setattr(dm, "_%s_state_callback" % motor, state_cb)
 
-#   camera = mxcube.diffractometer.camera
-#    streaming.set_video_size(camera.getWidth(), camera.getHeight())
+        try:
+            motor_hwobj = dm.getObjectByRole(motor)
+            motor_hwobj.connect(motor_hwobj, 'positionChanged', state_cb)
+
+            if hasattr(motor_hwobj, "actuatorIn"):
+                motor_hwobj = dm.getObjectByRole(motor)
+                motor_hwobj.connect(motor_hwobj, 'actuatorStateChanged', state_cb)
+            else:
+                motor_sw_hwobj = dm.getObjectByRole(motor + 'Switch')
+                motor_sw_hwobj.connect(motor_sw_hwobj, 'actuatorStateChanged', state_cb)
+
+        except Exception as ex:
+            logging.getLogger('HWR').exception(str(ex))
+
+    dm.connect("centringStarted", signals.centring_started)
+    dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
+    dm.connect(dm, "centringFailed", wait_for_centring_finishes)
 
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
@@ -386,12 +369,13 @@ def back_light_on():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLight')
     if hasattr(motor_hwobj, "actuatorIn"):
-        motor_hwobj.actuatorIn()  # wait=False)
+        motor_hwobj.actuatorIn()
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
-        motor_hwobj.actuatorIn()  # wait=False)
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLightSwitch')
+        motor_hwobj.actuatorIn()
+
     return Response(status=200)
 
 
@@ -402,12 +386,14 @@ def back_light_off():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLight')
+
     if hasattr(motor_hwobj, "actuatorOut"):
         motor_hwobj.actuatorOut()
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLightSwitch')
         motor_hwobj.actuatorOut()
+
     return Response(status=200)
 
 
@@ -418,12 +404,14 @@ def front_light_on():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLight')
+
     if hasattr(motor_hwobj, "actuatorIn"):
         motor_hwobj.actuatorIn()
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLightSwitch')
         motor_hwobj.actuatorIn()
+
     return Response(status=200)
 
 
@@ -434,12 +422,13 @@ def front_light_off():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLight')
     if hasattr(motor_hwobj, "actuatorOut"):
         motor_hwobj.actuatorOut(wait=False)
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLightSwitch')
         motor_hwobj.actuatorOut(wait=False)
+
     return Response(status=200)
 
 
@@ -596,6 +585,7 @@ def wait_for_centring_finishes(*args, **kwargs):
     point = mxcube.shapes.add_shape_from_mpos([motor_positions], (x, y), "P")
     point.state = "TMP"
 
+    signals.send_shapes(update_positions = False)
     mxcube.diffractometer.emit('stateChanged', (True,))
 
 
@@ -606,6 +596,7 @@ def accept_centring():
     """
     mxcube.diffractometer.acceptCentring()
     return Response(status=200)
+
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=['PUT'])

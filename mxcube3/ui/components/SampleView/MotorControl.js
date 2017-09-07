@@ -32,7 +32,7 @@ export default class MotorControl extends React.Component {
                 label="Omega:"
                 suffix="&deg;"
                 decimalPoints="2"
-                state={phi.Status}
+                state={phi.state}
                 stop={stop}
                 disabled={this.props.motorsDisabled}
               />
@@ -48,7 +48,7 @@ export default class MotorControl extends React.Component {
                 label="Kappa:"
                 suffix="&deg;"
                 decimalPoints="2"
-                state={kappa.Status}
+                state={kappa.state}
                 stop={stop}
                 disabled={this.props.motorsDisabled}
               />
@@ -64,7 +64,7 @@ export default class MotorControl extends React.Component {
                 label="Phi:"
                 suffix="&deg;"
                 decimalPoints="2"
-                state={kappa_phi.Status}
+                state={kappa_phi.state}
                 stop={stop}
                 disabled={this.props.motorsDisabled}
               />
@@ -80,7 +80,7 @@ export default class MotorControl extends React.Component {
                 label="Y:"
                 suffix="mm"
                 decimalPoints="2"
-                state={phiy.Status}
+                state={phiy.state}
                 stop={stop}
                 disabled={this.props.motorsDisabled}
               />
@@ -96,7 +96,7 @@ export default class MotorControl extends React.Component {
                 label="Z:"
                 suffix="mm"
                 decimalPoints="2"
-                state={phiz.Status}
+                state={phiz.state}
                 stop={stop}
                 disabled={this.props.motorsDisabled}
               />
@@ -112,7 +112,7 @@ export default class MotorControl extends React.Component {
                 label="Focus:"
                 suffix="mm"
                 decimalPoints="2"
-                state={focus.Status}
+                state={focus.state}
                 stop={stop}
                 disabled={this.props.motorsDisabled}
               />
@@ -128,7 +128,7 @@ export default class MotorControl extends React.Component {
                 label="Samp-X:"
                 suffix="mm"
                 decimalPoints="2"
-                state={sampx.Status}
+                state={sampx.state}
                 stop={stop}
                 disabled={this.props.motorsDisabled}
               />
@@ -144,7 +144,7 @@ export default class MotorControl extends React.Component {
                  label="Samp-Y:"
                  suffix="mm"
                  decimalPoints="2"
-                 state={sampy.Status}
+                 state={sampy.state}
                  stop={stop}
                  disabled={this.props.motorsDisabled}
                />

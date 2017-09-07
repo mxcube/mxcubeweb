@@ -29,14 +29,7 @@ export default class SampleControls extends React.Component {
 
 
   setZoom(option) {
-    const currentZoom = this.props.zoom;
-    if (option.target.name === 'zoomOut' && currentZoom > 1) {
-      this.props.sampleActions.sendZoomPos(currentZoom - 1);
-    } else if (option.target.name === 'zoomSlider') {
-      this.props.sampleActions.sendZoomPos(option.target.value);
-    } else if (option.target.name === 'zoomIn' && currentZoom < 10) {
-      this.props.sampleActions.sendZoomPos(currentZoom + 1);
-    }
+    this.props.sampleActions.sendZoomPos(option.target.value);
   }
 
   setApertureSize(option) {
@@ -76,11 +69,12 @@ export default class SampleControls extends React.Component {
   }
 
   toggleLight(name) {
-    const lighStatus = this.props.motors[`${name}Switch`].Status;
-    if (lighStatus) {
-      this.props.sampleActions.sendLightOff(name.toLowerCase());
+    const lighstate = this.props.motors[`${name}Switch`].position;
+
+    if (lighstate) {
+      this.props.sampleActions.sendLightOff(name);
     } else {
-      this.props.sampleActions.sendLightOn(name.toLowerCase());
+      this.props.sampleActions.sendLightOn(name);
     }
   }
 
@@ -129,7 +123,6 @@ export default class SampleControls extends React.Component {
       </li>);
 
     const motors = this.props.motors;
-
     return (
       <div style={ { display: 'flex', position: 'absolute', width: '100%', zIndex: 1000 } } >
         <div className="sample-controlls text-center" >
@@ -210,8 +203,8 @@ export default class SampleControls extends React.Component {
                   id="zoom-control"
                   min="1" max="10"
                   step="1"
-                  defaultValue={motors.zoom}
-                  disabled={motors.zoom.Status !== 2}
+                  defaultValue={motors.zoom.position}
+                  disabled={motors.zoom.state !== 2}
                   onMouseUp={this.setZoom}
                   list="volsettings"
                   name="zoomSlider"
@@ -252,7 +245,7 @@ export default class SampleControls extends React.Component {
               title="Backlight On/Off"
               className="fa fa-lightbulb-o sample-controll"
               onClick={this.toggleBackLight}
-              active={motors.BackLightSwitch.Status === 1}
+              active={motors.BackLightSwitch.position === 1}
             />
             <OverlayTrigger trigger="click" rootClose placement="bottom"
               overlay={(
@@ -264,7 +257,7 @@ export default class SampleControls extends React.Component {
                     step="0.1"
                     min="0" max="1"
                     defaultValue={motors.BackLight.position}
-                    disabled={motors.BackLight.Status !== 2}
+                    disabled={motors.BackLight.state !== 2}
                     onMouseUp={(e) =>
                       this.props.sampleActions.sendMotorPosition('BackLight', e.target.value)}
                     name="backlightSlider"
@@ -287,7 +280,7 @@ export default class SampleControls extends React.Component {
               title="Front On/Off"
               className="fa fa-lightbulb-o sample-controll"
               onClick={this.toggleFrontLight}
-              active={motors.FrontLightSwitch.Status === 1}
+              active={motors.FrontLightSwitch.position === 1}
             />
             <OverlayTrigger trigger="click" rootClose placement="bottom"
               overlay={(
@@ -298,7 +291,7 @@ export default class SampleControls extends React.Component {
                     step="0.1"
                     min="0" max="1"
                     defaultValue={motors.FrontLight.position}
-                    disabled={motors.FrontLight.Status !== 2}
+                    disabled={motors.FrontLight.state !== 2}
                     onMouseUp={(e) =>
                       this.props.sampleActions.sendMotorPosition('FrontLight', e.target.value)}
                     name="frontLightSlider"

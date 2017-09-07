@@ -32,11 +32,9 @@ def last_queue_node():
 
 beam_signals = ['beamPosChanged', 'beamInfoChanged']
 
-microdiffSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted',
-                    'centringAccepted','centringMoving', 'centringFailed', 'centringSuccessful',
-                    'progressMessage', 'centringSnapshots', 'warning', 'minidiffPhaseChanged',
-                    'minidiffSampleIsLoadedChanged', 'zoomMotorPredefinedPositionChanged',
-                    'minidiffTransferModeChanged']
+centringSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted',
+                   'centringAccepted','centringMoving', 'centringFailed', 'centringSuccessful',
+                   'centringSnapshots']
 
 task_signals = {  # missing egyscan, xrf, etc...
     'collectStarted':               'Data collection has started',
@@ -391,57 +389,38 @@ def queue_interleaved_sw_done(data):
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
-
-def motor_position_callback(motor, pos):
-    socketio.emit('motor_position', {'name': motor, 'position': pos}, namespace='/hwr')
-
-
-def motor_state_callback(motor, state, sender=None, **kw):
+def send_shapes(update_positions = False):
     shape_dict = {}
 
     for shape in mxcube.shapes.get_shapes():
-        shape.update_position(mxcube.diffractometer.motor_positions_to_screen)
+        if update_positions:
+            shape.update_position(mxcube.diffractometer.motor_positions_to_screen)
+
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})
 
-    if state == 2:
-        # READY
-        motor_position_callback(motor, sender.getPosition())
-
-    socketio.emit('motor_state', {'name': motor,
-                                  'state': state,
-                                  'centredPositions': shape_dict},
-                  namespace='/hwr')
+    socketio.emit('update_shapes', {'shapes': shape_dict}, namespace='/hwr')
 
 
-def motor_event_callback(*args, **kwargs):
-    signal = kwargs['signal']
-    sender = str(kwargs['sender'].__class__).split('.')[0]
+def motor_position_callback(movable):
+    socketio.emit('motor_position', movable, namespace='/hwr')
 
-    motors_info = Utils.get_centring_motors_info()
-    motors_info.update(Utils.get_light_state_and_intensity())
-    motors_info['pixelsPerMm'] = mxcube.diffractometer.get_pixels_per_mm()
 
-    shape_dict = {}
+def motor_state_callback(movable, sender=None, **kw):
+    if movable["state"] == 2:
+        # Re emit the position when the motor have finished to move
+        # so that we are always sure that we have sent the final position
+        motor_position_callback(movable)
 
-    for shape in mxcube.shapes.get_shapes():
-        shape.update_position(mxcube.diffractometer.motor_positions_to_screen)
-        s = to_camel(shape.as_dict())
-        shape_dict.update({shape.id: s})
+        # Re calculate positions for shapes after motor finished to move
+        send_shapes(update_positions = True)
 
-    #  sending all motors position/status, and the current centred positions
-    msg = {'Signal': signal,
-           'Message': signal,
-           'Motors': motors_info,
-           'centredPositions': shape_dict,
-           'Data': args[0] if len(args) == 1 else args}
-    #logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
+        # Update the pixels per mm if it was the zoom motor that moved
+        if movable["name"] == "zoom":
+            ppm = mxcube.diffractometer.get_pixels_per_mm()
+            socketio.emit('update_pixels_per_mm', {"pixelsPerMm": ppm}, namespace='/hwr')
 
-    try:
-        socketio.emit('Motors', msg, namespace='/hwr')
-    except Exception:
-        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
-
+    socketio.emit('motor_state', movable, namespace='/hwr')
 
 def beam_changed(*args, **kwargs):
     ret = {}
@@ -463,10 +442,8 @@ def beam_changed(*args, **kwargs):
                 'size_y': beam_info_dict.get("size_y")
                 })
 
-    msg = {'Signal': signal, 'Message': signal, 'Data': ret}
-    # logging.getLogger('HWR').debug('[MOTOR CALLBACK]   ' + str(msg))
     try:
-        socketio.emit('beam_changed', msg, namespace='/hwr')
+        socketio.emit('beam_changed', {'data': ret}, namespace='/hwr')
     except Exception:
         logging.getLogger("HWR").exception('error sending message: %s' + str(msg))
 
