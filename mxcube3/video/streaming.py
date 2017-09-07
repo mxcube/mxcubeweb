@@ -167,20 +167,33 @@ def tango_lima_video_plugin(camera, video_device):
             time.sleep(0.1)
             camera.setLive(True)
 
+            def parse_image_data(self, img_data):
+                hfmt = ">IHHqiiHHHH"
+                hsize = struct.calcsize(hfmt)
+                _, _, img_mode, frame_number, width, height, _, _, _, _ = \
+                    struct.unpack(hfmt, img_data[1][:hsize])
+                raw_data = img_data[1][hsize:]
+
+                return width, height, raw_data
+
             def do_polling(self, sleep_time):
                 hfmt = ">IHHqiiHHHH"
                 hsize = struct.calcsize(hfmt)
                 while True:
-                    img_data = self.device.video_last_image
-                    _, _, img_mode, frame_number, width, height, _, _, _, _ = \
-                        struct.unpack(hfmt, img_data[1][:hsize])
-
-                    raw_data = img_data[1][hsize:]
+                    width, height, raw_data = \
+                        self.parse_image_data(self.device.video_last_image)
                     self.emit("imageReceived", raw_data, width, height, False)
                     time.sleep(sleep_time)
 
-            camera._do_polling = types.MethodType(do_polling, camera)
+            def take_snapshot(self, path):
+                width, height, raw_data = \
+                    self.parse_image_data(self.device.video_last_image)
+                img = PIL.Image.frombytes("RGB", (width, height), raw_data)
+                img.save(path)
 
+            camera._do_polling = types.MethodType(do_polling, camera)
+            camera.takeSnapshot = types.MethodType(take_snapshot, camera)
+            camera.parse_image_data = types.MethodType(parse_image_data, camera)
 
 def init(camera, video_device_path):
     """
