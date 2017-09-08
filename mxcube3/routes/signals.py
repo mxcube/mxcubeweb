@@ -504,4 +504,5 @@ def safety_shutter_state_changed(values):
     try:
         socketio.emit("beamline_value_change", data, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").error('error sending message: %s' + str(data))
+        logging.getLogger("HWR").error('error sending message: %s', data)
+
