@@ -15,16 +15,20 @@ import { Row,
          Well,
          FormControl } from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
+import Plot1D from '../components/Plot1D';
 import { RUNNING } from '../constants';
 
 class BeamlineActionsContainer extends React.Component {
   constructor(props) {
     super(props);
 
+    this.plotIdByAction = {};
+
     this.startAction = this.startAction.bind(this);
     this.stopAction = this.stopAction.bind(this);
     this.showOutput = this.showOutput.bind(this);
     this.hideOutput = this.hideOutput.bind(this);
+    this.newPlotDisplayed = this.newPlotDisplayed.bind(this);
   }
 
   startAction(cmdName) {
@@ -44,6 +48,7 @@ class BeamlineActionsContainer extends React.Component {
       return false;
     });
 
+    this.plotIdByAction[this.props.currentAction.name] = null;
     this.props.startAction(cmdName, parameters);
   }
 
@@ -57,6 +62,10 @@ class BeamlineActionsContainer extends React.Component {
 
   hideOutput() {
     this.props.hideOutput(this.props.currentAction.name);
+  }
+
+  newPlotDisplayed(plotId) {
+    this.plotIdByAction[this.props.currentAction.name] = plotId;
   }
 
   render() {
@@ -129,6 +138,7 @@ class BeamlineActionsContainer extends React.Component {
                   Run
                 </Button> }
              <hr></hr>
+             <Plot1D displayedPlotCallback={this.newPlotDisplayed} plotId={this.plotIdByAction[currentActionName]} />
              { this.props.currentAction.messages.length > 0 ? (<Well>
                {this.props.currentAction.messages.map(message => <p>{message.message}</p>)}
              </Well>) : '' }
