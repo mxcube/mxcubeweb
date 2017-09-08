@@ -44,8 +44,8 @@ class Plot1D extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.plotId != null) {
-      if (this.props.autoNext) {
+    if (this.props.autoNext) {
+      if (this.state.plotId != null) {
         if (nextProps.lastPlotId != this.state.plotId) {
           const currentPlotInfo = nextProps.plotsInfo[this.state.plotId];
           if (currentPlotInfo.end) {
@@ -53,30 +53,32 @@ class Plot1D extends React.Component {
             this.setPlot(nextProps.lastPlotId);
           } 
         }
-      }
-    } else {
-      const plotId = nextProps.lastPlotId;
-      const plotInfo = nextProps.plotsInfo[plotId];
+      } else {
+        const plotId = nextProps.lastPlotId;
+        const plotInfo = nextProps.plotsInfo[plotId];
       
-      if (plotInfo.end) {
-        // do not display an old plot
-        return;
-      }
+        if (plotInfo.end) {
+          // do not display an old plot
+          return;
+        }
 
-      this.setPlot(plotId);
+        this.setPlot(plotId);
+      }
     }
   }
 
   componentWillUpdate(nextProps, nextState) {
     const plotId = nextState.plotId;
-    const plotInfo = nextProps.plotsInfo[plotId];
-    const plotData = nextProps.plotsData[plotId];
+    if (plotId) {
+      const plotInfo = nextProps.plotsInfo[plotId];
+      const plotData = nextProps.plotsData[plotId];
 
-    if (this.dygraph) {
-      this.dygraph.updateOptions({ file: plotData });
-    } else { 
-      this.dygraph = new Dygraph(this.dygraph_div, plotData, { title: plotInfo.title, 
+      if (this.dygraph) {
+        this.dygraph.updateOptions({ file: plotData });
+      } else { 
+        this.dygraph = new Dygraph(this.dygraph_div, plotData, { title: plotInfo.title, 
                                                                labels: plotInfo.labels });
+      }
     }
   }
 

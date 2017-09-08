@@ -138,7 +138,7 @@ class BeamlineActionsContainer extends React.Component {
                   Run
                 </Button> }
              <hr></hr>
-             <Plot1D displayedPlotCallback={this.newPlotDisplayed} plotId={this.plotIdByAction[currentActionName]} />
+             <Plot1D displayedPlotCallback={this.newPlotDisplayed} plotId={this.plotIdByAction[currentActionName]} autoNext={currentActionRunning}/>
              { this.props.currentAction.messages.length > 0 ? (<Well>
                {this.props.currentAction.messages.map(message => <p>{message.message}</p>)}
              </Well>) : '' }
