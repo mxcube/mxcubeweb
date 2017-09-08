@@ -11,7 +11,10 @@ import {
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setMachInfo } from './actions/beamline';
-import { setActionState } from './actions/beamlineActions';
+import { setActionState,
+         newPlot,
+         plotData,
+         plotEnd } from './actions/beamlineActions';
 import { setStatus,
          addTaskResultAction,
          addTaskAction,
@@ -223,6 +226,19 @@ class ServerIO {
 
     this.hwrSocket.on('beamline_action', (data) => {
       this.dispatch(setActionState(data.name, data.state));
+    });
+
+    this.hwrSocket.on('new_plot', (plotInfo) => {
+      this.dispatch(newPlot(plotInfo));
+    });
+
+    this.hwrSocket.on('plot_data', (data) => {
+      this.dispatch(plotData(data.id, data.data, false));
+    });
+
+    this.hwrSocket.on('plot_end', (data) => {
+      this.dispatch(plotData(data.id, data.data, true));
+      this.dispatch(plotEnd(data.id));
     });
   }
 }
