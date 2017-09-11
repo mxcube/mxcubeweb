@@ -34,6 +34,7 @@ UNCOLLECTED = 0x0
 READY = 0
 
 ORIGIN_MX3 = "MX3"
+QUEUE_CACHE = {}
 
 
 def node_index(node):
@@ -231,7 +232,7 @@ def get_queue_state():
     return res
 
 
-def _handle_dc(sample_id, node):
+def _handle_dc(sample_id, node, include_lims_data=False):
     parameters = node.as_dict()
     parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
@@ -254,10 +255,12 @@ def _handle_dc(sample_id, node):
     parameters['fullPath'] = os.path.join(parameters['path'],
                                           parameters['fileName'])
 
-    if mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(node.id)
-    else:
-        limsres = ''
+    limsres = ''
+
+    # Only add data from lims if explicitly asked for, since
+    # its a operation that can take some time.
+    if include_lims_data and mxcube.rest_lims:
+        limsres = mxcube.rest_lims.get_dc(node.id)      
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -548,7 +551,8 @@ def move_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
 
-def queue_add_item(item_list):
+
+def queue_add_item(item_list, use_queue_cache=False):
     """
     Adds the queue items in item_list to the queue. The items in the list can
     be either samples and or tasks. Samples are only added if they are not
@@ -565,20 +569,82 @@ def queue_add_item(item_list):
 
     Each item (dictionary) describes either a sample or a task.
     """
+    global QUEUE_CACHE
+    res = None
+
+    if use_queue_cache:
+        current_queue = QUEUE_CACHE if QUEUE_CACHE else queue_to_dict()
+    else:
+        current_queue = queue_to_dict()
+
+    _queue_add_item_rec(item_list, current_queue)
+
+    # Handling interleaved data collections, swap interleave task with
+    # the first of the data collections that are used as wedges, and then
+    # remove all collections that were used as wedges
+    for task in item_list:
+        if task["type"] == "Interleaved" and \
+           task["parameters"].get("taskIndexList", False):
+            current_queue = queue_to_dict()
+
+            sid = task["sampleID"]
+            interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
+
+            tindex_list = task["parameters"]["taskIndexList"]
+            tindex_list.sort()
+
+            # Swap first "wedge task" and the actual interleaved collection
+            # so that the interleaved task is the first task
+            swap_task_entry(sid, interleaved_tindex, tindex_list[0])
+
+            # We remove the swapped wedge index from the list, (now pointing
+            # at the interleaved collection) and add its new position
+            # (last task item) to the list.
+            tindex_list = tindex_list[1:]
+            tindex_list.append(interleaved_tindex)
+
+            # The delete operation can be done all in one call if we make sure
+            # that we remove the items starting from the end (not altering
+            # previous indices)
+            for ti in reversed(tindex_list):
+                delete_entry_at([[sid, int(ti)]])
+
+    if use_queue_cache:
+        QUEUE_CACHE = queue_to_dict()
+        res = QUEUE_CACHE
+
+    return res
+
+def _queue_add_item_rec(item_list, current_queue):
+    """
+    Adds the queue items in item_list to the queue. The items in the list can
+    be either samples and or tasks. Samples are only added if they are not
+    already in the queue  and tasks are appended to the end of an
+    (already existing) sample. A task is ignored if the sample is not already
+    in the queue.
+
+    The items in item_list are dictionaries with the following structure:
+
+    { "type": "Sample | DataCollection | Characterisation",
+      "sampleID": sid
+      ... task or sample specific data
+    }
+
+    Each item (dictionary) describes either a sample or a task.
+    """
+    children = []
 
     for item in item_list:
         item_t = item["type"]
-        current_queue = queue_to_dict()
-
         # If the item a sample, then add it and its tasks. If its not, get the
         # node id for the sample of the new task and append it to the sample
         sample_id = str(item["sampleID"])
         if item_t == "Sample":
             sample_node_id = add_sample(sample_id, item)
             tasks = item.get("tasks")
-
+            
             if tasks:
-                queue_add_item(tasks)
+                children.extend(tasks)
         else:
             sample_node_id = current_queue[sample_id]["queueID"]
 
@@ -592,6 +658,10 @@ def queue_add_item(item_list):
         elif item_t == "Interleaved":
             add_interleaved(sample_node_id, item)
 
+    # Bredth first
+    if children:
+        _queue_add_item_rec(children, queue_to_dict())
+
 
 def add_sample(sample_id, item):
     """
@@ -603,10 +673,10 @@ def add_sample(sample_id, item):
     # Is the sample with location sample_id already in the queue,
     # in that case, send error response
 
-    for sampleId, sampleData in queue_to_dict().iteritems():
-        if sampleId == sample_id:
-            msg = "[QUEUE] sample could not be added, already in the queue"
-            raise Exception(msg)
+#    for sampleId, sampleData in queue_to_dict().iteritems():
+#        if sampleId == sample_id:
+#            msg = "[QUEUE] sample could not be added, already in the queue"
+#            raise Exception(msg)
 
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)

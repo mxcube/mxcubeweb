@@ -194,7 +194,7 @@ def execute_entry_with_id(sid, tindex):
     except:
         return Response(status=409)
     else:
-        logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+#       logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
         return Response(status=200)
 
 
@@ -206,7 +206,7 @@ def set_queue():
 
     # Set new queue
     qutils.queue_add_item(request.get_json())
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+ #  logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     qutils.save_queue(session)
 
     return Response(status=200)
@@ -215,41 +215,8 @@ def set_queue():
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
     tasks = request.get_json()
-    qutils.queue_add_item(tasks)
-
-    # Handling interleaved data collections, swap interleave task with
-    # the first of the data collections that are used as wedges, and then
-    # remove all collections that were used as wedges
-    for task in tasks:
-        current_queue = qutils.queue_to_dict()
-
-        if task["type"] == "Interleaved" and \
-           task["parameters"].get("taskIndexList", False):
-            sid = task["sampleID"]
-            interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
-
-            tindex_list = task["parameters"]["taskIndexList"]
-            tindex_list.sort()
-
-            # Swap first "wedge task" and the actual interleaved collection
-            # so that the interleaved task is the first task
-            qutils.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
-
-            # We remove the swapped wedge index from the list, (now pointing
-            # at the interleaved collection) and add its new position
-            # (last task item) to the list.
-            tindex_list = tindex_list[1:]
-            tindex_list.append(interleaved_tindex)
-
-            # The delete operation can be done all in one call if we make sure
-            # that we remove the items starting from the end (not altering
-            # previous indices)
-            for ti in reversed(tindex_list):
-                qutils.delete_entry_at([[sid, int(ti)]])
-
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-
-    resp = qutils.queue_to_json_response()
+    queue = qutils.queue_add_item(tasks, use_queue_cache=True)
+    resp = jsonify(queue)
     resp.status_code = 200
 
     return resp
