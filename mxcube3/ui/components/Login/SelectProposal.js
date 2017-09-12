@@ -34,9 +34,8 @@ class SelectProposal extends React.Component {
       clickToSelectAndEditCell: false,
       hideSelectColumn: true,
     };
-
-    const proposals = this.props.data.ProposalList.map((prop) => ({
-      Number: prop.Proposal.number,
+    const proposals = this.props.data.proposalList.map((prop) => ({
+      Number: prop.Proposal.code + prop.Proposal.number,
       Person: prop.Person.familyName,
       Session: prop.Session.session.startDate.split(' ')[0]
     }));

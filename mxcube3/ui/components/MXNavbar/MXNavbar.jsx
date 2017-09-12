@@ -12,7 +12,7 @@ export default class MXNavbar extends React.Component {
   }
 
   findProposal(prop) {
-    return `${prop.code}${prop.number}` === this.props.selectedProposal;
+    return `${prop.Proposal.code}${prop.Proposal.number}` === this.props.selectedProposal;
   }
 
   render() {
