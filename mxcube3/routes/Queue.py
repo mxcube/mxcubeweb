@@ -448,7 +448,7 @@ def get_default_dc_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
-    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
     template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
@@ -491,7 +491,7 @@ def get_default_char_acq_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_char_acq_parameters()
-    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
     template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
