@@ -81,7 +81,7 @@ export default class TaskItem extends Component {
     let res = '';
 
     wedges.forEach((wedge) => {
-      if (res.indexOf(`${wedge.parameters.shape}`) < 0) {
+      if ((wedge.parameters.shape !== -1) && res.indexOf(`${wedge.parameters.shape}`) < 0) {
         res += `${wedge.parameters.shape} `;
       }
     });
