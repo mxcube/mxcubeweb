@@ -143,8 +143,13 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    return Response(stream_video(mxcube.diffractometer.camera),
-                    mimetype='multipart/x-mixed-replace; boundary="!>"')
+    if streaming.VIDEO_DEVICE:
+        result = Response(status=200)
+    else:
+        result = Response(stream_video(mxcube.diffractometer.camera),
+                          mimetype='multipart/x-mixed-replace; boundary="!>"')
+
+    return result
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
