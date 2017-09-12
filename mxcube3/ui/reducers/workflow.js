@@ -19,7 +19,8 @@ export default (state = initialState, action) => {
       }
     case 'SET_INITIAL_STATE':
       {
-        return { ...state, workflows: action.data.workflow.workflows };
+        const wf = action.data.workflow ? action.data.workflow.workflows : {};
+        return { ...state, workflows: wf };
       }
     default:
       return state;
