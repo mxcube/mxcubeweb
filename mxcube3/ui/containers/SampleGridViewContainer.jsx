@@ -168,7 +168,7 @@ class SampleGridViewContainer extends React.Component {
   showTaskForm(formName, extraParams = {}) {
     let prefix = '';
     let path = '';
-    let subdir = ''
+    const subdir = '';
 
     if (Object.keys(this.props.selected).length === 1) {
       prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
