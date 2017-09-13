@@ -117,6 +117,7 @@ export default class MotorInput extends React.Component {
                 alignItems: 'center',
                 textAlign: 'center',
                 fontSize: '12px',
+                cursor: 'pointer',
                 backgroundColor: '#EAEAEA' }}
             >
               {(this.props.saveStep && this.props.state === 2) ?

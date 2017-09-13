@@ -11,16 +11,15 @@ export function setLoginInfo(loginInfo) {
   };
 }
 
-export function showProposalsForm(formname) {
+export function showProposalsForm() {
   return {
     type: 'SHOW_PROPOSALS_FORM',
-    name: formname,
   };
 }
 
 export function hideProposalsForm() {
   return {
-    type: 'HIDE_FORM'
+    type: 'HIDE_PROPOSALS_FORM'
   };
 }
 
@@ -105,10 +104,7 @@ export function signIn(proposal, password) {
         dispatch(showErrorPanel(false));
         dispatch(getLoginInfo()).then(response => response).then((resp) => {
           if (resp.loginType === 'User') {
-            dispatch(showProposalsForm('SelectProposals')).then(() => {
-              browserHistory.push('/');
-            }
-          );
+            dispatch(showProposalsForm());
           } else {
             dispatch(selectProposal(proposal));
             browserHistory.push('/');

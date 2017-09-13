@@ -32,7 +32,7 @@ def open_video_device(path="/dev/video0"):
         VIDEO_DEVICE = device
     else:
         msg = "Cannot open video device %s, path do not exist. " % path
-        msg += "Make sure that the kernel module v4l2loopback is installed (modprobe v4l2loopback). "
+        msg += "Make sure that the v4l2loopback kernel module is loaded (modprobe v4l2loopback). "
         msg += "Falling back to MJPEG."
         raise RuntimeError(msg)
 

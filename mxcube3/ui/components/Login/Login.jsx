@@ -39,13 +39,7 @@ export default class LoginComponent extends React.Component {
     }
 
     return (<Grid>
-        { this.props.showError ?
-          <Alert bsStyle="danger">
-            <h4>Authentification invalide.</h4>
-          </Alert>
-          : ''
-        }
-        { (this.props.showForm === 'SelectProposals') ?
+        { this.props.showProposalsForm ?
           <SelectProposal
             show
             hide={this.props.hideTaskParametersForm}
@@ -68,7 +62,7 @@ export default class LoginComponent extends React.Component {
           </center>
         </Row>
         <Row>
-          {(this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : '')}
+          {this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : null}
           <Col xs={4} xsOffset={4}>
             <Row>
               <Col xs={12}>

@@ -1,5 +1,5 @@
 from flask import request
-from flask.ext.socketio import emit, join_room, leave_room
+from flask_socketio import emit, join_room, leave_room
 from mxcube3 import socketio
 import json
 
