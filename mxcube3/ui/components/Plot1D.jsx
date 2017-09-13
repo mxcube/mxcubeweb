@@ -7,8 +7,8 @@ class Plot1D extends React.Component {
   constructor(props) {
     super(props);
 
-    this.setPlot = this.setPlot.bind(this);
     this.clearPlot = this.clearPlot.bind(this);
+    this.setPlot = this.setPlot.bind(this);
 
     this.dygraph = null;
     this.state = { plotId: null };
@@ -20,43 +20,20 @@ class Plot1D extends React.Component {
     }
   }
 
-  clearPlot() {
-    if (this.dygraph) {
-      this.dygraph.destroy();
-    }
-
-    this.dygraph = null;
-  }
-
-  componentWillUnmount() {
-    this.clearPlot();
-  }
-
-  setPlot(plotId) {
-    this.clearPlot();
-
-    this.setState({ plotId });
-
-    if (this.props.displayedPlotCallback) {
-      // tell parent we are displaying this plot
-      this.props.displayedPlotCallback(plotId);
-    }
-  }
-
   componentWillReceiveProps(nextProps) {
     if (this.props.autoNext) {
-      if (this.state.plotId != null) {
-        if (nextProps.lastPlotId != this.state.plotId) {
+      if (this.state.plotId !== null) {
+        if (nextProps.lastPlotId !== this.state.plotId) {
           const currentPlotInfo = nextProps.plotsInfo[this.state.plotId];
           if (currentPlotInfo.end) {
             // display next plot
             this.setPlot(nextProps.lastPlotId);
-          } 
+          }
         }
       } else {
         const plotId = nextProps.lastPlotId;
         const plotInfo = nextProps.plotsInfo[plotId];
-      
+
         if (plotInfo.end) {
           // do not display an old plot
           return;
@@ -75,11 +52,34 @@ class Plot1D extends React.Component {
 
       if (this.dygraph) {
         this.dygraph.updateOptions({ file: plotData });
-      } else { 
-        this.dygraph = new Dygraph(this.dygraph_div, plotData, { title: plotInfo.title, 
+      } else {
+        this.dygraph = new Dygraph(this.dygraph_div, plotData, { title: plotInfo.title,
                                                                labels: plotInfo.labels });
       }
     }
+  }
+
+  componentWillUnmount() {
+    this.clearPlot();
+  }
+
+  setPlot(plotId) {
+    this.clearPlot();
+
+    this.setState({ plotId });
+
+    if (this.props.displayedPlotCallback) {
+      // tell parent we are displaying this plot
+      this.props.displayedPlotCallback(plotId);
+    }
+  }
+
+  clearPlot() {
+    if (this.dygraph) {
+      this.dygraph.destroy();
+    }
+
+    this.dygraph = null;
   }
 
   render() {
