@@ -308,7 +308,7 @@ export default class SampleImage extends React.Component {
     const { sendGoToBeam } = sampleActions;
 
     // Only move to beam if the click was done directly on the canvas.
-    if (e.target.tagName === 'CANVAS') {
+    if (e.target.tagName === 'CANVAS' && e.shiftKey) {
       sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
     }
   }
@@ -471,7 +471,7 @@ export default class SampleImage extends React.Component {
     const { sampleActions, motorSteps, zoom, motors } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     const keyPressed = this._keyPressed;
-    if (keyPressed === 'r' && motors.phi.Status === 2) {
+    if (keyPressed === 'r' && motors.phi.state === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -480,7 +480,7 @@ export default class SampleImage extends React.Component {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (keyPressed === 'f' && motors.focus.Status === 2) {
+    } else if (keyPressed === 'f' && motors.focus.state === 2) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
@@ -488,7 +488,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (keyPressed === 'z' && motors.zoom.Status === 2) {
+    } else if (keyPressed === 'z' && motors.zoom.state === 2) {
       // in this case zooming
       if (e.deltaY > 0 && zoom < 10) {
         // zoom in

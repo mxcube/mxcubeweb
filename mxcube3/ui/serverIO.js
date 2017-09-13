@@ -1,14 +1,13 @@
 import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
 import {
-  updatePointsPosition,
-  saveMotorPositions,
+  updateShapes,
   saveMotorPosition,
   updateMotorState,
-  setCurrentPhase,
   setBeamInfo,
   startClickCentring,
   updateShape,
+  setPixelsPerMm,
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setMachInfo } from './actions/beamline';
@@ -86,28 +85,24 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('Motors', (record) => {
-      this.dispatch(updatePointsPosition(record.centredPositions));
-      this.dispatch(saveMotorPositions(record.Motors));
-      switch (record.Signal) {
-        case 'minidiffPhaseChanged':
-          this.dispatch(setCurrentPhase(record.Data));
-          break;
-        default:
-      }
-    });
-
     this.hwrSocket.on('motor_position', (record) => {
       this.dispatch(saveMotorPosition(record.name, record.position));
     });
 
     this.hwrSocket.on('motor_state', (record) => {
-      this.dispatch(updatePointsPosition(record.centredPositions));
       this.dispatch(updateMotorState(record.name, record.state));
     });
 
+    this.hwrSocket.on('update_shapes', (record) => {
+      this.dispatch(updateShapes(record.shapes));
+    });
+
+    this.hwrSocket.on('update_pixels_per_mm', (record) => {
+      this.dispatch(setPixelsPerMm(record.pixelsPerMm));
+    });
+
     this.hwrSocket.on('beam_changed', (record) => {
-      this.dispatch(setBeamInfo(record.Data));
+      this.dispatch(setBeamInfo(record.data));
     });
 
     this.hwrSocket.on('mach_info_changed', (info) => {
