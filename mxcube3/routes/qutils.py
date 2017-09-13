@@ -703,7 +703,7 @@ def add_sample(sample_id, item):
     return sample_model._node_id
 
 
-def set_dc_params(model, entry, task_data):
+def set_dc_params(model, entry, task_data, sample_model):
     """
     Helper method that sets the data collection parameters for a DataCollection.
 
@@ -722,7 +722,12 @@ def set_dc_params(model, entry, task_data):
     acq.path_template.suffix = ftype
     acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
         getProperty("precision", 4))
-    acq.path_template.base_prefix = params['prefix']
+
+    if params['prefix']:
+        acq.path_template.base_prefix = params['prefix']
+    else:
+        acq.path_template.base_prefix = mxcube.session.\
+            get_default_prefix(sample_model, False)
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
                              params.get('subdir', ''))
@@ -825,7 +830,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     entry.set_enabled(task_data['checked'])
 
 
-def set_char_params(model, entry, task_data):
+def set_char_params(model, entry, task_data, sample_model):
     """
     Helper method that sets the characterisation parameters for a
     Characterisation.
@@ -915,7 +920,7 @@ def add_characterisation(node_id, task):
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
     char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters
-    set_char_params(char_model, char_entry, task)
+    set_char_params(char_model, char_entry, task, sample_model)
 
     # A characterisation has two TaskGroups one for the characterisation itself
     # and its reference collection and one for the resulting diffraction plans.
@@ -949,7 +954,7 @@ def add_data_collection(node_id, task):
     """
     sample_model, sample_entry = get_entry(node_id)
     dc_model, dc_entry = _create_dc(task)
-    set_dc_params(dc_model, dc_entry, task)
+    set_dc_params(dc_model, dc_entry, task, sample_model)
 
     pt = dc_model.acquisitions[0].path_template
 
@@ -1034,7 +1039,7 @@ def add_interleaved(node_id, task):
     for wedge in task['parameters']['wedges']:
         wc = wc + 1
         dc_model, dc_entry = _create_dc(wedge)
-        set_dc_params(dc_model, dc_entry, wedge)
+        set_dc_params(dc_model, dc_entry, wedge, sample_model)
         dc_model.acquisitions[0].path_template.wedge_prefix = "wedge-%s" % wc
         mxcube.queue.add_child(group_model, dc_model)
         group_entry.enqueue(dc_entry)
