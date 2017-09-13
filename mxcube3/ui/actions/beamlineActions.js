@@ -56,3 +56,14 @@ export function stopAction(cmdName) {
   };
 }
 
+export function newPlot(plotInfo) {
+  return { type: 'NEW_PLOT', plotInfo };
+}
+
+export function plotData(plotId, data, fullDataSet) {
+  return { type: 'PLOT_DATA', id: plotId, data, fullDataSet };
+}
+
+export function plotEnd(plotId) {
+  return { type: 'PLOT_END', id: plotId };
+}

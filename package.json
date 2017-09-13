@@ -20,6 +20,7 @@
   "dependencies": {
     "bootstrap": "3.3.5",
     "classnames": "^2.2.0",
+    "dygraphs": "^2.0.0",
     "everpolate": "0.0.3",
     "font-awesome": "^4.4.0",
     "history": "1.17.x",

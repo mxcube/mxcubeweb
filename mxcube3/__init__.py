@@ -43,6 +43,11 @@ opt_parser.add_option("-v", "--video-device",
                       dest="video_device",
                       help="Video device, defaults to /dev/video0",
                       default='/dev/video0')
+opt_parser.add_option("-p", "--plotting",
+                      dest="plotting",
+                      help="Plotting HWR file, defaults to /plotting",
+                      default='/plotting')
+
 
 cmdline_options, args = opt_parser.parse_args()
 
@@ -136,12 +141,12 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
         app.queue = qutils.new_queue()
         app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
+        app.plotting = hwr.getHardwareObject(cmdline_options.plotting)
 
         # SampleID of currently mounted sample
         app.CURRENTLY_MOUNTED_SAMPLE = ''
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
-
 
         # set up streaming
         from mxcube3.video import streaming

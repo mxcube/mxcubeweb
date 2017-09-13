@@ -475,6 +475,7 @@ def beamline_action_failed(name):
     else:
         logging.getLogger('user_level_log').error('Action %s failed !', name)
 
+
 def safety_shutter_state_changed(values):
     ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("safety_shutter")
     data = ho.dict_repr()
@@ -482,4 +483,33 @@ def safety_shutter_state_changed(values):
         socketio.emit("beamline_value_change", data, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s', data)
+
+
+def new_plot(plot_info):
+    try:
+        socketio.emit("new_plot", plot_info, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").error('error sending new_plot message: %s', plot_info)
+
+
+@Utils.RateLimited(1)
+def plot_data(data, last_index=[0], **kwargs):
+    data_data = data["data"]
+    if last_index[0] > len(data_data):
+      last_index = [0]
+
+    data["data"] = data_data[last_index[0]:]
+
+    try:
+        socketio.emit("plot_data", data, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").exception('error sending plot_data message for plot %s', data['id'])
+    else:    
+        last_index[0] += len(data_data)
+
+def plot_end(data):
+    try:
+        socketio.emit("plot_end", data, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").error('error sending plot_end message for plot %s', data['id'])
 

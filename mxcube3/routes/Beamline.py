@@ -45,6 +45,13 @@ def init_signals():
     except Exception, ex:
         logging.getLogger('HWR').error("error loading safety_shutter hwo: %s" % str(ex))
 
+    try:
+        mxcube.plotting.connect(mxcube.plotting, 'new_plot', signals.new_plot)
+        mxcube.plotting.connect(mxcube.plotting, 'plot_data', signals.plot_data)
+        mxcube.plotting.connect(mxcube.plotting, 'plot_end', signals.plot_end)
+    except Exception, ex:
+        logging.getLogger('HWR').error("error loading plotting hwo: %s" % str(ex))
+
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():
