@@ -22,6 +22,57 @@ from mxcube3.video import streaming
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
+CLICK_LIMIT = 3
+CENTRING_POINT_ID = None
+
+
+def centring_clicks_left():
+    global CLICK_COUNT, CLICK_LIMIT
+    return CLICK_LIMIT - CLICK_COUNT
+
+
+def centring_reset_click_count():
+    global CLICK_COUNT
+    CLICK_COUNT = 0
+
+
+def centring_click():
+    global CLICK_COUNT
+    CLICK_COUNT += 1
+
+
+def centring_remove_current_point():
+    global CENTRING_POINT_ID
+
+    if CENTRING_POINT_ID:
+        mxcube.shapes.delete_shape(CENTRING_POINT_ID)
+        signals.send_shapes(update_positions = False)
+        CENTRING_POINT_ID = None
+
+
+def centring_add_current_point():
+    global CENTRING_POINT_ID
+    shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+
+    if shape:
+        shape.state = "SAVED"
+        signals.send_shapes(update_positions = False)
+        CENTRING_POINT_ID = None
+
+
+def centring_update_current_point(motor_positions, x, y):
+    global CENTRING_POINT_ID
+
+    if CENTRING_POINT_ID:
+        point = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+        point.move_to_mpos([motor_positions], [x, y])
+    else:
+        point = mxcube.shapes.\
+                add_shape_from_mpos([motor_positions], (x, y), "P")
+        point.state = "TMP"
+        CENTRING_POINT_ID = point.id
+
+    signals.send_shapes(update_positions = False)
 
 
 def init_signals():
@@ -72,6 +123,9 @@ def init_signals():
     dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
     dm.connect(dm, "centringFailed", wait_for_centring_finishes)
 
+    global CLICK_LIMIT
+    CLICK_LIMIT = int(mxcube.beamline.\
+                      getProperty('click_centring_num_clicks') or 3)
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     """
@@ -106,11 +160,13 @@ def stream_video(camera_hwobj):
     mxcube.diffractometer.camera.new_frame = gevent.event.Event()
 
     try:
-        mxcube.diffractometer.camera.disconnect("imageReceived", new_sample_video_frame_received)
+        mxcube.diffractometer.camera.\
+            disconnect("imageReceived", new_sample_video_frame_received)
     except KeyError:
         pass
 
-    mxcube.diffractometer.camera.connect("imageReceived", new_sample_video_frame_received)
+    mxcube.diffractometer.camera.\
+        connect("imageReceived", new_sample_video_frame_received)
 
     while True:
         try:
@@ -288,16 +344,17 @@ def update_shapes():
     if not shape:
         refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
 
-        # Store pixels per mm for third party software, to facilitate 
-        # certain calculations 
+        # Store pixels per mm for third party software, to facilitate
+        # certain calculations
         shape_data["pixels_per_mm"] =  mxcube.diffractometer.get_pixels_per_mm()
         shape_data["beam_pos"] = (mxcube.diffractometer.getBeamPosX(),
                                   mxcube.diffractometer.getBeamPosY())
-        
+
         # Shape does not have any refs, create a new Centered position
         if not refs:
             x, y = shape_data["screen_coord"]
-            mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y, return_by_names=True)
+            mpos = mxcube.diffractometer.\
+                   get_centred_point_from_coord(x, y, return_by_names=True)
             pos.append(mpos)
             # We also store the center of the grid
             if t == 'G':
@@ -511,14 +568,14 @@ def centre_3_click():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    global CLICK_COUNT
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
+
     mxcube.diffractometer.start3ClickCentring()
-    CLICK_COUNT = 0
-    data = {'clickLeft': 3 - CLICK_COUNT}
+    centring_reset_click_count()
+    data = {'clickLeft': centring_clicks_left()}
     resp = jsonify(data)
     resp.status_code = 200
-    return resp  # this only means the call was succesfull
+    return resp
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/abort", methods=['PUT'])
@@ -529,7 +586,7 @@ def abort_centring():
         :statuscode: 409: error
     """
     logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
-    current_centring_procedure = mxcube.diffractometer.cancelCentringMethod()
+    centring_remove_current_point()
     return Response(status=200)  # this only means the call was succesfull
 
 
@@ -542,8 +599,6 @@ def click():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    global CLICK_COUNT
-
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)
@@ -555,14 +610,18 @@ def click():
                                            click_position['y'],
                                            click_position['x'],
                                            click_position['y'])
-        # we store the cpos as temporary, only when asked for save
-        # it we switch the type
-        CLICK_COUNT += 1
-        data = {'clickLeft': 3 - CLICK_COUNT}
+
+        centring_click()
+        data = {'clickLeft': centring_clicks_left()}
         resp = jsonify(data)
         resp.status_code = 200
         return resp
     else:
+        if not centring_clicks_left():
+            centring_reset_click_count()
+            mxcube.diffractometer.cancelCentringMethod()
+            mxcube.diffractometer.start3ClickCentring()
+
         return Response(status=409)
 
 
@@ -571,6 +630,8 @@ def wait_for_centring_finishes(*args, **kwargs):
     Executed when a centring is finished. It updates the temporary
     centred point.
     """
+    centring_status = args[1]
+
     # we do not send/save any centring data if there is no sample
     # to avoid the 2d centring when no sample is mounted
     if scutils.get_current_sample() == '':
@@ -580,18 +641,17 @@ def wait_for_centring_finishes(*args, **kwargs):
     except KeyError:
         msg = "[SAMPLEVIEW] Centring error, cannot retrieve motor positions."
         logging.getLogger('HWR').exception(msg)
-        return
 
-    motor_positions.pop('zoom', None)
-    motor_positions.pop('beam_y', None)
-    motor_positions.pop('beam_x', None)
+    # If centering is valid add the point, otherwise remove it
+    if centring_status['valid']:
+        motor_positions.pop('zoom', None)
+        motor_positions.pop('beam_y', None)
+        motor_positions.pop('beam_x', None)
 
-    x, y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
-    point = mxcube.shapes.add_shape_from_mpos([motor_positions], (x, y), "P")
-    point.state = "TMP"
+        x, y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
 
-    signals.send_shapes(update_positions = False)
-    mxcube.diffractometer.emit('stateChanged', (True,))
+        centring_update_current_point(motor_positions, x, y)
+        mxcube.diffractometer.emit('stateChanged', (True,))
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
@@ -600,6 +660,8 @@ def accept_centring():
     Accept the centring position.
     """
     mxcube.diffractometer.acceptCentring()
+    centring_add_current_point()
+
     return Response(status=200)
 
 
@@ -607,7 +669,10 @@ def accept_centring():
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=['PUT'])
 def reject_centring():
     """Reject the centring position."""
+
     mxcube.diffractometer.rejectCentring()
+    centring_remove_current_point()
+
     return Response(status=200)
 
 
