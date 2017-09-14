@@ -3,8 +3,8 @@ import { Grid,
          Row,
          Col,
          FormGroup,
+         InputGroup,
          FormControl,
-         ControlLabel,
          Alert,
          Button } from 'react-bootstrap';
 import logo from '../../img/mxcube_logo20.png';
@@ -52,44 +52,53 @@ export default class LoginComponent extends React.Component {
           />
           : null
         }
-
         <Row>
-          <center>
-            <img src={logo} role="presentation"
-              style={{ width: '192px', height: '248px', marginTop: '50px' }}
-            />
-            <h3 style={{ marginBottom: '15px' }}>Welcome to XXX at YYY</h3>
-          </center>
-        </Row>
-        <Row>
-          {this.props.showError ? <Alert bsStyle="danger"><h4>Failed Sign In</h4></Alert> : null}
           <Col xs={4} xsOffset={4}>
+            <div className="loginBox">
+              <Row>
+                <center>
+                  <img src={logo} role="presentation"
+                    style={{ width: '80px', marginBottom: '30px' }}
+                  />
+                  <span className="title">MXCuBE 3</span>
+                </center>
+              </Row>
             <Row>
               <Col xs={12}>
                 <FormGroup>
-                  <ControlLabel>LoginID</ControlLabel>
-                  <FormControl type="text" placeholder="LoginID" autoFocus required
-                    inputRef={(ref) => {this.loginID = ref;}}
-                  />
+                  <InputGroup>
+                    <InputGroup.Addon>
+                      <i className="glyphicon glyphicon-user"></i>
+                    </InputGroup.Addon>
+                      <FormControl type="text" placeholder="LoginID" autoFocus required
+                        inputRef={(ref) => {this.loginID = ref;}}
+                      />
+                   </InputGroup>
                 </FormGroup>
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
                 <FormGroup>
-                  <ControlLabel>Password</ControlLabel>
-                  <FormControl type="password" placeholder="Password" required
-                    onKeyPress={this.handleKeyPress}
-                    inputRef={(ref) => {this.password = ref;}}
-                  />
+                  <InputGroup>
+                    <InputGroup.Addon>
+                      <i className="glyphicon glyphicon-lock"></i>
+                    </InputGroup.Addon>
+                    <FormControl type="password" placeholder="Password" required
+                      onKeyPress={this.handleKeyPress}
+                      inputRef={(ref) => {this.password = ref;}}
+                    />
+                  </InputGroup>
                 </FormGroup>
               </Col>
             </Row>
-            <Row>
+            <Row style={{ marginTop: '10px' }}>
               <Col xs={12}>
                 <Button block bsStyle="primary" onClick={this.signIn}>Sign in</Button>
               </Col>
             </Row>
+              {(this.props.showError ? <Alert bsStyle="danger"><h4>Login failed</h4></Alert> : '')}
+          </div>
           </Col>
         </Row>
       </Grid>);
