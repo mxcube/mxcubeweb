@@ -7,7 +7,7 @@ from mxcube3 import app as mxcube
 from . import limsutils
 
 
-@mxcube.route("/mxcube/api/v0.1/lims/samples/<proposal_id>")
+@mxcube.route("/mxcube/api/v0.1/lims/samples/<proposal_id>", methods=['GET'])
 def proposal_samples(proposal_id):
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
@@ -24,7 +24,7 @@ def proposal_samples(proposal_id):
         except (TypeError, ValueError):
             continue
         else:
-            if mxcube.sample_changer.__class__.__TYPE__ == 'Robodiff':
+            if mxcube.sample_changer.__class__.__TYPE__ in ['HCD', 'FlexHCD', 'RoboDiff']:
                 cell = int(round((basket+0.5)/3.0))
                 puck = basket-3*(cell-1)
                 sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
