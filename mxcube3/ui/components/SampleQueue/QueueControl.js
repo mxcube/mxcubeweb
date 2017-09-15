@@ -1,6 +1,6 @@
 import React from 'react';
 import './app.less';
-import { Button, Checkbox } from 'react-bootstrap';
+import { Button, Checkbox, DropdownButton } from 'react-bootstrap';
 import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED } from '../../constants';
 
 export default class QueueControl extends React.Component {
@@ -82,7 +82,6 @@ export default class QueueControl extends React.Component {
   }
 
   render() {
-    const { queueLength, historyLength } = this.props;
     const sampleId = this.props.mounted;
     const queueOptions = this.state.options[this.props.queueStatus];
 
@@ -99,30 +98,43 @@ export default class QueueControl extends React.Component {
     return (
       <div className="m-tree">
         <div className="list-head">
-          <div className="left">
+          <div className="pull-left">
             <span style={{ marginRight: '0.5em' }}>
               {queueOptions.map((option) => this.renderOptions(option))}
             </span>
             <span>
               {sampleQueueOptions.map((option) => this.renderSampleOptions(option))}
             </span>
-            <span className="queue-root right">
-              Total Progress {`${historyLength}/${queueLength} `}
-            </span>
           </div>
-          <div>
-            <Checkbox
-              name="autoMountNext"
-              onClick={this.autoMountNextOnClick}
-              checked={this.props.autoMountNext}
+          <div className="queue-settings pull-right">
+            <DropdownButton
+              className="test"
+              bsStyle="default"
+              title={(<span><i className="fa fa-1x fa-cog" /> Settings</span>)}
+              key={1}
+              id={`dropdown-basic-${1}`}
             >
-              Automount next sample
-            </Checkbox>
-            <Checkbox
-              name="autoLoopCentring"
-            >
-              Auto loop centring
-           </Checkbox>
+              <li role="presentation">
+                <span role="menuitem">
+                  <Checkbox
+                    name="autoMountNext"
+                    onClick={this.autoMountNextOnClick}
+                    checked={this.props.autoMountNext}
+                  >
+                    Automount next sample
+                  </Checkbox>
+                </span>
+              </li>
+              <li role="presentation">
+                <span role="menuitem">
+                  <Checkbox
+                    name="autoLoopCentring"
+                  >
+                    Auto loop centring
+                  </Checkbox>
+                </span>
+              </li>
+            </DropdownButton>
           </div>
         </div>
       </div>
