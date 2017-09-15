@@ -570,6 +570,9 @@ def centre_3_click():
     """
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
 
+    if mxcube.diffractometer.currentCentringProcedure:
+        mxcube.diffractometer.cancelCentringMethod()
+
     mxcube.diffractometer.start3ClickCentring()
     centring_reset_click_count()
     data = {'clickLeft': centring_clicks_left()}
@@ -586,6 +589,7 @@ def abort_centring():
         :statuscode: 409: error
     """
     logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
+    mxcube.diffractometer.cancelCentringMethod()
     centring_remove_current_point()
     return Response(status=200)  # this only means the call was succesfull
 
