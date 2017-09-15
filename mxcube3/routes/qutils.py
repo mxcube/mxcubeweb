@@ -840,7 +840,7 @@ def set_char_params(model, entry, task_data, sample_model):
     :param dict task_data: Dictionary with new parameters
     """
     params = task_data['parameters']
-    set_dc_params(model.reference_image_collection, entry, task_data)
+    set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
     model.characterisation_parameters.set_from_dict(params)
 
     # Set default characterisation values taken from ednadefaults for
