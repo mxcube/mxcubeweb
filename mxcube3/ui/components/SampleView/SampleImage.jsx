@@ -3,7 +3,7 @@
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
-import { makePoints, makeLines, makeImageOverlay } from './shapes';
+import { makePoints, makeLines, makeImageOverlay, makeCross } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 
@@ -39,6 +39,7 @@ export default class SampleImage extends React.Component {
     this.lineGroup = null;
     this.drawGridPlugin = new DrawGridPlugin();
     this.player = null;
+    this.centringCross = [];
   }
 
   componentDidMount() {
@@ -101,6 +102,20 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
+    if (this.props.clickCentring) {
+      if (this.centringCross.length === 2) {
+        this.canvas.remove(this.centringCross[0]);
+        this.canvas.remove(this.centringCross[1]);
+      }
+
+      this.centringCross = makeCross((options.e.layerX + 1.5) * this.props.imageRatio,
+                                     (options.e.layerY + 1) * this.props.imageRatio,
+                                     this.props.imageRatio,
+                                     this.canvas.width, this.canvas.height);
+
+      this.canvas.add(...this.centringCross);
+    }
+
     this.drawGridPlugin.update(this.canvas,
                                options.e.layerX,
                                options.e.layerY,
@@ -598,7 +613,7 @@ export default class SampleImage extends React.Component {
       beamPosition,
       beamShape,
       beamSize,
-      clickCentringPoints,
+      clickCentring,
       distancePoints,
       points,
       lines,
@@ -611,10 +626,17 @@ export default class SampleImage extends React.Component {
       beamPosition,
       beamShape,
       beamSize,
-      clickCentringPoints,
+      clickCentring,
       distancePoints,
       this.canvas
     ));
+
+    if (this.props.clickCentring === false) {
+      this.centringCross = [];
+    }
+
+    this.canvas.add(...this.centringCross);
+
     const fabricSelectables = [
       ...makePoints(points, imageRatio),
       ...makeLines(lines, imageRatio)
@@ -646,7 +668,7 @@ export default class SampleImage extends React.Component {
       });
     }
 
-    if (!this.drawGridPlugin.drawing && this.drawGridPlugin.shapeGroup) {
+    if (this.drawGridPlugin.shapeGroup) {
       this.canvas.add(this.drawGridPlugin.shapeGroup);
     }
 
