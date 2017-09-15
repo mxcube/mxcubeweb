@@ -205,7 +205,8 @@ export default class TaskItem extends Component {
               <div key={`wedge-${i}`}>
               <div style={ { borderLeft: '1px solid #DDD',
                              borderRight: '1px solid #DDD',
-                             paddingTop: padding } }
+                             paddingTop: padding,
+                             marginRight: '1px' } }
               >
                 <div style={ { borderTop: '1px solid #DDD',
                                padding: '0.5em' } }

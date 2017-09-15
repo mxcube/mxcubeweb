@@ -75,7 +75,7 @@ class SampleViewContainer extends Component {
                   cellSpacing={this.props.cellSpacing}
                 />
               </div>
-              <div className="col-xs-3" style={ { display: 'flex' } }>
+              <div className="col-xs-4" style={ { display: 'flex' } }>
                 <SampleQueueContainer />
             </div>
             </div>
