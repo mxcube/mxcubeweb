@@ -17,7 +17,6 @@ class DataCollection extends React.Component {
     super(props);
 
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
-    this.submitAcceptDiffractionPlan = this.submitAcceptDiffractionPlan.bind(this);
     this.showFooter = this.showFooter.bind(this);
     this.showDCFooter = this.showDCFooter.bind(this);
     this.showDPFooter = this.showDPFooter.bind(this);
@@ -27,44 +26,6 @@ class DataCollection extends React.Component {
 
   submitAddToQueue() {
     this.props.handleSubmit(this.addToQueue.bind(this, false))();
-  }
-
-  submitAcceptDiffractionPlan() {
-    this.props.handleSubmit(this.acceptDiffractionPlanCb.bind(this, false))();
-  }
-
-  acceptDiffractionPlanCb(runNow, params) {
-    const pars = {
-      ...this.props.taskData,
-      parameters: { ...params },
-    };
-
-    // Form gives us all parameter values in strings so we need to transform numbers back
-    const stringFields = [
-      'shutterless',
-      'inverse_beam',
-      'centringMethod',
-      'detector_mode',
-      'space_group',
-      'prefix',
-      'subdir',
-      'type',
-      'shape',
-      'label',
-      'helical',
-      'isDiffractionPlan',
-    ];
-
-    for (const key in pars) {
-      if (pars.parameters.hasOwnProperty(key)
-          && stringFields.indexOf(key) === -1
-          && pars.parameters[key]) {
-        pars.parameters[key] = Number(pars.parameters[key]);
-      }
-    }
-
-    this.props.acceptDiffractionPlan(pars);
-    this.props.hide();
   }
 
   submitRunNow() {
@@ -130,9 +91,9 @@ class DataCollection extends React.Component {
              Run Now
            </Button>
            <Button bsStyle="primary" disabled={this.props.invalid}
-             onClick={this.submitAcceptDiffractionPlan}
+             onClick={this.submitAddToQueue}
            >
-             { 'Accept Diffraction Plan' }
+             { 'Add Diffraction Plan to Queue' }
            </Button>
          </ButtonToolbar>
        </Modal.Footer>
@@ -141,15 +102,10 @@ class DataCollection extends React.Component {
 
   showFooter() {
     const isDiffractionPlan = this.props.taskData.isDiffractionPlan;
-    const diffPlanAccepted = this.props.taskData.diffractionPlanAccepted;
     let foot = '';
 
     if (isDiffractionPlan) {
-      if (diffPlanAccepted) {
-        foot = '';
-      } else {
-        foot = this.showDPFooter();
-      }
+      foot = this.showDPFooter();
     } else {
       foot = this.showDCFooter();
     }

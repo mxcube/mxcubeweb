@@ -50,7 +50,11 @@ export default class TaskItem extends Component {
       if (Object.keys(data.diffractionPlan).length !== 0) {
         // it can be empty
         diffPlan = (
-          <div>
+          <div style={ { borderLeft: '1px solid #DDD',
+                     borderRight: '1px solid #DDD',
+                     borderBottom: '1px solid #DDD',
+                     padding: '0.5em' } }
+          >
             <b>Diffraction plan available</b>
              <i className="fa fa-plus-circle" onClick={this.showDiffPlan} />
           </div>
@@ -62,8 +66,29 @@ export default class TaskItem extends Component {
 
   showDiffPlan() {
     const { data, sampleId } = this.props;
-    const { type, parameters } = data.diffractionPlan;
-    this.props.showForm(type, sampleId, data.diffractionPlan, parameters.shape);
+    const tasks = data.diffractionPlan;
+
+    // if there is a single wedge, display the form, otherwise, add all wedges as differente dc-s
+    if (tasks.length <= 1) {
+      delete data.diffractionPlan[0].run_number;
+      delete data.diffractionPlan[0].sampleID;
+      const { type, parameters } = data.diffractionPlan[0];
+
+      this.props.showForm(type, [sampleId], data.diffractionPlan[0], parameters.shape);
+    } else {
+      tasks.forEach((t) => {
+        const pars = {
+          // ...this.props.taskData,
+          type: 'DataCollection',
+          label: 'Data Collection',
+          helical: false,
+          shape: this.props.pointID,
+          ...t.parameters,
+        };
+
+        this.props.addTask([sampleId], pars, false);
+      });
+    }
   }
   toggleChecked() {
     this.props.toggleChecked(this.props.sampleId, this.props.index);
@@ -261,10 +286,11 @@ export default class TaskItem extends Component {
                   {this.wedgeParameters(wedge)}
                 </tbody>
               </Table>
+              {this.getResult(state)}
+              {this.getDiffPlan(data)}
               </div>);
             })}
-            {this.getResult(state)}
-            {this.getDiffPlan(data)}
+
           </div>
         </Collapse>
       </ContextMenuTrigger>

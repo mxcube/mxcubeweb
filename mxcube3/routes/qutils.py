@@ -317,21 +317,26 @@ def _handle_char(sample_id, node):
     return res
 
 def _handle_diffraction_plan(node):
-    k = mxcube.queue.diffraction_plan.keys()
-    if len(k) == 0:
+    model, entry = get_entry(node._node_id)
+    originID = model.get_origin()  # char node id
+    sample = model.get_parent()  # sample Node
+    tasks = []
+
+    if len(model.diffraction_plan) == 0:
         return (-1, {})
     else:
-        task = mxcube.queue.diffraction_plan.get(node._node_id)
-        if task == None:
-            return (-1, {})
+        collections = model.diffraction_plan[0]  # a list of lists
 
-        originID = task['originID']
+        for col in collections:
+            t = _handle_dc(sample._node_id, col)
+            if t == None:
+                tasks.append({})
+                continue
 
-    if not task.has_key('isDiffractionPlan'):
-        task['isDiffractionPlan'] = True
-        task['diffractionPlanAccepted'] = False
-    if node._node_id == originID:
-        return (originID, task)
+            t['isDiffractionPlan'] = True
+            tasks.append(t)
+
+        return (originID, tasks)
 
     return (-1, {})
 
@@ -861,11 +866,16 @@ def add_characterisation(node_id, task):
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
     char_model = qmo.Characterisation(refdc_model, char_params)
+
     char_model.set_origin(ORIGIN_MX3)
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
     char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters
     set_char_params(char_model, char_entry, task)
+
+    # the default value is True, here we adapt to mxcube3 needs
+    char_model.auto_add_diff_plan = False
+    char_entry.auto_add_diff_plan = False
 
     # A characterisation has two TaskGroups one for the characterisation itself
     # and its reference collection and one for the resulting diffraction plans.
@@ -1060,16 +1070,8 @@ def queue_model_child_added(parent, child):
         # is added, but when a dc_entry is added to such TaskGroup
         # the origin of the task group is the char node, but not for the dc_entry
         if isinstance(child, qmo.DataCollection) and isinstance(origin_model, qmo.Characterisation):
-            # This is the addition of the TaskGroup
-            dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
-            child.set_enabled(False)
-            dc_entry.set_enabled(False)
-            parent_entry.enqueue(dc_entry)
-            sample = parent.get_parent()
-            task = _handle_dc(sample._node_id, child)
-            task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id, 'diffractionPlanAccepted': False})
-            mxcube.queue.diffraction_plan.update({origin_model._node_id: task})
-            socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
+            # this case is handled in queue_model_diff_plan_available
+            pass
 
         elif isinstance(child, qmo.DataCollection) and not isinstance(origin_model, qmo.Characterisation):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
@@ -1087,6 +1089,18 @@ def queue_model_child_added(parent, child):
             dcg_entry.set_enabled(True)
             parent_entry.enqueue(dcg_entry)
 
+
+def queue_model_diff_plan_available(char, index, collection):
+    if isinstance(collection, qmo.DataCollection):
+        if collection.get_origin():
+            origin_model, origin_entry = get_entry(collection.get_origin())
+            print 'oriign... ', origin_model, origin_entry, origin_model._node_id
+        collection.set_enabled(False)
+        dcg_model = char.get_parent()
+        sample = dcg_model.get_parent()
+        task = _handle_dc(sample._node_id, collection)
+        task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
+        socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
 def execute_entry_with_id(sid, tindex=None):
     """
@@ -1149,6 +1163,8 @@ def init_signals(queue):
                            signals.collect_oscillation_finished)
 
     queue.connect(queue, 'child_added', queue_model_child_added)
+
+    queue.connect(queue, 'diff_plan_available', queue_model_diff_plan_available)
 
     queue.queue_hwobj.connect("queue_execute_started",
                               signals.queue_execution_started)

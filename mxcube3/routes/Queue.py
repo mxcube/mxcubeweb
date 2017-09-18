@@ -334,13 +334,6 @@ def update_sample(sample_id):
         logging.getLogger('HWR').exception('[QUEUE] sample not in the queue, can not update')
         return Response(status=409)
 
-
-@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<node_id>/accept", methods=['POST'])
-def accept_diff_plan(sid, node_id):
-    qutils.enable_entry(mxcube.queue.diffraction_plan[int(node_id)]['queueID'], True)
-    mxcube.queue.diffraction_plan[int(node_id)]['diffractionPlanAccepted'] = True
-    return Response(status=200)
-
 @mxcube.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=['PUT'])
 def toggle_node(node_id):
     '''
@@ -654,7 +647,6 @@ def create_diff_plan(sid):
     '''
     from mock import Mock
 
-
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
     ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
     ftype = ftype if ftype else '.?'
@@ -690,7 +682,7 @@ def create_diff_plan(sid):
     }
 
     sample_model, sample_entry = qutils.get_entry(sid)
-    dc_model, dc_entry = qutils._create_dc(task)
+    dc_model, dc_entry = qutils._create_dc(task)    
     qutils.set_dc_params(dc_model, dc_entry, task)
     pt = dc_model.acquisitions[0].path_template
 
@@ -699,20 +691,16 @@ def create_diff_plan(sid):
         msg += "path collision"
         raise Exception(msg)
 
-    group_model = qmo.TaskGroup()
-    group_model.set_name('Diffraction plan')
-    group_model.set_origin(3)
-    group_model.set_enabled(False)
-
     dc_model.set_origin(3)
     dc_model.set_enabled(False)
-    mxcube.queue.add_child(sample_model, group_model)  # we should ignore this signal
-    mxcube.queue.add_child(group_model, dc_model)  # and catch this one
 
-    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-    group_entry.set_enabled(False)
-    sample_entry.enqueue(group_entry)
-    group_entry.enqueue(dc_entry)
+    char, char_entry = qutils.get_entry(3)
 
+    char.diffraction_plan.append([dc_model])
+    mxcube.queue.emit('diff_plan_available',
+                                (char,
+                                 char.diffraction_plan.index([dc_model]),
+                                 dc_model)
+                                )
 
     return Response(status=200)

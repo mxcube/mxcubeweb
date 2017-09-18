@@ -16,7 +16,6 @@ import {
   updateTask,
   addSamplesToQueue,
   addSampleAndMount,
-  acceptDiffractionPlan
 } from '../actions/queue';
 
 import {
@@ -95,7 +94,6 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
-        acceptDiffractionPlan={this.props.acceptDiffractionPlan}
       />);
     }
 
@@ -188,7 +186,6 @@ function mapDispatchToProps(dispatch) {
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
     addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
     addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
-    acceptDiffractionPlan: bindActionCreators(acceptDiffractionPlan, dispatch)
   };
 }
 

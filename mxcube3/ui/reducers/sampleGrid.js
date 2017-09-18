@@ -182,7 +182,7 @@ export default (state = INITIAL_STATE, action) => {
         sampleList[task.sampleID].tasks.forEach((tt) => {
           if (tt.queueID === originID && tt.type === 'Characterisation') {
             tt.diffractionPlanID = task.queueID;
-            tt.diffractionPlan = task;
+            tt.diffractionPlan = action.tasks;
           }
         });
         /* eslint-enable no-param-reassign */
@@ -195,36 +195,6 @@ export default (state = INITIAL_STATE, action) => {
           state: TASK_UNCOLLECTED
         };
       });
-
-      return Object.assign({}, state, { sampleList });
-    }
-    case 'ACCEPT_DIFF_PLAN': {
-      const task = Object.assign({}, action.task);
-      const originID = task.originID;
-      task.isDiffractionPlan = false;
-      task.diffractionPlanAccepted = true;
-      task.state = 0;
-      // task.diffractionPlanAccepted = true;
-      const sampleList = { ...state.sampleList };
-      const taskList = state.sampleList[task.sampleID].tasks;
-      // first we find which char task is the origin and we set the accepted flag
-      /* eslint-disable no-param-reassign */
-      taskList.forEach((tt) => {
-        if (tt.queueID === originID && tt.type === 'Characterisation') {
-          tt.diffractionPlan.diffractionPlanAccepted = true;
-        }
-      });
-      /* eslint-enable no-param-reassign */
-
-      if (task.parameters.prefix === '') {
-        task.parameters.prefix = sampleList[task.sampleID].defaultPrefix;
-      }
-
-      sampleList[task.sampleID] = {
-        ...sampleList[task.sampleID],
-        tasks: [...sampleList[task.sampleID].tasks, task],
-        state: TASK_UNCOLLECTED
-      };
 
       return Object.assign({}, state, { sampleList });
     }
