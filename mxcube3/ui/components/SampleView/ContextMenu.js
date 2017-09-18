@@ -43,20 +43,24 @@ export default class ContextMenu extends React.Component {
       SAVED: [
         { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
         { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 2 },
-        { text: 'Go To Point', action: () => this.goToPoint(), key: 4 },
-        { text: 'divider', key: 5 },
+	{ text: 'Add XRF Scan', action: () => this.showModal('XRFScan'), key: 3 },
+	{ text: 'Add Energy Scan', action: () => this.showModal('EnergyScan'), key: 4 },
+        { text: 'Go To Point', action: () => this.goToPoint(), key: 5 },
+        { text: 'divider', key: 6 },
         ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
-        { text: 'Delete Point', action: () => this.removeShape(), key: 7 },
+        workflowTasks.point.length > 0 ? { text: 'divider', key: 26 } : {},
+        { text: 'Delete Point', action: () => this.removeShape(), key: 27 },
       ],
       TMP: [
         { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
         { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 2 },
-        { text: 'divider', key: 3 },
+	{ text: 'Add XRF Scan', action: () => this.showModal('XRFScan'), key: 3 },
+	{ text: 'Add Energy Scan', action: () => this.showModal('EnergyScan'), key: 4 },
+        { text: 'divider', key: 5 },
         ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
-        { text: 'Save Point', action: () => this.savePoint(), key: 4 },
-        { text: 'Delete Point', action: () => this.removeShape(), key: 5 }
+        workflowTasks.point.length > 0 ? { text: 'divider', key: 20 } : {},
+        { text: 'Save Point', action: () => this.savePoint(), key: 21 },
+        { text: 'Delete Point', action: () => this.removeShape(), key: 22 }
       ],
       GROUP: [
         { text: 'Add Datacollections', action: () => this.showModal('DataCollection'), key: 1 },

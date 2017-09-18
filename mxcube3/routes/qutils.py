@@ -295,6 +295,70 @@ def _handle_wf(sample_id, node):
     return res
 
 
+def _handle_xrf(sample_id, node):
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+    parameters = {"countTime": node.count_time,
+                  "shape": -1}
+    parameters.update(node.path_template.as_dict())
+    parameters['path'] = parameters['directory']
+
+    parameters['subdir'] = parameters['path'].\
+        split(mxcube.session.get_base_image_directory())[1][1:]
+
+    pt = node.path_template
+
+    parameters['fileName'] = pt.get_image_file_name().\
+        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+
+    parameters['fullPath'] = os.path.join(parameters['path'],
+                                          parameters['fileName'])
+
+    res = {"label": "XRF Scan",
+           "type": "XRFScan",
+           "parameters": parameters,
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "queueID": queueID,
+           "checked": node.is_enabled(),
+           "state": state
+           }
+
+    return res
+
+def _handle_energy_scan(sample_id, node):
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+    parameters = {"element": node.element_symbol,
+                  "edge": node.edge,
+                  "shape": -1}
+    parameters.update(node.path_template.as_dict())
+    parameters['path'] = parameters['directory']
+
+    parameters['subdir'] = parameters['path'].\
+        split(mxcube.session.get_base_image_directory())[1][1:]
+
+    pt = node.path_template
+
+    parameters['fileName'] = pt.get_image_file_name().\
+        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+
+    parameters['fullPath'] = os.path.join(parameters['path'],
+                                          parameters['fileName'])
+
+    res = {"label": "Energy Scan",
+           "type": "EnergyScan",
+           "parameters": parameters,
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "queueID": queueID,
+           "checked": node.is_enabled(),
+           "state": state
+           }
+
+    return res
+
+
 def _handle_char(sample_id, node):
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
@@ -418,6 +482,12 @@ def queue_to_dict_rec(node):
         elif isinstance(node, qmo.Workflow):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_wf(sample_id, node))
+        elif isinstance(node, qmo.XRFSpectrum):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_xrf(sample_id, node))
+        elif isinstance(node, qmo.EnergyScan):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_energy_scan(sample_id, node))
         elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
             sample_id = node.get_parent().loc_str
             result.append(_handle_interleaved(sample_id, node))
@@ -652,12 +722,16 @@ def _queue_add_item_rec(item_list, current_queue):
         # The item is either a data_collection or a characterisation
         if item_t == "DataCollection":
             add_data_collection(sample_node_id, item)
+        elif item_t == "Interleaved":
+            add_interleaved(sample_node_id, item)
         elif item_t == "Characterisation":
             add_characterisation(sample_node_id, item)
         elif item_t == "Workflow":
             add_workflow(sample_node_id, item)
-        elif item_t == "Interleaved":
-            add_interleaved(sample_node_id, item)
+        elif item_t == "XRFScan":
+            add_xrf_scan(sample_node_id, item)
+        elif item_t == "EnergyScan":
+            add_energy_scan(sample_node_id, item)
 
     # Bredth first
     if children:
@@ -865,6 +939,93 @@ def set_char_params(model, entry, task_data, sample_model):
     entry.set_enabled(task_data['checked'])
 
 
+def set_xrf_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+
+    :param XRFSpectrum QueueModel: The model to set parameters of
+    :param XRFSpectrumQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    """
+    params = task_data['parameters']
+
+    # Needs to be taken from XML configuration files if institute dependent
+    ftype = "xrf"
+
+    model.path_template.set_from_dict(params)
+    model.path_template.suffix = ftype
+    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
+        getProperty("precision", 4))
+
+    if params['prefix']:
+        model.path_template.base_prefix = params['prefix']
+    else:
+        model.path_template.base_prefix = mxcube.session.\
+            get_default_prefix(sample_model, False)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('subdir', ''))
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('subdir', ''))
+    model.path_template.process_directory = process_path
+
+    model.path_template.run_number = mxcube.queue.\
+        get_next_run_number(model.path_template)
+
+    # Set count time, and if any, other paramters
+    model.count_time = params.get("countTime", 0)
+
+    model.set_enabled(task_data['checked'])
+    entry.set_enabled(task_data['checked'])
+
+
+def set_energy_scan_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+
+    :param EnergyScan QueueModel: The model to set parameters of
+    :param EnergyScanQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    """
+    params = task_data['parameters']
+
+    # Needs to be taken from XML configuration files if institute dependent
+    ftype = "escan"
+
+    model.path_template.set_from_dict(params)
+    model.path_template.suffix = ftype
+    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
+        getProperty("precision", 4))
+
+    if params['prefix']:
+        model.path_template.base_prefix = params['prefix']
+    else:
+        model.path_template.base_prefix = mxcube.session.\
+            get_default_prefix(sample_model, False)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('subdir', ''))
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('subdir', ''))
+    model.path_template.process_directory = process_path
+
+    model.path_template.run_number = mxcube.queue.\
+        get_next_run_number(model.path_template)
+
+    # Set element, and if any, other parameters
+    model.element_symbol = params.get("element", "")
+    model.edge = params.get("edge", "")
+
+    model.set_enabled(task_data['checked'])
+    entry.set_enabled(task_data['checked'])
+
+
 def _create_dc(task):
     """
     Creates a data collection model and its corresponding queue entry from
@@ -895,6 +1056,38 @@ def _create_wf(task):
     dc_entry = qe.GenericWorkflowQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
+
+
+def _create_xrf(task):
+    """
+    Creates a XRFSpectrum model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    xrf_model = qmo.XRFSpectrum()
+    xrf_model.set_origin(ORIGIN_MX3)
+    xrf_entry = qe.XRFSpectrumQueueEntry(Mock(), xrf_model)
+
+    return xrf_model, xrf_entry
+
+
+def _create_energy_scan(task):
+    """
+    Creates a energy scan model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    escan_model = qmo.EnergyScan()
+    escan_model.set_origin(ORIGIN_MX3)
+    escan_entry = qe.EnergyScanQueueEntry(Mock(), escan_model)
+
+    return escan_model, escan_entry
 
 
 def add_characterisation(node_id, task):
@@ -1045,6 +1238,76 @@ def add_interleaved(node_id, task):
         group_entry.enqueue(dc_entry)
 
     return group_model._node_id
+
+
+def add_xrf_scan(node_id, task):
+    """
+    Adds a XRF Scan task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = get_entry(node_id)
+    xrf_model, xrf_entry = _create_xrf(task)
+    set_xrf_params(xrf_model, xrf_entry, task, sample_model)
+
+    pt = xrf_model.path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    group_model = qmo.TaskGroup()
+    group_model.set_origin(ORIGIN_MX3)
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, xrf_model)
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(xrf_entry)
+
+    return xrf_model._node_id
+
+
+def add_energy_scan(node_id, task):
+    """
+    Adds a energy scan task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = get_entry(node_id)
+    escan_model, escan_entry = _create_energy_scan(task)
+    set_energy_scan_params(escan_model, escan_entry, task, sample_model)
+
+    pt = escan_model.path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    group_model = qmo.TaskGroup()
+    group_model.set_origin(ORIGIN_MX3)
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, escan_model)
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(escan_entry)
+
+    return escan_model._node_id
 
 
 def new_queue():
