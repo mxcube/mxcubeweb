@@ -102,10 +102,10 @@ export function makeScale(height, scaleLengthX, scaleLengthY, color, text) {
   ];
 }
 
-export function makeCross(point, imageRatio, width, height) {
+export function makeCross(x, y, imageRatio, width, height) {
   return [
-    makeLine(point.x / imageRatio, 0, point.x / imageRatio, height, 'yellow', 2, false),
-    makeLine(0, point.y / imageRatio, width, point.y / imageRatio, 'yellow', 2, false)
+    makeLine(x / imageRatio, 0, x / imageRatio, height, 'rgba(255,255,0,0.5)', 2, false),
+    makeLine(0, y / imageRatio, width, y / imageRatio, 'rgba(255,255,0,0.5)', 2, false)
   ];
 }
 
