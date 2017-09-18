@@ -56,7 +56,11 @@ export default class TaskItem extends Component {
                      padding: '0.5em' } }
           >
             <b>Diffraction plan available</b>
-             <i className="fa fa-plus-circle" onClick={this.showDiffPlan} />
+            <button type="button" style={{ maxWidth: '40px', marginRight: '0px' }}
+              className="btn btn-primary btn-xs fa fa-plus-circle"
+              onClick={this.showDiffPlan}
+            >
+            </button>
           </div>
           );
       }
