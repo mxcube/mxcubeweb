@@ -874,8 +874,8 @@ def add_characterisation(node_id, task):
     set_char_params(char_model, char_entry, task)
 
     # the default value is True, here we adapt to mxcube3 needs
-    char_model.auto_add_diff_plan = False
-    char_entry.auto_add_diff_plan = False
+    char_model.auto_add_diff_plan = mxcube.AUTO_ADD_DIFFPLAN
+    char_entry.auto_add_diff_plan = mxcube.AUTO_ADD_DIFFPLAN
 
     # A characterisation has two TaskGroups one for the characterisation itself
     # and its reference collection and one for the resulting diffraction plans.
@@ -1101,6 +1101,15 @@ def queue_model_diff_plan_available(char, index, collection):
         task = _handle_dc(sample._node_id, collection)
         task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
         socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
+
+def set_auto_add_diffplan(autoadd, current_sample=None):
+    """
+    Sets auto mount next flag, automatically mount next sample in queue
+    (True) or wait for user (False)
+
+    :param bool automount: True auto-mount, False wait for user
+    """
+    mxcube.AUTO_ADD_DIFFPLAN = autoadd
 
 def execute_entry_with_id(sid, tindex=None):
     """

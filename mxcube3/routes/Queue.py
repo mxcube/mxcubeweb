@@ -641,6 +641,17 @@ def set_autmount():
 
     return resp
 
+@mxcube.route("/mxcube/api/v0.1/queue/auto_add_diffplan", methods=["POST"])
+def set_autoadd():
+    try:
+        autoadd = request.get_json()
+        qutils.set_auto_add_diffplan(autoadd)
+        resp = jsonify({'auto_add_diffplan': autoadd})
+        resp.status_code = 200
+    except Exception as ex:
+        print ex
+    return resp
+
 @mxcube.route("/mxcube/api/v0.1/queue/mock/diff_plan/<sid>", methods=["GET"])
 def create_diff_plan(sid):
     '''Juts for creating a diff plan as if it were created by edna and so on.

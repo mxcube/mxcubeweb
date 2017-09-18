@@ -568,3 +568,29 @@ export function setAutoMountSample(automount) {
     });
   };
 }
+
+export function setAutoAddDiffPlanAction(autoadd) {
+  return { type: 'SET_AUTO_ADD_DIFFPLAN', autoadd };
+}
+
+export function setAutoAddDiffPlan(autoadddiffplan) {
+  return function (dispatch) {
+    return fetch('mxcube/api/v0.1/queue/auto_add_diffplan', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(autoadddiffplan)
+    }).then(response => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Could not set/unset automount'));
+      }
+      return response.json();
+    }).then(response => {
+      const a = response.auto_add_diffplan;
+      dispatch(setAutoAddDiffPlanAction(a));
+    });
+  };
+}

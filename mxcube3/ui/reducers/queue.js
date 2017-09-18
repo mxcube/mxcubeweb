@@ -5,7 +5,8 @@ const initialState = {
   queue: [],
   current: { sampleID: null, running: false },
   queueStatus: QUEUE_STOPPED,
-  autoMountNext: false
+  autoMountNext: false,
+  autoAddDiffPlan: true
 };
 
 export default (state = initialState, action) => {
@@ -64,6 +65,9 @@ export default (state = initialState, action) => {
     case 'SET_AUTO_MOUNT_SAMPLE': {
       return { ...state, autoMountNext: action.automount };
     }
+    case 'SET_AUTO_ADD_DIFFPLAN': {
+      return { ...state, autoAddDiffPlan: action.autoadd };
+    }
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
@@ -79,6 +83,7 @@ export default (state = initialState, action) => {
           rootPath: action.data.beamlineSetup.path,
           queue: Object.keys(action.data.queue.queue),
           autoMountNext: action.data.queue.autoMountNext,
+          autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
           current: { sampleID: action.data.queue.loaded,
                      running: action.data.queue.queueStatus }
         };
