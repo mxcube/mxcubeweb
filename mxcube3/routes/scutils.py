@@ -11,7 +11,6 @@ from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 def set_current_sample(sample_id):
     mxcube.CURRENTLY_MOUNTED_SAMPLE = str(sample_id)
 
-
 def get_current_sample():
     return mxcube.CURRENTLY_MOUNTED_SAMPLE
 
@@ -105,6 +104,7 @@ def mount_sample_clean_up(sample):
     try:
         msg = '[SC] mounting %s (%r)', sample['location'], sample['sampleID']
         logging.getLogger('HWR').info(msg)
+        set_sample_to_be_mounted(sample['sampleID'])
         set_current_sample(sample['sampleID'])
 
         if not sample['location'] == 'Manual':
