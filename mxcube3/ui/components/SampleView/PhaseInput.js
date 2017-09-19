@@ -1,5 +1,7 @@
 import React from 'react';
 import './motor.css';
+import '../input.css';
+import cx from 'classnames';
 
 export default class PhaseInput extends React.Component {
 
@@ -13,12 +15,18 @@ export default class PhaseInput extends React.Component {
   }
 
   render() {
+    let inputCSS = cx('form-control input-sm', {
+      'input-bg-moving': this.props.phase === 'Unknown',
+      'input-bg-ready': this.props.phase !== 'Unknown'
+    });
+
     return (
-      <select
-        className="form-control input-sm"
-        onChange={this.sendPhase}
-        value={this.props.phase}
-      >
+       <div className="motor-input-container" >
+        <select
+          className={inputCSS}
+          onChange={this.sendPhase}
+          value={this.props.phase}
+        >
         {this.props.phaseList.map((option) => (
           <option
             key={option}
@@ -29,6 +37,7 @@ export default class PhaseInput extends React.Component {
           )
         )}
       </select>
+      </div>
       );
   }
 }

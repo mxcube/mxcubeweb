@@ -1,9 +1,7 @@
 import './SampleView.css';
 import React from 'react';
 import { OverlayTrigger, Popover, Button, DropdownButton, MenuItem } from 'react-bootstrap';
-import PhaseInput from './PhaseInput';
 import 'fabric';
-import config from 'guiConfig';
 const fabric = window.fabric;
 
 export default class SampleControls extends React.Component {
@@ -112,16 +110,6 @@ export default class SampleControls extends React.Component {
   }
 
   render() {
-    const phaseControl = (
-      <li>
-        <PhaseInput
-          phase={this.props.currentPhase}
-          phaseList={this.props.phaseList}
-          sendPhase={this.props.sampleActions.sendCurrentPhase}
-        />
-      <span className="sample-controll-label">Phase</span>
-      </li>);
-
     const motors = this.props.motors;
     return (
       <div style={ { display: 'flex', position: 'absolute', width: '100%', zIndex: 1000 } } >
@@ -306,7 +294,6 @@ export default class SampleControls extends React.Component {
             </OverlayTrigger>
             <span className="sample-controll-label">Frontlight</span>
             </li>
-            {config.phaseControl ? phaseControl : null }
             <li>
               <DropdownButton
                 className="sample-controll"
