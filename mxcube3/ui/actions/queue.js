@@ -373,6 +373,35 @@ export function addTaskAction(tasks) {
   return { type: 'ADD_TASKS', tasks };
 }
 
+export function updateTaskAction(sampleID, taskIndex, taskData) {
+  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
+}
+
+
+export function updateTask(sampleID, taskIndex, params, runNow) {
+  return function (dispatch, getState) {
+    const { sampleGrid } = getState();
+    const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
+    dispatch(queueLoading(true));
+
+    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
+      }
+      return response.json();
+    }).then((data) => {
+      dispatch(updateTaskAction(sampleID, taskIndex, data));
+
+      if (runNow) {
+        dispatch(sendRunSample(sampleID, taskIndex));
+      }
+    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+  };
+}
+
+export function addDiffractionPlanAction(tasks) {
+  return { type: 'ADD_DIFF_PLAN', tasks };
+}
 
 export function addTask(sampleIDs, parameters, runNow) {
   return function (dispatch, getState) {
@@ -440,33 +469,6 @@ export function addTask(sampleIDs, parameters, runNow) {
       if (runNow) {
         const taskIndex = data[sampleIDs[0]].tasks[data[sampleIDs[0]].tasks.length - 1].taskIndex;
         dispatch(sendRunSample(sampleIDs[0], taskIndex));
-      }
-    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
-  };
-}
-
-
-export function updateTaskAction(sampleID, taskIndex, taskData) {
-  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
-}
-
-
-export function updateTask(sampleID, taskIndex, params, runNow) {
-  return function (dispatch, getState) {
-    const { sampleGrid } = getState();
-    const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
-    dispatch(queueLoading(true));
-
-    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
-      }
-      return response.json();
-    }).then((data) => {
-      dispatch(updateTaskAction(sampleID, taskIndex, data));
-
-      if (runNow) {
-        dispatch(sendRunSample(sampleID, taskIndex));
       }
     }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
@@ -563,6 +565,32 @@ export function setAutoMountSample(automount) {
       let a = response.automount;
       a = a === undefined ? false : a;
       dispatch(setAutoMountAction(a));
+    });
+  };
+}
+
+export function setAutoAddDiffPlanAction(autoadd) {
+  return { type: 'SET_AUTO_ADD_DIFFPLAN', autoadd };
+}
+
+export function setAutoAddDiffPlan(autoadddiffplan) {
+  return function (dispatch) {
+    return fetch('mxcube/api/v0.1/queue/auto_add_diffplan', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(autoadddiffplan)
+    }).then(response => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Could not set/unset automount'));
+      }
+      return response.json();
+    }).then(response => {
+      const a = response.auto_add_diffplan;
+      dispatch(setAutoAddDiffPlanAction(a));
     });
   };
 }

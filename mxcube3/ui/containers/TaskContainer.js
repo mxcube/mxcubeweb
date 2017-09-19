@@ -17,7 +17,7 @@ import {
   addTask,
   updateTask,
   addSamplesToQueue,
-  addSampleAndMount
+  addSampleAndMount,
 } from '../actions/queue';
 
 import {
@@ -211,7 +211,7 @@ function mapDispatchToProps(dispatch) {
     addTask: bindActionCreators(addTask, dispatch),
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
     addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
-    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch)
+    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
   };
 }
 

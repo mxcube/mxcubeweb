@@ -8,6 +8,7 @@ export default class QueueControl extends React.Component {
     super(props);
 
     this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
+    this.setAutoAddDiffPlan = this.setAutoAddDiffPlan.bind(this);
     this.nextSample = this.nextSample.bind(this);
 
     this.state = {
@@ -43,6 +44,10 @@ export default class QueueControl extends React.Component {
         ]
       }
     };
+  }
+
+  setAutoAddDiffPlan(e) {
+    this.props.setAutoAddDiffPlan(e.target.checked);
   }
 
   nextSample() {
@@ -131,6 +136,17 @@ export default class QueueControl extends React.Component {
                     name="autoLoopCentring"
                   >
                     Auto loop centring
+                  </Checkbox>
+                </span>
+              </li>
+              <li role="presentation">
+                <span role="menuitem">
+                  <Checkbox
+                    name="autoAddDiffPlan"
+                    onClick={this.setAutoAddDiffPlan}
+                    checked={this.props.autoAddDiffPlan}
+                  >
+                  Auto add diffraction plan
                   </Checkbox>
                 </span>
               </li>

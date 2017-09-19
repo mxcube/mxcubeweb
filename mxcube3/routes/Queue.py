@@ -268,7 +268,6 @@ def queue_move_task_item(sid, ti1, ti2):
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200)
 
-   
 
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
 def update_sample(sample_id):
@@ -293,7 +292,7 @@ def update_sample(sample_id):
         # TODO: update here the model with the new 'params'
         # missing lines...
         sample_entry.set_data_model(sample_node)
-        #qutils.save_queue(session)
+        # qutils.save_queue(session)
         logging.getLogger('HWR').info('[QUEUE] sample updated')
         resp = jsonify({'QueueId': node_id})
         resp.status_code = 200
@@ -301,7 +300,6 @@ def update_sample(sample_id):
     else:
         logging.getLogger('HWR').exception('[QUEUE] sample not in the queue, can not update')
         return Response(status=409)
-
 
 @mxcube.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=['PUT'])
 def toggle_node(node_id):
@@ -607,5 +605,78 @@ def set_autmount():
 
     resp = jsonify({'automount': automount})
     resp.status_code = 200
-    
+
     return resp
+
+@mxcube.route("/mxcube/api/v0.1/queue/auto_add_diffplan", methods=["POST"])
+def set_autoadd():
+    autoadd = request.get_json()
+    qutils.set_auto_add_diffplan(autoadd)
+    resp = jsonify({'auto_add_diffplan': autoadd})
+    resp.status_code = 200
+
+    return resp
+
+@mxcube.route("/mxcube/api/v0.1/queue/mock/diff_plan/<sid>", methods=["GET"])
+def create_diff_plan(sid):
+    '''Juts for creating a diff plan as if it were created by edna and so on.
+    '''
+    from mock import Mock
+
+    acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
+    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = ftype if ftype else '.?'
+    n = int(mxcube.session["file_info"].getProperty("precision", 4))
+    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
+
+    task = { 'parameters': {
+            'first_image': acq_parameters.first_image,
+            'num_images': 111,
+            'osc_start': acq_parameters.osc_start,
+            'osc_range': 42,
+            'kappa': acq_parameters.kappa,
+            'kappa_phi': acq_parameters.kappa_phi,
+            'overlap': acq_parameters.overlap,
+            'exp_time': 456,
+            'num_passes': acq_parameters.num_passes,
+            'resolution': acq_parameters.resolution,
+            'energy': acq_parameters.energy,
+            'transmission': acq_parameters.transmission,
+            'shutterless': acq_parameters.shutterless,
+            'detector_mode': acq_parameters.detector_mode,
+            'inverse_beam': False,
+            'take_dark_current': True,
+            'skip_existing_images': False,
+            'take_snapshots': True,
+            'helical': False,
+            'mesh': False,
+            'fileNameTemplate': template,
+            'prefix': 'foo',
+            'shape': 'P1'#-1
+        },
+        'checked': {True}
+    }
+
+    sample_model, sample_entry = qutils.get_entry(sid)
+    dc_model, dc_entry = qutils._create_dc(task)    
+    qutils.set_dc_params(dc_model, dc_entry, task, sample_model)
+    pt = dc_model.acquisitions[0].path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    dc_model.set_origin(3)
+    dc_model.set_enabled(False)
+
+    char, char_entry = qutils.get_entry(3)
+
+    char.diffraction_plan.append([dc_model])
+    mxcube.queue.emit('diff_plan_available',
+                                (char,
+                                 char.diffraction_plan.index([dc_model]),
+                                 dc_model)
+                                )
+
+    return Response(status=200)

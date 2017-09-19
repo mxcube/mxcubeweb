@@ -17,6 +17,9 @@ class DataCollection extends React.Component {
     super(props);
 
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
+    this.showFooter = this.showFooter.bind(this);
+    this.showDCFooter = this.showDCFooter.bind(this);
+    this.showDPFooter = this.showDPFooter.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
   }
@@ -55,6 +58,58 @@ class DataCollection extends React.Component {
 
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
+  }
+
+  showDCFooter() {
+    return (
+       <Modal.Footer>
+         <ButtonToolbar className="pull-right">
+           <Button bsStyle="success"
+             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+             onClick={this.submitRunNow}
+           >
+             Run Now
+           </Button>
+           <Button bsStyle="primary" disabled={this.props.invalid}
+             onClick={this.submitAddToQueue}
+           >
+             {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+           </Button>
+         </ButtonToolbar>
+       </Modal.Footer>
+      );
+  }
+
+  showDPFooter() {
+    return (
+       <Modal.Footer>
+         <ButtonToolbar className="pull-right">
+           <Button bsStyle="success"
+             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+             onClick={this.submitRunNow}
+           >
+             Run Now
+           </Button>
+           <Button bsStyle="primary" disabled={this.props.invalid}
+             onClick={this.submitAddToQueue}
+           >
+             { 'Add Diffraction Plan to Queue' }
+           </Button>
+         </ButtonToolbar>
+       </Modal.Footer>
+    );
+  }
+
+  showFooter() {
+    const isDiffractionPlan = this.props.taskData.isDiffractionPlan;
+    let foot = '';
+
+    if (isDiffractionPlan) {
+      foot = this.showDPFooter();
+    } else {
+      foot = this.showDCFooter();
+    }
+    return foot;
   }
 
   render() {
@@ -135,23 +190,8 @@ class DataCollection extends React.Component {
           <FieldsHeader title="Processing" />
        </Modal.Body>
 
-       { this.props.taskData.state ? '' :
-           <Modal.Footer>
-             <ButtonToolbar className="pull-right">
-               <Button bsStyle="success"
-                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
-                 onClick={this.submitRunNow}
-               >
-                 Run Now
-               </Button>
-               <Button bsStyle="primary" disabled={this.props.invalid}
-                 onClick={this.submitAddToQueue}
-               >
-                 {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-               </Button>
-             </ButtonToolbar>
-           </Modal.Footer>
-       }
+       { this.props.taskData.state ? '' : this.showFooter() }
+
       </DraggableModal>);
   }
 }

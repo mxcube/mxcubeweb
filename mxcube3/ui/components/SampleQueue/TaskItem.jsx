@@ -135,7 +135,6 @@ export default class TaskItem extends Component {
     const { state,
             data,
             show } = this.props;
-
     let wedges = [];
 
     if (data.type === 'Interleaved') {
@@ -240,9 +239,10 @@ export default class TaskItem extends Component {
                   {this.wedgeParameters(wedge)}
                 </tbody>
               </Table>
+              {this.getResult(state)}
               </div>);
             })}
-            {this.getResult(state)}
+
           </div>
         </Collapse>
       </ContextMenuTrigger>

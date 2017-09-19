@@ -369,6 +369,7 @@ def _handle_char(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
+    originID, task = _handle_diffraction_plan(node)
     res = {"label": "Characterisation",
            "type": "Characterisation",
            "parameters": parameters,
@@ -376,11 +377,36 @@ def _handle_char(sample_id, node):
            "sampleID": sample_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": node._node_id,
-           "state": state
+           "state": state,
+           "diffractionPlan": task,
+           "diffractionPlanID": originID
            }
 
     return res
 
+def _handle_diffraction_plan(node):
+    model, entry = get_entry(node._node_id)
+    originID = model.get_origin()  # char node id
+    sample = model.get_parent()  # sample Node
+    tasks = []
+
+    if len(model.diffraction_plan) == 0:
+        return (-1, {})
+    else:
+        collections = model.diffraction_plan[0]  # a list of lists
+
+        for col in collections:
+            t = _handle_dc(sample._node_id, col)
+            if t == None:
+                tasks.append({})
+                continue
+
+            t['isDiffractionPlan'] = True
+            tasks.append(t)
+
+        return (originID, tasks)
+
+    return (-1, {})
 
 def _handle_interleaved(sample_id, node):
     wedges = []
@@ -1109,11 +1135,16 @@ def add_characterisation(node_id, task):
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
     char_model = qmo.Characterisation(refdc_model, char_params)
+
     char_model.set_origin(ORIGIN_MX3)
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
     char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters
     set_char_params(char_model, char_entry, task, sample_model)
+
+    # the default value is True, here we adapt to mxcube3 needs
+    char_model.auto_add_diff_plan = mxcube.AUTO_ADD_DIFFPLAN
+    char_entry.auto_add_diff_plan = mxcube.AUTO_ADD_DIFFPLAN
 
     # A characterisation has two TaskGroups one for the characterisation itself
     # and its reference collection and one for the resulting diffraction plans.
@@ -1316,6 +1347,8 @@ def new_queue():
     :returns: MxCuBE QueueModel Object
     """
     queue = pickle.loads(mxcube.empty_queue)
+    queue.diffraction_plan = {}
+
     init_signals(queue)
     mxcube.xml_rpc_server.queue_hwobj = queue.queue_hwobj
     mxcube.xml_rpc_server.queue_model_hwobj = queue
@@ -1363,21 +1396,10 @@ def queue_model_child_added(parent, child):
     characterisations and workflows.
     """
     parent_model, parent_entry = get_entry(parent._node_id)
-    model, entry = get_entry(child._node_id)
+    child_model, child_entry = get_entry(child._node_id)
 
     # Origin is ORIGIN_MX3 if task comes from MXCuBE-3
-    if model.get_origin() != ORIGIN_MX3:
-
-        # If origin is set get the originating entry and model and
-        # handle accordingly
-        if model.get_origin():
-            origin_model, origin_entry = get_entry(model.get_origin())
-
-            if isinstance(origin_model, qmo.Characterisation):
-                # Handle characterization specific logic here
-                print("CHARACTERIZATION")
-
-        # To handle results from characterization, make this elif
+    if child_model.get_origin() != ORIGIN_MX3:
         if isinstance(child, qmo.DataCollection):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
 
@@ -1388,11 +1410,42 @@ def queue_model_child_added(parent, child):
 
             task = _handle_dc(sample._node_id, child)
             socketio.emit('add_task', {"tasks": [task]}, namespace='/hwr')
+
         elif isinstance(child, qmo.TaskGroup):
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
             enable_entry(dcg_entry, True)
             parent_entry.enqueue(dcg_entry)
 
+
+def queue_model_diff_plan_available(char, index, collection):
+    if isinstance(collection, qmo.DataCollection):
+        if collection.get_origin():
+            origin_model, origin_entry = get_entry(collection.get_origin())
+        collection.set_enabled(False)
+        dcg_model = char.get_parent()
+        sample = dcg_model.get_parent()
+        task = _handle_dc(sample._node_id, collection)
+        task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
+        socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
+
+def set_auto_add_diffplan(autoadd, current_sample=None):
+    """
+    Sets auto mount next flag, automatically mount next sample in queue
+    (True) or wait for user (False)
+
+    :param bool automount: True auto-mount, False wait for user
+    """
+    mxcube.AUTO_ADD_DIFFPLAN = autoadd
+    current_queue = queue_to_dict()
+    current_queue.pop('sample_order')
+    sampleIDs = current_queue.keys()
+    for sample in sampleIDs:
+        # this would be a sample
+        tasks = current_queue[sample]['tasks']
+        for t in tasks:
+            if t['type'] == 'Characterisation':
+                model, entry =  get_entry(t['queueID'])
+                entry.auto_add_diff_plan = autoadd
 
 def execute_entry_with_id(sid, tindex=None):
     """
@@ -1455,6 +1508,8 @@ def init_signals(queue):
                            signals.collect_oscillation_finished)
 
     queue.connect(queue, 'child_added', queue_model_child_added)
+
+    queue.connect(queue, 'diff_plan_available', queue_model_diff_plan_available)
 
     queue.queue_hwobj.connect("queue_execute_started",
                               signals.queue_execution_started)

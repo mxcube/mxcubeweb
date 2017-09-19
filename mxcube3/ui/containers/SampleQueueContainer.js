@@ -24,6 +24,7 @@ function mapStateToProps(state) {
     queueStatus: state.queue.queueStatus,
     queue: state.queue.queue,
     autoMountNext: state.queue.autoMountNext,
+    autoAddDiffPlan: state.queue.autoAddDiffPlan,
     sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
@@ -72,7 +73,8 @@ export default class SampleQueueContainer extends React.Component {
       displayData,
       visibleList,
       loading,
-      autoMountNext
+      autoMountNext,
+      autoAddDiffPlan
     } = this.props;
     const {
       sendToggleCheckBox,
@@ -86,6 +88,7 @@ export default class SampleQueueContainer extends React.Component {
       sendMountSample,
       moveTask,
       setAutoMountSample,
+      setAutoAddDiffPlan,
       sendRunSample,
     } = this.props.queueActions;
     const {
@@ -133,6 +136,8 @@ export default class SampleQueueContainer extends React.Component {
                   stopQueue={sendStopQueue}
                   setAutoMountSample={setAutoMountSample}
                   autoMountNext={autoMountNext}
+                  setAutoAddDiffPlan={setAutoAddDiffPlan}
+                  autoAddDiffPlan={autoAddDiffPlan}
                   mounted={current.sampleID}
                   runSample={sendRunSample}
                   todoList={todo}
