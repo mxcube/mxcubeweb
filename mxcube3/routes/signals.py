@@ -1,6 +1,7 @@
 import logging
 
 import queue_model_objects_v1 as qmo
+import json
 
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
@@ -97,33 +98,61 @@ def sc_state_changed(*args):
     known_location = scutils.get_current_sample()
     location = known_location if known_location else sc_location
 
-    if location:
-        if new_state == SampleChangerState.Moving and ( old_state == None or
-           SampleChangerState.Ready ):
-            msg = {'signal': 'loadingSample',
-                   'location': location,
-                   'message': 'Please wait, operating sample changer'}
+    if new_state == SampleChangerState.Moving:
+        msg = {'signal': 'operatingSampleChanger',
+               'location': '',
+               'message': 'Please wait, operating sample changer'}
 
-        elif new_state == SampleChangerState.Loading:
-            msg = {'signal': 'loadingSample',
-                   'location': location,
-                   'message': 'Please wait, Loading sample %s' % location}
+    elif new_state in [SampleChangerState.Loading, SampleChangerState.Unloading]:
+        if new_state == SampleChangerState.Loading:
+            location = scutils.get_sample_to_be_mounted()
+            message = 'Please wait, Loading sample %s' % location
+            signal = 'loadingSample'
+        elif new_state == SampleChangerState.Unloading:
+            signal = 'unLoadingSample'
+            message = 'Please wait, Unloading sample' 
 
-        elif new_state == SampleChangerState.Unloading and location:
-            msg = {'signal': 'loadingSample',
-                   'location': location,
-                   'message': 'Please wait, Unloading sample %s' % location}
-
-        elif new_state == SampleChangerState.Ready and (old_state == None or
-             old_state == SampleChangerState.Loading or
-             old_state == SampleChangerState.Moving):
-
+        msg = {'signal': signal,
+               'location': location,
+               'message': message}
+    else:
+        # make sure operation is finished in any other case
+        if location: 
             msg = {'signal': 'loadReady', 'location': location}
             scutils.set_current_sample(location)
+        msg = {'signal': 'loadReady', 'location': ''}
+    
+    if msg:
+        logging.getLogger("HWR").info('emitting sc state changed: ' + str(msg))
+        socketio.emit('sc', msg, namespace='/hwr')
+   
+    # emit also brut sample changer state for those interested
+    state_str = SampleChangerState.STATE_DESC.get(new_state, "Unknown").upper()
+    socketio.emit('sc_state', state_str, namespace='/hwr')
 
-        if msg:
-            socketio.emit('sc', msg, namespace='/hwr')
+def loaded_sample_changed(sample):
+    if sample is not None:
+        address = sample.getAddress()
+        barcode = sample.getID()
+    else:
+        address = ''
+        barcode = ''
 
+    logging.getLogger("HWR").info('loaded sample changed now is: ' + address)
+
+    try:
+        socketio.emit("loaded_sample_changed", {'address': address, 'barcode': barcode}, namespace="/hwr")
+    except Exception, msg:
+        logging.getLogger("HWR").error('error setting loaded sample: %s' + str(msg))
+
+def sc_contents_update():
+    socketio.emit("sc_contents_update")
+
+def sc_maintenance_update(state_list, cmd_state, message):
+    try:
+        socketio.emit("sc_maintenance_update", {'state': json.dumps(state_list), 'commands_state': json.dumps(cmd_state), 'message': message}, namespace="/hwr")
+    except Exception,msg:
+        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
 
 def centring_started(method, *args):
     usr_msg = 'Using 3-click centring, please click the position on '
@@ -482,15 +511,19 @@ def safety_shutter_state_changed(values):
     try:
         socketio.emit("beamline_value_change", data, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").error('error sending message: %s', data)
+        logging.getLogger("HWR").error('error sending message: %s' + str(data))
 
+def mach_info_changed(values):
+    try:
+        socketio.emit("mach_info_changed", values, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: %s' + str(msg))
 
 def new_plot(plot_info):
     try:
         socketio.emit("new_plot", plot_info, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error('error sending new_plot message: %s', plot_info)
-
 
 @Utils.RateLimited(1)
 def plot_data(data, last_index=[0], **kwargs):
@@ -504,7 +537,7 @@ def plot_data(data, last_index=[0], **kwargs):
         socketio.emit("plot_data", data, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").exception('error sending plot_data message for plot %s', data['id'])
-    else:    
+    else:
         last_index[0] += len(data_data)
 
 def plot_end(data):
@@ -512,4 +545,3 @@ def plot_end(data):
         socketio.emit("plot_end", data, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error('error sending plot_end message for plot %s', data['id'])
-

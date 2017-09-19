@@ -11,10 +11,14 @@ from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 def set_current_sample(sample_id):
     mxcube.CURRENTLY_MOUNTED_SAMPLE = str(sample_id)
 
-
 def get_current_sample():
     return mxcube.CURRENTLY_MOUNTED_SAMPLE
 
+def set_sample_to_be_mounted(loc):
+    mxcube.SAMPLE_TO_BE_MOUNTED = loc
+
+def get_sample_to_be_mounted():
+    return mxcube.SAMPLE_TO_BE_MOUNTED
 
 def mount_sample(beamline_setup_hwobj,
                  view, data_model,
@@ -68,16 +72,16 @@ def mount_sample(beamline_setup_hwobj,
                 if centring_method == CENTRING_METHOD.MANUAL:
                     log.warning("Manual centring used, waiting for" +\
                                 " user to center sample")
-                    dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
                 elif centring_method == CENTRING_METHOD.LOOP:
-                    dm.startCentringMethod(dm.C3D_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
                     log.warning("Centring in progress. Please save" +\
                                 " the suggested centring or re-center")
                 elif centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
                     log.info("Centring sample, please wait.")
-                    dm.startCentringMethod(dm.C3D_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
                 else:
-                    dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
+                    dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
 
                 view.setText(1, "Centring !")
                 centring_result = async_result.get()
@@ -90,6 +94,8 @@ def mount_sample(beamline_setup_hwobj,
                     else:
                         raise RuntimeError("Could not center sample")
             except:
+                import traceback
+                log.info(" centrong did not pass %s" % traceback.format_exc())
                 pass
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
@@ -98,6 +104,7 @@ def mount_sample_clean_up(sample):
     try:
         msg = '[SC] mounting %s (%r)', sample['location'], sample['sampleID']
         logging.getLogger('HWR').info(msg)
+        set_sample_to_be_mounted(sample['sampleID'])
         set_current_sample(sample['sampleID'])
 
         if not sample['location'] == 'Manual':

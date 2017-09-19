@@ -11,9 +11,11 @@ export class SampleChangerTree extends React.Component {
     let titleBackground;
 
     if (this.props.state === 'READY') {
-      titleBackground = 'default';
+      titleBackground = 'success';
     } else if (this.props.state === 'MOVING') {
       titleBackground = 'warning';
+    } else if (this.props.state === 'DISABLED') {
+      titleBackground = 'default';
     } else {
       titleBackground = 'danger';
     }
@@ -171,6 +173,8 @@ export default class SampleChanger extends React.Component {
     super(props);
     this.buildTree = this.buildTree.bind(this);
     this.scan = this.scan.bind(this);
+    this.unload = this.unload.bind(this);
+    this.abort = this.abort.bind(this);
   }
 
 
@@ -178,6 +182,13 @@ export default class SampleChanger extends React.Component {
     this.props.scan('');
   }
 
+  unload() {
+    this.props.unload('');
+  }
+
+  abort() {
+    this.props.abort();
+  }
 
   buildTree(node, root) {
     if (node.children) {
@@ -206,27 +217,50 @@ export default class SampleChanger extends React.Component {
                                  unload: this.props.unload });
   }
 
+  // display some buttons depending on available features
   render() {
     const nodes = this.buildTree(this.props.contents, true);
+    let current = '';
+    let abortButton = '';
+
+    if (this.props.loadedSample.address) {
+      current = (<div style={{ marginTop: '1em' }}>
+                        Currently loaded: {this.props.loadedSample.address}
+                        <span style={{ marginRight: '1em' }} />
+                         ( {this.props.loadedSample.barcode} )
+                        <span style={{ marginRight: '1em' }} />
+                        <Button bsStyle="default" onClick={this.unload}>
+                         <Glyphicon glyph="save" /> Unload
+                        </Button>
+                      </div>
+                     );
+    } else {
+      current = (<div style={{ marginTop: '1em', marginBottom: '1em' }} />);
+    }
+
+    if (this.props.state === 'MOVING') {
+      abortButton = (<Button bsStyle="default" className="abortButton" onClick={this.abort}>
+                 <Glyphicon glyph="stop" /> Abort
+               </Button>
+              );
+    } else {
+      abortButton = '';
+    }
+
     return (
-      <div style={{ marginTop: '1em' }}>
-        <SampleChangerTree
-          title={`Sample Changer (${this.props.state})`}
-          state={this.props.state}
-        >
-          <div>
-            <Button bsStyle="default" onClick={this.props.refresh}>
-               <Glyphicon glyph="refresh" /> Refresh
-            </Button>
-            <span style={{ marginLeft: '1em' }} />
-            <Button bsStyle="default" onClick={this.scan}>
-              <Glyphicon glyph="qrcode" /> Scan all containers
-            </Button>
-            <div style={{ marginBottom: '1em' }} />
-            {nodes}
-          </div>
-        </SampleChangerTree>
-      </div>
+       <Panel header="Contents">
+         <Button bsStyle="default" onClick={this.props.refresh}>
+            <Glyphicon glyph="refresh" /> Refresh
+         </Button>
+         <span style={{ marginLeft: '1em' }} />
+         <Button bsStyle="default" onClick={this.scan}>
+            <Glyphicon glyph="qrcode" /> Scan all containers
+         </Button>
+         <span style={{ marginLeft: '1em' }}>{abortButton}</span>
+         {current}
+         <div style={{ marginBottom: '1em' }} />
+         {nodes}
+       </Panel>
     );
   }
 }

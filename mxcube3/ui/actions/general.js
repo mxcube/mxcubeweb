@@ -165,7 +165,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const sampleChangerContents = fetch('mxcube/api/v0.1/sample_changer/contents', {
+    const sampleChangerInitialState = fetch('mxcube/api/v0.1/sample_changer/get_initial_state', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -208,9 +208,12 @@ export function getInitialState() {
       meshParameters.then(parse).then(
         json => { state.meshParameters = json.acq_parameters; }).catch(notify),
       savedShapes.then(parse).then(json => {state.shapes = json.shapes;}).catch(notify),
-      sampleChangerContents.then(parse).then(json => {
-        state.sampleChangerContents = json;
-      }).catch(notify),
+      sampleChangerInitialState.then(parse).then(
+        json => { state.sampleChangerState = { state: json.state }; return json; }).then(
+        json => { state.sampleChangerContents = json.contents; return json; }).then(
+        json => { state.loadedSample = json.loaded_sample; return json; }).then(
+        json => { state.sampleChangerCommands = json.cmds; return json; }).then(
+        json => { state.sampleChangerGlobalState = json.global_state; return json; }).catch(notify),
       observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
       workflow.then(parse).then(json => { state.workflow = json; }).catch(notify)
     ];

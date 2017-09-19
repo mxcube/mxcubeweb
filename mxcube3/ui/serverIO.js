@@ -31,6 +31,11 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
 
+import { setSCState,
+         setLoadedSample,
+         setSCGlobalState,
+         updateSCContents } from './actions/sampleChanger';
+
 
 class ServerIO {
 
@@ -165,12 +170,18 @@ class ServerIO {
     });
 
     this.hwrSocket.on('sc', (record) => {
-      this.dispatch(setLoading((record.signal === 'loadingSample' ||
-                                record.signal === 'loadedSample'),
-                               `Loading sample ${record.location}`,
-                               record.message, true, () => (this.dispatch(sendStopQueue()))));
-
-      if (record.signal === 'loadReady') {
+      if (record.signal === 'operatingSampleChanger') {
+        this.dispatch(setLoading(true, 'Sample changer in operation',
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+      } else if ((record.signal === 'loadingSample' || record.signal === 'loadedSample')) {
+        this.dispatch(setLoading(true, `Loading sample ${record.location}`,
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+      } else if (record.signal === 'unLoadingSample' || record.signal === 'unLoadedSample') {
+        this.dispatch(setLoading(true, `Unloading sample ${record.location}`,
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+      } else if (record.signal === 'loadReady') {
+        this.dispatch(setLoading(false, 'SC Ready',
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
         this.dispatch(setCurrentSample(record.location));
       }
     });
@@ -234,6 +245,22 @@ class ServerIO {
 
     this.hwrSocket.on('beamline_action', (data) => {
       this.dispatch(setActionState(data.name, data.state));
+    });
+
+    this.hwrSocket.on('sc_state', (state) => {
+      this.dispatch(setSCState(state));
+    });
+
+    this.hwrSocket.on('loaded_sample_changed', (data) => {
+      this.dispatch(setLoadedSample(data));
+    });
+
+    this.hwrSocket.on('sc_maintenance_update', (data) => {
+      this.dispatch(setSCGlobalState(data));
+    });
+
+    this.hwrSocket.on('sc_contents_update', () => {
+      this.dispatch(updateSCContents());
     });
 
     this.hwrSocket.on('new_plot', (plotInfo) => {
