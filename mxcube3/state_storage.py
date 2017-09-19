@@ -1,5 +1,5 @@
 from flask import request
-from flask.ext.socketio import emit, join_room, leave_room
+from flask_socketio import emit, join_room, leave_room
 from mxcube3 import socketio
 import json
 
@@ -20,13 +20,13 @@ def disconnect():
 @socketio.on('ui_state_get', namespace='/ui_state')
 def ui_state_get(k):
     k = k.replace("reduxPersist:", "")
-    #print 'ui state GET',k,'returning:',STATE[k]
+    # print 'ui state GET',k,'returning:',STATE[k]
     return json.dumps(UI_STATE[k])
 
 @socketio.on('ui_state_rm', namespace='/ui_state')
 def ui_state_rm(k):
     k = k.replace("reduxPersist:", "")
-    print 'ui state REMOVE',k
+    # print 'ui state REMOVE',k
     del UI_STATE[k]
 
 @socketio.on('ui_state_set', namespace='/ui_state')
@@ -34,7 +34,7 @@ def ui_state_update(key_val):
     leave_room("raSlaves")
 
     key, val = key_val
-    print 'ui state SET', key
+    # print 'ui state SET', key
     UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
 
     emit("state_update", json.dumps(UI_STATE), namespace="/ui_state", room="raSlaves")

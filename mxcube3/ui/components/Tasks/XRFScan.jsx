@@ -1,24 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal,
-         Button,
-         Form,
-         Row,
-         Col,
-         ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
+import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { FieldsHeader,
-         StaticField,
-         InputField,
-         CheckboxField,
-         SelectField,
-         FieldsRow,
-         CollapsableRows,
-         DisplayField } from './fields';
+import { FieldsHeader, StaticField, InputField } from './fields';
 
-class Mesh extends React.Component {
+class XRFScan extends React.Component {
   constructor(props) {
     super(props);
 
@@ -36,120 +24,70 @@ class Mesh extends React.Component {
   }
 
   addToQueue(runNow, params) {
-    let aux = params.num_images;
-    if (params.cell_counting === 'zig-zag') {
-      aux = params.numCols;
-    } else {
-      aux = params.numRows;
-    }
-
     const parameters = {
       ...params,
-      type: 'DataCollection',
-      label: 'Mesh',
-      mesh: true,
-      helical: false,
+      type: 'XRFScan',
+      label: params.wfname,
       shape: this.props.pointID,
-      num_images: aux
+      suffix: this.props.suffix
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
     const stringFields = [
-      'shutterless',
-      'inverse_beam',
       'centringMethod',
-      'detector_mode',
-      'space_group',
       'prefix',
       'subdir',
       'type',
-      'point',
-      'label',
-      'mesh',
       'shape',
+      'label',
+      'wfname',
+      'wfpath',
+      'suffix'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
+
   render() {
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>Mesh Scan</Modal.Title>
+          <Modal.Title>{this.props.wfname}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
+            <StaticField label="Filename" data={this.props.filename} />
             <Row>
-              <Col xs={12}>
+              <Col xs={12} style={{ marginTop: '10px' }}>
                 <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
             <Row>
               <Col xs={8}>
                 <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
-            </Col>
-            {this.props.taskData.sampleID ?
-              (<Col xs={4}>
-                <InputField
-                  propName="run_number"
-                  disabled
-                  label="Run number"
-                  col1="4"
-                  col2="8"
-                />
-              </Col>)
-            : null}
+              </Col>
+              {this.props.taskData.sampleID ?
+                (<Col xs={4}>
+                  <InputField
+                    propName="run_number"
+                    disabled
+                    label="Run number"
+                    col1="4"
+                    col2="8"
+                  />
+                </Col>)
+              : null}
             </Row>
-            <StaticField label="Filename" data={this.props.filename} />
+            <Row>
+              <Col xs={12} style={{ marginTop: '10px' }}>
+                <InputField propName="countTime" label="Count time (s)" col1="4" col2="2" />
+              </Col>
+            </Row>
           </Form>
-
-          <FieldsHeader title="Acquisition" />
-          <Form horizontal>
-            <FieldsRow>
-              <InputField propName="osc_range" label="Oscillation range per image" />
-              <InputField propName="first_image" label="First image" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="osc_start" label="Oscillation start" />
-              <DisplayField label="Total number of images"
-                value={this.props.taskData.parameters.cell_count}
-              />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="exp_time" label="Exposure time per image(ms)" />
-              <InputField propName="transmission" label="Transmission" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="energy" label="Energy" />
-              <InputField propName="resolution" label="Resolution" />
-            </FieldsRow>
-            <CollapsableRows>
-              <FieldsRow>
-                <InputField propName="kappa" label="Kappa" />
-                <InputField propName="kappa_phi" label="Phi" />
-              </FieldsRow>
-              <FieldsRow>
-                <SelectField
-                  propName="beam_size"
-                  label="Beam size"
-                  list={this.props.apertureList}
-                />
-                <SelectField
-                  propName="detector_mode"
-                  label="Detector mode"
-                  list={['0', 'C18', 'C2']}
-                />
-              </FieldsRow>
-              <FieldsRow>
-                <CheckboxField propName="shutterless" label="Shutterless" />
-              </FieldsRow>
-            </CollapsableRows>
-          </Form>
-
-          <FieldsHeader title="Processing" />
        </Modal.Body>
+
        { this.props.taskData.state ? '' :
            <Modal.Footer>
              <ButtonToolbar className="pull-right">
@@ -171,15 +109,22 @@ class Mesh extends React.Component {
   }
 }
 
-Mesh = reduxForm({
-  form: 'mesh',
+XRFScan = reduxForm({
+  form: 'workflow',
   validate
-})(Mesh);
+})(XRFScan);
 
-const selector = formValueSelector('helical');
+const selector = formValueSelector('workflow');
 
-Mesh = connect(state => {
+XRFScan = connect(state => {
   const subdir = selector(state, 'subdir');
+  const countTime = selector(state, 'countTime');
+  const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
+  let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
+  if (typeof position === 'object') {
+    const vals = Object.values(position).sort();
+    position = `[${vals}]`;
+  }
 
   let fname = '';
 
@@ -205,7 +150,10 @@ Mesh = connect(state => {
   return {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: fname,
+    countTime,
+    wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
@@ -214,9 +162,9 @@ Mesh = connect(state => {
         state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value),
+        state.beamline.attributes.energy.value)
     }
   };
-})(Mesh);
+})(XRFScan);
 
-export default Mesh;
+export default XRFScan;

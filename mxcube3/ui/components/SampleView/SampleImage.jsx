@@ -3,7 +3,7 @@
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
-import { makePoints, makeLines, makeImageOverlay } from './shapes';
+import { makePoints, makeLines, makeImageOverlay, makeCross } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 
@@ -25,10 +25,13 @@ export default class SampleImage extends React.Component {
     this.setHCellSpacing = this.setHCellSpacing.bind(this);
     this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.gridCellSpacing = this.gridCellSpacing.bind(this);
+    this.setGridOverlay = this.setGridOverlay.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
+    this.updateGridResults = this.updateGridResults.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
     this.initJSMpeg = this.initJSMpeg.bind(this);
+    this.getGridForm = this.getGridForm.bind(this);
     this.canvas = {};
     this._keyPressed = null;
     this.gridStarted = false;
@@ -36,6 +39,7 @@ export default class SampleImage extends React.Component {
     this.lineGroup = null;
     this.drawGridPlugin = new DrawGridPlugin();
     this.player = null;
+    this.centringCross = [];
   }
 
   componentDidMount() {
@@ -98,7 +102,25 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
-    this.drawGridPlugin.update(this.canvas, options.e.layerX, options.e.layerY);
+    if (this.props.clickCentring) {
+      if (this.centringCross.length === 2) {
+        this.canvas.remove(this.centringCross[0]);
+        this.canvas.remove(this.centringCross[1]);
+      }
+
+      this.centringCross = makeCross((options.e.layerX + 1.5) * this.props.imageRatio,
+                                     (options.e.layerY + 1) * this.props.imageRatio,
+                                     this.props.imageRatio,
+                                     this.canvas.width, this.canvas.height);
+
+      this.canvas.add(...this.centringCross);
+    }
+
+    this.drawGridPlugin.update(this.canvas,
+                               options.e.layerX,
+                               options.e.layerY,
+                               this.props.imageRatio
+                               );
   }
 
   onMouseUp() {
@@ -147,6 +169,57 @@ export default class SampleImage extends React.Component {
     }
   }
 
+  getGridForm() {
+    let spacingDiv = [];
+    if (this.props.cellSpacing !== 'None' && this.props.cellSpacing !== undefined) {
+      let cellSpacingChoiceArray = this.props.cellSpacing.split(',');
+
+      cellSpacingChoiceArray = cellSpacingChoiceArray.map((choice) =>
+        choice.charAt(0).toUpperCase() + choice.slice(1)
+      );
+
+      spacingDiv = cellSpacingChoiceArray.map((choice) =>
+        (
+          <FormGroup>
+            <ControlLabel>{choice} Spacing:</ControlLabel>
+            <FormControl
+              style={{ width: '50px', marginRight: '1em' }}
+              type="text"
+              value={choice === 'Horizontal' ?
+                this.gridCellSpacing()[0] : this.gridCellSpacing()[1]}
+              onChange={choice === 'Horizontal' ?
+                this.setHCellSpacing : this.setVCellSpacing}
+            />
+          </FormGroup>
+        )
+      );
+    }
+
+    const gridForm = (
+        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
+          <Form inline>
+            { spacingDiv }
+            <FormGroup>
+            <ControlLabel>Overlay: </ControlLabel>
+            <FormControl
+              style={{ width: '100px', padding: '0', marginLeft: '10px', marginRight: '1em' }}
+              className="bar"
+              type="range"
+              id="overlay-control"
+              min="0" max="1"
+              step="0.05"
+              defaultValue={this.getGridOverlay()}
+              onChange={this.setGridOverlay}
+              ref="overlaySlider"
+              name="overlaySlider"
+            />
+            </FormGroup>
+          </Form>
+        </div>);
+
+    return gridForm;
+  }
+
   setVCellSpacing(e) {
     let value = parseFloat(e.target.value);
     if (isNaN(value)) { value = ''; }
@@ -177,15 +250,34 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  selectedGrid() {
-    let gridData = null;
+  setGridOverlay(e) {
+    let value = parseFloat(e.target.value);
+    if (isNaN(value)) { value = '1'; }
+    const gridData = this.selectedGrid();
+    if (gridData) {
+      const gd = this.drawGridPlugin.setGridOverlay(gridData, value);
+      this.props.sampleActions.setOverlay(value);
+      this.drawGridPlugin.repaint(this.canvas);
+      // Note: I am missing sth, next line needed for update the state and triggering
+      // the component rendering, this.props.sampleActions.setOverlay alone not doing that
+      this.props.sampleActions.updateShape(gd);
+    }
+  }
 
+  getGridOverlay() {
+    let overlay = 1.0;
     if (this.props.selectedGrids.length === 1) {
-      gridData = this.props.grids[this.props.selectedGrids[0]];
+      const gridData = this.selectedGrid();
+      if (gridData) {
+        overlay = gridData.overlayLevel;
+      }
+    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      overlay = 1;
     }
 
-    return gridData;
+    return overlay;
   }
+
 
   gridCellSpacing() {
     let vSpace = 0;
@@ -206,6 +298,16 @@ export default class SampleImage extends React.Component {
     return [hSpace, vSpace];
   }
 
+  selectedGrid() {
+    let gridData = null;
+
+    if (this.props.selectedGrids.length === 1) {
+      gridData = this.props.grids[this.props.selectedGrids[0]];
+    }
+
+    return gridData;
+  }
+
   keyDown(event) {
     if (!this._keyPressed) {
       this._keyPressed = event.key;
@@ -221,7 +323,7 @@ export default class SampleImage extends React.Component {
     const { sendGoToBeam } = sampleActions;
 
     // Only move to beam if the click was done directly on the canvas.
-    if (e.target.tagName === 'CANVAS') {
+    if (e.target.tagName === 'CANVAS' && e.shiftKey) {
       sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
     }
   }
@@ -384,7 +486,7 @@ export default class SampleImage extends React.Component {
     const { sampleActions, motorSteps, zoom, motors } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     const keyPressed = this._keyPressed;
-    if (keyPressed === 'r' && motors.phi.Status === 2) {
+    if (keyPressed === 'r' && motors.phi.state === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -393,7 +495,7 @@ export default class SampleImage extends React.Component {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (keyPressed === 'f' && motors.focus.Status === 2) {
+    } else if (keyPressed === 'f' && motors.focus.state === 2) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
@@ -401,7 +503,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (keyPressed === 'z' && motors.zoom.Status === 2) {
+    } else if (keyPressed === 'z' && motors.zoom.state === 2) {
       // in this case zooming
       if (e.deltaY > 0 && zoom < 10) {
         // zoom in
@@ -415,12 +517,20 @@ export default class SampleImage extends React.Component {
 
   configureGrid() {
     const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0] / this.props.imageRatio;
-    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[0] / this.props.imageRatio;
+    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[1] / this.props.imageRatio;
     this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
+    this.drawGridPlugin.setCellCounting(this.props.cellCounting);
 
     if (!this.props.drawGrid) {
       this.hideGridForm();
       this.drawGridPlugin.reset();
+    }
+  }
+
+  updateGridResults() {
+    const gd = this.selectedGrid();
+    if (gd) {
+      this.drawGridPlugin.setGridResult(gd.result);
     }
   }
 
@@ -432,16 +542,16 @@ export default class SampleImage extends React.Component {
     const gridForm = document.getElementById('gridForm');
 
     if (gridData) {
-      left = gridData.screenCoord[0];
-      top = gridData.screenCoord[1];
+      left = gridData.screenCoord[0] / this.props.imageRatio;
+      top = gridData.screenCoord[1] / this.props.imageRatio;
     } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
       left = this.drawGridPlugin.currentGridData().left;
       top = this.drawGridPlugin.currentGridData().top;
     }
 
     if (gridForm && left && top) {
-      gridForm.style.top = `${top - 70}px`;
-      gridForm.style.left = `${left + 15}px`;
+      gridForm.style.top = `${(top - 70)}px`;
+      gridForm.style.left = `${(left + 15)}px`;
       gridForm.style.display = 'block';
     } else {
       this.hideGridForm();
@@ -457,6 +567,7 @@ export default class SampleImage extends React.Component {
   }
 
   saveGrid() {
+    this.drawGridPlugin.initializeGridResult();
     this.props.sampleActions.addGrid(this.drawGridPlugin.currentGridData());
     this.props.sampleActions.toggleDrawGrid();
   }
@@ -502,7 +613,7 @@ export default class SampleImage extends React.Component {
       beamPosition,
       beamShape,
       beamSize,
-      clickCentringPoints,
+      clickCentring,
       distancePoints,
       points,
       lines,
@@ -511,14 +622,21 @@ export default class SampleImage extends React.Component {
     this.drawCanvas(imageRatio);
     this.canvas.add(...makeImageOverlay(
       imageRatio,
-      pixelsPerMm[0],
+      pixelsPerMm,
       beamPosition,
       beamShape,
       beamSize,
-      clickCentringPoints,
+      clickCentring,
       distancePoints,
       this.canvas
     ));
+
+    if (this.props.clickCentring === false) {
+      this.centringCross = [];
+    }
+
+    this.canvas.add(...this.centringCross);
+
     const fabricSelectables = [
       ...makePoints(points, imageRatio),
       ...makeLines(lines, imageRatio)
@@ -550,7 +668,7 @@ export default class SampleImage extends React.Component {
       });
     }
 
-    if (!this.drawGridPlugin.drawing && this.drawGridPlugin.shapeGroup) {
+    if (this.drawGridPlugin.shapeGroup) {
       this.canvas.add(this.drawGridPlugin.shapeGroup);
     }
 
@@ -561,8 +679,9 @@ export default class SampleImage extends React.Component {
       if (this.props.selectedGrids.includes(gridData.id)) {
         gridData.selected = true;
       }
-
-      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData).shapeGroup);
+      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData,
+                                                                   this.props.imageRatio
+                                                                  ).shapeGroup);
     });
 
     this.canvas.renderAll();
@@ -571,31 +690,10 @@ export default class SampleImage extends React.Component {
   render() {
     this.configureGrid();
     this.showGridForm();
-
+    this.updateGridResults();
     return (
       <div>
-        <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
-          <Form inline>
-            <FormGroup>
-              <ControlLabel>H-Cell Spacing:</ControlLabel>
-              <FormControl
-                style={{ width: '50px', marginRight: '1em' }}
-                type="text"
-                value={this.gridCellSpacing()[0]}
-                onChange={this.setHCellSpacing}
-              />
-            </FormGroup>
-            <FormGroup>
-              <ControlLabel>V-Cell Spacing:</ControlLabel>
-              <FormControl
-                style={{ width: '50px' }}
-                type="text"
-                value={this.gridCellSpacing()[1]}
-                onChange={this.setVCellSpacing}
-              />
-            </FormGroup>
-          </Form>
-        </div>
+        {this.getGridForm()}
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">
             <SampleControls

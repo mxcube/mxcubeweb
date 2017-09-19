@@ -13,10 +13,27 @@
   user-select: none;
 }
 
+.queue-settings .dropdown-menu {
+  margin-left: -100px !important;
+}
+
+
+.dropdown-menu > li > span {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+}
+
 .m-tree {
   position: relative;
-  overflow: hidden;
   .f-no-select;
+  background-color: #f7f7f7;
+  padding-bottom: 1em;
+  padding-top: 0.1em;
 }
 
 .center-in-box {
@@ -180,6 +197,7 @@
   padding: 0.5rem 1rem;
   border: 1px solid #DDD;
   background-color: rgb(249, 249, 249);
+  margin-right: 1px;
 }
 
 .task-head-selected {

@@ -1,3 +1,5 @@
+import { REHYDRATE } from 'redux-persist/constants';
+
 const initialState = {
   clickCentring: false,
   clickCentringPoints: [],
@@ -39,9 +41,9 @@ export default (state = initialState, action) => {
       {
         return { ...state, cinema: !state.cinema };
       }
-    case 'SET_ZOOM':
+    case 'SET_PIXELS_PER_MM':
       {
-        return { ...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm };
+        return { ...state, pixelsPerMm: action.pixelsPerMm };
       }
     case 'START_CLICK_CENTRING':
       {
@@ -152,6 +154,13 @@ export default (state = initialState, action) => {
                                gridList: [],
                                gridCount: 0 }
          );
+      }
+    case REHYDRATE:
+      {
+        return {
+          ...action.payload.sampleview,
+          ...state,
+        };
       }
     case 'SET_INITIAL_STATE':
       {

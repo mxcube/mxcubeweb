@@ -22,6 +22,57 @@ from mxcube3.video import streaming
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
+CLICK_LIMIT = 3
+CENTRING_POINT_ID = None
+
+
+def centring_clicks_left():
+    global CLICK_COUNT, CLICK_LIMIT
+    return CLICK_LIMIT - CLICK_COUNT
+
+
+def centring_reset_click_count():
+    global CLICK_COUNT
+    CLICK_COUNT = 0
+
+
+def centring_click():
+    global CLICK_COUNT
+    CLICK_COUNT += 1
+
+
+def centring_remove_current_point():
+    global CENTRING_POINT_ID
+
+    if CENTRING_POINT_ID:
+        mxcube.shapes.delete_shape(CENTRING_POINT_ID)
+        signals.send_shapes(update_positions = False)
+        CENTRING_POINT_ID = None
+
+
+def centring_add_current_point():
+    global CENTRING_POINT_ID
+    shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+
+    if shape:
+        shape.state = "SAVED"
+        signals.send_shapes(update_positions = False)
+        CENTRING_POINT_ID = None
+
+
+def centring_update_current_point(motor_positions, x, y):
+    global CENTRING_POINT_ID
+
+    if CENTRING_POINT_ID:
+        point = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+        point.move_to_mpos([motor_positions], [x, y])
+    else:
+        point = mxcube.shapes.\
+                add_shape_from_mpos([motor_positions], (x, y), "P")
+        point.state = "TMP"
+        CENTRING_POINT_ID = point.id
+
+    signals.send_shapes(update_positions = False)
 
 
 def init_signals():
@@ -29,66 +80,52 @@ def init_signals():
     Connect all the relevant hwobj signals with the corresponding
     callback method.
     """
-    for signal in signals.microdiffSignals:
-        mxcube.diffractometer.connect(mxcube.diffractometer, signal,
-                                      signals.motor_event_callback)
-    for motor in mxcube.diffractometer.centring_motors_list:
+    dm = mxcube.diffractometer
+
+    for motor in dm.centring_motors_list:
         @Utils.RateLimited(3)
-        def pos_cb(pos, motor=motor.lower(), **kw):
-          signals.motor_position_callback(motor, pos)
+        def pos_cb(pos, motor=motor, **kw):
+            movable = Utils.get_movable_state_and_position(motor)[motor]
+            signals.motor_position_callback(movable)
 
-        def state_cb(state, motor=motor.lower(), **kw):
-          signals.motor_state_callback(motor, state, **kw)
+        def state_cb(state, motor=motor, **kw):
+            movable = Utils.get_movable_state_and_position(motor)[motor]
+            signals.motor_state_callback(movable, **kw)
 
-        setattr(mxcube.diffractometer, "_%s_pos_callback" % motor, pos_cb)
-        setattr(mxcube.diffractometer, "_%s_state_callback" % motor, state_cb)
-        mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
-                                      "positionChanged",
-                                      pos_cb)
-        mxcube.diffractometer.connect(mxcube.diffractometer.getObjectByRole(motor.lower()),
-                                      "stateChanged",
-                                      state_cb) #signals.motor_event_callback)
-    try:
-        frontlight_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
-        frontlight_hwobj.connect(frontlight_hwobj, 'positionChanged',
-                                 signals.motor_event_callback)
-        if hasattr(frontlight_hwobj, "getActuatorState"):
-            frontlight_hwobj.connect(frontlight_hwobj, 'actuatorStateChanged',
-                                     signals.motor_event_callback)
-        else:
-            frontlightswitch_hwobj = mxcube.diffractometer.getObjectByRole(
-                'frontlightswitch')
-            frontlightswitch_hwobj.connect(frontlightswitch_hwobj,
-                                           'actuatorStateChanged',
-                                           signals.motor_event_callback)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] frontlight error')
+        setattr(dm, "_%s_pos_callback" % motor, pos_cb)
+        setattr(dm, "_%s_state_callback" % motor, state_cb)
+        dm.connect(dm.getObjectByRole(motor), "positionChanged", pos_cb)
+        dm.connect(dm.getObjectByRole(motor), "stateChanged", state_cb)
 
-    try:
-        backlight_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
-        backlight_hwobj.connect(backlight_hwobj, 'positionChanged',
-                                signals.motor_event_callback)
-        if hasattr(backlight_hwobj, "getActuatorState"):
-            backlight_hwobj.connect(backlight_hwobj, 'actuatorStateChanged',
-                                    signals.motor_event_callback)
-        else:
-            backlightswitch_hwobj = mxcube.diffractometer.getObjectByRole(
-                'backlightswitch')
-            backlightswitch_hwobj.connect(backlightswitch_hwobj,
-                                          'actuatorStateChanged',
-                                          signals.motor_event_callback)
-    except Exception:
-        logging.getLogger('HWR').exception('[SAMPLEVIEW] back light error')
+    for motor in  ['FrontLight', 'BackLight']:
+        def state_cb(state, motor=motor, **kw):
+            movable = Utils.get_movable_state_and_position(motor)
+            signals.motor_state_callback(movable[motor], **kw)
+            signals.motor_state_callback(movable[motor + "Switch"], **kw)
 
-    mxcube.diffractometer.connect("centringStarted", signals.centring_started)
-    mxcube.diffractometer.connect(mxcube.diffractometer, "centringSuccessful",
-                                  wait_for_centring_finishes)
-    mxcube.diffractometer.connect(mxcube.diffractometer, "centringFailed",
-                                  wait_for_centring_finishes)
+        setattr(dm, "_%s_state_callback" % motor, state_cb)
 
-#   camera = mxcube.diffractometer.camera
-#    streaming.set_video_size(camera.getWidth(), camera.getHeight())
+        try:
+            motor_hwobj = dm.getObjectByRole(motor)
+            motor_hwobj.connect(motor_hwobj, 'positionChanged', state_cb)
 
+            if hasattr(motor_hwobj, "actuatorIn"):
+                motor_hwobj = dm.getObjectByRole(motor)
+                motor_hwobj.connect(motor_hwobj, 'actuatorStateChanged', state_cb)
+            else:
+                motor_sw_hwobj = dm.getObjectByRole(motor + 'Switch')
+                motor_sw_hwobj.connect(motor_sw_hwobj, 'actuatorStateChanged', state_cb)
+
+        except Exception as ex:
+            logging.getLogger('HWR').exception(str(ex))
+
+    dm.connect("centringStarted", signals.centring_started)
+    dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
+    dm.connect(dm, "centringFailed", wait_for_centring_finishes)
+
+    global CLICK_LIMIT
+    CLICK_LIMIT = int(mxcube.beamline.\
+                      getProperty('click_centring_num_clicks') or 3)
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
     """
@@ -123,11 +160,13 @@ def stream_video(camera_hwobj):
     mxcube.diffractometer.camera.new_frame = gevent.event.Event()
 
     try:
-        mxcube.diffractometer.camera.disconnect("imageReceived", new_sample_video_frame_received)
+        mxcube.diffractometer.camera.\
+            disconnect("imageReceived", new_sample_video_frame_received)
     except KeyError:
         pass
 
-    mxcube.diffractometer.camera.connect("imageReceived", new_sample_video_frame_received)
+    mxcube.diffractometer.camera.\
+        connect("imageReceived", new_sample_video_frame_received)
 
     while True:
         try:
@@ -143,8 +182,13 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    return Response(stream_video(mxcube.diffractometer.camera),
-                    mimetype='multipart/x-mixed-replace; boundary="!>"')
+    if streaming.VIDEO_DEVICE:
+        result = Response(status=200)
+    else:
+        result = Response(stream_video(mxcube.diffractometer.camera),
+                          mimetype='multipart/x-mixed-replace; boundary="!>"')
+
+    return result
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=['PUT'])
@@ -242,10 +286,48 @@ def get_shapes():
     return resp
 
 
+@mxcube.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=['GET'])
+def get_shape_with_sid(sid):
+    """
+    Retrieve requested shape information.
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: shape not found
+    """
+    shape = mxcube.shapes.get_shape(sid)
+
+    if shape is not None:
+        shape = shape.as_dict()
+        resp = jsonify({"shape": to_camel(shape)})
+        resp.status_code = 200
+        return resp
+    else:
+        return Response(status=409)
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=['GET'])
+def shape_mock_result(sid):
+    shape = mxcube.shapes.get_shape(sid)
+    res = {}
+
+    if shape:
+        from random import random
+
+        for i in range(1, shape.num_rows*shape.num_cols + 1):
+            res[i] = [i, [int(random() * 255), int(random() * 255),
+                          int(random() * 255), int(random())]]
+
+        mxcube.shapes.set_grid_data(sid, res)
+        signals.grid_result_available(to_camel(shape.as_dict()))
+
+    return Response(status=200)
+
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/shapes", methods=['POST'])
 def update_shapes():
     """
-    Retrieve all the stored centred positions.
+    Update shape information.
+        :parameter shape_data: dict with shape information (id, type, ...)
         :response Content-type: application/json, the stored centred positions.
         :statuscode: 200: no error
         :statuscode: 409: error
@@ -253,6 +335,7 @@ def update_shapes():
     resp = Response(status=409)
     params = request.get_json()
     shape_data = from_camel(params.get("shapeData", {}))
+    pos = []
 
     # Get the shape if already exists
     shape = mxcube.shapes.get_shape(params["id"])
@@ -261,11 +344,26 @@ def update_shapes():
     if not shape:
         refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
 
+        # Store pixels per mm for third party software, to facilitate
+        # certain calculations
+        shape_data["pixels_per_mm"] =  mxcube.diffractometer.get_pixels_per_mm()
+        shape_data["beam_pos"] = (mxcube.diffractometer.getBeamPosX(),
+                                  mxcube.diffractometer.getBeamPosY())
+
         # Shape does not have any refs, create a new Centered position
         if not refs:
             x, y = shape_data["screen_coord"]
-            mpos = mxcube.diffractometer.get_centred_point_from_coord(x, y)
-            shape = mxcube.shapes.add_shape_from_mpos([mpos], (x, y), t)
+            mpos = mxcube.diffractometer.\
+                   get_centred_point_from_coord(x, y, return_by_names=True)
+            pos.append(mpos)
+            # We also store the center of the grid
+            if t == 'G':
+                # coords for the center of the grid
+                x_c = x + (shape_data['num_cols'] / 2.0) * shape_data['cell_width']
+                y_c = y + (shape_data['num_rows'] / 2.0) * shape_data['cell_height']
+                center_positions = mxcube.diffractometer.get_centred_point_from_coord(x_c, y_c, return_by_names=True)
+                pos.append(center_positions)
+            shape = mxcube.shapes.add_shape_from_mpos(pos, (x, y), t)
         else:
             shape = mxcube.shapes.add_shape_from_refs(refs, t)
 
@@ -333,12 +431,13 @@ def back_light_on():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLight')
     if hasattr(motor_hwobj, "actuatorIn"):
-        motor_hwobj.actuatorIn()  # wait=False)
+        motor_hwobj.actuatorIn()
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
-        motor_hwobj.actuatorIn()  # wait=False)
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLightSwitch')
+        motor_hwobj.actuatorIn()
+
     return Response(status=200)
 
 
@@ -349,12 +448,14 @@ def back_light_off():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('backlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLight')
+
     if hasattr(motor_hwobj, "actuatorOut"):
         motor_hwobj.actuatorOut()
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('backlightswitch')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('BackLightSwitch')
         motor_hwobj.actuatorOut()
+
     return Response(status=200)
 
 
@@ -365,12 +466,14 @@ def front_light_on():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLight')
+
     if hasattr(motor_hwobj, "actuatorIn"):
         motor_hwobj.actuatorIn()
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLightSwitch')
         motor_hwobj.actuatorIn()
+
     return Response(status=200)
 
 
@@ -381,12 +484,13 @@ def front_light_off():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlight')
+    motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLight')
     if hasattr(motor_hwobj, "actuatorOut"):
         motor_hwobj.actuatorOut(wait=False)
     else:
-        motor_hwobj = mxcube.diffractometer.getObjectByRole('frontlightswitch')
+        motor_hwobj = mxcube.diffractometer.getObjectByRole('FrontLightSwitch')
         motor_hwobj.actuatorOut(wait=False)
+
     return Response(status=200)
 
 
@@ -464,14 +568,17 @@ def centre_3_click():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    global CLICK_COUNT
     logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
+
+    if mxcube.diffractometer.currentCentringProcedure:
+        mxcube.diffractometer.cancelCentringMethod()
+
     mxcube.diffractometer.start3ClickCentring()
-    CLICK_COUNT = 0
-    data = {'clickLeft': 3 - CLICK_COUNT}
+    centring_reset_click_count()
+    data = {'clickLeft': centring_clicks_left()}
     resp = jsonify(data)
     resp.status_code = 200
-    return resp  # this only means the call was succesfull
+    return resp
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/abort", methods=['PUT'])
@@ -482,7 +589,8 @@ def abort_centring():
         :statuscode: 409: error
     """
     logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
-    current_centring_procedure = mxcube.diffractometer.cancelCentringMethod()
+    mxcube.diffractometer.cancelCentringMethod()
+    centring_remove_current_point()
     return Response(status=200)  # this only means the call was succesfull
 
 
@@ -495,8 +603,6 @@ def click():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    global CLICK_COUNT
-
     if mxcube.diffractometer.currentCentringProcedure:
         params = request.data
         params = json.loads(params)
@@ -508,14 +614,18 @@ def click():
                                            click_position['y'],
                                            click_position['x'],
                                            click_position['y'])
-        # we store the cpos as temporary, only when asked for save
-        # it we switch the type
-        CLICK_COUNT += 1
-        data = {'clickLeft': 3 - CLICK_COUNT}
+
+        centring_click()
+        data = {'clickLeft': centring_clicks_left()}
         resp = jsonify(data)
         resp.status_code = 200
         return resp
     else:
+        if not centring_clicks_left():
+            centring_reset_click_count()
+            mxcube.diffractometer.cancelCentringMethod()
+            mxcube.diffractometer.start3ClickCentring()
+
         return Response(status=409)
 
 
@@ -524,6 +634,8 @@ def wait_for_centring_finishes(*args, **kwargs):
     Executed when a centring is finished. It updates the temporary
     centred point.
     """
+    centring_status = args[1]
+
     # we do not send/save any centring data if there is no sample
     # to avoid the 2d centring when no sample is mounted
     if scutils.get_current_sample() == '':
@@ -533,17 +645,17 @@ def wait_for_centring_finishes(*args, **kwargs):
     except KeyError:
         msg = "[SAMPLEVIEW] Centring error, cannot retrieve motor positions."
         logging.getLogger('HWR').exception(msg)
-        return
 
-    motor_positions.pop('zoom', None)
-    motor_positions.pop('beam_y', None)
-    motor_positions.pop('beam_x', None)
+    # If centering is valid add the point, otherwise remove it
+    if centring_status['valid']:
+        motor_positions.pop('zoom', None)
+        motor_positions.pop('beam_y', None)
+        motor_positions.pop('beam_x', None)
 
-    x, y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
-    point = mxcube.shapes.add_shape_from_mpos([motor_positions], (x, y), "P")
-    point.state = "TMP"
+        x, y = mxcube.diffractometer.motor_positions_to_screen(motor_positions)
 
-    mxcube.diffractometer.emit('stateChanged', (True,))
+        centring_update_current_point(motor_positions, x, y)
+        mxcube.diffractometer.emit('stateChanged', (True,))
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=['PUT'])
@@ -552,13 +664,19 @@ def accept_centring():
     Accept the centring position.
     """
     mxcube.diffractometer.acceptCentring()
+    centring_add_current_point()
+
     return Response(status=200)
+
 
 
 @mxcube.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=['PUT'])
 def reject_centring():
     """Reject the centring position."""
+
     mxcube.diffractometer.rejectCentring()
+    centring_remove_current_point()
+
     return Response(status=200)
 
 

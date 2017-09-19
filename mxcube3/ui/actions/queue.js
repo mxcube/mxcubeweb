@@ -399,7 +399,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                        checked: true };
 
         // If a task is created on a shape, save shape if not already saved before
-        if (parameters.shape !== -1) {
+        if (parameters.shape !== -1 && parameters.shape !== undefined) {
           if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
             dispatch(sendUpdateShape(task.parameters.shape, { state: 'SAVED' }));
           }
@@ -438,7 +438,7 @@ export function addTask(sampleIDs, parameters, runNow) {
     }).then((data) => {
       dispatch(setQueue(data));
       if (runNow) {
-        const taskIndex = state.sampleGrid.sampleList[sampleIDs[0]].tasks.length;
+        const taskIndex = data[sampleIDs[0]].tasks[data[sampleIDs[0]].tasks.length - 1].taskIndex;
         dispatch(sendRunSample(sampleIDs[0], taskIndex));
       }
     }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));

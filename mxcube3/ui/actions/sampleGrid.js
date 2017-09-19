@@ -79,7 +79,7 @@ export function sendGetSampleList() {
 
 export function sendSyncSamples(proposalId) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/samples/${proposalId}`, { credentials: 'include' })
+    fetch(`mxcube/api/v0.1/lims/samples/${proposalId}`, { credentials: 'include' })
             .then(response => response.json())
             .then(json => {
               dispatch(setSamplesInfoAction(json.samples_info));

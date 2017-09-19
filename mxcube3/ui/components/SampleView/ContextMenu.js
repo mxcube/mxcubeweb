@@ -43,20 +43,24 @@ export default class ContextMenu extends React.Component {
       SAVED: [
         { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
         { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 2 },
-        { text: 'Go To Point', action: () => this.goToPoint(), key: 4 },
-        { text: 'divider', key: 5 },
+	{ text: 'Add XRF Scan', action: () => this.showModal('XRFScan'), key: 3 },
+	{ text: 'Add Energy Scan', action: () => this.showModal('EnergyScan'), key: 4 },
+        { text: 'Go To Point', action: () => this.goToPoint(), key: 5 },
+        { text: 'divider', key: 6 },
         ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
-        { text: 'Delete Point', action: () => this.removeShape(), key: 7 },
+        workflowTasks.point.length > 0 ? { text: 'divider', key: 26 } : {},
+        { text: 'Delete Point', action: () => this.removeShape(), key: 27 },
       ],
       TMP: [
         { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
         { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 2 },
-        { text: 'divider', key: 3 },
+	{ text: 'Add XRF Scan', action: () => this.showModal('XRFScan'), key: 3 },
+	{ text: 'Add Energy Scan', action: () => this.showModal('EnergyScan'), key: 4 },
+        { text: 'divider', key: 5 },
         ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
-        { text: 'Save Point', action: () => this.savePoint(), key: 4 },
-        { text: 'Delete Point', action: () => this.removeShape(), key: 5 }
+        workflowTasks.point.length > 0 ? { text: 'divider', key: 20 } : {},
+        { text: 'Save Point', action: () => this.savePoint(), key: 21 },
+        { text: 'Delete Point', action: () => this.removeShape(), key: 22 }
       ],
       GROUP: [
         { text: 'Add Datacollections', action: () => this.showModal('DataCollection'), key: 1 },
@@ -79,6 +83,7 @@ export default class ContextMenu extends React.Component {
       ],
       GridGroupSaved: [
         { text: 'Mesh Scan', action: () => this.showModal('Mesh'), key: 1 },
+        { text: 'Centring Point on cell', action: () => this.createCollectionOnCell(), key: 5 },
         { text: 'divider', key: 2 },
         ...workflowTasks.grid,
         workflowTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
@@ -99,6 +104,7 @@ export default class ContextMenu extends React.Component {
   showModal(modalName, wf = {}, _shape = null) {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
     const sid = _shape ? _shape.id : shape.id;
+
     this.props.showForm(
       modalName,
       [sampleID],
@@ -106,7 +112,10 @@ export default class ContextMenu extends React.Component {
         { ...defaultParameters[modalName.toLowerCase()],
           ...wf,
           prefix: sampleData.defaultPrefix,
-          subdir: sampleData.sampleName
+          subdir: sampleData.sampleName,
+          cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
+          numRows: shape.gridData ? shape.gridData.numRows : 0,
+          numCols: shape.gridData ? shape.gridData.numCols : 0
         }
       },
       sid
@@ -115,9 +124,34 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.showContextMenu(false);
   }
 
+  calculateCellCenter(x, y, gridData, imageRatio) {
+    let [x0, y0] = gridData.screenCoord;
+    let { cellWidth, cellHeight } = gridData;
+
+    x0 = x0 / imageRatio;
+    y0 = y0 / imageRatio;
+    cellWidth = cellWidth / imageRatio;
+    cellHeight = cellHeight / imageRatio;
+
+    const hCell = Math.floor((x - x0) / cellWidth);
+    const vCell = Math.floor((y - y0) / cellHeight);
+    const xCell = (hCell + 0.5) * cellWidth + x0;
+    const yCell = (vCell + 0.5) * cellHeight + y0;
+    return [xCell * imageRatio, yCell * imageRatio];
+  }
+
+  createCollectionOnCell() {
+    const [x, y] = this.calculateCellCenter(this.props.x,
+                                            this.props.y,
+                                            this.props.shape.gridData,
+                                            this.props.imageRatio
+                                            );
+    this.createPoint(x, y);
+    this.props.sampleActions.showContextMenu(false);
+  }
+
   showContextMenu(x, y) {
     const contextMenu = document.getElementById('contextMenu');
-
     if (contextMenu) {
       contextMenu.style.top = `${y}px`;
       contextMenu.style.left = `${x + 15}px`;
@@ -125,10 +159,13 @@ export default class ContextMenu extends React.Component {
     }
   }
 
+  createPoint(x, y) {
+    this.props.sampleActions.sendAddShape({ screenCoord: [x, y], t: 'P', state: 'SAVED' });
+  }
+
   savePoint() {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.stopClickCentring();
-    this.props.sampleActions.sendUpdateShape(this.props.shape.id, { state: 'SAVED' });
     this.props.sampleActions.sendAcceptCentring();
   }
 
@@ -160,7 +197,19 @@ export default class ContextMenu extends React.Component {
 
   saveGrid() {
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendAddShape({ t: 'G', ...this.props.shape.gridData });
+
+    const gd = { ...this.props.shape.gridData };
+
+    if (this.props.imageRatio !== 1) {
+      gd.cellHeight = gd.cellHeight * this.props.imageRatio;
+      gd.cellWidth = gd.cellWidth * this.props.imageRatio;
+      gd.width = gd.width * this.props.imageRatio;
+      gd.height = gd.height * this.props.imageRatio;
+      gd.screenCoord[0] = gd.screenCoord[0] * this.props.imageRatio;
+      gd.screenCoord[1] = gd.screenCoord[1] * this.props.imageRatio;
+    }
+
+    this.props.sampleActions.sendAddShape({ t: 'G', ...gd });
     this.props.sampleActions.toggleDrawGrid();
   }
 

@@ -26,8 +26,9 @@ function _GridData() {
            cellWidth: null, cellHeight: null,
            cellVSpace: 0, cellHSpace: 0,
            numCols: null, numRows: null,
-           label: 'Grid', cellCountFun: 'zig-zag',
-           selected: false, id: null };
+           label: 'Grid', cellCountFun: null,
+           selected: false, id: null,
+           result: null };
 }
 
 
@@ -39,14 +40,35 @@ export default class DrawGridPlugin {
     this.repaint = this.repaint.bind(this);
     this.currentGridData = this.currentGridData.bind(this);
     this.currentShape = this.currentShape.bind(this);
+    this.setImageRatio = this.setImageRatio.bind(this);
     this.setCellSize = this.setCellSize.bind(this);
     this.shapeFromGridData = this.shapeFromGridData.bind(this);
     this.reset = this.reset.bind(this);
     this.snapToGrid = true;
-
+    this.heatMapColorForValue = this.heatMapColorForValue.bind(this);
+    this.initializeCellFilling = this.initializeCellFilling.bind(this);
+    this.initializeGridResult = this.initializeGridResult.bind(this);
+    this.setGridResult = this.setGridResult.bind(this);
     this.drawing = false;
     this.shapeGroup = null;
+    this.overlayLevel = 0.2;
+    this.imageRatio = 1;
     this.gridData = _GridData();
+  }
+
+  /**
+   * Sets cell couting method: 'zig-zag', 'inverse-zig-zag'
+   *
+   * @param {float} cellCounting
+   */
+  setCellCounting(cellCounting) {
+    this.gridData.cellCountFun = cellCounting;
+  }
+
+  setImageRatio(imageRatio) {
+    this.imageRatio = imageRatio;
+
+    return this.gridData;
   }
 
   /**
@@ -98,6 +120,28 @@ export default class DrawGridPlugin {
     this.gridData = this.setCellSpace(this.gridData, this.snapToGrid, hSpace, vSpace);
   }
 
+  setGridOverlay(gd, level) {
+    this.overlayLevel = level;
+    return gd;
+  }
+
+  initializeGridResult(gridData) {
+    const col = gridData.numCols;
+    const row = gridData.numRows;
+    const cellResultMatrix = [];
+
+    for (let c = 0; c < col; c++) {
+      for (let r = 0; r < row; c++) {
+        cellResultMatrix.append([0, [0, 0, 0]]);
+      }
+    }
+
+    return cellResultMatrix;
+  }
+
+  setGridResult(result) {
+    this.gridData.result = result;
+  }
 
   /**
    * Sart drawing grid
@@ -124,12 +168,12 @@ export default class DrawGridPlugin {
    * @param {float} x - bottom x coordinate of grid, (mouse x position)
    * @param {float} y - bottom y coordinate of grid, (mouse y position)
    */
-  update(canvas, x, y) {
+  update(canvas, x, y, imageRatio) {
     const [left, top] = this.gridData.screenCoord;
     const validPosition = x > left && y > top;
     const draw = this.drawing && validPosition;
-    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace;
-    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace;
+    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace / imageRatio;
+    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace / imageRatio;
 
     let width = Math.abs(x - left);
     let height = Math.abs(y - top);
@@ -160,7 +204,6 @@ export default class DrawGridPlugin {
    */
   repaint(canvas) {
     const shape = this.shapeFromGridData(this.gridData);
-
     if (this.shapeGroup) {
       canvas.remove(this.shapeGroup);
     }
@@ -168,10 +211,54 @@ export default class DrawGridPlugin {
     this.shapeGroup = shape.shapeGroup;
     this.gridData = shape.gridData;
     canvas.add(this.shapeGroup);
-
     canvas.renderAll();
   }
 
+  heatMapColorForValue(gd, value) {
+    let dataFill = `rgba(${parseInt(value[0], 10)}, ${parseInt(value[1], 10)},`;
+    dataFill += `${parseInt(value[2], 10)}, ${this.overlayLevel})`;
+    return dataFill;
+  }
+
+  setResulOnCell(col, row, val) {
+    const gridData = this.currentGridData();
+    gridData.result[col][row] = val;
+    return gridData;
+  }
+
+  initializeCellFilling(gd, col, row) {
+    const level = this.overlayLevel ? this.overlayLevel : 0.2;
+    const fill = `rgba(0, 0, 200, ${level}`;
+    const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill(fill));
+    return cellfillingMatrix;
+  }
+
+  cellFillingFromData(gd, col, row) {
+    /**
+    * Creates the heatmap data for later fill grid cells
+    * @param {GridData} gd
+    * @param 2d array data
+    */
+    const data = Array(col).fill().map(() => Array(row).fill());
+
+    for (let nw = 0; nw < col; nw++) {
+      for (let nh = 0; nh < row; nh++) {
+        data[nw][nh] = Math.random();
+      }
+    }
+
+    const fillingMatrix = this.initializeCellFilling(gd, col, row);
+
+    if (typeof gd.result !== 'undefined' && gd.result !== null) {
+      for (let nh = 0; nh < row; nh++) {
+        for (let nw = 0; nw < col; nw++) {
+          const index = nw + nh * col + 1;
+          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, gd.result[index][1]);
+        }
+      }
+    }
+    return fillingMatrix;
+  }
 
   /**
    * Creates a Fabric GridGroup shape from a GridData object
@@ -179,25 +266,27 @@ export default class DrawGridPlugin {
    * @param {GridData} gd
    * @return {Object} {shapeGroup, gridData}
    */
-  shapeFromGridData(gd) {
+  shapeFromGridData(gd, imageRatio = 1) {
     const gridData = { ...gd };
-    const [left, top] = gd.screenCoord;
+    let [left, top] = gd.screenCoord;
+    left = left / imageRatio;
+    top = top / imageRatio;
     const shapes = [];
-    const cellWidth = gridData.cellWidth;
-    const cellHeight = gridData.cellHeight;
+    const cellWidth = (gridData.cellWidth) / imageRatio;
+    const cellHeight = (gridData.cellHeight) / imageRatio;
+    const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
 
-    const cellTW = cellWidth + gridData.cellHSpace;
-    const cellTH = cellHeight + gridData.cellVSpace;
+    const cellTW = cellWidth + (gridData.cellHSpace / imageRatio);
+    const cellTH = cellHeight + (gridData.cellVSpace / imageRatio);
 
     const color = gridData.selected ? 'rgba(0,255,0,1)' : 'rgba(0,0,100,0.8)';
     const strokeArray = gridData.selected ? [] : [5, 5];
-
 
     if (cellWidth > 0 && cellHeight > 0) {
       for (let nw = 1; nw < gridData.numCols; nw++) {
         shapes.push(new fabric.Line(
           [left + cellTW * nw, top,
-           left + cellTW * nw, top + gridData.height],
+           left + cellTW * nw, top + gridData.height / imageRatio],
           {
             strokeDashArray: strokeArray,
             stroke: color,
@@ -209,7 +298,7 @@ export default class DrawGridPlugin {
       for (let nh = 1; nh < gridData.numRows; nh++) {
         shapes.push(new fabric.Line(
           [left, top + (cellTH) * nh,
-           left + gridData.width, top + (cellTH) * nh],
+           left + gridData.width / imageRatio, top + (cellTH) * nh],
           {
             strokeDashArray: strokeArray,
             stroke: color,
@@ -225,7 +314,7 @@ export default class DrawGridPlugin {
             top: top + gridData.cellVSpace / 2 + (cellTH) * nh,
             width: cellWidth,
             height: cellHeight,
-            fill: 'rgba(0,0,100,0.2)',
+            fill: fillingMatrix[nw][nh],
             stroke: 'rgba(0,0,0,0)',
             hasControls: false,
             selectable: false,
@@ -254,8 +343,8 @@ export default class DrawGridPlugin {
     shapes.push(new fabric.Rect({
       left,
       top,
-      width: gridData.width,
-      height: gridData.height,
+      width: gridData.width / imageRatio,
+      height: gridData.height / imageRatio,
       fill: 'rgba(0,0,0,0)',
       strokeDashArray: strokeArray,
       stroke: color,
@@ -266,7 +355,7 @@ export default class DrawGridPlugin {
 
     if (gridData.label) {
       shapes.push(new fabric.Text(gridData.label, {
-        left: left + gridData.width,
+        left: left + gridData.width / imageRatio,
         top: top - 20,
         fill: color,
         fontFamily: 'Helvetica',
@@ -336,7 +425,7 @@ export default class DrawGridPlugin {
    * @param {String} mode - method to use one of ['zig-zag', 'left-to-right']
    * @param {Number} currentRow - Row currently at
    * @param {Number} currentCol - Column currently at
-   * @param {Number} numRows - Total numver of rows in grid
+   * @param {Number} numRows - Total number of rows in grid
    * @param {Number} numCols - Total number of columns in grid
    *
    * @return {String} - index
@@ -346,6 +435,8 @@ export default class DrawGridPlugin {
 
     if (mode === 'zig-zag') {
       count = this.zigZagCellCount(currentRow, currentCol, numRows, numCols);
+    } else if (mode === 'inverse-zig-zag') {
+      count = this.inverseZigZagCellCount(currentRow, currentCol, numRows, numCols);
     } else {
       count = this.leftRightCellCount(currentRow, currentCol, numRows, numCols);
     }
@@ -373,4 +464,35 @@ export default class DrawGridPlugin {
   leftRightCellCount(currentRow, currentCol, numRows, numCols) {
     return (currentRow + 1) + currentCol * numCols;
   }
+
+
+  /**
+   * inverse bottom up indexing of cells (see countCells for doc)
+   * 9 6 3
+   * 8 5 2
+   * 7 4 1
+   */
+  inverseBottomUp(currentRow, currentCol, numRows, numCols) {
+    const cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
+
+    return cellCount;
+  }
+
+
+  /**
+   * inverse zig-zag indexing of cells (see countCells for doc)
+   * 9 4 3
+   * 8 5 2
+   * 7 6 1
+   */
+  inverseZigZagCellCount(currentRow, currentCol, numRows, numCols) {
+    let cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
+
+    if (currentRow !== (numCols - 1) && (numCols - currentRow + 1) % 2 !== 0) {
+      cellCount = (numRows * numCols) - (currentRow * numRows) + currentCol - numRows + 1;
+    }
+    return cellCount;
+  }
+
+
 }

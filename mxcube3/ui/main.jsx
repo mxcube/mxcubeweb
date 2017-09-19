@@ -40,6 +40,7 @@ function requireAuth(nextState, replace, callback) {
     if (!state.login.loggedIn) {
       replace('/login');
     } else {
+      serverIO.listen(store);
       store.dispatch(startSession());
     }
     return callback();
@@ -81,7 +82,6 @@ export default class App extends React.Component {
                          'form', 'login', 'general', 'logger', 'points'],
              storage: new ServerStorage() },
              () => {
-               serverIO.listen(store);
                /* eslint-disable react/no-set-state */
                this.setState({ initialized: true });
                /* eslint-enable react/no-set-state */

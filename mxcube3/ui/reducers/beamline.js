@@ -110,22 +110,27 @@ export const INITIAL_STATE = {
     },
   },
   motors: {
-    focus: { position: 0, Status: 0 },
-    phi: { position: 0, Status: 0 },
-    phiy: { position: 0, Status: 0 },
-    phiz: { position: 0, Status: 0 },
-    sampx: { position: 0, Status: 0 },
-    sampy: { position: 0, Status: 0 },
-    BackLight: { position: 0, Status: 0 },
-    FrontLight: { position: 0, Status: 0 },
-    BackLightSwitch: { position: 0, Status: 0 },
-    FrontLightSwitch: { position: 0, Status: 0 },
-    kappa: { position: 0, Status: 0 },
-    kappa_phi: { position: 0, Status: 0 }
+    focus: { position: 0, state: 0 },
+    phi: { position: 0, state: 0 },
+    phiy: { position: 0, state: 0 },
+    phiz: { position: 0, state: 0 },
+    sampx: { position: 0, state: 0 },
+    sampy: { position: 0, state: 0 },
+    BackLight: { position: 0, state: 0 },
+    FrontLight: { position: 0, state: 0 },
+    BackLightSwitch: { position: 0, state: 0 },
+    FrontLightSwitch: { position: 0, state: 0 },
+    kappa: { position: 0, state: 0 },
+    kappa_phi: { position: 0, state: 0 },
+    zoom: { position: 0, state: 0 }
   },
   zoom: 0,
   beamlineActionsList: [],
-  currentBeamlineAction: { show: false, messages: [], arguments: [] }
+  currentBeamlineAction: { show: false, messages: [], arguments: [] },
+  motorInputDisable: false,
+  lastPlotId: null,
+  plotsInfo: {},
+  plotsData: {}
 };
 
 
@@ -152,11 +157,14 @@ export default (state = INITIAL_STATE, action) => {
       return data;
 
     case 'SET_MOTOR_MOVING':
-      return { ...state, motors: { ...state.motors, [action.name.toLowerCase()]:
+      return { ...state,
+               motorInputDisable: true,
+               motors: { ...state.motors, [action.name.toLowerCase()]:
                                    { ...state.motors[action.name.toLowerCase()],
-                                     Status: action.status
+                                     state: action.status
                                    }
-      } };
+                       }
+             };
 
     case 'SAVE_MOTOR_POSITIONS':
       return { ...state,
@@ -166,14 +174,16 @@ export default (state = INITIAL_STATE, action) => {
     case 'SAVE_MOTOR_POSITION':
       return { ...state, motors: { ...state.motors, [action.name]:
                                    { position: action.value,
-                                     Status: state.motors[action.name].Status }
+                                     state: state.motors[action.name].state }
                                  }
              };
     case 'UPDATE_MOTOR_STATE':
-      return { ...state, motors: { ...state.motors, [action.name]:
+      return { ...state,
+               motorInputDisable: action.value !== 2,
+               motors: { ...state.motors, [action.name]:
                                    { position: state.motors[action.name].position,
-                                     Status: action.value }
-                                 }
+                                     state: action.value }
+                       }
              };
     case 'SET_INITIAL_STATE':
       return { ...INITIAL_STATE,
@@ -264,6 +274,37 @@ export default (state = INITIAL_STATE, action) => {
         });
 
         return { ...state, beamlineActionsList, currentBeamlineAction };
+      }
+    case 'NEW_PLOT':
+      {
+        const plotId = action.plotInfo.id;
+        const plotsInfo = { ...state.plotsInfo, [plotId]: { labels: action.plotInfo.labels,
+                                                            title: action.plotInfo.title,
+                                                            end: false } };
+        const plotsData = { ...state.plotsData };
+        plotsData[plotId] = [];
+
+        return { ...state, plotsInfo, plotsData, lastPlotId: plotId };
+      }
+    case 'PLOT_DATA':
+      {
+        const plotsData = { ...state.plotsData };
+        if (action.fullDataSet) {
+          plotsData[action.id] = action.data;
+        } else {
+          const plotData = [...plotsData[action.id]];
+          plotData.push(...action.data);
+          plotsData[action.id] = plotData;
+        }
+        return { ...state, plotsData };
+      }
+    case 'PLOT_END':
+      {
+        const plotsInfo = { ...state.plotsInfo };
+        const plotInfo = plotsInfo[action.id];
+        plotInfo.end = true;
+        plotsInfo[action.id] = plotInfo;
+        return { ...state, plotsInfo };
       }
     default:
       return state;

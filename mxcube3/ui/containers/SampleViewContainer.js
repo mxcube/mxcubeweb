@@ -8,6 +8,7 @@ import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
+import { QUEUE_RUNNING } from '../constants';
 
 class SampleViewContainer extends Component {
 
@@ -28,6 +29,7 @@ class SampleViewContainer extends Component {
       }
     });
 
+
     return (
         <div className="row">
         <div className="col-xs-12">
@@ -44,6 +46,8 @@ class SampleViewContainer extends Component {
                   save={sendMotorPosition}
                   saveStep={setStepSize}
                   motors={this.props.beamline.motors}
+                  motorsDisabled={ this.props.beamline.motorInputDisable ||
+                                   this.props.queueState === QUEUE_RUNNING }
                   steps={motorSteps}
                   stop={sendStopMotor}
                 />
@@ -67,9 +71,11 @@ class SampleViewContainer extends Component {
                   points={points}
                   lines={lines}
                   grids={grids}
+                  cellCounting={this.props.cellCounting}
+                  cellSpacing={this.props.cellSpacing}
                 />
               </div>
-              <div className="col-xs-3" style={ { display: 'flex' } }>
+              <div className="col-xs-4" style={ { display: 'flex' } }>
                 <SampleQueueContainer />
             </div>
             </div>
@@ -84,12 +90,15 @@ function mapStateToProps(state) {
   return {
     sampleList: state.sampleGrid.sampleList,
     current: state.queue.current,
+    queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     beamline: state.beamline,
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
-    workflows: state.workflow.workflows
+    workflows: state.workflow.workflows,
+    cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
+    cellSpacing: state.taskForm.defaultParameters.mesh.cell_spacing,
   };
 }
 

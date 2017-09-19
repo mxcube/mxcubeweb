@@ -25,6 +25,12 @@ export function setImageRatio(clientWidth) {
   };
 }
 
+export function setOverlay(level) {
+  return {
+    type: 'SET_OVERLAY', level
+  };
+}
+
 export function setAperture(size) {
   return {
     type: 'SET_APERTURE', size
@@ -43,9 +49,9 @@ export function showContextMenu(show, shape = { type: 'NONE' }, x = 0, y = 0) {
   };
 }
 
-export function setZoom(level, pixelsPerMm) {
+export function setPixelsPerMm(pixelsPerMm) {
   return {
-    type: 'SET_ZOOM', level, pixelsPerMm
+    type: 'SET_PIXELS_PER_MM', pixelsPerMm
   };
 }
 
@@ -155,7 +161,7 @@ export function updateMotorState(name, value) {
   };
 }
 
-export function updatePointsPosition(shapes) {
+export function updateShapes(shapes) {
   return {
     type: 'UPDATE_SHAPE_POSITION', shapes
   };
@@ -165,6 +171,10 @@ export function toggleCinema() {
   return {
     type: 'TOOGLE_CINEMA'
   };
+}
+
+export function setGridOverlay(level) {
+  return { type: 'SET_GRID_OVERLAY', level };
 }
 
 export function toggleDrawGrid() {
@@ -203,7 +213,7 @@ export function sendStartClickCentring() {
 }
 
 export function sendCentringPoint(x, y) {
-  return function (dispatch) {
+  return function () {
     fetch('/mxcube/api/v0.1/sampleview/centring/click', {
       method: 'PUT',
       credentials: 'include',
@@ -216,8 +226,6 @@ export function sendCentringPoint(x, y) {
       if (response.status >= 400) {
         throw new Error('Server refused to add point');
       }
-    }).then(() => {
-      dispatch(addCentringPoint(x, y));
     });
   };
 }
@@ -270,6 +278,8 @@ export function sendStartAutoCentring() {
       if (response.status >= 400) {
         throw new Error('Server refused to start autocentring');
       }
+
+      return response.json();
     });
   };
 }
@@ -286,7 +296,7 @@ export function sendAddShape(shapeData = {}, successCb = null) {
       body: JSON.stringify({ id: -1, shapeData })
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to add line');
+        throw new Error('Server refused to add shape');
       }
       return response.json();
     }).then((json) => {
@@ -310,7 +320,7 @@ export function sendUpdateShape(id, shapeData) {
       body: JSON.stringify({ id, shapeData })
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to add line');
+        throw new Error('Server refused to update shape');
       }
       return response.json();
     }).then((json) => {
@@ -363,7 +373,7 @@ export function sendZoomPos(level) {
 export function sendLightOn(name) {
   return function (dispatch) {
     dispatch(saveMotorPosition(name, true));
-    fetch(`/mxcube/api/v0.1/sampleview/${name}on`, {
+    fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}on`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -372,7 +382,6 @@ export function sendLightOn(name) {
       }
     }).then((response) => {
       if (response.status >= 400) {
-        dispatch(saveMotorPosition(name, false));
         dispatch(showErrorPanel(true, 'Server refused to turn light on'));
       }
     });
@@ -382,7 +391,7 @@ export function sendLightOn(name) {
 export function sendLightOff(name) {
   return function (dispatch) {
     dispatch(saveMotorPosition(name, false));
-    fetch(`/mxcube/api/v0.1/sampleview/${name}off`, {
+    fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}off`, {
       method: 'PUT',
       credentials: 'include',
       headers: {
@@ -391,7 +400,6 @@ export function sendLightOff(name) {
       }
     }).then((response) => {
       if (response.status >= 400) {
-        dispatch(saveMotorPosition(name, true));
         dispatch(showErrorPanel(true, 'Server refused to turn light off'));
       }
     });
@@ -569,7 +577,7 @@ export function getPointsPosition() {
       }
       return response.json();
     }).then((json) => {
-      dispatch(updatePointsPosition(json));
+      dispatch(updateShapes(json));
     });
   };
 }

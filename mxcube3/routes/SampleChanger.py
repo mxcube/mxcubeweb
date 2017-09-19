@@ -83,7 +83,7 @@ def get_samples_list():
         coords = s.getCoords()
         sample_data = {"sampleID": s.getAddress(),
                        "location": ":".join(map(str, coords)),
-                       "sampleName": "Sample-%s" % s.getAddress().replace(':', ''),
+                       "sampleName": "Sample-%s" % s.getAddress(),
                        "code": sample_dm,
                        "loadable": True,
                        "state": state,

@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
+import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,
          TASK_COLLECTED,
          TASK_COLLECT_FAILED,
          TASK_RUNNING } from '../../constants';
 
-export default class TaskItem extends Component {
+export default class WorkflowTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
@@ -77,20 +77,16 @@ export default class TaskItem extends Component {
     this.props.showForm(type, sampleId, data, parameters.shape);
   }
 
-  pointIDString(wedges) {
+  pointIDString(parameters) {
     let res = '';
 
-    wedges.forEach((wedge) => {
-      if ((wedge.parameters.shape !== -1) && res.indexOf(`${wedge.parameters.shape}`) < 0) {
-        res += `${wedge.parameters.shape} `;
-      }
-    });
-
+    if (parameters.shape !== -1) {
+      res = `${parameters.shape} `;
+    }
     return res;
   }
 
-  wedgePath(wedge) {
-    const parameters = wedge.parameters;
+  path(parameters) {
     const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
 
@@ -114,35 +110,12 @@ export default class TaskItem extends Component {
       </OverlayTrigger>);
   }
 
-  wedgeParameters(wedge) {
-    const parameters = wedge.parameters;
-
-    return (
-      <tr>
-        <td><a>{parameters.osc_start}</a></td>
-        <td><a>{parameters.osc_range}</a></td>
-        <td><a>{parameters.exp_time}</a></td>
-        <td><a>{parameters.num_images}</a></td>
-        <td><a>{parameters.transmission}</a></td>
-        <td><a>{parameters.resolution}</a></td>
-        <td><a>{parameters.energy}</a></td>
-        <td><a>{parameters.kappa_phi}</a></td>
-        <td><a>{parameters.kappa}</a></td>
-      </tr>);
-  }
-
   render() {
     const { state,
             data,
             show } = this.props;
 
-    let wedges = [];
-
-    if (data.type === 'Interleaved') {
-      wedges = data.parameters.wedges;
-    } else {
-      wedges = [data];
-    }
+    const parameters = data.parameters;
 
 
     let delTaskCSS = {
@@ -178,7 +151,7 @@ export default class TaskItem extends Component {
         >
           <b>
             <span className="node-name" style={{ display: 'flex' }} >
-              {this.pointIDString(wedges)} {data.label}
+              {this.pointIDString(parameters)} {data.label}
               <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
                 <ProgressBar
                   bsStyle={pbarBsStyle}
@@ -199,50 +172,19 @@ export default class TaskItem extends Component {
         </div>
         <Collapse in={Boolean(show)}>
           <div className="task-body">
-            { wedges.map((wedge, i) => {
-              const padding = i > 0 ? '1em' : '0em';
-              return (
-              <div key={`wedge-${i}`}>
-              <div style={ { borderLeft: '1px solid #DDD',
-                             borderRight: '1px solid #DDD',
-                             paddingTop: padding,
+            <div>
+              <div style={ { border: '1px solid #DDD',
                              marginRight: '1px' } }
               >
-                <div style={ { borderTop: '1px solid #DDD',
-                               padding: '0.5em' } }
+                <div
+                  style={ { padding: '0.5em' } }
+                  onClick={this.showForm}
                 >
-                  <b>Path:</b> { this.wedgePath(wedge) }
+                  <b>Path:</b> { this.path(parameters) }
                 </div>
               </div>
-              <Table
-                striped
-                condensed
-                bordered
-                hover
-                onClick={this.showForm}
-                style={{ fontSize: 'smaller', marginBottom: '0px' }}
-                className="task-parameters-table"
-              >
-                <thead>
-                  <tr>
-                    <th>Start &deg; </th>
-                    <th>Osc. &deg; </th>
-                    <th>t (ms)</th>
-                    <th># Img</th>
-                    <th>T (%)</th>
-                    <th>Res. (&Aring;)</th>
-                    <th>E (KeV)</th>
-                    <th>&phi; &deg;</th>
-                    <th>&kappa; &deg;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.wedgeParameters(wedge)}
-                </tbody>
-              </Table>
-              </div>);
-            })}
-            {this.getResult(state)}
+              {this.getResult(state)}
+            </div>
           </div>
         </Collapse>
       </ContextMenuTrigger>

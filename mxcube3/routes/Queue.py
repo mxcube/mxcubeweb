@@ -194,7 +194,7 @@ def execute_entry_with_id(sid, tindex):
     except:
         return Response(status=409)
     else:
-        logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+#       logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
         return Response(status=200)
 
 
@@ -206,7 +206,7 @@ def set_queue():
 
     # Set new queue
     qutils.queue_add_item(request.get_json())
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+ #  logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     qutils.save_queue(session)
 
     return Response(status=200)
@@ -215,40 +215,8 @@ def set_queue():
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
     tasks = request.get_json()
-    qutils.queue_add_item(tasks)
-
-    # Handling interleaved data collections, swap interleave task with
-    # the first of the data collections that are used as wedges, and then
-    # remove all collections that were used as wedges
-    for task in tasks:
-        current_queue = qutils.queue_to_dict()
-
-        if task["type"] == "Interleaved" and task["parameters"]["taskIndexList"]:
-            sid = task["sampleID"]
-            interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
-
-            tindex_list = task["parameters"]["taskIndexList"]
-            tindex_list.sort()
-
-            # Swap first "wedge task" and the actual interleaved collection
-            # so that the interleaved task is the first task
-            qutils.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
-
-            # We remove the swapped wedge index from the list, (now pointing
-            # at the interleaved collection) and add its new position
-            # (last task item) to the list.
-            tindex_list = tindex_list[1:]
-            tindex_list.append(interleaved_tindex)
-
-            # The delete operation can be done all in one call if we make sure
-            # that we remove the items starting from the end (not altering
-            # previous indices)
-            for ti in reversed(tindex_list):
-                qutils.delete_entry_at([[sid, int(ti)]])
-
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
-
-    resp = qutils.queue_to_json_response()
+    queue = qutils.queue_add_item(tasks, use_queue_cache=True)
+    resp = jsonify(queue)
     resp.status_code = 200
 
     return resp
@@ -447,7 +415,7 @@ def get_default_dc_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
-    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
     template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
@@ -490,7 +458,7 @@ def get_default_char_acq_params():
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_char_acq_parameters()
-    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
     template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
@@ -529,6 +497,40 @@ def get_default_char_params():
     returns the default values for a characterisation.
     """
     resp = jsonify(mxcube.beamline.get_default_characterisation_parameters().as_dict())
+    resp.status_code = 200
+    return resp
+
+@mxcube.route("/mxcube/api/v0.1/queue/mesh", methods=['GET'])
+def get_default_mesh_params():
+    """
+    returns the default values for a mesh.
+    """
+    acq_parameters = mxcube.beamline.get_default_acquisition_parameters('default_mesh_values')
+    resp = jsonify({
+        'acq_parameters': {
+            'first_image': acq_parameters.first_image,
+            'num_images': acq_parameters.num_images,
+            'osc_start': acq_parameters.osc_start,
+            'osc_range': acq_parameters.osc_range,
+            'kappa': acq_parameters.kappa,
+            'kappa_phi': acq_parameters.kappa_phi,
+            'overlap': acq_parameters.overlap,
+            'exp_time': acq_parameters.exp_time,
+            'num_passes': acq_parameters.num_passes,
+            'resolution': acq_parameters.resolution,
+            'energy': acq_parameters.energy,
+            'transmission': acq_parameters.transmission,
+            'shutterless': acq_parameters.shutterless,
+            'detector_mode': acq_parameters.detector_mode,
+            'inverse_beam': False,
+            'take_dark_current': True,
+            'skip_existing_images': False,
+            'take_snapshots': True,
+            'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
+            'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
+
+        },
+        })    
     resp.status_code = 200
     return resp
 
