@@ -1,5 +1,3 @@
-import logging
-
 import signals
 
 from flask import Response, jsonify, request
@@ -181,7 +179,6 @@ def get_maintenance_cmds():
         else:
             ret = "SC maintenance controller not defined"
     except Exception, exc:
-        print("There was an exception %s" % str(exc))
         return Response(status=409)
     else:
         return jsonify(cmds=ret)
@@ -192,12 +189,9 @@ def get_global_state():
         if mxcube.sc_maintenance is not None:
             ret = mxcube.sc_maintenance.get_global_state()
             state, cmdstate, msg = ret
-            print("Command returns %s" % str(ret))
         else:
-            print("No SC maintenance controller")
             return jsonify({})
     except Exception, exc:
-        print("There was an exception %s" % str(exc))
         return Response(status=409)
     else:
         return jsonify(state=state, commands_state=cmdstate, message=msg)
@@ -239,7 +233,6 @@ def get_initial_state():
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/send_command/<cmdparts>", methods=['GET'])
 def send_command(cmdparts):
-    print("Sending command to sample changer: %s" % (cmdparts, ))
     try:
         ret = mxcube.sc_maintenance.send_command(cmdparts)
     except Exception, exc:
