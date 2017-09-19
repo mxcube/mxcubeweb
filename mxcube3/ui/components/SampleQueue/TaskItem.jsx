@@ -21,7 +21,6 @@ export default class TaskItem extends Component {
     this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
-    this.showDiffPlan = this.showDiffPlan.bind(this);
     this.state = {
       overInput: false,
       selected: false
@@ -44,56 +43,6 @@ export default class TaskItem extends Component {
     );
   }
 
-  getDiffPlan(data) {
-    let diffPlan = [];
-    if (data.hasOwnProperty('diffractionPlan')) {
-      if (Object.keys(data.diffractionPlan).length !== 0) {
-        // it can be empty
-        diffPlan = (
-          <div style={ { borderLeft: '1px solid #DDD',
-                     borderRight: '1px solid #DDD',
-                     borderBottom: '1px solid #DDD',
-                     padding: '0.5em' } }
-          >
-            <b>Diffraction plan available</b>
-            <button type="button" style={{ maxWidth: '40px', marginRight: '0px' }}
-              className="btn btn-primary btn-xs fa fa-plus-circle"
-              onClick={this.showDiffPlan}
-            >
-            </button>
-          </div>
-          );
-      }
-    }
-    return diffPlan;
-  }
-
-  showDiffPlan() {
-    const { data, sampleId } = this.props;
-    const tasks = data.diffractionPlan;
-
-    // if there is a single wedge, display the form, otherwise, add all wedges as differente dc-s
-    if (tasks.length <= 1) {
-      delete data.diffractionPlan[0].run_number;
-      delete data.diffractionPlan[0].sampleID;
-      const { type, parameters } = data.diffractionPlan[0];
-
-      this.props.showForm(type, [sampleId], data.diffractionPlan[0], parameters.shape);
-    } else {
-      tasks.forEach((t) => {
-        const pars = {
-          // ...this.props.taskData,
-          type: 'DataCollection',
-          label: 'Data Collection',
-          helical: false,
-          shape: this.props.pointID,
-          ...t.parameters,
-        };
-
-        this.props.addTask([sampleId], pars, false);
-      });
-    }
-  }
   toggleChecked() {
     this.props.toggleChecked(this.props.sampleId, this.props.index);
   }
@@ -186,7 +135,6 @@ export default class TaskItem extends Component {
     const { state,
             data,
             show } = this.props;
-
     let wedges = [];
 
     if (data.type === 'Interleaved') {
@@ -292,7 +240,6 @@ export default class TaskItem extends Component {
                 </tbody>
               </Table>
               {this.getResult(state)}
-              {this.getDiffPlan(data)}
               </div>);
             })}
 

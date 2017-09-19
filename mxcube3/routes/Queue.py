@@ -661,7 +661,7 @@ def create_diff_plan(sid):
 
     sample_model, sample_entry = qutils.get_entry(sid)
     dc_model, dc_entry = qutils._create_dc(task)    
-    qutils.set_dc_params(dc_model, dc_entry, task)
+    qutils.set_dc_params(dc_model, dc_entry, task, sample_model)
     pt = dc_model.acquisitions[0].path_template
 
     if mxcube.queue.check_for_path_collisions(pt):

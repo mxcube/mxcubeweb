@@ -147,6 +147,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.CURRENTLY_MOUNTED_SAMPLE = ''
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
+        app.AUTO_ADD_DIFFPLAN = True
 
         # set up streaming
         from mxcube3.video import streaming
