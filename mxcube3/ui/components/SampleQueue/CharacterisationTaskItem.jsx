@@ -28,7 +28,7 @@ export default class TaskItem extends Component {
     };
   }
 
-  getResult(state) {
+  getResult(state, data) {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
@@ -40,6 +40,7 @@ export default class TaskItem extends Component {
                      padding: '0.5em' } }
       >
         <a href={this.props.data.limstResultData}> ISPyB link</a>
+        {this.getDiffPlan(data)}
       </div>
     );
   }
@@ -50,18 +51,13 @@ export default class TaskItem extends Component {
       if (Object.keys(data.diffractionPlan).length !== 0) {
         // it can be empty
         diffPlan = (
-          <div style={ { borderLeft: '1px solid #DDD',
-                     borderRight: '1px solid #DDD',
-                     borderBottom: '1px solid #DDD',
-                     padding: '0.5em' } }
-          >
-            <b>Diffraction plan available</b>
-            <button type="button" style={{ maxWidth: '40px', marginRight: '0px' }}
-              className="btn btn-primary btn-xs fa fa-plus-circle"
+            <span className="pull-right">
+            <a href="#"
               onClick={this.showDiffPlan}
             >
-            </button>
-          </div>
+            Diffraction plan available
+            </a>
+          </span>
           );
       }
     }
@@ -290,8 +286,7 @@ export default class TaskItem extends Component {
                   {this.wedgeParameters(wedge)}
                 </tbody>
               </Table>
-              {this.getResult(state)}
-              {this.getDiffPlan(data)}
+              {this.getResult(state, data)}
               </div>);
             })}
 

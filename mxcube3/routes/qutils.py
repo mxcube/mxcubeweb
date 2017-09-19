@@ -1400,19 +1400,7 @@ def queue_model_child_added(parent, child):
 
     # Origin is ORIGIN_MX3 if task comes from MXCuBE-3
     if child_model.get_origin() != ORIGIN_MX3:
-        # If origin is set get the originating entry and model and
-        # handle accordingly
-        if child_model.get_origin():
-            origin_model, origin_entry = get_entry(child_model.get_origin())
-
-        # we do not want to process when TaskGroup (get_name contains 'Diffraction Plan')
-        # is added, but when a dc_entry is added to such TaskGroup
-        # the origin of the task group is the char node, but not for the dc_entry
-        if isinstance(child, qmo.DataCollection) and isinstance(origin_model, qmo.Characterisation):
-            # this case is handled in queue_model_diff_plan_available
-            pass
-
-        elif isinstance(child, qmo.DataCollection) and not isinstance(origin_model, qmo.Characterisation):
+        if isinstance(child, qmo.DataCollection):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
 
             enable_entry(dc_entry, True)
@@ -1433,7 +1421,6 @@ def queue_model_diff_plan_available(char, index, collection):
     if isinstance(collection, qmo.DataCollection):
         if collection.get_origin():
             origin_model, origin_entry = get_entry(collection.get_origin())
-            print 'oriign... ', origin_model, origin_entry, origin_model._node_id
         collection.set_enabled(False)
         dcg_model = char.get_parent()
         sample = dcg_model.get_parent()
@@ -1449,6 +1436,16 @@ def set_auto_add_diffplan(autoadd, current_sample=None):
     :param bool automount: True auto-mount, False wait for user
     """
     mxcube.AUTO_ADD_DIFFPLAN = autoadd
+    current_queue = queue_to_dict()
+    current_queue.pop('sample_order')
+    sampleIDs = current_queue.keys()
+    for sample in sampleIDs:
+        # this would be a sample
+        tasks = current_queue[sample]['tasks']
+        for t in tasks:
+            if t['type'] == 'Characterisation':
+                model, entry =  get_entry(t['queueID'])
+                entry.auto_add_diff_plan = autoadd
 
 def execute_entry_with_id(sid, tindex=None):
     """

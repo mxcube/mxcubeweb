@@ -146,7 +146,7 @@ export default class QueueControl extends React.Component {
                     onClick={this.setAutoAddDiffPlan}
                     checked={this.props.autoAddDiffPlan}
                   >
-                  Auto add diffraction plan                  >
+                  Auto add diffraction plan
                   </Checkbox>
                 </span>
               </li>
