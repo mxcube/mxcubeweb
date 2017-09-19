@@ -94,18 +94,18 @@ export function makeText(x, y, fontSize, color, text) {
   });
 }
 
-export function makeScale(height, scaleLength, color, text) {
+export function makeScale(height, scaleLengthX, scaleLengthY, color, text) {
   return [
-    makeLine(10, height - 10, scaleLength + 10, height - 10, 'green', 4, false),
-    makeLine(10, height - 10, 10, height - 10 - scaleLength, 'green', 4, false),
+    makeLine(10, height - 10, scaleLengthX + 10, height - 10, 'green', 4, false),
+    makeLine(10, height - 10, 10, height - 10 - scaleLengthY, 'green', 4, false),
     makeText(20, height - 30, 16, color, text)
   ];
 }
 
-export function makeCross(point, imageRatio, width, height) {
+export function makeCross(x, y, imageRatio, width, height) {
   return [
-    makeLine(point.x / imageRatio, 0, point.x / imageRatio, height, 'yellow', 2, false),
-    makeLine(0, point.y / imageRatio, width, point.y / imageRatio, 'yellow', 2, false)
+    makeLine(x / imageRatio, 0, x / imageRatio, height, 'rgba(255,255,0,0.5)', 2, false),
+    makeLine(0, y / imageRatio, width, y / imageRatio, 'rgba(255,255,0,0.5)', 2, false)
   ];
 }
 
@@ -207,17 +207,19 @@ export function makeLines(lines, imageRatio) {
 
 export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
   const imageOverlay = [];
-  const scaleLength = 0.05 * ppMm / iR;
+  const scaleLengthX = 0.05 * ppMm[0] / iR;
+  const scaleLengthY = 0.05 * ppMm[1] / iR;
+
   imageOverlay.push(
     ...makeBeam(
       bP[0] / iR,
       bP[1] / iR,
-      bSi.x * ppMm / iR,
-      bSi.y * ppMm / iR,
+      bSi.x * ppMm[0] / iR,
+      bSi.y * ppMm[1] / iR,
       bSh
       )
     );
-  imageOverlay.push(...makeScale(canvas.height, scaleLength, 'green', '50 µm'));
+  imageOverlay.push(...makeScale(canvas.height, scaleLengthX, scaleLengthY, 'green', '50 µm'));
   if (cCP.length) {
     const point = cCP[cCP.length - 1];
     imageOverlay.push(...makeCross(point, iR, canvas.width, canvas.height));

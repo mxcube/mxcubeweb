@@ -8,6 +8,8 @@ import Mesh from '../components/Tasks/Mesh';
 import AddSample from '../components/Tasks/AddSample';
 import Workflow from '../components/Tasks/Workflow';
 import Interleaved from '../components/Tasks/Interleaved';
+import XRFScan from '../components/Tasks/XRFScan';
+import EnergyScan from '../components/Tasks/EnergyScan';
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 
@@ -150,6 +152,30 @@ class TaskContainer extends React.Component {
       return (<Interleaved
         show
         addTask={this.addTask}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+      />);
+    }
+
+    if (this.props.showForm === 'XRFScan') {
+      return (<XRFScan
+        show
+        addTask={this.addTask}
+        pointID={this.props.pointID}
+        taskData={this.props.taskData}
+        hide={this.props.hideTaskParametersForm}
+        apertureList={this.props.apertureList}
+        rootPath={this.props.path}
+      />);
+    }
+
+    if (this.props.showForm === 'EnergyScan') {
+      return (<EnergyScan
+        show
+        addTask={this.addTask}
+        pointID={this.props.pointID}
         taskData={this.props.taskData}
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}

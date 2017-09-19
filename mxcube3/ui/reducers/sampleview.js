@@ -41,9 +41,9 @@ export default (state = initialState, action) => {
       {
         return { ...state, cinema: !state.cinema };
       }
-    case 'SET_ZOOM':
+    case 'SET_PIXELS_PER_MM':
       {
-        return { ...state, zoom: action.level, pixelsPerMm: action.pixelsPerMm };
+        return { ...state, pixelsPerMm: action.pixelsPerMm };
       }
     case 'START_CLICK_CENTRING':
       {

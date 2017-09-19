@@ -34,6 +34,7 @@ UNCOLLECTED = 0x0
 READY = 0
 
 ORIGIN_MX3 = "MX3"
+QUEUE_CACHE = {}
 
 
 def node_index(node):
@@ -231,7 +232,7 @@ def get_queue_state():
     return res
 
 
-def _handle_dc(sample_id, node):
+def _handle_dc(sample_id, node, include_lims_data=False):
     parameters = node.as_dict()
     parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
@@ -254,10 +255,12 @@ def _handle_dc(sample_id, node):
     parameters['fullPath'] = os.path.join(parameters['path'],
                                           parameters['fileName'])
 
-    if mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(node.id)
-    else:
-        limsres = ''
+    limsres = ''
+
+    # Only add data from lims if explicitly asked for, since
+    # its a operation that can take some time.
+    if include_lims_data and mxcube.rest_lims:
+        limsres = mxcube.rest_lims.get_dc(node.id)      
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -292,10 +295,75 @@ def _handle_wf(sample_id, node):
     return res
 
 
+def _handle_xrf(sample_id, node):
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+    parameters = {"countTime": node.count_time,
+                  "shape": -1}
+    parameters.update(node.path_template.as_dict())
+    parameters['path'] = parameters['directory']
+
+    parameters['subdir'] = parameters['path'].\
+        split(mxcube.session.get_base_image_directory())[1][1:]
+
+    pt = node.path_template
+
+    parameters['fileName'] = pt.get_image_file_name().\
+        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+
+    parameters['fullPath'] = os.path.join(parameters['path'],
+                                          parameters['fileName'])
+
+    res = {"label": "XRF Scan",
+           "type": "XRFScan",
+           "parameters": parameters,
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "queueID": queueID,
+           "checked": node.is_enabled(),
+           "state": state
+           }
+
+    return res
+
+def _handle_energy_scan(sample_id, node):
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+    parameters = {"element": node.element_symbol,
+                  "edge": node.edge,
+                  "shape": -1}
+    parameters.update(node.path_template.as_dict())
+    parameters['path'] = parameters['directory']
+
+    parameters['subdir'] = parameters['path'].\
+        split(mxcube.session.get_base_image_directory())[1][1:]
+
+    pt = node.path_template
+
+    parameters['fileName'] = pt.get_image_file_name().\
+        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+
+    parameters['fullPath'] = os.path.join(parameters['path'],
+                                          parameters['fileName'])
+
+    res = {"label": "Energy Scan",
+           "type": "EnergyScan",
+           "parameters": parameters,
+           "sampleID": sample_id,
+           "taskIndex": node_index(node)['idx'],
+           "queueID": queueID,
+           "checked": node.is_enabled(),
+           "state": state
+           }
+
+    return res
+
+
 def _handle_char(sample_id, node):
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
     refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
+
     parameters.update(refp)
 
     queueID = node._node_id
@@ -440,6 +508,12 @@ def queue_to_dict_rec(node):
         elif isinstance(node, qmo.Workflow):
             sample_id = node.get_parent().get_parent().loc_str
             result.append(_handle_wf(sample_id, node))
+        elif isinstance(node, qmo.XRFSpectrum):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_xrf(sample_id, node))
+        elif isinstance(node, qmo.EnergyScan):
+            sample_id = node.get_parent().get_parent().loc_str
+            result.append(_handle_energy_scan(sample_id, node))
         elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
             sample_id = node.get_parent().loc_str
             result.append(_handle_interleaved(sample_id, node))
@@ -574,7 +648,8 @@ def move_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
 
-def queue_add_item(item_list):
+
+def queue_add_item(item_list, use_queue_cache=False):
     """
     Adds the queue items in item_list to the queue. The items in the list can
     be either samples and or tasks. Samples are only added if they are not
@@ -591,32 +666,102 @@ def queue_add_item(item_list):
 
     Each item (dictionary) describes either a sample or a task.
     """
+    global QUEUE_CACHE
+    res = None
+
+    if use_queue_cache:
+        current_queue = QUEUE_CACHE if QUEUE_CACHE else queue_to_dict()
+    else:
+        current_queue = queue_to_dict()
+
+    _queue_add_item_rec(item_list, current_queue)
+
+    # Handling interleaved data collections, swap interleave task with
+    # the first of the data collections that are used as wedges, and then
+    # remove all collections that were used as wedges
+    for task in item_list:
+        if task["type"] == "Interleaved" and \
+           task["parameters"].get("taskIndexList", False):
+            current_queue = queue_to_dict()
+
+            sid = task["sampleID"]
+            interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
+
+            tindex_list = task["parameters"]["taskIndexList"]
+            tindex_list.sort()
+
+            # Swap first "wedge task" and the actual interleaved collection
+            # so that the interleaved task is the first task
+            swap_task_entry(sid, interleaved_tindex, tindex_list[0])
+
+            # We remove the swapped wedge index from the list, (now pointing
+            # at the interleaved collection) and add its new position
+            # (last task item) to the list.
+            tindex_list = tindex_list[1:]
+            tindex_list.append(interleaved_tindex)
+
+            # The delete operation can be done all in one call if we make sure
+            # that we remove the items starting from the end (not altering
+            # previous indices)
+            for ti in reversed(tindex_list):
+                delete_entry_at([[sid, int(ti)]])
+
+    if use_queue_cache:
+        QUEUE_CACHE = queue_to_dict()
+        res = QUEUE_CACHE
+
+    return res
+
+def _queue_add_item_rec(item_list, current_queue):
+    """
+    Adds the queue items in item_list to the queue. The items in the list can
+    be either samples and or tasks. Samples are only added if they are not
+    already in the queue  and tasks are appended to the end of an
+    (already existing) sample. A task is ignored if the sample is not already
+    in the queue.
+
+    The items in item_list are dictionaries with the following structure:
+
+    { "type": "Sample | DataCollection | Characterisation",
+      "sampleID": sid
+      ... task or sample specific data
+    }
+
+    Each item (dictionary) describes either a sample or a task.
+    """
+    children = []
 
     for item in item_list:
         item_t = item["type"]
-        current_queue = queue_to_dict()
-
         # If the item a sample, then add it and its tasks. If its not, get the
         # node id for the sample of the new task and append it to the sample
         sample_id = str(item["sampleID"])
         if item_t == "Sample":
             sample_node_id = add_sample(sample_id, item)
             tasks = item.get("tasks")
-
+            
             if tasks:
-                queue_add_item(tasks)
+                children.extend(tasks)
         else:
             sample_node_id = current_queue[sample_id]["queueID"]
 
         # The item is either a data_collection or a characterisation
         if item_t == "DataCollection":
             add_data_collection(sample_node_id, item)
+        elif item_t == "Interleaved":
+            add_interleaved(sample_node_id, item)
         elif item_t == "Characterisation":
             add_characterisation(sample_node_id, item)
         elif item_t == "Workflow":
             add_workflow(sample_node_id, item)
-        elif item_t == "Interleaved":
-            add_interleaved(sample_node_id, item)
+        elif item_t == "XRFScan":
+            add_xrf_scan(sample_node_id, item)
+        elif item_t == "EnergyScan":
+            add_energy_scan(sample_node_id, item)
+
+    # Bredth first
+    if children:
+        _queue_add_item_rec(children, queue_to_dict())
 
 
 def add_sample(sample_id, item):
@@ -629,10 +774,10 @@ def add_sample(sample_id, item):
     # Is the sample with location sample_id already in the queue,
     # in that case, send error response
 
-    for sampleId, sampleData in queue_to_dict().iteritems():
-        if sampleId == sample_id:
-            msg = "[QUEUE] sample could not be added, already in the queue"
-            raise Exception(msg)
+#    for sampleId, sampleData in queue_to_dict().iteritems():
+#        if sampleId == sample_id:
+#            msg = "[QUEUE] sample could not be added, already in the queue"
+#            raise Exception(msg)
 
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)
@@ -658,7 +803,7 @@ def add_sample(sample_id, item):
     return sample_model._node_id
 
 
-def set_dc_params(model, entry, task_data):
+def set_dc_params(model, entry, task_data, sample_model):
     """
     Helper method that sets the data collection parameters for a DataCollection.
 
@@ -670,14 +815,19 @@ def set_dc_params(model, entry, task_data):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
-    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
 
     acq.path_template.set_from_dict(params)
     acq.path_template.suffix = ftype
     acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
         getProperty("precision", 4))
-    acq.path_template.base_prefix = params['prefix']
+
+    if params['prefix']:
+        acq.path_template.base_prefix = params['prefix']
+    else:
+        acq.path_template.base_prefix = mxcube.session.\
+            get_default_prefix(sample_model, False)
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
                              params.get('subdir', ''))
@@ -780,7 +930,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     entry.set_enabled(task_data['checked'])
 
 
-def set_char_params(model, entry, task_data):
+def set_char_params(model, entry, task_data, sample_model):
     """
     Helper method that sets the characterisation parameters for a
     Characterisation.
@@ -790,7 +940,7 @@ def set_char_params(model, entry, task_data):
     :param dict task_data: Dictionary with new parameters
     """
     params = task_data['parameters']
-    set_dc_params(model.reference_image_collection, entry, task_data)
+    set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
     model.characterisation_parameters.set_from_dict(params)
 
     # Set default characterisation values taken from ednadefaults for
@@ -810,6 +960,93 @@ def set_char_params(model, entry, task_data):
 
     # MXCuBE3 specific shape attribute
     model.shape = params["shape"]
+
+    model.set_enabled(task_data['checked'])
+    entry.set_enabled(task_data['checked'])
+
+
+def set_xrf_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+
+    :param XRFSpectrum QueueModel: The model to set parameters of
+    :param XRFSpectrumQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    """
+    params = task_data['parameters']
+
+    # Needs to be taken from XML configuration files if institute dependent
+    ftype = "xrf"
+
+    model.path_template.set_from_dict(params)
+    model.path_template.suffix = ftype
+    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
+        getProperty("precision", 4))
+
+    if params['prefix']:
+        model.path_template.base_prefix = params['prefix']
+    else:
+        model.path_template.base_prefix = mxcube.session.\
+            get_default_prefix(sample_model, False)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('subdir', ''))
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('subdir', ''))
+    model.path_template.process_directory = process_path
+
+    model.path_template.run_number = mxcube.queue.\
+        get_next_run_number(model.path_template)
+
+    # Set count time, and if any, other paramters
+    model.count_time = params.get("countTime", 0)
+
+    model.set_enabled(task_data['checked'])
+    entry.set_enabled(task_data['checked'])
+
+
+def set_energy_scan_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+
+    :param EnergyScan QueueModel: The model to set parameters of
+    :param EnergyScanQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    """
+    params = task_data['parameters']
+
+    # Needs to be taken from XML configuration files if institute dependent
+    ftype = "escan"
+
+    model.path_template.set_from_dict(params)
+    model.path_template.suffix = ftype
+    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
+        getProperty("precision", 4))
+
+    if params['prefix']:
+        model.path_template.base_prefix = params['prefix']
+    else:
+        model.path_template.base_prefix = mxcube.session.\
+            get_default_prefix(sample_model, False)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('subdir', ''))
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+                                params.get('subdir', ''))
+    model.path_template.process_directory = process_path
+
+    model.path_template.run_number = mxcube.queue.\
+        get_next_run_number(model.path_template)
+
+    # Set element, and if any, other parameters
+    model.element_symbol = params.get("element", "")
+    model.edge = params.get("edge", "")
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -847,6 +1084,38 @@ def _create_wf(task):
     return dc_model, dc_entry
 
 
+def _create_xrf(task):
+    """
+    Creates a XRFSpectrum model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    xrf_model = qmo.XRFSpectrum()
+    xrf_model.set_origin(ORIGIN_MX3)
+    xrf_entry = qe.XRFSpectrumQueueEntry(Mock(), xrf_model)
+
+    return xrf_model, xrf_entry
+
+
+def _create_energy_scan(task):
+    """
+    Creates a energy scan model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    escan_model = qmo.EnergyScan()
+    escan_model.set_origin(ORIGIN_MX3)
+    escan_entry = qe.EnergyScanQueueEntry(Mock(), escan_model)
+
+    return escan_model, escan_entry
+
+
 def add_characterisation(node_id, task):
     """
     Adds a data characterisation task to the sample with id: <id>
@@ -871,7 +1140,7 @@ def add_characterisation(node_id, task):
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
     char_entry.queue_model_hwobj = mxcube.queue
     # Set the characterisation and reference collection parameters
-    set_char_params(char_model, char_entry, task)
+    set_char_params(char_model, char_entry, task, sample_model)
 
     # the default value is True, here we adapt to mxcube3 needs
     char_model.auto_add_diff_plan = mxcube.AUTO_ADD_DIFFPLAN
@@ -909,7 +1178,7 @@ def add_data_collection(node_id, task):
     """
     sample_model, sample_entry = get_entry(node_id)
     dc_model, dc_entry = _create_dc(task)
-    set_dc_params(dc_model, dc_entry, task)
+    set_dc_params(dc_model, dc_entry, task, sample_model)
 
     pt = dc_model.acquisitions[0].path_template
 
@@ -994,12 +1263,82 @@ def add_interleaved(node_id, task):
     for wedge in task['parameters']['wedges']:
         wc = wc + 1
         dc_model, dc_entry = _create_dc(wedge)
-        set_dc_params(dc_model, dc_entry, wedge)
+        set_dc_params(dc_model, dc_entry, wedge, sample_model)
         dc_model.acquisitions[0].path_template.wedge_prefix = "wedge-%s" % wc
         mxcube.queue.add_child(group_model, dc_model)
         group_entry.enqueue(dc_entry)
 
     return group_model._node_id
+
+
+def add_xrf_scan(node_id, task):
+    """
+    Adds a XRF Scan task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = get_entry(node_id)
+    xrf_model, xrf_entry = _create_xrf(task)
+    set_xrf_params(xrf_model, xrf_entry, task, sample_model)
+
+    pt = xrf_model.path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    group_model = qmo.TaskGroup()
+    group_model.set_origin(ORIGIN_MX3)
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, xrf_model)
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(xrf_entry)
+
+    return xrf_model._node_id
+
+
+def add_energy_scan(node_id, task):
+    """
+    Adds a energy scan task to the sample with id: <id>
+
+    :param int id: id of the sample to which the task belongs
+    :param dict task: task data
+
+    :returns: The queue id of the data collection
+    :rtype: int
+    """
+    sample_model, sample_entry = get_entry(node_id)
+    escan_model, escan_entry = _create_energy_scan(task)
+    set_energy_scan_params(escan_model, escan_entry, task, sample_model)
+
+    pt = escan_model.path_template
+
+    if mxcube.queue.check_for_path_collisions(pt):
+        msg = "[QUEUE] data collection could not be added to sample: "
+        msg += "path collision"
+        raise Exception(msg)
+
+    group_model = qmo.TaskGroup()
+    group_model.set_origin(ORIGIN_MX3)
+    group_model.set_enabled(True)
+    mxcube.queue.add_child(sample_model, group_model)
+    mxcube.queue.add_child(group_model, escan_model)
+
+    group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+    group_entry.set_enabled(True)
+    sample_entry.enqueue(group_entry)
+    group_entry.enqueue(escan_entry)
+
+    return escan_model._node_id
 
 
 def new_queue():
@@ -1076,8 +1415,8 @@ def queue_model_child_added(parent, child):
         elif isinstance(child, qmo.DataCollection) and not isinstance(origin_model, qmo.Characterisation):
             dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
 
-            child.set_enabled(True)
-            dc_entry.set_enabled(True)
+            enable_entry(dc_entry, True)
+            enable_entry(parent_entry, True)
             parent_entry.enqueue(dc_entry)
             sample = parent.get_parent()
 
@@ -1086,7 +1425,7 @@ def queue_model_child_added(parent, child):
 
         elif isinstance(child, qmo.TaskGroup):
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
-            dcg_entry.set_enabled(True)
+            enable_entry(dcg_entry, True)
             parent_entry.enqueue(dcg_entry)
 
 

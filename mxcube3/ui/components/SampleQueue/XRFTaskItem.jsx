@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
+import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,
          TASK_COLLECTED,
          TASK_COLLECT_FAILED,
          TASK_RUNNING } from '../../constants';
 
-export default class TaskItem extends Component {
+export default class XRFTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
@@ -21,7 +21,6 @@ export default class TaskItem extends Component {
     this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
-    this.showDiffPlan = this.showDiffPlan.bind(this);
     this.state = {
       overInput: false,
       selected: false
@@ -44,56 +43,6 @@ export default class TaskItem extends Component {
     );
   }
 
-  getDiffPlan(data) {
-    let diffPlan = [];
-    if (data.hasOwnProperty('diffractionPlan')) {
-      if (Object.keys(data.diffractionPlan).length !== 0) {
-        // it can be empty
-        diffPlan = (
-          <div style={ { borderLeft: '1px solid #DDD',
-                     borderRight: '1px solid #DDD',
-                     borderBottom: '1px solid #DDD',
-                     padding: '0.5em' } }
-          >
-            <b>Diffraction plan available</b>
-            <button type="button" style={{ maxWidth: '40px', marginRight: '0px' }}
-              className="btn btn-primary btn-xs fa fa-plus-circle"
-              onClick={this.showDiffPlan}
-            >
-            </button>
-          </div>
-          );
-      }
-    }
-    return diffPlan;
-  }
-
-  showDiffPlan() {
-    const { data, sampleId } = this.props;
-    const tasks = data.diffractionPlan;
-
-    // if there is a single wedge, display the form, otherwise, add all wedges as differente dc-s
-    if (tasks.length <= 1) {
-      delete data.diffractionPlan[0].run_number;
-      delete data.diffractionPlan[0].sampleID;
-      const { type, parameters } = data.diffractionPlan[0];
-
-      this.props.showForm(type, [sampleId], data.diffractionPlan[0], parameters.shape);
-    } else {
-      tasks.forEach((t) => {
-        const pars = {
-          // ...this.props.taskData,
-          type: 'DataCollection',
-          label: 'Data Collection',
-          helical: false,
-          shape: this.props.pointID,
-          ...t.parameters,
-        };
-
-        this.props.addTask([sampleId], pars, false);
-      });
-    }
-  }
   toggleChecked() {
     this.props.toggleChecked(this.props.sampleId, this.props.index);
   }
@@ -128,20 +77,16 @@ export default class TaskItem extends Component {
     this.props.showForm(type, sampleId, data, parameters.shape);
   }
 
-  pointIDString(wedges) {
+  pointIDString(parameters) {
     let res = '';
 
-    wedges.forEach((wedge) => {
-      if ((wedge.parameters.shape !== -1) && res.indexOf(`${wedge.parameters.shape}`) < 0) {
-        res += `${wedge.parameters.shape} `;
-      }
-    });
-
+    if (parameters.shape !== -1) {
+      res = `${parameters.shape} `;
+    }
     return res;
   }
 
-  wedgePath(wedge) {
-    const parameters = wedge.parameters;
+  path(parameters) {
     const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
 
@@ -165,35 +110,12 @@ export default class TaskItem extends Component {
       </OverlayTrigger>);
   }
 
-  wedgeParameters(wedge) {
-    const parameters = wedge.parameters;
-
-    return (
-      <tr>
-        <td><a>{parameters.osc_start}</a></td>
-        <td><a>{parameters.osc_range}</a></td>
-        <td><a>{parameters.exp_time}</a></td>
-        <td><a>{parameters.num_images}</a></td>
-        <td><a>{parameters.transmission}</a></td>
-        <td><a>{parameters.resolution}</a></td>
-        <td><a>{parameters.energy}</a></td>
-        <td><a>{parameters.kappa_phi}</a></td>
-        <td><a>{parameters.kappa}</a></td>
-      </tr>);
-  }
-
   render() {
     const { state,
             data,
             show } = this.props;
 
-    let wedges = [];
-
-    if (data.type === 'Interleaved') {
-      wedges = data.parameters.wedges;
-    } else {
-      wedges = [data];
-    }
+    const parameters = data.parameters;
 
 
     let delTaskCSS = {
@@ -229,7 +151,7 @@ export default class TaskItem extends Component {
         >
           <b>
             <span className="node-name" style={{ display: 'flex' }} >
-              {this.pointIDString(wedges)} {data.label}
+              {this.pointIDString(parameters)} {data.label}
               <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
                 <ProgressBar
                   bsStyle={pbarBsStyle}
@@ -250,52 +172,21 @@ export default class TaskItem extends Component {
         </div>
         <Collapse in={Boolean(show)}>
           <div className="task-body">
-            { wedges.map((wedge, i) => {
-              const padding = i > 0 ? '1em' : '0em';
-              return (
-              <div key={`wedge-${i}`}>
-              <div style={ { borderLeft: '1px solid #DDD',
-                             borderRight: '1px solid #DDD',
-                             paddingTop: padding,
+            <div>
+              <div style={ { border: '1px solid #DDD',
                              marginRight: '1px' } }
               >
-                <div style={ { borderTop: '1px solid #DDD',
-                               padding: '0.5em' } }
+                <div
+                  style={ { padding: '0.5em' } }
+                  onClick={this.showForm}
                 >
-                  <b>Path:</b> { this.wedgePath(wedge) }
+                  <b>Path:</b> { this.path(parameters) }
+                  <br />
+                  <b>Count time:</b> {parameters.countTime}
                 </div>
               </div>
-              <Table
-                striped
-                condensed
-                bordered
-                hover
-                onClick={this.showForm}
-                style={{ fontSize: 'smaller', marginBottom: '0px' }}
-                className="task-parameters-table"
-              >
-                <thead>
-                  <tr>
-                    <th>Start &deg; </th>
-                    <th>Osc. &deg; </th>
-                    <th>t (ms)</th>
-                    <th># Img</th>
-                    <th>T (%)</th>
-                    <th>Res. (&Aring;)</th>
-                    <th>E (KeV)</th>
-                    <th>&phi; &deg;</th>
-                    <th>&kappa; &deg;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.wedgeParameters(wedge)}
-                </tbody>
-              </Table>
               {this.getResult(state)}
-              {this.getDiffPlan(data)}
-              </div>);
-            })}
-
+            </div>
           </div>
         </Collapse>
       </ContextMenuTrigger>

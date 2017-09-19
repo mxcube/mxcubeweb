@@ -1,7 +1,7 @@
 from __future__ import absolute_import
-from flask import Flask, request
-from flask.ext.socketio import SocketIO
-from flask.ext.session import Session
+from flask import Flask, request, session
+from flask_socketio import SocketIO
+from flask_session import Session
 from optparse import OptionParser
 
 import os
@@ -43,12 +43,16 @@ opt_parser.add_option("-v", "--video-device",
                       dest="video_device",
                       help="Video device, defaults to /dev/video0",
                       default='/dev/video0')
+opt_parser.add_option("-p", "--plotting",
+                      dest="plotting",
+                      help="Plotting HWR file, defaults to /plotting",
+                      default='/plotting')
+
 
 cmdline_options, args = opt_parser.parse_args()
 
 t0 = time.time()
 
-socketio = SocketIO()
 app = Flask(__name__, static_url_path='')
 app.config['SESSION_TYPE'] = "redis"
 app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
@@ -61,7 +65,8 @@ app.register_error_handler(Exception, exception_handler)
 sess = Session()
 sess.init_app(app)
 app.debug = False
-# this line important for socketio msg, otherwise no msg is sent...
+
+socketio = SocketIO(manage_session=False)
 socketio.init_app(app)
 
 # the following test prevents Flask from initializing twice
@@ -136,12 +141,12 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
         app.queue = qutils.new_queue()
         app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
+        app.plotting = hwr.getHardwareObject(cmdline_options.plotting)
 
         # SampleID of currently mounted sample
         app.CURRENTLY_MOUNTED_SAMPLE = ''
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
-
 
         # set up streaming
         from mxcube3.video import streaming

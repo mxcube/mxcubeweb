@@ -1,18 +1,20 @@
 import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
 import {
-  updatePointsPosition,
-  saveMotorPositions,
+  updateShapes,
   saveMotorPosition,
   updateMotorState,
-  setCurrentPhase,
   setBeamInfo,
   startClickCentring,
   updateShape,
+  setPixelsPerMm,
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setMachInfo } from './actions/beamline';
-import { setActionState } from './actions/beamlineActions';
+import { setActionState,
+         newPlot,
+         plotData,
+         plotEnd } from './actions/beamlineActions';
 import { setStatus,
          addTaskResultAction,
          addTaskAction,
@@ -87,28 +89,24 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('Motors', (record) => {
-      this.dispatch(updatePointsPosition(record.CentredPositions));
-      this.dispatch(saveMotorPositions(record.Motors));
-      switch (record.Signal) {
-        case 'minidiffPhaseChanged':
-          this.dispatch(setCurrentPhase(record.Data));
-          break;
-        default:
-      }
-    });
-
     this.hwrSocket.on('motor_position', (record) => {
       this.dispatch(saveMotorPosition(record.name, record.position));
     });
 
     this.hwrSocket.on('motor_state', (record) => {
-      this.dispatch(updatePointsPosition(record.centredPositions));
       this.dispatch(updateMotorState(record.name, record.state));
     });
 
+    this.hwrSocket.on('update_shapes', (record) => {
+      this.dispatch(updateShapes(record.shapes));
+    });
+
+    this.hwrSocket.on('update_pixels_per_mm', (record) => {
+      this.dispatch(setPixelsPerMm(record.pixelsPerMm));
+    });
+
     this.hwrSocket.on('beam_changed', (record) => {
-      this.dispatch(setBeamInfo(record.Data));
+      this.dispatch(setBeamInfo(record.data));
     });
 
     this.hwrSocket.on('mach_info_changed', (info) => {
@@ -236,6 +234,19 @@ class ServerIO {
 
     this.hwrSocket.on('beamline_action', (data) => {
       this.dispatch(setActionState(data.name, data.state));
+    });
+
+    this.hwrSocket.on('new_plot', (plotInfo) => {
+      this.dispatch(newPlot(plotInfo));
+    });
+
+    this.hwrSocket.on('plot_data', (data) => {
+      this.dispatch(plotData(data.id, data.data, false));
+    });
+
+    this.hwrSocket.on('plot_end', (data) => {
+      this.dispatch(plotData(data.id, data.data, true));
+      this.dispatch(plotEnd(data.id));
     });
   }
 }

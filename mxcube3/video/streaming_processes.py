@@ -41,9 +41,11 @@ def start(device, scale):
     FNULL = open(os.devnull, 'w')
     ffmpeg = subprocess.Popen(["ffmpeg",
                                "-f", "v4l2",
-                               "-i", device,
+                               "-i", device,                              
                                "-vf", scale,
                                "-f", "mpegts",
+                               "-b:v", "6000k",
+                               "-q:v", "3",
                                "-an",
                                "-vcodec", "mpeg1video",
                                "http://localhost:4041/video"],

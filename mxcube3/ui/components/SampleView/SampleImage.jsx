@@ -3,7 +3,7 @@
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
-import { makePoints, makeLines, makeImageOverlay } from './shapes';
+import { makePoints, makeLines, makeImageOverlay, makeCross } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 
@@ -39,6 +39,7 @@ export default class SampleImage extends React.Component {
     this.lineGroup = null;
     this.drawGridPlugin = new DrawGridPlugin();
     this.player = null;
+    this.centringCross = [];
   }
 
   componentDidMount() {
@@ -101,6 +102,20 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
+    if (this.props.clickCentring) {
+      if (this.centringCross.length === 2) {
+        this.canvas.remove(this.centringCross[0]);
+        this.canvas.remove(this.centringCross[1]);
+      }
+
+      this.centringCross = makeCross((options.e.layerX + 1.5) * this.props.imageRatio,
+                                     (options.e.layerY + 1) * this.props.imageRatio,
+                                     this.props.imageRatio,
+                                     this.canvas.width, this.canvas.height);
+
+      this.canvas.add(...this.centringCross);
+    }
+
     this.drawGridPlugin.update(this.canvas,
                                options.e.layerX,
                                options.e.layerY,
@@ -308,7 +323,7 @@ export default class SampleImage extends React.Component {
     const { sendGoToBeam } = sampleActions;
 
     // Only move to beam if the click was done directly on the canvas.
-    if (e.target.tagName === 'CANVAS') {
+    if (e.target.tagName === 'CANVAS' && e.shiftKey) {
       sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
     }
   }
@@ -471,7 +486,7 @@ export default class SampleImage extends React.Component {
     const { sampleActions, motorSteps, zoom, motors } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     const keyPressed = this._keyPressed;
-    if (keyPressed === 'r' && motors.phi.Status === 2) {
+    if (keyPressed === 'r' && motors.phi.state === 2) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -480,7 +495,7 @@ export default class SampleImage extends React.Component {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (keyPressed === 'f' && motors.focus.Status === 2) {
+    } else if (keyPressed === 'f' && motors.focus.state === 2) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
@@ -488,7 +503,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (keyPressed === 'z' && motors.zoom.Status === 2) {
+    } else if (keyPressed === 'z' && motors.zoom.state === 2) {
       // in this case zooming
       if (e.deltaY > 0 && zoom < 10) {
         // zoom in
@@ -502,7 +517,7 @@ export default class SampleImage extends React.Component {
 
   configureGrid() {
     const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0] / this.props.imageRatio;
-    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[0] / this.props.imageRatio;
+    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[1] / this.props.imageRatio;
     this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
     this.drawGridPlugin.setCellCounting(this.props.cellCounting);
 
@@ -527,16 +542,16 @@ export default class SampleImage extends React.Component {
     const gridForm = document.getElementById('gridForm');
 
     if (gridData) {
-      left = gridData.screenCoord[0];
-      top = gridData.screenCoord[1];
+      left = gridData.screenCoord[0] / this.props.imageRatio;
+      top = gridData.screenCoord[1] / this.props.imageRatio;
     } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
       left = this.drawGridPlugin.currentGridData().left;
       top = this.drawGridPlugin.currentGridData().top;
     }
 
     if (gridForm && left && top) {
-      gridForm.style.top = `${(top - 70) / this.props.imageRatio}px`;
-      gridForm.style.left = `${(left + 15) / this.props.imageRatio}px`;
+      gridForm.style.top = `${(top - 70)}px`;
+      gridForm.style.left = `${(left + 15)}px`;
       gridForm.style.display = 'block';
     } else {
       this.hideGridForm();
@@ -598,7 +613,7 @@ export default class SampleImage extends React.Component {
       beamPosition,
       beamShape,
       beamSize,
-      clickCentringPoints,
+      clickCentring,
       distancePoints,
       points,
       lines,
@@ -607,14 +622,21 @@ export default class SampleImage extends React.Component {
     this.drawCanvas(imageRatio);
     this.canvas.add(...makeImageOverlay(
       imageRatio,
-      pixelsPerMm[0],
+      pixelsPerMm,
       beamPosition,
       beamShape,
       beamSize,
-      clickCentringPoints,
+      clickCentring,
       distancePoints,
       this.canvas
     ));
+
+    if (this.props.clickCentring === false) {
+      this.centringCross = [];
+    }
+
+    this.canvas.add(...this.centringCross);
+
     const fabricSelectables = [
       ...makePoints(points, imageRatio),
       ...makeLines(lines, imageRatio)
@@ -646,7 +668,7 @@ export default class SampleImage extends React.Component {
       });
     }
 
-    if (!this.drawGridPlugin.drawing && this.drawGridPlugin.shapeGroup) {
+    if (this.drawGridPlugin.shapeGroup) {
       this.canvas.add(this.drawGridPlugin.shapeGroup);
     }
 

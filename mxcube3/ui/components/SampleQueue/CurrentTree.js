@@ -1,6 +1,10 @@
 import React from 'react';
 import './app.less';
 import TaskItem from './TaskItem';
+import XRFTaskItem from './XRFTaskItem';
+import EnergyScanTaskItem from './EnergyScanTaskItem';
+import WorkflowTaskItem from './WorkflowTaskItem';
+import CharacterisationTaskItem from './CharacterisationTaskItem';
 import { ContextMenu, MenuItem } from 'react-contextmenu';
 import '../context-menu-style.css';
 
@@ -113,27 +117,116 @@ export default class CurrentTree extends React.Component {
       <div>
         <div style={{ top: 'initial' }} className="list-body" >
           {sampleTasks.map((taskData, i) => {
-            const task =
-              (<TaskItem
-                key={taskData.queueID}
-                index={i}
-                id={`${taskData.queueID}`}
-                data={taskData}
-                moveCard={this.moveCard}
-                deleteTask={this.props.deleteTask}
-                sampleId={sampleData.sampleID}
-                selected={this.props.displayData[taskData.queueID].selected}
-                checked={this.props.checked}
-                toggleChecked={this.props.toggleCheckBox}
-                taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
-                taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
-                state={this.props.sampleList[taskData.sampleID].tasks[i].state}
-                show={this.props.displayData[taskData.queueID].collapsed}
-                progress={this.props.displayData[taskData.queueID].progress}
-                moveTask={this.props.moveTask}
-                showForm={this.props.showForm}
-                addTask={this.props.addTask}
-              />);
+            let task = null;
+
+            if (taskData.type === 'Workflow') {
+              task =
+                (<WorkflowTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  moveCard={this.moveCard}
+                  deleteTask={this.props.deleteTask}
+                  sampleId={sampleData.sampleID}
+                  selected={this.props.displayData[taskData.queueID].selected}
+                  checked={this.props.checked}
+                  toggleChecked={this.props.toggleCheckBox}
+                  taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
+                  taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
+                  state={this.props.sampleList[taskData.sampleID].tasks[i].state}
+                  show={this.props.displayData[taskData.queueID].collapsed}
+                  progress={this.props.displayData[taskData.queueID].progress}
+                  moveTask={this.props.moveTask}
+                  showForm={this.props.showForm}
+                />);
+            } else if (taskData.type === 'XRFScan') {
+              task =
+                (<XRFTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  moveCard={this.moveCard}
+                  deleteTask={this.props.deleteTask}
+                  sampleId={sampleData.sampleID}
+                  selected={this.props.displayData[taskData.queueID].selected}
+                  checked={this.props.checked}
+                  toggleChecked={this.props.toggleCheckBox}
+                  taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
+                  taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
+                  state={this.props.sampleList[taskData.sampleID].tasks[i].state}
+                  show={this.props.displayData[taskData.queueID].collapsed}
+                  progress={this.props.displayData[taskData.queueID].progress}
+                  moveTask={this.props.moveTask}
+                  showForm={this.props.showForm}
+                />);
+            } else if (taskData.type === 'EnergyScan') {
+              task =
+                (<EnergyScanTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  moveCard={this.moveCard}
+                  deleteTask={this.props.deleteTask}
+                  sampleId={sampleData.sampleID}
+                  selected={this.props.displayData[taskData.queueID].selected}
+                  checked={this.props.checked}
+                  toggleChecked={this.props.toggleCheckBox}
+                  taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
+                  taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
+                  state={this.props.sampleList[taskData.sampleID].tasks[i].state}
+                  show={this.props.displayData[taskData.queueID].collapsed}
+                  progress={this.props.displayData[taskData.queueID].progress}
+                  moveTask={this.props.moveTask}
+                  showForm={this.props.showForm}
+                />);
+            } else if (taskData.type === 'Characterisation') {
+              task =
+                (<CharacterisationTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  moveCard={this.moveCard}
+                  deleteTask={this.props.deleteTask}
+                  sampleId={sampleData.sampleID}
+                  selected={this.props.displayData[taskData.queueID].selected}
+                  checked={this.props.checked}
+                  toggleChecked={this.props.toggleCheckBox}
+                  taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
+                  taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
+                  state={this.props.sampleList[taskData.sampleID].tasks[i].state}
+                  show={this.props.displayData[taskData.queueID].collapsed}
+                  progress={this.props.displayData[taskData.queueID].progress}
+                  moveTask={this.props.moveTask}
+                  showForm={this.props.showForm}
+                />);
+            } else {
+              task =
+                (<TaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  moveCard={this.moveCard}
+                  deleteTask={this.props.deleteTask}
+                  sampleId={sampleData.sampleID}
+                  selected={this.props.displayData[taskData.queueID].selected}
+                  checked={this.props.checked}
+                  toggleChecked={this.props.toggleCheckBox}
+                  taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
+                  taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
+                  state={this.props.sampleList[taskData.sampleID].tasks[i].state}
+                  show={this.props.displayData[taskData.queueID].collapsed}
+                  progress={this.props.displayData[taskData.queueID].progress}
+                  moveTask={this.props.moveTask}
+                  showForm={this.props.showForm}
+                  addTask={this.props.addTask}
+                />);
+            }
+
             return task;
           })}
         </div>

@@ -7,7 +7,7 @@ import copy
 import queue_model_objects_v1 as qmo
 
 from mxcube3 import app as mxcube
-
+from flask import session
 
 def lims_login(loginID, password):
     """
@@ -37,7 +37,7 @@ def lims_login(loginID, password):
 
         try:
             proposals = mxcube.db_connection.get_proposals_by_user(loginID)
-            mxcube.session.proposal_list = proposals
+            session['proposal_list'] = proposals
         except:
             logging.getLogger('HWR').error('[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
             return dict({'status': {'code': '0'}})
@@ -57,7 +57,8 @@ def lims_login(loginID, password):
             logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
             return dict({'status': {'code': '0'}})
 
-        mxcube.session.proposal_list = [login_res]
+        session['proposal_list'] = [login_res]
+
         login_res['proposalList'] = [login_res['Proposal']]
 
     logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
@@ -69,7 +70,8 @@ def get_proposal_info(proposal):
     """
     Search for the given proposal in the proposal list.
     """
-    for prop in mxcube.session.proposal_list:
+    for prop in session.get('proposal_list', []):
+
         _p = "%s%s" % (prop.get('Proposal').get('code', ''),
                        prop.get('Proposal').get('number', ''))
 

@@ -20,6 +20,7 @@ export class ConfirmCollectDialog extends React.Component {
     this.onResize = this.onResize.bind(this);
     this.resizeTable = this.resizeTable.bind(this);
     this.autoLoopCentringOnClick = this.autoLoopCentringOnClick.bind(this);
+    this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
     this.onHide = this.onHide.bind(this);
     this.collectText = this.collectText.bind(this);
     this.tasksToCollect = this.tasksToCollect.bind(this);
@@ -54,6 +55,9 @@ export class ConfirmCollectDialog extends React.Component {
   onHide() { }
 
   autoLoopCentringOnClick() {
+  }
+
+  autoMountNextOnClick() {
   }
 
   /**
@@ -142,7 +146,18 @@ export class ConfirmCollectDialog extends React.Component {
   taskTable() {
     const tasks = this.tasksToCollect();
     const summary = this.collectionSummary();
-    let table = (<div />);
+    let table = (
+      <div style={{ marginBottom: '1em', borderRadius: '5px',
+                    backgroundColor: 'rgba(247, 211, 35, 0.27)',
+                    padding: '1em', width: '50em'
+           }}
+      >
+        No tasks added to any of the samples, you have the
+        possibility to add tasks while the queue is running. <br />
+        The queue is executed sample by sample and will wait until
+        <b> Mount Next Sample </b> is pressed before mounting the
+        next sample <br />
+      </div>);
 
     if (summary.numTasks > 0) {
       table = (
@@ -215,6 +230,9 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   render() {
+    const summary = this.collectionSummary();
+    const autoMountNext = summary.numTasks !== 0;
+
     return (
       <Modal
         dialogClassName="collect-confirm-dialog"
@@ -223,7 +241,7 @@ export class ConfirmCollectDialog extends React.Component {
       >
         <Modal.Header>
           <Modal.Title>
-            Collect queue ?
+            Confirm - Collect queue
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -232,9 +250,15 @@ export class ConfirmCollectDialog extends React.Component {
           </p>
           <div style={ { marginLeft: '20px' } }>
             <span>
-              <Checkbox onClick={this.autoLoopCentringOnClick}>
+              <Checkbox defaultChecked onClick={this.autoLoopCentringOnClick}>
                 Auto loop centring
               </Checkbox>
+              { autoMountNext ?
+                  <Checkbox defaultChecked={autoMountNext} onClick={this.autoMountNextOnClick}>
+                    Auto mount next sample
+                  </Checkbox>
+                : <span />
+              }
             </span>
           </div>
           <br />
