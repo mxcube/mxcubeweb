@@ -253,6 +253,7 @@ class ServerIO {
 
     this.hwrSocket.on('sc_contents_update', () => {
       this.dispatch(updateSCContents());
+    });
 
     this.hwrSocket.on('new_plot', (plotInfo) => {
       this.dispatch(newPlot(plotInfo));
