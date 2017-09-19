@@ -3,12 +3,14 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
+import PhaseInput from '../components/SampleView/PhaseInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
 import { QUEUE_RUNNING } from '../constants';
+import config from 'guiConfig';
 
 class SampleViewContainer extends Component {
 
@@ -28,7 +30,15 @@ class SampleViewContainer extends Component {
         grids[shape.id] = shape;
       }
     });
-
+    const phaseControl = (
+      <div>
+      <p className="motor-name">Phase Control:</p>
+      <PhaseInput
+        phase={this.props.sampleViewState.currentPhase}
+        phaseList={this.props.sampleViewState.phaseList}
+        sendPhase={this.props.sampleViewActions.sendCurrentPhase}
+      />
+      </div>);
 
     return (
         <div className="row">
@@ -42,6 +52,7 @@ class SampleViewContainer extends Component {
               <div className="col-xs-1"
                 style={ { paddingRight: '5px', paddingLeft: '1.5em' } }
               >
+                {config.phaseControl ? phaseControl : null }
                 <MotorControl
                   save={sendMotorPosition}
                   saveStep={setStepSize}
