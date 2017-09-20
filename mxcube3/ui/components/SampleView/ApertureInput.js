@@ -15,7 +15,6 @@ export default class ApertureInput extends React.Component {
   }
 
   render() {
-    console.log('rendering>>  ');
     let inputCSS = cx('form-control input-sm', {
       'input-bg-moving': this.props.aperture === 'Unknown',
       'input-bg-ready': this.props.aperture !== 'Unknown'
