@@ -8,13 +8,13 @@ export function addUserMessage(record, target) {
   const meta = record.logger;
 
   if (record.severity === 'ERROR') {
-    duration = 5000;
+    duration = 7000;
     level = 'ERROR';
   } else if (record.severutiy === 'WARNING') {
     duration = 5000;
     level = 'WARNING';
   } else {
-    duration = 5000;
+    duration = 7000;
   }
 
   let exp = new Date().getTime();
