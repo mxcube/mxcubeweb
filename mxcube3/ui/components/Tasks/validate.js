@@ -21,7 +21,9 @@ const validate = (values, props) => {
       parseInt(values.num_images, 10) < 1) {
     errors.num_images = 'Number of images out of allowed range';
   }
-  if (values.osc_range === '' || parseFloat(values.osc_range, 10) < 0) {
+  if (values.osc_range === '' ||
+    parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range ||
+    parseFloat(values.osc_range, 10) < 0) {
     errors.osc_range = 'wrong value';
   }
   if (values.osc_start === '') {

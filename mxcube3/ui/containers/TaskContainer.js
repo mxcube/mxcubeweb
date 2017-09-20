@@ -84,6 +84,7 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
+        attributes={this.props.attributes}
       />);
     }
 
@@ -96,6 +97,7 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
+        attributes={this.props.attributes}
       />);
     }
 
@@ -110,6 +112,7 @@ class TaskContainer extends React.Component {
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
         lines={lines}
+        attributes={this.props.attributes}
       />);
     }
 
@@ -199,7 +202,8 @@ function mapStateToProps(state) {
     pointID: state.taskForm.pointID,
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath,
-    shapes: state.shapes.shapes
+    shapes: state.shapes.shapes,
+    attributes: state.beamline.attributes
   };
 }
 

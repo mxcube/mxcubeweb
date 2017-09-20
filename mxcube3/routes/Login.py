@@ -75,6 +75,7 @@ def signout():
 
     qutils.save_queue(session)
     mxcube.queue = qutils.new_queue()
+    mxcube.shapes.clear_all()
 
     LOGGED_IN_USER = None
     if remote_access.is_master(session.sid):
