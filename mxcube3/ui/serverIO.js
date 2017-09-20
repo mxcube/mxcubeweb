@@ -186,10 +186,7 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('sample_centring', (record) => {
-      this.dispatch(setLoading(record.signal === 'SampleCentringRequest',
-                              'Center sample',
-                               record.message, false));
+    this.hwrSocket.on('sample_centring', () => {
       this.dispatch(startClickCentring());
     });
 

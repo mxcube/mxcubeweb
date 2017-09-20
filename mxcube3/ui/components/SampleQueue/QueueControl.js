@@ -1,7 +1,8 @@
 import React from 'react';
 import './app.less';
 import { Button, Checkbox, DropdownButton } from 'react-bootstrap';
-import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED } from '../../constants';
+import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED,
+         AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../../constants';
 
 export default class QueueControl extends React.Component {
   constructor(props) {
@@ -10,6 +11,7 @@ export default class QueueControl extends React.Component {
     this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
     this.setAutoAddDiffPlan = this.setAutoAddDiffPlan.bind(this);
     this.nextSample = this.nextSample.bind(this);
+    this.autoLoopCentringOnClick = this.autoLoopCentringOnClick.bind(this);
 
     this.state = {
       options: {
@@ -58,6 +60,14 @@ export default class QueueControl extends React.Component {
 
   autoMountNextOnClick(e) {
     this.props.setAutoMountSample(e.target.checked);
+  }
+
+  autoLoopCentringOnClick(e) {
+    if (e.target.checked) {
+      this.props.sendSetCentringMethod(AUTO_LOOP_CENTRING);
+    } else {
+      this.props.sendSetCentringMethod(CLICK_CENTRING);
+    }
   }
 
   renderSampleOptions(option) {
@@ -134,6 +144,7 @@ export default class QueueControl extends React.Component {
                 <span role="menuitem">
                   <Checkbox
                     name="autoLoopCentring"
+                    onClick={this.autoLoopCentringOnClick}
                   >
                     Auto loop centring
                   </Checkbox>

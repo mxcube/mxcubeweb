@@ -24,7 +24,7 @@ def mount_sample(beamline_setup_hwobj,
                  view, data_model,
                  centring_done_cb, async_result):
 
-    view.setText(1, "Loading sample")
+    logging.getLogger('user_level_log').info("Loading sample ...")
     set_current_sample(data_model.loc_str)
 
     beamline_setup_hwobj.shape_history_hwobj.clear_all()
@@ -57,37 +57,36 @@ def mount_sample(beamline_setup_hwobj,
 
     if not sample_mount_device.hasLoadedSample():
         #Disables all related collections
-        view.setOn(False)
-        view.setText(1, "Sample not loaded")
+        logging.getLogger('user_level_log').info("Sample not loaded")
         set_current_sample('')
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
-        view.setText(1, "Sample loaded")
+        logging.getLogger('user_level_log').info("Sample loaded")
         dm = beamline_setup_hwobj.diffractometer_hwobj
         if dm is not None:
             try:
                 dm.connect("centringAccepted", centring_done_cb)
-                centring_method = view.listView().parent().\
-                                  centring_method
+                centring_method = mxcube.CENTRING_METHOD
                 if centring_method == CENTRING_METHOD.MANUAL:
-                    log.warning("Manual centring used, waiting for" +\
-                                " user to center sample")
+                    msg = "Manual centring used, waiting for" +\
+                          " user to center sample"
+                    log.warning(msg)
                     dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
                 elif centring_method == CENTRING_METHOD.LOOP:
                     dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
-                    log.warning("Centring in progress. Please save" +\
-                                " the suggested centring or re-center")
+                    msg = "Centring in progress. Please save" +\
+                          " the suggested centring or re-center"
+                    log.warning(msg)
                 elif centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
                     log.info("Centring sample, please wait.")
                     dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
                 else:
                     dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
 
-                view.setText(1, "Centring !")
+                logging.getLogger('user_level_log').info("Centring ...")
                 centring_result = async_result.get()
                 if centring_result['valid']:
-                    view.setText(1, "Centring done !")
-                    log.info("Centring saved")
+                    logging.getLogger('user_level_log').info("Centring done !")
                 else:
                     if centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
                         raise QueueSkippEntryException("Could not center sample, skipping", "")
@@ -95,7 +94,7 @@ def mount_sample(beamline_setup_hwobj,
                         raise RuntimeError("Could not center sample")
             except:
                 import traceback
-                log.info(" centrong did not pass %s" % traceback.format_exc())
+                log.info("centring did not pass %s" % traceback.format_exc())
                 pass
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)

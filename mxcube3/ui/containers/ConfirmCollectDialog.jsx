@@ -4,8 +4,9 @@ import { bindActionCreators } from 'redux';
 
 import { Modal, Button, Table, OverlayTrigger, Popover, Checkbox } from 'react-bootstrap';
 import { sendRunQueue, sendRunSample, sendMountSample, setAutoMountSample } from '../actions/queue';
+import { sendSetCentringMethod } from '../actions/sampleview';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
-import { TASK_UNCOLLECTED } from '../constants';
+import { TASK_UNCOLLECTED, AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
 
 import './ConfirmCollectDialog.css';
 
@@ -54,10 +55,16 @@ export class ConfirmCollectDialog extends React.Component {
 
   onHide() { }
 
-  autoLoopCentringOnClick() {
+  autoLoopCentringOnClick(e) {
+    if (e.target.checked) {
+      this.props.sendSetCentringMethod(AUTO_LOOP_CENTRING);
+    } else {
+      this.props.sendSetCentringMethod(CLICK_CENTRING);
+    }
   }
 
-  autoMountNextOnClick() {
+  autoMountNextOnClick(e) {
+    this.props.setAutoMountSample(e.target.checked);
   }
 
   /**
@@ -286,7 +293,8 @@ function mapDispatchToProps(dispatch) {
     sendRunQueue: bindActionCreators(sendRunQueue, dispatch),
     sendRunSample: bindActionCreators(sendRunSample, dispatch),
     sendMountSample: bindActionCreators(sendMountSample, dispatch),
-    setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch)
+    setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
+    sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch)
   };
 }
 

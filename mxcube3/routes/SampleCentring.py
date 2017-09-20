@@ -19,6 +19,8 @@ from mxcube3.routes import scutils
 from mxcube3.routes import beamlineutils
 from mxcube3.video import streaming
 
+from queue_entry import CENTRING_METHOD
+
 
 SAMPLE_IMAGE = None
 CLICK_COUNT = 0
@@ -696,4 +698,30 @@ def move_to_beam():
     else:
         # v <= 2.1
         mxcube.diffractometer.moveToBeam(click_position['x'], click_position['y'])
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/sampleview/centring/centring_method", methods=['PUT'])
+def set_centring_method():
+    """
+    Set MXCuBE to use automatic (lucid) centring procedure when
+    mounting samples
+
+    :statuscode: 200: no error
+    :statuscode: 409: error
+
+    """
+    params = json.loads(request.data)
+    method = params.get("centringMethod", "")
+
+    if method == "AUTO_LOOP":
+        msg = '[Centring] Using automatic loop centring when mounting samples'
+        mxcube.CENTRING_METHOD =  CENTRING_METHOD.LOOP
+    else:
+        msg = '[Centring] Using click centring when mounting samples'
+        mxcube.CENTRING_METHOD =  CENTRING_METHOD.MANUAL
+
+    logging.getLogger('HWR.MX3').info(msg)
+
+        
     return Response(status=200)

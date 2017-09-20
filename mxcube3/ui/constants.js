@@ -20,6 +20,10 @@ export const TASK_UNCOLLECTED = 0x0;
 export const READY = 0;
 export const RUNNING = 0x1;
 
+export const AUTO_LOOP_CENTRING = 'AUTO_LOOP';
+export const CLICK_CENTRING = 'CLICK_CENTRING';
+
+
 export function isCollected(task) {
   return task.state !== TASK_UNCOLLECTED;
 }
