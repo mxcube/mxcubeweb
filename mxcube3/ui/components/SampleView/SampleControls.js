@@ -261,6 +261,7 @@ export default class SampleControls extends React.Component {
             </li>
             <li>
               <DropdownButton
+                style = {{ lineHeight: '1.3', padding: '0px' }}
                 className="sample-controll"
                 bsStyle="default"
                 title={(<i className="fa fa-1x fa-video-camera" />)}
