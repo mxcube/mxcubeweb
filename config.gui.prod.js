@@ -1,3 +1,4 @@
 module.exports = {
-	phaseControl: true
+	phaseControl: true,
+	apertureControl: true
 }
