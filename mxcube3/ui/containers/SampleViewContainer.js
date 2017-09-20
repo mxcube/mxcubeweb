@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import PhaseInput from '../components/SampleView/PhaseInput';
+import ApertureInput from '../components/SampleView/ApertureInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
@@ -40,6 +41,16 @@ class SampleViewContainer extends Component {
       />
       </div>);
 
+    const apertureControl = (
+      <div>
+      <p className="motor-name">Aperture Control:</p>
+      <ApertureInput
+        aperture={this.props.sampleViewState.currentAperture}
+        apertureList={this.props.sampleViewState.apertureList}
+        sendAperture={this.props.sampleViewActions.sendChangeAperture}
+      />
+      </div>);
+
     return (
         <div className="row">
         <div className="col-xs-12">
@@ -53,6 +64,7 @@ class SampleViewContainer extends Component {
                 style={ { paddingRight: '5px', paddingLeft: '1.5em' } }
               >
                 {config.phaseControl ? phaseControl : null }
+                {apertureControl}
                 <MotorControl
                   save={sendMotorPosition}
                   saveStep={setStepSize}

@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { OverlayTrigger, Popover, Button, DropdownButton, MenuItem } from 'react-bootstrap';
+import { OverlayTrigger, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import 'fabric';
 const fabric = window.fabric;
 
@@ -13,7 +13,6 @@ export default class SampleControls extends React.Component {
     this.takeSnapShot = this.takeSnapShot.bind(this);
     this.doTakeSnapshot = this.doTakeSnapshot.bind(this);
     this.setZoom = this.setZoom.bind(this);
-    this.setApertureSize = this.setApertureSize.bind(this);
     this.toggleFrontLight = this.toggleLight.bind(this, 'FrontLight');
     this.toggleBackLight = this.toggleLight.bind(this, 'BackLight');
     this.toggleCentring = this.toggleCentring.bind(this);
@@ -28,10 +27,6 @@ export default class SampleControls extends React.Component {
 
   setZoom(option) {
     this.props.sampleActions.sendZoomPos(option.target.value);
-  }
-
-  setApertureSize(option) {
-    this.props.sampleActions.sendChangeAperture(option.target.value);
   }
 
   toggleDrawGrid() {
@@ -115,36 +110,6 @@ export default class SampleControls extends React.Component {
       <div style={ { display: 'flex', position: 'absolute', width: '100%', zIndex: 1000 } } >
         <div className="sample-controlls text-center" >
           <ul className="bs-glyphicons-list">
-          <li>
-          <OverlayTrigger trigger="click" placement="top" rootClose overlay={
-            <Popover id="Aperture" title="Aperture">
-              <div className="form-inline">
-                <div className="form-group">
-                  <form>
-                    <select
-                      className="form-control"
-                      value={this.props.currentAperture}
-                      onChange={this.setApertureSize}
-                    >
-                      {this.props.apertureList.map((val, i) =>
-                        (<option key={i} value={val}>{val}</option>)
-                      )}
-                    </select>
-                  </form>
-                </div>
-              </div>
-            </Popover>
-            }
-          >
-          <Button
-            type="button"
-            data-toggle="tooltip"
-            title="Set Aperture"
-            className="fa fa-2x fa-dot-circle-o sample-controll"
-          />
-          </OverlayTrigger>
-          <span className="sample-controll-label">Aperture</span>
-          </li>
           <li>
           <Button
             href="#"
