@@ -26,16 +26,16 @@
 .sample-controlls{
     z-index: 1000;
     margin: auto;
-    opacity: 0.4;
+    opacity: 1;
     border-radius: 3px;
-    background-color: rgba(34, 34, 34, 0.4);
+    background-color: rgba(34, 34, 34, 1);
 }
 
-.sample-controlls:hover{
+/*.sample-controlls:hover{
     opacity: 1;
     transition: opacity .3s cubic-bezier(0.6, 0.04, 0.98, 0.335);
 }
-
+*/
 .sample-controlls li{
     border: 0px !important;
 }
