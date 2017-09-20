@@ -13,6 +13,7 @@ from sample_changer.GenericSampleChanger import SampleChangerState
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
 from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED
+from queue_entry import CENTRING_METHOD
 from mxcube3.routes.transportutils import to_camel, from_camel
 
 
@@ -155,13 +156,10 @@ def sc_maintenance_update(state_list, cmd_state, message):
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
 
 def centring_started(method, *args):
-    usr_msg = 'Using 3-click centring, please click the position on '
-    usr_msg += 'the sample you would like to center (three times)'
+    msg = {'method': method}
 
-    msg = {'signal': 'SampleCentringRequest',
-           'message': usr_msg}
-
-    socketio.emit('sample_centring', msg, namespace='/hwr')
+    if method != CENTRING_METHOD.LOOP:
+        socketio.emit('sample_centring', msg, namespace='/hwr')
 
 
 def get_task_state(entry):

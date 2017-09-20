@@ -89,7 +89,7 @@ export default class SampleQueueContainer extends React.Component {
       moveTask,
       setAutoMountSample,
       setAutoAddDiffPlan,
-      sendRunSample,
+      sendRunSample
     } = this.props.queueActions;
     const {
       collapseItem,
@@ -140,6 +140,7 @@ export default class SampleQueueContainer extends React.Component {
                   autoAddDiffPlan={autoAddDiffPlan}
                   mounted={current.sampleID}
                   runSample={sendRunSample}
+                  sendSetCentringMethod={this.props.sampleViewActions.sendSetCentringMethod}
                   todoList={todo}
                 />
               <div className="m-tree queue-body">

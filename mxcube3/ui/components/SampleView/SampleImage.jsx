@@ -1,5 +1,3 @@
-
-
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
@@ -32,7 +30,7 @@ export default class SampleImage extends React.Component {
     this.selectedGrid = this.selectedGrid.bind(this);
     this.initJSMpeg = this.initJSMpeg.bind(this);
     this.getGridForm = this.getGridForm.bind(this);
-    this.getCentringMessage = this.getCentringMessage.bind(this);
+    this.centringMessage = this.centringMessage.bind(this);
     this.canvas = {};
     this._keyPressed = null;
     this.gridStarted = false;
@@ -573,6 +571,31 @@ export default class SampleImage extends React.Component {
     this.props.sampleActions.toggleDrawGrid();
   }
 
+  centringMessage() {
+    let message = '';
+    let result = null;
+
+    if (this.props.clickCentringClicksLeft === 0) {
+      message += 'Save centring or clicking on screen to restart';
+    } else {
+      message += `Clicks left: ${this.props.clickCentringClicksLeft}`;
+    }
+
+    if (this.props.clickCentring) {
+      result =
+	(
+          <div
+            key={this.props.clickCentringClicksLeft}
+            id="video-message-overlay"
+          >
+            3-Click Centring: <br /> {message}
+         </div>
+	);
+    }
+
+    return result;
+  }
+
   createVideoPlayerContainer(format) {
     // Default to MJPEG
     let result = (
@@ -688,31 +711,6 @@ export default class SampleImage extends React.Component {
     this.canvas.renderAll();
   }
 
-  getCentringMessage() {
-    let message = '';
-    let result = null;
-
-    if (this.props.clickCentringClicksLeft === 0) {
-      message += 'Save centring or clicking on screen to restart';
-    } else {
-      message += `Clicks left: ${this.props.clickCentringClicksLeft}`;
-    }
-
-    if (this.props.clickCentring) {
-      result =
-	(
-          <div
-            key={this.props.clickCentringClicksLeft}
-            id="video-message-overlay"
-          >
-            3-Click Centring: <br /> {message}
-         </div>
-	);
-    }
-
-    return result;
-  }
-
   render() {
     this.configureGrid();
     this.showGridForm();
@@ -727,7 +725,7 @@ export default class SampleImage extends React.Component {
               {...this.props}
               canvas={this.canvas}
             />
-            {this.getCentringMessage()}
+            {this.centringMessage()}
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>

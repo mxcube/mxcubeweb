@@ -4,6 +4,7 @@ const initialState = {
   clickCentring: false,
   clickCentringPoints: [],
   clickCentringClicksLeft: -1,
+  centringMethod: null,
   measureDistance: false,
   distancePoints: [],
   width: 659,
@@ -145,6 +146,10 @@ export default (state = initialState, action) => {
     case 'SHOW_VIDEO_OVERLAY_MESSAGE':
       {
         return { ...state, showMessageOverlay: action.value };
+      }
+    case 'SET_CENTRING_METHOD':
+      {
+        return { ...state, centringMethod: action.centringMethod };
       }
     case 'CLEAR_ALL':
       {
