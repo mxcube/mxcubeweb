@@ -346,9 +346,12 @@ def update_shapes():
 
         # Store pixels per mm for third party software, to facilitate
         # certain calculations
-        shape_data["pixels_per_mm"] =  mxcube.diffractometer.get_pixels_per_mm()
-        shape_data["beam_pos"] = (mxcube.diffractometer.getBeamPosX(),
-                                  mxcube.diffractometer.getBeamPosY())
+
+        beam_info_dict = beam_info_dict = beamlineutils.get_beam_info()
+       
+        shape_data["pixels_per_mm"] = mxcube.diffractometer.get_pixels_per_mm()
+        shape_data["beam_pos"] = (beam_info_dict.get("position")[0],
+                                  beam_info_dict.get("position")[1])
 
         # Shape does not have any refs, create a new Centered position
         if not refs:
