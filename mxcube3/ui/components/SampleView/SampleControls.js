@@ -37,18 +37,19 @@ export default class SampleControls extends React.Component {
     const img = document.getElementById('sample-img');
     const fimg = new fabric.Image(img);
     let imgDataURI = '';
-
     this.props.canvas.setBackgroundImage(fimg);
     this.props.canvas.renderAll();
     imgDataURI = this.props.canvas.toDataURL({ format: 'jpeg' });
     this.props.canvas.setBackgroundImage(0);
     this.props.canvas.renderAll();
-
     return imgDataURI;
   }
 
   takeSnapShot() {
     document.getElementById('downloadLink').href = this.doTakeSnapshot();
+    const sampleName = this.props.sampleList[this.props.current.sampleID].sampleName;
+    const filename = `${this.props.proposal}-${sampleName}.jpeg`;
+    document.getElementById('downloadLink').download = filename;
   }
 
   toggleCentring() {
@@ -111,10 +112,9 @@ export default class SampleControls extends React.Component {
         <div className="sample-controlls text-center" >
           <ul className="bs-glyphicons-list">
           <li>
-          <Button
+          <a style={{ marginTop: '0.3em' }}
             href="#"
             id="downloadLink"
-            type="button"
             data-toggle="tooltip"
             title="Take snapshot"
             className="fa fa-camera sample-controll"
