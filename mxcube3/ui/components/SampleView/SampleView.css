@@ -28,14 +28,31 @@
     margin: auto;
     opacity: 1;
     border-radius: 3px;
-    background-color: rgba(34, 34, 34, 1);
+    background-color: rgba(34, 34, 34, 0.8);
 }
 
-/*.sample-controlls:hover{
+
+#video-message-overlay{
+    width: 40%;
+    background-color: rgb(34, 34, 34);
+    border-radius: 10px;
+    position: absolute;
+    bottom: 2em;
+    right: 2em;
+    padding: 1em;
+    color: #33BEFF;
+    text-align: center;
+    animation: fade 2s 2s forwards;
     opacity: 1;
-    transition: opacity .3s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+    font-weight: bold;
 }
-*/
+
+@keyframes fade {
+  0% { opacity: 1 }
+  100% { opacity: 0 }
+}
+
+
 .sample-controlls li{
     border: 0px !important;
 }

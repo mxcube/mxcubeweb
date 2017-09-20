@@ -112,6 +112,11 @@ export function toggleAutoScale(width = 1) {
   return { type: 'TOGGLE_AUTO_SCALE', width };
 }
 
+
+export function showVideoMessageOverlay(show) {
+  return { type: 'SHOW_VIDEO_MESSAGE_OVERLAY', show };
+}
+
 export function setVideoSize(width, height) {
   return function (dispatch, getState) {
     const { sampleview } = getState();
@@ -189,6 +194,10 @@ export function selectGrid(id) {
   return { type: 'SELECT_GRID', id };
 }
 
+export function centringClicksLeft(clicksLeft) {
+  return { type: 'CENTRING_CLICKS_LEFT', clicksLeft };
+}
+
 export function sendStartClickCentring() {
   return function (dispatch, getState) {
     const { queue } = getState();
@@ -206,6 +215,10 @@ export function sendStartClickCentring() {
         } else {
           dispatch(startClickCentring());
         }
+
+        return response.json();
+      }).then((json) => {
+        dispatch(centringClicksLeft(json.clicksLeft));
       });
     } else {
       dispatch(showErrorPanel(true, 'There is not a sample mounted! Cannot center.'));
@@ -213,7 +226,7 @@ export function sendStartClickCentring() {
 }
 
 export function sendCentringPoint(x, y) {
-  return function () {
+  return function (dispatch) {
     fetch('/mxcube/api/v0.1/sampleview/centring/click', {
       method: 'PUT',
       credentials: 'include',
@@ -223,9 +236,9 @@ export function sendCentringPoint(x, y) {
       },
       body: JSON.stringify({ clickPos: { x, y } })
     }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to add point');
-      }
+      return response.json();
+    }).then((json) => {
+      dispatch(centringClicksLeft(json.clicksLeft));
     });
   };
 }

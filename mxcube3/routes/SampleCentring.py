@@ -578,7 +578,7 @@ def centre_3_click():
 
     mxcube.diffractometer.start3ClickCentring()
     centring_reset_click_count()
-    data = {'clickLeft': centring_clicks_left()}
+    data = {'clicksLeft': centring_clicks_left()}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
@@ -617,19 +617,17 @@ def click():
                                            click_position['y'],
                                            click_position['x'],
                                            click_position['y'])
-
-        centring_click()
-        data = {'clickLeft': centring_clicks_left()}
-        resp = jsonify(data)
-        resp.status_code = 200
-        return resp
+        centring_click()   
     else:
         if not centring_clicks_left():
             centring_reset_click_count()
             mxcube.diffractometer.cancelCentringMethod()
             mxcube.diffractometer.start3ClickCentring()
 
-        return Response(status=409)
+    data = {'clicksLeft': centring_clicks_left()}
+    resp = jsonify(data)
+    resp.status_code = 200
+    return resp
 
 
 def wait_for_centring_finishes(*args, **kwargs):
