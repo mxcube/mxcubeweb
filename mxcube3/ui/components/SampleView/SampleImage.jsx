@@ -722,11 +722,11 @@ export default class SampleImage extends React.Component {
         {this.getGridForm()}
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">
+            {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
               {...this.props}
               canvas={this.canvas}
             />
-            {this.createVideoPlayerContainer(this.props.videoFormat)}
             {this.getCentringMessage()}
             <canvas id="canvas" className="coveringCanvas" />
           </div>

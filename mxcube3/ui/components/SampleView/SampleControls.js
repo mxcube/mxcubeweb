@@ -108,7 +108,7 @@ export default class SampleControls extends React.Component {
   render() {
     const motors = this.props.motors;
     return (
-      <div style={ { display: 'flex', position: 'absolute', width: '100%', zIndex: 1000 } } >
+      <div style={ { display: 'flex', position: 'absolute', width: '100%' } } >
         <div className="sample-controlls text-center" >
           <ul className="bs-glyphicons-list">
           <li>
