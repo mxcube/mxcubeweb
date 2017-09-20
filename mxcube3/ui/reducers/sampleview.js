@@ -3,6 +3,7 @@ import { REHYDRATE } from 'redux-persist/constants';
 const initialState = {
   clickCentring: false,
   clickCentringPoints: [],
+  clickCentringClicksLeft: -1,
   measureDistance: false,
   distancePoints: [],
   width: 659,
@@ -32,7 +33,8 @@ const initialState = {
   cinema: false,
   phaseList: [],
   drawGrid: false,
-  selectedGrids: []
+  selectedGrids: [],
+  showMessageOverlay: true
 };
 
 export default (state = initialState, action) => {
@@ -102,6 +104,9 @@ export default (state = initialState, action) => {
           beamPosition: action.beamPosition
         };
       }
+    case 'CENTRING_CLICKS_LEFT': {
+      return { ...state, clickCentringClicksLeft: action.clicksLeft };
+    }
     case 'SET_IMAGE_RATIO':
       {
         return { ...state, imageRatio: state.width / action.clientWidth };
@@ -136,6 +141,10 @@ export default (state = initialState, action) => {
     case 'SET_STEP_SIZE':
       {
         return { ...state, motorSteps: { ...state.motorSteps, [action.name]: action.value } };
+      }
+    case 'SHOW_VIDEO_OVERLAY_MESSAGE':
+      {
+        return { ...state, showMessageOverlay: action.value };
       }
     case 'CLEAR_ALL':
       {
