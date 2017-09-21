@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
+import { ProgressBar, Button, Collapse, OverlayTrigger, Popover, Modal } from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
+import Plot1D from '../Plot1D';
+
 import { TASK_UNCOLLECTED,
          TASK_COLLECTED,
          TASK_COLLECT_FAILED,
@@ -21,26 +23,90 @@ export default class XRFTaskItem extends Component {
     this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
+    this.showXRFPlot = this.showXRFPlot.bind(this);
+    this.showPlotModal = this.showPlotModal.bind(this);
+    this.open = this.open.bind(this);
+    this.close = this.close.bind(this);
+
     this.state = {
       overInput: false,
-      selected: false
+      selected: false,
+      showModal: false
     };
   }
 
   getResult(state) {
-    if (state !== TASK_COLLECTED) {
+    if (state === TASK_UNCOLLECTED) {
       return (<span></span>);
     }
-
     return (
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
                      borderBottom: '1px solid #DDD',
-                     padding: '0.5em' } }
+                     padding: '0.5em',
+                     height: '30px' } }
       >
-        <a href={this.props.data.limstResultData}> ISPyB link</a>
+        {this.getIspybLink(state)}
+        {this.getPlot(state)}
       </div>
     );
+  }
+
+  getIspybLink(state) {
+    if (state !== TASK_COLLECTED) {
+      return (<span></span>);
+    }
+
+    return (<a href={this.props.data.limstResultData}> ISPyB link</a>);
+  }
+
+  getPlot(state) {
+    if (state === TASK_UNCOLLECTED) {
+      return (<span></span>);
+    }
+
+    return (
+      <div className="pull-right">
+      <a href="#"
+        onClick={this.showXRFPlot}
+      >
+      Plot available
+      </a>
+      </div>
+    );
+  }
+
+  showPlotModal() {
+    return (
+      <div>
+      <Modal show={this.state.showModal} onHide={this.close}>
+        <Modal.Header closeButton>
+          <Modal.Title>XRF Plot</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Text in a modal</h4>
+        </Modal.Body>
+        <Plot1D displayedPlotCallback={this.newPlotDisplayed}
+          plotId={'this.plotIdByAction[currentActionName'} autoNext={'True'}
+        />
+        <Modal.Footer>
+          <Button onClick={this.close}>Close</Button>
+        </Modal.Footer>
+      </Modal>
+      </div>
+      );
+  }
+
+  close() {
+    this.setState({ showModal: false });
+  }
+
+  open() {
+    this.setState({ showModal: true });
+  }
+
+  showXRFPlot() {
+    this.open();
   }
 
   toggleChecked() {
@@ -114,9 +180,11 @@ export default class XRFTaskItem extends Component {
     const { state,
             data,
             show } = this.props;
-
+    const plotId = this.props.id;
     const parameters = data.parameters;
 
+    const result = this.props.data.result;
+    const plotAlreadyStored = result !== null;
 
     let delTaskCSS = {
       display: 'flex',
@@ -186,8 +254,19 @@ export default class XRFTaskItem extends Component {
                 </div>
               </div>
               {this.getResult(state)}
+              <Modal show={this.state.showModal} onHide={this.close}>
+                <Modal.Header closeButton>
+                  <Modal.Title>XRF Plot</Modal.Title>
+                </Modal.Header>
+                <Plot1D
+                  plotId={plotId} autoNext saved={plotAlreadyStored} data={result}
+                />
+                <Modal.Footer>
+                  <Button onClick={this.close}>Close</Button>
+                </Modal.Footer>
+              </Modal>
             </div>
-          </div>
+            </div>
         </Collapse>
       </ContextMenuTrigger>
       </div>);
