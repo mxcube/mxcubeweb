@@ -273,7 +273,7 @@ class ServerIO {
 
     this.hwrSocket.on('plot_end', (data) => {
       this.dispatch(plotData(data.id, data.data, true));
-      this.dispatch(plotEnd(data.id));
+      this.dispatch(plotEnd(data));
     });
   }
 }
