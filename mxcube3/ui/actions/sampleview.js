@@ -92,6 +92,12 @@ export function addShape(shape) {
   };
 }
 
+export function savePointId(id) {
+  return {
+    type: 'SAVE_POINT_ID', id
+  };
+}
+
 export function updateShape(shape) {
   return {
     type: 'UPDATE_SHAPE', shape
