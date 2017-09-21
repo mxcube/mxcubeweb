@@ -24,6 +24,8 @@
   <object href="/shape-history" role="shape_history"/>
   <object href="/ednaparams" role="workflow"/>
   <object href="/data-analysis" role="data_analysis"/>
+  <object href="/xrf" role="xrf_spectrum"/>
+
   <!--<object href="/workflow-mockup" role="workflow"/> -->
  
   <!-- Procedures and routines -->
