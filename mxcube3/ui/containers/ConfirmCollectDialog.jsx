@@ -2,9 +2,21 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Modal, Button, Table, OverlayTrigger, Popover, Checkbox } from 'react-bootstrap';
-import { sendRunQueue, sendRunSample, sendMountSample, setAutoMountSample } from '../actions/queue';
-import { sendSetCentringMethod } from '../actions/sampleview';
+import { Modal,
+         Button,
+         Table,
+         OverlayTrigger,
+         Popover,
+         Checkbox } from 'react-bootstrap';
+
+import { sendRunQueue,
+         sendRunSample,
+         sendMountSample,
+         setAutoMountSample,
+         sendSetCentringMethod,
+         sendSetNumSnapshots } from '../actions/queue';
+
+import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import { TASK_UNCOLLECTED, AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
 
@@ -25,6 +37,7 @@ export class ConfirmCollectDialog extends React.Component {
     this.onHide = this.onHide.bind(this);
     this.collectText = this.collectText.bind(this);
     this.tasksToCollect = this.tasksToCollect.bind(this);
+    this.setNumSnapshots = this.setNumSnapshots.bind(this);
   }
 
   componentDidMount() {
@@ -54,6 +67,10 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   onHide() { }
+
+  setNumSnapshots(n) {
+    this.props.sendSetNumSnapshots(n);
+  }
 
   autoLoopCentringOnClick(e) {
     if (e.target.checked) {
@@ -239,7 +256,6 @@ export class ConfirmCollectDialog extends React.Component {
   render() {
     const summary = this.collectionSummary();
     const autoMountNext = summary.numTasks !== 0;
-
     return (
       <Modal
         dialogClassName="collect-confirm-dialog"
@@ -257,7 +273,10 @@ export class ConfirmCollectDialog extends React.Component {
           </p>
           <div style={ { marginLeft: '20px' } }>
             <span>
-              <Checkbox defaultChecked onClick={this.autoLoopCentringOnClick}>
+              <Checkbox
+                defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
+                onClick={this.autoLoopCentringOnClick}
+              >
                 Auto loop centring
               </Checkbox>
               { autoMountNext ?
@@ -266,6 +285,7 @@ export class ConfirmCollectDialog extends React.Component {
                   </Checkbox>
                 : <span />
               }
+              <NumSnapshotsDropDown />
             </span>
           </div>
           <br />
@@ -294,7 +314,8 @@ function mapDispatchToProps(dispatch) {
     sendRunSample: bindActionCreators(sendRunSample, dispatch),
     sendMountSample: bindActionCreators(sendMountSample, dispatch),
     setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
-    sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch)
+    sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
+    sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch)
   };
 }
 

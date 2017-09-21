@@ -1,12 +1,14 @@
 import update from 'react/lib/update';
-import { QUEUE_STOPPED } from '../constants';
+import { QUEUE_STOPPED, CLICK_CENTRING } from '../constants';
 
 const initialState = {
   queue: [],
   current: { sampleID: null, running: false },
   queueStatus: QUEUE_STOPPED,
   autoMountNext: false,
-  autoAddDiffPlan: true
+  autoAddDiffPlan: true,
+  centringMethod: null,
+  numSnapshots: CLICK_CENTRING,
 };
 
 export default (state = initialState, action) => {
@@ -68,6 +70,12 @@ export default (state = initialState, action) => {
     case 'SET_AUTO_ADD_DIFFPLAN': {
       return { ...state, autoAddDiffPlan: action.autoadd };
     }
+    case 'SET_CENTRING_METHOD': {
+      return { ...state, centringMethod: action.centringMethod };
+    }
+    case 'SET_NUM_SNAPSHOTS': {
+      return { ...state, numSnapshots: action.n };
+    }
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
@@ -84,6 +92,7 @@ export default (state = initialState, action) => {
           queue: Object.keys(action.data.queue.queue),
           autoMountNext: action.data.queue.autoMountNext,
           autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
+          centringMethod: action.data.queue.centringMethod,
           current: { sampleID: action.data.queue.loaded,
                      running: action.data.queue.queueStatus }
         };
