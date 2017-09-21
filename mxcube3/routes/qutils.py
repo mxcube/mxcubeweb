@@ -299,7 +299,7 @@ def _handle_xrf(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
     parameters = {"countTime": node.count_time,
-                  "shape": -1}
+                  "shape": node.shape}
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
@@ -313,6 +313,7 @@ def _handle_xrf(sample_id, node):
 
     parameters['fullPath'] = os.path.join(parameters['path'],
                                           parameters['fileName'])
+    model, entry = get_entry(queueID)
 
     res = {"label": "XRF Scan",
            "type": "XRFScan",
@@ -321,7 +322,8 @@ def _handle_xrf(sample_id, node):
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
            "checked": node.is_enabled(),
-           "state": state
+           "state": state,
+           "result": model.result.mca_data
            }
 
     return res
@@ -1003,6 +1005,9 @@ def set_xrf_params(model, entry, task_data, sample_model):
 
     # Set count time, and if any, other paramters
     model.count_time = params.get("countTime", 0)
+
+    # MXCuBE3 specific shape attribute
+    model.shape = params["shape"]
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
