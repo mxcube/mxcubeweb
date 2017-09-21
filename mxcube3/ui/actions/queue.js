@@ -18,6 +18,7 @@ export function setQueueAction(queue) {
   return { type: 'SET_QUEUE', queue };
 }
 
+
 export function setQueue(queue) {
   const q = queue;
   delete q.sample_order;
@@ -25,6 +26,16 @@ export function setQueue(queue) {
   return function (dispatch) {
     dispatch(setQueueAction(q));
   };
+}
+
+
+export function setCentringMethod(centringMethod) {
+  return { type: 'SET_CENTRING_METHOD', centringMethod };
+}
+
+
+export function setNumSnapshots(n) {
+  return { type: 'SET_NUM_SNAPSHOTS', n };
 }
 
 
@@ -591,6 +602,46 @@ export function setAutoAddDiffPlan(autoadddiffplan) {
     }).then(response => {
       const a = response.auto_add_diffplan;
       dispatch(setAutoAddDiffPlanAction(a));
+    });
+  };
+}
+
+export function sendSetCentringMethod(centringMethod) {
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/sampleview/centring/centring_method', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ centringMethod })
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error(`Server could not set centring method ${centringMethod}`);
+      } else {
+        dispatch(setCentringMethod(centringMethod));
+      }
+    });
+  };
+}
+
+export function sendSetNumSnapshots(numSnapshots) {
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/queue/num_snapshots', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ numSnapshots })
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error(`Server could not set number of snapshots ${numSnapshots}`);
+      } else {
+        dispatch(setNumSnapshots(numSnapshots));
+      }
     });
   };
 }

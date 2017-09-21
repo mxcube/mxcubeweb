@@ -225,7 +225,9 @@ def get_queue_state():
     queue.pop("sample_order") if queue else queue
 
     res = { "loaded": scutils.get_current_sample(),
+            "centringMethod": mxcube.CENTRING_METHOD,
             "autoMountNext": get_auto_mount_sample(),
+            "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
             "queue": queue,
             "queueStatus": queue_exec_state() }
 

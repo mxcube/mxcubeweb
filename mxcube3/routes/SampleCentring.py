@@ -712,9 +712,9 @@ def set_centring_method():
 
     """
     params = json.loads(request.data)
-    method = params.get("centringMethod", "")
+    method = params.get("centringMethod", CENTRING_METHOD.LOOP)
 
-    if method == "AUTO_LOOP":
+    if method == CENTRING_METHOD.LOOP:
         msg = '[Centring] Using automatic loop centring when mounting samples'
         mxcube.CENTRING_METHOD =  CENTRING_METHOD.LOOP
     else:

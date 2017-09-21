@@ -4,7 +4,6 @@ const initialState = {
   clickCentring: false,
   clickCentringPoints: [],
   clickCentringClicksLeft: -1,
-  centringMethod: null,
   measureDistance: false,
   distancePoints: [],
   width: 659,
