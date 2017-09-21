@@ -249,7 +249,7 @@ export default class DrawGridPlugin {
 
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    if (typeof gd.result !== 'undefined' && gd.result !== null) {
+    if (typeof gd.result !== 'undefined' && gd.result !== null && gd.id !== null) {
       for (let nh = 0; nh < row; nh++) {
         for (let nw = 0; nw < col; nw++) {
           const index = nw + nh * col + 1;
