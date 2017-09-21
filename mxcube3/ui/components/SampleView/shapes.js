@@ -82,6 +82,34 @@ export function makeLine(x1, y1, x2, y2, col, wid, select, id, hover = 'crosshai
   });
 }
 
+export function makeArrow(line, col, select, id, hover = 'crosshair') {
+  const dist = Math.sqrt((line.x2 - line.x1) ** 2 + (line.y2 - line.y1) ** 2);
+  const angledeg = Math.atan2(line.y2 - line.y1, line.x2 - line.x1) * 180 / Math.PI;
+  const deltaX = dist * 0.8 * Math.cos(angledeg * Math.PI / 180);
+  const deltaY = dist * 0.8 * Math.sin(angledeg * Math.PI / 180);
+
+  return new fabric.Triangle({
+    left: line.get('x2') - deltaX,
+    top: line.get('y2') - deltaY,
+    fill: col,
+    stroke: col,
+    defaultColor: col,
+    originX: 'center',
+    originY: 'center',
+    hasBorders: false,
+    hasControls: false,
+    lockScalingX: true,
+    lockScalingY: true,
+    hasRotatingPoint: false,
+    pointType: 'arrow_start',
+    angle: angledeg - 90,
+    width: 10,
+    height: 15,
+    hoverCursor: hover,
+  });
+}
+
+
 export function makeText(x, y, fontSize, color, text) {
   return new fabric.Text(text, {
     fontSize,
@@ -177,9 +205,11 @@ export function makePoints(points, imageRatio) {
 export function pointLine(x1, y1, x2, y2, color, width, selectable, id, name, cursor) {
   const text = makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, name);
   const line = makeLine(x1, y1, x2, y2, color, width, selectable, id, cursor, text, 'LINE');
+  const arrow = makeArrow(line, color, selectable, id);
   return [
     text,
-    line
+    line,
+    arrow
   ];
 }
 
