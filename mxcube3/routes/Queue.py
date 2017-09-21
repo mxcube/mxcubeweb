@@ -233,9 +233,10 @@ def queue_update_item(sid, tindex):
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
     model, entry = qutils.get_entry(node_id)
+    sample_model, sample_entry = qutils.get_entry(sid)
 
     if data["type"] == "DataCollection":
-        qutils.set_dc_params(model, entry, data)
+        qutils.set_dc_params(model, entry, data, sample_model)
     elif data["type"] == "Characterisation":
         qutils.set_char_params(model, entry, data)
 
