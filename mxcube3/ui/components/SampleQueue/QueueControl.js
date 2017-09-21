@@ -4,6 +4,8 @@ import { Button, Checkbox, DropdownButton } from 'react-bootstrap';
 import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED,
          AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../../constants';
 
+import NumSnapshotsDropDown from '../../containers/NumSnapshotsDropDown.jsx';
+
 export default class QueueControl extends React.Component {
   constructor(props) {
     super(props);
@@ -134,7 +136,7 @@ export default class QueueControl extends React.Component {
                   <Checkbox
                     name="autoMountNext"
                     onClick={this.autoMountNextOnClick}
-                    checked={this.props.autoMountNext}
+                    defaultChecked={this.props.autoMountNext}
                   >
                     Automount next sample
                   </Checkbox>
@@ -143,8 +145,9 @@ export default class QueueControl extends React.Component {
               <li role="presentation">
                 <span role="menuitem">
                   <Checkbox
-                    name="autoLoopCentring"
                     onClick={this.autoLoopCentringOnClick}
+                    name="autoLoopCentring"
+                    defaultChecked={this.props.centringMethod === AUTO_LOOP_CENTRING}
                   >
                     Auto loop centring
                   </Checkbox>
@@ -155,10 +158,15 @@ export default class QueueControl extends React.Component {
                   <Checkbox
                     name="autoAddDiffPlan"
                     onClick={this.setAutoAddDiffPlan}
-                    checked={this.props.autoAddDiffPlan}
+                    defaultChecked={this.props.autoAddDiffPlan}
                   >
                   Auto add diffraction plan
                   </Checkbox>
+                </span>
+              </li>
+              <li role="presentation">
+                <span role="menuitem">
+                  <NumSnapshotsDropDown />
                 </span>
               </li>
             </DropdownButton>

@@ -25,6 +25,7 @@ function mapStateToProps(state) {
     queue: state.queue.queue,
     autoMountNext: state.queue.autoMountNext,
     autoAddDiffPlan: state.queue.autoAddDiffPlan,
+    centringMethod: state.queue.centringMethod,
     sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
@@ -76,7 +77,8 @@ export default class SampleQueueContainer extends React.Component {
       visibleList,
       loading,
       autoMountNext,
-      autoAddDiffPlan
+      autoAddDiffPlan,
+      centringMethod
     } = this.props;
     const {
       sendToggleCheckBox,
@@ -91,7 +93,8 @@ export default class SampleQueueContainer extends React.Component {
       moveTask,
       setAutoMountSample,
       setAutoAddDiffPlan,
-      sendRunSample
+      sendRunSample,
+      sendSetCentringMethod
     } = this.props.queueActions;
     const {
       collapseItem,
@@ -142,7 +145,8 @@ export default class SampleQueueContainer extends React.Component {
                   autoAddDiffPlan={autoAddDiffPlan}
                   mounted={current.sampleID}
                   runSample={sendRunSample}
-                  sendSetCentringMethod={this.props.sampleViewActions.sendSetCentringMethod}
+                  sendSetCentringMethod={sendSetCentringMethod}
+                  centringMethod={centringMethod}
                   todoList={todo}
                 />
               <div className="m-tree queue-body">
