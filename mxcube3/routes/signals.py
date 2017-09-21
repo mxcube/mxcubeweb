@@ -417,6 +417,21 @@ def queue_interleaved_sw_done(data):
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
+def xrf_task_progress(taskId, progress):
+    node = last_queue_node()
+
+    msg = {'Signal': 'XRFTaskUpdate',
+           'Message': 'XRFTaskUpdate',
+           'taskIndex': node['idx'],
+           'queueID': node['queue_id'],
+           'sample': node['sample'],
+           'state': RUNNING if progress < 1 else COLLECTED,
+           'progress': progress}
+
+    try:
+        safe_emit('task', msg, namespace='/hwr')
+    except Exception:
+        logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 def send_shapes(update_positions = False):
     shape_dict = {}
