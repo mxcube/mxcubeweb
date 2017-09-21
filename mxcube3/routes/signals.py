@@ -109,19 +109,15 @@ def sc_state_changed(*args):
             location = scutils.get_sample_to_be_mounted()
             message = 'Please wait, Loading sample %s' % location
             signal = 'loadingSample'
+
         elif new_state == SampleChangerState.Unloading:
             signal = 'unLoadingSample'
-            message = 'Please wait, Unloading sample' 
+            message = 'Please wait, Unloading sample'
+            scutils.set_current_sample(None)
 
         msg = {'signal': signal,
                'location': location,
                'message': message}
-    else:
-        # make sure operation is finished in any other case
-        if location: 
-            msg = {'signal': 'loadReady', 'location': location}
-            scutils.set_current_sample(location)
-        msg = {'signal': 'loadReady', 'location': ''}
     
     if msg:
         logging.getLogger("HWR").info('emitting sc state changed: ' + str(msg))
@@ -142,6 +138,9 @@ def loaded_sample_changed(sample):
     logging.getLogger("HWR").info('loaded sample changed now is: ' + address)
 
     try:
+        scutils.set_current_sample(address)
+        msg = {'signal': 'loadReady', 'location': address}
+        socketio.emit('sc', msg, namespace='/hwr')
         socketio.emit("loaded_sample_changed", {'address': address, 'barcode': barcode}, namespace="/hwr")
     except Exception, msg:
         logging.getLogger("HWR").error('error setting loaded sample: %s' + str(msg))
