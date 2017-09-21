@@ -52,6 +52,13 @@ def init_signals():
     except Exception, ex:
         logging.getLogger('HWR').error("error loading plotting hwo: %s" % str(ex))
 
+    try:
+        mxcube.beamline.xrf_spectrum_hwobj.connect(mxcube.beamline.xrf_spectrum_hwobj, 'new_plot', signals.new_plot)
+        mxcube.beamline.xrf_spectrum_hwobj.connect(mxcube.beamline.xrf_spectrum_hwobj, 'plot_data', signals.plot_data)
+        mxcube.beamline.xrf_spectrum_hwobj.connect(mxcube.beamline.xrf_spectrum_hwobj, 'plot_end', signals.plot_end)
+        mxcube.beamline.xrf_spectrum_hwobj.connect(mxcube.beamline.xrf_spectrum_hwobj, 'xrf_task_progress', signals.xrf_task_progress)
+    except Exception, ex:
+        logging.getLogger('HWR').error("error loading plotting hwo: %s" % str(ex))
 
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():

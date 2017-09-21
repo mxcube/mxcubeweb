@@ -64,6 +64,6 @@ export function plotData(plotId, data, fullDataSet) {
   return { type: 'PLOT_DATA', id: plotId, data, fullDataSet };
 }
 
-export function plotEnd(plotId) {
-  return { type: 'PLOT_END', id: plotId };
+export function plotEnd(data) {
+  return { type: 'PLOT_END', id: data.id, data: data.data, dataType: data.type };
 }

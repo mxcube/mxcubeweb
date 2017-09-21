@@ -198,6 +198,21 @@ export default (state = INITIAL_STATE, action) => {
 
       return Object.assign({}, state, { sampleList });
     }
+    case 'PLOT_END': {
+      const sampleList = { ...state.sampleList };
+      /* eslint-disable no-param-reassign */
+      Object.keys(sampleList).forEach((sampleId) => {
+        sampleList[sampleId].tasks.forEach((tt) => {
+          if (tt.queueID === action.id && tt.type === action.dataType) {
+            tt.result = action.data;
+            tt.diffractionPlan = action.tasks;
+          }
+        });
+      });
+      /* eslint-enable no-param-reassign */
+
+      return Object.assign({}, state, { sampleList });
+    }
     case 'CHANGE_TASK_ORDER': {
       const sampleList = Object.assign({}, state.sampleList);
 
