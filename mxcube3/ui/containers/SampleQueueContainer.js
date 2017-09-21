@@ -31,7 +31,9 @@ function mapStateToProps(state) {
     rootPath: state.queue.rootPath,
     displayData: state.queueGUI.displayData,
     loading: state.queueGUI.loading,
-    userMessages: state.general.userMessages
+    userMessages: state.general.userMessages,
+    plotsData: state.beamline.plotsData,
+    plotsInfo: state.beamline.plotsInfo,
   };
 }
 
@@ -185,6 +187,9 @@ export default class SampleQueueContainer extends React.Component {
                   todoList={todo}
                   moveTask={moveTask}
                   addTask={addTask}
+                  plotsData={this.props.plotsData}
+                  plotsInfo={this.props.plotsInfo}
+
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
