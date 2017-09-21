@@ -127,6 +127,14 @@ export default class SampleImage extends React.Component {
   }
 
   setColorPoint(o, selection) {
+    let myP = '';
+    if (o.e !== undefined && o.target !== undefined) {
+      myP = o.target.id !== undefined ? o.target.id : '';
+      if (myP.startsWith('P')) {
+        this.props.sampleActions.savePointId(myP);
+      }
+    }
+
     const shape = o.target;
     if (shape && shape.type === 'group') {
       shape.hasBorders = false;

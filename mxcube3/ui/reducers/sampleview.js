@@ -34,7 +34,8 @@ const initialState = {
   phaseList: [],
   drawGrid: false,
   selectedGrids: [],
-  showMessageOverlay: true
+  showMessageOverlay: true,
+  savedPointId: ''
 };
 
 export default (state = initialState, action) => {
@@ -145,6 +146,14 @@ export default (state = initialState, action) => {
     case 'SHOW_VIDEO_OVERLAY_MESSAGE':
       {
         return { ...state, showMessageOverlay: action.value };
+      }
+    case 'SET_CENTRING_METHOD':
+      {
+        return { ...state, centringMethod: action.centringMethod };
+      }
+    case 'SAVE_POINT_ID':
+      {
+        return { ...state, savedPointId: action.id };
       }
     case 'CLEAR_ALL':
       {
