@@ -87,7 +87,6 @@ export function makeArrow(line, col, select, id, hover = 'crosshair') {
   const angledeg = Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180 / Math.PI;
   const deltaX = dist * 0.8 * Math.cos(angledeg * Math.PI / 180);
   const deltaY = dist * 0.8 * Math.sin(angledeg * Math.PI / 180);
-  console.log(line.x1, line.y1, line.x2, line.y2);
   return new fabric.Triangle({
     left: line.get('x1') - deltaX,
     top: line.get('y1') - deltaY,
