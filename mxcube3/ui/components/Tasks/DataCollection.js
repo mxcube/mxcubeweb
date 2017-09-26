@@ -22,6 +22,8 @@ class DataCollection extends React.Component {
     this.showDPFooter = this.showDPFooter.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
+    this.resetParameters = this.resetParameters.bind(this);
+    this.defaultParameters = this.defaultParameters.bind(this);
   }
 
   submitAddToQueue() {
@@ -60,9 +62,35 @@ class DataCollection extends React.Component {
     this.props.hide();
   }
 
+  resetParameters() {
+    this.props.reset();
+  }
+
+  defaultParameters() {
+    this.props.resetTaskParameters();
+    const type = this.props.taskData.parameters.type;
+    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
+    fieldNames.forEach((field) => {
+      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+    });
+  }
+
   showDCFooter() {
     return (
        <Modal.Footer>
+       <div className="input-group-btn">
+          <ButtonToolbar className="pull-left">
+           <Button bsSize="xsmall" bsStyle="default"
+             onClick={this.defaultParameters}
+           >
+             Default Parameters
+           </Button>
+           <Button bsSize="xsmall" bsStyle="default"
+             onClick={this.resetParameters}
+           >
+             Reset Form
+           </Button>
+          </ButtonToolbar>
          <ButtonToolbar className="pull-right">
            <Button bsStyle="success"
              disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
@@ -76,6 +104,7 @@ class DataCollection extends React.Component {
              {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
            </Button>
          </ButtonToolbar>
+        </div>
        </Modal.Footer>
       );
   }
