@@ -10,7 +10,10 @@ import Workflow from '../components/Tasks/Workflow';
 import Interleaved from '../components/Tasks/Interleaved';
 import XRFScan from '../components/Tasks/XRFScan';
 import EnergyScan from '../components/Tasks/EnergyScan';
-import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
+import { hideTaskParametersForm,
+         showTaskForm,
+         resetTaskParameters,
+         updateDefaultParameters } from '../actions/taskForm';
 
 
 import {
@@ -45,7 +48,6 @@ class TaskContainer extends React.Component {
 
   addTask(params, stringFields, runNow) {
     const parameters = { ...params };
-
     for (const key in parameters) {
       if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
         parameters[key] = Number(parameters[key]);
@@ -59,6 +61,7 @@ class TaskContainer extends React.Component {
       const taskIndex = this.props.sampleList[sampleIds].tasks.indexOf(taskData);
       this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
     }
+    this.props.updateDefaultParameters(params);
   }
 
   render() {
@@ -85,6 +88,8 @@ class TaskContainer extends React.Component {
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
         attributes={this.props.attributes}
+        initialParameters={this.props.initialParameters}
+        resetTaskParameters={this.props.resetTaskParameters}
       />);
     }
 
@@ -98,6 +103,8 @@ class TaskContainer extends React.Component {
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
         attributes={this.props.attributes}
+        initialParameters={this.props.initialParameters}
+        resetTaskParameters={this.props.resetTaskParameters}
       />);
     }
 
@@ -113,6 +120,8 @@ class TaskContainer extends React.Component {
         rootPath={this.props.path}
         lines={lines}
         attributes={this.props.attributes}
+        initialParameters={this.props.initialParameters}
+        resetTaskParameters={this.props.resetTaskParameters}
       />);
     }
 
@@ -127,6 +136,8 @@ class TaskContainer extends React.Component {
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
         cellCount={this.props.cellCount}
+        initialParameters={this.props.initialParameters}
+        resetTaskParameters={this.props.resetTaskParameters}
       />);
     }
 
@@ -203,7 +214,8 @@ function mapStateToProps(state) {
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath,
     shapes: state.shapes.shapes,
-    attributes: state.beamline.attributes
+    attributes: state.beamline.attributes,
+    initialParameters: state.taskForm.initialParameters
   };
 }
 
@@ -211,6 +223,8 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
+    resetTaskParameters: bindActionCreators(resetTaskParameters, dispatch),
+    updateDefaultParameters: bindActionCreators(updateDefaultParameters, dispatch),
     updateTask: bindActionCreators(updateTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),

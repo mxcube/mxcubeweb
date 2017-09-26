@@ -39,6 +39,19 @@ export default (state = initialState, action) => {
                }
              };
       }
+    case 'ADD_TASK':
+      {
+        let type = action.tasks[0].type.toLowerCase();
+        if (action.tasks[0].parameters.helical) {
+          type = 'helical';
+        }
+        return { ...state, defaultParameters:
+                 { ...state.defaultParameters, [type]: {
+                   ...action.tasks[0].parameters
+                 }
+               }
+             };
+      }
     case 'UPDATE_TASK':
       {
         return {
@@ -47,6 +60,30 @@ export default (state = initialState, action) => {
             ...state.defaultParameters,
             [action.taskData.type.toLowerCase()]: {
               ...action.taskData.parameters
+            }
+          }
+        };
+      }
+    case 'RESET_TASK_PARAMETERS':
+      {
+        return {
+          ...state,
+          defaultParameters: {
+            ...state.initialParameters
+          }
+        };
+      }
+    case 'UPDATE_DEFAULT_PARAMETERS':
+      {
+        let type = action.data.type.toLowerCase();
+        if (action.data.helical) {
+          type = 'helical';
+        }
+        return {
+          ...state,
+          defaultParameters: {
+            ...state.defaultParameters, [type]: {
+              ...action.data
             }
           }
         };
@@ -74,6 +111,25 @@ export default (state = initialState, action) => {
         return {
           ...state,
           defaultParameters: {
+            datacollection: {
+              ...action.data.dcParameters,
+              ...state.defaultParameters.datacollection },
+            characterisation: {
+              ...action.data.charParameters,
+              ...state.defaultParameters.characterisation },
+            helical: {
+              ...action.data.dcParameters,
+              ...state.defaultParameters.helical },
+            mesh: {
+              ...action.data.dcParameters,
+              ...action.data.meshParameters },
+            workflow: {
+              ...action.data.dcParameters,
+              ...state.defaultParameters.workflow },
+            interleaved: {
+              ...state.defaultParameters.interleaved }
+          },
+          initialParameters: {
             datacollection: {
               ...action.data.dcParameters,
               ...state.defaultParameters.datacollection },
