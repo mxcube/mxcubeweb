@@ -204,9 +204,11 @@ export function makePoints(points, imageRatio) {
 export function pointLine(x1, y1, x2, y2, color, width, selectable, id, name, cursor) {
   const text = makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, name);
   const line = makeLine(x1, y1, x2, y2, color, width, selectable, id, cursor, text, 'LINE');
+  const arrow = makeArrow(line, color, selectable, id);
   return [
     text,
-    line
+    line,
+    arrow
   ];
 }
 

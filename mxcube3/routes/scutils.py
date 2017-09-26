@@ -58,7 +58,7 @@ def mount_sample(beamline_setup_hwobj,
     if not sample_mount_device.hasLoadedSample():
         #Disables all related collections
         logging.getLogger('user_level_log').info("Sample not loaded")
-        set_current_sample('')
+        set_current_sample(None)
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
         logging.getLogger('user_level_log').info("Sample loaded")

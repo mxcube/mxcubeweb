@@ -92,6 +92,12 @@ export function addShape(shape) {
   };
 }
 
+export function savePointId(id) {
+  return {
+    type: 'SAVE_POINT_ID', id
+  };
+}
+
 export function updateShape(shape) {
   return {
     type: 'UPDATE_SHAPE', shape
@@ -196,30 +202,6 @@ export function selectGrid(id) {
 
 export function centringClicksLeft(clicksLeft) {
   return { type: 'CENTRING_CLICKS_LEFT', clicksLeft };
-}
-
-export function setCentringMethod(centringMethod) {
-  return { type: 'SET_CENTRING_METHOD', centringMethod };
-}
-
-export function sendSetCentringMethod(centringMethod) {
-  return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview/centring/centring_method', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify({ centringMethod })
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error(`Server could not set centring method ${centringMethod}`);
-      } else {
-        dispatch(setCentringMethod(centringMethod));
-      }
-    });
-  };
 }
 
 export function sendStartClickCentring() {

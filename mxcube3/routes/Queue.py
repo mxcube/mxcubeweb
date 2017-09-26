@@ -179,6 +179,7 @@ def queue_get_state():
     return resp
 
 
+
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=['PUT'])
 def execute_entry_with_id(sid, tindex):
     """
@@ -609,6 +610,16 @@ def set_autmount():
 
     return resp
 
+
+@mxcube.route("/mxcube/api/v0.1/queue/num_snapshots", methods=["PUT"])
+def set_num_snapshots():
+    data = request.get_json()
+    resp = jsonify({'numSnapshots': data.get("num_snapshots", 4)})
+    resp.status_code = 200
+
+    return resp
+
+
 @mxcube.route("/mxcube/api/v0.1/queue/auto_add_diffplan", methods=["POST"])
 def set_autoadd():
     autoadd = request.get_json()
@@ -617,6 +628,7 @@ def set_autoadd():
     resp.status_code = 200
 
     return resp
+
 
 @mxcube.route("/mxcube/api/v0.1/queue/mock/diff_plan/<sid>", methods=["GET"])
 def create_diff_plan(sid):
