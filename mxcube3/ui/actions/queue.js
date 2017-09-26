@@ -374,6 +374,7 @@ export function addTaskAction(tasks) {
 }
 
 export function updateTaskAction(sampleID, taskIndex, taskData) {
+  console.log('in updateTaskAction');
   return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
 }
 
