@@ -25,6 +25,8 @@ class Mesh extends React.Component {
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
+    this.resetParameters = this.resetParameters.bind(this);
+    this.defaultParameters = this.defaultParameters.bind(this);
   }
 
   submitAddToQueue() {
@@ -72,6 +74,20 @@ class Mesh extends React.Component {
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
+
+  resetParameters() {
+    this.props.reset();
+  }
+
+  defaultParameters() {
+    this.props.resetTaskParameters();
+    const type = this.props.taskData.parameters.type;
+    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
+    fieldNames.forEach((field) => {
+      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+    });
+  }
+
   render() {
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
@@ -152,6 +168,18 @@ class Mesh extends React.Component {
        </Modal.Body>
        { this.props.taskData.state ? '' :
            <Modal.Footer>
+             <ButtonToolbar className="pull-left">
+             <Button bsSize="xsmall" bsStyle="default"
+               onClick={this.defaultParameters}
+             >
+               Default Parameters
+             </Button>
+             <Button bsSize="xsmall" bsStyle="default"
+               onClick={this.resetParameters}
+             >
+               Reset Form
+             </Button>
+             </ButtonToolbar>
              <ButtonToolbar className="pull-right">
                <Button bsStyle="success"
                  disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
