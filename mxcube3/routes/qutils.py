@@ -1070,6 +1070,7 @@ def _create_dc(task):
     """
     dc_model = qmo.DataCollection()
     dc_model.set_origin(ORIGIN_MX3)
+    dc_model.center_before_collect = True
     dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
 
     return dc_model, dc_entry
