@@ -1,6 +1,7 @@
 var webpack = require("webpack");
 var path = require('path');
 var backend_server = require('./backend_server.js');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 var config = {
     entry: {
@@ -11,15 +12,13 @@ var config = {
         filename: '[name].js', 
         publicPath: '' 
     },
-  module: {
+    module: {
     rules: [
       {
-	test: /\.js/,
-	exclude: /node_modules/,
-        enforce: "pre",
+	test: /\.jsx?$/,
+	exclude: /node_modules\/(?!(dygraphs)\/).*/,
 	use:[
-          "babel-loader",
-          "eslint-loader"
+          "babel-loader"
         ]
       },
       {  
@@ -52,30 +51,46 @@ var config = {
           }
         ]
       },
-      {
-        test: /\.jsx$/,
-        loader: "babel-loader",
-	exclude: /node_modules/
-      },
       { 
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=[a-z0-9]\.[a-z0-9]\.[a-z0-9])?$/,
         loader: 'url-loader?limit=100000'
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.(gif|png|jpe?g|svg)$/i,
         loaders: [
-          'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
-          'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
+          'file-loader', {
+            loader: 'image-webpack-loader',
+            options: {
+              gifsicle: {
+                enabled: false,
+                interlaced: false,
+              },
+              optipng: {
+                enabled: false,
+                optimizationLevel: 7,
+              },
+              pngquant: {
+                enabled: false,
+                quality: '65-90',
+                speed: 4
+              },
+              mozjpeg: {
+                progressive: true,
+                quality: 65
+              }
+            }
+          }
         ]
       }
-    ]    
+    ]
   },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': '"production"'
       }
-    })
+    }),
+    new UglifyJSPlugin()
   ],
   externals: {
     'guiConfig': JSON.stringify(require('./config.gui.prod.js'))
@@ -87,3 +102,5 @@ var config = {
 }
 
 module.exports = config;
+
+
