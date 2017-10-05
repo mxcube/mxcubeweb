@@ -15,11 +15,9 @@ def lims_login(loginID, password):
     :param str password: Password
     :returns dict: On the format:
 
-      {'status': { 'code': 'ok', 'msg': msg }, 'Proposal': proposal,
-      'session': todays_session,
-      'local_contact': local_contact,
-      'person': Person,
-      'laboratory': Laboratory}
+      {'status': { 'code': 'ok', 'msg': msg },
+      'proposalList':[]
+      }
     """
     login_res = {}
 
@@ -37,29 +35,36 @@ def lims_login(loginID, password):
 
         try:
             proposals = mxcube.db_connection.get_proposals_by_user(loginID)
+            logging.getLogger('HWR').error('[LIMS] Proposal list, %s' % proposals)
+
             session['proposal_list'] = proposals
         except:
             logging.getLogger('HWR').error('[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
             return dict({'status': {'code': '0'}})
         for prop in proposals:
+            # if len(prop['Session']) == 0:
             todays_session = mxcube.db_connection.get_todays_session(prop)
-            prop['Session'] = todays_session
+            prop['Session'] = [todays_session]
+            # elif not prop['Session'][0]['scheduled']:
+            #     todays_session = mxcube.db_connection.get_todays_session(prop)
+            #     prop['Session'] = [todays_session]
 
         login_res['proposalList'] = proposals
         login_res['status'] = {"code": "ok", "msg": "Successful login"}
 
     else:
         try:
-            login_res = mxcube.db_connection.login(loginID, password)
-            login_res = mxcube.db_connection.get_proposal(
-                login_res['Proposal']['code'], login_res['Proposal']['number'])
+            aux = mxcube.db_connection.login(loginID, password)
+            status = aux['status']
+            aux = mxcube.db_connection.get_proposal(
+                 aux['Proposal']['code'], aux['Proposal']['number'])
         except:
             logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
             return dict({'status': {'code': '0'}})
 
-        session['proposal_list'] = [login_res]
-
-        login_res['proposalList'] = [login_res['Proposal']]
+        login_res['proposalList'] = [aux]
+        login_res['status'] = status
+        session['proposal_list'] = [aux]
 
     logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
 
@@ -75,7 +80,7 @@ def get_proposal_info(proposal):
         _p = "%s%s" % (prop.get('Proposal').get('code', ''),
                        prop.get('Proposal').get('number', ''))
 
-        if  _p == proposal:
+        if _p == proposal:
             return prop
 
     return {}
@@ -84,6 +89,7 @@ def get_proposal_info(proposal):
 def select_proposal(proposal):
     proposal_info = get_proposal_info(proposal)
     logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal)
+    logging.getLogger('HWR').info("[LIMS] Proposal info: %s" % proposal_info)
 
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')

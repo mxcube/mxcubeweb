@@ -20,7 +20,7 @@ export default class MXNavbar extends React.Component {
     const proposal = this.props.userInfo.proposalList ?
         this.props.userInfo.proposalList.find(this.findProposal) : '';
     const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
-        `Proposal: ${proposal.number}` : '');
+        `Proposal: ${proposal.Proposal.number}` : '');
 
     document.title = `MxCuBE-3 ${propInfo}`;
 
