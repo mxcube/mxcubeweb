@@ -1483,9 +1483,9 @@ def execute_entry_with_id(sid, tindex=None):
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
         node, entry = get_entry(node_id)
-	# in order to fill lims data, we execute first the parent (group_id missing)
-	parent_id = node.get_parent()._node_id
-	
+        # in order to fill lims data, we execute first the parent (group_id missing)
+        parent_id = node.get_parent()._node_id
+
         node, entry = get_entry(parent_id)
 
         mxcube.queue.queue_hwobj._running = True
