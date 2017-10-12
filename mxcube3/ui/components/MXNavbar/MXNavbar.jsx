@@ -12,7 +12,7 @@ export default class MXNavbar extends React.Component {
   }
 
   findProposal(prop) {
-    return `${prop.code}${prop.number}` === this.props.selectedProposal;
+    return `${prop.Proposal.code}${prop.Proposal.number}` === this.props.selectedProposal;
   }
 
   render() {
@@ -20,7 +20,7 @@ export default class MXNavbar extends React.Component {
     const proposal = this.props.userInfo.proposalList ?
         this.props.userInfo.proposalList.find(this.findProposal) : '';
     const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
-        `Proposal: ${proposal.number}` : '');
+        `Proposal: ${proposal.Proposal.number}` : '');
 
     document.title = `MxCuBE-3 ${propInfo}`;
 

@@ -105,6 +105,7 @@ export function signIn(proposal, password) {
         dispatch(getLoginInfo()).then(response => response).then((resp) => {
           if (resp.loginType === 'User') {
             dispatch(showProposalsForm());
+            // browserHistory.push('/');
           } else {
             dispatch(selectProposal(proposal));
             browserHistory.push('/');
