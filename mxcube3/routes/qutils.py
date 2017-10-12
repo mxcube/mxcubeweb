@@ -228,6 +228,7 @@ def get_queue_state():
             "centringMethod": mxcube.CENTRING_METHOD,
             "autoMountNext": get_auto_mount_sample(),
             "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
+            "numSnapshots": mxcube.NUM_SNAPSHOTS,
             "queue": queue,
             "queueStatus": queue_exec_state() }
 
@@ -775,14 +776,6 @@ def add_sample(sample_id, item):
     :param str sample_id: Sample id (often sample changer location)
     :returns: SampleQueueEntry
     """
-    # Is the sample with location sample_id already in the queue,
-    # in that case, send error response
-
-#    for sampleId, sampleData in queue_to_dict().iteritems():
-#        if sampleId == sample_id:
-#            msg = "[QUEUE] sample could not be added, already in the queue"
-#            raise Exception(msg)
-
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)
 
@@ -842,6 +835,8 @@ def set_dc_params(model, entry, task_data, sample_model):
                                 params.get('subdir', ''))
     acq.path_template.process_directory = process_path
 
+    # TODO, Please remove this ad-hoc definition
+    #
     # MXCuBE3 specific shape attribute
     model.shape = params["shape"]
 
@@ -1272,7 +1267,13 @@ def add_interleaved(node_id, task):
         wc = wc + 1
         dc_model, dc_entry = _create_dc(wedge)
         set_dc_params(dc_model, dc_entry, wedge, sample_model)
+
+        # Add wedge prefix to path
         dc_model.acquisitions[0].path_template.wedge_prefix = "wedge-%s" % wc
+
+        # Disable snapshots for sub-wedges
+        dc_model.acquisitions[0].acquisition_parameters.take_snapshots = False
+
         mxcube.queue.add_child(group_model, dc_model)
         group_entry.enqueue(dc_entry)
 

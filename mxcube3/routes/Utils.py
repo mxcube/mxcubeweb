@@ -182,11 +182,11 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
         diffractometer = self.diffractometer()
         move_omega_relative = diffractometer.phiMotor.syncMoveRelative
 
-    number_of_snapshots = dc_params.get("take_snapshots", 4)
-    if number_of_snapshots == True:
-        # backward compatibility
-        number_of_snapshots = 4 
-  
+    if dc_params["acquisitions"][0]["acquisition_parameters"]["take_snapshots"]:
+        number_of_snapshots = mxcube.NUM_SNAPSHOTS
+    else:
+        number_of_snapshots = 0
+
     if number_of_snapshots > 0:
         snapshot_directory = dc_params["fileinfo"]["archive_directory"]
         if not os.path.exists(snapshot_directory):
@@ -196,7 +196,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 logging.getLogger("HWR").exception("Collection: Error creating snapshot directory")
 
         logging.getLogger("user_level_log").info(\
-                 "Collection: Taking %d sample snapshot(s)" % number_of_snapshots)
+                 "[COLLECT]: Taking %d sample snapshot(s)" % number_of_snapshots)
 
         for snapshot_index in range(number_of_snapshots):
             snapshot_filename = os.path.join(\
