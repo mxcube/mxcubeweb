@@ -72,6 +72,7 @@ def centring_update_current_point(motor_positions, x, y):
         point = mxcube.shapes.\
                 add_shape_from_mpos([motor_positions], (x, y), "P")
         point.state = "TMP"
+        point.selected = True
         CENTRING_POINT_ID = point.id
 
     signals.send_shapes(update_positions = False)
@@ -336,49 +337,59 @@ def update_shapes():
     """
     resp = Response(status=409)
     params = request.get_json()
-    shape_data = from_camel(params.get("shapeData", {}))
-    pos = []
+    shapes = params.get("shapes", [])
+    updated_shapes = []
+    
+    for s in shapes:
+        shape_data = from_camel(s);
+        pos = []
+    
+        # Get the shape if already exists
+        shape = mxcube.shapes.get_shape(shape_data.get("id", -1))
+        
+        # If shape does not exist add it
+        if not shape:
+            refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
 
-    # Get the shape if already exists
-    shape = mxcube.shapes.get_shape(params["id"])
+            # Store pixels per mm for third party software, to facilitate
+            # certain calculations
 
-    # If shape does not exist add it
-    if not shape:
-        refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
+            beam_info_dict = beam_info_dict = beamlineutils.get_beam_info()
 
-        # Store pixels per mm for third party software, to facilitate
-        # certain calculations
+            shape_data["pixels_per_mm"] = mxcube.diffractometer.get_pixels_per_mm()
+            shape_data["beam_pos"] = (beam_info_dict.get("position")[0],
+                                      beam_info_dict.get("position")[1])
 
-        beam_info_dict = beam_info_dict = beamlineutils.get_beam_info()
-       
-        shape_data["pixels_per_mm"] = mxcube.diffractometer.get_pixels_per_mm()
-        shape_data["beam_pos"] = (beam_info_dict.get("position")[0],
-                                  beam_info_dict.get("position")[1])
+            # Shape does not have any refs, create a new Centered position
+            if not refs:
+                x, y = shape_data["screen_coord"]
+                mpos = mxcube.diffractometer.\
+                       get_centred_point_from_coord(x, y, return_by_names=True)
+                pos.append(mpos)
 
-        # Shape does not have any refs, create a new Centered position
-        if not refs:
-            x, y = shape_data["screen_coord"]
-            mpos = mxcube.diffractometer.\
-                   get_centred_point_from_coord(x, y, return_by_names=True)
-            pos.append(mpos)
-            # We also store the center of the grid
-            if t == 'G':
-                # coords for the center of the grid
-                x_c = x + (shape_data['num_cols'] / 2.0) * shape_data['cell_width']
-                y_c = y + (shape_data['num_rows'] / 2.0) * shape_data['cell_height']
-                center_positions = mxcube.diffractometer.get_centred_point_from_coord(x_c, y_c, return_by_names=True)
-                pos.append(center_positions)
-            shape = mxcube.shapes.add_shape_from_mpos(pos, (x, y), t)
-        else:
-            shape = mxcube.shapes.add_shape_from_refs(refs, t)
+                # We also store the center of the grid
+                if t == 'G':
+                    # coords for the center of the grid
+                    x_c = x + (shape_data['num_cols'] / 2.0) * shape_data['cell_width']
+                    y_c = y + (shape_data['num_rows'] / 2.0) * shape_data['cell_height']
+                    center_positions = mxcube.diffractometer.\
+                        get_centred_point_from_coord(x_c, y_c, return_by_names=True)
+                    pos.append(center_positions)
 
-    # shape will be none if creation failed, so we check if shape exists
-    # before setting additional parameters
-    if shape:
-        shape.update_from_dict(shape_data)
-        shape_dict = shape.as_dict()
-        resp = jsonify(to_camel(shape_dict))
-        resp.status_code = 200
+                shape = mxcube.shapes.add_shape_from_mpos(pos, (x, y), t)
+
+            else:
+                shape = mxcube.shapes.add_shape_from_refs(refs, t)
+
+        # shape will be none if creation failed, so we check if shape exists
+        # before setting additional parameters
+        if shape:
+            shape.update_from_dict(shape_data)
+            shape_dict = to_camel(shape.as_dict())
+            updated_shapes.append(shape_dict)
+
+    resp = jsonify({"shapes": updated_shapes})
+    resp.status_code = 200
 
     return resp
 

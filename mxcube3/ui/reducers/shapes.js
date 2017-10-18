@@ -6,7 +6,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'UPDATE_SHAPE_POSITION':
+    case 'SET_SHAPES':
       {
         return { ...state, shapes: action.shapes };
       }
@@ -16,7 +16,13 @@ export default (state = initialState, action) => {
       }
     case 'UPDATE_SHAPE':
       {
-        return { ...state, shapes: { ...state.shapes, [action.shape.id]: action.shape } };
+        const shapes = { ...state.shapes };
+
+        action.shapes.forEach((shape) => {
+          shapes[shape.id] = shape;
+        });
+
+        return { ...state, shapes };
       }
     case 'DELETE_SHAPE':
       {

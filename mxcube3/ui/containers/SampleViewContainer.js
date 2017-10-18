@@ -20,6 +20,7 @@ class SampleViewContainer extends Component {
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleID = this.props.current.sampleID;
     const [points, lines, grids] = [{}, {}, {}];
+    const selectedGrids = [];
 
     Object.keys(this.props.shapes).forEach((key) => {
       const shape = this.props.shapes[key];
@@ -29,6 +30,10 @@ class SampleViewContainer extends Component {
         lines[shape.id] = shape;
       } else if (shape.t === 'G') {
         grids[shape.id] = shape;
+
+        if (shape.selected) {
+          selectedGrids.push(shape);
+        }
       }
     });
     const phaseControl = (
@@ -92,9 +97,11 @@ class SampleViewContainer extends Component {
                   {...this.props.sampleViewState}
                   {...this.props.beamline}
                   contextMenuVisible={this.props.contextMenu.show}
+                  shapes={this.props.shapes}
                   points={points}
                   lines={lines}
                   grids={grids}
+                  selectedGrids={selectedGrids}
                   cellCounting={this.props.cellCounting}
                   cellSpacing={this.props.cellSpacing}
                   current={this.props.current}
