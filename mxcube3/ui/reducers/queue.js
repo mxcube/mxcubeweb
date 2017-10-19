@@ -7,8 +7,8 @@ const initialState = {
   queueStatus: QUEUE_STOPPED,
   autoMountNext: false,
   autoAddDiffPlan: true,
-  centringMethod: null,
-  numSnapshots: CLICK_CENTRING,
+  centringMethod: CLICK_CENTRING,
+  numSnapshots: 4
 };
 
 export default (state = initialState, action) => {
@@ -92,6 +92,7 @@ export default (state = initialState, action) => {
           queue: Object.keys(action.data.queue.queue),
           autoMountNext: action.data.queue.autoMountNext,
           autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
+          numSnapshots: action.data.queue.numSnapshots,
           centringMethod: action.data.queue.centringMethod,
           current: { sampleID: action.data.queue.loaded,
                      running: action.data.queue.queueStatus }
