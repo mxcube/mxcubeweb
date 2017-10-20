@@ -33,7 +33,8 @@ import {
 import {
   sendClearQueue,
   deleteSamplesFromQueue,
-  addSamplesToQueue
+  addSamplesToQueue,
+  sendStopQueue
 } from '../actions/queue';
 
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -392,7 +393,7 @@ class SampleGridViewContainer extends React.Component {
 
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       button = (
-        <Button className="btn btn-danger pull-right" >
+        <Button className="btn btn-danger pull-right" onClick={this.props.sendStopQueue}>
           <b> Stop queue </b>
         </Button>);
     }
@@ -633,6 +634,7 @@ function mapDispatchToProps(dispatch) {
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
+    sendStopQueue: () => dispatch(sendStopQueue()),
     confirmClearQueueShow: bindActionCreators(showConfirmClearQueueDialog, dispatch),
     confirmClearQueueHide:
       bindActionCreators(showConfirmClearQueueDialog.bind(this, false), dispatch),
