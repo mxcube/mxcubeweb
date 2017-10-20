@@ -118,18 +118,24 @@ export class CollapsableRows extends React.Component {
       { this.state.collapsed ? '' : this.props.children }
       <Row>
         <Col xs={12}>
-          { this.state.collapsed ?
-            <Button bsStyle="link" className="pull-right"
-              onClick={() => {this.setState({ collapsed: false });}}
-            >
-               Show more
-            </Button> :
-            <Button bsStyle="link" className="pull-right"
-              onClick={() => {this.setState({ collapsed: true });}}
-            >
-               Show less
-            </Button>
-         }
+          <center>
+            { this.state.collapsed ?
+              <Button bsStyle="link"
+                onClick={() => {this.setState({ collapsed: false });}}
+              >
+                <a>
+                  <i className="glyphicon glyphicon-option-horizontal" aria-hidden="true"></i>
+                </a>
+              </Button> :
+              <Button bsStyle="link"
+                onClick={() => {this.setState({ collapsed: true });}}
+              >
+                <a>
+                  <i className="glyphicon glyphicon-option-vertical" aria-hidden="true"></i>
+                </a>
+              </Button>
+            }
+          </center>
         </Col>
       </Row>
     </div>);
