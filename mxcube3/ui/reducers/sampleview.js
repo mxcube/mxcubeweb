@@ -33,9 +33,9 @@ const initialState = {
   cinema: false,
   phaseList: [],
   drawGrid: false,
-  selectedGrids: [],
   showMessageOverlay: true,
-  savedPointId: ''
+  savedPointId: '',
+  selectedShapes: []
 };
 
 export default (state = initialState, action) => {
@@ -74,10 +74,6 @@ export default (state = initialState, action) => {
         if (!state.drawGrid) { selectedGrids = []; }
 
         return { ...state, drawGrid: !state.drawGrid, selectedGrids };
-      }
-    case 'SELECT_GRID':
-      {
-        return { ...state, selectedGrids: [action.id] };
       }
     case 'MEASURE_DISTANCE':
       {
@@ -151,9 +147,25 @@ export default (state = initialState, action) => {
       {
         return { ...state, centringMethod: action.centringMethod };
       }
-    case 'SAVE_POINT_ID':
+    case 'UPDATE_SHAPES':
       {
-        return { ...state, savedPointId: action.id };
+        let selectedShapes = [...state.selectedShapes];
+
+        action.shapes.forEach((shape) => {
+          // Shape was selected, or shape was de-selected, add or remove to selectedShapes
+          if (shape.selected && !state.selectedShapes.includes(shape.id)) {
+            selectedShapes.push(shape.id);
+          } else if (!shape.selected && state.selectedShapes.includes(shape.id)) {
+            selectedShapes = state.selectedShapes.filter((id) => (id !== shape.id));
+          }
+        });
+
+        return { ...state, selectedShapes };
+      }
+    case 'DELETE_SHAPE':
+      {
+        const selectedShapes = state.selectedShapes.filter((id) => (id === action.id));
+        return { ...state, selectedShapes };
       }
     case 'CLEAR_ALL':
       {

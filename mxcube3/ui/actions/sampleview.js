@@ -85,22 +85,15 @@ export function addCentringPoint(x, y) {
   };
 }
 
-
 export function addShape(shape) {
   return {
     type: 'ADD_SHAPE', shape
   };
 }
 
-export function savePointId(id) {
+export function updateShapes(shapes) {
   return {
-    type: 'SAVE_POINT_ID', id
-  };
-}
-
-export function updateShape(shape) {
-  return {
-    type: 'UPDATE_SHAPE', shape
+    type: 'UPDATE_SHAPES', shapes
   };
 }
 
@@ -172,9 +165,9 @@ export function updateMotorState(name, value) {
   };
 }
 
-export function updateShapes(shapes) {
+export function setShapes(shapes) {
   return {
-    type: 'UPDATE_SHAPE_POSITION', shapes
+    type: 'SET_SHAPES', shapes
   };
 }
 
@@ -194,10 +187,6 @@ export function toggleDrawGrid() {
 
 export function addGridAction(gridData) {
   return { type: 'ADD_GRID', gridData };
-}
-
-export function selectGrid(id) {
-  return { type: 'SELECT_GRID', id };
 }
 
 export function centringClicksLeft(clicksLeft) {
@@ -311,22 +300,22 @@ export function sendAddShape(shapeData = {}, successCb = null) {
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ id: -1, shapeData })
+      body: JSON.stringify({ shapes: [shapeData] })
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to add shape');
       }
       return response.json();
     }).then((json) => {
-      dispatch(addShape(json));
+      dispatch(addShape(json.shapes[0]));
       if (successCb !== null) {
-        successCb(json);
+        successCb(json.shapes[0]);
       }
     });
   };
 }
 
-export function sendUpdateShape(id, shapeData) {
+export function sendUpdateShapes(shapes) {
   return function (dispatch) {
     fetch('/mxcube/api/v0.1/sampleview/shapes', {
       method: 'POST',
@@ -335,14 +324,14 @@ export function sendUpdateShape(id, shapeData) {
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ id, shapeData })
+      body: JSON.stringify({ shapes })
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to update shape');
       }
       return response.json();
     }).then((json) => {
-      dispatch(updateShape(json));
+      dispatch(updateShapes(json.shapes));
     });
   };
 }

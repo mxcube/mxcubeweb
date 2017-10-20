@@ -34,10 +34,10 @@ export function makeElipse(posX, posY, sizeX, sizeY, color) {
   });
 }
 
-export function makeCircle(x, y, selectable, radius, color, id, type, text) {
+export function makeCircle(x, y, selectable, radius, color, id, type, text, strokeWidth) {
   return new fabric.Circle({
     radius,
-    strokeWidth: 2,
+    strokeWidth,
     stroke: color,
     fill: '',
     left: x,
@@ -55,6 +55,7 @@ export function makeCircle(x, y, selectable, radius, color, id, type, text) {
     hasRotatingPoint: false,
     defaultColor: color,
     hasControls: false,
+    hasBorders: false,
     id,
     text
   });
@@ -77,6 +78,8 @@ export function makeLine(x1, y1, x2, y2, col, wid, select, id, hover = 'crosshai
     type,
     selectable: select,
     hoverCursor: hover,
+    hasControls: false,
+    hasBorders: false,
     id,
     text
   });
@@ -85,8 +88,8 @@ export function makeLine(x1, y1, x2, y2, col, wid, select, id, hover = 'crosshai
 export function makeArrow(line, col, select, id, hover = 'crosshair') {
   const dist = Math.sqrt((line.x1 - line.x2) ** 2 + (line.y1 - line.y2) ** 2);
   const angledeg = Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180 / Math.PI;
-  const deltaX = dist * 0.8 * Math.cos(angledeg * Math.PI / 180);
-  const deltaY = dist * 0.8 * Math.sin(angledeg * Math.PI / 180);
+  const deltaX = dist * 0.99 * Math.cos(angledeg * Math.PI / 180);
+  const deltaY = dist * 0.99 * Math.sin(angledeg * Math.PI / 180);
   return new fabric.Triangle({
     left: line.get('x1') - deltaX,
     top: line.get('y1') - deltaY,
@@ -102,9 +105,32 @@ export function makeArrow(line, col, select, id, hover = 'crosshair') {
     hasRotatingPoint: false,
     pointType: 'arrow_start',
     angle: angledeg - 90,
-    width: 10,
-    height: 15,
-    hoverCursor: hover,
+    width: 7,
+    height: 10,
+    hoverCursor: hover
+  });
+}
+
+export function makeAnchor(line, col, select, id, hover = 'crosshair') {
+  const angledeg = Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180 / Math.PI;
+  return new fabric.Rect({
+    left: line.get('x1'),
+    top: line.get('y1'),
+    fill: col,
+    stroke: col,
+    defaultColor: col,
+    originX: 'center',
+    originY: 'center',
+    hasBorders: false,
+    hasControls: false,
+    lockScalingX: true,
+    lockScalingY: true,
+    hasRotatingPoint: false,
+    pointType: 'arrow_start',
+    angle: angledeg - 90,
+    width: 7,
+    height: 2,
+    hoverCursor: hover
   });
 }
 
@@ -117,7 +143,8 @@ export function makeText(x, y, fontSize, color, text) {
     left: x,
     top: y,
     selectable: false,
-    hoverCursor: 'crosshair'
+    hoverCursor: 'crosshair',
+    hasBorders: false
   });
 }
 
@@ -156,9 +183,9 @@ export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   ];
 }
 
-export function makePoint(x, y, id, color, type, name) {
+export function makePoint(x, y, id, color, type, name, strokeWidth) {
   const text = makeText(x + 10, y - 25, 14, color, name);
-  const circle = makeCircle(x, y, true, 10, color, id, type, text);
+  const circle = makeCircle(x, y, true, 10, color, id, type, text, strokeWidth);
   return [circle, text];
 }
 
@@ -175,9 +202,10 @@ export function makePoints(points, imageRatio) {
               x / imageRatio,
               y / imageRatio,
               id,
-              '#e4ff09',
+              points[id].selected ? '#88ff5b' : '#e4ff09',
               'SAVED',
-              points[id].name
+              points[id].name,
+              points[id].selected ? 3 : 2
             )
           );
           break;
@@ -189,7 +217,8 @@ export function makePoints(points, imageRatio) {
               id,
               'white',
               'TMP',
-              points[id].name
+              points[id].name,
+              points[id].selected ? 3 : 2
             )
           );
           break;
@@ -205,10 +234,12 @@ export function pointLine(x1, y1, x2, y2, color, width, selectable, id, name, cu
   const text = makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, name);
   const line = makeLine(x1, y1, x2, y2, color, width, selectable, id, cursor, text, 'LINE');
   const arrow = makeArrow(line, color, selectable, id);
+  const anchor = makeAnchor(line, color, selectable, id);
   return [
     text,
     line,
-    arrow
+    arrow,
+    anchor
   ];
 }
 
@@ -223,8 +254,8 @@ export function makeLines(lines, imageRatio) {
       y1 / imageRatio,
       x2 / imageRatio,
       y2 / imageRatio,
-      'yellow',
-      3,
+      line.selected ? '#88ff5b' : '#e4ff09',
+      line.selected ? 3 : 2,
       true,
       id,
       line.name,

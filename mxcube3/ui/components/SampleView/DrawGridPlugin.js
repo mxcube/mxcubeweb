@@ -26,9 +26,8 @@ function _GridData() {
            cellWidth: null, cellHeight: null,
            cellVSpace: 0, cellHSpace: 0,
            numCols: null, numRows: null,
-           label: 'Grid', cellCountFun: null,
-           selected: false, id: null,
-           result: null };
+           cellCountFun: null, selected: false,
+           id: null, result: null };
 }
 
 
@@ -353,8 +352,8 @@ export default class DrawGridPlugin {
       hoverCursor: 'pointer'
     }));
 
-    if (gridData.label) {
-      shapes.push(new fabric.Text(gridData.label, {
+    if (gridData.name) {
+      shapes.push(new fabric.Text(gridData.name, {
         left: left + gridData.width / imageRatio,
         top: top - 20,
         fill: color,

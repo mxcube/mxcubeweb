@@ -9,6 +9,8 @@ const jsmpeg = require('./jsmpeg.min.js');
 
 import 'fabric';
 const fabric = window.fabric;
+fabric.Group.prototype.hasControls = false;
+fabric.Group.prototype.hasBorders = false;
 
 export default class SampleImage extends React.Component {
 
@@ -17,7 +19,6 @@ export default class SampleImage extends React.Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.setImageRatio = this.setImageRatio.bind(this);
-    this.setColorPoint = this.setColorPoint.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.keyUp = this.keyUp.bind(this);
     this.setHCellSpacing = this.setHCellSpacing.bind(this);
@@ -31,6 +32,11 @@ export default class SampleImage extends React.Component {
     this.initJSMpeg = this.initJSMpeg.bind(this);
     this.getGridForm = this.getGridForm.bind(this);
     this.centringMessage = this.centringMessage.bind(this);
+    this.selectShape = this.selectShape.bind(this);
+    this.deSelectShape = this.deSelectShape.bind(this);
+    this.clearSelection = this.clearSelection.bind(this);
+    this.selectShapeEvent = this.selectShapeEvent.bind(this);
+    this.clearSelectionEvent = this.clearSelectionEvent.bind(this);
     this.canvas = {};
     this._keyPressed = null;
     this.gridStarted = false;
@@ -50,12 +56,10 @@ export default class SampleImage extends React.Component {
     this.canvas.on('mouse:move', (options) => this.onMouseMove(options));
     this.canvas.on('mouse:up', (options) => this.onMouseUp(options));
 
-    // Render color of points
-    this.canvas.on('before:selection:cleared', (o) => this.setColorPoint(o, false));
-    this.canvas.on('object:selected', (o) => this.setColorPoint(o, true));
-    this.canvas.on('selection:cleared', (o) => this.setColorPoint(o, false));
+    this.canvas.on('selection:created', (e) => this.selectShapeEvent(e));
+    this.canvas.on('selection:cleared', (e) => this.clearSelectionEvent(e));
 
-    // Bind rigthclick to function manually with javascript
+    // Bind rigth click to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
     imageOverlay.addEventListener('contextmenu', (e) => this.rightClick(e), false);
     // Bind mouse scroll up/down to function manually with javascript
@@ -126,49 +130,6 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin.endDrawing(null, this.canvas);
   }
 
-  setColorPoint(o, selection) {
-    let myP = '';
-    if (o.e !== undefined && o.target !== undefined) {
-      myP = o.target.id !== undefined ? o.target.id : '';
-      if (myP.startsWith('P')) {
-        this.props.sampleActions.savePointId(myP);
-      }
-    }
-
-    const shape = o.target;
-    if (shape && shape.type === 'group') {
-      shape.hasBorders = false;
-      shape.hasControls = false;
-      shape.forEachObject((p) => {
-        const point = p;
-        if (point.type === 'SAVED' || point.type === 'LINE') {
-          const color = selection ? '#88ff5b' : point.defaultColor;
-          const width = selection ? 4 : 2;
-          point.stroke = color;
-          point.text.stroke = color;
-          point.text.fill = color;
-          point.strokeWidth = width;
-        }
-      });
-    } else if (shape && shape.text) {
-      this.canvas.getObjects('SAVED').concat(
-      this.canvas.getObjects('LINE')).forEach((p) => {
-        const point = p;
-        const color = point.active ? '#88ff5b' : point.defaultColor;
-        const width = point.active ? 4 : 2;
-        point.stroke = color;
-        point.text.stroke = color;
-        point.text.fill = color;
-        point.hasControls = false;
-        point.strokeWidth = width;
-      });
-    } else if (shape && shape.type === 'GridGroup') {
-      if (shape.id !== null) {
-        this.props.sampleActions.selectGrid(shape.id);
-      }
-    }
-  }
-
   setImageRatio() {
     if (this.props.autoScale) {
       const clientWidth = document.getElementById('outsideWrapper').clientWidth;
@@ -235,8 +196,8 @@ export default class SampleImage extends React.Component {
 
     if (gridData) {
       const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, value);
-      this.props.sampleActions.sendUpdateShape(gd.id, gd);
-    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      this.props.sampleActions.sendUpdateShapes([gd]);
+    } else if (this.selectedGrid() === null && this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(null, value);
       this.drawGridPlugin.repaint(this.canvas);
     }
@@ -250,8 +211,8 @@ export default class SampleImage extends React.Component {
 
     if (gridData) {
       const gd = this.drawGridPlugin.setCellSpace(gridData, true, value, gridData.cellVSpace);
-      this.props.sampleActions.sendUpdateShape(gd.id, gd);
-    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+      this.props.sampleActions.sendUpdateShapes([gd]);
+    } else if (this.selectedGrid() === null && this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(value, null);
       this.drawGridPlugin.repaint(this.canvas);
     }
@@ -267,18 +228,18 @@ export default class SampleImage extends React.Component {
       this.drawGridPlugin.repaint(this.canvas);
       // Note: I am missing sth, next line needed for update the state and triggering
       // the component rendering, this.props.sampleActions.setOverlay alone not doing that
-      this.props.sampleActions.updateShape(gd);
+      this.props.sampleActions.updateShapes([gd]);
     }
   }
 
   getGridOverlay() {
     let overlay = 1.0;
-    if (this.props.selectedGrids.length === 1) {
+    if (this.selectedGrid() !== null) {
       const gridData = this.selectedGrid();
       if (gridData) {
         overlay = gridData.overlayLevel;
       }
-    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+    } else if (this.selectedGrid() === null && this.props.drawGrid) {
       overlay = 1;
     }
 
@@ -290,14 +251,14 @@ export default class SampleImage extends React.Component {
     let vSpace = 0;
     let hSpace = 0;
 
-    if (this.props.selectedGrids.length === 1) {
-      const gridData = this.props.grids[this.props.selectedGrids[0]];
+    if (this.selectedGrid() !== null) {
+      const gridData = this.props.grids[this.selectedGrid()];
 
       if (gridData) {
         vSpace = gridData.cellVSpace;
         hSpace = gridData.cellHSpace;
       }
-    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+    } else if (this.selectedGrid() === null && this.props.drawGrid) {
       vSpace = this.drawGridPlugin.currentGridData().cellVSpace;
       hSpace = this.drawGridPlugin.currentGridData().cellHSpace;
     }
@@ -306,13 +267,7 @@ export default class SampleImage extends React.Component {
   }
 
   selectedGrid() {
-    let gridData = null;
-
-    if (this.props.selectedGrids.length === 1) {
-      gridData = this.props.grids[this.props.selectedGrids[0]];
-    }
-
-    return gridData;
+    return this.props.selectedGrids[0];
   }
 
   keyDown(event) {
@@ -357,37 +312,19 @@ export default class SampleImage extends React.Component {
 
 
   rightClick(e) {
-    const group = this.canvas.getActiveGroup();
-    const { sampleActions } = this.props;
-    const { showContextMenu } = sampleActions;
-    let objectFound = false;
-    const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
     e.preventDefault();
 
-    this.canvas.forEachObject((obj) => {
-      if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
-        objectFound = true;
-        this.canvas.setActiveObject(obj);
+    const { sampleActions } = this.props;
+    const { showContextMenu } = sampleActions;
 
-        if (obj.type === 'GridGroup') {
-          let gridData = this.props.grids[this.props.selectedGrids[0]];
+    const group = this.canvas.getActiveGroup();
+    const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
+    let ctxMenuObj = { type: 'NONE' };
+    let objectFound = false;
 
-          if (gridData) {
-            showContextMenu(true, { type: 'GridGroupSaved', gridData, id: gridData.id },
-                            e.offsetX, e.offsetY);
-          } else {
-            gridData = this.drawGridPlugin.currentGridData();
-            showContextMenu(true, { type: 'GridGroup', gridData, id: obj.id },
-                            e.offsetX, e.offsetY);
-          }
-        } else {
-          showContextMenu(true, obj, obj.left, obj.top);
-        }
-      }
-    });
-
+    // Existing selection clicked
     if (group && group.containsPoint(clickPoint)) {
-      const points = group.getObjects();
+      const shapes = group.getObjects();
       this.canvas.discardActiveGroup();
 
       group.getObjects().forEach((obj) => {
@@ -397,71 +334,85 @@ export default class SampleImage extends React.Component {
       });
 
       if (objectFound) {
-        group.getObjects().forEach((obj) => {
-          const shape = obj;
-          shape.active = true;
-        });
-        this.canvas.setActiveGroup(
-          new fabric.Group(
-            group.getObjects(),
-            { originX: 'center',
-            originY: 'center' }
-        ));
+        const pointList = shapes.filter((shape) => (
+          this.props.points[shape.id] !== undefined)).map((shape) => (shape.id));
 
-        const pointList = {};
-        points.map((point, index) => {
-          pointList[`p${index + 1}`] = point.id;
-          return pointList;
-        });
+        const gridList = shapes.filter((shape) => (
+          this.props.grids[shape.id] !== undefined)).map((shape) => (shape.id));
 
-        if (points.length === 2) {
-          showContextMenu(true, {
-            type: 'HELICAL',
-            id: pointList
-          },
-            e.offsetX, e.offsetY);
-        } else {
-          showContextMenu(true, {
-            type: 'GROUP',
-            id: pointList
-          },
-            e.offsetX, e.offsetY);
+        const lineList = shapes.filter((shape) => (
+          this.props.lines[shape.id] !== undefined)).map((shape) => (shape.id));
+
+        if (pointList.length === 2) {
+          ctxMenuObj = { type: 'HELICAL', id: this.props.selectedShapes };
+        } else if (pointList.length === 1 && this.props.points[pointList[0]].state === 'SAVED') {
+          ctxMenuObj = { type: 'SAVED', id: pointList };
+        } else if (pointList.length === 1 && this.props.points[pointList[0]].state === 'TMP') {
+          ctxMenuObj = { type: 'TMP', id: pointList };
+        } else if (pointList.length > 2) {
+          ctxMenuObj = { type: 'GROUP', id: pointList };
+        } else if (gridList.length === 1) {
+          ctxMenuObj = { type: 'GridGroupSaved', gridData: gridList[0], id: gridList[0].id };
+        } else if (lineList.length !== 0) {
+          ctxMenuObj = { type: 'LINE', id: lineList };
         }
       }
+    } else {
+      // One or several individual objects clicked
+      this.canvas.forEachObject((obj) => {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+          objectFound = true;
+
+          this.selectShape([obj], false);
+
+          if (obj.type === 'GridGroup') {
+            let gridData = this.props.grids[obj.id];
+
+            if (gridData) {
+              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
+            } else {
+              gridData = this.drawGridPlugin.currentGridData();
+              ctxMenuObj = { type: 'GridGroup', gridData, id: obj.id };
+            }
+          } else {
+            ctxMenuObj = obj;
+          }
+        }
+      });
     }
 
     if (!objectFound) {
       this.canvas.discardActiveGroup();
-      showContextMenu(true, { type: 'NONE' }, e.offsetX, e.offsetY);
     }
+
+    showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);
   }
 
   leftClick(option) {
-    this.canvas.discardActiveGroup();
     let objectFound = false;
 
     if (option.target && option.target.type === 'group') {
+      const group = this.canvas.getActiveGroup();
       const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
 
-      option.target.getObjects().forEach((obj) => {
+      // Important to call this for containsPoint to work properly
+      this.canvas.discardActiveGroup();
+
+      group.getObjects().forEach((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
-          objectFound = true;
+          objectFound = obj;
+        } else {
+          this.deSelectShape([obj], option.e.ctrlKey);
         }
       });
+    } else if (option.target) {
+      objectFound = option.target;
     }
 
-    if (objectFound) {
-      option.target.getObjects().forEach((obj) => {
-        const shape = obj;
-        shape.active = true;
-      });
-
-      this.canvas.setActiveGroup(
-        new fabric.Group(
-          option.target.getObjects(),
-          { originX: 'center',
-          originY: 'center' }
-      ));
+    if (!objectFound) {
+      this.clearSelection();
+    } else {
+      this.selectShape([objectFound], option.e.ctrlKey);
     }
 
     const {
@@ -551,7 +502,7 @@ export default class SampleImage extends React.Component {
     if (gridData) {
       left = gridData.screenCoord[0] / this.props.imageRatio;
       top = gridData.screenCoord[1] / this.props.imageRatio;
-    } else if (this.props.selectedGrids.length === 0 && this.props.drawGrid) {
+    } else if (this.selectedGrid() === null && this.props.drawGrid) {
       left = this.drawGridPlugin.currentGridData().left;
       top = this.drawGridPlugin.currentGridData().top;
     }
@@ -562,6 +513,87 @@ export default class SampleImage extends React.Component {
       gridForm.style.display = 'block';
     } else {
       this.hideGridForm();
+    }
+  }
+
+  selectShape(shapes, include) {
+    const updatedShapes = [];
+    // Single selection if shapes are NOT to be included,
+    // i.e. CTRL key not pressed
+    if (!include) {
+      this.clearSelection();
+    }
+
+    shapes.forEach((s) => {
+      const shapeData = this.props.shapes[s.id];
+      const shape = s;
+
+      if (shapeData && include) {
+        shape.active = !shapeData.selected;
+        shapeData.selected = !shapeData.selected;
+        updatedShapes.push(shapeData);
+      } else if (shapeData && !shapeData.selected) {
+        shape.active = true;
+        shapeData.selected = true;
+        updatedShapes.push(shapeData);
+      }
+    });
+
+    if (updatedShapes.length > 0) {
+      this.props.sampleActions.sendUpdateShapes(updatedShapes);
+    }
+  }
+
+  deSelectShape(shapes, include) {
+    const updatedShapes = [];
+
+    shapes.forEach((s) => {
+      const shapeData = this.props.shapes[s.id];
+      const shape = s;
+
+      if (shapeData && shapeData.selected && !include) {
+        shape.active = false;
+        shapeData.selected = false;
+        updatedShapes.push(shapeData);
+      }
+    });
+
+    if (updatedShapes.length > 0) {
+      this.props.sampleActions.sendUpdateShapes(updatedShapes);
+    }
+  }
+
+  selectShapeEvent(options) {
+    let shapes = [];
+
+    if (options.e !== undefined && options.target.id === undefined) {
+      shapes = options.target.getObjects();
+      this.selectShape(shapes, options.e.ctrlKey);
+    }
+  }
+
+  clearSelection() {
+    const updatedShapes = [];
+
+    // Single selection if shapes are NOT to be included i.e control key is
+    // NOT pressed
+    Object.values(this.props.shapes).forEach((s) => {
+      if (s.selected) {
+        const shapeData = this.props.shapes[s.id];
+        shapeData.selected = false;
+        updatedShapes.push(shapeData);
+      }
+    });
+
+    if (updatedShapes.length > 0) {
+      this.props.sampleActions.sendUpdateShapes(updatedShapes);
+    }
+  }
+
+  clearSelectionEvent(options) {
+    // Single selection if control key is NOT pressed
+    if (options.e !== undefined && !options.e.ctrlKey) {
+      this.clearSelection();
     }
   }
 
@@ -649,6 +681,7 @@ export default class SampleImage extends React.Component {
       distancePoints,
       points,
       lines,
+      grids,
       pixelsPerMm
     } = nextProps;
     this.drawCanvas(imageRatio);
@@ -673,48 +706,49 @@ export default class SampleImage extends React.Component {
       ...makePoints(points, imageRatio),
       ...makeLines(lines, imageRatio)
     ];
+
+    // Grids already defined (drawn)
+    Object.values(grids).forEach((gd) => {
+      const gridData = { ...gd };
+      fabricSelectables.push(this.drawGridPlugin.shapeFromGridData(
+        gridData, imageRatio).shapeGroup);
+    });
+
+    // Grid beeing defined (being drawn)
+    if (this.drawGridPlugin.shapeGroup) {
+      fabricSelectables.push(this.drawGridPlugin.shapeGroup);
+    }
+
     this.canvas.add(...fabricSelectables);
+
+    // Handle fabric selection logic, create an active group with currently
+    // selected shapes, either selected through multiple selection or through
+    // single item selection
+    const aShapes = [];
+
     if (group) {
       const groupIDs = group.getObjects().map((shape) => shape.id);
-      const selectedShapes = [];
+
       fabricSelectables.forEach((obj) => {
         const shape = obj;
         if (groupIDs.includes(shape.id)) {
-          selectedShapes.push(shape);
+          aShapes.push(shape);
           shape.active = true;
         }
       });
-      this.canvas.setActiveGroup(
-        new fabric.Group(
-          selectedShapes,
-          {
-            originX: 'center',
-            originY: 'center'
-          })
-      );
     } else if (selection) {
-      fabricSelectables.forEach((shape) => {
-        if (shape.id === selection.id) {
-          this.canvas.setActiveObject(shape);
+      fabricSelectables.forEach((s) => {
+        const shape = s;
+        const shapeData = this.props.shapes[shape.id];
+
+        if (shapeData && shapeData.selected) {
+          shape.active = true;
+          aShapes.push(shape);
         }
       });
     }
 
-    if (this.drawGridPlugin.shapeGroup) {
-      this.canvas.add(this.drawGridPlugin.shapeGroup);
-    }
-
-    Object.values(this.props.grids).map((gd) => {
-      const gridData = { ...gd };
-      gridData.label = gd.name;
-
-      if (this.props.selectedGrids.includes(gridData.id)) {
-        gridData.selected = true;
-      }
-      return this.canvas.add(this.drawGridPlugin.shapeFromGridData(gridData,
-                                                                   this.props.imageRatio
-                                                                  ).shapeGroup);
-    });
+    this.canvas.setActiveGroup(new fabric.Group(aShapes, { originX: 'center', originY: 'center' }));
 
     this.canvas.renderAll();
   }

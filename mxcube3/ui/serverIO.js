@@ -1,12 +1,12 @@
 import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
 import {
-  updateShapes,
+  setShapes,
   saveMotorPosition,
   updateMotorState,
   setBeamInfo,
   startClickCentring,
-  updateShape,
+  updateShapes,
   setPixelsPerMm,
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
@@ -103,7 +103,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('update_shapes', (record) => {
-      this.dispatch(updateShapes(record.shapes));
+      this.dispatch(setShapes(record.shapes));
     });
 
     this.hwrSocket.on('update_pixels_per_mm', (record) => {
@@ -123,7 +123,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('grid_result_available', (data) => {
-      this.dispatch(updateShape(data.shape));
+      this.dispatch(updateShapes(data.shape));
     });
 
     this.hwrSocket.on('task', (record, callback) => {

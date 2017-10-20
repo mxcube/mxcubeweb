@@ -167,7 +167,6 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.stopClickCentring();
     this.props.sampleActions.sendAcceptCentring();
-    this.props.sampleActions.savePointId(this.props.shape.id);
   }
 
   goToPoint() {
@@ -216,17 +215,10 @@ export default class ContextMenu extends React.Component {
   }
 
   createLine() {
-    const { shape, savedPointId } = this.props;
-    if (savedPointId !== '') {
-      // we ensure the order of the line points
-      const p1 = shape.id.p1;
-      if (savedPointId !== p1) {
-        shape.id.p2 = p1;
-        shape.id.p1 = savedPointId;
-      }
-    }
+    const { shape } = this.props;
+
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendAddShape({ t: 'L', refs: [shape.id.p1, shape.id.p2] },
+    this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id },
       (s) => {this.showModal('Helical', {}, s);});
   }
 
