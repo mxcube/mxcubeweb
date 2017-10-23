@@ -91,6 +91,7 @@ class SampleViewContainer extends Component {
                   imageRatio={imageRatio}
                   workflows={this.props.workflows}
                   savedPointId={this.props.sampleViewState.savedPointId}
+                  groupFolder={this.props.groupFolder}
                 />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
@@ -124,6 +125,7 @@ function mapStateToProps(state) {
   return {
     sampleList: state.sampleGrid.sampleList,
     current: state.queue.current,
+    groupFolder: state.queue.groupFolder,
     queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,

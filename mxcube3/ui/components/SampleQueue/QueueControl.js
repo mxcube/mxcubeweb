@@ -5,6 +5,8 @@ import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED,
          AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../../constants';
 
 import NumSnapshotsDropDown from '../../containers/NumSnapshotsDropDown.jsx';
+import GroupFolderInput from '../../containers/GroupFolderInput.jsx';
+
 
 export default class QueueControl extends React.Component {
   constructor(props) {
@@ -116,7 +118,7 @@ export default class QueueControl extends React.Component {
       <div className="m-tree">
         <div className="list-head">
           <div className="pull-left">
-            <span style={{ marginRight: '0.5em' }}>
+            <span style={{ marginRight: '0.6em' }}>
               {queueOptions.map((option) => this.renderOptions(option))}
             </span>
             <span>
@@ -164,9 +166,16 @@ export default class QueueControl extends React.Component {
                   </Checkbox>
                 </span>
               </li>
+              <li role="separator" className="divider"></li>
               <li role="presentation">
                 <span role="menuitem">
                   <NumSnapshotsDropDown />
+                </span>
+              </li>
+              <li role="separator" className="divider"></li>
+              <li role="presentation">
+                <span role="menuitem">
+                  <GroupFolderInput />
                 </span>
               </li>
             </DropdownButton>

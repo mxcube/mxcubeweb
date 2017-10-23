@@ -229,6 +229,7 @@ def get_queue_state():
             "autoMountNext": get_auto_mount_sample(),
             "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
             "numSnapshots": mxcube.NUM_SNAPSHOTS,
+            "groupFolder": mxcube.session.get_group_name(),
             "queue": queue,
             "queueStatus": queue_exec_state() }
 

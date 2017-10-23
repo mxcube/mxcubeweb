@@ -1,3 +1,4 @@
+import re
 import json
 import logging
 import signals
@@ -602,9 +603,7 @@ def serialize():
 @mxcube.route("/mxcube/api/v0.1/queue/automount", methods=["POST"])
 def set_autmount():
     automount = request.get_json()
-
     qutils.set_auto_mount_sample(automount)
-
     resp = jsonify({'automount': automount})
     resp.status_code = 200
 
@@ -621,13 +620,42 @@ def set_num_snapshots():
     return resp
 
 
+@mxcube.route("/mxcube/api/v0.1/queue/group_folder", methods=["POST"])
+def set_group_folder():
+    data = request.get_json()
+
+    path = data.get('path','')
+
+    if path and path[0] in ["/", "."]:
+        path = path[1:]
+
+    if path and path[-1] != "/":
+        path += "/"
+
+    path = "".join([c for c in path if re.match(r"^[a-zA-Z0-9_/-]*$", c)])
+
+    mxcube.session.set_user_group(path)
+    root_path = mxcube.session.get_base_image_directory()
+    resp = jsonify({'path': path, 'rootPath': root_path});
+    resp.status_code = 200
+
+    return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/group_folder", methods=["GET"])
+def get_group_folder():
+    resp = jsonify({'path': mxcube.session.get_group_name()});
+    resp.status_code = 200
+
+    return resp
+
+
 @mxcube.route("/mxcube/api/v0.1/queue/auto_add_diffplan", methods=["POST"])
 def set_autoadd():
     autoadd = request.get_json()
     qutils.set_auto_add_diffplan(autoadd)
     resp = jsonify({'auto_add_diffplan': autoadd})
     resp.status_code = 200
-
     return resp
 
 

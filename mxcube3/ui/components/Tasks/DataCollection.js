@@ -40,7 +40,7 @@ class DataCollection extends React.Component {
       type: 'DataCollection',
       label: 'Data Collection',
       helical: false,
-      shape: this.props.pointID,
+      shape: this.props.pointID
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
