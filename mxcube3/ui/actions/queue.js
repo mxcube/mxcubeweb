@@ -39,6 +39,10 @@ export function setNumSnapshots(n) {
 }
 
 
+export function setGroupFolder(path) {
+  return { type: 'SET_GROUP_FOLDER', path };
+}
+
 export function addSamplesToQueueAction(samplesData) {
   return { type: 'ADD_SAMPLES_TO_QUEUE', samplesData };
 }
@@ -641,6 +645,26 @@ export function sendSetNumSnapshots(numSnapshots) {
       } else {
         dispatch(setNumSnapshots(numSnapshots));
       }
+    });
+  };
+}
+export function sendSetGroupFolder(path) {
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/queue/group_folder', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ path })
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error(`Server could not set group folder ${path}`);
+      }
+      return response.json();
+    }).then((response) => {
+      dispatch(setGroupFolder(response.path));
     });
   };
 }

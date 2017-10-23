@@ -8,7 +8,8 @@ const initialState = {
   autoMountNext: false,
   autoAddDiffPlan: true,
   centringMethod: CLICK_CENTRING,
-  numSnapshots: 4
+  numSnapshots: 4,
+  groupFolder: ''
 };
 
 export default (state = initialState, action) => {
@@ -76,6 +77,9 @@ export default (state = initialState, action) => {
     case 'SET_NUM_SNAPSHOTS': {
       return { ...state, numSnapshots: action.n };
     }
+    case 'SET_GROUP_FOLDER': {
+      return { ...state, groupFolder: action.path };
+    }
     case 'CLEAR_ALL':
       {
         return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
@@ -90,6 +94,7 @@ export default (state = initialState, action) => {
           ...state,
           rootPath: action.data.beamlineSetup.path,
           queue: Object.keys(action.data.queue.queue),
+          groupFolder: action.data.queue.groupFolder,
           autoMountNext: action.data.queue.autoMountNext,
           autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
           numSnapshots: action.data.queue.numSnapshots,

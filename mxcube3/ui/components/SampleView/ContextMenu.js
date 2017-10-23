@@ -112,7 +112,7 @@ export default class ContextMenu extends React.Component {
         { ...defaultParameters[modalName.toLowerCase()],
           ...wf,
           prefix: sampleData.defaultPrefix,
-          subdir: sampleData.sampleName,
+          subdir: `${this.props.groupFolder}${sampleData.sampleName}`,
           cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
           numRows: shape.gridData ? shape.gridData.numRows : 0,
           numCols: shape.gridData ? shape.gridData.numCols : 0
