@@ -182,7 +182,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
         diffractometer = self.diffractometer()
         move_omega_relative = diffractometer.phiMotor.syncMoveRelative
 
-    if dc_params["acquisitions"][0]["acquisition_parameters"]["take_snapshots"]:
+    if dc_params["take_snapshots"]:
         number_of_snapshots = mxcube.NUM_SNAPSHOTS
     else:
         number_of_snapshots = 0

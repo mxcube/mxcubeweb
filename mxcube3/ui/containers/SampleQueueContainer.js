@@ -139,6 +139,8 @@ export default class SampleQueueContainer extends React.Component {
                   queueStatus={queueStatus}
                   runQueue={showConfirmCollectDialog}
                   stopQueue={sendStopQueue}
+                  pause={sendPauseQueue}
+                  unpause={sendUnpauseQueue}
                   setAutoMountSample={setAutoMountSample}
                   autoMountNext={autoMountNext}
                   setAutoAddDiffPlan={setAutoAddDiffPlan}
