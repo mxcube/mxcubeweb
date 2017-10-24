@@ -20,13 +20,13 @@ export default class QueueControl extends React.Component {
     this.state = {
       options: {
         [QUEUE_RUNNING]: [
-        { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
+          { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
         ],
         [QUEUE_STOPPED]: [
-        { text: 'Run Queue', class: 'btn-success', action: props.runQueue, key: 1 },
+          { text: 'Run Queue', class: 'btn-success', action: props.runQueue, key: 1 },
         ],
         [QUEUE_PAUSED]: [
-        { text: 'Run Queue', class: 'btn-success', action: props.runQueue, key: 1 },
+          { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
         ]
       }
     };
@@ -40,7 +40,7 @@ export default class QueueControl extends React.Component {
           { text: 'Mount Next Sample', class: 'btn-primary', action: this.nextSample, key: 2 }
         ],
         [QUEUE_PAUSED]: [
-          { text: 'Unpause', class: 'btn-success', action: this.props.unpause, key: 2 }
+          { text: 'Resume', class: 'btn-success', action: this.props.unpause, key: 2 }
         ],
         NoSampleMounted: [
           { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },

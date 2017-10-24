@@ -1535,6 +1535,9 @@ def init_signals(queue):
     queue.queue_hwobj.connect("queue_stopped",
                               signals.queue_execution_finished)
 
+    queue.queue_hwobj.connect("queue_paused",
+                              signals.queue_execution_paused)
+
     queue.queue_hwobj.connect("queue_execute_entry_finished",
                               signals.queue_execution_entry_finished)
 

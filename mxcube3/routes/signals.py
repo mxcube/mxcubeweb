@@ -199,9 +199,18 @@ def queue_execution_finished(entry, queue_state=None):
     safe_emit('queue', msg, namespace='/hwr')
 
 
-def queue_execution_stopped():
+def queue_execution_stopped(*args):
     msg = {'Signal': 'QueueStopped', 'Message': 'Queue execution stopped'}
 
+    safe_emit('queue', msg, namespace='/hwr')
+
+
+def queue_execution_paused(state):
+    if state:
+        msg = {'Signal': 'QueuePaused', 'Message': 'Queue execution paused'}
+    else:
+        msg = {'Signal': 'QueueRunning', 'Message': 'Queue execution paused'}
+    
     safe_emit('queue', msg, namespace='/hwr')
 
 
