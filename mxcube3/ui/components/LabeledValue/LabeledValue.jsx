@@ -22,8 +22,9 @@ export default class LabeledValue extends React.Component {
           <div>
             <Label
               bsStyle={bsStyle}
-              style={{ backgroundColor: 'transparent', display: 'block',
-                       fontSize: '100%', borderRadius: '0px', color: '#000' }}
+              style={{ backgroundColor: 'transparent', display: 'block-inline',
+                       fontSize: '100%', borderRadius: '0px', color: '#000',
+                       padding: '0px' }}
             >
               {this.props.value}
             </Label>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col } from 'react-bootstrap';
-import LabelPopInput from '../components/PopInput/LabelPopInput';
+import { Row, Col, Table } from 'react-bootstrap';
+import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
 import LabeledValue from '../components/LabeledValue/LabeledValue';
@@ -47,7 +47,7 @@ class BeamlineSetupContainer extends React.Component {
     const acts = [];
     for (let key in this.props.data.attributes) {
       if (this.props.data.attributes[key].type === 'DUOSTATE') {
-        acts.push(<Col key={key} sm={1}>
+        acts.push(<Col key={key} sm={1} smPush={2}>
                     <InOutSwitch2
                       onText={ this.props.data.attributes[key].commands[0] }
                       offText={ this.props.data.attributes[key].commands[1] }
@@ -76,75 +76,112 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={1}>
               <BeamlineActions actionsList={this.props.data.beamlineActionsList} />
             </Col>
+            <Col sm={5} smPush={1}>
+              <Table
+                condensed
+                style={{ margin: '0px', fontWeight: 'bold',
+                         paddingLeft: '7em', paddingRight: '7em' }}
+              >
+               <tr>
+                 <td>
+                   Energy:
+                 </td>
+                <td style={{ fontWeight: 'bold' }}>
+                  <PopInput
+                    name=""
+                    pkey="energy"
+                    suffix="keV"
+                    data={ this.props.data.attributes.energy }
+                    onSave= { this.setAttribute }
+                    onCancel= { this.onCancelHandler }
+                  />
+                </td>
+                <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                  Resolution:
+                </td>
+                <td>
+                  <PopInput
+                    name=""
+                    pkey="resolution"
+                    suffix="&Aring;"
+                    data={this.props.data.attributes.resolution}
+                    onSave={this.setAttribute}
+                    onCancel={this.onCancelHandler}
+                  />
+                </td>
+                <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                  Transmission:
+                </td>
+                <td>
+                  <PopInput
+                    name=""
+                    pkey="transmission"
+                    suffix="%"
+                    data={this.props.data.attributes.transmission}
+                    onSave={this.setAttribute}
+                    onCancel={this.onCancelHandler}
+                  />
+                </td>
+                <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                  Cryo:
+                </td>
+                <td>
+                  <PopInput
+                    name=""
+                    pkey="cryo"
+                    suffix="K"
+                    data={this.props.data.cryo}
+                    onSave={this.setAttribute}
+                    onCancel={this.onCancelHandler}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Wavelength:
+                </td>
+                <td>
+                  <PopInput
+                    name=""
+                    pkey="wavelength"
+                    placement="left"
+                    suffix="&Aring;"
+                    data={this.props.data.attributes.wavelength}
+                    onSave={this.setAttribute}
+                    onCancel={this.onCancelHandler}
+                  />
+                </td>
+                <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                  Detector:
+                </td>
+                <td>
+                  <PopInput
+                    name=""
+                    pkey="detdist"
+                    suffix="mm"
+                    data={this.props.data.attributes.detdist}
+                    onSave={this.setAttribute}
+                    onCancel={this.onCancelHandler}
+                  />
+                </td>
+                <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                  Flux:
+                </td>
+                <td>
+                  <LabeledValue
+                    name=""
+                    value={this.props.data.attributes.flux.value}
+                  />
+                </td>
+                <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                </td>
+                <td>
+                </td>
+              </tr>
+            </Table>
+            </Col>
             {this.createActuatorComponent()}
-            <Col sm={1} style={{ paddingRight: '0px', marginLeft: '2em' }}>
-              <LabelPopInput
-                name="Energy"
-                pkey="energy"
-                suffix="keV"
-                data={ this.props.data.attributes.energy }
-                onSave= { this.setAttribute }
-                onCancel= { this.onCancelHandler }
-              />
-            </Col>
-            <Col sm={1} style={{ paddingLeft: '0px', marginLeft: '-2em' }}>
-              <LabelPopInput
-                name="Wavelength"
-                pkey="wavelength"
-                placement="left"
-                suffix="&Aring;"
-                data={this.props.data.attributes.wavelength}
-                onSave={this.setAttribute}
-                onCancel={this.onCancelHandler}
-              />
-            </Col>
-            <Col sm={1} style={{ paddingRight: '0px', marginLeft: '2em' }}>
-              <LabelPopInput
-                name="Resolution"
-                pkey="resolution"
-                suffix="&Aring;"
-                data={this.props.data.attributes.resolution}
-                onSave={this.setAttribute}
-                onCancel={this.onCancelHandler}
-              />
-            </Col>
-            <Col sm={1} style={{ paddingLeft: '0px', marginLeft: '-2em' }}>
-              <LabelPopInput
-                name="Detector"
-                pkey="detdist"
-                suffix="mm"
-                data={this.props.data.attributes.detdist}
-                onSave={this.setAttribute}
-                onCancel={this.onCancelHandler}
-              />
-            </Col>
-            <Col sm={1} style={{ paddingRight: '0px', marginLeft: '2em' }}>
-              <LabelPopInput
-                name="Transmission"
-                pkey="transmission"
-                suffix="%"
-                data={this.props.data.attributes.transmission}
-                onSave={this.setAttribute}
-                onCancel={this.onCancelHandler}
-              />
-            </Col>
-            <Col sm={1} style={{ paddingLeft: '0px', marginLeft: '-2em' }}>
-              <LabeledValue
-                name="Flux"
-                value={this.props.data.attributes.flux.value}
-              />
-            </Col>
-            <Col sm={1}>
-              <LabelPopInput
-                name="Cryo"
-                pkey="cryo"
-                suffix="K"
-                data={this.props.data.cryo}
-                onSave={this.setAttribute}
-                onCancel={this.onCancelHandler}
-              />
-            </Col>
-            <Col sm={1}>
+            <Col sm={1} smPush={2}>
               <MachInfo
                 info={this.props.data.attributes.machinfo.value}
               />
