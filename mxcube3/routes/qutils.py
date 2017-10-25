@@ -793,7 +793,7 @@ def add_sample(sample_id, item):
         sample_model.location = tuple(map(int, item['location'].split(':')))
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
-    sample_entry.set_enabled(True)
+    enable_entry(sample_entry, get_auto_mount_sample())
 
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
@@ -1576,7 +1576,8 @@ def set_auto_mount_sample(automount, current_sample=None):
     # If automount next is off, that is do not mount and run next
     # sample, disable all entries except the current one
     # If automount next is on, enable all
-    enable_sample_entries(current_queue["sample_order"], automount)
+    if current_queue:
+        enable_sample_entries(current_queue["sample_order"], automount)
 
     # No automount, enable the current entry if any
     if not automount and sample:
