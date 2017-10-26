@@ -162,17 +162,30 @@ def centring_started(method, *args):
 
 
 def get_task_state(entry):
-
-    _, state = qutils.get_node_state(entry.get_data_model()._node_id)
+    node_id = entry.get_data_model()._node_id
+    _, state = qutils.get_node_state(node_id)
     node_index = qutils.node_index(entry.get_data_model())
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, 'null')
+
+    try:
+        limsres = mxcube.rest_lims.get_dc(lims_id)
+    except:
+        limsres = {}
+
+    try:
+        limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
 
     msg = {'Signal': '',
            'Message': '',
            'taskIndex': node_index['idx'],
            'queueID': last_queue_node()['queue_id'],
            'sample': node_index['sample'],
+           'limsResultData': limsres,
            'state': state,
-           'limstResultData': '',
            'progress': 1}
 
     return msg
@@ -267,27 +280,28 @@ def collect_oscillation_failed(owner=None, status=FAILED, state=None,
                                lims_id='', osc_id=None, params=None):
     node = last_queue_node()
 
+    mxubce.NODE_ID_TO_LIMS_ID[node['queue_id']] = lims_id
+
     if not qutils.is_interleaved(node["node"]):
         try:
             limsres = mxcube.rest_lims.get_dc(lims_id)
         except:
-            limsres = ''
+            limsres = {}
 
-            msg = {'Signal': 'collectOscillationFailed',
-                   'Message': task_signals['collectOscillationFailed'],
-                   'taskIndex': node['idx'],
-                   'queueID': node['queue_id'],
-                   'sample': node['sample'],
-                   'limstResultData': limsres,
-                   'state': FAILED,
-                   'progress': 0}
+        msg = {'Signal': 'collectOscillationFailed',
+               'Message': task_signals['collectOscillationFailed'],
+               'taskIndex': node['idx'],
+               'queueID': node['queue_id'],
+               'sample': node['sample'],
+               'state': FAILED,
+               'progress': 0}
 
-            logging.getLogger('HWR').debug('[TASK CALLBACK]   ' + str(msg))
-
-            try:
-                safe_emit('task', msg, namespace='/hwr')
-            except Exception:
-                logging.getLogger("HWR").error('error sending message: ' + str(msg))
+        logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+        
+        try:
+            safe_emit('task', msg, namespace='/hwr')
+        except Exception:
+            logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
 
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
@@ -296,18 +310,11 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     if not qutils.is_interleaved(node["node"]):
         qutils.enable_entry(node['queue_id'], False)
 
-        if mxcube.rest_lims:
-            limsres = mxcube.rest_lims.get_dc(lims_id)
-        else:
-            logging.getLogger("HWR").warning('No REST Lims interface has been defined.')
-            limsres = ''
-
         msg = {'Signal': 'collectOscillationFinished',
                'Message': task_signals['collectOscillationFinished'],
                'taskIndex': node['idx'],
                'queueID': node['queue_id'],
                'sample': node['sample'],
-               'limsResultData': limsres,
                'state': COLLECTED,
                'progress': 1}
 

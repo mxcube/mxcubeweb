@@ -153,6 +153,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.AUTO_ADD_DIFFPLAN = True
         app.CENTRING_METHOD = None
         app.NUM_SNAPSHOTS = 4
+        app.NODE_ID_TO_LIMS_ID = {}
 
         # set up streaming
         from mxcube3.video import streaming
