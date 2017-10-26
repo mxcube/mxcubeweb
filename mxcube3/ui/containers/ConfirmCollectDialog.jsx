@@ -280,7 +280,10 @@ export class ConfirmCollectDialog extends React.Component {
                 Auto loop centring
               </Checkbox>
               { autoMountNext ?
-                  <Checkbox defaultChecked={autoMountNext} onClick={this.autoMountNextOnClick}>
+                  <Checkbox
+                    defaultChecked={this.props.queue.autoMountNext}
+                    onClick={this.autoMountNextOnClick}
+                  >
                     Auto mount next sample
                   </Checkbox>
                 : <span />

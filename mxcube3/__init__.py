@@ -148,7 +148,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         # SampleID of currently mounted sample
         app.CURRENTLY_MOUNTED_SAMPLE = None
         app.SAMPLE_TO_BE_MOUNTED = ''
-        app.AUTO_MOUNT_SAMPLE = False
+        app.AUTO_MOUNT_SAMPLE = True
         app.AUTO_LOOP_CENTER = False
         app.AUTO_ADD_DIFFPLAN = True
         app.CENTRING_METHOD = None

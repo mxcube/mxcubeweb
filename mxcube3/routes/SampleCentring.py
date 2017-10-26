@@ -88,12 +88,20 @@ def init_signals():
     for motor in dm.centring_motors_list:
         @Utils.RateLimited(3)
         def pos_cb(pos, motor=motor, **kw):
-            movable = Utils.get_movable_state_and_position(motor)[motor]
-            signals.motor_position_callback(movable)
+            movable = Utils.get_movable_state_and_position(motor)
+
+            if movable:
+                signals.motor_position_callback(movable[motor])
+            else:
+                logging.getLogger('HWR').exception("Could not call position callback for %s" % motor)
 
         def state_cb(state, motor=motor, **kw):
-            movable = Utils.get_movable_state_and_position(motor)[motor]
-            signals.motor_state_callback(movable, **kw)
+            movable = Utils.get_movable_state_and_position(motor)
+
+            if movable:
+                signals.motor_state_callback(movable[motor], **kw)
+            else:
+                logging.getLogger('HWR').exception("Could not call state callback for %s" % motor)
 
         setattr(dm, "_%s_pos_callback" % motor, pos_cb)
         setattr(dm, "_%s_state_callback" % motor, state_cb)
