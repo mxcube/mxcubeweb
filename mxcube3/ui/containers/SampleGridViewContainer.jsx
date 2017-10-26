@@ -61,6 +61,7 @@ class SampleGridViewContainer extends React.Component {
     this.sampleGridClearFilter = this.sampleGridClearFilter.bind(this);
     this.filterIsUsed = this.filterIsUsed.bind(this);
     this.resizeGridContainer = this.resizeGridContainer.bind(this);
+    this.getPuckFilterOptions = this.getPuckFilterOptions.bind(this);
 
     // Methods for handling addition and removal of queue items (Samples and Tasks)
     // Also used by the SampleGridContainer
@@ -115,12 +116,29 @@ class SampleGridViewContainer extends React.Component {
       notInQueue: this.props.filterOptions.notInQueue,
       collected: this.props.filterOptions.collected,
       notCollected: this.props.filterOptions.notCollected,
-      filterText: this.props.filterOptions.text
+      filterText: this.props.filterOptions.text,
+      puckFilter: this.props.filterOptions.puckFilter
     };
 
     value = optionMap[id];
 
     return value;
+  }
+
+
+  getPuckFilterOptions() {
+    const sc = this.props.sampleChanger.contents;
+    let options = [];
+
+    if (sc.children) {
+      options = Object.values(sc.children).map((basket) => (
+        (<option value={`${basket.name}:`}>{basket.name}</option>)
+      ));
+    }
+
+    options.push((<option value="">ALL</option>));
+
+    return options;
   }
 
 
@@ -234,6 +252,7 @@ class SampleGridViewContainer extends React.Component {
    */
   sampleGridFilter(e) {
     const optionMap = {
+      puckFilter: { puckFilter: e.target.value },
       inQueue: { inQueue: e.target.checked },
       notInQueue: { notInQueue: e.target.checked },
       collected: { collected: e.target.checked },
@@ -407,68 +426,88 @@ class SampleGridViewContainer extends React.Component {
       <DropdownButton componentClass={InputGroup.Button} title="" id="filter-drop-down">
         <div style={{ padding: '1em', width: '300px' }}>
           <b>Filter: </b>
-        <Row>
-          <Col xs={12}>
-            <div style={{ margin: '1em 0em' }}>
+          <Row>
+            <Col xs={12}>
               <Row>
-                <Col xs={12}>
-                  <Row>
-                    <Col xs={6}>
-                      <Checkbox
-                        id="inQueue"
-                        inline
-                        checked={this.getFilterOptionValue('inQueue')}
-                        onChange={this.sampleGridFilter}
-                      >
-                        In Queue
-                      </Checkbox>
-                  </Col>
-                  <Col xs={6}>
-                    <Checkbox inline
-                      id="notInQueue"
-                      checked={this.getFilterOptionValue('notInQueue')}
+                <Col xs={6}>
+                  <FormGroup bsSize="small" style={{ float: 'none', marginTop: '0.5em' }}>
+                    <span> Basket: </span>
+                    <FormControl
+                      style={{ float: 'none' }}
+                      id="puckFilter"
+                      componentClass="select"
+                      defaultValue={this.getFilterOptionValue('puckFilter')}
                       onChange={this.sampleGridFilter}
                     >
-                      Not in Queue
-                    </Checkbox>
-                  </Col>
-                </Row>
-              </Col>
-            </Row>
-            <Row>
-              <Col xs={12}>
+                      {this.getPuckFilterOptions()}
+                    </FormControl>
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={12}>
+              <div style={{ margin: '1em 0em' }}>
                 <Row>
-                  <Col xs={6}>
-                    <Checkbox
-                      inline
-                      id="collected"
-                      checked={this.getFilterOptionValue('collected')}
-                      onChange={this.sampleGridFilter}
-                    >
-                      Collected
-                    </Checkbox>
-                  </Col>
-                  <Col xs={6}>
-                    <Checkbox
-                      inline
-                      id="notCollected"
-                      checked={this.getFilterOptionValue('notCollected')}
-                      onChange={this.sampleGridFilter}
-                    >
-                      Not Collected
-                    </Checkbox>
+                  <Col xs={12}>
+                    <Row>
+                      <Col xs={6}>
+                        <Checkbox
+                          id="inQueue"
+                          inline
+                          checked={this.getFilterOptionValue('inQueue')}
+                          onChange={this.sampleGridFilter}
+                        >
+                          In Queue
+                        </Checkbox>
+                      </Col>
+                      <Col xs={6}>
+                        <Checkbox inline
+                          id="notInQueue"
+                          checked={this.getFilterOptionValue('notInQueue')}
+                          onChange={this.sampleGridFilter}
+                        >
+                          Not in Queue
+                        </Checkbox>
+                      </Col>
+                    </Row>
                   </Col>
                 </Row>
-              </Col>
-            </Row>
-            </div>
-            <div className="pull-right">
-              <Button onClick={this.sampleGridClearFilter}>
-                Clear
-              </Button>
-            </div>
-          </Col>
-        </Row>
+                <Row>
+                  <Col xs={12}>
+                    <Row>
+                      <Col xs={6}>
+                        <Checkbox
+                          inline
+                          id="collected"
+                          checked={this.getFilterOptionValue('collected')}
+                          onChange={this.sampleGridFilter}
+                        >
+                          Collected
+                        </Checkbox>
+                      </Col>
+                      <Col xs={6}>
+                        <Checkbox
+                          inline
+                          id="notCollected"
+                          checked={this.getFilterOptionValue('notCollected')}
+                          onChange={this.sampleGridFilter}
+                        >
+                          Not Collected
+                        </Checkbox>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+              </div>
+              <div className="pull-right">
+                <Button onClick={this.sampleGridClearFilter}>
+                  Clear
+                </Button>
+              </div>
+            </Col>
+          </Row>
         </div>
       </DropdownButton>
     );
@@ -619,6 +658,7 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
+    sampleChanger: state.sampleChanger,
     confirmClearQueueDialog: state.general.showConfirmClearQueueDialog
   };
 }

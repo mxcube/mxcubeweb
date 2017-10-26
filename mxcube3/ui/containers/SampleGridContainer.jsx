@@ -375,7 +375,7 @@ class SampleGridContainer extends React.Component {
       sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
-
+      fi &= sampleFilter.includes(this.props.filterOptions.puckFilter.toLowerCase());
       fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
       fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
     }
