@@ -38,7 +38,7 @@ export default class TaskItem extends Component {
                      borderBottom: '1px solid #DDD',
                      padding: '0.5em' } }
       >
-        <a href={this.props.data.limstResultData}> ISPyB link</a>
+        <a href={this.props.data.limsResultData.limsTaskLink}> ISPyB link</a>
       </div>
     );
   }

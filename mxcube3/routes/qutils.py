@@ -222,7 +222,8 @@ def get_queue_state():
               }
     """
     queue = queue_to_dict()
-    queue.pop("sample_order") if queue else queue
+    if queue:
+        queue.pop("sample_order")
 
     res = { "loaded": scutils.get_current_sample(),
             "centringMethod": mxcube.CENTRING_METHOD,
@@ -259,12 +260,15 @@ def _handle_dc(sample_id, node, include_lims_data=False):
     parameters['fullPath'] = os.path.join(parameters['path'],
                                           parameters['fileName'])
 
-    limsres = ''
+    limsres = {}
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
     if include_lims_data and mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(node.id)      
+        limsres = mxcube.rest_lims.get_dc(node.id)
+
+    # Always add link to data, (no request made)
+    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(node.id)
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -274,7 +278,7 @@ def _handle_dc(sample_id, node, include_lims_data=False):
            "queueID": queueID,
            "checked": node.is_enabled(),
            "state": state,
-           "limstResultData": limsres,
+           "limsResultData": limsres,
            }
 
     return res
