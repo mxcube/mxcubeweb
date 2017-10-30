@@ -1438,16 +1438,25 @@ def queue_model_diff_plan_available(char, index, collection):
         collection.set_enabled(False)
         dcg_model = char.get_parent()
         sample = dcg_model.get_parent()
+        sampleID = sample._node_id
+        queue = queue_to_dict()
+        tasks = queue[str(sampleID)]['tasks']
+
+        for t in tasks:
+            if t['queueID'] == char._node_id:
+                shape = t['parameters']['shape']
+                setattr(collection, 'shape', shape)
+
         task = _handle_dc(sample._node_id, collection)
         task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
         socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
 def set_auto_add_diffplan(autoadd, current_sample=None):
     """
-    Sets auto mount next flag, automatically mount next sample in queue
+    Sets auto add diffraction plan flag, automatically add to the queue
     (True) or wait for user (False)
 
-    :param bool automount: True auto-mount, False wait for user
+    :param bool autoadd: True autoadd, False wait for user
     """
     mxcube.AUTO_ADD_DIFFPLAN = autoadd
     current_queue = queue_to_dict()
@@ -1458,7 +1467,7 @@ def set_auto_add_diffplan(autoadd, current_sample=None):
         tasks = current_queue[sample]['tasks']
         for t in tasks:
             if t['type'] == 'Characterisation':
-                model, entry =  get_entry(t['queueID'])
+                model, entry = get_entry(t['queueID'])
                 entry.auto_add_diff_plan = autoadd
 
 def execute_entry_with_id(sid, tindex=None):
