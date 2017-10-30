@@ -240,7 +240,7 @@ def queue_update_item(sid, tindex):
     if data["type"] == "DataCollection":
         qutils.set_dc_params(model, entry, data, sample_model)
     elif data["type"] == "Characterisation":
-        qutils.set_char_params(model, entry, data)
+        qutils.set_char_params(model, entry, data, sample_model)
 
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
 
