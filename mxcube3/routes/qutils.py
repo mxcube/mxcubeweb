@@ -1466,7 +1466,7 @@ def queue_model_diff_plan_available(char, index, collection_list):
             socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
 
-def se_auto_add_diffplan(autoadd, current_sample=None):
+def set_auto_add_diffplan(autoadd, current_sample=None):
     """
     Sets auto add diffraction plan flag, automatically add to the queue
     (True) or wait for user (False)
