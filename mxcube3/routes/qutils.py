@@ -1422,6 +1422,17 @@ def queue_model_child_added(parent, child):
             parent_entry.enqueue(dc_entry)
             sample = parent.get_parent()
 
+            sampleID = sample._node_id
+            # The task comes without a shape,
+            # so find origin (char generates >task node > collection)
+            # add associate shape id
+            queue = queue_to_dict()
+            tasks = queue[str(sampleID)]['tasks']
+            for t in tasks:
+                if t['queueID'] == parent.get_origin():
+                    shape = t['parameters']['shape']
+                    setattr(child, 'shape', shape)
+
             task = _handle_dc(sample._node_id, child)
             socketio.emit('add_task', {"tasks": [task]}, namespace='/hwr')
 
@@ -1454,7 +1465,8 @@ def queue_model_diff_plan_available(char, index, collection_list):
             task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
             socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
-def set_auto_add_diffplan(autoadd, current_sample=None):
+
+def se_auto_add_diffplan(autoadd, current_sample=None):
     """
     Sets auto add diffraction plan flag, automatically add to the queue
     (True) or wait for user (False)
