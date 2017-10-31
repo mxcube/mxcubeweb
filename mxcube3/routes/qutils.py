@@ -1406,7 +1406,7 @@ def queue_model_child_added(parent, child):
     """
     Listen to the addition of elements to the queue model ('child_added').
     Add the corresponding entries to the queue if they are not already
-    added. Handels for instance the addition of referance collections for
+    added. Handels for instance the addition of reference collections for
     characterisations and workflows.
     """
     parent_model, parent_entry = get_entry(parent._node_id)
@@ -1431,25 +1431,28 @@ def queue_model_child_added(parent, child):
             parent_entry.enqueue(dcg_entry)
 
 
-def queue_model_diff_plan_available(char, index, collection):
-    if isinstance(collection, qmo.DataCollection):
-        if collection.get_origin():
-            origin_model, origin_entry = get_entry(collection.get_origin())
-        collection.set_enabled(False)
-        dcg_model = char.get_parent()
-        sample = dcg_model.get_parent()
-        sampleID = sample._node_id
-        queue = queue_to_dict()
-        tasks = queue[str(sampleID)]['tasks']
+def queue_model_diff_plan_available(char, index, collection_list):
+    # TODO: The client is not prepared for handling several collections for now @#@#!
+    for collection in collection_list:
+        if isinstance(collection, qmo.DataCollection):
+            if collection.get_origin():
+                origin_model, origin_entry = get_entry(collection.get_origin())
+            else:
+                origin_model, origin_entry = get_entry(char._node_id)
+            collection.set_enabled(False)
+            dcg_model = char.get_parent()
+            sample = dcg_model.get_parent()
+            sampleID = sample._node_id
+            queue = queue_to_dict()
+            tasks = queue[str(sampleID)]['tasks']
 
-        for t in tasks:
-            if t['queueID'] == char._node_id:
-                shape = t['parameters']['shape']
-                setattr(collection, 'shape', shape)
-
-        task = _handle_dc(sample._node_id, collection)
-        task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
-        socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
+            for t in tasks:
+                if t['queueID'] == char._node_id:
+                    shape = t['parameters']['shape']
+                    setattr(collection, 'shape', shape)
+            task = _handle_dc(sample._node_id, collection)
+            task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
+            socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
 
 def set_auto_add_diffplan(autoadd, current_sample=None):
     """
