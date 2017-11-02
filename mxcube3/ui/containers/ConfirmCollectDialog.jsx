@@ -159,6 +159,74 @@ export class ConfirmCollectDialog extends React.Component {
     return text;
   }
 
+  taskPopover(task) {
+    let pover = (<span></span>);
+
+    if (task.type === 'EnergyScan') {
+      pover = (
+        <Popover id="collect-confirm-dialog-popover">
+          <Table striped bordered condensed hover>
+            <thead>
+              <tr>
+                <th>Element</th>
+                <th>Edge</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{task.parameters.element}</td>
+                <td>{task.parameters.edge}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Popover>);
+    } else if (task.type === 'XRFScan') {
+      pover = (
+        <Popover id="collect-confirm-dialog-popover">
+          <Table striped bordered condensed hover>
+            <thead>
+              <tr>
+                <th>Integration Time (s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{task.parameters.countTime}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Popover>);
+    } else {
+      pover = (
+        <Popover id="collect-confirm-dialog-popover">
+          <Table striped bordered condensed hover>
+            <thead>
+              <tr>
+                <th>Osc. start</th>
+                <th>Osc. range</th>
+                <th>Exp time</th>
+                <th>Resolution</th>
+                <th>Transmission</th>
+                <th>Energy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{task.parameters.osc_start}</td>
+                <td>{task.parameters.osc_range}</td>
+                <td>{task.parameters.exp_time}</td>
+                <td>{task.parameters.resolution}</td>
+                <td>{task.parameters.transmission}</td>
+                <td>{task.parameters.energy}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Popover>);
+    }
+
+    return pover;
+  }
+
   /**
    * Returns the markup for a table containing summary/details for each task
    * in the queue
@@ -186,19 +254,20 @@ export class ConfirmCollectDialog extends React.Component {
     if (summary.numTasks > 0) {
       table = (
         <div className="scroll">
-        <Table striped bordered condensed hover>
+        <Table striped bordered hover condensed>
           <thead id="table-head">
             <tr>
               <th>Type</th>
               <th>Sample</th>
               <th>Path</th>
-              <th>Prefix</th>
               <th># Images</th>
             </tr>
           </thead>
           <tbody id="table-body">
             {tasks.map((task) => {
               let parameters = task.parameters;
+              const sample = this.props.sampleGrid.sampleList[task.sampleID];
+              const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
 
               if (task.type === 'Interleaved') {
                 parameters = task.parameters.wedges[0].parameters;
@@ -206,41 +275,20 @@ export class ConfirmCollectDialog extends React.Component {
 
               return (
                 <OverlayTrigger
-                  key={task.sampleID}
+                  key={task.queueID}
                   bsClass="collect-confirm-dialog-overlay-trigger"
                   placement="bottom"
-                  overlay={(
-                    <Popover id="collect-confirm-dialog-popover">
-                      <Table striped bordered condensed hover>
-                        <thead>
-                          <tr>
-                            <th>Osc. start</th>
-                            <th>Osc. range</th>
-                            <th>Exp time</th>
-                            <th>Resolution</th>
-                            <th>Transmission</th>
-                            <th>Energy</th>
-                          </tr>
-                        </thead>
-                      <tbody>
-                        <tr>
-                          <td>{parameters.osc_start}</td>
-                          <td>{parameters.osc_range}</td>
-                          <td>{parameters.os}</td>
-                          <td>{parameters.resolution}</td>
-                          <td>{parameters.transmission}</td>
-                          <td>{parameters.energy}</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </Popover>)}
+                  overlay={this.taskPopover(task)}
                 >
-                  <tr>
+                  <tr id={task.queueID}>
                     <td>{task.label}</td>
-                    <td>{task.sampleID}</td>
-                    <td>{parameters.path}</td>
-                    <td>{parameters.prefix}</td>
-                    <td>{parameters.num_images}</td>
+                  <td>{sampleName} ({sample.location})</td>
+                    <td>
+                      <b style={{ color: '#337ab7' }} >
+                        ...{parameters.fullPath.split(this.props.queue.rootPath)}
+                      </b>
+                    </td>
+                    <td>{parameters.num_images || '-'}</td>
                   </tr>
                 </OverlayTrigger>
              );})}
@@ -264,14 +312,14 @@ export class ConfirmCollectDialog extends React.Component {
       >
         <Modal.Header>
           <Modal.Title>
-            Confirm - Collect queue
+            Collect Queue ?
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
             <b>{this.collectText()}</b>
           </p>
-          <div style={ { marginLeft: '20px' } }>
+          <div>
             <span>
               <Checkbox
                 defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
@@ -291,7 +339,11 @@ export class ConfirmCollectDialog extends React.Component {
               <NumSnapshotsDropDown />
             </span>
           </div>
+
           <br />
+          <p style={{ color: '#337ab7' }}>
+            <b>Data Root: {this.props.queue.rootPath}</b>
+          </p>
           {this.taskTable()}
         </Modal.Body>
         <Modal.Footer>

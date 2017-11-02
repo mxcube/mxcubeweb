@@ -10,6 +10,8 @@
 .scroll table{
   width: auto;
   border-spacing: 0;
+  border: 0px;
+  border-top: 1px solid #ddd;
 }
 
 .scroll tbody,
@@ -17,10 +19,12 @@
   display: block;
 }
 
-.scroll thead tr th { }
+.scroll thead tr th {
+  border-right: 1px solid #ddd;
+}
 
 .scroll tbody {
-  height: 500px;
+  max-height: 500px;
   overflow-y: auto;
   overflow-x: auto
 }
@@ -32,7 +36,14 @@
   white-space: nowrap;
 }
 
-.scroll tbody td:last-child,
-.scroll thead th:last-child {
-  border-right: none;
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #FFF;
+}
+
+.table-striped > tbody > tr:nth-of-type(even) {
+  background-color: rgba(238,232,170, 0.2);
+}
+
+.table-striped > tbody > tr:hover {
+  background-color: #f0f3f5;
 }
