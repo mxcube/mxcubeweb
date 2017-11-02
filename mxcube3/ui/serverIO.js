@@ -123,7 +123,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('grid_result_available', (data) => {
-      this.dispatch(updateShapes(data.shape));
+      this.dispatch(updateShapes([data.shape]));
     });
 
     this.hwrSocket.on('task', (record, callback) => {
