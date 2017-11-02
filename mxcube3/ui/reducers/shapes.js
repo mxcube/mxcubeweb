@@ -14,7 +14,7 @@ export default (state = initialState, action) => {
       {
         return { ...state, shapes: { ...state.shapes, [action.shape.id]: action.shape } };
       }
-    case 'UPDATE_SHAPE':
+    case 'UPDATE_SHAPES':
       {
         const shapes = { ...state.shapes };
 
