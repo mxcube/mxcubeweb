@@ -101,30 +101,30 @@ export class TaskItem extends React.Component {
 
           <div className="row">
             <span className="col-sm-3">Resolution at collect</span>
-            <span className="col-sm-3">{`${r.resolution} Å`}</span>
+            <span className="col-sm-3">{`${r.resolution || '-'} Å`}</span>
             <span className="col-sm-3">Resolution at corner:</span>
-            <span className="col-sm-3">{`${r.resolutionAtCorner} Å`}</span>
+            <span className="col-sm-3">{`${r.resolutionAtCorner || '-'} Å`}</span>
           </div>
 
           <div className="row">
             <span className="col-sm-3">Wavelength</span>
-            <span className="col-sm-3">{`${r.wavelength} Å`}</span>
+            <span className="col-sm-3">{`${r.wavelength || '-'} Å`}</span>
             <span className="col-sm-3"> </span>
             <span className="col-sm-3"> </span>
           </div>
 
           <div className="row" style={ { paddingTop: '1em' } }>
             <span className="col-sm-2">Start time:</span>
-            <span className="col-sm-4">{r.startTime}</span>
+            <span className="col-sm-4">{r.startTime || '-'}</span>
             <span className="col-sm-2">End time</span>
-            <span className="col-sm-4">{r.endTime}</span>
+            <span className="col-sm-4">{r.endTime || '-'}</span>
           </div>
 
           <div className="row">
             <span className="col-sm-2">Flux at start:</span>
-            <span className="col-sm-4">{sFlux}e+9 (Giga) ph/s</span>
+            <span className="col-sm-4">{sFlux || '-'}e+9 (Giga) ph/s</span>
             <span className="col-sm-2">Flux at end</span>
-            <span className="col-sm-4">{eFlux}e+9 (Giga) ph/s</span>
+            <span className="col-sm-4">{eFlux || '-'}e+9 (Giga) ph/s</span>
           </div>
 
           <div className="row" style={ { paddingTop: '0.5em' } } >

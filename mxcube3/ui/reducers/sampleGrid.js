@@ -30,7 +30,20 @@ const INITIAL_STATE = { selected: {},
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'SET_QUEUE': {
-      return { ...state, sampleList: Object.assign(state.sampleList, action.queue) };
+      // Sample list is a fusion of data from Queue, Sample changer, and LIMS.
+      // SET QUEUE for sample grid means add new tasks and remove uncollected tasks
+      // of samples that have been removed from the queue
+      const sampleList = { ...state.sampleList };
+
+      Object.values(sampleList).forEach((s) => {
+        if (s.tasks.length > 0 && action.queue[s.sampleID] === undefined) {
+          sampleList[s.sampleID].tasks = sampleList[s.sampleID].tasks.filter((t) => (
+            t.state !== TASK_UNCOLLECTED
+          ));
+        }
+      });
+
+      return { ...state, sampleList: Object.assign(sampleList, action.queue) };
     }
     // Set the list of samples (sampleList), clearing any existing list
     case 'UPDATE_SAMPLE_LIST': {
@@ -49,6 +62,21 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, { sampleList,
 					order,
 					selected: {} });
+    }
+    case 'REMOVE_SAMPLES_FROM_QUEUE': {
+      // When removing samples from queue, remove uncollected tasks from that sample in
+      // the sample list.
+      const sampleList = { ...state.sampleList };
+
+      action.sampleIDList.forEach((sid) => {
+        if (sampleList[sid] !== undefined) {
+          sampleList[sid].tasks = sampleList[sid].tasks.filter((t) => (
+            t.state !== TASK_UNCOLLECTED
+          ));
+        }
+      });
+
+      return { ...state, sampleList };
     }
     case 'ADD_SAMPLES_TO_LIST': {
       const sampleList = { ...state.sampleList };
