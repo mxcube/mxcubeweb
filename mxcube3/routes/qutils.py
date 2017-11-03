@@ -1444,6 +1444,7 @@ def queue_model_child_added(parent, child):
 
 def queue_model_diff_plan_available(char, index, collection_list):
     # TODO: The client is not prepared for handling several collections for now @#@#!
+    cols = []
     for collection in collection_list:
         if isinstance(collection, qmo.DataCollection):
             if collection.get_origin():
@@ -1463,7 +1464,9 @@ def queue_model_diff_plan_available(char, index, collection_list):
                     setattr(collection, 'shape', shape)
             task = _handle_dc(sample._node_id, collection)
             task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
-            socketio.emit('add_diff_plan', {"tasks": [task]}, namespace='/hwr')
+            cols.append(task)
+
+    socketio.emit('add_diff_plan', {"tasks": cols}, namespace='/hwr')
 
 
 def set_auto_add_diffplan(autoadd, current_sample=None):
