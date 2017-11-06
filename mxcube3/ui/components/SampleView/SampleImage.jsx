@@ -463,10 +463,10 @@ export default class SampleImage extends React.Component {
       }
     } else if (keyPressed === 'z' && motors.zoom.state === 2) {
       // in this case zooming
-      if (e.deltaY > 0 && zoom < 10) {
+      if (e.deltaY > 0 && zoom < motors.zoom.limits[1]) {
         // zoom in
         sendZoomPos(zoom + 1);
-      } else if (e.deltaY < 0 && zoom > 1) {
+      } else if (e.deltaY < 0 && zoom > motors.zoom.limits[0]) {
         // zoom out
         sendZoomPos(zoom - 1);
       }
