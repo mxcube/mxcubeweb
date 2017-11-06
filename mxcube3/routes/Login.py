@@ -1,4 +1,5 @@
 import logging
+import os
 
 from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
@@ -6,8 +7,31 @@ from mxcube3.routes import qutils
 from mxcube3.routes import limsutils
 from mxcube3 import remote_access, state_storage
 from mxcube3 import socketio
+from scandir import scandir
 
 LOGGED_IN_USER = None
+
+
+def scantree(path, include):
+    res = []
+
+    try:
+        res = _scantree_rec(path, include, [])
+    except OSError as ex:
+        pass
+
+    return res
+
+
+def _scantree_rec(path, include=[], files=[]):
+    for entry in scandir(path):
+        if entry.is_dir(follow_symlinks=False):
+            _scantree_rec(entry.path, include, files)
+        elif entry.is_file():
+            if os.path.splitext(entry.path)[1][1:] in include:
+                files.append(entry.path)
+
+    return files
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -141,6 +165,13 @@ def loginInfo():
         limsutils.select_proposal(LOGGED_IN_USER)
         res["selectedProposal"] = LOGGED_IN_USER
         logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
+
+
+    # Get all the files in the root data dir for this user
+    if not mxcube.INITIAL_FILE_LIST:
+        ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
+        root_path = mxcube.session.get_base_image_directory()
+        mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
 
     return jsonify(res)
 
