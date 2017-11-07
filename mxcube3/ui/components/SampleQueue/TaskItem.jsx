@@ -31,14 +31,14 @@ export default class TaskItem extends Component {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
-
+    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
     return (
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
                      borderBottom: '1px solid #DDD',
                      padding: '0.5em' } }
       >
-        <a href={this.props.data.limsResultData.limsTaskLink}> ISPyB link</a>
+        <a href={link}> ISPyB link</a>
       </div>
     );
   }
