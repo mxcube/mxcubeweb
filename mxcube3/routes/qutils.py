@@ -37,6 +37,37 @@ ORIGIN_MX3 = "MX3"
 QUEUE_CACHE = {}
 
 
+def build_prefix_path_dict(path_list):
+    prefix_path_dict = {}
+
+    for path in path_list:
+        path, run_number, img_number = qmo.PathTemplate.interpret_path(path)
+
+        if path in prefix_path_dict and  prefix_path_dict[path] < run_number:
+            prefix_path_dict[path] = run_number
+        else:
+            prefix_path_dict[path] = run_number
+
+    return prefix_path_dict
+
+
+def get_run_number(pt):
+    prefix_path_dict = build_prefix_path_dict(mxcube.INITIAL_FILE_LIST)
+
+    # Path templates of files not yet written to to disk, we are only
+    # interested in the prefix path
+    fname = pt.get_image_path()
+    prefix_path, _, _ = qmo.PathTemplate.interpret_path(fname)
+    run_number = mxcube.queue.get_next_run_number(pt)
+
+    if prefix_path in prefix_path_dict:
+        rn = run_number + prefix_path_dict[prefix_path]
+    else:
+        rn = run_number
+
+    return rn
+
+
 def node_index(node):
     """
     Get the position (index) in the queue, sample and node id of node <node>.
@@ -821,6 +852,10 @@ def set_dc_params(model, entry, task_data, sample_model):
     ftype = ftype if ftype else '.?'
 
     acq.path_template.set_from_dict(params)
+    # certain attributes have to be updated explicitly,
+    # like precision, suffix ...
+    acq.path_template.start_num = params["first_image"]
+    acq.path_template.num_files = params["num_images"]
     acq.path_template.suffix = ftype
     acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
         getProperty("precision", 4))
@@ -880,8 +915,7 @@ def set_dc_params(model, entry, task_data, sample_model):
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
-    acq.path_template.run_number = mxcube.queue.\
-        get_next_run_number(acq.path_template)
+    acq.path_template.run_number = get_run_number(acq.path_template)
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -1002,8 +1036,7 @@ def set_xrf_params(model, entry, task_data, sample_model):
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
-    model.path_template.run_number = mxcube.queue.\
-        get_next_run_number(model.path_template)
+    model.path_template.run_number = get_run_number(acq.path_template)
 
     # Set count time, and if any, other paramters
     model.count_time = params.get("countTime", 0)
@@ -1048,8 +1081,7 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
-    model.path_template.run_number = mxcube.queue.\
-        get_next_run_number(model.path_template)
+    model.path_template.run_number = get_run_number(acq.path_template)
 
     # Set element, and if any, other parameters
     model.element_symbol = params.get("element", "")

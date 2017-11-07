@@ -18,3 +18,4 @@ lxml
 numpy
 requests
 v4l2
+scandir

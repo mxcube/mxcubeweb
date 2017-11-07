@@ -14,6 +14,7 @@ import cPickle as pickle
 import gevent
 import traceback
 import mock
+
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
 sys.modules["ShapeHistory"] = mock.MagicMock()
@@ -154,6 +155,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.CENTRING_METHOD = None
         app.NUM_SNAPSHOTS = 4
         app.NODE_ID_TO_LIMS_ID = {}
+        app.INITIAL_FILE_LIST = []
 
         # set up streaming
         from mxcube3.video import streaming
