@@ -188,6 +188,11 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
         number_of_snapshots = 0
 
     if number_of_snapshots > 0:
+        if self.diffractometer_hwobj.get_current_phase() != "Centring":
+            logging.getLogger("user_level_log").info("Moving Diffractometer to CentringPhase")
+            self.diffractometer_hwobj.set_phase("Centring", wait=True, timeout=200)
+            self.move_to_centered_position()
+
         snapshot_directory = dc_params["fileinfo"]["archive_directory"]
         if not os.path.exists(snapshot_directory):
             try:
@@ -209,6 +214,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 (snapshot_index + 1)] = snapshot_filename
 
             try:
+                logging.getLogger("HWR").info("Taking snapshot number: %d" % (snapshot_index + 1))
                 _do_take_snapshot(snapshot_filename)
             except Exception:
                 sys.excepthook(*sys.exc_info())
