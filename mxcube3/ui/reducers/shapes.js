@@ -24,6 +24,16 @@ export default (state = initialState, action) => {
 
         return { ...state, shapes };
       }
+    case 'UPDATE_SHAPES':
+      {
+        const shapes = { ...state.shapes };
+
+        action.shapes.forEach((shape) => {
+          shapes[shape.id] = shape;
+        });
+
+        return { ...state, shapes };
+      }
     case 'DELETE_SHAPE':
       {
         return { ...state, shapes: omit(state.shapes, action.id) };
