@@ -5,7 +5,8 @@
 
 /* eslint-disable no-unused-vars */
 
-export const QUEUE_RUNNING = 'QueueStarted';
+export const QUEUE_STARTED = 'QueueStarted';
+export const QUEUE_RUNNING = 'QueueRunning';
 export const QUEUE_STOPPED = 'QueueStopped';
 export const QUEUE_PAUSED = 'QueuePaused';
 export const QUEUE_FAILED = 'QueueFailed';
