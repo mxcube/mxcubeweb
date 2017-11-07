@@ -280,7 +280,7 @@ def collect_oscillation_failed(owner=None, status=FAILED, state=None,
                                lims_id='', osc_id=None, params=None):
     node = last_queue_node()
 
-    mxubce.NODE_ID_TO_LIMS_ID[node['queue_id']] = lims_id
+    mxcube.NODE_ID_TO_LIMS_ID[node['queue_id']] = lims_id
 
     if not qutils.is_interleaved(node["node"]):
         try:

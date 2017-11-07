@@ -1,7 +1,7 @@
 import React from 'react';
 import './app.less';
 import { Button, Checkbox, DropdownButton } from 'react-bootstrap';
-import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED,
+import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED, QUEUE_STARTED,
          AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../../constants';
 
 import NumSnapshotsDropDown from '../../containers/NumSnapshotsDropDown.jsx';
@@ -19,6 +19,9 @@ export default class QueueControl extends React.Component {
 
     this.state = {
       options: {
+        [QUEUE_STARTED]: [
+          { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
+        ],
         [QUEUE_RUNNING]: [
           { text: 'Stop', class: 'btn-danger', action: props.stopQueue, key: 1 },
         ],
@@ -33,6 +36,9 @@ export default class QueueControl extends React.Component {
 
     this.sampleState = {
       options: {
+        [QUEUE_STARTED]: [
+          { text: 'Pause', class: 'btn-warning', action: this.props.pause, key: 2 },
+        ],
         [QUEUE_RUNNING]: [
           { text: 'Pause', class: 'btn-warning', action: this.props.pause, key: 2 },
         ],

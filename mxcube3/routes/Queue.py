@@ -613,8 +613,8 @@ def set_autmount():
 @mxcube.route("/mxcube/api/v0.1/queue/num_snapshots", methods=["PUT"])
 def set_num_snapshots():
     data = request.get_json()
-    mxcube.NUM_SNAPSHOTS = data.get("num_snapshots", 4)
-    resp = jsonify({'numSnapshots': data.get("num_snapshots", 4)})
+    mxcube.NUM_SNAPSHOTS = data.get("numSnapshots", 4)
+    resp = jsonify({'numSnapshots': data.get("numSnapshots", 4)})
     resp.status_code = 200
 
     return resp
