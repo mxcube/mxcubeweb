@@ -22,6 +22,7 @@ class SelectProposal extends React.Component {
   }
 
   handleCancel() {
+    this.props.singOut();
     this.props.hide();
   }
 
@@ -41,7 +42,7 @@ class SelectProposal extends React.Component {
     }));
 
     return (
-      <Modal show={this.props.show} onHide={this.handleCancel}>
+      <Modal show={this.props.show} backdrop="static" onHide={this.handleCancel}>
         <Modal.Header closeButton>
           <Modal.Title>Select a proposal</Modal.Title>
         </Modal.Header>
