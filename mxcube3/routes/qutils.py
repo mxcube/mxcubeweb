@@ -253,6 +253,13 @@ def get_queue_state():
               }
     """
     queue = queue_to_dict()
+
+    # in case the user logged out without unloading a sample
+    # we populate the queue with that sample
+    if not queue and mxcube.CURRENTLY_MOUNTED_SAMPLE:
+        add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE, mxcube.CURRENTLY_MOUNTED_SAMPLE_DATA)
+        queue = queue_to_dict()
+    
     if queue:
         queue.pop("sample_order")
 
@@ -812,6 +819,12 @@ def add_sample(sample_id, item):
     :param str sample_id: Sample id (often sample changer location)
     :returns: SampleQueueEntry
     """
+    if item['location'] == 'Manual':
+        mxcube.CURRENTLY_MOUNTED_SAMPLE_IS_MANUAL = True
+    else:
+        mxcube.CURRENTLY_MOUNTED_SAMPLE_IS_MANUAL = False
+        mxcube.CURRENTLY_MOUNTED_SAMPLE_DATA = item
+
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)
 

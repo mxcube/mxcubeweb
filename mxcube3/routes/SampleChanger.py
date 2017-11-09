@@ -74,7 +74,7 @@ def get_samples_list():
         if s.isLoaded():
             state = SAMPLE_MOUNTED
         elif s.hasBeenLoaded():
-            state.COLLECTED
+            state = COLLECTED
         else:
             state = UNCOLLECTED
         sample_dm = s.getID() or ""

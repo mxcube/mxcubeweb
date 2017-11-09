@@ -101,6 +101,10 @@ def signout():
     mxcube.queue = qutils.new_queue()
     mxcube.shapes.clear_all()
 
+    if mxcube.CURRENTLY_MOUNTED_SAMPLE_IS_MANUAL:
+        mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+        mxcube.CURRENTLY_MOUNTED_SAMPLE_IS_MANUAL = False
+
     LOGGED_IN_USER = None
     if remote_access.is_master(session.sid):
         state_storage.flush()
