@@ -35,13 +35,13 @@ def lims_login(loginID, password):
 
         try:
             proposals = mxcube.db_connection.get_proposals_by_user(loginID)
-            logging.getLogger('HWR').error('[LIMS] Proposal list, %s' % proposals)
+            logging.getLogger('HWR').info('[LIMS] Proposal list, %s' % proposals)
 
-            session['proposal_list'] = proposals
+            session['proposal_list'] = copy.deepcopy(proposals)
         except:
             logging.getLogger('HWR').error('[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
             return dict({'status': {'code': '0'}})
-        for prop in proposals:
+        for prop in session['proposal_list']:
             # if len(prop['Session']) == 0:
             todays_session = mxcube.db_connection.get_todays_session(prop)
             prop['Session'] = [todays_session]
@@ -49,7 +49,7 @@ def lims_login(loginID, password):
             #     todays_session = mxcube.db_connection.get_todays_session(prop)
             #     prop['Session'] = [todays_session]
 
-        login_res['proposalList'] = proposals
+        login_res['proposalList'] = session['proposal_list']
         login_res['status'] = {"code": "ok", "msg": "Successful login"}
 
     else:
