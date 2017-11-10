@@ -57,8 +57,14 @@ class SelectProposal extends React.Component {
         </div>
         </Modal.Body>
         <Modal.Footer>
-          <ButtonToolbar className="pull-rigth">
-            <Button bsStyle="primary" disabled={this.props.selectedProposal === ''}
+          <ButtonToolbar>
+            <Button bsStyle="default"
+              onClick={this.handleCancel}
+            >
+              Sing Out
+            </Button>
+            <Button bsStyle="primary" className="pull-right"
+              disabled={this.props.selectedProposal === ''}
               onClick={this.sendProposal}
             >
               Select Proposal
