@@ -819,12 +819,6 @@ def add_sample(sample_id, item):
     :param str sample_id: Sample id (often sample changer location)
     :returns: SampleQueueEntry
     """
-    if item['location'] == 'Manual':
-        mxcube.CURRENTLY_MOUNTED_SAMPLE_IS_MANUAL = True
-    else:
-        mxcube.CURRENTLY_MOUNTED_SAMPLE_IS_MANUAL = False
-        mxcube.CURRENTLY_MOUNTED_SAMPLE_DATA = item
-
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)
 
