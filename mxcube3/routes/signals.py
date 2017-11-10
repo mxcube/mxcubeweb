@@ -10,9 +10,10 @@ from mxcube3.routes import qutils
 from mxcube3.routes import scutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
+from sample_changer.Container import Pin
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
-from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED
+from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED, queue_to_dict
 from queue_entry import CENTRING_METHOD
 from mxcube3.routes.transportutils import to_camel, from_camel
 
@@ -96,7 +97,7 @@ def sc_state_changed(*args):
     elif loaded_sample:
         sc_location = loaded_sample.getAddress()
 
-    known_location = scutils.get_current_sample()
+    known_location = scutils.get_current_sample().get('sampleID', '')
     location = known_location if known_location else sc_location
 
     if new_state == SampleChangerState.Moving:
@@ -137,8 +138,14 @@ def loaded_sample_changed(sample):
 
     logging.getLogger("HWR").info('loaded sample changed now is: ' + address)
 
+    if isinstance(sample, Pin):
+        # recreate the dict with the sample info
+        q = queue_to_dict()
+        sampleID = sample.getAddress()
+        sample_data = q.get(sampleID, {})
+     
     try:
-        scutils.set_current_sample(address)
+        scutils.set_current_sample(sample_data)
         msg = {'signal': 'loadReady', 'location': address}
         socketio.emit('sc', msg, namespace='/hwr')
         socketio.emit("loaded_sample_changed", {'address': address, 'barcode': barcode}, namespace="/hwr")

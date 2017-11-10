@@ -660,7 +660,7 @@ def wait_for_centring_finishes(*args, **kwargs):
 
     # we do not send/save any centring data if there is no sample
     # to avoid the 2d centring when no sample is mounted
-    if scutils.get_current_sample() == '':
+    if scutils.get_current_sample().get('sampleID', '') == '':
         return
     try:
         motor_positions = mxcube.diffractometer.centringStatus["motors"]

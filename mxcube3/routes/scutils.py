@@ -8,11 +8,17 @@ from mxcube3 import app as mxcube
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 
 
-def set_current_sample(sample_id):
-    mxcube.CURRENTLY_MOUNTED_SAMPLE = str(sample_id)
+def set_current_sample(sample):
+    mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
 
 def get_current_sample():
-    return mxcube.CURRENTLY_MOUNTED_SAMPLE
+    if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+        return mxcube.CURRENTLY_MOUNTED_SAMPLE
+    else:
+        return {}
+
+def get_sample_info(location):
+    return {}
 
 def set_sample_to_be_mounted(loc):
     mxcube.SAMPLE_TO_BE_MOUNTED = loc
@@ -25,7 +31,7 @@ def mount_sample(beamline_setup_hwobj,
                  centring_done_cb, async_result):
 
     logging.getLogger('user_level_log').info("Loading sample ...")
-    set_current_sample(data_model.loc_str)
+    set_current_sample(data_model)
 
     beamline_setup_hwobj.shape_history_hwobj.clear_all()
     log = logging.getLogger("user_level_log")
@@ -101,10 +107,10 @@ def mount_sample(beamline_setup_hwobj,
 
 def mount_sample_clean_up(sample):
     try:
-        msg = '[SC] mounting %s (%r)', sample['location'], sample['sampleID']
+        msg = '[SC] mounting %s (%r)' % (sample['location'], sample['sampleID'])
         logging.getLogger('HWR').info(msg)
         set_sample_to_be_mounted(sample['sampleID'])
-        set_current_sample(sample['sampleID'])
+        set_current_sample(sample)
         mxcube.CURRENTLY_MOUNTED_SAMPLE_DATA = sample
 
         if not sample['location'] == 'Manual':
@@ -113,7 +119,7 @@ def mount_sample_clean_up(sample):
         mxcube.queue.mounted_sample = sample['sampleID']
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
-        set_current_sample('')
+        set_current_sample(None)
         raise
     else:
         # Clearing centered position
@@ -133,7 +139,7 @@ def unmount_sample_clean_up(sample):
         raise
     else:
         mxcube.queue.mounted_sample = ''
-        set_current_sample('')
+        set_current_sample(None)
         # Remove Centring points
 
         mxcube.shapes.clear_all()
