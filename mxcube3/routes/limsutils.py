@@ -35,13 +35,12 @@ def lims_login(loginID, password):
 
         try:
             proposals = mxcube.db_connection.get_proposals_by_user(loginID)
-            logging.getLogger('HWR').error('[LIMS] Proposal list, %s' % proposals)
-
-            session['proposal_list'] = proposals
+            logging.getLogger('HWR').info('[LIMS] Retrieving proposal list for user: %s, proposals: %s' % (loginID, proposals))
+            session['proposal_list'] = copy.deepcopy(proposals)
         except:
             logging.getLogger('HWR').error('[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
             return dict({'status': {'code': '0'}})
-        for prop in proposals:
+        for prop in session['proposal_list']:
             # if len(prop['Session']) == 0:
             todays_session = mxcube.db_connection.get_todays_session(prop)
             prop['Session'] = [todays_session]
@@ -49,7 +48,12 @@ def lims_login(loginID, password):
             #     todays_session = mxcube.db_connection.get_todays_session(prop)
             #     prop['Session'] = [todays_session]
 
-        login_res['proposalList'] = proposals
+    	# append a dummy proposal data so staff can select instead of their own research
+        if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None):
+            dummy = mxcube.session.commissioning_fake_proposal
+    	    session['proposal_list'].append(dummy)
+
+        login_res['proposalList'] = session['proposal_list']
         login_res['status'] = {"code": "ok", "msg": "Successful login"}
 
     else:
@@ -80,7 +84,7 @@ def get_proposal_info(proposal):
         _p = "%s%s" % (prop.get('Proposal').get('code', ''),
                        prop.get('Proposal').get('number', ''))
 
-        if _p == proposal:
+        if _p == proposal.lower():
             return prop
 
     return {}
@@ -90,6 +94,10 @@ def select_proposal(proposal):
     proposal_info = get_proposal_info(proposal)
     logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal)
     logging.getLogger('HWR').info("[LIMS] Proposal info: %s" % proposal_info)
+    if mxcube.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
+        if hasattr(mxcube.session, 'set_in_commissioning'):
+            mxcube.session.set_in_commissioning(proposal_info)
+    	    logging.getLogger('HWR').info("[LIMS] Commissioning proposal flag set.")
 
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')

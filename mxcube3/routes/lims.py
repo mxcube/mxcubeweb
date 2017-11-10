@@ -13,7 +13,7 @@ def proposal_samples(proposal_id):
     # 'db_connection.get_samples'
     lims_samples = mxcube.db_connection.get_samples(proposal_id, None)
     samples_info_list = [limsutils.convert_to_dict(x) for x in lims_samples]
-
+   
     for sample_info in samples_info_list:
         sample_info["limsID"] = sample_info.pop("sampleId")
         sample_info["limsLink"] = mxcube.rest_lims.sample_link()
