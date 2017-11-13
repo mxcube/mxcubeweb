@@ -257,7 +257,7 @@ def get_queue_state():
     # in case the user logged out without unloading a sample
     # we populate the queue with that sample
     if not queue and mxcube.CURRENTLY_MOUNTED_SAMPLE:
-        add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE.get('sampleID'), mxcube.CURRENTLY_MOUNTED_SAMPLE_DATA)
+        add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE.get('sampleID'), mxcube.CURRENTLY_MOUNTED_SAMPLE)
         queue = queue_to_dict()
     
     if queue:

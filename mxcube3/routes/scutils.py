@@ -111,7 +111,6 @@ def mount_sample_clean_up(sample):
         logging.getLogger('HWR').info(msg)
         set_sample_to_be_mounted(sample['sampleID'])
         set_current_sample(sample)
-        mxcube.CURRENTLY_MOUNTED_SAMPLE_DATA = sample
 
         if not sample['location'] == 'Manual':
             mxcube.sample_changer.load(sample['sampleID'], wait=False)

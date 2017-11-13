@@ -102,7 +102,7 @@ def signout():
     mxcube.shapes.clear_all()
 
     if mxcube.CURRENTLY_MOUNTED_SAMPLE:
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE_DATA['location'] == 'Manual':
+        if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
             mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
     LOGGED_IN_USER = None
