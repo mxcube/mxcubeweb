@@ -293,16 +293,18 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'SET_INITIAL_STATE': {
       const sampleList = { ...state.sampleList };
+      const order = [...state.order];
 
       for (const sampleID in action.data.queue.queue) {
         if (action.data.queue.queue.hasOwnProperty(sampleID)) {
           sampleList[sampleID] = action.data.queue.queue[sampleID];
+          order.push(sampleID);
           const pref = `${sampleList[sampleID].sampleName}-${sampleList[sampleID].proteinAcronym}`;
           sampleList[sampleID].defaultPrefix = pref;
         }
       }
 
-      return { ...state, sampleList };
+      return { ...state, sampleList, order };
     }
     case 'CLEAR_SAMPLE_GRID': {
       return Object.assign({}, state, { ...INITIAL_STATE });

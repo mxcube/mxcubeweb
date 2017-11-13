@@ -74,7 +74,7 @@ def get_samples_list():
         if s.isLoaded():
             state = SAMPLE_MOUNTED
         elif s.hasBeenLoaded():
-            state.COLLECTED
+            state = COLLECTED
         else:
             state = UNCOLLECTED
         sample_dm = s.getID() or ""
@@ -144,13 +144,13 @@ def mount_sample(loc):
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
 def unmount_sample(loc):
     mxcube.sample_changer.unload(loc, wait=True)
-    set_current_sample('')
+    set_current_sample(None)
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount_current/", methods=['GET'])
 def unmount_current():
     mxcube.sample_changer.unload(None, wait=True)
-    set_current_sample('')
+    set_current_sample(None)
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])

@@ -253,10 +253,17 @@ def get_queue_state():
               }
     """
     queue = queue_to_dict()
+
+    # in case the user logged out without unloading a sample
+    # we populate the queue with that sample
+    if not queue and mxcube.CURRENTLY_MOUNTED_SAMPLE:
+        add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE.get('sampleID'), mxcube.CURRENTLY_MOUNTED_SAMPLE)
+        queue = queue_to_dict()
+    
     if queue:
         queue.pop("sample_order")
 
-    res = { "loaded": scutils.get_current_sample(),
+    res = { "loaded": scutils.get_current_sample().get('sampleID', ''),
             "centringMethod": mxcube.CENTRING_METHOD,
             "autoMountNext": get_auto_mount_sample(),
             "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
@@ -1540,7 +1547,7 @@ def execute_entry_with_id(sid, tindex=None):
         # the sample task), so in order function as expected; just mount the
         # sample
         if (not len(current_queue[sid]["tasks"])) and \
-           sid != scutils.get_current_sample():
+           sid != scutils.get_current_sample().get('sampleID', ''):
 
             scutils.mount_sample_clean_up(current_queue[sid])
 
@@ -1634,7 +1641,7 @@ def set_auto_mount_sample(automount, current_sample=None):
     mxcube.AUTO_MOUNT_SAMPLE = automount
     current_queue = queue_to_dict()
 
-    sample = current_sample if current_sample else scutils.get_current_sample()
+    sample = current_sample if current_sample else scutils.get_current_sample().get('sampleID', '')
 
     # If automount next is off, that is do not mount and run next
     # sample, disable all entries except the current one
