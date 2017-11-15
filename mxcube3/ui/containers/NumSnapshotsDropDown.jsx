@@ -30,6 +30,7 @@ class NumSnapshotsDropDown extends React.Component {
           <MenuItem key="1" onClick={ () => (this.setNumSnapshots(1)) }>1</MenuItem>
           <MenuItem key="2" onClick={ () => (this.setNumSnapshots(2)) }>2</MenuItem>
           <MenuItem key="4" onClick={ () => (this.setNumSnapshots(4)) }>4</MenuItem>
+          <MenuItem key="0" onClick={ () => (this.setNumSnapshots(0)) }>0</MenuItem>
         </DropdownButton>
       </div>
     );
