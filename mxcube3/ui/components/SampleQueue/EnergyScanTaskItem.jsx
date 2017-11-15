@@ -27,18 +27,21 @@ export default class EnergyScanTaskItem extends Component {
     };
   }
 
-  getResult(state) {
+  getResult(state, data) {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
+    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
 
     return (
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
                      borderBottom: '1px solid #DDD',
+                     marginRight: '1px',
                      padding: '0.5em' } }
       >
-        <a href={this.props.data.limstResultData}> ISPyB link</a>
+        <a href={link} target="_blank"> View Results in ISPyB</a>
+        {this.getDiffPlan(data)}
       </div>
     );
   }
