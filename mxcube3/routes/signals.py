@@ -313,6 +313,7 @@ def collect_oscillation_failed(owner=None, status=FAILED, state=None,
 
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     node = last_queue_node()
+    mxcube.NODE_ID_TO_LIMS_ID[node['queue_id']] = lims_id
 
     if not qutils.is_interleaved(node["node"]):
         qutils.enable_entry(node['queue_id'], False)

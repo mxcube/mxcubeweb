@@ -79,10 +79,18 @@ export function sendGetSampleList() {
 
 export function sendSyncSamples(proposalId) {
   return function (dispatch) {
+    dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
     fetch(`mxcube/api/v0.1/lims/samples/${proposalId}`, { credentials: 'include' })
             .then(response => response.json())
             .then(json => {
-              dispatch(setSamplesInfoAction(json.samples_info));
+              const sampleList = json.sampleList;
+              const sampleOrder = json.sampleOrder;
+
+              dispatch(updateSampleList(sampleList, sampleOrder));
+              dispatch(setLoading(false));
+            }, () => {
+              dispatch(setLoading(false));
+              dispatch(showErrorPanel(true, 'Synchronization with ISPyB failed'));
             });
   };
 }

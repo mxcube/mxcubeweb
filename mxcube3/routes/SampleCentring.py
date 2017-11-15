@@ -667,6 +667,7 @@ def wait_for_centring_finishes(*args, **kwargs):
     except KeyError:
         msg = "[SAMPLEVIEW] Centring error, cannot retrieve motor positions."
         logging.getLogger('HWR').exception(msg)
+        return
 
     # If centering is valid add the point, otherwise remove it
     if centring_status['valid']:
