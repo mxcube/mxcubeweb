@@ -92,6 +92,7 @@ class SampleViewContainer extends Component {
                   workflows={this.props.workflows}
                   savedPointId={this.props.sampleViewState.savedPointId}
                   groupFolder={this.props.groupFolder}
+                  clickCentring={this.props.sampleViewState.clickCentring}
                 />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
