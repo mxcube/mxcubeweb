@@ -5,9 +5,57 @@ import logging
 import copy
 
 import queue_model_objects_v1 as qmo
+import scutils
 
 from mxcube3 import app as mxcube
 from flask import session
+
+
+def init_sample_list():
+    mxcube.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
+
+
+def sample_list_set(sample_list):
+    mxcube.SAMPLE_LIST = sample_list
+
+
+def sample_list_get(loc=None):
+    res = mxcube.SAMPLE_LIST
+
+    if loc:
+        res = mxcube.SAMPLE_LIST.get("sampleList").get(loc, {})
+
+    return res
+
+
+def sample_list_sync_sample(lims_sample):
+    lims_code = lims_sample.get("code", None)
+    lims_location = lims_sample.get("lims_location")
+    sample_to_update = None
+
+    # LIMS sample has code, check if the code was read by SC
+    if lims_code and scutils.sc_contetns_from_code_get(lims_code):
+        sample_to_update = scutils.sc_contents_from_code_get(lims_code)
+    elif lims_location:
+        # Asume that the samples have been put in the right place of the SC
+        sample_to_update = scutils.sc_contents_from_location_get(lims_location)
+
+    if sample_to_update:
+        loc = sample_to_update["sampleID"]
+        sample_list_update_sample(loc, lims_sample)
+
+
+def sample_list_update_sample(loc, sample):
+    _sample = mxcube.SAMPLE_LIST["sampleList"].get(loc, {})
+
+    # If sample exists in sample list update it, otherwise add it
+    if _sample:
+        mxcube.SAMPLE_LIST["sampleList"].get(loc, {}).update(sample)
+    else:
+        mxcube.SAMPLE_LIST["sampleList"][loc] = sample
+
+    return mxcube.SAMPLE_LIST["sampleList"].get(loc, {})
+
 
 def lims_login(loginID, password):
     """
@@ -122,9 +170,23 @@ def get_default_prefix(sample_data, generic_name):
     sample.code = sample_data.get("code", "")
     sample.name = sample_data.get("sampleName", "")
     sample.location = sample_data.get("location", "").split(':')
+    sample.lims_id = sample_data.get("limsID", -1)
     sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
 
     return mxcube.session.get_default_prefix(sample, generic_name)
+
+def get_default_subdir(sample_data):
+    subdir = ""
+
+    sample_name = sample_data.get("sampleName", "")
+    protein_acronym = sample_data.get("proteinAcronym", "")
+
+    if protein_acronym:
+        subdir = "%s/%s-%s/" %(protein_acronym, protein_acronym, sample_name)
+    else:
+        subdir = "%s/" % sample_name
+
+    return subdir
 
 
 def convert_to_dict(ispyb_object):

@@ -275,7 +275,7 @@ def get_queue_state():
     return res
 
 
-def _handle_dc(sample_id, node, include_lims_data=False):
+def _handle_dc(sample_id, node, include_lims_data=True):
     parameters = node.as_dict()
     parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
@@ -299,14 +299,15 @@ def _handle_dc(sample_id, node, include_lims_data=False):
                                           parameters['fileName'])
 
     limsres = {}
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, 'null')
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
     if include_lims_data and mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(node.id)
+        limsres = mxcube.rest_lims.get_dc(lims_id)
 
     # Always add link to data, (no request made)
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(node.id)
+    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -340,6 +341,12 @@ def _handle_wf(sample_id, node):
 
     parameters['fullPath'] = os.path.join(parameters['path'],
                                           parameters['fileName'])
+
+    # Always add link to data, (no request made)
+    limsres = {}
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
+    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+
     res = {"label": parameters['label'],
            "type": "Workflow",
            "name": node._type,
@@ -348,7 +355,8 @@ def _handle_wf(sample_id, node):
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
            "checked": node.is_enabled(),
-           "state": state
+           "state": state,
+           "limsResultData": limsres,
            }
 
     return res
@@ -430,6 +438,11 @@ def _handle_char(sample_id, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
+    # Always add link to data, (no request made)
+    limsres = {}
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
+    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+
     originID, task = _handle_diffraction_plan(node)
     res = {"label": "Characterisation",
            "type": "Characterisation",
@@ -439,6 +452,7 @@ def _handle_char(sample_id, node):
            "taskIndex": node_index(node)['idx'],
            "queueID": node._node_id,
            "state": state,
+           "limsResultData": limsres,
            "diffractionPlan": task,
            "diffractionPlanID": originID
            }
@@ -510,21 +524,18 @@ def _handle_sample(node):
     else:
         state = UNCOLLECTED
 
-    sample = {node.loc_str: {'sampleID': node.loc_str,
-                             'queueID': node._node_id,
-                             'code': node.code,
-                             'location': location,
-                             'sampleName': node.get_name(),
-                             'proteinAcronym': node.crystals[0].protein_acronym,
-                             'type': 'Sample',
-                             'checked': enabled,
-                             'state': state,
-                             'tasks': queue_to_dict_rec(node)}}
+    sample = {'sampleID': node.loc_str,
+              'queueID': node._node_id,
+              'code': node.code,
+              'location': location,
+              'sampleName': node.get_name(),
+              'proteinAcronym': node.crystals[0].protein_acronym,
+              'type': 'Sample',
+              'checked': enabled,
+              'state': state,
+              'tasks': queue_to_dict_rec(node)}
 
-    sample[node.loc_str]["defaultPrefix"] = limsutils.\
-        get_default_prefix(sample[node.loc_str], False)
-
-    return sample
+    return {node.loc_str: sample}
 
 
 def queue_to_dict_rec(node):
@@ -835,9 +846,12 @@ def add_sample(sample_id, item):
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)
 
-    # We should really use sample_id instead of loc_str
     sample_model.loc_str = sample_id
     sample_model.free_pin_mode = item['location'] == 'Manual'
+
+    # Manually added sample, make sure that its on the server side sample list
+    if item['location'] == 'Manual':
+        sample = limsutils.sample_list_update_sample(item['location'], item)
 
     sample_model.set_name(item['sampleName'])
     sample_model.crystals[0].protein_acronym = item.get('proteinAcronym', '')

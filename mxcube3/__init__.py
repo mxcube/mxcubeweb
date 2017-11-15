@@ -98,7 +98,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(NullHandler())
     custom_log_handler = logging_handler.MX3LoggingHandler()
-    custom_log_handler.setLevel(logging.INFO)
+    custom_log_handler.setLevel(logging.DEBUG)
     custom_log_handler.setFormatter(log_formatter)
     exception_logger = logging.getLogger("exceptions")
     hwr_logger = logging.getLogger("HWR")
@@ -145,17 +145,18 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
         app.plotting = hwr.getHardwareObject(cmdline_options.plotting)
 
-
         # SampleID of currently mounted sample
         app.CURRENTLY_MOUNTED_SAMPLE = None
         app.SAMPLE_TO_BE_MOUNTED = ''
-        app.AUTO_MOUNT_SAMPLE = True
+        app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_LOOP_CENTER = False
-        app.AUTO_ADD_DIFFPLAN = True
+        app.AUTO_ADD_DIFFPLAN = False
         app.CENTRING_METHOD = None
         app.NUM_SNAPSHOTS = 4
         app.NODE_ID_TO_LIMS_ID = {}
         app.INITIAL_FILE_LIST = []
+        app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
+        app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
 
         # set up streaming
         from mxcube3.video import streaming

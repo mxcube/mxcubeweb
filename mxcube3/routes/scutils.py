@@ -8,8 +8,30 @@ from mxcube3 import app as mxcube
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 
 
+def sc_contents_init():
+    mxcube.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
+
+
+def sc_contents_add(sample):
+    code, location = sample.get("code", None), sample.get("sampleID")
+
+    if code:
+        mxcube.SC_CONTENTS.get("FROM_CODE")[code] = sample
+    else:
+        mxcube.SC_CONTENTS.get("FROM_LOCATION")[location] = sample
+
+
+def sc_contents_from_code_get(code):
+    return mxcube.SC_CONTENTS["FROM_CODE"].get(code, {})
+
+
+def sc_contents_from_location_get(loc):
+    return mxcube.SC_CONTENTS["FROM_LOCATION"].get(loc, {})
+
+
 def set_current_sample(sample):
     mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
+
 
 def get_current_sample():
     if mxcube.CURRENTLY_MOUNTED_SAMPLE:
@@ -17,14 +39,18 @@ def get_current_sample():
     else:
         return {}
 
+
 def get_sample_info(location):
     return {}
+
 
 def set_sample_to_be_mounted(loc):
     mxcube.SAMPLE_TO_BE_MOUNTED = loc
 
+
 def get_sample_to_be_mounted():
     return mxcube.SAMPLE_TO_BE_MOUNTED
+
 
 def mount_sample(beamline_setup_hwobj,
                  view, data_model,

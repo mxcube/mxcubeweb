@@ -91,13 +91,22 @@ def get_samples_list():
         samplesByCoords[coords] = sample_data['sampleID']
 
         sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
+        sample_data["defaultSubDir"] = limsutils.get_default_subdir(sample_data)
 
         samples[s.getAddress()] = sample_data
+        limsutils.sc_contents_add(sample_data)
+
+        if sample_data["state"] == SAMPLE_MOUNTED:
+            scutils.set_current_sample(sample_data)
+
 
     # sort by location, using coords tuple
     order.sort()
-
-    return jsonify({ 'sampleList': samples, 'sampleOrder': [samplesByCoords[coords] for coords in order] })
+    sample_list = { 'sampleList': samples,
+                    'sampleOrder': [samplesByCoords[coords] for coords in order] }
+    
+    limsutils.sample_list_set(sample_list)
+    return jsonify(sample_list)
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/state", methods=['GET'])
 def get_sc_state():
