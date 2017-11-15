@@ -217,10 +217,12 @@ export class SampleGridItem extends React.Component {
 
 
   sampleDisplayName() {
-    let name = this.props.sampleData.sampleName;
+    let name = this.props.sampleData.proteinAcronym || '';
 
-    if (this.props.sampleData.proteinAcronym) {
-      name += ` - ${this.props.sampleData.proteinAcronym}`;
+    if (this.props.sampleData.sampleName && name) {
+      name += ` - ${this.props.sampleData.sampleName}`;
+    } else {
+      name = this.props.sampleData.sampleName || '';
     }
 
     return name;
