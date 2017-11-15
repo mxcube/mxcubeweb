@@ -461,7 +461,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (keyPressed === 'z' && motors.focus.state === 2) {
+    } else if (keyPressed === 'z' && motors.zoom.state === 2) {
       // in this case zooming
       if (e.deltaY > 0 && motors.zoom.position < 10) {
         // zoom in
