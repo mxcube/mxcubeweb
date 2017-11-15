@@ -986,24 +986,38 @@ def set_char_params(model, entry, task_data, sample_model):
     """
     params = task_data['parameters']
     set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
-    model.characterisation_parameters.set_from_dict(params)
 
-    # Set default characterisation values taken from ednadefaults for
-    # those values that are no used in the UI.
-
+    # Set default characterisation values taken from ednadefaults xml file
     defaults = et.fromstring(mxcube.beamline.getObjectByRole("data_analysis").
                              edna_default_input)
-
-    model.characterisation_parameters.aimed_i_sigma = float(defaults.find(
-        ".diffractionPlan/aimedIOverSigmaAtHighestResolution/value").text)
 
     model.characterisation_parameters.aimed_completness = float(defaults.find(
         ".diffractionPlan/aimedCompleteness/value").text)
 
+    model.characterisation_parameters.aimed_i_sigma = float(defaults.find(
+        ".diffractionPlan/aimedIOverSigmaAtHighestResolution/value").text)
+
     model.characterisation_parameters.aimed_resolution = float(defaults.find(
         ".diffractionPlan/aimedResolution/value").text)
 
+    model.characterisation_parameters.max_crystal_vdim = float(defaults.find(
+        "./sample/size/x/value").text)
+
+    model.characterisation_parameters.min_crystal_vdim = float(defaults.find(
+        ".sample/size/y/value").text)
+
+    model.characterisation_parameters.rad_suscept = float(defaults.find(
+            ".sample/susceptibility/value").text)
+    
+    try:
+        params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(params["strategy_complexity"])
+    except ValueError:
+         params["strategy_complexity"] = 0
+
+    model.characterisation_parameters.set_from_dict(params)
+
     # MXCuBE3 specific shape attribute
+    # TODO: Please consider defining shape attribute properly !
     model.shape = params["shape"]
 
     model.set_enabled(task_data['checked'])
