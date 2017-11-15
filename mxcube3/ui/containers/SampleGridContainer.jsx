@@ -371,11 +371,12 @@ class SampleGridContainer extends React.Component {
     let fi = false;
 
     if (sample) {
-      let sampleFilter = `${sample.sampleName} ${sample.proteinAcronym} `;
-      sampleFilter += `${sample.code} ${sample.location.toLowerCase()}`;
+      const sampleFilter = `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
+      const locationFilter = `${sample.code} ${sample.location}`;
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
-      fi &= sampleFilter.includes(this.props.filterOptions.puckFilter.toLowerCase());
+
+      fi &= locationFilter.includes(this.props.filterOptions.puckFilter.toLowerCase());
       fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
       fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
     }
@@ -694,7 +695,7 @@ class SampleGridContainer extends React.Component {
       >
         <ul id="contextMenu" style={{ display: 'none' }} className="dropdown-menu" role="menu">
           <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-            <span><Glyphicon glyph="unchecked" /> En-queue Sample </span>
+            <span><Glyphicon glyph="unchecked" /> Add to Queue</span>
           </MenuItem>
           <MenuItem eventKey="2" onClick={this.mountAndCollect}>
             <span><Glyphicon glyph="screenshot" /> Mount and collect</span>

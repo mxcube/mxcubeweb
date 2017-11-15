@@ -870,6 +870,27 @@ def add_sample(sample_id, item):
     return sample_model._node_id
 
 
+def strip_prefix(pt, prefix):
+    """
+    Strips the reference, wedge and mad prefix from a given prefix. For example 
+    removes ref- from the beginning and _w[n] and -pk, -ip, -ipp from the end.
+
+    :param PathTemplate pt: path template used to create the prefix
+    :param str prefix: prefix from the client
+    :returns: stripped prefix
+    """
+    if pt.reference_image_prefix == prefix[0:len(pt.reference_image_prefix)]:
+        prefix = prefix[len(pt.reference_image_prefix) + 1:]
+
+    if pt.wedge_prefix == prefix[-len(pt.wedge_prefix):]:
+       prefix = prefix[:-(len(pt.wedge_prefix) + 1)]
+
+    if pt.mad_prefix == prefix[-len(pt.mad_prefix):]:
+        prefix = prefix[:-(len(pt.mad_prefix) + 1)]
+
+    return prefix
+
+        
 def set_dc_params(model, entry, task_data, sample_model):
     """
     Helper method that sets the data collection parameters for a DataCollection.
@@ -894,8 +915,12 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
         getProperty("precision", 4))
 
-    if params['prefix']:
-        acq.path_template.base_prefix = params['prefix']
+    # mxcube3 passes entire prefix as prefix, including reference, mad and wedge
+    # prefix. So we strip those before setting the actual base_prefix.
+    prefix = strip_prefix(acq.path_template, params['prefix'])
+
+    if prefix:
+        acq.path_template.base_prefix = prefix
     else:
         acq.path_template.base_prefix = mxcube.session.\
             get_default_prefix(sample_model, False)
@@ -1013,24 +1038,38 @@ def set_char_params(model, entry, task_data, sample_model):
     """
     params = task_data['parameters']
     set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
-    model.characterisation_parameters.set_from_dict(params)
 
-    # Set default characterisation values taken from ednadefaults for
-    # those values that are no used in the UI.
-
+    # Set default characterisation values taken from ednadefaults xml file
     defaults = et.fromstring(mxcube.beamline.getObjectByRole("data_analysis").
                              edna_default_input)
-
-    model.characterisation_parameters.aimed_i_sigma = float(defaults.find(
-        ".diffractionPlan/aimedIOverSigmaAtHighestResolution/value").text)
 
     model.characterisation_parameters.aimed_completness = float(defaults.find(
         ".diffractionPlan/aimedCompleteness/value").text)
 
+    model.characterisation_parameters.aimed_i_sigma = float(defaults.find(
+        ".diffractionPlan/aimedIOverSigmaAtHighestResolution/value").text)
+
     model.characterisation_parameters.aimed_resolution = float(defaults.find(
         ".diffractionPlan/aimedResolution/value").text)
 
+    model.characterisation_parameters.max_crystal_vdim = float(defaults.find(
+        "./sample/size/x/value").text)
+
+    model.characterisation_parameters.min_crystal_vdim = float(defaults.find(
+        ".sample/size/y/value").text)
+
+    model.characterisation_parameters.rad_suscept = float(defaults.find(
+            ".sample/susceptibility/value").text)
+    
+    try:
+        params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(params["strategy_complexity"])
+    except ValueError:
+         params["strategy_complexity"] = 0
+
+    model.characterisation_parameters.set_from_dict(params)
+
     # MXCuBE3 specific shape attribute
+    # TODO: Please consider defining shape attribute properly !
     model.shape = params["shape"]
 
     model.set_enabled(task_data['checked'])

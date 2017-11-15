@@ -98,7 +98,8 @@
 
 
 .samples-grid-item-current {
-  background-color: #F0D64E;
+  border: 2px solid #5cb85c;
+  padding: 4px;
 }
 
 
@@ -152,7 +153,7 @@
 
 
 .sc_location {
-    font-size: x-small;
+    font-size: 11px;
     float: right;
 }
 
@@ -171,7 +172,7 @@
 
 
 .samples-grid-item-selected {
-    border: 2px solid #888 !important;
+    border: 2px dashed #337ab7 !important;
     padding: 4px;
 }
 
@@ -235,4 +236,9 @@
   min-width: 700px !important;
   max-width: 700px !important; 
   padding-bottom: 1em;
+}
+
+
+.sample-grid-task-item {
+  float: left;
 }

@@ -48,8 +48,8 @@ export default class ContextMenu extends React.Component {
         { text: 'Go To Point', action: () => this.goToPoint(), key: 5 },
         { text: 'divider', key: 6 },
         ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 26 } : {},
-        { text: 'Delete Point', action: () => this.removeShape(), key: 27 },
+        workflowTasks.point.length > 0 ? { text: 'divider', key: 7 } : {},
+        { text: 'Delete Point', action: () => this.removeShape(), key: 8 },
       ],
       TMP: [
         { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
@@ -58,9 +58,9 @@ export default class ContextMenu extends React.Component {
 	{ text: 'Add Energy Scan', action: () => this.showModal('EnergyScan'), key: 4 },
         { text: 'divider', key: 5 },
         ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 20 } : {},
-        { text: 'Save Point', action: () => this.savePoint(), key: 21 },
-        { text: 'Delete Point', action: () => this.removeShape(), key: 22 }
+        workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
+        { text: 'Save Point', action: () => this.savePoint(), key: 7 },
+        { text: 'Delete Point', action: () => this.removeShape(), key: 8 }
       ],
       GROUP: [
         { text: 'Add Datacollections', action: () => this.showModal('DataCollection'), key: 1 },
@@ -105,6 +105,11 @@ export default class ContextMenu extends React.Component {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
     const sid = _shape ? _shape.id : shape.id;
 
+    if (this.props.clickCentring) {
+      this.props.sampleActions.stopClickCentring();
+      this.props.sampleActions.sendAcceptCentring();
+    }
+
     this.props.showForm(
       modalName,
       [sampleID],
@@ -112,7 +117,7 @@ export default class ContextMenu extends React.Component {
         { ...defaultParameters[modalName.toLowerCase()],
           ...wf,
           prefix: sampleData.defaultPrefix,
-          subdir: `${this.props.groupFolder}${sampleData.sampleName}`,
+          subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
           cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
           numRows: shape.gridData ? shape.gridData.numRows : 0,
           numCols: shape.gridData ? shape.gridData.numCols : 0
@@ -164,9 +169,11 @@ export default class ContextMenu extends React.Component {
   }
 
   savePoint() {
+    if (this.props.clickCentring) {
+      this.props.sampleActions.stopClickCentring();
+      this.props.sampleActions.sendAcceptCentring();
+    }
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.stopClickCentring();
-    this.props.sampleActions.sendAcceptCentring();
   }
 
   goToPoint() {
@@ -181,9 +188,12 @@ export default class ContextMenu extends React.Component {
   }
 
   removeShape() {
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendAbortCentring();
+    if (this.props.clickCentring) {
+      this.props.sampleActions.sendAbortCentring();
+    }
+
     this.props.sampleActions.sendDeleteShape(this.props.shape.id);
+    this.props.sampleActions.showContextMenu(false);
   }
 
   measureDistance() {
@@ -230,7 +240,7 @@ export default class ContextMenu extends React.Component {
     let el = (<li key={type.key}><a onClick={type.action}>{type.text}</a></li>);
 
     if (type.text === 'divider') {
-      el = (<li className="divider" />);
+      el = (<li key={type.key} className="divider" />);
     }
 
     return el;

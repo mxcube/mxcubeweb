@@ -35,19 +35,21 @@ export default class XRFTaskItem extends Component {
     };
   }
 
-  getResult(state) {
-    if (state === TASK_UNCOLLECTED) {
+  getResult(state, data) {
+    if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
+    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
+
     return (
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
                      borderBottom: '1px solid #DDD',
-                     padding: '0.5em',
-                     height: '30px' } }
+                     marginRight: '1px',
+                     padding: '0.5em' } }
       >
-        {this.getIspybLink(state)}
-        {this.getPlot(state)}
+        <a href={link} target="_blank"> View Results in ISPyB</a>
+        {this.getDiffPlan(data)}
       </div>
     );
   }

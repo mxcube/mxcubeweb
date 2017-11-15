@@ -217,10 +217,12 @@ export class SampleGridItem extends React.Component {
 
 
   sampleDisplayName() {
-    let name = this.props.sampleData.sampleName;
+    let name = this.props.sampleData.proteinAcronym || '';
 
-    if (this.props.sampleData.proteinAcronym) {
-      name += ` - ${this.props.sampleData.proteinAcronym}`;
+    if (this.props.sampleData.sampleName && name) {
+      name += ` - ${this.props.sampleData.sampleName}`;
+    } else {
+      name = this.props.sampleData.sampleName || '';
     }
 
     return name;
@@ -297,9 +299,8 @@ export class SampleGridItem extends React.Component {
     let classes = classNames('samples-grid-item',
       { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
-        'samples-grid-item-to-be-collected':
-          this.props.picked && (!isCollected(this.props.sampleData) || this.props.current),
-        'samples-grid-item-current': this.props.current && !isCollected(this.props.sampleData),
+        'samples-grid-item-to-be-collected': this.props.picked,
+        'samples-grid-item-current': this.props.current,
         'samples-grid-item-collected': isCollected(this.props.sampleData) });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
