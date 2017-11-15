@@ -186,12 +186,12 @@ class SampleGridViewContainer extends React.Component {
    */
   showTaskForm(formName, extraParams = {}) {
     let prefix = '';
-    let path = '';
-    const subdir = '';
+    const path = '';
+    let subdir = '';
 
     if (Object.keys(this.props.selected).length === 1) {
       prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
-      path = this.props.sampleList[Object.keys(this.props.selected)[0]].sampleName;
+      subdir = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
     }
 
     const parameters = { parameters: {
@@ -226,7 +226,7 @@ class SampleGridViewContainer extends React.Component {
     let proposalId;
 
     try {
-      proposalId = this.props.loginData.Proposal.proposalId;
+      proposalId = this.props.loginData.proposalList[0].Proposal.proposalId;
     } catch (e) {
       return;
     }
@@ -605,7 +605,7 @@ class SampleGridViewContainer extends React.Component {
                     id="pipeline-mode-dropdown"
                     disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                     onClick={this.addSelectedSamplesToQueue}
-                    title={<span><Glyphicon glyph="plus" /> En-queue sample</span>}
+                    title={<span><Glyphicon glyph="plus" /> Add to Queue</span>}
                   >
                     <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
                       Add Data collection
