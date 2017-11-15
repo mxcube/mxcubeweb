@@ -461,14 +461,14 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (keyPressed === 'z' && motors.zoom.state === 2) {
+    } else if (keyPressed === 'z' && motors.focus.state === 2) {
       // in this case zooming
-      if (e.deltaY > 0 && zoom < motors.zoom.limits[1]) {
+      if (e.deltaY > 0 && motors.zoom.position < 10) {
         // zoom in
-        sendZoomPos(zoom + 1);
-      } else if (e.deltaY < 0 && zoom > motors.zoom.limits[0]) {
+        sendZoomPos(motors.zoom.position + 1);
+      } else if (e.deltaY < 0 && motors.zoom.position > 0) {
         // zoom out
-        sendZoomPos(zoom - 1);
+        sendZoomPos(motors.zoom.position - 1);
       }
     }
   }
