@@ -215,6 +215,13 @@ export default class PopInput extends React.Component {
         </div>
       </Popover>);
 
+    let value = this.props.data.value ? parseFloat(this.props.data.value) : '-';
+
+    if (value !== '-' && this.props.data.precision) {
+      value = value.toFixed(parseInt(this.props.data.precision, 10));
+    }
+
+
     return (
       <div style={this.props.style} className={`${this.props.className} popinput-input-container`}>
         { this.props.name ?
@@ -232,7 +239,7 @@ export default class PopInput extends React.Component {
               key="valueLabel"
               className={`popinput-input-link ${linkClass} ${stateClass}`}
             >
-              {this.props.data.value} {this.props.suffix}
+              {value} {this.props.suffix}
             </a>
           </OverlayTrigger>
         </span>

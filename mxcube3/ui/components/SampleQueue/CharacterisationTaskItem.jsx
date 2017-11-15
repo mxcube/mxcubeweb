@@ -32,14 +32,16 @@ export default class TaskItem extends Component {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
+    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
 
     return (
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
                      borderBottom: '1px solid #DDD',
+                     marginRight: '1px',
                      padding: '0.5em' } }
       >
-        <a href={this.props.data.limstResultData}> ISPyB link</a>
+        <a href={link} target="_blank"> View Results in ISPyB</a>
         {this.getDiffPlan(data)}
       </div>
     );
@@ -52,11 +54,14 @@ export default class TaskItem extends Component {
         // it can be empty
         diffPlan = (
             <span className="pull-right">
-            <a href="#"
-              onClick={this.showDiffPlan}
-            >
-            Diffraction plan available
-            </a>
+              <Button
+                bsSize="xs"
+                style={{ width: 'auto', marginTop: '-4px' }}
+                onClick={this.showDiffPlan}
+              >
+                <i className="glyphicon glyphicon-plus" />
+                Add Diffraction Plan
+              </Button>
           </span>
           );
       }
@@ -166,15 +171,15 @@ export default class TaskItem extends Component {
 
     return (
       <tr>
-        <td><a>{parameters.osc_start}</a></td>
-        <td><a>{parameters.osc_range}</a></td>
-        <td><a>{parameters.exp_time}</a></td>
+        <td><a>{parameters.osc_start.toFixed(2)}</a></td>
+        <td><a>{parameters.osc_range.toFixed(2)}</a></td>
+        <td><a>{parameters.exp_time.toFixed(2)}</a></td>
         <td><a>{parameters.num_images}</a></td>
-        <td><a>{parameters.transmission}</a></td>
-        <td><a>{parameters.resolution}</a></td>
-        <td><a>{parameters.energy}</a></td>
-        <td><a>{parameters.kappa_phi}</a></td>
-        <td><a>{parameters.kappa}</a></td>
+        <td><a>{parameters.transmission.toFixed(2)}</a></td>
+        <td><a>{parameters.resolution.toFixed(3)}</a></td>
+        <td><a>{parameters.energy.toFixed(4)}</a></td>
+        <td><a>{parameters.kappa_phi.toFixed(2)}</a></td>
+        <td><a>{parameters.kappa.toFixed(2)}</a></td>
       </tr>);
   }
 

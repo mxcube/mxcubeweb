@@ -76,6 +76,7 @@ export class TaskItem extends React.Component {
     let fImageUrl = '';
 
     const r = task.limsResultData;
+
     if (task.limsResultData && Object.keys(task.limsResultData).length > 0) {
       if (task.limsResultData.firstImageId) {
         fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
@@ -197,6 +198,9 @@ export class TaskItem extends React.Component {
 
     if (task.state === 0) {
       this.props.taskItemOnClick(e, task);
+    } else {
+      const limsLink = task.limsResultData.limsTaskLink ? task.limsResultData.limsTaskLink : '';
+      window.open(limsLink);
     }
   }
 
@@ -214,6 +218,8 @@ export class TaskItem extends React.Component {
     return (
       <div key={this.props.taskIndex} className="sample-grid-task-item">
         <OverlayTrigger
+          trigger={['hover']}
+          rootClose="true"
           ref="taskSummaryPopoverTrigger"
           placement={this.popoverPosition()}
           overlay={(
