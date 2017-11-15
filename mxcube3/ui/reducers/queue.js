@@ -6,7 +6,7 @@ const initialState = {
   current: { sampleID: null, running: false },
   queueStatus: QUEUE_STOPPED,
   autoMountNext: false,
-  autoAddDiffPlan: true,
+  autoAddDiffPlan: false,
   centringMethod: CLICK_CENTRING,
   numSnapshots: 4,
   groupFolder: ''
