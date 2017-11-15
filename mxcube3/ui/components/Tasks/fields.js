@@ -58,7 +58,7 @@ export const DisplayField = ({ label, value }) => (
       </FormGroup>
 );
 
-export const CheckboxField = ({ propName, label }) => (
+export const CheckboxField = ({ propName, label, defaultChecked }) => (
    <Field name={propName}
      component={ (prop) =>
        <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
@@ -66,7 +66,12 @@ export const CheckboxField = ({ propName, label }) => (
            {label}
          </Col>
          <Col xs={prop.col2 || 4}>
-           <Checkbox value={prop.input.value} onChange={prop.input.onChange} {...prop} />
+            <Checkbox
+              defaultChecked={defaultChecked}
+              value={prop.input.value}
+              onChange={prop.input.onChange}
+              {...prop}
+            />
          </Col>
        </FormGroup>
      }

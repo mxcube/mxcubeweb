@@ -36,6 +36,8 @@ def queue_start():
             sid = scutils.get_current_sample() or sample_id
             qutils.execute_entry_with_id(sid)
         else:
+            # Making sure all sample entries are enabled before running the queue
+            qutils.enable_sample_entries(queue["sample_order"], True)
             mxcube.queue.queue_hwobj.set_pause(False)
             mxcube.queue.queue_hwobj.execute()
 
@@ -478,13 +480,21 @@ def get_default_char_acq_params():
             'resolution': acq_parameters.resolution,
             'energy': acq_parameters.energy,
             'transmission': acq_parameters.transmission,
-            'shutterless': acq_parameters.shutterless,
+            'shutterless': False,
             'detector_mode': acq_parameters.detector_mode,
             'inverse_beam': False,
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
-            'fileNameTemplate': template
+            'fileNameTemplate': template,
+            'strategy_complexity': 'FEW',
+            'account_rad_damage': True,
+            'opt_sad': False,
+            'min_crystal_vdim': 0.05,
+            'max_crystal_vdim': 0.05,
+            'min_crystal_vphi': 0,
+            'max_crystal_vphi': 90,
+            
         },
         })
 
