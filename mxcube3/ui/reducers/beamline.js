@@ -124,7 +124,6 @@ export const INITIAL_STATE = {
     kappa_phi: { position: 0, state: 0 },
     zoom: { position: 0, state: 0 }
   },
-  zoom: 0,
   beamlineActionsList: [],
   currentBeamlineAction: { show: false, messages: [], arguments: [] },
   motorInputDisable: false,
@@ -194,7 +193,6 @@ export default (state = INITIAL_STATE, action) => {
         attributes: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.attributes },
         motorsLimits: { ...INITIAL_STATE.motorsLimits,
                         ...action.data.motorsLimits },
-        zoom: action.data.Motors.zoom.position,
         beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0)
       };
     case 'BL_MACH_INFO':
