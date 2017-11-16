@@ -6,6 +6,7 @@ import copy
 
 import queue_model_objects_v1 as qmo
 import scutils
+import qutils
 
 from mxcube3 import app as mxcube
 from flask import session
@@ -20,6 +21,7 @@ def sample_list_set(sample_list):
 
 
 def sample_list_get(loc=None):
+    synch_sample_list_with_queue()
     res = mxcube.SAMPLE_LIST
 
     if loc:
@@ -45,6 +47,15 @@ def sample_list_sync_sample(lims_sample):
         sample_list_update_sample(loc, lims_sample)
 
 
+def synch_sample_list_with_queue():
+    current_queue = qutils.queue_to_dict()
+    sample_order = current_queue.get("sample_order", [])
+
+    for sample_loc in sample_order:
+        sample = current_queue[sample_loc]
+        sample_list_update_sample(sample_loc, sample)
+
+
 def sample_list_update_sample(loc, sample):
     _sample = mxcube.SAMPLE_LIST["sampleList"].get(loc, {})
 
@@ -53,6 +64,7 @@ def sample_list_update_sample(loc, sample):
         mxcube.SAMPLE_LIST["sampleList"].get(loc, {}).update(sample)
     else:
         mxcube.SAMPLE_LIST["sampleList"][loc] = sample
+        mxcube.SAMPLE_LIST["sampleOrder"].append(loc)
 
     return mxcube.SAMPLE_LIST["sampleList"].get(loc, {})
 

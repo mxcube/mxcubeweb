@@ -37,6 +37,10 @@ ORIGIN_MX3 = "MX3"
 QUEUE_CACHE = {}
 
 
+def get_queue_from_cache():
+    return QUEUE_CACHE
+
+
 def build_prefix_path_dict(path_list):
     prefix_path_dict = {}
 
@@ -260,8 +264,7 @@ def get_queue_state():
         add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE.get('sampleID'), mxcube.CURRENTLY_MOUNTED_SAMPLE)
         queue = queue_to_dict()
     
-    if queue:
-        queue.pop("sample_order")
+    sample_order = queue.get("sample_order", [])
 
     res = { "loaded": scutils.get_current_sample().get('sampleID', ''),
             "centringMethod": mxcube.CENTRING_METHOD,
@@ -269,7 +272,8 @@ def get_queue_state():
             "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
             "numSnapshots": mxcube.NUM_SNAPSHOTS,
             "groupFolder": mxcube.session.get_group_name(),
-            "queue": queue,
+            "queue": sample_order,
+            "sampleList": limsutils.sample_list_get(),
             "queueStatus": queue_exec_state() }
 
     return res
@@ -534,7 +538,7 @@ def _handle_sample(node):
               'checked': enabled,
               'state': state,
               'tasks': queue_to_dict_rec(node)}
-
+    
     return {node.loc_str: sample}
 
 
@@ -720,7 +724,6 @@ def move_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
 
-
 def queue_add_item(item_list, use_queue_cache=False):
     """
     Adds the queue items in item_list to the queue. The items in the list can
@@ -781,6 +784,8 @@ def queue_add_item(item_list, use_queue_cache=False):
     if use_queue_cache:
         QUEUE_CACHE = queue_to_dict()
         res = QUEUE_CACHE
+    else:
+        res = queue_to_dict()
 
     return res
 
@@ -845,21 +850,23 @@ def add_sample(sample_id, item):
     """
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)
+    sample_model.set_from_dict(item)
 
+    # Explicitly set parameters that are not sent by the client
     sample_model.loc_str = sample_id
     sample_model.free_pin_mode = item['location'] == 'Manual'
-
-    # Manually added sample, make sure that its on the server side sample list
-    if item['location'] == 'Manual':
-        sample = limsutils.sample_list_update_sample(item['location'], item)
-
     sample_model.set_name(item['sampleName'])
-    sample_model.crystals[0].protein_acronym = item.get('proteinAcronym', '')
+#   sample_model.crystals[0].protein_acronym = item.get('proteinAcronym', '')
 
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
     else:
         sample_model.location = tuple(map(int, item['location'].split(':')))
+
+    # Manually added sample, make sure that its on the server side sample list
+    if item['location'] == 'Manual':
+        sample = limsutils.sample_list_update_sample(item['location'], item)
+
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
     enable_entry(sample_entry, get_auto_mount_sample())

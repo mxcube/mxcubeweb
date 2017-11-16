@@ -15,7 +15,7 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_QUEUE': {
-      return Object.assign({}, { ...state, queue: Object.keys(action.queue) });
+      return Object.assign({}, { ...state, queue: action.sampleOrder });
     }
     case 'CLEAR_QUEUE': {
       return Object.assign({}, state, { queue: initialState.queue,
@@ -93,7 +93,7 @@ export default (state = initialState, action) => {
         return {
           ...state,
           rootPath: action.data.beamlineSetup.path,
-          queue: Object.keys(action.data.queue.queue),
+          queue: action.data.queue.queue,
           groupFolder: action.data.queue.groupFolder,
           autoMountNext: action.data.queue.autoMountNext,
           autoAddDiffPlan: action.data.queue.autoAddDiffPlan,

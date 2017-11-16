@@ -30,20 +30,8 @@ const INITIAL_STATE = { selected: {},
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'SET_QUEUE': {
-      // Sample list is a fusion of data from Queue, Sample changer, and LIMS.
-      // SET QUEUE for sample grid means add new tasks and remove uncollected tasks
-      // of samples that have been removed from the queue
       const sampleList = { ...state.sampleList };
-
-      Object.values(sampleList).forEach((s) => {
-        if (s.tasks.length > 0 && action.queue[s.sampleID] === undefined) {
-          sampleList[s.sampleID].tasks = sampleList[s.sampleID].tasks.filter((t) => (
-            t.state !== TASK_UNCOLLECTED
-          ));
-        }
-      });
-
-      return { ...state, sampleList: Object.assign(sampleList, action.queue) };
+      return { ...state, sampleList: Object.assign(sampleList, action.sampleList) };
     }
     // Set the list of samples (sampleList), clearing any existing list
     case 'UPDATE_SAMPLE_LIST': {
@@ -292,18 +280,8 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, { filterOptions });
     }
     case 'SET_INITIAL_STATE': {
-      const sampleList = { ...state.sampleList };
-      const order = [...state.order];
-
-      for (const sampleID in action.data.queue.queue) {
-        if (action.data.queue.queue.hasOwnProperty(sampleID)) {
-          sampleList[sampleID] = action.data.queue.queue[sampleID];
-          order.push(sampleID);
-          const pref = `${sampleList[sampleID].sampleName}-${sampleList[sampleID].proteinAcronym}`;
-          sampleList[sampleID].defaultPrefix = pref;
-        }
-      }
-
+      const sampleList = { ...action.data.queue.sampleList.sampleList };
+      const order = [...action.data.queue.sampleList.sampleOrder];
       return { ...state, sampleList, order };
     }
     case 'CLEAR_SAMPLE_GRID': {
