@@ -12,6 +12,8 @@ import { FieldsHeader,
          FieldsRow,
          CollapsableRows } from './fields';
 
+import { SPACE_GROUPS } from '../../constants';
+
 class DataCollection extends React.Component {
   constructor(props) {
     super(props);
@@ -55,7 +57,7 @@ class DataCollection extends React.Component {
       'type',
       'shape',
       'label',
-      'helical',
+      'helical'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -217,6 +219,25 @@ class DataCollection extends React.Component {
           </Form>
 
           <FieldsHeader title="Processing" />
+            <CollapsableRows>
+              <Form horizontal>
+                <FieldsRow>
+                  <SelectField propName="space_group" label="Space group" list={SPACE_GROUPS} />
+                </FieldsRow>
+                <b> Unit Cell </b>
+                <FieldsRow>
+                  <InputField col1="1" col2="5" propName="cellA" label="a" />
+                  <InputField col1="1" col2="5" propName="cellB" label="b" />
+                  <InputField col1="1" col2="5" propName="cellC" label="c" />
+                </FieldsRow>
+                <FieldsRow>
+                  <InputField col1="1" col2="5" propName="cellAlpha" label="&alpha;" />
+                  <InputField col1="1" col2="5" propName="cellBeta" label="&beta;" />
+                  <InputField col1="1" col2="5" propName="cellGamma" label="&gamma;" />
+                </FieldsRow>
+              </Form>
+            </CollapsableRows>
+
        </Modal.Body>
 
        { this.props.taskData.state ? '' : this.showFooter() }
