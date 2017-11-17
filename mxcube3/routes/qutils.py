@@ -974,7 +974,10 @@ def set_dc_params(model, entry, task_data, sample_model):
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
-    acq.path_template.run_number = get_run_number(acq.path_template)
+    # Only get a run number for new tasks, keep the already existing
+    # run number for existing items.
+    if not params.get("queueID", ""):
+        acq.path_template.run_number = get_run_number(acq.path_template)
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -1109,7 +1112,10 @@ def set_xrf_params(model, entry, task_data, sample_model):
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
-    model.path_template.run_number = get_run_number(acq.path_template)
+    # Only get a run number for new tasks, keep the already existing
+    # run number for existing items.
+    if not params.get("queueID", ""):
+        model.path_template.run_number = get_run_number(model.path_template)
 
     # Set count time, and if any, other paramters
     model.count_time = params.get("countTime", 0)
@@ -1154,7 +1160,10 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
-    model.path_template.run_number = get_run_number(acq.path_template)
+    # Only get a run number for new tasks, keep the already existing
+    # run number for existing items.
+    if not params.get("queueID", ""):    
+        model.path_template.run_number = get_run_number(model.path_template)
 
     # Set element, and if any, other parameters
     model.element_symbol = params.get("element", "")
