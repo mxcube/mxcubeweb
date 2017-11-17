@@ -421,7 +421,6 @@ def get_default_dc_params():
     ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
-    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     resp = jsonify({
         'acq_parameters': {
@@ -445,7 +444,8 @@ def get_default_dc_params():
             'take_snapshots': True,
             'helical': False,
             'mesh': False,
-            'fileNameTemplate': template
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -464,7 +464,6 @@ def get_default_char_acq_params():
     ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
-    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     resp = jsonify({
         'acq_parameters': {
@@ -486,15 +485,15 @@ def get_default_char_acq_params():
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
-            'fileNameTemplate': template,
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
             'strategy_complexity': 'FEW',
             'account_rad_damage': True,
             'opt_sad': False,
             'min_crystal_vdim': 0.05,
             'max_crystal_vdim': 0.05,
             'min_crystal_vphi': 0,
-            'max_crystal_vphi': 90,
-            
+            'max_crystal_vphi': 90,  
         },
         })
 
@@ -539,7 +538,8 @@ def get_default_mesh_params():
             'take_snapshots': True,
             'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
             'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
-
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
         },
         })    
     resp.status_code = 200
@@ -679,7 +679,6 @@ def create_diff_plan(sid):
     ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
-    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     task = { 'parameters': {
             'first_image': acq_parameters.first_image,
@@ -702,7 +701,8 @@ def create_diff_plan(sid):
             'take_snapshots': True,
             'helical': False,
             'mesh': False,
-            'fileNameTemplate': template,
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
             'prefix': 'foo',
             'shape': 'P1'#-1
         },

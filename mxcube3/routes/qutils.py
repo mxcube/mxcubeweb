@@ -37,6 +37,10 @@ ORIGIN_MX3 = "MX3"
 QUEUE_CACHE = {}
 
 
+def get_queue_from_cache():
+    return QUEUE_CACHE
+
+
 def build_prefix_path_dict(path_list):
     prefix_path_dict = {}
 
@@ -260,8 +264,7 @@ def get_queue_state():
         add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE.get('sampleID'), mxcube.CURRENTLY_MOUNTED_SAMPLE)
         queue = queue_to_dict()
     
-    if queue:
-        queue.pop("sample_order")
+    sample_order = queue.get("sample_order", [])
 
     res = { "loaded": scutils.get_current_sample().get('sampleID', ''),
             "centringMethod": mxcube.CENTRING_METHOD,
@@ -269,7 +272,8 @@ def get_queue_state():
             "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
             "numSnapshots": mxcube.NUM_SNAPSHOTS,
             "groupFolder": mxcube.session.get_group_name(),
-            "queue": queue,
+            "queue": sample_order,
+            "sampleList": limsutils.sample_list_get(),
             "queueStatus": queue_exec_state() }
 
     return res
@@ -534,7 +538,7 @@ def _handle_sample(node):
               'checked': enabled,
               'state': state,
               'tasks': queue_to_dict_rec(node)}
-
+    
     return {node.loc_str: sample}
 
 
@@ -720,7 +724,6 @@ def move_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
 
-
 def queue_add_item(item_list, use_queue_cache=False):
     """
     Adds the queue items in item_list to the queue. The items in the list can
@@ -781,6 +784,8 @@ def queue_add_item(item_list, use_queue_cache=False):
     if use_queue_cache:
         QUEUE_CACHE = queue_to_dict()
         res = QUEUE_CACHE
+    else:
+        res = queue_to_dict()
 
     return res
 
@@ -845,21 +850,22 @@ def add_sample(sample_id, item):
     """
     sample_model = qmo.Sample()
     sample_model.set_origin(ORIGIN_MX3)
+    sample_model.set_from_dict(item)
 
+    # Explicitly set parameters that are not sent by the client
     sample_model.loc_str = sample_id
     sample_model.free_pin_mode = item['location'] == 'Manual'
-
-    # Manually added sample, make sure that its on the server side sample list
-    if item['location'] == 'Manual':
-        sample = limsutils.sample_list_update_sample(item['location'], item)
-
     sample_model.set_name(item['sampleName'])
-    sample_model.crystals[0].protein_acronym = item.get('proteinAcronym', '')
 
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
     else:
         sample_model.location = tuple(map(int, item['location'].split(':')))
+
+    # Manually added sample, make sure that its on the server side sample list
+    if item['location'] == "Manual":
+        item["defaultSubDir"] = limsutils.get_default_subdir(item)
+        sample = limsutils.sample_list_update_sample(sample_id, item)
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
     enable_entry(sample_entry, get_auto_mount_sample())
@@ -870,27 +876,6 @@ def add_sample(sample_id, item):
     return sample_model._node_id
 
 
-def strip_prefix(pt, prefix):
-    """
-    Strips the reference, wedge and mad prefix from a given prefix. For example 
-    removes ref- from the beginning and _w[n] and -pk, -ip, -ipp from the end.
-
-    :param PathTemplate pt: path template used to create the prefix
-    :param str prefix: prefix from the client
-    :returns: stripped prefix
-    """
-    if pt.reference_image_prefix == prefix[0:len(pt.reference_image_prefix)]:
-        prefix = prefix[len(pt.reference_image_prefix) + 1:]
-
-    if pt.wedge_prefix == prefix[-len(pt.wedge_prefix):]:
-       prefix = prefix[:-(len(pt.wedge_prefix) + 1)]
-
-    if pt.mad_prefix == prefix[-len(pt.mad_prefix):]:
-        prefix = prefix[:-(len(pt.mad_prefix) + 1)]
-
-    return prefix
-
-        
 def set_dc_params(model, entry, task_data, sample_model):
     """
     Helper method that sets the data collection parameters for a DataCollection.
@@ -915,12 +900,10 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
         getProperty("precision", 4))
 
-    # mxcube3 passes entire prefix as prefix, including reference, mad and wedge
-    # prefix. So we strip those before setting the actual base_prefix.
-    prefix = strip_prefix(acq.path_template, params['prefix'])
+    limsutils.apply_template(params, sample_model, acq.path_template)
 
-    if prefix:
-        acq.path_template.base_prefix = prefix
+    if params["prefix"]:
+        acq.path_template.base_prefix = params['prefix']
     else:
         acq.path_template.base_prefix = mxcube.session.\
             get_default_prefix(sample_model, False)

@@ -125,20 +125,8 @@ Workflow = connect(state => {
   if (state.taskForm.taskData.sampleID) {
     fname = state.taskForm.taskData.parameters.fileName;
   } else {
-    // Try to call eval on the file name template, just return the template
-    // itself if it fails. Disable eslint since prefix and runNumber are unused
-    // by the rest of the code, but possible used in the template. All variables
-    // that are to be used in the template should be defined in the try.
-    try {
-      /*eslint-disable */
-      const prefix = selector(state, 'prefix');
-      const position = state.taskForm.pointID === '' ? 'GX' : state.taskForm.pointID;
-
-      fname = eval(state.taskForm.taskData.parameters.fileNameTemplate);
-      /*eslint-enable */
-    } catch (e) {
-      fname = state.taskForm.taskData.parameters.fileNameTemplate;
-    }
+    const prefix = selector(state, 'prefix');
+    fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
   return {
