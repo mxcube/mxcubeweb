@@ -221,24 +221,21 @@ def set_queue():
 def queue_add_item():
     tasks = request.get_json()
     queue = qutils.queue_add_item(tasks, use_queue_cache=True)
-    resp = jsonify(queue)
+    sample_list = limsutils.sample_list_get()
+
+    resp = jsonify({"sampleOrder": queue.get("sample_order", []),
+                    "sampleList": sample_list.get("sampleList", {})})
     resp.status_code = 200
 
     return resp
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>", methods=['POST'])
-def queue_update_item(sid, tindex):
+@mxcube.route("/mxcube/api/v0.1/queue/<sqid>/<tqid>", methods=['POST'])
+def queue_update_item(sqid, tqid):
     data = request.get_json()
-    current_queue = qutils.queue_to_dict()
 
-    if tindex in ['undefined']:
-        node_id = current_queue[sid]["queueID"]
-    else:
-        node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
-
-    model, entry = qutils.get_entry(node_id)
-    sample_model, sample_entry = qutils.get_entry(sid)
+    model, entry = qutils.get_entry(tqid)
+    sample_model, sample_entry = qutils.get_entry(sqid)
 
     if data["type"] == "DataCollection":
         qutils.set_dc_params(model, entry, data, sample_model)
@@ -422,7 +419,6 @@ def get_default_dc_params():
     ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
-    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     resp = jsonify({
         'acq_parameters': {
@@ -446,7 +442,8 @@ def get_default_dc_params():
             'take_snapshots': True,
             'helical': False,
             'mesh': False,
-            'fileNameTemplate': template
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -465,7 +462,6 @@ def get_default_char_acq_params():
     ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
-    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     resp = jsonify({
         'acq_parameters': {
@@ -487,15 +483,15 @@ def get_default_char_acq_params():
             'take_dark_current': True,
             'skip_existing_images': False,
             'take_snapshots': True,
-            'fileNameTemplate': template,
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
             'strategy_complexity': 'FEW',
             'account_rad_damage': True,
             'opt_sad': False,
             'min_crystal_vdim': 0.05,
             'max_crystal_vdim': 0.05,
             'min_crystal_vphi': 0,
-            'max_crystal_vphi': 90,
-            
+            'max_crystal_vphi': 90,  
         },
         })
 
@@ -540,7 +536,8 @@ def get_default_mesh_params():
             'take_snapshots': True,
             'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
             'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
-
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
         },
         })    
     resp.status_code = 200
@@ -680,7 +677,6 @@ def create_diff_plan(sid):
     ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
-    template = '`${prefix}_${position}_[RUN]_%s.%s`' % (n * '#', ftype)
 
     task = { 'parameters': {
             'first_image': acq_parameters.first_image,
@@ -703,7 +699,8 @@ def create_diff_plan(sid):
             'take_snapshots': True,
             'helical': False,
             'mesh': False,
-            'fileNameTemplate': template,
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
             'prefix': 'foo',
             'shape': 'P1'#-1
         },

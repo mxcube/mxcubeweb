@@ -69,6 +69,52 @@ def sample_list_update_sample(loc, sample):
     return mxcube.SAMPLE_LIST["sampleList"].get(loc, {})
 
 
+def apply_template(params, sample_model, path_template):
+    # Apply subdir template if used:
+    if '{' in params.get('subdir', ''):
+        params['subdir'] = params['subdir'].format(NAME=sample_model.get_name(),
+                                                   ACRONYM=sample_model.crystals[0].protein_acronym)
+
+        if params['subdir'].endswith('-'):
+            params['subdir'] = sample_model.get_name()
+
+    if '{' in params.get('prefix', ''):
+        sample = sample_list_get(sample_model.loc_str)
+        prefix = get_default_prefix(sample, False)
+        shape = params["shape"] if params["shape"] > 0 else '';
+        params['prefix'] = params['prefix'].format(PREFIX=prefix,
+                                                   POSITION=shape)
+
+        if params['prefix'].endswith('_'):
+            params['prefix'] = params['prefix'][:-1]
+
+    # mxcube3 passes entire prefix as prefix, including reference, mad and wedge
+    # prefix. So we strip those before setting the actual base_prefix.
+    params['prefix'] = strip_prefix(path_template, params['prefix'])
+
+
+def strip_prefix(pt, prefix):
+    """
+    Strips the reference, wedge and mad prefix from a given prefix. For example 
+    removes ref- from the beginning and _w[n] and -pk, -ip, -ipp from the end.
+
+    :param PathTemplate pt: path template used to create the prefix
+    :param str prefix: prefix from the client
+    :returns: stripped prefix
+    """
+    if pt.reference_image_prefix and \
+       pt.reference_image_prefix == prefix[0:len(pt.reference_image_prefix)]:
+        prefix = prefix[len(pt.reference_image_prefix) + 1:]
+
+    if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix):]:
+       prefix = prefix[:-(len(pt.wedge_prefix) + 1)]
+
+    if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix):]:
+        prefix = prefix[:-(len(pt.mad_prefix) + 1)]
+
+    return prefix
+
+
 def lims_login(loginID, password):
     """
     :param str loginID: Username

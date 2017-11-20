@@ -856,17 +856,16 @@ def add_sample(sample_id, item):
     sample_model.loc_str = sample_id
     sample_model.free_pin_mode = item['location'] == 'Manual'
     sample_model.set_name(item['sampleName'])
-#   sample_model.crystals[0].protein_acronym = item.get('proteinAcronym', '')
 
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
     else:
         sample_model.location = tuple(map(int, item['location'].split(':')))
 
-    # Manually added sample, make sure that its on the server side sample list
-    if item['location'] == 'Manual':
-        sample = limsutils.sample_list_update_sample(item['location'], item)
-
+    # Manually added sample, make sure that i'ts on the server side sample list
+    if item['location'] == "Manual":
+        item["defaultSubDir"] = limsutils.get_default_subdir(item)
+        sample = limsutils.sample_list_update_sample(sample_id, item)
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
     enable_entry(sample_entry, get_auto_mount_sample())
@@ -877,27 +876,6 @@ def add_sample(sample_id, item):
     return sample_model._node_id
 
 
-def strip_prefix(pt, prefix):
-    """
-    Strips the reference, wedge and mad prefix from a given prefix. For example 
-    removes ref- from the beginning and _w[n] and -pk, -ip, -ipp from the end.
-
-    :param PathTemplate pt: path template used to create the prefix
-    :param str prefix: prefix from the client
-    :returns: stripped prefix
-    """
-    if pt.reference_image_prefix == prefix[0:len(pt.reference_image_prefix)]:
-        prefix = prefix[len(pt.reference_image_prefix) + 1:]
-
-    if pt.wedge_prefix == prefix[-len(pt.wedge_prefix):]:
-       prefix = prefix[:-(len(pt.wedge_prefix) + 1)]
-
-    if pt.mad_prefix == prefix[-len(pt.mad_prefix):]:
-        prefix = prefix[:-(len(pt.mad_prefix) + 1)]
-
-    return prefix
-
-        
 def set_dc_params(model, entry, task_data, sample_model):
     """
     Helper method that sets the data collection parameters for a DataCollection.
@@ -922,12 +900,10 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
         getProperty("precision", 4))
 
-    # mxcube3 passes entire prefix as prefix, including reference, mad and wedge
-    # prefix. So we strip those before setting the actual base_prefix.
-    prefix = strip_prefix(acq.path_template, params['prefix'])
+    limsutils.apply_template(params, sample_model, acq.path_template)
 
-    if prefix:
-        acq.path_template.base_prefix = prefix
+    if params["prefix"]:
+        acq.path_template.base_prefix = params['prefix']
     else:
         acq.path_template.base_prefix = mxcube.session.\
             get_default_prefix(sample_model, False)
@@ -981,7 +957,10 @@ def set_dc_params(model, entry, task_data, sample_model):
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
-    acq.path_template.run_number = get_run_number(acq.path_template)
+    # Only get a run number for new tasks, keep the already existing
+    # run number for existing items.
+    if not params.get("queueID", ""):
+        acq.path_template.run_number = get_run_number(acq.path_template)
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
@@ -1116,7 +1095,10 @@ def set_xrf_params(model, entry, task_data, sample_model):
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
-    model.path_template.run_number = get_run_number(acq.path_template)
+    # Only get a run number for new tasks, keep the already existing
+    # run number for existing items.
+    if not params.get("queueID", ""):
+        model.path_template.run_number = get_run_number(model.path_template)
 
     # Set count time, and if any, other paramters
     model.count_time = params.get("countTime", 0)
@@ -1161,7 +1143,10 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
-    model.path_template.run_number = get_run_number(acq.path_template)
+    # Only get a run number for new tasks, keep the already existing
+    # run number for existing items.
+    if not params.get("queueID", ""):    
+        model.path_template.run_number = get_run_number(model.path_template)
 
     # Set element, and if any, other parameters
     model.element_symbol = params.get("element", "")

@@ -94,7 +94,7 @@ def get_samples_list():
         sample_data["defaultSubDir"] = limsutils.get_default_subdir(sample_data)
 
         samples[s.getAddress()] = sample_data
-        limsutils.sc_contents_add(sample_data)
+        scutils.sc_contents_add(sample_data)
 
         if sample_data["state"] == SAMPLE_MOUNTED:
             scutils.set_current_sample(sample_data)
