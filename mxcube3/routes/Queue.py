@@ -220,7 +220,7 @@ def set_queue():
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
     tasks = request.get_json()
-    queue = qutils.queue_add_item(tasks, use_queue_cache=True)
+    queue = qutils.queue_add_item(tasks, use_queue_cache=False)
     sample_list = limsutils.sample_list_get()
 
     resp = jsonify({"sampleOrder": queue.get("sample_order", []),

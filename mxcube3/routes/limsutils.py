@@ -55,9 +55,12 @@ def synch_sample_list_with_queue():
     current_queue = qutils.queue_to_dict()
     sample_order = current_queue.get("sample_order", [])
 
-    for sample_loc in sample_order:
-        sample = current_queue[sample_loc]
-        sample_list_update_sample(sample_loc, sample)
+    for loc, data in mxcube.SAMPLE_LIST["sampleList"].iteritems():
+        if loc in sample_order:
+            sample = current_queue[loc]
+            sample_list_update_sample(loc, sample)
+        elif len(data["tasks"]):
+            data["tasks"] = []
 
 
 def sample_list_update_sample(loc, sample):
