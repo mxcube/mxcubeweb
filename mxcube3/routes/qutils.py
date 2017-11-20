@@ -717,11 +717,31 @@ def move_task_entry(sid, ti1, ti2):
     node_id = current_queue[sid]["queueID"]
     smodel, sentry = get_entry(node_id)
 
-    # Move the order in the queue model
+    # Swap the order in the queue model
     smodel._children.insert(ti2, smodel._children.pop(ti1))
 
     # Swap queue entry order
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
+
+
+def set_sample_order(order):
+    """
+    Set the sample order of the queue
+    :param list sample_order: List of sample ids
+    """
+    current_queue = queue_to_dict()
+    sid_list = list(filter(lambda sid: current_queue.get(sid, False), order))
+
+    if sid_list:
+        queue_id_list = [current_queue[sid]["queueID"] for sid in sid_list]
+        model_entry_list =  [get_entry(qid) for qid in queue_id_list]
+        model_list = [model_entry[0] for model_entry in model_entry_list]
+        entry_list = [model_entry[1] for model_entry in model_entry_list]
+
+        # Set the order in the queue model
+        mxcube.queue.get_model_root()._children = model_list
+        # Set queue entry order
+        mxcube.queue.queue_hwobj._queue_entry_list = entry_list
 
 
 def queue_add_item(item_list, use_queue_cache=False):

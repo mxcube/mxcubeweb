@@ -271,6 +271,15 @@ def queue_move_task_item(sid, ti1, ti2):
     return Response(status=200)
 
 
+@mxcube.route("/mxcube/api/v0.1/queue/sample-order", methods=['POST'])
+def queue_set_sample_order():
+    sample_order = request.get_json().get("sampleOrder", [])
+    qutils.set_sample_order(sample_order)
+    limsutils.sample_list_set_order(sample_order)
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    return Response(status=200)
+
+
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
 def update_sample(sample_id):
     '''

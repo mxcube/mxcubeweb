@@ -15,7 +15,7 @@ import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected } from '../constants';
 
 import { toggleMovableAction,
          selectSamplesAction,
-         setSampleOrderAction } from '../actions/sampleGrid';
+         sendSetSampleOrderAction } from '../actions/sampleGrid';
 
 import { deleteTask, sendMountSample } from '../actions/queue';
 
@@ -457,7 +457,7 @@ class SampleGridContainer extends React.Component {
 
     const newSampleOrder = [...this.props.order];
     newSampleOrder.splice(targetPos, 0, newSampleOrder.splice(sourcePos, 1)[0]);
-    this.props.setSampleOrderAction(newSampleOrder);
+    this.props.sendSetSampleOrderAction(newSampleOrder);
   }
 
 
@@ -759,7 +759,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    setSampleOrderAction: (order) => dispatch(setSampleOrderAction(order)),
+    sendSetSampleOrderAction: (order) => dispatch(sendSetSampleOrderAction(order)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     sendMountSample: bindActionCreators(sendMountSample, dispatch),
