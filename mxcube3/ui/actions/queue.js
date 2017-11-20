@@ -15,16 +15,13 @@ export function clearAll() {
 
 
 export function setQueueAction(queue) {
-  return { type: 'SET_QUEUE', queue };
+  return { type: 'SET_QUEUE', sampleOrder: queue.sampleOrder, sampleList: queue.sampleList };
 }
 
 
 export function setQueue(queue) {
-  const q = queue;
-  delete q.sample_order;
-
   return function (dispatch) {
-    dispatch(setQueueAction(q));
+    dispatch(setQueueAction(queue));
   };
 }
 
@@ -396,21 +393,23 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 export function updateTask(sampleID, taskIndex, params, runNow) {
   return function (dispatch, getState) {
     const { sampleGrid } = getState();
+
     const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
     dispatch(queueLoading(true));
 
-    sendUpdateQueueItem(sampleID, taskIndex, taskData).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
-      }
-      return response.json();
-    }).then((data) => {
-      dispatch(updateTaskAction(sampleID, taskIndex, data));
+    sendUpdateQueueItem(sampleGrid.sampleList[sampleID].queueID, taskData.queueID, taskData).
+      then((response) => {
+        if (response.status >= 400) {
+          dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
+        }
+        return response.json();
+      }).then((data) => {
+        dispatch(updateTaskAction(sampleID, taskIndex, data));
 
-      if (runNow) {
-        dispatch(sendRunSample(sampleID, taskIndex));
-      }
-    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+        if (runNow) {
+          dispatch(sendRunSample(sampleID, taskIndex));
+        }
+      }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
   };
 }
 
@@ -481,7 +480,8 @@ export function addTask(sampleIDs, parameters, runNow) {
     }).then((data) => {
       dispatch(setQueue(data));
       if (runNow) {
-        const taskIndex = data[sampleIDs[0]].tasks[data[sampleIDs[0]].tasks.length - 1].taskIndex;
+        const sl = data.sampleList;
+        const taskIndex = sl[sampleIDs[0]].tasks[sl[sampleIDs[0]].tasks.length - 1].taskIndex;
         dispatch(sendRunSample(sampleIDs[0], taskIndex));
       }
     }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));

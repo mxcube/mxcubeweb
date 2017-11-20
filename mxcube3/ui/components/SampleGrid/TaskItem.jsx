@@ -5,7 +5,8 @@ import './SampleGrid.css';
 import { TASK_COLLECTED,
          TASK_COLLECT_FAILED,
          TASK_COLLECT_WARNING,
-         TASK_RUNNING } from '../../constants';
+         TASK_RUNNING,
+         isCollected } from '../../constants';
 
 export class TaskItem extends React.Component {
 
@@ -77,7 +78,7 @@ export class TaskItem extends React.Component {
 
     const r = task.limsResultData;
 
-    if (task.limsResultData && Object.keys(task.limsResultData).length > 0) {
+    if (isCollected(task) && task.limsResultData && Object.keys(task.limsResultData).length > 0) {
       if (task.limsResultData.firstImageId) {
         fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
         fImageUrl += task.limsResultData.firstImageId.toString();

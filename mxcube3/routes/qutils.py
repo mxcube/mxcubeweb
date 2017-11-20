@@ -862,7 +862,7 @@ def add_sample(sample_id, item):
     else:
         sample_model.location = tuple(map(int, item['location'].split(':')))
 
-    # Manually added sample, make sure that its on the server side sample list
+    # Manually added sample, make sure that i'ts on the server side sample list
     if item['location'] == "Manual":
         item["defaultSubDir"] = limsutils.get_default_subdir(item)
         sample = limsutils.sample_list_update_sample(sample_id, item)

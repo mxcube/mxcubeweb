@@ -12,6 +12,7 @@ from mxcube3 import app as mxcube
 from mxcube3 import socketio
 import qutils
 import scutils
+import limsutils
 
 qm = QueueManager.QueueManager('Mxcube3')
 

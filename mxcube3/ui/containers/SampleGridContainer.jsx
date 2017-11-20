@@ -59,8 +59,7 @@ class SampleGridContainer extends React.Component {
     this.taskItemOnClickHandler = this.taskItemOnClickHandler.bind(this);
 
     this.showRubberBand = false;
-    this.state = { sampleItems: this.getSampleItems(props) };
-    this.sampleItems = this.getSampleItems(props);
+    this.sampleItems = [];
     this.workflowMenuOptions = this.workflowMenuOptions.bind(this);
     this.mountAndCollect = this.mountAndCollect.bind(this);
   }
@@ -214,8 +213,8 @@ class SampleGridContainer extends React.Component {
    */
   getSampleItems(props) {
     const sampleItemList = [];
-
     const orderedList = [];
+
     props.order.forEach(key => {
       if (props.queue.queue.includes(key)) {
         orderedList.push(key);

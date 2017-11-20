@@ -25,9 +25,9 @@ export default (state = initialState, action) => {
       const sourceNodes = [];
       const newNodes = [];
 
-      for (const sampleID in action.queue) {
-        if (action.queue.hasOwnProperty(sampleID)) {
-          action.queue[sampleID].tasks.forEach((task) => {
+      action.sampleOrder.forEach((sampleID) => {
+        if (action.sampleList.hasOwnProperty(sampleID)) {
+          action.sampleList[sampleID].tasks.forEach((task) => {
             if (existingNodes.indexOf(task.queueID.toString()) === -1) {
               newNodes.push(task.queueID.toString());
               displayData[task.queueID] = { collapsed: false,
@@ -37,7 +37,7 @@ export default (state = initialState, action) => {
             sourceNodes.push(task.queueID.toString());
           });
         }
-      }
+      });
 
       const nodesToBeRemoved = [];
 
