@@ -259,7 +259,7 @@ def get_queue_state():
     queue = queue_to_dict()
     sample_order = queue.get("sample_order", [])
 
-    res = { "loaded": scutils.get_current_sample().get('sampleID', ''),
+    res = { "current": scutils.get_current_sample().get('sampleID', ''),
             "centringMethod": mxcube.CENTRING_METHOD,
             "autoMountNext": get_auto_mount_sample(),
             "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
@@ -649,6 +649,8 @@ def delete_entry_at(item_pos_list):
                 entry = entry.get_container()
 
         delete_entry(entry)
+
+    
 
 
 def enable_entry(id_or_qentry, flag):

@@ -99,7 +99,7 @@ export default (state = initialState, action) => {
           autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
           numSnapshots: action.data.queue.numSnapshots,
           centringMethod: action.data.queue.centringMethod,
-          current: { sampleID: action.data.queue.loaded,
+          current: { sampleID: action.data.queue.current,
                      running: action.data.queue.queueStatus }
         };
       }

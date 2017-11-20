@@ -3,6 +3,7 @@ import logging
 
 # We are patching queue_entry.mount_sample at the end of this file.
 import queue_entry
+import qutils
 
 from mxcube3 import app as mxcube
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
@@ -34,7 +35,10 @@ def set_current_sample(sample):
 
 
 def get_current_sample():
-    if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+    current_queue = qutils.queue_to_dict()
+    
+    if mxcube.CURRENTLY_MOUNTED_SAMPLE and \
+       mxcube.CURRENTLY_MOUNTED_SAMPLE["sampleID"] in  current_queue:
         return mxcube.CURRENTLY_MOUNTED_SAMPLE
     else:
         return {}
