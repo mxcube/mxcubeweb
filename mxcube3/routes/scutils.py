@@ -57,7 +57,6 @@ def mount_sample(beamline_setup_hwobj,
                  centring_done_cb, async_result):
 
     logging.getLogger('user_level_log').info("Loading sample ...")
-    set_current_sample(data_model)
 
     beamline_setup_hwobj.shape_history_hwobj.clear_all()
     log = logging.getLogger("user_level_log")
