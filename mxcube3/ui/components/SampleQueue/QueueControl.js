@@ -43,7 +43,7 @@ export default class QueueControl extends React.Component {
           { text: 'Pause', class: 'btn-warning', action: this.props.pause, key: 2 },
         ],
         [QUEUE_STOPPED]: [
-          { text: 'Mount Next Sample', class: 'btn-primary', action: this.nextSample, key: 2 }
+          { text: 'Mount Next Sample', class: 'btn-default', action: this.nextSample, key: 2 }
         ],
         [QUEUE_PAUSED]: [
           { text: 'Resume', class: 'btn-success', action: this.props.unpause, key: 2 }

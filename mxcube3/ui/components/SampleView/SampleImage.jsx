@@ -613,23 +613,16 @@ export default class SampleImage extends React.Component {
   }
 
   centringMessage() {
-    let message = '';
     let result = null;
 
-    if (this.props.clickCentringClicksLeft === 0) {
-      message += 'Save centring or clicking on screen to restart';
-    } else {
-      message += `Clicks left: ${this.props.clickCentringClicksLeft}`;
-    }
-
-    if (this.props.clickCentring) {
+    if (this.props.videoMessageOverlay.show) {
       result =
 	(
           <div
+            dangerouslySetInnerHTML={{ __html: this.props.videoMessageOverlay.msg }}
             key={this.props.clickCentringClicksLeft}
             id="video-message-overlay"
           >
-            3-Click Centring: <br /> {message}
          </div>
 	);
     }

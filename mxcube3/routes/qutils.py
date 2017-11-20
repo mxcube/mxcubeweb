@@ -1728,7 +1728,7 @@ def set_auto_mount_sample(automount, current_sample=None):
         enable_sample_entries(current_queue["sample_order"], automount)
 
     # No automount, enable the current entry if any
-    if not automount and sample:
+    if not automount and sample in current_queue["sample_order"]:
         enable_sample_entries([sample], True)
 
 
