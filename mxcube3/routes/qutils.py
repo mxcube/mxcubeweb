@@ -257,13 +257,6 @@ def get_queue_state():
               }
     """
     queue = queue_to_dict()
-
-    # in case the user logged out without unloading a sample
-    # we populate the queue with that sample
-    if not queue and mxcube.CURRENTLY_MOUNTED_SAMPLE:
-        add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE.get('sampleID'), mxcube.CURRENTLY_MOUNTED_SAMPLE)
-        queue = queue_to_dict()
-    
     sample_order = queue.get("sample_order", [])
 
     res = { "loaded": scutils.get_current_sample().get('sampleID', ''),
