@@ -112,8 +112,8 @@ export function toggleAutoScale(width = 1) {
 }
 
 
-export function showVideoMessageOverlay(show) {
-  return { type: 'SHOW_VIDEO_MESSAGE_OVERLAY', show };
+export function videoMessageOverlay(show, msg) {
+  return { type: 'SHOW_VIDEO_MESSAGE_OVERLAY', show, msg };
 }
 
 export function setVideoSize(width, height) {
@@ -213,7 +213,18 @@ export function sendStartClickCentring() {
 
         return response.json();
       }).then((json) => {
-        dispatch(centringClicksLeft(json.clicksLeft));
+        const clicksLeft = json.clicksLeft;
+        dispatch(centringClicksLeft(clicksLeft));
+
+        let msg = '3-Click Centring: <br />';
+
+        if (clicksLeft === 0) {
+          msg += 'Save centring or clicking on screen to restart';
+        } else {
+          msg += `Clicks left: ${clicksLeft}`;
+        }
+
+        dispatch(videoMessageOverlay(true, msg));
       });
     } else {
       dispatch(showErrorPanel(true, 'There is not a sample mounted! Cannot center.'));
@@ -232,13 +243,24 @@ export function sendCentringPoint(x, y) {
       body: JSON.stringify({ clickPos: { x, y } })
     }).then((response) => (response.json())
     ).then((json) => {
-      dispatch(centringClicksLeft(json.clicksLeft));
+      const clicksLeft = json.clicksLeft;
+      let msg = '3-Click Centring: <br />';
+
+      dispatch(centringClicksLeft(clicksLeft));
+
+      if (clicksLeft === 0) {
+        msg += 'Save centring or clicking on screen to restart';
+      } else {
+        msg += `Clicks left: ${clicksLeft}`;
+      }
+
+      dispatch(videoMessageOverlay(true, msg));
     });
   };
 }
 
 export function sendAcceptCentring() {
-  return function () {
+  return function (dispatch) {
     fetch('/mxcube/api/v0.1/sampleview/centring/accept', {
       method: 'PUT',
       credentials: 'include',
@@ -250,6 +272,7 @@ export function sendAcceptCentring() {
       if (response.status >= 400) {
         throw new Error('Centring not accepted');
       }
+      dispatch(videoMessageOverlay(false, ''));
     });
   };
 }
@@ -459,6 +482,7 @@ export function sendAbortCentring() {
         dispatch(showErrorPanel(true, 'Server refused to abort centring'));
       } else {
         dispatch(stopClickCentring());
+        dispatch(videoMessageOverlay(false, ''));
       }
     });
   };

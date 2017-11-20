@@ -120,6 +120,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     ### Install server-side UI state storage
     from mxcube3 import state_storage
 
+    from queue_entry import CENTRING_METHOD
+
     def complete_initialization(app):
         app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
         app.xml_rpc_server = hwr.getHardwareObject('xml-rpc-server')
@@ -149,9 +151,8 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.CURRENTLY_MOUNTED_SAMPLE = None
         app.SAMPLE_TO_BE_MOUNTED = ''
         app.AUTO_MOUNT_SAMPLE = False
-        app.AUTO_LOOP_CENTER = False
         app.AUTO_ADD_DIFFPLAN = False
-        app.CENTRING_METHOD = None
+        app.CENTRING_METHOD = CENTRING_METHOD.LOOP
         app.NUM_SNAPSHOTS = 4
         app.NODE_ID_TO_LIMS_ID = {}
         app.INITIAL_FILE_LIST = []

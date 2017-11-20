@@ -219,10 +219,6 @@
     text-decoration: initial !important;
 }
 
-.list-head .btn-sm{
-    border-radius: 0px;
-}
-
 .slider-overlay {
     position: absolute;
     z-index: 1001;

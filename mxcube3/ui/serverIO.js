@@ -8,6 +8,7 @@ import {
   startClickCentring,
   updateShapes,
   setPixelsPerMm,
+  videoMessageOverlay
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setMachInfo } from './actions/beamline';
@@ -188,6 +189,8 @@ class ServerIO {
 
     this.hwrSocket.on('sample_centring', () => {
       this.dispatch(startClickCentring());
+      const msg = '3-Click Centring: <br /> Select centered position or center';
+      this.dispatch(videoMessageOverlay(true, msg));
     });
 
     this.hwrSocket.on('disconnect', () => {

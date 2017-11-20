@@ -33,7 +33,7 @@ const initialState = {
   cinema: false,
   phaseList: [],
   drawGrid: false,
-  showMessageOverlay: true,
+  videoMessageOverlay: { show: false, msg: '' },
   savedPointId: '',
   selectedShapes: []
 };
@@ -139,9 +139,9 @@ export default (state = initialState, action) => {
       {
         return { ...state, motorSteps: { ...state.motorSteps, [action.name]: action.value } };
       }
-    case 'SHOW_VIDEO_OVERLAY_MESSAGE':
+    case 'SHOW_VIDEO_MESSAGE_OVERLAY':
       {
-        return { ...state, showMessageOverlay: action.value };
+        return { ...state, videoMessageOverlay: { show: action.show, msg: action.msg } };
       }
     case 'SET_CENTRING_METHOD':
       {
