@@ -20,6 +20,10 @@ def sample_list_set(sample_list):
     mxcube.SAMPLE_LIST = sample_list
 
 
+def sample_list_set_order(sample_order):
+    mxcube.SAMPLE_LIST['sampleOrder'] = sample_order
+
+
 def sample_list_get(loc=None):
     synch_sample_list_with_queue()
     res = mxcube.SAMPLE_LIST

@@ -38,6 +38,26 @@ export function setSampleOrderAction(order) {
 }
 
 
+export function sendSetSampleOrderAction(sampleOrder) {
+  return function (dispatch) {
+    fetch('mxcube/api/v0.1/queue/sample-order', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ sampleOrder })
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Could not set sample order');
+      } else {
+        dispatch(setSampleOrderAction(sampleOrder));
+      }
+    });
+  };
+}
+
 export function selectSamplesAction(keys, selected = true) {
   return { type: 'SELECT_SAMPLES', keys, selected };
 }
