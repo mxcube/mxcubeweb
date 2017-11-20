@@ -21,7 +21,7 @@ from . import limsutils
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = 'QueuePaused'
-QUEUE_RUNNING = 'QueueStarted'
+QUEUE_RUNNING = 'QueueRunning'
 QUEUE_STOPPED = 'QueueStopped'
 QUEUE_FAILED = 'QueueFailed'
 
