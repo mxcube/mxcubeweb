@@ -220,24 +220,21 @@ def set_queue():
 def queue_add_item():
     tasks = request.get_json()
     queue = qutils.queue_add_item(tasks, use_queue_cache=True)
-    resp = jsonify(queue)
+    sample_list = limsutils.sample_list_get()
+
+    resp = jsonify({"sampleOrder": queue.get("sample_order", []),
+                    "sampleList": sample_list.get("sampleList", {})})
     resp.status_code = 200
 
     return resp
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>", methods=['POST'])
-def queue_update_item(sid, tindex):
+@mxcube.route("/mxcube/api/v0.1/queue/<sqid>/<tqid>", methods=['POST'])
+def queue_update_item(sqid, tqid):
     data = request.get_json()
-    current_queue = qutils.queue_to_dict()
 
-    if tindex in ['undefined']:
-        node_id = current_queue[sid]["queueID"]
-    else:
-        node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
-
-    model, entry = qutils.get_entry(node_id)
-    sample_model, sample_entry = qutils.get_entry(sid)
+    model, entry = qutils.get_entry(tqid)
+    sample_model, sample_entry = qutils.get_entry(sqid)
 
     if data["type"] == "DataCollection":
         qutils.set_dc_params(model, entry, data, sample_model)
