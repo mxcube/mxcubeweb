@@ -71,22 +71,26 @@ export function setCurrentSample(sampleID) {
 
 
 export function sendMountSample(sampleData) {
-  return function (dispatch) {
-    fetch('mxcube/api/v0.1/sample_changer/mount', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(sampleData)
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to mount sample');
-      } else {
-        dispatch(setCurrentSample(sampleData.sampleID));
-      }
-    });
+  return function (dispatch, getState) {
+    const state = getState();
+
+    if (state.queue.current.sampleID !== sampleData.sampleID) {
+      fetch('mxcube/api/v0.1/sample_changer/mount', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(sampleData)
+      }).then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to mount sample');
+        } else {
+          dispatch(setCurrentSample(sampleData.sampleID));
+        }
+      });
+    }
   };
 }
 
