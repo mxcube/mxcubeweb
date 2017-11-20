@@ -697,7 +697,7 @@ class SampleGridContainer extends React.Component {
             <span><Glyphicon glyph="unchecked" /> Add to Queue</span>
           </MenuItem>
           <MenuItem eventKey="2" onClick={this.mountAndCollect}>
-            <span><Glyphicon glyph="screenshot" /> Mount and collect</span>
+            <span><Glyphicon glyph="screenshot" /> Collect </span>
           </MenuItem>
           <MenuItem divider />
           <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>
