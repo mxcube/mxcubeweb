@@ -826,7 +826,9 @@ def _queue_add_item_rec(item_list, current_queue):
         # If the item a sample, then add it and its tasks. If its not, get the
         # node id for the sample of the new task and append it to the sample
         sample_id = str(item["sampleID"])
-        if item_t == "Sample":
+
+        # Do not add samples that are already in the queue
+        if item_t == "Sample" and item["sampleID"] not in current_queue:
             sample_node_id = add_sample(sample_id, item)
             tasks = item.get("tasks")
             
