@@ -34,8 +34,8 @@ def queue_start():
 
         # If auto mount sample is false, just run the first one
         if not qutils.get_auto_mount_sample():
-            sid = scutils.get_current_sample() or sample_id
-            qutils.execute_entry_with_id(sid)
+            sample_id = scutils.get_current_sample().get("sampleID", None) or sample_id
+            qutils.execute_entry_with_id(sample_id)
         else:
             # Making sure all sample entries are enabled before running the queue
             qutils.enable_sample_entries(queue["sample_order"], True)
