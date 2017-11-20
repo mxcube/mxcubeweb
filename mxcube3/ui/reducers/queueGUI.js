@@ -87,7 +87,7 @@ export default (state = initialState, action) => {
     case 'REMOVE_TASK': {
       return Object.assign({}, state, { displayData: omit(state.displayData, action.queueID) });
     }
-    case 'QUEUE_LOADIG': {
+    case 'QUEUE_LOADING': {
       return { ...state, loading: action.loading };
     }
     // show list
