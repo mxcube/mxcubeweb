@@ -37,7 +37,6 @@ class DataCollection extends React.Component {
   }
 
   addToQueue(runNow, params) {
-
     const parameters = {
       ...params,
       type: 'DataCollection',
