@@ -179,25 +179,25 @@ class DataCollection extends React.Component {
           <FieldsHeader title="Acquisition" />
           <Form horizontal>
             <FieldsRow>
-              <InputField propName="osc_range" label="Oscillation range" />
-              <InputField propName="first_image" label="First image" />
+              <InputField propName="osc_range" type="number" label="Oscillation range" />
+              <InputField propName="first_image" type="number" label="First image" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="osc_start" label="Oscillation start" />
-              <InputField propName="num_images" label="Number of images" />
+              <InputField propName="osc_start" type="number" label="Oscillation start" />
+              <InputField propName="num_images" type="number" label="Number of images" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" label="Exposure time (ms)" />
-              <InputField propName="transmission" label="Transmission" />
+              <InputField propName="exp_time" type="number" label="Exposure time (ms)" />
+              <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="energy" label="Energy" />
-              <InputField propName="resolution" label="Resolution" />
+              <InputField propName="energy" type="number" label="Energy" />
+              <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
             <CollapsableRows>
               <FieldsRow>
-                <InputField propName="kappa" label="Kappa" />
-                <InputField propName="kappa_phi" label="Phi" />
+                <InputField propName="kappa" type="number" label="Kappa" />
+                <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
               <FieldsRow>
                 <SelectField
