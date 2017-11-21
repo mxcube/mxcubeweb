@@ -21,7 +21,7 @@ from . import limsutils
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = 'QueuePaused'
-QUEUE_RUNNING = 'QueueStarted'
+QUEUE_RUNNING = 'QueueRunning'
 QUEUE_STOPPED = 'QueueStopped'
 QUEUE_FAILED = 'QueueFailed'
 
@@ -257,16 +257,9 @@ def get_queue_state():
               }
     """
     queue = queue_to_dict()
-
-    # in case the user logged out without unloading a sample
-    # we populate the queue with that sample
-    if not queue and mxcube.CURRENTLY_MOUNTED_SAMPLE:
-        add_sample(mxcube.CURRENTLY_MOUNTED_SAMPLE.get('sampleID'), mxcube.CURRENTLY_MOUNTED_SAMPLE)
-        queue = queue_to_dict()
-    
     sample_order = queue.get("sample_order", [])
 
-    res = { "loaded": scutils.get_current_sample().get('sampleID', ''),
+    res = { "current": scutils.get_current_sample().get('sampleID', ''),
             "centringMethod": mxcube.CENTRING_METHOD,
             "autoMountNext": get_auto_mount_sample(),
             "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
@@ -657,6 +650,8 @@ def delete_entry_at(item_pos_list):
 
         delete_entry(entry)
 
+    
+
 
 def enable_entry(id_or_qentry, flag):
     """
@@ -833,7 +828,9 @@ def _queue_add_item_rec(item_list, current_queue):
         # If the item a sample, then add it and its tasks. If its not, get the
         # node id for the sample of the new task and append it to the sample
         sample_id = str(item["sampleID"])
-        if item_t == "Sample":
+
+        # Do not add samples that are already in the queue
+        if item_t == "Sample" and item["sampleID"] not in current_queue:
             sample_node_id = add_sample(sample_id, item)
             tasks = item.get("tasks")
             
