@@ -102,9 +102,14 @@ class Mesh extends React.Component {
   }
 
   isMotorDisabled(prop) {
-    // 0: "NOTINITIALIZED",
-    // 1: "UNUSABLE",
-    return this.props.motors[prop].state <= 1;
+    const data = this.props.motors[prop];
+    let disabled = false;
+    if (!data) {
+      disabled = true;
+    } else {
+      disabled = data.disabled;
+    }
+    return disabled;
   }
 
   render() {

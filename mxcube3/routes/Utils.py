@@ -94,7 +94,7 @@ def get_movable_state_and_position(item_name):
         if hwobj is None:
             msg = "[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role '%s'" % item_name
             logging.getLogger("HWR").error(msg)
-            return {item_name: { "name": item_name, "state": None, "position": None }}
+            return {item_name: { "name": item_name, "state": None, "position": None , "disabled": True}}
         else:
             if hasattr(hwobj, "getCurrentPositionName"):
                 # a motor similar to zoom
@@ -105,10 +105,13 @@ def get_movable_state_and_position(item_name):
                     pos = None
             else:
                 pos = hwobj.getPosition()
+            state = hwobj.getState()
+            isdisabled = state < 2
 
             return {item_name: {"name": item_name,
-                                "state": hwobj.getState(),
-                                "position": pos}}
+                                "state": state,
+                                "position": pos,
+                                "disabled": isdisabled}}
     except Exception:
         logging.getLogger("HWR").exception("[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item '%s'" % item_name)
 
