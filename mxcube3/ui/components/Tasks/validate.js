@@ -8,6 +8,7 @@ const validate = (values, props) => {
   }
   const currEnergy = parseFloat(values.energy);
   const currRes = parseFloat(values.resolution);
+  const currTransmission = parseFloat(values.transmission);
   const energies = props.attributes.resolution.limits.map(value => value[0]);
   const limitsMin = props.attributes.resolution.limits.map(value => value[1]);
   const limitsMax = props.attributes.resolution.limits.map(value => value[2]);
@@ -39,6 +40,9 @@ const validate = (values, props) => {
   if (!(currEnergy > props.attributes.energy.limits[0] &&
         currEnergy < props.attributes.energy.limits[1])) {
     errors.energy = 'Energy outside working range';
+  }
+  if (!(currTransmission >= 0 && currTransmission <= 100)) {
+    errors.transmission = 'Transmission outside working range';
   }
   return errors;
 };

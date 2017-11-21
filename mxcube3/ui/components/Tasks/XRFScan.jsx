@@ -82,7 +82,13 @@ class XRFScan extends React.Component {
             </Row>
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="countTime" label="Count time (s)" col1="4" col2="2" />
+                <InputField
+                  propName="countTime"
+                  type="number"
+                  label="Count time (s)"
+                  col1="4"
+                  col2="2"
+                />
               </Col>
             </Row>
           </Form>
