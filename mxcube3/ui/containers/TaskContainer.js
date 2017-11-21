@@ -141,6 +141,8 @@ class TaskContainer extends React.Component {
         cellCount={this.props.cellCount}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
+        attributes={this.props.attributes}
+        motors={this.props.motors}
       />);
     }
 

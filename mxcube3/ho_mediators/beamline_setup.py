@@ -247,6 +247,10 @@ class HOMediatorBase(object):
         """
         return ""
 
+    def isDisabled(self):
+        state = self.state()
+        return state == "NOTINITIALIZED" or state == "UNUSABLE"
+
     def dict_repr(self):
         """
         :returns: The dictionary representation of the hardware object.
@@ -259,7 +263,8 @@ class HOMediatorBase(object):
                 "msg": self.msg(),
                 "type": "FLOAT",
                 "precision": self.precision(),
-                "step": self.step_size()
+                "step": self.step_size(),
+                "disabled": self.isDisabled()
                 }
 
         return data
@@ -356,6 +361,11 @@ class EnergyHOMediator(HOMediatorBase):
             raise ValueError("Could not get limits")
 
         return energy_limits
+
+       
+    def isDisabled(self):
+        state = self.state()
+        return state == "NOTINITIALIZED" or state == "UNUSABLE" or not self._ho.canMoveEnergy()
 
 class WavelengthHOMediator(HOMediatorBase):
     """
@@ -655,7 +665,8 @@ class ResolutionHOMediator(HOMediatorBase):
                 "state": self.state(),
                 "msg": self.msg(),
                 "precision": self.precision(),
-                "step": self.step_size()
+                "step": self.step_size(),
+                "disabled": self.isDisabled()
                 }
 
         return data

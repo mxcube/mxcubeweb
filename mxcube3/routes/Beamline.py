@@ -210,16 +210,22 @@ def beamline_get_attribute(name):
 
     Replies with status code 200 on success and 520 on exceptions.
     """
-    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
     data = {"name": name, "value": ""}
 
     try:
+        ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole(name.lower())
         data = ho.dict_repr()
         code = 200
     except Exception as ex:
         data["value"] = ""
         data["state"] = "UNUSABLE"
         data["msg"] = str(ex)
+        data["disabled"] = True
+        data["label"] = name.capitalize()
+        data["precision"] = 4
+        data["step"] = 0.1
+        data["type"] = "FLOAT"
+        data["limits"] = [0, 1]
         code = 520
 
     response = jsonify(data)

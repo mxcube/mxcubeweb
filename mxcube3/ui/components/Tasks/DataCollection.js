@@ -146,7 +146,14 @@ class DataCollection extends React.Component {
   }
 
   isInputDisabled(prop) {
-    return this.props.attributes[prop].state === 'FAULT';
+    const data = this.props.attributes[prop];
+    let disabled = false;
+    if (!data) {
+      disabled = true;
+    } else {
+      disabled = data.disabled || data.state === 'FAULT';
+    }
+    return disabled;
   }
 
   isMotorDisabled(prop) {
