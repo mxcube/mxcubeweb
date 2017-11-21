@@ -137,14 +137,13 @@ def loaded_sample_changed(sample):
         barcode = ''
 
     logging.getLogger("HWR").info('loaded sample changed now is: ' + address)
-
-    if isinstance(sample, Pin):
+ 
+    try:
         # recreate the dict with the sample info
         q = queue_to_dict()
         sampleID = sample.getAddress()
         sample_data = q.get(sampleID, {})
-     
-    try:
+    
         scutils.set_current_sample(sample_data)
         msg = {'signal': 'loadReady', 'location': address}
         socketio.emit('sc', msg, namespace='/hwr')

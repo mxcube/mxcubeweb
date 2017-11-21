@@ -59,6 +59,7 @@ def get_sample_to_be_mounted():
 def mount_sample(beamline_setup_hwobj,
                  view, data_model,
                  centring_done_cb, async_result):
+    from signals import loaded_sample_changed
 
     logging.getLogger('user_level_log').info("Loading sample ...")
 
@@ -77,7 +78,8 @@ def mount_sample(beamline_setup_hwobj,
     else:
         sample_mount_device = beamline_setup_hwobj.sample_changer_hwobj
 
-    if sample_mount_device.getLoadedSample().getAddress() == data_model.loc_str:
+    if sample_mount_device.getLoadedSample() and \
+            sample_mount_device.getLoadedSample().getAddress() == data_model.loc_str:
         return
 
     if hasattr(sample_mount_device, '__TYPE__'):
@@ -96,9 +98,11 @@ def mount_sample(beamline_setup_hwobj,
     if not sample_mount_device.hasLoadedSample():
         #Disables all related collections
         logging.getLogger('user_level_log').info("Sample not loaded")
-        set_current_sample(None)
+        #set_current_sample(None)
+        loaded_sample_changed(sample_mount_device.getLoadedSample())
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
+        loaded_sample_changed(sample_mount_device.getLoadedSample())
         logging.getLogger('user_level_log').info("Sample loaded")
         dm = beamline_setup_hwobj.diffractometer_hwobj
         if dm is not None:
@@ -109,17 +113,17 @@ def mount_sample(beamline_setup_hwobj,
                     msg = "Manual centring used, waiting for" +\
                           " user to center sample"
                     log.warning(msg)
-                    dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
+                    dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
                 elif centring_method == CENTRING_METHOD.LOOP:
-                    dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
+                    dm.startCentringMethod(dm.C3D_MODE)
                     msg = "Centring in progress. Please save" +\
                           " the suggested centring or re-center"
                     log.warning(msg)
                 elif centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
                     log.info("Centring sample, please wait.")
-                    dm.start_centring_method(dm.CENTRING_METHOD_AUTO)
+                    dm.startCentringMethod(dm.C3D_MODE)
                 else:
-                    dm.start_centring_method(dm.CENTRING_METHOD_MANUAL)
+                    dm.start_centring_method(dm.MANUAL3CLICK_MODE)
 
                 logging.getLogger('user_level_log').info("Centring ...")
                 centring_result = async_result.get()
@@ -144,8 +148,8 @@ def mount_sample_clean_up(sample):
 
         set_sample_to_be_mounted(sample['sampleID'])
 
-        if sample['location'] != 'Manual' and \
-           mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
+        if sample['location'] != 'Manual' and mxcube.sample_changer.getLoadedSample() and \
+                mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
             mxcube.sample_changer.load(sample['sampleID'], wait=False)
 
         mxcube.queue.mounted_sample = sample['sampleID']

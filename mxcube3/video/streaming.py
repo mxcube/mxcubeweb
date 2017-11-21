@@ -185,10 +185,14 @@ def tango_lima_video_plugin(camera, video_device):
                     self.emit("imageReceived", raw_data, width, height, False)
                     time.sleep(sleep_time)
 
-            def take_snapshot(self, path):
+            def take_snapshot(self, path, bw=False):
                 width, height, raw_data = \
                     self.parse_image_data(self.device.video_last_image)
                 img = PIL.Image.frombytes("RGB", (width, height), raw_data)
+                
+                if bw:
+                    img.convert("1")
+
                 img.save(path)
 
             camera._do_polling = types.MethodType(do_polling, camera)
