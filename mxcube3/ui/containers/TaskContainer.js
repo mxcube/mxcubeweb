@@ -88,6 +88,7 @@ class TaskContainer extends React.Component {
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
         attributes={this.props.attributes}
+        motors={this.props.motors}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
       />);
@@ -103,6 +104,7 @@ class TaskContainer extends React.Component {
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
         attributes={this.props.attributes}
+        motors={this.props.motors}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
       />);
@@ -120,6 +122,7 @@ class TaskContainer extends React.Component {
         rootPath={this.props.path}
         lines={lines}
         attributes={this.props.attributes}
+        motors={this.props.motors}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
       />);
@@ -138,6 +141,8 @@ class TaskContainer extends React.Component {
         cellCount={this.props.cellCount}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
+        attributes={this.props.attributes}
+        motors={this.props.motors}
       />);
     }
 
@@ -215,7 +220,8 @@ function mapStateToProps(state) {
     path: state.queue.rootPath,
     shapes: state.shapes.shapes,
     attributes: state.beamline.attributes,
-    initialParameters: state.taskForm.initialParameters
+    initialParameters: state.taskForm.initialParameters,
+    motors: state.beamline.motors
   };
 }
 

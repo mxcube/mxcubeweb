@@ -72,6 +72,28 @@ class Helical extends React.Component {
     });
   }
 
+  isInputDisabled(prop) {
+    const data = this.props.attributes[prop];
+    let disabled = false;
+    if (!data) {
+      disabled = true;
+    } else {
+      disabled = data.disabled || data.state === 'FAULT';
+    }
+    return disabled;
+  }
+
+  isMotorDisabled(prop) {
+    const data = this.props.motors[prop];
+    let disabled = false;
+    if (!data) {
+      disabled = true;
+    } else {
+      disabled = data.disabled;
+    }
+    return disabled;
+  }
+
   render() {
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
@@ -117,16 +139,36 @@ class Helical extends React.Component {
             </FieldsRow>
             <FieldsRow>
               <InputField propName="exp_time" label="Exposure time (ms)" />
-              <InputField propName="transmission" label="Transmission" />
+              <InputField
+                propName="transmission"
+                disabled={ this.isInputDisabled('transmission') }
+                label="Transmission"
+              />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="energy" label="Energy" />
-              <InputField propName="resolution" label="Resolution" />
+              <InputField
+                propName="energy"
+                disabled={ this.isInputDisabled('energy') }
+                label="Energy (keV)"
+              />
+              <InputField
+                propName="resolution"
+                disabled={ this.isInputDisabled('resolution') }
+                label="Resolution (Å)"
+              />
             </FieldsRow>
             <CollapsableRows>
               <FieldsRow>
-                <InputField propName="kappa" label="Kappa" />
-                <InputField propName="kappa_phi" label="Phi" />
+                <InputField
+                  propName="kappa"
+                  disabled={this.isMotorDisabled('kappa') }
+                  label="Kappa"
+                />
+                <InputField
+                  propName="kappa_phi"
+                  disabled={this.isMotorDisabled('kappa_phi') }
+                  label="Phi"
+                />
               </FieldsRow>
               <FieldsRow>
                 <SelectField
