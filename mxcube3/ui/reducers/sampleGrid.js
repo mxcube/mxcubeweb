@@ -56,13 +56,6 @@ export default (state = INITIAL_STATE, action) => {
       // the sample list.
       const sampleList = { ...state.sampleList };
 
-      action.sampleIDList.forEach((sid) => {
-        if (sampleList[sid] !== undefined) {
-          sampleList[sid].tasks = sampleList[sid].tasks.filter((t) => (
-            t.state !== TASK_UNCOLLECTED
-          ));
-        }
-      });
 
       return { ...state, sampleList };
     }
