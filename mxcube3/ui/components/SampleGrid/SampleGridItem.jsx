@@ -82,7 +82,6 @@ export class SampleGridItem extends React.Component {
           onClick={this.pickButtonOnClick}
           onMouseUp={this.pickButtonMouseUp}
           onMouseDown={this.pickButtonMouseDown}
-          disabled={this.props.current}
         >
           <i className={iconClassName} />
         </button>
@@ -294,17 +293,20 @@ export class SampleGridItem extends React.Component {
     }
   }
 
+  currentSampleText() {
+    return this.props.current ? '(MOUNTED)' : '';
+  }
+
 
   render() {
     let classes = classNames('samples-grid-item',
       { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
         'samples-grid-item-to-be-collected': this.props.picked,
-        'samples-grid-item-current': this.props.current,
         'samples-grid-item-collected': isCollected(this.props.sampleData) });
 
     let scLocationClasses = classNames('sc_location', 'label', 'label-default',
-      { 'label-success': this.props.sampleData.loadable === true });
+      { 'label-custom-success': this.props.sampleData.loadable === true });
 
     const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
 
@@ -317,7 +319,9 @@ export class SampleGridItem extends React.Component {
       >
         {this.moveArrows()}
         {this.itemControls()}
-        <div className={scLocationClasses}>{this.props.sampleData.location}</div>
+        <div className={scLocationClasses}>
+          {this.props.sampleData.location} {this.currentSampleText()}
+        </div>
         <div style={{ display: 'block', clear: 'both' }}>
         <OverlayTrigger
           ref="sampleInfoPopoverTrigger"

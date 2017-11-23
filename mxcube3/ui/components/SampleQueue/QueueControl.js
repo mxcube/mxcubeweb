@@ -51,9 +51,7 @@ export default class QueueControl extends React.Component {
         NoSampleMounted: [
           { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
         ],
-        LastSample: [
-          { text: 'Finish', class: 'btn-primary', action: this.unMountSample, key: 1 }
-        ]
+        LastSample: []
       }
     };
   }

@@ -188,8 +188,8 @@ class SampleGridContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       document.getElementById('contextMenu').style.display = 'none';
     } else if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
-      document.getElementById('contextMenu').style.top = `${e.clientY}px`;
-      document.getElementById('contextMenu').style.left = `${e.clientX}px`;
+      document.getElementById('contextMenu').style.top = `${e.pageY}px`;
+      document.getElementById('contextMenu').style.left = `${e.pageX}px`;
       document.getElementById('contextMenu').style.display = 'block';
       res = false;
     } else {
@@ -371,11 +371,11 @@ class SampleGridContainer extends React.Component {
 
     if (sample) {
       const sampleFilter = `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
-      const locationFilter = `${sample.code} ${sample.location}`;
+      const locationFilter = `${sample.location}`;
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
-      fi &= locationFilter.includes(this.props.filterOptions.puckFilter.toLowerCase());
+      fi &= locationFilter.startsWith(this.props.filterOptions.puckFilter.toLowerCase());
       fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
       fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
     }

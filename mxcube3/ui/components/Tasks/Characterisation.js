@@ -157,22 +157,23 @@ class Characterisation extends React.Component {
                   />
                   <CheckboxField propName="opt_sad" label="Optimised SAD" />
                 </FieldsRow>
-                <FieldsRow>
-                  <SelectField
-                    propName="strategy_complexity"
-                    label="Strategy complexity"
-                    list={['SINGLE', 'FEW', 'MANY']}
-                  />
-                </FieldsRow>
+                <SelectField
+                  col1="4" col2="3"
+                  propName="strategy_complexity"
+                  label="Strategy complexity"
+                  list={['SINGLE', 'FEW', 'MANY']}
+                />
               </Form>
             </CollapsableRows>
 
             <FieldsHeader title="Crystal" />
             <CollapsableRows>
               <Form horizontal>
-                <FieldsRow>
-                  <SelectField propName="space_group" label="Space group" list={SPACE_GROUPS} />
-                </FieldsRow>
+                <SelectField col1="3" col2="3"
+                  propName="space_group"
+                  label="Space group"
+                  list={SPACE_GROUPS}
+                />
                 <FieldsRow>
                   <InputField propName="min_crystal_vdim" label="Min" />
                   <InputField propName="max_crystal_vdim" label="Max" />
