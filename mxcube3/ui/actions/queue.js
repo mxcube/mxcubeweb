@@ -569,27 +569,6 @@ export function sendToggleCheckBox(data, index) {
 }
 
 
-export function setEnabledSample(sampleIDList, value) {
-  return function (dispatch, getState) {
-    const state = getState();
-    dispatch(queueLoading(true));
-
-    const qidList = sampleIDList.map(sampleID => (
-      state.sampleGrid.sampleList[sampleID].queueID));
-
-    sendSetEnabledQueueItem(qidList, value).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to set item enabled flag'));
-      } else {
-        sampleIDList.forEach(sid => {
-          dispatch(setSampleAttribute(sid, 'checked', value));
-        });
-      }
-    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
-  };
-}
-
-
 export function deleteSamplesFromQueue(sampleIDList) {
   return function (dispatch) {
     dispatch(queueLoading(true));
