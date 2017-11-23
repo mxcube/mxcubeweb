@@ -239,7 +239,7 @@ class SampleGridContainer extends React.Component {
               queueOrder={orderedList.indexOf(key) + 1}
               selected={props.selected[sample.sampleID]}
               current={props.queue.current.sampleID === sample.sampleID}
-              picked={props.inQueue(sample.sampleID)}
+              picked={props.inQueue(sample.sampleID) && sample.checked}
               moving={props.moving[key]}
             >
               {sample.tasks.map((taskData, i) => (

@@ -38,7 +38,7 @@ def queue_start():
             qutils.execute_entry_with_id(sample_id)
         else:
             # Making sure all sample entries are enabled before running the queue
-            qutils.enable_sample_entries(queue["sample_order"], True)
+            #qutils.enable_sample_entries(queue["sample_order"], True)
             mxcube.queue.queue_hwobj.set_pause(False)
             mxcube.queue.queue_hwobj.execute()
 
@@ -254,6 +254,18 @@ def queue_update_item(sqid, tqid):
 def queue_delete_item():
     item_pos_list = request.get_json()
     qutils.delete_entry_at(item_pos_list)
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/set_enabled", methods=['POST'])
+def queue_enable_item():
+    params = request.get_json()
+    qidList, enabled = params.get("qidList", None), params.get("enabled", False)
+
+    for qid in qidList:
+        qutils.set_enabled_entry(qid, enabled)
+
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200)
 
