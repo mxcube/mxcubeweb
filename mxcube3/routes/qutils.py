@@ -37,6 +37,10 @@ ORIGIN_MX3 = "MX3"
 QUEUE_CACHE = {}
 
 
+def is_collected(task):
+    return (task["state"] & COLLECTED) == COLLECTED
+
+
 def get_queue_from_cache():
     return QUEUE_CACHE
 
