@@ -242,3 +242,9 @@
 .sample-grid-task-item {
   float: left;
 }
+
+.label-custom-success {
+  color: #464646;
+  border: 1px solid #ccc;
+  background-color: #d9edf7;
+}

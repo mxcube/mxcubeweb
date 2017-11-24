@@ -6,7 +6,7 @@ import { TASK_COLLECTED,
          TASK_COLLECT_FAILED,
          TASK_COLLECT_WARNING,
          TASK_RUNNING,
-         isCollected } from '../../constants';
+         isUnCollected } from '../../constants';
 
 export class TaskItem extends React.Component {
 
@@ -78,7 +78,8 @@ export class TaskItem extends React.Component {
 
     const r = task.limsResultData;
 
-    if (isCollected(task) && task.limsResultData && Object.keys(task.limsResultData).length > 0) {
+    if (!isUnCollected(task) && task.limsResultData &&
+        Object.keys(task.limsResultData).length > 0) {
       if (task.limsResultData.firstImageId) {
         fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
         fImageUrl += task.limsResultData.firstImageId.toString();
@@ -215,6 +216,7 @@ export class TaskItem extends React.Component {
 
   render() {
     const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
+    const task = this.props.taskData;
 
     return (
       <div key={this.props.taskIndex} className="sample-grid-task-item">
@@ -239,7 +241,11 @@ export class TaskItem extends React.Component {
             onClick={this.taskItemOnClick}
           >
             {this.tagName()}
-            <i className="fa fa-times" onClick={this.deleteButtonOnClick} />
+            {
+             task.state !== TASK_COLLECTED ?
+             (<i className="fa fa-times" onClick={this.deleteButtonOnClick} />) :
+             (<span />)
+            }
           </span>
         </OverlayTrigger>
       </div>
