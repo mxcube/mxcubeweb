@@ -11,10 +11,8 @@ import qutils
 from mxcube3 import app as mxcube
 from flask import session
 
-
-def init_sample_list():
-    mxcube.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
-
+def new_sample_list():
+    return {"sampleList": {}, 'sampleOrder': []}
 
 def sample_list_set(sample_list):
     mxcube.SAMPLE_LIST = sample_list
@@ -60,7 +58,8 @@ def synch_sample_list_with_queue():
             sample = current_queue[loc]
             sample_list_update_sample(loc, sample)
         elif len(data["tasks"]):
-            data["tasks"] = []
+            # Only keep collected tasks
+            data["tasks"] = list(filter(qutils.is_collected, data["tasks"]))
 
 
 def sample_list_update_sample(loc, sample):
@@ -68,7 +67,11 @@ def sample_list_update_sample(loc, sample):
 
     # If sample exists in sample list update it, otherwise add it
     if _sample:
+        # synchronize collected tasks
+        tasks = mxcube.SAMPLE_LIST["sampleList"].get("tasks", [])
+        tasks += sample.get("tasks", [])
         mxcube.SAMPLE_LIST["sampleList"].get(loc, {}).update(sample)
+        mxcube.SAMPLE_LIST["sampleList"][loc]["tasks"] = tasks
     else:
         mxcube.SAMPLE_LIST["sampleList"][loc] = sample
         mxcube.SAMPLE_LIST["sampleOrder"].append(loc)
