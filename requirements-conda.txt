@@ -1,4 +1,3 @@
-python=2
 gevent==1.2.2
 flask==0.12.2
 flask-socketio==2.9.2
