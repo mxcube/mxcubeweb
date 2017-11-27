@@ -129,6 +129,9 @@ def sc_state_changed(*args):
     socketio.emit('sc_state', state_str, namespace='/hwr')
 
 def loaded_sample_changed(sample):
+    if isinstance(sample, Pin):
+        return
+    
     if sample is not None:
         address = sample.getAddress()
         barcode = sample.getID()
