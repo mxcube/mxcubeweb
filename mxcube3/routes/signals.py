@@ -1,6 +1,7 @@
 import logging
 
 import queue_model_objects_v1 as qmo
+import queue_entry as qe
 import json
 
 from mxcube3 import socketio
@@ -204,6 +205,10 @@ def queue_execution_entry_finished(entry):
     if not qutils.is_interleaved(entry.get_data_model()):
         safe_emit('task', get_task_state(entry), namespace='/hwr')
 
+    if isinstance(entry, qe.SampleQueueEntry):
+        msg = {'Signal': 'DisableSample', 'sampleID': entry.get_data_model().loc_str}
+        safe_emit('queue', msg, namespace='/hwr')
+
 
 def queue_execution_started(entry, queue_state=None):
     state = queue_state if queue_state else qutils.queue_exec_state()
@@ -215,6 +220,9 @@ def queue_execution_started(entry, queue_state=None):
 def queue_execution_finished(entry, queue_state=None):
     state = queue_state if queue_state else qutils.queue_exec_state()
     msg = {'Signal': state, 'Message': 'Queue execution stopped'}
+
+    qutils.enable_sample_entries(mxcube.TEMP_DISABLED, True)
+    mxcube.TEMP_DISABLED = []
 
     safe_emit('queue', msg, namespace='/hwr')
 

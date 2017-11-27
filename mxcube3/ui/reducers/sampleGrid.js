@@ -252,6 +252,11 @@ export default (state = INITIAL_STATE, action) => {
 
       return Object.assign({}, state, { sampleList });
     }
+    case 'SET_SAMPLE_ATTRIBUTE': {
+      const sampleList = Object.assign({}, state.sampleList);
+      sampleList[action.sampleID][action.attr] = action.value;
+      return { ...state, sampleList };
+    }
     // Toggles a samples movable flag
     case 'TOGGLE_MOVABLE_SAMPLE': {
       const moving = { };

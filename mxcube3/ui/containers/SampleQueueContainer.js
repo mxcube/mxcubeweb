@@ -113,7 +113,7 @@ export default class SampleQueueContainer extends React.Component {
 
         if (sample.state && SAMPLE_MOUNTED) {
           history.push(sample.sampleID);
-        } else if (sample.sampleID !== current.sampleID) {
+        } else if (sample.sampleID !== current.sampleID && sample.checked) {
           todo.push(sample.sampleID);
         }
       }
@@ -131,91 +131,90 @@ export default class SampleQueueContainer extends React.Component {
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
-                <QueueControl
-                  ref="queueContainer"
-                  historyLength={history.length}
-                  queueLength={queue.length}
-                  todoLength={todo.length}
-                  queueStatus={queueStatus}
-                  runQueue={showConfirmCollectDialog}
-                  stopQueue={sendStopQueue}
-                  pause={sendPauseQueue}
-                  unpause={sendUnpauseQueue}
-                  setAutoMountSample={setAutoMountSample}
-                  autoMountNext={autoMountNext}
-                  setAutoAddDiffPlan={setAutoAddDiffPlan}
-                  autoAddDiffPlan={autoAddDiffPlan}
-                  mounted={current.sampleID}
-                  runSample={sendRunSample}
-                  sendSetCentringMethod={sendSetCentringMethod}
-                  centringMethod={centringMethod}
-                  todoList={todo}
-                />
-              <div className="m-tree queue-body">
-                <Nav
-                  bsStyle="tabs"
-                  justified
-                  activeKey={visibleList}
-                  onSelect={this.handleSelect}
-                >
-                  <NavItem eventKey={'current'}>
-                    <b>
-                      { current.sampleID ? `Sample: ${sampleName} ${proteinAcronym}` : 'Current'}
-                    </b>
-                  </NavItem>
-                  <NavItem eventKey={'todo'}><b>Upcoming ({todo.length})</b></NavItem>
-                </Nav>
-                {loading ?
-                  <div className="center-in-box">
-                    <img src={loader} className="img-responsive" alt="" />
-                  </div>
-                  : null
-                }
-                <CurrentTree
-                  changeOrder={changeTaskOrderAction}
-                  show={visibleList === 'current'}
-                  mounted={current.sampleID}
-                  queue={queue}
-                  sampleList={sampleList}
-                  toggleCheckBox={sendToggleCheckBox}
-                  checked={checked}
-                  deleteTask={deleteTask}
-                  pause={sendPauseQueue}
-                  unpause={sendUnpauseQueue}
-                  stop={sendStopQueue}
-                  showForm={showForm}
-                  unmount={sendUnmountSample}
-                  queueStatus={queueStatus}
-                  rootPath={rootPath}
-                  collapseItem={collapseItem}
-                  selectItem={selectItem}
-                  displayData={displayData}
-                  runSample={sendRunSample}
-                  todoList={todo}
-                  moveTask={moveTask}
-                  addTask={addTask}
-                  plotsData={this.props.plotsData}
-                  plotsInfo={this.props.plotsInfo}
-
-                />
-                <TodoTree
-                  show={visibleList === 'todo'}
-                  list={todo}
-                  queue={queue}
-                  sampleList={sampleList}
-                  collapseItem={collapseItem}
-                  displayData={displayData}
-                  mount={sendMountSample}
-                  showForm={showForm}
-                  queueStatus={queueStatus}
-                />
-                <UserMessage
-                  messages={this.props.userMessages}
-                  domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
-                  placement="left"
-                  target="queue"
-                />
+        <QueueControl
+          ref="queueContainer"
+          historyLength={history.length}
+          queueLength={queue.length}
+          todoLength={todo.length}
+          queueStatus={queueStatus}
+          runQueue={showConfirmCollectDialog}
+          stopQueue={sendStopQueue}
+          pause={sendPauseQueue}
+          unpause={sendUnpauseQueue}
+          setAutoMountSample={setAutoMountSample}
+          autoMountNext={autoMountNext}
+          setAutoAddDiffPlan={setAutoAddDiffPlan}
+          autoAddDiffPlan={autoAddDiffPlan}
+          mounted={current.sampleID}
+          runSample={sendRunSample}
+          sendSetCentringMethod={sendSetCentringMethod}
+          centringMethod={centringMethod}
+          todoList={todo}
+        />
+        <div className="m-tree queue-body">
+          <Nav
+            bsStyle="tabs"
+            justified
+            activeKey={visibleList}
+            onSelect={this.handleSelect}
+          >
+            <NavItem eventKey={'current'}>
+              <b>
+                { current.sampleID ? `Sample: ${sampleName} ${proteinAcronym}` : 'Current'}
+              </b>
+            </NavItem>
+            <NavItem eventKey={'todo'}><b>Upcoming ({todo.length})</b></NavItem>
+          </Nav>
+          {loading ?
+            <div className="center-in-box">
+                <img src={loader} className="img-responsive" alt="" />
               </div>
+              : null
+            }
+            <CurrentTree
+              changeOrder={changeTaskOrderAction}
+              show={visibleList === 'current'}
+              mounted={current.sampleID}
+              queue={queue}
+              sampleList={sampleList}
+              toggleCheckBox={sendToggleCheckBox}
+              checked={checked}
+              deleteTask={deleteTask}
+              pause={sendPauseQueue}
+              unpause={sendUnpauseQueue}
+              stop={sendStopQueue}
+              showForm={showForm}
+              unmount={sendUnmountSample}
+              queueStatus={queueStatus}
+              rootPath={rootPath}
+              collapseItem={collapseItem}
+              selectItem={selectItem}
+              displayData={displayData}
+              runSample={sendRunSample}
+              todoList={todo}
+              moveTask={moveTask}
+              addTask={addTask}
+              plotsData={this.props.plotsData}
+              plotsInfo={this.props.plotsInfo}
+            />
+            <TodoTree
+              show={visibleList === 'todo'}
+              list={todo}
+              queue={queue}
+              sampleList={sampleList}
+              collapseItem={collapseItem}
+              displayData={displayData}
+              mount={sendMountSample}
+              showForm={showForm}
+              queueStatus={queueStatus}
+            />
+            <UserMessage
+              messages={this.props.userMessages}
+              domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
+              placement="left"
+              target="queue"
+            />
+        </div>
       </div>
     );
   }

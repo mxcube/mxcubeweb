@@ -21,7 +21,8 @@ import { setStatus,
          addTaskAction,
          sendStopQueue,
          setCurrentSample,
-         addDiffractionPlanAction } from './actions/queue';
+         addDiffractionPlanAction,
+         setSampleAttribute } from './actions/queue';
 import { collapseItem,
          showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading,
@@ -167,7 +168,11 @@ class ServerIO {
         callback();
       }
 
-      this.dispatch(setStatus(record.Signal));
+      if (record.Signal === 'DisableSample') {
+        this.dispatch(setSampleAttribute(record.sampleID, 'checked', false));
+      } else {
+        this.dispatch(setStatus(record.Signal));
+      }
     });
 
     this.hwrSocket.on('sc', (record) => {

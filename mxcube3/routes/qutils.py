@@ -625,6 +625,11 @@ def get_entry(id):
     return model, entry
 
 
+def set_enabled_entry(qid, enabled):
+    model, entry = get_entry(qid)
+    model.set_enabled(enabled)
+
+
 def delete_entry(entry):
     """
     Helper function that deletes an entry and its model from the queue
@@ -653,8 +658,6 @@ def delete_entry_at(item_pos_list):
                 entry = entry.get_container()
 
         delete_entry(entry)
-
-    
 
 
 def enable_entry(id_or_qentry, flag):
@@ -834,12 +837,18 @@ def _queue_add_item_rec(item_list, current_queue):
         sample_id = str(item["sampleID"])
 
         # Do not add samples that are already in the queue
-        if item_t == "Sample" and item["sampleID"] not in current_queue:
-            sample_node_id = add_sample(sample_id, item)
+        if item_t == "Sample":
+            if item["sampleID"] not in current_queue:
+                sample_node_id = add_sample(sample_id, item)
+            else:
+                model, entry = get_entry(item["queueID"])
+                model.set_enabled(True)
+
             tasks = item.get("tasks")
-            
+
             if tasks:
                 children.extend(tasks)
+
         else:
             sample_node_id = current_queue[sample_id]["queueID"]
 
@@ -889,7 +898,7 @@ def add_sample(sample_id, item):
         sample = limsutils.sample_list_update_sample(sample_id, item)
 
     sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
-    enable_entry(sample_entry, get_auto_mount_sample())
+    enable_entry(sample_entry, True)
 
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
     mxcube.queue.queue_hwobj.enqueue(sample_entry)
@@ -1618,8 +1627,15 @@ def execute_entry_with_id(sid, tindex=None):
 
     if tindex in ['undefined', 'None', 'null', None]:
         node_id = current_queue[sid]["queueID"]
+        enabled_entries = []
 
-        enable_sample_entries(current_queue["sample_order"], False)
+        for sampleID in current_queue["sample_order"]:
+            if current_queue[sampleID].get("checked", False):
+                enabled_entries.append(sampleID)
+
+        enabled_entries.pop(enabled_entries.index(sid))
+        mxcube.TEMP_DISABLED = enabled_entries
+        enable_sample_entries(enabled_entries, False)
         enable_sample_entries([sid], True)
 
         # The queue ignores empty samples (so does not run the mount defined by
@@ -1627,7 +1643,6 @@ def execute_entry_with_id(sid, tindex=None):
         # sample
         if (not len(current_queue[sid]["tasks"])) and \
            sid != scutils.get_current_sample().get('sampleID', ''):
-
             scutils.mount_sample_clean_up(current_queue[sid])
 
         mxcube.queue.queue_hwobj.execute()
@@ -1718,19 +1733,6 @@ def set_auto_mount_sample(automount, current_sample=None):
     :param bool automount: True auto-mount, False wait for user
     """
     mxcube.AUTO_MOUNT_SAMPLE = automount
-    current_queue = queue_to_dict()
-
-    sample = current_sample if current_sample else scutils.get_current_sample().get('sampleID', '')
-
-    # If automount next is off, that is do not mount and run next
-    # sample, disable all entries except the current one
-    # If automount next is on, enable all
-    if current_queue:
-        enable_sample_entries(current_queue["sample_order"], automount)
-
-    # No automount, enable the current entry if any
-    if not automount and sample in current_queue["sample_order"]:
-        enable_sample_entries([sample], True)
 
 
 def get_auto_mount_sample():

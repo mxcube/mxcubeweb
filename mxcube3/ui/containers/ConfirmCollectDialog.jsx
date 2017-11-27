@@ -324,8 +324,7 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   render() {
-    const summary = this.collectionSummary();
-    const autoMountNext = summary.numTasks !== 0;
+    const autoMountNext = this.props.queue.queue.length > 1;
     return (
       <Modal
         dialogClassName="collect-confirm-dialog"
