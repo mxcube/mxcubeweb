@@ -464,7 +464,7 @@ def get_default_dc_params():
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -505,7 +505,7 @@ def get_default_char_acq_params():
             'skip_existing_images': False,
             'take_snapshots': True,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
             'strategy_complexity': 'FEW',
             'account_rad_damage': True,
             'opt_sad': False,
@@ -558,7 +558,7 @@ def get_default_mesh_params():
             'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
             'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
         },
         })    
     resp.status_code = 200
@@ -721,7 +721,7 @@ def create_diff_plan(sid):
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
             'prefix': 'foo',
             'shape': 'P1'#-1
         },
