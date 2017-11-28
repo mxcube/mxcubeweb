@@ -45,6 +45,7 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin = new DrawGridPlugin();
     this.player = null;
     this.centringCross = [];
+    this.removeShapes = this.removeShapes.bind(this);
   }
 
   componentDidMount() {
@@ -275,7 +276,31 @@ export default class SampleImage extends React.Component {
   keyDown(event) {
     if (!this._keyPressed) {
       this._keyPressed = event.key;
+
+      if (this._keyPressed === 'Delete') {
+        this.removeShapes();
+      }
+
+      if (this._keyPressed === 'Escape') {
+        if (this.props.clickCentring) {
+          this.props.sampleActions.sendAbortCentring();
+        }
+
+        if (this.props.drawGrid) {
+          this.props.sampleActions.toggleDrawGrid();
+        }
+      }
     }
+  }
+
+  removeShapes() {
+    if (this.props.clickCentring) {
+      this.props.sampleActions.sendAbortCentring();
+    }
+
+    this.props.selectedShapes.forEach((shapeID) => (
+      this.props.sampleActions.sendDeleteShape(shapeID)
+    ));
   }
 
   keyUp() {
