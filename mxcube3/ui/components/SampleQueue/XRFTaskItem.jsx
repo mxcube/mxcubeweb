@@ -35,7 +35,7 @@ export default class XRFTaskItem extends Component {
     };
   }
 
-  getResult(state, data) {
+  getResult(state) {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
@@ -49,7 +49,6 @@ export default class XRFTaskItem extends Component {
                      padding: '0.5em' } }
       >
         <a href={link} target="_blank"> View Results in ISPyB</a>
-        {this.getDiffPlan(data)}
       </div>
     );
   }
