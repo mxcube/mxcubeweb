@@ -7,7 +7,9 @@
 
 .messageINFO {
   border-top: 5px solid #2196F3;
-  background-color: rgba(91, 141, 180, 179);
+  background-color: rgba(91, 141, 180, 1);
+  border-radius: 5px;
+  margin-top: 1em;
 }
 
 .messageWARNING {

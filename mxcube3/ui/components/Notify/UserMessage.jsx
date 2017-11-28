@@ -96,7 +96,9 @@ export default class UserMessage extends React.Component {
           <span className="messageText">
             {message.message}
           </span>
-          <span className="closebtn" onClick={clickHandler}>&times;</span>
+          { message.level !== 'INFO' ?
+            (<span className="closebtn" onClick={clickHandler}>&times;</span>) : null
+          }
         </div>
         ));
 
@@ -119,7 +121,9 @@ export default class UserMessage extends React.Component {
         placement={this.props.placement}
         target={this.props.domTarget}
       >
-        <Popover id="usermessages" style={ { minWidth: '500px' } }>
+        <Popover id="usermessages" style={ { minWidth: '500px',
+                 backgroundColor: 'rgba(255, 255, 255, 1)' } }
+        >
           <div>
             {messages}
           </div>
