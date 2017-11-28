@@ -79,6 +79,7 @@ def beamline_get_all_attributes():
 
         actions.append({ "name": cmd.name(), "username": cmd.userName(), "state": READY, "arguments": args, "messages": [] })
 
+    data.update({'availableMethods': ho.get_available_methods()})
     data.update({'path': mxcube.session.get_base_image_directory(), 'actionsList': actions })
 
     return jsonify(data)

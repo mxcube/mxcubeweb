@@ -95,6 +95,8 @@ export function sendMountSample(sampleData) {
           dispatch(setCurrentSample(sampleData.sampleID));
         }
       });
+    } else {
+      setCurrentSample(sampleData.sampleID);
     }
   };
 }

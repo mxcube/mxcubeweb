@@ -45,6 +45,7 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin = new DrawGridPlugin();
     this.player = null;
     this.centringCross = [];
+    this.removeShapes = this.removeShapes.bind(this);
   }
 
   componentDidMount() {
@@ -119,11 +120,13 @@ export default class SampleImage extends React.Component {
       this.canvas.add(...this.centringCross);
     }
 
-    this.drawGridPlugin.update(this.canvas,
-                               options.e.layerX,
-                               options.e.layerY,
-                               this.props.imageRatio
-                               );
+    if (options.e.buttons > 0) {
+      this.drawGridPlugin.update(this.canvas,
+                                 options.e.layerX,
+                                 options.e.layerY,
+                                 this.props.imageRatio
+                                );
+    }
   }
 
   onMouseUp() {
@@ -273,7 +276,31 @@ export default class SampleImage extends React.Component {
   keyDown(event) {
     if (!this._keyPressed) {
       this._keyPressed = event.key;
+
+      if (this._keyPressed === 'Delete') {
+        this.removeShapes();
+      }
+
+      if (this._keyPressed === 'Escape') {
+        if (this.props.clickCentring) {
+          this.props.sampleActions.sendAbortCentring();
+        }
+
+        if (this.props.drawGrid) {
+          this.props.sampleActions.toggleDrawGrid();
+        }
+      }
     }
+  }
+
+  removeShapes() {
+    if (this.props.clickCentring) {
+      this.props.sampleActions.sendAbortCentring();
+    }
+
+    this.props.selectedShapes.forEach((shapeID) => (
+      this.props.sampleActions.sendDeleteShape(shapeID)
+    ));
   }
 
   keyUp() {
@@ -431,7 +458,7 @@ export default class SampleImage extends React.Component {
       sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     } else if (measureDistance) {
       sampleActions.addDistancePoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
-    } else if (this.props.drawGrid) {
+    } else if (this.props.drawGrid && this.drawGridPlugin.saved()) {
       this.drawGridPlugin.startDrawing(option, this.canvas);
       this.showGridForm();
     }
@@ -609,6 +636,7 @@ export default class SampleImage extends React.Component {
   saveGrid() {
     this.drawGridPlugin.initializeGridResult();
     this.props.sampleActions.addGrid(this.drawGridPlugin.currentGridData());
+    this.drawGridPlugin.saveGrid();
     this.props.sampleActions.toggleDrawGrid();
   }
 

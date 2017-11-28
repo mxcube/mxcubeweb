@@ -157,6 +157,8 @@ class _BeamlineSetupMediator(object):
 
         return {"attributes": attributes}
 
+    def get_available_methods(self):
+        return self._bl["available_methods"].getProperties()    
 
 
 class HOMediatorBase(object):

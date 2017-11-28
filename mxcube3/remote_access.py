@@ -72,8 +72,8 @@ def disconnect():
            mxcube.queue.queue_hwobj.is_executing():
 
         DISCONNECT_HANDLED = False
-        mxcube.queue.queue_hwobj.stop()
-        logging.getLogger('HWR').info('Client disconnected, stopping queue')
+        mxcube.queue.queue_hwobj.pause(True)
+        logging.getLogger('HWR').info('Client disconnected, pausing queue')
 
 @socketio.on('setRaMaster', namespace='/hwr')
 def set_master_id(data):

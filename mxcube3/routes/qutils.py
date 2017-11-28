@@ -1578,18 +1578,15 @@ def queue_model_diff_plan_available(char, index, collection_list):
                 origin_model, origin_entry = get_entry(collection.get_origin())
             else:
                 origin_model, origin_entry = get_entry(char._node_id)
+
             collection.set_enabled(False)
+
             dcg_model = char.get_parent()
             sample = dcg_model.get_parent()
-            sampleID = sample._node_id
-            queue = queue_to_dict()
-            tasks = queue[str(sampleID)]['tasks']
 
-            for t in tasks:
-                if t['queueID'] == char._node_id:
-                    shape = t['parameters']['shape']
-                    setattr(collection, 'shape', shape)
-            task = _handle_dc(sample._node_id, collection)
+            setattr(collection, 'shape', origin_model.shape)
+
+            task = _handle_dc(sample.loc_str, collection)
             task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
             cols.append(task)
 

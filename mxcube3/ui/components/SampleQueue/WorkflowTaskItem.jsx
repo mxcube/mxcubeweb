@@ -27,7 +27,7 @@ export default class WorkflowTaskItem extends Component {
     };
   }
 
-  getResult(state, data) {
+  getResult(state) {
     if (state !== TASK_COLLECTED) {
       return (<span></span>);
     }
@@ -41,7 +41,6 @@ export default class WorkflowTaskItem extends Component {
                      padding: '0.5em' } }
       >
         <a href={link} target="_blank"> View Results in ISPyB</a>
-        {this.getDiffPlan(data)}
       </div>
     );
   }
@@ -113,6 +112,33 @@ export default class WorkflowTaskItem extends Component {
       </OverlayTrigger>);
   }
 
+  progressBar() {
+    const state = this.props.state;
+    let pbarBsStyle = 'info';
+
+    if (state === TASK_RUNNING) {
+      pbarBsStyle = 'info';
+    } else if (state === TASK_COLLECTED) {
+      pbarBsStyle = 'success';
+    } else if (state === TASK_COLLECT_FAILED) {
+      pbarBsStyle = 'danger';
+    }
+
+    return (
+      <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
+        <ProgressBar
+          bsStyle={pbarBsStyle}
+          striped
+          style={{ marginBottom: '0px', height: '18px' }}
+          min={0}
+          max={1}
+          active={ this.props.progress < 1 }
+          label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+          now={this.props.progress}
+        />
+      </span>);
+  }
+
   render() {
     const { state,
             data,
@@ -131,16 +157,14 @@ export default class WorkflowTaskItem extends Component {
       cursor: 'pointer'
     };
 
-    const taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
-
-    let pbarBsStyle = 'info';
+    let taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
 
     if (state === TASK_RUNNING) {
-      pbarBsStyle = 'info';
+      taskCSS += ' running';
     } else if (state === TASK_COLLECTED) {
-      pbarBsStyle = 'success';
+      taskCSS += ' success';
     } else if (state === TASK_COLLECT_FAILED) {
-      pbarBsStyle = 'danger';
+      taskCSS += ' error';
     }
 
     return (
@@ -155,18 +179,7 @@ export default class WorkflowTaskItem extends Component {
           <b>
             <span className="node-name" style={{ display: 'flex' }} >
               {this.pointIDString(parameters)} {data.label}
-              <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
-                <ProgressBar
-                  bsStyle={pbarBsStyle}
-                  striped
-                  style={{ marginBottom: '0px', height: '18px' }}
-                  min={0}
-                  max={1}
-                  active={ this.props.progress < 1 }
-                  label={ `${(this.props.progress * 100).toPrecision(3)} %` }
-                  now={this.props.progress}
-                />
-              </span>
+              { state === TASK_RUNNING ? this.progressBar() : null }
             </span>
           </b>
             { state === TASK_UNCOLLECTED ?
