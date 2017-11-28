@@ -1,0 +1,29 @@
+name: mxcube3
+dependencies:
+  - python=2
+  - gevent==1.2.2
+  - flask==0.12.2
+  - flask-socketio==2.9.2
+  - gevent-websocket==0.10.1
+  - python-socketio==1.8.0
+  - louie
+  - redis-py
+  - scipy
+  - mock
+  - jsonpickle
+  - pillow
+  - suds-jurko
+  - python-ldap
+  - lxml
+  - numpy
+  - requests
+  - v4l2
+  - scandir
+  - pip:
+      - Flask-Session==0.3.1
+  - redis
+  - nodejs
+  - ffmpeg
+  - pytango
+  - opencv
+  
