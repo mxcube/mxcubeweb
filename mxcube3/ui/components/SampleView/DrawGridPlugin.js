@@ -49,6 +49,7 @@ export default class DrawGridPlugin {
     this.initializeGridResult = this.initializeGridResult.bind(this);
     this.setGridResult = this.setGridResult.bind(this);
     this.drawing = false;
+    this.gridSaved = true;
     this.shapeGroup = null;
     this.overlayLevel = 0.2;
     this.imageRatio = 1;
@@ -154,6 +155,7 @@ export default class DrawGridPlugin {
     if (!canvas.getActiveObject() && !this.drawing) {
       this.snapToGrid = snapToGrid;
       this.drawing = true;
+      this.gridSaved = false;
       this.gridData.screenCoord[0] = options.e.layerX;
       this.gridData.screenCoord[1] = options.e.layerY;
     }
@@ -378,7 +380,6 @@ export default class DrawGridPlugin {
     return { shapeGroup, gridData };
   }
 
-
   /**
    * Ends drawing
    */
@@ -388,11 +389,26 @@ export default class DrawGridPlugin {
     }
   }
 
+  /**
+  * Is current grid saved
+  * @return {boolean} Saved
+  */
+  saved() {
+    return this.gridSaved;
+  }
+
+  /**
+  * Save current grid
+  */
+  saveGrid() {
+    this.gridSaved = true;
+  }
 
   /**
    * Reset current grid, used to clear current grid.
    */
   reset() {
+    this.gridSaved = true;
     this.drawing = false;
     this.shapeGroup = null;
     this.gridData = _GridData();

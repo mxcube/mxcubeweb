@@ -119,11 +119,13 @@ export default class SampleImage extends React.Component {
       this.canvas.add(...this.centringCross);
     }
 
-    this.drawGridPlugin.update(this.canvas,
-                               options.e.layerX,
-                               options.e.layerY,
-                               this.props.imageRatio
-                               );
+    if (options.e.buttons > 0) {
+      this.drawGridPlugin.update(this.canvas,
+                                 options.e.layerX,
+                                 options.e.layerY,
+                                 this.props.imageRatio
+                                );
+    }
   }
 
   onMouseUp() {
@@ -431,7 +433,7 @@ export default class SampleImage extends React.Component {
       sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
     } else if (measureDistance) {
       sampleActions.addDistancePoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
-    } else if (this.props.drawGrid) {
+    } else if (this.props.drawGrid && this.drawGridPlugin.saved()) {
       this.drawGridPlugin.startDrawing(option, this.canvas);
       this.showGridForm();
     }
@@ -609,6 +611,7 @@ export default class SampleImage extends React.Component {
   saveGrid() {
     this.drawGridPlugin.initializeGridResult();
     this.props.sampleActions.addGrid(this.drawGridPlugin.currentGridData());
+    this.drawGridPlugin.saveGrid();
     this.props.sampleActions.toggleDrawGrid();
   }
 
