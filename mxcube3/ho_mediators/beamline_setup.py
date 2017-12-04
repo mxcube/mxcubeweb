@@ -86,6 +86,8 @@ class _BeamlineSetupMediator(object):
             return self._ho_dict.setdefault(name, MachineInfoHOMediator(ho, "machinfo"))
         elif name == "flux":
             return self._ho_dict.setdefault(name, PhotonFluxHOMediator(ho, "flux"))
+        elif name == "cryo":
+            return self._ho_dict.setdefault(name, CryoHOMediator(ho, "cryo"))
         else:
             return ho
 
@@ -154,6 +156,13 @@ class _BeamlineSetupMediator(object):
 
         except Exception:
             logging.getLogger("HWR").exception("Failed to get photon flux")
+
+        try:
+            cryo = self.getObjectByRole("cryo")
+            attributes.update({"cryo": cryo.dict_repr()})
+
+        except Exception:
+            logging.getLogger("HWR").exception("Failed to get cryo")
 
         return {"attributes": attributes}
 
@@ -544,7 +553,24 @@ class TransmissionHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(TransmissionHOMediator, self).__init__(ho, name)
         ho.connect("attFactorChanged", self.state_change)
-        self._precision = 2
+        ho.connect("valueChanged", self._value_change)
+        self._precision = 3
+
+    def limits(self):
+        """
+        :returns: The transmission limits.
+        """
+        try:
+            trans_limits = self._ho.getLimits()
+        except (AttributeError, TypeError):
+            trans_limits = (0, 100)
+            raise ValueError("Could not get limits")
+
+        return trans_limits
+
+    @Utils.RateLimited(6)
+    def _value_change(self, *args, **kwargs):
+        self.value_change(*args, **kwargs)
 
     def set(self, value):
         try:
@@ -819,3 +845,52 @@ class PhotonFluxHOMediator(HOMediatorBase):
                 "precision": self.precision()}
 
         return data
+
+class CryoHOMediator(HOMediatorBase):
+    def __init__(self, ho, name=''):
+        super(CryoHOMediator, self).__init__(ho, name)
+
+        try:
+            ho.connect("valueChanged", self.state_change)
+        except:
+            pass
+
+        self._precision = 1
+
+    def set(self, value):
+        pass
+
+    def get(self):
+        try:
+            value = self._ho.getValue()
+        except Exception as ex:
+            value = '0'
+
+        return value
+
+    def message(self):
+        return ""
+
+    def limits(self):
+        """
+        :returns: The detector distance limits.
+        """
+        return []
+
+    def state(self):
+        return "READY"
+
+    def dict_repr(self):
+        """
+        :returns: The dictionary representation of the hardware object.
+        """
+        data = {"name": self._name,
+                "label": self._name.replace('_', ' ').title(),
+                "value": self.get(),
+                "limits": self.limits(),
+                "state":  self.state(),
+                "msg": self.message(),
+                "precision": self.precision()}
+
+        return data
+                      
