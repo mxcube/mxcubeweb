@@ -115,7 +115,7 @@ class Characterisation extends React.Component {
                 <InputField propName="transmission" type="number" label="Transmission" />
               </FieldsRow>
               <FieldsRow>
-                <InputField propName="exp_time" type="number" label="Exposure time (ms)" />
+                <InputField propName="exp_time" type="number" label="Exposure time (s)" />
                 <SelectField
                   propName="beam_size"
                   label="Beam size"
