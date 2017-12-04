@@ -554,6 +554,18 @@ class TransmissionHOMediator(HOMediatorBase):
 
         return self.get()
 
+    def limits(self):
+        """
+        :returns: The transmission limits.
+        """
+        try:
+            trans_limits = self._ho.getLimits()
+        except (AttributeError, TypeError):
+            trans_limits = (0, 100)
+            raise ValueError("Could not get limits")
+
+        return trans_limits
+
     def get(self):
         try:
             transmission = self._ho.getAttFactor()

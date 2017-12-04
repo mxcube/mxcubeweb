@@ -130,7 +130,7 @@ class BeamlineSetupContainer extends React.Component {
                     name=""
                     pkey="cryo"
                     suffix="K"
-                    data={this.props.data.cryo}
+                    data={this.props.data.attributes.cryo}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
