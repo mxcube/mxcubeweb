@@ -166,7 +166,7 @@ export default class SampleQueueContainer extends React.Component {
                   <NavItem eventKey={'todo'}><b>Upcoming ({todo.length})</b></NavItem>
                 </Nav>
                 {loading ?
-                  <div className="center-in-box">
+                  <div className="center-in-box" style={{ zIndex: '1000' }}>
                     <img src={loader} className="img-responsive" alt="" />
                   </div>
                   : null
