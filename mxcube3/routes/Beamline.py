@@ -257,3 +257,17 @@ def beamline_get_data_path():
     """
     data = mxcube.session.get_base_image_directory()
     return jsonify(data)
+
+@mxcube.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=['PUT'])
+def prepare_beamline_for_sample():
+    """
+    Prepare the beamline for a new sample.
+    """
+    
+    try:
+        if hasattr(mxcube.collect, 'prepare_for_new_sample'):
+            mxcube.collect.prepare_for_new_sample()
+    except Exception:
+        logging.getLogger('HWR').error('Cannot prepare the Beamline for a new sample')
+        return Response(status=200)
+    return Response(status=200)

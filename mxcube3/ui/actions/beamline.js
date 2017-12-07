@@ -95,3 +95,18 @@ export function sendAbortCurrentAction(name) {
     });
   };
 }
+
+
+export function sendPrepareForNewSample() {
+  return () => {
+    fetch('mxcube/api/v0.1/beamline/prepare_beamline', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+  };
+}
+
