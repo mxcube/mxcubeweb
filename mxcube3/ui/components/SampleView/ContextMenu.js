@@ -105,10 +105,10 @@ export default class ContextMenu extends React.Component {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
     const sid = _shape ? _shape.id : shape.id;
 
-    if (this.props.clickCentring) {
-      this.props.sampleActions.stopClickCentring();
-      this.props.sampleActions.sendAcceptCentring();
-    }
+    // if (this.props.clickCentring) {
+    this.props.sampleActions.stopClickCentring();
+    this.props.sampleActions.sendAcceptCentring();
+    // }
 
     this.props.showForm(
       modalName,
@@ -169,10 +169,10 @@ export default class ContextMenu extends React.Component {
   }
 
   savePoint() {
-    if (this.props.clickCentring) {
-      this.props.sampleActions.stopClickCentring();
-      this.props.sampleActions.sendAcceptCentring();
-    }
+    // if (this.props.clickCentring) {
+    this.props.sampleActions.stopClickCentring();
+    this.props.sampleActions.sendAcceptCentring();
+    // }
     this.props.sampleActions.showContextMenu(false);
   }
 
