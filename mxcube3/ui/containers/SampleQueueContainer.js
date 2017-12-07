@@ -15,6 +15,7 @@ import { Nav, NavItem } from 'react-bootstrap';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
 import { SAMPLE_MOUNTED } from '../constants';
+import * as BeamlineActions from '../actions/beamline';
 
 function mapStateToProps(state) {
   return {
@@ -44,7 +45,8 @@ function mapDispatchToProps(dispatch) {
     queueActions: bindActionCreators(QueueActions, dispatch),
     queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch)
+    showForm: bindActionCreators(showTaskForm, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
   };
 }
 
@@ -101,6 +103,10 @@ export default class SampleQueueContainer extends React.Component {
       showConfirmCollectDialog,
       selectItem
     } = this.props.queueGUIActions;
+    const {
+      sendPrepareForNewSample
+    } = this.props.beamlineActions;
+
 
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
@@ -196,7 +202,6 @@ export default class SampleQueueContainer extends React.Component {
                   addTask={addTask}
                   plotsData={this.props.plotsData}
                   plotsInfo={this.props.plotsInfo}
-
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
@@ -208,6 +213,7 @@ export default class SampleQueueContainer extends React.Component {
                   mount={sendMountSample}
                   showForm={showForm}
                   queueStatus={queueStatus}
+                  sendPrepareForNewSample={sendPrepareForNewSample}
                 />
                 <UserMessage
                   messages={this.props.userMessages}
