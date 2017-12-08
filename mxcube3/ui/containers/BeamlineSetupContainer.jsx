@@ -126,13 +126,9 @@ class BeamlineSetupContainer extends React.Component {
                   Cryo:
                 </td>
                 <td>
-                  <PopInput
+                  <LabeledValue
                     name=""
-                    pkey="cryo"
-                    suffix="K"
-                    data={this.props.data.attributes.cryo}
-                    onSave={this.setAttribute}
-                    onCancel={this.onCancelHandler}
+                    value={this.props.data.attributes.cryo.value}
                   />
                 </td>
               </tr>
