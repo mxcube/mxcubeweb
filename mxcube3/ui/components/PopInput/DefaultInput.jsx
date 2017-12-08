@@ -42,7 +42,6 @@ export default class DefaultInput extends React.Component {
     this.props.onSubmit(event);
   }
 
-
   render() {
     return (
       <Form inline onSubmit={this.submit}>
@@ -70,6 +69,7 @@ export default class DefaultInput extends React.Component {
             style={ { width: this.props.inputSize } }
             ref="formControl"
             label="input"
+            step="any"
             inputRef={(ref) => {this.input = ref;}}
             type={this.props.dataType}
             placeholder=""
@@ -93,7 +93,7 @@ export default class DefaultInput extends React.Component {
 DefaultInput.defaultProps = {
   dataType: 'number',
   inputSize: '110',
-  step: 0.1,
+  step: 'any',
   precision: 1,
   value: 0,
   onSave: undefined,

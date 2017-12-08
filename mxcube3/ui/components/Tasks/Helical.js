@@ -116,7 +116,7 @@ class Helical extends React.Component {
               <InputField propName="num_images" type="number" label="Number of images" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" type="number" label="Exposure time (ms)" />
+              <InputField propName="exp_time" type="number" label="Exposure time (s)" />
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>

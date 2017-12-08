@@ -15,6 +15,7 @@ import { Nav, NavItem } from 'react-bootstrap';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
 import { SAMPLE_MOUNTED } from '../constants';
+import * as BeamlineActions from '../actions/beamline';
 
 function mapStateToProps(state) {
   return {
@@ -44,7 +45,8 @@ function mapDispatchToProps(dispatch) {
     queueActions: bindActionCreators(QueueActions, dispatch),
     queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch)
+    showForm: bindActionCreators(showTaskForm, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
   };
 }
 
@@ -99,8 +101,13 @@ export default class SampleQueueContainer extends React.Component {
     const {
       collapseItem,
       showConfirmCollectDialog,
-      selectItem
+      selectItem,
+      showList
     } = this.props.queueGUIActions;
+    const {
+      sendPrepareForNewSample
+    } = this.props.beamlineActions;
+
 
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
@@ -166,7 +173,7 @@ export default class SampleQueueContainer extends React.Component {
                   <NavItem eventKey={'todo'}><b>Upcoming ({todo.length})</b></NavItem>
                 </Nav>
                 {loading ?
-                  <div className="center-in-box">
+                  <div className="center-in-box" style={{ zIndex: '1000' }}>
                     <img src={loader} className="img-responsive" alt="" />
                   </div>
                   : null
@@ -196,7 +203,6 @@ export default class SampleQueueContainer extends React.Component {
                   addTask={addTask}
                   plotsData={this.props.plotsData}
                   plotsInfo={this.props.plotsInfo}
-
                 />
                 <TodoTree
                   show={visibleList === 'todo'}
@@ -208,6 +214,8 @@ export default class SampleQueueContainer extends React.Component {
                   mount={sendMountSample}
                   showForm={showForm}
                   queueStatus={queueStatus}
+                  sendPrepareForNewSample={sendPrepareForNewSample}
+                  showList={showList}
                 />
                 <UserMessage
                   messages={this.props.userMessages}
