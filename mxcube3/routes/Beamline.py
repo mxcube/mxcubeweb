@@ -262,7 +262,7 @@ def prepare_beamline_for_sample():
     """
     
     try:
-        if hasattr(mxcube.collect, prepare_for_new_sample):
+        if hasattr(mxcube.collect, 'prepare_for_new_sample'):
             mxcube.collect.prepare_for_new_sample()
     except Exception:
         logging.getLogger('HWR').error('Cannot prepare the Beamline for a new sample')
