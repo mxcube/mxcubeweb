@@ -747,11 +747,15 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 class MachineInfoHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(MachineInfoHOMediator, self).__init__(ho, name)
-        ho.connect("valueChanged", self.state_change)
+        ho.connect("valueChanged", self._state_change)
         self._precision = 1
 
     def set(self, value):
         pass
+
+    @Utils.RateLimited(0.1)
+    def _state_change(self, *args, **kwargs):
+        self.value_change(*args, **kwargs)
 
     def get(self):
         return {"current": self.get_current(),
@@ -851,11 +855,15 @@ class CryoHOMediator(HOMediatorBase):
         super(CryoHOMediator, self).__init__(ho, name)
 
         try:
-            ho.connect("valueChanged", self.state_change)
+            ho.connect("valueChanged", self._state_change)
         except:
             pass
 
         self._precision = 1
+
+    @Utils.RateLimited(0.1)
+    def _state_change(self, *args, **kwargs):
+        self.value_change(*args, **kwargs)
 
     def set(self, value):
         pass
