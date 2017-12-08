@@ -18,6 +18,7 @@ export default class TodoTree extends React.Component {
   showAddSampleForm() {
     this.props.sendPrepareForNewSample();
     this.props.showForm('AddSample');
+    this.props.showList('current');
   }
 
   filter(list, searchWord) {

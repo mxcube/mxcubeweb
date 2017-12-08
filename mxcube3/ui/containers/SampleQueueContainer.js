@@ -101,7 +101,8 @@ export default class SampleQueueContainer extends React.Component {
     const {
       collapseItem,
       showConfirmCollectDialog,
-      selectItem
+      selectItem,
+      showList
     } = this.props.queueGUIActions;
     const {
       sendPrepareForNewSample
@@ -214,6 +215,7 @@ export default class SampleQueueContainer extends React.Component {
                   showForm={showForm}
                   queueStatus={queueStatus}
                   sendPrepareForNewSample={sendPrepareForNewSample}
+                  showList={showList}
                 />
                 <UserMessage
                   messages={this.props.userMessages}
