@@ -189,7 +189,10 @@ def get_task_state(entry):
         limsres = {}
 
     try:
-        limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+	if mxcube.db_connection.use_exi:
+            limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+	else:
+	    limsres["limsTaskLink"] = mxcube.db_connection.dc_link(lims_id)
     except Exception:
         limsres["limsTaskLink"] = "#"
         msg = "Could not get lims link for collection with id: %s" % lims_id
@@ -279,7 +282,6 @@ def collect_oscillation_started(*args):
 
 def collect_image_taken(frame):
     node = last_queue_node()
-
     if not qutils.is_interleaved(node["node"]):
         progress = qutils.get_task_progress(last_queue_node()['node'], frame)
 
