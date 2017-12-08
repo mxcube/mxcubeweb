@@ -304,7 +304,15 @@ def _handle_dc(sample_id, node, include_lims_data=True):
         limsres = mxcube.rest_lims.get_dc(lims_id)
 
     # Always add link to data, (no request made)
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    try:
+        if mxcube.db_connection.use_exi:
+            limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+        else:
+            limsres["limsTaskLink"] = mxcube.db_connection.dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -342,7 +350,15 @@ def _handle_wf(sample_id, node):
     # Always add link to data, (no request made)
     limsres = {}
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    try:
+        if mxcube.db_connection.use_exi:
+            limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+        else:
+            limsres["limsTaskLink"] = mxcube.db_connection.dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
 
     res = {"label": parameters['label'],
            "type": "Workflow",
@@ -438,7 +454,15 @@ def _handle_char(sample_id, node):
     # Always add link to data, (no request made)
     limsres = {}
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    try:
+	if mxcube.db_connection.use_exi:
+	    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+	else:
+	    limsres["limsTaskLink"] = mxcube.db_connection.dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
 
     originID, task = _handle_diffraction_plan(node)
     res = {"label": "Characterisation",
@@ -758,12 +782,10 @@ def queue_add_item(item_list, use_queue_cache=False):
     """
     global QUEUE_CACHE
     res = None
-
     if use_queue_cache:
         current_queue = QUEUE_CACHE if QUEUE_CACHE else queue_to_dict()
     else:
         current_queue = queue_to_dict()
-
     _queue_add_item_rec(item_list, current_queue)
 
     # Handling interleaved data collections, swap interleave task with
@@ -822,7 +844,6 @@ def _queue_add_item_rec(item_list, current_queue):
     Each item (dictionary) describes either a sample or a task.
     """
     children = []
-
     for item in item_list:
         item_t = item["type"]
         # If the item a sample, then add it and its tasks. If its not, get the
@@ -830,10 +851,11 @@ def _queue_add_item_rec(item_list, current_queue):
         sample_id = str(item["sampleID"])
 
         # Do not add samples that are already in the queue
-        if item_t == "Sample" and item["sampleID"] not in current_queue:
-            sample_node_id = add_sample(sample_id, item)
+	# TODO: fix this!!!
+        if item_t == "Sample":
+	    if item["sampleID"] not in current_queue:
+                sample_node_id = add_sample(sample_id, item)
             tasks = item.get("tasks")
-            
             if tasks:
                 children.extend(tasks)
         else:
@@ -1303,7 +1325,6 @@ def add_data_collection(node_id, task):
     set_dc_params(dc_model, dc_entry, task, sample_model)
 
     pt = dc_model.acquisitions[0].path_template
-
     if mxcube.queue.check_for_path_collisions(pt):
         msg = "[QUEUE] data collection could not be added to sample: "
         msg += "path collision"
@@ -1631,8 +1652,8 @@ def execute_entry_with_id(sid, tindex=None):
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
         node, entry = get_entry(node_id)
-        # in order to fill lims data, we execute first the parent (group_id missing)
-        parent_id = node.get_parent()._node_id
+	# in order to fill lims data, we execute first the parent (group_id missing)
+	parent_id = node.get_parent()._node_id
 
         node, entry = get_entry(parent_id)
 
