@@ -63,5 +63,6 @@ npm-debug.log*
 .DS_Store
 /dump.rdb
 /supervisord.pid
-
+log
+mxcube3/static
 yarn.lock
