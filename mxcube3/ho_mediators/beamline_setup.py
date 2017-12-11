@@ -588,7 +588,6 @@ class TransmissionHOMediator(HOMediatorBase):
             trans_limits = self._ho.getLimits()
         except (AttributeError, TypeError):
             trans_limits = (0, 100)
-            raise ValueError("Could not get limits")
 
         return trans_limits
 
