@@ -149,7 +149,10 @@ EnergyScan = connect(state => {
         state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value)
+        state.beamline.attributes.energy.value),
+      transmission: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.transmission :
+        state.beamline.attributes.transmission.value)
     }
   };
 })(EnergyScan);
