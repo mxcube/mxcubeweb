@@ -504,7 +504,7 @@ def get_default_char_acq_params():
             'take_snapshots': True,
             'prefixTemplate': '{PREFIX}_{POSITION}',
             'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
-            'strategy_complexity': 'FEW',
+            'strategy_complexity': 'SINGLE',
             'account_rad_damage': True,
             'opt_sad': False,
             'min_crystal_vdim': 0.05,
