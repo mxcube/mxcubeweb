@@ -83,7 +83,7 @@ def node_index(node):
     :returns: dictionary on the form:
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
-    sample, index = None, None
+    sample, index, sample_model = None, None, None
 
     # RootNode nothing to return
     if isinstance(node, qmo.RootNode):
@@ -115,7 +115,7 @@ def node_index(node):
         except Exception:
             pass
 
-    return {'sample': sample, 'idx': index, 'queue_id': node._node_id}
+    return {'sample': sample, 'idx': index, 'queue_id': node._node_id, 'sample_node': sample_model}
 
 
 def load_queue_from_dict(queue_dict):
@@ -162,7 +162,9 @@ def queue_to_dict(node=None):
     if not node:
         node = mxcube.queue.get_model_root()
 
-    return reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
+    res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
+
+    return res
 
 
 def queue_to_json(node=None):
@@ -276,7 +278,7 @@ def get_queue_state():
     return res
 
 
-def _handle_dc(sample_id, node, include_lims_data=True):
+def _handle_dc(sample_node, node, include_lims_data=True):
     parameters = node.as_dict()
     parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
@@ -313,7 +315,8 @@ def _handle_dc(sample_id, node, include_lims_data=True):
     res = {"label": "Data Collection",
            "type": "DataCollection",
            "parameters": parameters,
-           "sampleID": sample_id,
+           "sampleID": sample_node.loc_str,
+           "sampleQueueID": sample_node._node_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
            "checked": node.is_enabled(),
@@ -324,7 +327,7 @@ def _handle_dc(sample_id, node, include_lims_data=True):
     return res
 
 
-def _handle_wf(sample_id, node):
+def _handle_wf(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
     parameters = node.parameters
@@ -352,7 +355,7 @@ def _handle_wf(sample_id, node):
            "type": "Workflow",
            "name": node._type,
            "parameters": parameters,
-           "sampleID": sample_id,
+           "sampleID": sample_node.loc_str,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
            "checked": node.is_enabled(),
@@ -363,7 +366,7 @@ def _handle_wf(sample_id, node):
     return res
 
 
-def _handle_xrf(sample_id, node):
+def _handle_xrf(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
     parameters = {"countTime": node.count_time,
@@ -386,9 +389,10 @@ def _handle_xrf(sample_id, node):
     res = {"label": "XRF Scan",
            "type": "XRFScan",
            "parameters": parameters,
-           "sampleID": sample_id,
+           "sampleID": sample_node.loc_str,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
+           "sampleQueueID": sample_node._node_id,
            "checked": node.is_enabled(),
            "state": state,
            "result": model.result.mca_data
@@ -396,7 +400,7 @@ def _handle_xrf(sample_id, node):
 
     return res
 
-def _handle_energy_scan(sample_id, node):
+def _handle_energy_scan(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
     parameters = {"element": node.element_symbol,
@@ -419,7 +423,8 @@ def _handle_energy_scan(sample_id, node):
     res = {"label": "Energy Scan",
            "type": "EnergyScan",
            "parameters": parameters,
-           "sampleID": sample_id,
+           "sampleID": sample_node.loc_str,
+           "sampleQueueID": sample_node._node_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": queueID,
            "checked": node.is_enabled(),
@@ -429,10 +434,10 @@ def _handle_energy_scan(sample_id, node):
     return res
 
 
-def _handle_char(sample_id, node):
+def _handle_char(sample_node, node):
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
-    refp = _handle_dc(sample_id, node.reference_image_collection)['parameters']
+    refp = _handle_dc(sample_node, node.reference_image_collection)['parameters']
 
     parameters.update(refp)
 
@@ -449,7 +454,8 @@ def _handle_char(sample_id, node):
            "type": "Characterisation",
            "parameters": parameters,
            "checked": node.is_enabled(),
-           "sampleID": sample_id,
+           "sampleID": sample_node.loc_str,
+           "sampleQueueID": sample_node._node_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": node._node_id,
            "state": state,
@@ -472,7 +478,7 @@ def _handle_diffraction_plan(node):
         collections = model.diffraction_plan[0]  # a list of lists
 
         for col in collections:
-            t = _handle_dc(sample._node_id, col)
+            t = _handle_dc(sample, col)
             if t == None:
                 tasks.append({})
                 continue
@@ -484,11 +490,11 @@ def _handle_diffraction_plan(node):
 
     return (-1, {})
 
-def _handle_interleaved(sample_id, node):
+def _handle_interleaved(sample_node, node):
     wedges = []
 
     for child in node.get_children():
-        wedges.append(_handle_dc(sample_id, child))
+        wedges.append(_handle_dc(sample_node, child))
 
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
@@ -498,7 +504,8 @@ def _handle_interleaved(sample_id, node):
            "parameters": {"wedges": wedges,
                           "swNumImages": node.interleave_num_images},
            "checked": node.is_enabled(),
-           "sampleID": sample_id,
+           "sampleID": sample_node.loc_str,
+           "sampleQueueID": sample_node._node_id,
            "taskIndex": node_index(node)['idx'],
            "queueID": node._node_id,
            "state": state
@@ -535,7 +542,7 @@ def _handle_sample(node):
               'checked': enabled,
               'state': state,
               'tasks': queue_to_dict_rec(node)}
-    
+
     return {node.loc_str: sample}
 
 
@@ -571,25 +578,28 @@ def queue_to_dict_rec(node):
                 result = [{'sample_order': []}]
 
             result.append(_handle_sample(node))
-            result[0]['sample_order'].append(node.loc_str)
+
+            if node.is_enabled():
+                result[0]['sample_order'].append(node.loc_str)
+
         elif isinstance(node, qmo.Characterisation):
-            sample_id = node.get_parent().get_parent().loc_str
-            result.append(_handle_char(sample_id, node))
+            sample_node = node.get_parent().get_parent()
+            result.append(_handle_char(sample_node, node))
         elif isinstance(node, qmo.DataCollection):
-            sample_id = node_index(node)['sample']
-            result.append(_handle_dc(sample_id, node))
+            sample_node = node_index(node)['sample_node']
+            result.append(_handle_dc(sample_node, node))
         elif isinstance(node, qmo.Workflow):
-            sample_id = node.get_parent().get_parent().loc_str
-            result.append(_handle_wf(sample_id, node))
+            sample_node = node.get_parent().get_parent()
+            result.append(_handle_wf(sample_node, node))
         elif isinstance(node, qmo.XRFSpectrum):
-            sample_id = node.get_parent().get_parent().loc_str
-            result.append(_handle_xrf(sample_id, node))
+            sample_node = node.get_parent().get_parent()
+            result.append(_handle_xrf(sample_node, node))
         elif isinstance(node, qmo.EnergyScan):
-            sample_id = node.get_parent().get_parent().loc_str
-            result.append(_handle_energy_scan(sample_id, node))
+            sample_node = node.get_parent().get_parent()
+            result.append(_handle_energy_scan(sample_node, node))
         elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
-            sample_id = node.get_parent().loc_str
-            result.append(_handle_interleaved(sample_id, node))
+            sample_node = node.get_parent()
+            result.append(_handle_interleaved(sample_node, node))
         else:
             result.extend(queue_to_dict_rec(node))
 
@@ -628,6 +638,7 @@ def get_entry(id):
 def set_enabled_entry(qid, enabled):
     model, entry = get_entry(qid)
     model.set_enabled(enabled)
+    entry.set_enabled(enabled)
 
 
 def delete_entry(entry):
@@ -746,7 +757,7 @@ def set_sample_order(order):
         mxcube.queue.queue_hwobj._queue_entry_list = entry_list
 
 
-def queue_add_item(item_list, use_queue_cache=False):
+def queue_add_item(item_list):
     """
     Adds the queue items in item_list to the queue. The items in the list can
     be either samples and or tasks. Samples are only added if they are not
@@ -763,20 +774,12 @@ def queue_add_item(item_list, use_queue_cache=False):
 
     Each item (dictionary) describes either a sample or a task.
     """
-    global QUEUE_CACHE
-    res = None
-
-    if use_queue_cache:
-        current_queue = QUEUE_CACHE if QUEUE_CACHE else queue_to_dict()
-    else:
-        current_queue = queue_to_dict()
-
-    _queue_add_item_rec(item_list, current_queue)
+    _queue_add_item_rec(item_list, None)
 
     # Handling interleaved data collections, swap interleave task with
     # the first of the data collections that are used as wedges, and then
     # remove all collections that were used as wedges
-    for task in item_list:
+    for task in item_list[0]["tasks"]:
         if task["type"] == "Interleaved" and \
            task["parameters"].get("taskIndexList", False):
             current_queue = queue_to_dict()
@@ -803,15 +806,11 @@ def queue_add_item(item_list, use_queue_cache=False):
             for ti in reversed(tindex_list):
                 delete_entry_at([[sid, int(ti)]])
 
-    if use_queue_cache:
-        QUEUE_CACHE = queue_to_dict()
-        res = QUEUE_CACHE
-    else:
-        res = queue_to_dict()
+    res = queue_to_dict()
 
     return res
 
-def _queue_add_item_rec(item_list, current_queue):
+def _queue_add_item_rec(item_list, sample_node_id=None):
     """
     Adds the queue items in item_list to the queue. The items in the list can
     be either samples and or tasks. Samples are only added if they are not
@@ -836,23 +835,24 @@ def _queue_add_item_rec(item_list, current_queue):
         # node id for the sample of the new task and append it to the sample
         sample_id = str(item["sampleID"])
 
-        # Do not add samples that are already in the queue
         if item_t == "Sample":
-            if item["sampleID"] not in current_queue:
+            # Do not add samples that are already in the queue
+            if not item.get("queueID", False):
                 sample_node_id = add_sample(sample_id, item)
             else:
-                model, entry = get_entry(item["queueID"])
-                model.set_enabled(True)
+                set_enabled_entry(item["queueID"], True)
+                sample_node_id = item["queueID"]
 
             tasks = item.get("tasks")
 
             if tasks:
+                _queue_add_item_rec(tasks, sample_node_id)
                 children.extend(tasks)
 
         else:
-            sample_node_id = current_queue[sample_id]["queueID"]
+            if not sample_node_id:
+                sample_node_id = item.get("sampleQueueID", None)
 
-        # The item is either a data_collection or a characterisation
         if item_t == "DataCollection":
             add_data_collection(sample_node_id, item)
         elif item_t == "Interleaved":
@@ -865,10 +865,6 @@ def _queue_add_item_rec(item_list, current_queue):
             add_xrf_scan(sample_node_id, item)
         elif item_t == "EnergyScan":
             add_energy_scan(sample_node_id, item)
-
-    # Bredth first
-    if children:
-        _queue_add_item_rec(children, queue_to_dict())
 
 
 def add_sample(sample_id, item):
@@ -1560,7 +1556,7 @@ def queue_model_child_added(parent, child):
                     shape = t['parameters']['shape']
                     setattr(child, 'shape', shape)
 
-            task = _handle_dc(sample._node_id, child)
+            task = _handle_dc(sample, child)
             socketio.emit('add_task', {"tasks": [task]}, namespace='/hwr')
 
         elif isinstance(child, qmo.TaskGroup):
@@ -1586,7 +1582,7 @@ def queue_model_diff_plan_available(char, index, collection_list):
 
             setattr(collection, 'shape', origin_model.shape)
 
-            task = _handle_dc(sample.loc_str, collection)
+            task = _handle_dc(sample, collection)
             task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
             cols.append(task)
 

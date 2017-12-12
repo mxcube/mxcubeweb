@@ -504,6 +504,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                        label: pars.label,
                        state: TASK_UNCOLLECTED,
                        sampleID,
+                       sampleQueueID: state.sampleGrid.sampleList[sampleID].queueID,
                        parameters: { ...pars },
                        checked: true };
 
