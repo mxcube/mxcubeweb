@@ -23,7 +23,7 @@ const INITIAL_STATE = { selected: {},
                                          notInQueue: false,
                                          collected: false,
                                          notCollected: false,
-                                         puckFilter: '1',
+                                         puckFilter: '',
                                          useFilter: false } };
 
 
