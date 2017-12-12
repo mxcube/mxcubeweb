@@ -38,7 +38,6 @@ export default class TaskItem extends Component {
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
                      borderBottom: '1px solid #DDD',
-                     marginRight: '1px',
                      padding: '0.5em' } }
       >
         <a href={link} target="_blank"> View Results in ISPyB</a>
@@ -274,8 +273,7 @@ export default class TaskItem extends Component {
               <div key={`wedge-${i}`}>
               <div style={ { borderLeft: '1px solid #DDD',
                              borderRight: '1px solid #DDD',
-                             paddingTop: padding,
-                             marginRight: '1px' } }
+                             paddingTop: padding } }
               >
                 <div style={ { borderTop: '1px solid #DDD',
                                padding: '0.5em' } }
