@@ -216,7 +216,7 @@ class SampleGridContainer extends React.Component {
     const orderedList = [];
 
     props.order.forEach(key => {
-      if (props.queue.queue.includes(key)) {
+      if (props.queue.queue.includes(key) && props.sampleList[key].checked) {
         orderedList.push(key);
       }
     });
