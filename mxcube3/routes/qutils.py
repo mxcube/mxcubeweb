@@ -1005,8 +1005,8 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.set_from_dict(params)
     model.path_template.base_prefix = params['prefix']
     model.path_template.num_files = 0
-    model.path_template.precision = '0' +str(mxcube.session["file_info"].\
-        getProperty("precision"))
+    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
+        getProperty("precision", 4))
 
     full_path = os.path.join(mxcube.session.get_base_image_directory(),
                              params.get('subdir', ''))
@@ -1072,11 +1072,11 @@ def set_char_params(model, entry, task_data, sample_model):
 
     model.characterisation_parameters.rad_suscept = float(defaults.find(
             ".sample/susceptibility/value").text)
-    
+
     try:
         params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(params["strategy_complexity"])
     except ValueError:
-         params["strategy_complexity"] = 0
+        params["strategy_complexity"] = 0
 
     model.characterisation_parameters.set_from_dict(params)
 
@@ -1171,7 +1171,7 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
 
     # Only get a run number for new tasks, keep the already existing
     # run number for existing items.
-    if not params.get("queueID", ""):    
+    if not params.get("queueID", ""):
         model.path_template.run_number = get_run_number(model.path_template)
 
     # Set element, and if any, other parameters
@@ -1631,14 +1631,14 @@ def execute_entry_with_id(sid, tindex=None):
         enable_sample_entries(enabled_entries, False)
         enable_sample_entries([sid], True)
 
-        # The queue ignores empty samples (so does not run the mount defined by
-        # the sample task), so in order function as expected; just mount the
-        # sample
+        # The queue does not run the mount defined by the sample entry if it has no
+        # tasks, so in order function as expected; just mount the sample
         if (not len(current_queue[sid]["tasks"])) and \
            sid != scutils.get_current_sample().get('sampleID', ''):
             scutils.mount_sample_clean_up(current_queue[sid])
-
-        mxcube.queue.queue_hwobj.execute()
+            mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
+        else:
+            mxcube.queue.queue_hwobj.execute()
     else:
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
@@ -1708,6 +1708,9 @@ def init_signals(queue):
 
     queue.queue_hwobj.connect('queue_interleaved_sw_done',
                               signals.queue_interleaved_sw_done)
+
+    queue.queue_hwobj.connect('energy_scan_finished',
+                              signals.energy_scan_finished)
 
 
 def enable_sample_entries(sample_id_list, flag):

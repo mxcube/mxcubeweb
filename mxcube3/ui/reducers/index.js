@@ -14,6 +14,7 @@ import contextMenu from './contextMenu';
 import remoteAccess from './remoteAccess';
 import shapes from './shapes';
 import workflow from './workflow';
+import taskResult from './taskResult';
 
 import { reducer as formReducer } from 'redux-form';
 
@@ -33,6 +34,7 @@ const mxcubeReducer = combineReducers({
   shapes,
   queueGUI,
   workflow,
+  taskResult,
   form: formReducer
 });
 

@@ -130,7 +130,8 @@ export const INITIAL_STATE = {
   lastPlotId: null,
   plotsInfo: {},
   plotsData: {},
-  availableMethods: {}
+  availableMethods: {},
+  energyScanElements: []
 };
 
 
@@ -195,7 +196,8 @@ export default (state = INITIAL_STATE, action) => {
         motorsLimits: { ...INITIAL_STATE.motorsLimits,
                         ...action.data.motorsLimits },
         beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0),
-        availableMethods: action.data.beamlineSetup.availableMethods
+        availableMethods: action.data.beamlineSetup.availableMethods,
+        energyScanElements: action.data.beamlineSetup.energyScanElements
       };
     case 'BL_MACH_INFO':
       return { ...state,

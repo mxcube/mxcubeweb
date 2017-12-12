@@ -105,6 +105,7 @@ class TaskContainer extends React.Component {
         attributes={this.props.attributes}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
+        taskResult={this.props.taskResult}
       />);
     }
 
@@ -193,6 +194,7 @@ class TaskContainer extends React.Component {
         taskData={this.props.taskData}
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
+        availableElements={this.props.beamline.energyScanElements}
         rootPath={this.props.path}
       />);
     }
@@ -205,6 +207,7 @@ class TaskContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     queue: state.queue.queue,
+    beamline: state.beamline,
     sampleOrder: state.queue.sampleOrder,
     sampleList: state.sampleGrid.sampleList,
     showForm: state.taskForm.showForm,
@@ -215,7 +218,8 @@ function mapStateToProps(state) {
     path: state.queue.rootPath,
     shapes: state.shapes.shapes,
     attributes: state.beamline.attributes,
-    initialParameters: state.taskForm.initialParameters
+    initialParameters: state.taskForm.initialParameters,
+    taskResult: state.taskResult
   };
 }
 

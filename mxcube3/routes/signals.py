@@ -397,6 +397,10 @@ def grid_result_available(shape):
     socketio.emit('grid_result_available', {'shape': shape}, namespace='/hwr')
 
 
+def energy_scan_finished(pk, ip, rm, sample):
+    socketio.emit('energy_scan_result', {'pk': pk, 'ip': ip, 'rm': rm}, namespace='/hwr')
+
+
 def queue_interleaved_started():
     node = last_queue_node()
 

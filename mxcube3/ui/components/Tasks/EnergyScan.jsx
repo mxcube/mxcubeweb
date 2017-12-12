@@ -5,6 +5,7 @@ import { DraggableModal } from '../DraggableModal';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';
+import PeriodicTable from '../PeriodicTable/PeriodicTable';
 
 class EnergyScan extends React.Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class EnergyScan extends React.Component {
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
+    this.elementSelected = this.elementSelected.bind(this);
   }
 
   submitAddToQueue() {
@@ -43,14 +45,32 @@ class EnergyScan extends React.Component {
       'wfname',
       'wfpath',
       'suffix',
-      'element'
+      'element',
+      'edge'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
+  elementSelected(el) {
+    this.props.change('element', el);
+    let edge = '';
+
+    this.props.availableElements.forEach((item) => {
+      if (item.symbol === el) {
+        edge = item.energy;
+      }
+    });
+
+    this.props.change('edge', edge);
+  }
+
   render() {
+    const availableElements = this.props.availableElements.map((item) => (
+      item.symbol
+    ));
+
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>{this.props.wfname}</Modal.Title>
@@ -65,6 +85,11 @@ class EnergyScan extends React.Component {
                 <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
+            <FieldsHeader title="Element" />
+            <PeriodicTable
+              availableElements={availableElements}
+              onElementSelected={this.elementSelected}
+            />
             <Row>
               <Col xs={8}>
                 <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
