@@ -260,6 +260,10 @@ class ServerIO {
       this.dispatch(setLoadedSample(data));
     });
 
+    this.hwrSocket.on('set_current_sample', (sample) => {
+      this.dispatch(setCurrentSample(sample.sampleID));
+    });
+
     this.hwrSocket.on('sc_maintenance_update', (data) => {
       this.dispatch(setSCGlobalState(data));
     });

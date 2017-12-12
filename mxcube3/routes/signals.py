@@ -155,6 +155,12 @@ def loaded_sample_changed(sample):
     except Exception, msg:
         logging.getLogger("HWR").error('error setting loaded sample: %s' + str(msg))
 
+def set_current_sample(sample):
+    if not sample:
+        sample = {"sampleID": ''}
+
+    socketio.emit("set_current_sample", sample , namespace="/hwr")
+
 def sc_contents_update():
     socketio.emit("sc_contents_update")
 
