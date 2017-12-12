@@ -158,7 +158,6 @@ class DataCollection extends React.Component {
           <Modal.Title>Standard Data Collection</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />

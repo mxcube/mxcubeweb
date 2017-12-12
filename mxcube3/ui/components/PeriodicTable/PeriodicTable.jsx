@@ -26,7 +26,17 @@ export default class PeriodicTable extends React.Component {
     }
   }
 
+  enableElement(el) {
+    const domel = document.getElementById(el);
+
+    if (domel) {
+      domel.className += ' available';
+    }
+  }
+
   render() {
+    this.props.availableElements.forEach((el) => this.enableElement(el));
+
     return (
       <div className="periodic" onClick={this.onClickHandler}>
         <div className="periodic-row">

@@ -1,22 +1,6 @@
 <object class="EnergyScanMockup">
   <config_file>/users/blissadm/local/beamline_configuration/misc/EdgeScan.dat</config_file>
-  <!-- open/close safety shutter-->
-  <object href="/safshut" role="safety_shutter"/>
-  <!-- move undulator gap(s) -->
-  <object href="/feshut" role="undulators"/>
-  <gap_config_file>/users/blissadm/local/beamline_configuration/misc/undulators.dat</gap_config_file>
-  <!-- get current energy -->
-  <object href="/energy_ho" role="energy"/>
-  <!--  get the beamsize (bsX, bsY) -->
-  <object href="/udiff_aperturemot" role="beamsize"/>
-  <!-- read the transmission -->
-  <object href="/transmission" role="transmission"/>
-  <!-- MCA -->
-  <object href="/rontec" role="MCA"/>
-  <!-- control -->
-  <object href="/bliss" role="controller"/>
-  <!-- connect to ISpyB -->
-  <object href="/dbconnection" role="dbserver"/>
+
   <offset_keV>0.025</offset_keV>
   <theoritical_edge_threshold>0.01</theoritical_edge_threshold>
   <min_integrated_counts>2000</min_integrated_counts>

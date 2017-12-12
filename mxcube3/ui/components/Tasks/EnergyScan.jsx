@@ -73,10 +73,9 @@ class EnergyScan extends React.Component {
 
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.wfname}</Modal.Title>
+          <Modal.Title>Energy Scan</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
