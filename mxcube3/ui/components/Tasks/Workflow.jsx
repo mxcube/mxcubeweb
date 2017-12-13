@@ -4,7 +4,7 @@ import { reduxForm, formValueSelector } from 'redux-form';
 import { DraggableModal } from '../DraggableModal';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { FieldsHeader, StaticField, InputField } from './fields';
+import { StaticField, InputField } from './fields';
 
 class Workflow extends React.Component {
   constructor(props) {
@@ -55,7 +55,6 @@ class Workflow extends React.Component {
           <Modal.Title>{this.props.wfname}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />

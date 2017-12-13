@@ -14,7 +14,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
-import { SAMPLE_MOUNTED } from '../constants';
 
 function mapStateToProps(state) {
   return {
@@ -94,7 +93,8 @@ export default class SampleQueueContainer extends React.Component {
       setAutoMountSample,
       setAutoAddDiffPlan,
       sendRunSample,
-      sendSetCentringMethod
+      sendSetCentringMethod,
+      setEnabledSample
     } = this.props.queueActions;
     const {
       collapseItem,
@@ -111,22 +111,19 @@ export default class SampleQueueContainer extends React.Component {
       if (queue.includes(key)) {
         const sample = sampleList[key];
 
-        if (sample.state && SAMPLE_MOUNTED) {
-          history.push(sample.sampleID);
-        } else if (sample.sampleID !== current.sampleID && sample.checked) {
+        if (sample.sampleID !== current.sampleID && sample.checked) {
           todo.push(sample.sampleID);
         }
       }
     }
-
 
     let sampleName = '';
     let proteinAcronym = '';
 
     if (current.sampleID) {
       const sampleData = sampleList[current.sampleID];
-      sampleName = sampleData ? sampleData.sampleName : '';
-      proteinAcronym = sampleData ? `(${sampleData.proteinAcronym})` : '';
+      sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+      proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} -` : '';
     }
 
     return (
@@ -135,6 +132,8 @@ export default class SampleQueueContainer extends React.Component {
           ref="queueContainer"
           historyLength={history.length}
           queueLength={queue.length}
+          queue={queue}
+          setEnabledSample={setEnabledSample}
           todoLength={todo.length}
           queueStatus={queueStatus}
           runQueue={showConfirmCollectDialog}
@@ -150,6 +149,9 @@ export default class SampleQueueContainer extends React.Component {
           sendSetCentringMethod={sendSetCentringMethod}
           centringMethod={centringMethod}
           todoList={todo}
+          queue={queue}
+          sampleList={sampleList}
+          sendUnmountSample={sendUnmountSample}
         />
         <div className="m-tree queue-body">
           <Nav
@@ -160,10 +162,10 @@ export default class SampleQueueContainer extends React.Component {
           >
             <NavItem eventKey={'current'}>
               <b>
-                { current.sampleID ? `Sample: ${sampleName} ${proteinAcronym}` : 'Current'}
+                { current.sampleID ? `Sample: ${proteinAcronym} ${sampleName}` : 'Current'}
               </b>
             </NavItem>
-            <NavItem eventKey={'todo'}><b>Upcoming ({todo.length})</b></NavItem>
+            <NavItem eventKey={'todo'}><b>Queued Samples ({todo.length})</b></NavItem>
           </Nav>
           {loading ?
             <div className="center-in-box">

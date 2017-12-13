@@ -7,19 +7,19 @@
 
 .messageINFO {
   border-top: 5px solid #2196F3;
-  background-color: rgba(91, 141, 180, 1);
+  background-color: rgba(91, 141, 180, 0.8);
   border-radius: 5px;
   margin-top: 1em;
 }
 
 .messageWARNING {
   border-top: 5px solid #2196F3;
-  background-color: rgba(240, 173, 78, 160);
+  background-color: rgba(240, 173, 78, 0.8);
 }
 
 .messageERROR {
   border-top: 5px solid #D9534F;
-  background-color: rgba(217, 83, 79, 153);
+  background-color: rgba(217, 83, 79, 0.8);
 }
 
 .messageText {

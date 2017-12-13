@@ -27,15 +27,13 @@ def queue_start():
               409: Queue could not be started
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
+    args = request.get_json()
 
     try:
-        queue = qutils.queue_to_dict()
-        sample_id = queue["sample_order"][0]
-
-        # If auto mount sample is false, just run the first one
+        # If auto mount sample is false, just run the sample supplied in the call
         if not qutils.get_auto_mount_sample():
-            sample_id = scutils.get_current_sample().get("sampleID", None) or sample_id
-            qutils.execute_entry_with_id(sample_id)
+            if args.get("sid", -1) > 0:
+                qutils.execute_entry_with_id(args["sid"])
         else:
             # Making sure all sample entries are enabled before running the queue
             #qutils.enable_sample_entries(queue["sample_order"], True)
@@ -183,7 +181,6 @@ def queue_get_state():
     return resp
 
 
-
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=['PUT'])
 def execute_entry_with_id(sid, tindex):
     """
@@ -220,8 +217,9 @@ def set_queue():
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
     tasks = request.get_json()
-    queue = qutils.queue_add_item(tasks, use_queue_cache=False)
-    sample_list = limsutils.sample_list_get()
+
+    queue = qutils.queue_add_item(tasks)
+    sample_list = limsutils.sample_list_get(current_queue=queue)
 
     resp = jsonify({"sampleOrder": queue.get("sample_order", []),
                     "sampleList": sample_list.get("sampleList", {})})
@@ -506,7 +504,7 @@ def get_default_char_acq_params():
             'take_snapshots': True,
             'prefixTemplate': '{PREFIX}_{POSITION}',
             'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
-            'strategy_complexity': 'FEW',
+            'strategy_complexity': 'SINGLE',
             'account_rad_damage': True,
             'opt_sad': False,
             'min_crystal_vdim': 0.05,

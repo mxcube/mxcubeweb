@@ -285,7 +285,15 @@ class SampleGridViewContainer extends React.Component {
    * @return {number} number of sammples in queue
    */
   numSamplesPicked() {
-    return Object.keys(this.props.queue.queue).length;
+    const samples = [];
+
+    this.props.queue.queue.forEach((sampleID) => {
+      if (this.inQueue(sampleID)) {
+        samples.push(sampleID);
+      }
+    });
+
+    return samples.length;
   }
 
 

@@ -155,6 +155,12 @@ def loaded_sample_changed(sample):
     except Exception, msg:
         logging.getLogger("HWR").error('error setting loaded sample: %s' + str(msg))
 
+def set_current_sample(sample):
+    if not sample:
+        sample = {"sampleID": ''}
+
+    socketio.emit("set_current_sample", sample , namespace="/hwr")
+
 def sc_contents_update():
     socketio.emit("sc_contents_update")
 
@@ -389,6 +395,10 @@ def collect_started(*args, **kwargs):
 
 def grid_result_available(shape):
     socketio.emit('grid_result_available', {'shape': shape}, namespace='/hwr')
+
+
+def energy_scan_finished(pk, ip, rm, sample):
+    socketio.emit('energy_scan_result', {'pk': pk, 'ip': ip, 'rm': rm}, namespace='/hwr')
 
 
 def queue_interleaved_started():

@@ -25,6 +25,7 @@
   <object href="/ednaparams" role="workflow"/>
   <object href="/data-analysis" role="data_analysis"/>
   <object href="/xrf" role="xrf_spectrum"/>
+  <object href="/energyscan" role="energyscan"/>
 
   <!--<object href="/workflow-mockup" role="workflow"/> -->
  

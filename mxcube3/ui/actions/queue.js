@@ -19,9 +19,25 @@ export function setQueueAction(queue) {
 }
 
 
+export function setCurrentSample(sampleID) {
+  return {
+    type: 'SET_CURRENT_SAMPLE', sampleID
+  };
+}
+
+
 export function setQueue(queue) {
-  return function (dispatch) {
+  return function (dispatch, getState) {
+    const state = getState();
     dispatch(setQueueAction(queue));
+
+    // Check if sample is loaded by sample changer in that case set it as current sample
+    queue.sampleOrder.forEach((sid) => {
+      if (state.sampleChanger.loadedSample.address === sid &&
+          state.queue.current.sampleID !== sid) {
+        dispatch(setCurrentSample(sid));
+      }
+    });
   };
 }
 
@@ -68,18 +84,11 @@ export function sendAddQueueItem(items) {
 }
 
 
-export function setCurrentSample(sampleID) {
-  return {
-    type: 'SET_CURRENT_SAMPLE', sampleID
-  };
-}
-
-
 export function sendMountSample(sampleData) {
   return function (dispatch, getState) {
     const state = getState();
 
-    if (state.queue.current.sampleID !== sampleData.sampleID) {
+    if (state.sampleChanger.loadedSample.address !== sampleData.sampleID) {
       fetch('mxcube/api/v0.1/sample_changer/mount', {
         method: 'POST',
         credentials: 'include',
@@ -91,8 +100,6 @@ export function sendMountSample(sampleData) {
       }).then((response) => {
         if (response.status >= 400) {
           throw new Error('Server refused to mount sample');
-        } else {
-          dispatch(setCurrentSample(sampleData.sampleID));
         }
       });
     } else {
@@ -285,7 +292,7 @@ export function toggleChecked(sampleID, index) {
 }
 
 
-export function sendRunQueue() {
+export function sendRunQueue(autoMountNext = true, sid = -1) {
   return function () {
     fetch('mxcube/api/v0.1/queue/start', {
       method: 'PUT',
@@ -293,7 +300,8 @@ export function sendRunQueue() {
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ autoMountNext, sid })
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to start queue');
@@ -389,7 +397,8 @@ export function setEnabledSample(sampleIDList, value) {
     dispatch(queueLoading(true));
 
     const qidList = sampleIDList.map(sampleID => (
-      state.sampleGrid.sampleList[sampleID].queueID));
+      state.sampleGrid.sampleList[sampleID].queueID
+    ));
 
     sendSetEnabledQueueItem(qidList, value).then((response) => {
       if (response.status >= 400) {
@@ -397,6 +406,19 @@ export function setEnabledSample(sampleIDList, value) {
       } else {
         sampleIDList.forEach(sid => {
           dispatch(setSampleAttribute(sid, 'checked', value));
+
+          // If sample is loaded by SC, set as current
+          if (state.sampleChanger.loadedSample.address === sid && value) {
+            dispatch(setCurrentSample(sid));
+          }
+
+          if (state.sampleChanger.loadedSample.address === sid && !value) {
+            dispatch(setCurrentSample(''));
+          }
+
+          if (!value && state.queue.queue.includes(sid)) {
+            dispatch(removeSamplesFromQueueAction([sid]));
+          }
         });
       }
     }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
@@ -482,6 +504,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                        label: pars.label,
                        state: TASK_UNCOLLECTED,
                        sampleID,
+                       sampleQueueID: state.sampleGrid.sampleList[sampleID].queueID,
                        parameters: { ...pars },
                        checked: true };
 

@@ -81,7 +81,6 @@ class Characterisation extends React.Component {
           <Modal.Title>Characterisation</Modal.Title>
         </Modal.Header>
           <Modal.Body>
-            <FieldsHeader title="Data location" />
             <Form horizontal>
               <StaticField label="Path" data={this.props.path} />
               <StaticField label="Filename" data={this.props.filename} />

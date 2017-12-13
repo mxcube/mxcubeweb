@@ -148,11 +148,15 @@ def mount_sample_clean_up(sample):
 
         set_sample_to_be_mounted(sample['sampleID'])
 
-        if sample['location'] != 'Manual' and mxcube.sample_changer.getLoadedSample() and \
-                mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
-            mxcube.sample_changer.load(sample['sampleID'], wait=False)
+        if sample['location'] != 'Manual':
+            if not mxcube.sample_changer.getLoadedSample():
+                mxcube.sample_changer.load(sample['sampleID'], wait=False)
+            elif mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
+              mxcube.sample_changer.load(sample['sampleID'], wait=False)
+        elif sample['location'] == 'Manual':
+            import signals
+            signals.set_current_sample(sample)
 
-        mxcube.queue.mounted_sample = sample['sampleID']
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         set_current_sample(None)
@@ -168,6 +172,9 @@ def unmount_sample_clean_up(sample):
     try:
         if not sample['location'] == 'Manual':
             mxcube.sample_changer.unload(sample['sampleID'], wait=False)
+        else:
+            import signals
+            signals.set_current_sample(None)
 
         msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
         logging.getLogger('HWR').info(msg)

@@ -45,7 +45,6 @@ export default class XRFTaskItem extends Component {
       <div style={ { borderLeft: '1px solid #DDD',
                      borderRight: '1px solid #DDD',
                      borderBottom: '1px solid #DDD',
-                     marginRight: '1px',
                      padding: '0.5em' } }
       >
         <a href={link} target="_blank"> View Results in ISPyB</a>
@@ -242,9 +241,7 @@ export default class XRFTaskItem extends Component {
         <Collapse in={Boolean(show)}>
           <div className="task-body">
             <div>
-              <div style={ { border: '1px solid #DDD',
-                             marginRight: '1px' } }
-              >
+              <div style={ { border: '1px solid #DDD' } }>
                 <div
                   style={ { padding: '0.5em' } }
                   onClick={this.showForm}

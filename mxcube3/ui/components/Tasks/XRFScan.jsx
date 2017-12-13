@@ -4,7 +4,7 @@ import { reduxForm, formValueSelector } from 'redux-form';
 import { DraggableModal } from '../DraggableModal';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { FieldsHeader, StaticField, InputField } from './fields';
+import { StaticField, InputField } from './fields';
 
 class XRFScan extends React.Component {
   constructor(props) {
@@ -52,10 +52,9 @@ class XRFScan extends React.Component {
   render() {
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.wfname}</Modal.Title>
+          <Modal.Title>XRF</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />

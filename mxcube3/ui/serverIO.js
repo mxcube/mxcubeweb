@@ -38,6 +38,7 @@ import { setSCState,
          setSCGlobalState,
          updateSCContents } from './actions/sampleChanger';
 
+import { setEnergyScanResult } from './actions/taskResults';
 
 class ServerIO {
 
@@ -126,6 +127,10 @@ class ServerIO {
 
     this.hwrSocket.on('grid_result_available', (data) => {
       this.dispatch(updateShapes([data.shape]));
+    });
+
+    this.hwrSocket.on('energy_scan_result', (data) => {
+      this.dispatch(setEnergyScanResult(data.pk, data.ip, data.rm));
     });
 
     this.hwrSocket.on('task', (record, callback) => {
@@ -258,6 +263,10 @@ class ServerIO {
 
     this.hwrSocket.on('loaded_sample_changed', (data) => {
       this.dispatch(setLoadedSample(data));
+    });
+
+    this.hwrSocket.on('set_current_sample', (sample) => {
+      this.dispatch(setCurrentSample(sample.sampleID));
     });
 
     this.hwrSocket.on('sc_maintenance_update', (data) => {

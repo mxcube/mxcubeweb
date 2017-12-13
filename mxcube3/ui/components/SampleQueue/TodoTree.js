@@ -57,11 +57,18 @@ export default class TodoTree extends React.Component {
               <div className="list-body">
                 {list.map((key, id) => {
                   const sampleData = this.props.sampleList[key];
+                  const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+                  const proteinAcronym = sampleData.proteinAcronym ?
+                    `${sampleData.proteinAcronym} -` : '';
+
                   return (
                   <div key={id} className="node node-sample">
                     <div className="task-head">
                       <p className="node-name">
-                        {`${sampleData.sampleID}`}
+                          <b>
+                          {`${sampleData.sampleID} `}
+                          </b>
+                            {`${proteinAcronym} ${sampleName}`}
                         <Button
                           className="pull-right"
                           bsSize="xs"

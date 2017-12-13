@@ -144,23 +144,31 @@ class DataCollection extends React.Component {
   }
 
   render() {
+    const energyScanResult = this.props.taskResult.energyScan.length > 0 ?
+            this.props.taskResult.energyScan[this.props.taskResult.energyScan.length - 1] : [];
+
+    const energyList = [];
+
+    Object.values(energyScanResult).forEach((result) => {
+      energyList.push(result);
+    });
+
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Standard Data Collection</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
+                <InputField propName="subdir" label="Subdirectory" col1="2" col2="8" />
               </Col>
             </Row>
             <Row>
-              <Col xs={8}>
-                <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+              <Col xs={12}>
+                <InputField propName="prefix" label="Prefix" col1="2" col2="4" />
               </Col>
               {this.props.taskData.sampleID ?
                 (<Col xs={4}>
@@ -194,6 +202,19 @@ class DataCollection extends React.Component {
               <InputField propName="energy" type="number" label="Energy" />
               <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
+            { this.props.taskResult.energyScan.length > 0 ?
+              (<FieldsRow>
+                 <SelectField
+                   col1="7"
+                   col2="5"
+                   propName="energy"
+                   label="Energy scan result"
+                   list={energyList}
+                 />
+               </FieldsRow>)
+              :
+              null
+            }
             <CollapsableRows>
               <FieldsRow>
                 <InputField propName="kappa" type="number" label="Kappa" />
