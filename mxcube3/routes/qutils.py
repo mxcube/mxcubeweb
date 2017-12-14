@@ -229,7 +229,7 @@ def get_node_state(node_id):
     try:
         node, entry = get_entry(node_id)
     except:
-        return (1, 0)
+        return (True, UNCOLLECTED)
 
     executed = node.is_executed()
     enabled = node.is_enabled()
@@ -449,7 +449,8 @@ def _handle_char(sample_node, node):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
     limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
 
-    originID, task = _handle_diffraction_plan(node)
+    originID, task = _handle_diffraction_plan(node, sample_node)
+
     res = {"label": "Characterisation",
            "type": "Characterisation",
            "parameters": parameters,
@@ -466,10 +467,9 @@ def _handle_char(sample_node, node):
 
     return res
 
-def _handle_diffraction_plan(node):
+def _handle_diffraction_plan(node, sample_node):
     model, entry = get_entry(node._node_id)
-    originID = model.get_origin()  # char node id
-    sample = model.get_parent()  # sample Node
+    originID = model.get_origin()
     tasks = []
 
     if len(model.diffraction_plan) == 0:
@@ -478,7 +478,7 @@ def _handle_diffraction_plan(node):
         collections = model.diffraction_plan[0]  # a list of lists
 
         for col in collections:
-            t = _handle_dc(sample, col)
+            t = _handle_dc(sample_node, col)
             if t == None:
                 tasks.append({})
                 continue
@@ -1565,8 +1565,7 @@ def queue_model_child_added(parent, child):
             parent_entry.enqueue(dcg_entry)
 
 
-def queue_model_diff_plan_available(char, index, collection_list):
-    # TODO: The client is not prepared for handling several collections for now @#@#!
+def queue_model_diff_plan_available(char, collection_list):
     cols = []
     for collection in collection_list:
         if isinstance(collection, qmo.DataCollection):

@@ -62,8 +62,6 @@ def mount_sample(beamline_setup_hwobj,
     from signals import loaded_sample_changed
 
     logging.getLogger('user_level_log').info("Loading sample ...")
-
-    beamline_setup_hwobj.shape_history_hwobj.clear_all()
     log = logging.getLogger("user_level_log")
 
     loc = data_model.location
@@ -81,6 +79,8 @@ def mount_sample(beamline_setup_hwobj,
     if sample_mount_device.getLoadedSample() and \
             sample_mount_device.getLoadedSample().getAddress() == data_model.loc_str:
         return
+
+    beamline_setup_hwobj.shape_history_hwobj.clear_all()
 
     if hasattr(sample_mount_device, '__TYPE__'):
         if sample_mount_device.__TYPE__ in ['Marvin','CATS']:
@@ -153,6 +153,8 @@ def mount_sample_clean_up(sample):
                 mxcube.sample_changer.load(sample['sampleID'], wait=False)
             elif mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
               mxcube.sample_changer.load(sample['sampleID'], wait=False)
+              mxcube.shapes.clear_all()
+
         elif sample['location'] == 'Manual':
             import signals
             signals.set_current_sample(sample)
@@ -163,7 +165,6 @@ def mount_sample_clean_up(sample):
         raise
     else:
         # Clearing centered position
-        mxcube.shapes.clear_all()
         set_current_sample(sample)
         logging.getLogger('HWR').info('[SC] mounted %s' % sample)
 
@@ -184,8 +185,6 @@ def unmount_sample_clean_up(sample):
     else:
         mxcube.queue.mounted_sample = ''
         set_current_sample(None)
-        # Remove Centring points
-
         mxcube.shapes.clear_all()
 
 

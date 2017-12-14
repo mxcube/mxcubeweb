@@ -742,10 +742,6 @@ def create_diff_plan(sid):
     char, char_entry = qutils.get_entry(3)
 
     char.diffraction_plan.append([dc_model])
-    mxcube.queue.emit('diff_plan_available',
-                                (char,
-                                 char.diffraction_plan.index([dc_model]),
-                                 dc_model)
-                                )
+    mxcube.queue.emit('diff_plan_available', (char, [dc_model]))
 
     return Response(status=200)
