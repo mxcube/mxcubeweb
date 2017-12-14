@@ -168,7 +168,7 @@ class DataCollection extends React.Component {
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="2" col2="4" />
+                <InputField propName="prefix" label="Prefix" col1="2" col2="6" />
               </Col>
               {this.props.taskData.sampleID ?
                 (<Col xs={4}>

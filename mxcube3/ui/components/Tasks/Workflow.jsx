@@ -64,8 +64,8 @@ class Workflow extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col xs={8}>
-                <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+              <Col xs={12}>
+                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
               </Col>
               {this.props.taskData.sampleID ?
                 (<Col xs={4}>
