@@ -84,14 +84,9 @@ class EnergyScan extends React.Component {
                 <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
-            <FieldsHeader title="Element" />
-            <PeriodicTable
-              availableElements={availableElements}
-              onElementSelected={this.elementSelected}
-            />
             <Row>
-              <Col xs={8}>
-                <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+              <Col xs={12}>
+                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
               </Col>
               {this.props.taskData.sampleID ?
                 (<Col xs={4}>
@@ -105,6 +100,11 @@ class EnergyScan extends React.Component {
                 </Col>)
               : null}
             </Row>
+            <FieldsHeader title="Element" />
+            <PeriodicTable
+              availableElements={availableElements}
+              onElementSelected={this.elementSelected}
+            />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
                 <InputField propName="element" label="Element" col1="4" col2="2" />
