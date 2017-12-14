@@ -33,6 +33,9 @@ def sc_contents_from_location_get(loc):
 def set_current_sample(sample):
     mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
 
+    import signals
+    signals.set_current_sample(sample)
+
 
 def get_current_sample():
     current_queue = qutils.queue_to_dict()
@@ -95,14 +98,13 @@ def mount_sample(beamline_setup_hwobj,
                 # if sample could not be loaded, but no exception is raised, let's skip the sample
                 raise QueueSkippEntryException("Sample changer could not load sample", "")
 
+    loaded_sample_changed(sample_mount_device.getLoadedSample())
+
     if not sample_mount_device.hasLoadedSample():
         #Disables all related collections
         logging.getLogger('user_level_log').info("Sample not loaded")
-        #set_current_sample(None)
-        loaded_sample_changed(sample_mount_device.getLoadedSample())
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
-        loaded_sample_changed(sample_mount_device.getLoadedSample())
         logging.getLogger('user_level_log').info("Sample loaded")
         dm = beamline_setup_hwobj.diffractometer_hwobj
         if dm is not None:
@@ -155,10 +157,6 @@ def mount_sample_clean_up(sample):
               mxcube.sample_changer.load(sample['sampleID'], wait=False)
               mxcube.shapes.clear_all()
 
-        elif sample['location'] == 'Manual':
-            import signals
-            signals.set_current_sample(sample)
-
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         set_current_sample(None)
@@ -174,8 +172,7 @@ def unmount_sample_clean_up(sample):
         if not sample['location'] == 'Manual':
             mxcube.sample_changer.unload(sample['sampleID'], wait=False)
         else:
-            import signals
-            signals.set_current_sample(None)
+            set_current_sample(None)
 
         msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
         logging.getLogger('HWR').info(msg)
