@@ -195,7 +195,7 @@ class DataCollection extends React.Component {
               <InputField propName="num_images" type="number" label="Number of images" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" type="number" label="Exposure time (ms)" />
+              <InputField propName="exp_time" type="number" label="Exposure time (s)" />
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
@@ -306,7 +306,10 @@ DataCollection = connect(state => {
         state.beamline.attributes.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value)
+        state.beamline.attributes.energy.value),
+      transmission: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.transmission :
+        state.beamline.attributes.transmission.value)
     }
   };
 })(DataCollection);

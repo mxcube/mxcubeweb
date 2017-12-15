@@ -99,7 +99,8 @@ export default class SampleQueueContainer extends React.Component {
     const {
       collapseItem,
       showConfirmCollectDialog,
-      selectItem
+      selectItem,
+      showList
     } = this.props.queueGUIActions;
 
     // go through the queue, check if sample has been collected or not
@@ -168,11 +169,11 @@ export default class SampleQueueContainer extends React.Component {
             <NavItem eventKey={'todo'}><b>Queued Samples ({todo.length})</b></NavItem>
           </Nav>
           {loading ?
-            <div className="center-in-box">
-                <img src={loader} className="img-responsive" alt="" />
-              </div>
+            <div className="center-in-box" style={{ zIndex: '1000' }}>
+              <img src={loader} className="img-responsive" alt="" />
+            </div>
               : null
-            }
+          }
             <CurrentTree
               changeOrder={changeTaskOrderAction}
               show={visibleList === 'current'}
@@ -209,6 +210,7 @@ export default class SampleQueueContainer extends React.Component {
               mount={sendMountSample}
               showForm={showForm}
               queueStatus={queueStatus}
+              showList={showList}
             />
             <UserMessage
               messages={this.props.userMessages}

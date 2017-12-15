@@ -156,7 +156,7 @@ export default (state = initialState, action) => {
           if (shape.selected && !state.selectedShapes.includes(shape.id)) {
             selectedShapes.push(shape.id);
           } else if (!shape.selected && state.selectedShapes.includes(shape.id)) {
-            selectedShapes = state.selectedShapes.filter((id) => (id !== shape.id));
+            selectedShapes = selectedShapes.filter((id) => (id !== shape.id));
           }
         });
 
@@ -164,7 +164,7 @@ export default (state = initialState, action) => {
       }
     case 'DELETE_SHAPE':
       {
-        const selectedShapes = state.selectedShapes.filter((id) => (id === action.id));
+        const selectedShapes = state.selectedShapes.filter((id) => (id !== action.id));
         return { ...state, selectedShapes };
       }
     case 'CLEAR_ALL':

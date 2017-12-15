@@ -55,7 +55,6 @@ def centring_remove_current_point():
 def centring_add_current_point():
     global CENTRING_POINT_ID
     shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
-
     if shape:
         shape.state = "SAVED"
         signals.send_shapes(update_positions = False)
@@ -64,7 +63,6 @@ def centring_add_current_point():
 
 def centring_update_current_point(motor_positions, x, y):
     global CENTRING_POINT_ID
-
     if CENTRING_POINT_ID:
         point = mxcube.shapes.get_shape(CENTRING_POINT_ID)
         point.move_to_mpos([motor_positions], [x, y])
@@ -657,20 +655,14 @@ def wait_for_centring_finishes(*args, **kwargs):
     centred point.
     """
     centring_status = args[1]
-
     # we do not send/save any centring data if there is no sample
     # to avoid the 2d centring when no sample is mounted
     if scutils.get_current_sample().get('sampleID', '') == '':
         return
-    try:
-        motor_positions = mxcube.diffractometer.centringStatus["motors"]
-    except KeyError:
-        msg = "[SAMPLEVIEW] Centring error, cannot retrieve motor positions."
-        logging.getLogger('HWR').exception(msg)
-        return
 
     # If centering is valid add the point, otherwise remove it
     if centring_status['valid']:
+    	motor_positions = centring_status["motors"]
         motor_positions.pop('zoom', None)
         motor_positions.pop('beam_y', None)
         motor_positions.pop('beam_x', None)
@@ -688,7 +680,6 @@ def accept_centring():
     """
     mxcube.diffractometer.acceptCentring()
     centring_add_current_point()
-
     return Response(status=200)
 
 
@@ -709,7 +700,7 @@ def move_to_beam():
     params = request.data
     params = json.loads(params)
     click_position = params['clickPos']
-    logging.getLogger('HWR').info("A point submitted, x: %s, y: %s"
+    logging.getLogger('HWR').info("Moving to beam, A point submitted, x: %s, y: %s"
                                   % (click_position['x'],
                                      click_position['y']))
     if getattr(mxcube.diffractometer, 'moveToBeam') is None:

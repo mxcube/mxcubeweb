@@ -157,6 +157,7 @@ def lims_login(loginID, password):
 
         try:
             proposals = mxcube.db_connection.get_proposals_by_user(loginID)
+
             logging.getLogger('HWR').info('[LIMS] Retrieving proposal list for user: %s, proposals: %s' % (loginID, proposals))
             session['proposal_list'] = copy.deepcopy(proposals)
         except:
@@ -201,9 +202,9 @@ def get_proposal_info(proposal):
     """
     Search for the given proposal in the proposal list.
     """
+    logging.getLogger('HWR').info("[LIMS] Serching for proposal: %s" % proposal)
     for prop in session.get('proposal_list', []):
-
-        _p = "%s%s" % (prop.get('Proposal').get('code', ''),
+        _p = "%s%s" % (prop.get('Proposal').get('code', '').lower(),
                        prop.get('Proposal').get('number', ''))
 
         if _p == proposal.lower():
@@ -213,7 +214,12 @@ def get_proposal_info(proposal):
 
 
 def select_proposal(proposal):
-    proposal_info = get_proposal_info(proposal)
+    if not proposal.lower().startswith('mx'):
+	aux_prop = "{}{}".format('mx', proposal)
+    else:
+	aux_prop = proposal
+    
+    proposal_info = get_proposal_info(aux_prop)
     logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal)
     logging.getLogger('HWR').info("[LIMS] Proposal info: %s" % proposal_info)
     if mxcube.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
@@ -224,7 +230,7 @@ def select_proposal(proposal):
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
         mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
-        mxcube.session.session_id = proposal_info.get('Session')[0].get('sessionId')
+        mxcube.session.session_id = proposal_info.get('Session')[0].get('session').get('sessionId')
 
         if hasattr(mxcube.session, 'prepare_directories'):
             try:

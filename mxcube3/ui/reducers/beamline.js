@@ -101,6 +101,17 @@ export const INITIAL_STATE = {
       state: 'STATE.IDLE',
       msg: 'UNKNOWN'
     },
+    cryo: {
+      limits: [
+        0,
+        1000,
+        0.1
+      ],
+      name: 'cryo',
+      value: '0',
+      state: 'STATE.IDLE',
+      msg: 'UNKNOWN'
+    },
     machinfo: {
       limits: [],
       name: 'machinfo',

@@ -153,7 +153,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.AUTO_MOUNT_SAMPLE = False
         app.AUTO_ADD_DIFFPLAN = False
         app.CENTRING_METHOD = CENTRING_METHOD.LOOP
-        app.NUM_SNAPSHOTS = 4
+        app.NUM_SNAPSHOTS = app.collect.getProperty('num_snapshots', 4)
         app.NODE_ID_TO_LIMS_ID = {}
         app.INITIAL_FILE_LIST = []
         app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
