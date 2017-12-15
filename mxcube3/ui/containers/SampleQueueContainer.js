@@ -99,7 +99,8 @@ export default class SampleQueueContainer extends React.Component {
     const {
       collapseItem,
       showConfirmCollectDialog,
-      selectItem
+      selectItem,
+      showList
     } = this.props.queueGUIActions;
 
     // go through the queue, check if sample has been collected or not
@@ -208,6 +209,7 @@ export default class SampleQueueContainer extends React.Component {
                   mount={sendMountSample}
                   showForm={showForm}
                   queueStatus={queueStatus}
+                  showList={showList}
                 />
                 <UserMessage
                   messages={this.props.userMessages}
