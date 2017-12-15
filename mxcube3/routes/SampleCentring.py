@@ -659,13 +659,6 @@ def wait_for_centring_finishes(*args, **kwargs):
     # to avoid the 2d centring when no sample is mounted
     if scutils.get_current_sample().get('sampleID', '') == '':
         return
-    #try:
-    #    motor_positions = mxcube.diffractometer.centringStatus["motors"]
-    #except KeyError:
-    #	motor_positions = centring_status["motors"]
-    #    msg = "[SAMPLEVIEW] Centring error, cannot retrieve motor positions."
-    #    logging.getLogger('HWR').exception(msg)
-    #    return
 
     # If centering is valid add the point, otherwise remove it
     if centring_status['valid']:
@@ -687,7 +680,6 @@ def accept_centring():
     """
     mxcube.diffractometer.acceptCentring()
     centring_add_current_point()
-    global CENTRING_POINT_ID
     return Response(status=200)
 
 
