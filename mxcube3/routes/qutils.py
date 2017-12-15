@@ -5,7 +5,6 @@ import cPickle as pickle
 import redis
 import itertools
 import xml.etree.ElementTree as et
-import logging
 import Utils
 
 import queue_model_objects_v1 as qmo
