@@ -60,6 +60,7 @@ def init_signals():
     except Exception, ex:
         logging.getLogger('HWR').error("error loading plotting hwo: %s" % str(ex))
 
+
 @mxcube.route("/mxcube/api/v0.1/beamline", methods=['GET'])
 def beamline_get_all_attributes():
     ho = BeamlineSetupMediator(mxcube.beamline)
@@ -79,7 +80,9 @@ def beamline_get_all_attributes():
 
         actions.append({ "name": cmd.name(), "username": cmd.userName(), "state": READY, "arguments": args, "messages": [] })
 
+    data.update({'availableMethods': ho.get_available_methods()})
     data.update({'path': mxcube.session.get_base_image_directory(), 'actionsList': actions })
+    data.update({'energyScanElements': ho.get_available_elements().get("elements", [])})
 
     return jsonify(data)
 

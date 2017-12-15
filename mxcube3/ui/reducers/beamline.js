@@ -140,7 +140,9 @@ export const INITIAL_STATE = {
   motorInputDisable: false,
   lastPlotId: null,
   plotsInfo: {},
-  plotsData: {}
+  plotsData: {},
+  availableMethods: {},
+  energyScanElements: []
 };
 
 
@@ -204,7 +206,9 @@ export default (state = INITIAL_STATE, action) => {
         attributes: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.attributes },
         motorsLimits: { ...INITIAL_STATE.motorsLimits,
                         ...action.data.motorsLimits },
-        beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0)
+        beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0),
+        availableMethods: action.data.beamlineSetup.availableMethods,
+        energyScanElements: action.data.beamlineSetup.energyScanElements
       };
     case 'BL_MACH_INFO':
       return { ...state,

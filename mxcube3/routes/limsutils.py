@@ -11,10 +11,8 @@ import qutils
 from mxcube3 import app as mxcube
 from flask import session
 
-
-def init_sample_list():
-    mxcube.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
-
+def new_sample_list():
+    return {"sampleList": {}, 'sampleOrder': []}
 
 def sample_list_set(sample_list):
     mxcube.SAMPLE_LIST = sample_list
@@ -24,8 +22,8 @@ def sample_list_set_order(sample_order):
     mxcube.SAMPLE_LIST['sampleOrder'] = sample_order
 
 
-def sample_list_get(loc=None):
-    synch_sample_list_with_queue()
+def sample_list_get(loc=None, current_queue=None):
+    synch_sample_list_with_queue(current_queue)
     res = mxcube.SAMPLE_LIST
 
     if loc:
@@ -51,16 +49,26 @@ def sample_list_sync_sample(lims_sample):
         sample_list_update_sample(loc, lims_sample)
 
 
-def synch_sample_list_with_queue():
-    current_queue = qutils.queue_to_dict()
+def synch_sample_list_with_queue(current_queue=None):
+
+    if not current_queue:
+        current_queue = qutils.queue_to_dict()
+
     sample_order = current_queue.get("sample_order", [])
 
     for loc, data in mxcube.SAMPLE_LIST["sampleList"].iteritems():
-        if loc in sample_order:
+        if loc in current_queue:
             sample = current_queue[loc]
+
+            # Don't synchronize, lims attributes from queue sample, if
+            # they are already set by sc or lims
+            if data.get("sampleName", ""):
+                sample.pop("sampleName")
+
+            if  data.get("proteinAcronym", ""):
+                sample.pop("proteinAcronym")
+
             sample_list_update_sample(loc, sample)
-        elif len(data["tasks"]):
-            data["tasks"] = []
 
 
 def sample_list_update_sample(loc, sample):
@@ -68,7 +76,7 @@ def sample_list_update_sample(loc, sample):
 
     # If sample exists in sample list update it, otherwise add it
     if _sample:
-        mxcube.SAMPLE_LIST["sampleList"].get(loc, {}).update(sample)
+        _sample.update(sample)
     else:
         mxcube.SAMPLE_LIST["sampleList"][loc] = sample
         mxcube.SAMPLE_LIST["sampleOrder"].append(loc)
@@ -87,6 +95,7 @@ def apply_template(params, sample_model, path_template):
 
     if '{' in params.get('prefix', ''):
         sample = sample_list_get(sample_model.loc_str)
+        sample = mxcube.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
         prefix = get_default_prefix(sample, False)
         shape = params["shape"] if params["shape"] > 0 else '';
         params['prefix'] = params['prefix'].format(PREFIX=prefix,

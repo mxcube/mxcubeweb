@@ -47,6 +47,7 @@ class SampleGridContainer extends React.Component {
     this.sampleGridItemsSelectedHandler = this.sampleGridItemsSelectedHandler.bind(this);
     this.inQueueSampleID = this.inQueueSampleID.bind(this);
 
+    this.currentSample = this.currentSample.bind(this);
     this.getSampleItems = this.getSampleItems.bind(this);
     this.selectItemUnderCursor = this.selectItemUnderCursor.bind(this);
     this.sampleItemPickButtonOnClickHandler = this.sampleItemPickButtonOnClickHandler.bind(this);
@@ -188,8 +189,8 @@ class SampleGridContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       document.getElementById('contextMenu').style.display = 'none';
     } else if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
-      document.getElementById('contextMenu').style.top = `${e.clientY}px`;
-      document.getElementById('contextMenu').style.left = `${e.clientX}px`;
+      document.getElementById('contextMenu').style.top = `${e.pageY}px`;
+      document.getElementById('contextMenu').style.left = `${e.pageX}px`;
       document.getElementById('contextMenu').style.display = 'block';
       res = false;
     } else {
@@ -198,7 +199,6 @@ class SampleGridContainer extends React.Component {
 
     return res;
   }
-
 
   /**
    * Build a list of SampleItems and for each SampleItem a list of TaskItems
@@ -216,7 +216,7 @@ class SampleGridContainer extends React.Component {
     const orderedList = [];
 
     props.order.forEach(key => {
-      if (props.queue.queue.includes(key)) {
+      if (props.queue.queue.includes(key) && props.sampleList[key].checked) {
         orderedList.push(key);
       }
     });
@@ -238,8 +238,8 @@ class SampleGridContainer extends React.Component {
               sampleData={sample}
               queueOrder={orderedList.indexOf(key) + 1}
               selected={props.selected[sample.sampleID]}
-              current={props.queue.current.sampleID === sample.sampleID}
-              picked={props.inQueue(sample.sampleID)}
+              current={this.currentSample(sample.sampleID)}
+              picked={props.inQueue(sample.sampleID) && sample.checked}
               moving={props.moving[key]}
             >
               {sample.tasks.map((taskData, i) => (
@@ -260,6 +260,17 @@ class SampleGridContainer extends React.Component {
     return sampleItemList;
   }
 
+  currentSample(sampleID) {
+    let current = false;
+
+    if (this.props.queue.current.sampleID) {
+      current = this.props.queue.current.sampleID === sampleID;
+    } else if (this.props.sampleChanger.loadedSample.address) {
+      current = this.props.sampleChanger.loadedSample.address === sampleID;
+    }
+
+    return current;
+  }
 
   /**
    * Selects the SampleItem currently under the mouse cursor
@@ -371,11 +382,11 @@ class SampleGridContainer extends React.Component {
 
     if (sample) {
       const sampleFilter = `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
-      const locationFilter = `${sample.code} ${sample.location}`;
+      const locationFilter = `${sample.location}`;
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
-      fi &= locationFilter.includes(this.props.filterOptions.puckFilter.toLowerCase());
+      fi &= locationFilter.startsWith(this.props.filterOptions.puckFilter.toLowerCase());
       fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
       fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
     }
@@ -630,23 +641,23 @@ class SampleGridContainer extends React.Component {
     const workflowTasks = { point: [], line: [], grid: [], samplegrid: [], none: [] };
 
     Object.values(this.props.workflows).forEach((wf) => {
-      if (wf.requires === 'point') {
+      if (wf.requires.includes('point')) {
         workflowTasks.point.push({ text: wf.wfname,
                                    action: () => this.props.showWorkflowForm(wf),
                                    key: `wf-${wf.wfname}` });
-      } else if (wf.requires === 'line') {
+      } else if (wf.requires.includes('line')) {
         workflowTasks.line.push({ text: wf.wfname,
                                   action: () => this.props.showWorkflowForm(wf),
                                   key: `wf-${wf.wfname}` });
-      } else if (wf.requires === 'grid') {
+      } else if (wf.requires.includes('grid')) {
         workflowTasks.grid.push({ text: wf.wfname,
                                   action: () => this.props.showWorkflowForm(wf),
                                   key: `wf-${wf.wfname}` });
-      } else if (wf.requires === 'samplegrid') {
+      } else if (wf.requires.includes('samplegrid')) {
         workflowTasks.samplegrid.push({ text: wf.wfname,
                                         action: () => this.props.showWorkflowForm(wf),
                                         key: `wf-${wf.wfname}` });
-      } else if (wf.requires === '') {
+      } else {
         workflowTasks.none.push({ text: wf.wfname,
                                   action: () => this.props.showWorkflowForm(wf),
                                   key: `wf-${wf.wfname}` });
@@ -752,7 +763,8 @@ function mapStateToProps(state) {
     moving: state.sampleGrid.moving,
     sampleList: state.sampleGrid.sampleList,
     filterOptions: state.sampleGrid.filterOptions,
-    order: state.sampleGrid.order
+    order: state.sampleGrid.order,
+    sampleChanger: state.sampleChanger
   };
 }
 

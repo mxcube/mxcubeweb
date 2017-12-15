@@ -166,6 +166,17 @@ class _BeamlineSetupMediator(object):
 
         return {"attributes": attributes}
 
+    def get_available_methods(self):
+        return self._bl["available_methods"].getProperties()
+
+    def get_available_elements(self):
+        escan = self.getObjectByRole("energyscan")
+        elements = []
+
+        if escan:
+            elements = escan.getElements()
+
+        return {"elements": elements}
 
 
 class HOMediatorBase(object):

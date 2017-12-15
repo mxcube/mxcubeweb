@@ -27,18 +27,16 @@ def queue_start():
               409: Queue could not be started
     """
     logging.getLogger('HWR').info('[QUEUE] Queue going to start')
+    args = request.get_json()
 
     try:
-        queue = qutils.queue_to_dict()
-        sample_id = queue["sample_order"][0]
-
-        # If auto mount sample is false, just run the first one
+        # If auto mount sample is false, just run the sample supplied in the call
         if not qutils.get_auto_mount_sample():
-            sample_id = scutils.get_current_sample().get("sampleID", None) or sample_id
-            qutils.execute_entry_with_id(sample_id)
+            if args.get("sid", -1) > 0:
+                qutils.execute_entry_with_id(args["sid"])
         else:
             # Making sure all sample entries are enabled before running the queue
-            qutils.enable_sample_entries(queue["sample_order"], True)
+            #qutils.enable_sample_entries(queue["sample_order"], True)
             mxcube.queue.queue_hwobj.set_pause(False)
             mxcube.queue.queue_hwobj.execute()
 
@@ -183,7 +181,6 @@ def queue_get_state():
     return resp
 
 
-
 @mxcube.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=['PUT'])
 def execute_entry_with_id(sid, tindex):
     """
@@ -220,8 +217,9 @@ def set_queue():
 @mxcube.route("/mxcube/api/v0.1/queue", methods=['POST'])
 def queue_add_item():
     tasks = request.get_json()
-    queue = qutils.queue_add_item(tasks, use_queue_cache=False)
-    sample_list = limsutils.sample_list_get()
+
+    queue = qutils.queue_add_item(tasks)
+    sample_list = limsutils.sample_list_get(current_queue=queue)
 
     resp = jsonify({"sampleOrder": queue.get("sample_order", []),
                     "sampleList": sample_list.get("sampleList", {})})
@@ -254,6 +252,18 @@ def queue_update_item(sqid, tqid):
 def queue_delete_item():
     item_pos_list = request.get_json()
     qutils.delete_entry_at(item_pos_list)
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/set_enabled", methods=['POST'])
+def queue_enable_item():
+    params = request.get_json()
+    qidList, enabled = params.get("qidList", None), params.get("enabled", False)
+
+    for qid in qidList:
+        qutils.set_enabled_entry(qid, enabled)
+
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
     return Response(status=200)
 
@@ -452,7 +462,7 @@ def get_default_dc_params():
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -493,8 +503,8 @@ def get_default_char_acq_params():
             'skip_existing_images': False,
             'take_snapshots': True,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
-            'strategy_complexity': 'FEW',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'strategy_complexity': 'SINGLE',
             'account_rad_damage': True,
             'opt_sad': False,
             'min_crystal_vdim': 0.05,
@@ -546,7 +556,7 @@ def get_default_mesh_params():
             'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
             'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
         },
         })    
     resp.status_code = 200
@@ -709,7 +719,7 @@ def create_diff_plan(sid):
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{NAME}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
             'prefix': 'foo',
             'shape': 'P1'#-1
         },
@@ -732,10 +742,6 @@ def create_diff_plan(sid):
     char, char_entry = qutils.get_entry(3)
 
     char.diffraction_plan.append([dc_model])
-    mxcube.queue.emit('diff_plan_available',
-                                (char,
-                                 char.diffraction_plan.index([dc_model]),
-                                 dc_model)
-                                )
+    mxcube.queue.emit('diff_plan_available', (char, [dc_model]))
 
     return Response(status=200)

@@ -20,19 +20,19 @@ export default class ContextMenu extends React.Component {
     const workflowTasks = { point: [], line: [], grid: [], none: [] };
 
     Object.values(this.props.workflows).forEach((wf) => {
-      if (wf.requires === 'point') {
+      if (wf.requires.includes('point')) {
         workflowTasks.point.push({ text: wf.wfname,
                                    action: () => this.showModal('Workflow', wf),
                                    key: `wf-${wf.wfname}` });
-      } else if (wf.requires === 'line') {
+      } else if (wf.requires.includes('line')) {
         workflowTasks.line.push({ text: wf.wfname,
                                   action: () => this.showModal('Workflow', wf),
                                   key: `wf-${wf.wfname}` });
-      } else if (wf.requires === 'grid') {
+      } else if (wf.requires.includes('grid')) {
         workflowTasks.grid.push({ text: wf.wfname,
                                   action: () => this.showModal('Workflow', wf),
                                   key: `wf-${wf.wfname}` });
-      } else if (wf.requires === '') {
+      } else {
         workflowTasks.none.push({ text: wf.wfname,
                                   action: () => this.showModal('Workflow', wf),
                                   key: `wf-${wf.wfname}` });
@@ -41,21 +41,58 @@ export default class ContextMenu extends React.Component {
 
     const options = {
       SAVED: [
-        { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
-        { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 2 },
-	{ text: 'Add XRF Scan', action: () => this.showModal('XRFScan'), key: 3 },
-	{ text: 'Add Energy Scan', action: () => this.showModal('EnergyScan'), key: 4 },
-        { text: 'Go To Point', action: () => this.goToPoint(), key: 5 },
-        { text: 'divider', key: 6 },
+        { text: 'Add Datacollection',
+          action: () => this.showModal('DataCollection'),
+          key: 'datacollection'
+        },
+        {
+          text: 'Add Characterisation',
+          action: () => this.showModal('Characterisation'),
+          key: 'characterisation'
+        },
+        {
+          text: 'Add XRF Scan',
+          action: () => this.showModal('XRFScan'),
+          key: 'xrf_scan'
+        },
+        {
+          text: 'Add Energy Scan',
+          action: () => this.showModal('EnergyScan'),
+          key: 'energy_Scan'
+        },
+        {
+          text: 'Go To Point',
+          action: () => this.goToPoint(),
+          key: 5
+        },
+        {
+          text: 'divider',
+          key: 6 },
         ...workflowTasks.point,
         workflowTasks.point.length > 0 ? { text: 'divider', key: 7 } : {},
         { text: 'Delete Point', action: () => this.removeShape(), key: 8 },
       ],
       TMP: [
-        { text: 'Add Datacollection', action: () => this.showModal('DataCollection'), key: 1 },
-        { text: 'Add Characterisation', action: () => this.showModal('Characterisation'), key: 2 },
-	{ text: 'Add XRF Scan', action: () => this.showModal('XRFScan'), key: 3 },
-	{ text: 'Add Energy Scan', action: () => this.showModal('EnergyScan'), key: 4 },
+        {
+          text: 'Add Datacollection',
+          action: () => this.showModal('DataCollection'),
+          key: 'datacollection'
+        },
+        {
+          text: 'Add Characterisation',
+          action: () => this.showModal('Characterisation'),
+          key: 'characterisation'
+        },
+        {
+          text: 'Add XRF Scan',
+          action: () => this.showModal('XRFScan'),
+          key: 'xrf_scan'
+        },
+        {
+          text: 'Add Energy Scan',
+          action: () => this.showModal('EnergyScan'),
+          key: 'energy_scan'
+        },
         { text: 'divider', key: 5 },
         ...workflowTasks.point,
         workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
@@ -63,14 +100,34 @@ export default class ContextMenu extends React.Component {
         { text: 'Delete Point', action: () => this.removeShape(), key: 8 }
       ],
       GROUP: [
-        { text: 'Add Datacollections', action: () => this.showModal('DataCollection'), key: 1 },
-        { text: 'Add Characterisations', action: () => this.showModal('Characterisation'), key: 2 },
+        {
+          text: 'Add Datacollections',
+          action: () => this.showModal('DataCollection'),
+          key: 'datacollection'
+        },
+        {
+          text: 'Add Characterisations',
+          action: () => this.showModal('Characterisation'),
+          key: 'characterisation'
+        },
         ...workflowTasks.point,
       ],
       HELICAL: [
-        { text: 'Add Datacollections', action: () => this.showModal('DataCollection'), key: 1 },
-        { text: 'Add Characterisations', action: () => this.showModal('Characterisation'), key: 2 },
-        { text: 'Add Helical Scan', action: () => this.createLine(), key: 3 },
+        {
+          text: 'Add Datacollections',
+          action: () => this.showModal('DataCollection'),
+          key: 'datacollection'
+        },
+        {
+          text: 'Add Characterisations',
+          action: () => this.showModal('Characterisation'),
+          key: 'characterisation'
+        },
+        {
+          text: 'Add Helical Scan',
+          action: () => this.createLine(),
+          key: 'helical'
+        },
         ...workflowTasks.point,
       ],
       LINE: [
@@ -82,7 +139,11 @@ export default class ContextMenu extends React.Component {
         { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
       ],
       GridGroupSaved: [
-        { text: 'Mesh Scan', action: () => this.showModal('Mesh'), key: 1 },
+        {
+          text: 'Mesh Scan',
+          action: () => this.showModal('Mesh'),
+          key: 'mesh_scan'
+        },
         { text: 'Centring Point on cell', action: () => this.createCollectionOnCell(), key: 5 },
         { text: 'divider', key: 2 },
         ...workflowTasks.grid,
@@ -97,6 +158,20 @@ export default class ContextMenu extends React.Component {
         ...workflowTasks.none
       ]
     };
+
+    Object.keys(this.props.beamline.availableMethods).forEach((key) => {
+      if (!this.props.beamline.availableMethods[key]) {
+        Object.keys(options).forEach((k) => (
+          options[k] = options[k].filter((e) => {
+            let res = true;
+            if (Object.keys(this.props.beamline.availableMethods).includes(e.key)) {
+              res = this.props.beamline.availableMethods[e.key];
+            }
+            return res;
+          })
+        ));
+      }
+    });
 
     return options;
   }

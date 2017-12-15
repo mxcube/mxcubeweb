@@ -56,13 +56,6 @@ export default (state = INITIAL_STATE, action) => {
       // the sample list.
       const sampleList = { ...state.sampleList };
 
-      action.sampleIDList.forEach((sid) => {
-        if (sampleList[sid] !== undefined) {
-          sampleList[sid].tasks = sampleList[sid].tasks.filter((t) => (
-            t.state !== TASK_UNCOLLECTED
-          ));
-        }
-      });
 
       return { ...state, sampleList };
     }
@@ -251,6 +244,11 @@ export default (state = INITIAL_STATE, action) => {
       }
 
       return Object.assign({}, state, { sampleList });
+    }
+    case 'SET_SAMPLE_ATTRIBUTE': {
+      const sampleList = Object.assign({}, state.sampleList);
+      sampleList[action.sampleID][action.attr] = action.value;
+      return { ...state, sampleList };
     }
     // Toggles a samples movable flag
     case 'TOGGLE_MOVABLE_SAMPLE': {

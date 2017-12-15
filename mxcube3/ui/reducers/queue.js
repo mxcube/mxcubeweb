@@ -49,12 +49,6 @@ export default (state = initialState, action) => {
       );
     case 'RUN_SAMPLE':
       return Object.assign({}, state, { current: { ...state.current, running: true } });
-    case 'TOGGLE_CHECKED': {
-      const queue = Object.assign({}, state.queue);
-      queue[action.sampleID][action.taskIndex].checked ^= true;
-
-      return { ...state, queue };
-    }
     case 'CHANGE_SAMPLE_ORDER':
       return {
         ...state,

@@ -25,6 +25,7 @@
   <object href="/ednaparams" role="workflow"/>
   <object href="/data-analysis" role="data_analysis"/>
   <object href="/xrf" role="xrf_spectrum"/>
+  <object href="/energyscan" role="energyscan"/>
 
   <!--<object href="/workflow-mockup" role="workflow"/> -->
  
@@ -90,5 +91,14 @@
   </acquisition_limit_values>
 
   <click_centring_num_clicks>1</click_centring_num_clicks>
+
+  <available_methods>
+    <datacollection>True</datacollection>
+    <characterisation>True</characterisation>
+    <helical>True</helical>
+    <xrf_scan>True</xrf_scan>
+    <energy_scan>True</energy_scan>
+    <mesh_scan>False</mesh_scan>
+  </available_methods>
 
  </object>

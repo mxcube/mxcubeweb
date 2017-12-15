@@ -5,6 +5,7 @@ import { DraggableModal } from '../DraggableModal';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';
+import PeriodicTable from '../PeriodicTable/PeriodicTable';
 
 class EnergyScan extends React.Component {
   constructor(props) {
@@ -13,6 +14,7 @@ class EnergyScan extends React.Component {
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
+    this.elementSelected = this.elementSelected.bind(this);
   }
 
   submitAddToQueue() {
@@ -43,20 +45,37 @@ class EnergyScan extends React.Component {
       'wfname',
       'wfpath',
       'suffix',
-      'element'
+      'element',
+      'edge'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
+  elementSelected(el) {
+    this.props.change('element', el);
+    let edge = '';
+
+    this.props.availableElements.forEach((item) => {
+      if (item.symbol === el) {
+        edge = item.energy;
+      }
+    });
+
+    this.props.change('edge', edge);
+  }
+
   render() {
+    const availableElements = this.props.availableElements.map((item) => (
+      item.symbol
+    ));
+
     return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.wfname}</Modal.Title>
+          <Modal.Title>Energy Scan</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FieldsHeader title="Data location" />
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
@@ -66,8 +85,8 @@ class EnergyScan extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col xs={8}>
-                <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+              <Col xs={12}>
+                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
               </Col>
               {this.props.taskData.sampleID ?
                 (<Col xs={4}>
@@ -81,6 +100,11 @@ class EnergyScan extends React.Component {
                 </Col>)
               : null}
             </Row>
+            <FieldsHeader title="Element" />
+            <PeriodicTable
+              availableElements={availableElements}
+              onElementSelected={this.elementSelected}
+            />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
                 <InputField propName="element" label="Element" col1="4" col2="2" />

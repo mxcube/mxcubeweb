@@ -80,7 +80,7 @@ def get_samples_list():
         sample_dm = s.getID() or ""
         coords = s.getCoords()
         sample_data = {"sampleID": s.getAddress(),
-                       "location": ":".join(map(str, coords)),
+                       "location": s.getAddress(),
                        "sampleName": "Sample-%s" % s.getAddress(),
                        "code": sample_dm,
                        "loadable": True,
@@ -99,14 +99,13 @@ def get_samples_list():
         if sample_data["state"] == SAMPLE_MOUNTED:
             scutils.set_current_sample(sample_data)
 
-
     # sort by location, using coords tuple
     order.sort()
     sample_list = { 'sampleList': samples,
                     'sampleOrder': [samplesByCoords[coords] for coords in order] }
     
     limsutils.sample_list_set(sample_list)
-    return jsonify(sample_list)
+    return jsonify(limsutils.sample_list_get())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/state", methods=['GET'])
 def get_sc_state():

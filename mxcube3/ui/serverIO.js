@@ -21,7 +21,8 @@ import { setStatus,
          addTaskAction,
          sendStopQueue,
          setCurrentSample,
-         addDiffractionPlanAction } from './actions/queue';
+         addDiffractionPlanAction,
+         setSampleAttribute } from './actions/queue';
 import { collapseItem,
          showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading,
@@ -37,6 +38,7 @@ import { setSCState,
          setSCGlobalState,
          updateSCContents } from './actions/sampleChanger';
 
+import { setEnergyScanResult } from './actions/taskResults';
 
 class ServerIO {
 
@@ -127,6 +129,10 @@ class ServerIO {
       this.dispatch(updateShapes([data.shape]));
     });
 
+    this.hwrSocket.on('energy_scan_result', (data) => {
+      this.dispatch(setEnergyScanResult(data.pk, data.ip, data.rm));
+    });
+
     this.hwrSocket.on('task', (record, callback) => {
       if (callback) {
         callback();
@@ -167,7 +173,11 @@ class ServerIO {
         callback();
       }
 
-      this.dispatch(setStatus(record.Signal));
+      if (record.Signal === 'DisableSample') {
+        this.dispatch(setSampleAttribute(record.sampleID, 'checked', false));
+      } else {
+        this.dispatch(setStatus(record.Signal));
+      }
     });
 
     this.hwrSocket.on('sc', (record) => {
@@ -253,6 +263,10 @@ class ServerIO {
 
     this.hwrSocket.on('loaded_sample_changed', (data) => {
       this.dispatch(setLoadedSample(data));
+    });
+
+    this.hwrSocket.on('set_current_sample', (sample) => {
+      this.dispatch(setCurrentSample(sample.sampleID));
     });
 
     this.hwrSocket.on('sc_maintenance_update', (data) => {

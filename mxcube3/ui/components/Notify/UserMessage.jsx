@@ -1,5 +1,5 @@
 import React from 'react';
-import { Overlay, Popover } from 'react-bootstrap';
+import { Overlay } from 'react-bootstrap';
 
 import './style.css';
 
@@ -96,7 +96,9 @@ export default class UserMessage extends React.Component {
           <span className="messageText">
             {message.message}
           </span>
-          <span className="closebtn" onClick={clickHandler}>&times;</span>
+          { message.level !== 'INFO' ?
+            (<span className="closebtn" onClick={clickHandler}>&times;</span>) : null
+          }
         </div>
         ));
 
@@ -119,11 +121,17 @@ export default class UserMessage extends React.Component {
         placement={this.props.placement}
         target={this.props.domTarget}
       >
-        <Popover id="usermessages" style={ { minWidth: '500px' } }>
-          <div>
-            {messages}
-          </div>
-        </Popover>
+        <div id="usermessages"
+          style={ {
+            minWidth: '500px',
+            maxWidth: '500px',
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            display: 'block',
+            position: 'absolute',
+            zIndex: 1000 } }
+        >
+          {messages}
+        </div>
       </Overlay>
     );
   }

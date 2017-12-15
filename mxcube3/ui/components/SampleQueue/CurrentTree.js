@@ -48,7 +48,7 @@ export default class CurrentTree extends React.Component {
 
     // Available if more than one item selected and only DataCollection tasks are selected.
     selectedTasks.forEach((task) => {
-      if (task.type !== 'DataCollection') {
+      if (task.type !== 'DataCollection' || task.parameters.helical === true) {
         available = false;
       }
     });

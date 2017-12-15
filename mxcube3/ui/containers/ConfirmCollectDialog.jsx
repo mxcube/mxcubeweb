@@ -54,7 +54,7 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   onOkClick() {
-    this.props.sendRunQueue();
+    this.props.sendRunQueue(this.props.queue.autoMountNext, this.props.queue.current.sampleID);
     this.props.hide();
   }
 
@@ -126,8 +126,21 @@ export class ConfirmCollectDialog extends React.Component {
    */
   tasksToCollect() {
     // Flat array of all tasks
+    let queue = this.props.queue.queue;
+
+    // Making the dialog a bit more intuitive, only display the tasks for the
+    // sample to be colleted when autoMountNtext is false
+    if (!this.props.queue.autoMountNext) {
+      const sampleID = this.props.queue.current.sampleID ?
+              this.props.queue.current.sampleID : this.props.queue.queue[0];
+
+      if (sampleID) {
+        queue = [sampleID];
+      }
+    }
+
     const tasks = [].concat.apply([],
-      Object.values(this.props.queue.queue).map((sampleID) => (
+      Object.values(queue).map((sampleID) => (
         this.props.sampleGrid.sampleList[sampleID]
       )).map((sample) => sample.tasks));
 
@@ -142,8 +155,13 @@ export class ConfirmCollectDialog extends React.Component {
    * @return {Object} {numSaples, numTasks}
    */
   collectionSummary() {
-    const numSamples = this.props.queue.queue.length;
+    let numSamples = this.props.queue.queue.length;
     const numTasks = this.tasksToCollect().length;
+
+    if (!this.props.queue.autoMountNext &&
+        (this.props.queue.current.sampleID || this.props.queue.queue[0])) {
+      numSamples = 1;
+    }
 
     return { numSamples, numTasks };
   }
@@ -154,6 +172,10 @@ export class ConfirmCollectDialog extends React.Component {
 
     if (summary.numTasks === 0) {
       text = `Collecting ${summary.numSamples} samples`;
+    }
+
+    if (!this.props.queue.autoMountNext && this.props.queue.queue.length > 1) {
+      text += ', NOT auto mounting next sample';
     }
 
     return text;
@@ -302,8 +324,7 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   render() {
-    const summary = this.collectionSummary();
-    const autoMountNext = summary.numTasks !== 0;
+    const autoMountNext = this.props.queue.queue.length > 1;
     return (
       <Modal
         dialogClassName="collect-confirm-dialog"

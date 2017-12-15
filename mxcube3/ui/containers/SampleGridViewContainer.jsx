@@ -33,6 +33,7 @@ import {
 import {
   sendClearQueue,
   deleteSamplesFromQueue,
+  setEnabledSample,
   addSamplesToQueue,
   sendStopQueue
 } from '../actions/queue';
@@ -202,7 +203,8 @@ class SampleGridViewContainer extends React.Component {
       ...extraParams,
       prefix,
       path,
-      subdir } };
+      subdir,
+      shape: -1 } };
 
     const selected = [];
 
@@ -283,7 +285,15 @@ class SampleGridViewContainer extends React.Component {
    * @return {number} number of sammples in queue
    */
   numSamplesPicked() {
-    return Object.keys(this.props.queue.queue).length;
+    const samples = [];
+
+    this.props.queue.queue.forEach((sampleID) => {
+      if (this.inQueue(sampleID)) {
+        samples.push(sampleID);
+      }
+    });
+
+    return samples.length;
   }
 
 
@@ -303,7 +313,7 @@ class SampleGridViewContainer extends React.Component {
    * @return {boolean} true if sample with sampleID is in queue otherwise false
    */
   inQueue(sampleID) {
-    return this.props.queue.queue.includes(sampleID);
+    return this.props.queue.queue.includes(sampleID) && this.props.sampleList[sampleID].checked;
   }
 
 
@@ -324,7 +334,9 @@ class SampleGridViewContainer extends React.Component {
       }
     }
 
-    if (samplesToRemove.length > 0) { this.props.deleteSamplesFromQueue(samplesToRemove); }
+    if (samplesToRemove.length > 0) {
+      this.props.setEnabledSample(samplesToRemove, false);
+    }
     if (samples.length > 0) { this.addSamplesToQueue(samples); }
   }
 
@@ -335,7 +347,7 @@ class SampleGridViewContainer extends React.Component {
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
       if (this.inQueue(sampleID)) {
-        this.props.deleteSamplesFromQueue([sampleID]);
+        this.props.setEnabledSample([sampleID], false);
       }
     }
   }
@@ -675,6 +687,7 @@ function mapDispatchToProps(dispatch) {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
+    setEnabledSample: (qidList, value) => dispatch(setEnabledSample(qidList, value)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     sendStopQueue: () => dispatch(sendStopQueue()),

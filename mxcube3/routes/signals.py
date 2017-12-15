@@ -1,6 +1,7 @@
 import logging
 
 import queue_model_objects_v1 as qmo
+import queue_entry as qe
 import json
 
 from mxcube3 import socketio
@@ -129,6 +130,9 @@ def sc_state_changed(*args):
     socketio.emit('sc_state', state_str, namespace='/hwr')
 
 def loaded_sample_changed(sample):
+    if not isinstance(sample, Pin):
+        return
+    
     if sample is not None:
         address = sample.getAddress()
         barcode = sample.getID()
@@ -137,20 +141,25 @@ def loaded_sample_changed(sample):
         barcode = ''
 
     logging.getLogger("HWR").info('loaded sample changed now is: ' + address)
-
-    if isinstance(sample, Pin):
+ 
+    try:
         # recreate the dict with the sample info
         q = queue_to_dict()
         sampleID = sample.getAddress()
         sample_data = q.get(sampleID, {})
-     
-    try:
+    
         scutils.set_current_sample(sample_data)
         msg = {'signal': 'loadReady', 'location': address}
         socketio.emit('sc', msg, namespace='/hwr')
         socketio.emit("loaded_sample_changed", {'address': address, 'barcode': barcode}, namespace="/hwr")
     except Exception, msg:
         logging.getLogger("HWR").error('error setting loaded sample: %s' + str(msg))
+
+def set_current_sample(sample):
+    if not sample:
+        sample = {"sampleID": ''}
+
+    socketio.emit("set_current_sample", sample , namespace="/hwr")
 
 def sc_contents_update():
     socketio.emit("sc_contents_update")
@@ -204,6 +213,10 @@ def queue_execution_entry_finished(entry):
     if not qutils.is_interleaved(entry.get_data_model()):
         safe_emit('task', get_task_state(entry), namespace='/hwr')
 
+    if isinstance(entry, qe.SampleQueueEntry):
+        msg = {'Signal': 'DisableSample', 'sampleID': entry.get_data_model().loc_str}
+        safe_emit('queue', msg, namespace='/hwr')
+
 
 def queue_execution_started(entry, queue_state=None):
     state = queue_state if queue_state else qutils.queue_exec_state()
@@ -215,6 +228,9 @@ def queue_execution_started(entry, queue_state=None):
 def queue_execution_finished(entry, queue_state=None):
     state = queue_state if queue_state else qutils.queue_exec_state()
     msg = {'Signal': state, 'Message': 'Queue execution stopped'}
+
+    qutils.enable_sample_entries(mxcube.TEMP_DISABLED, True)
+    mxcube.TEMP_DISABLED = []
 
     safe_emit('queue', msg, namespace='/hwr')
 
@@ -379,6 +395,10 @@ def collect_started(*args, **kwargs):
 
 def grid_result_available(shape):
     socketio.emit('grid_result_available', {'shape': shape}, namespace='/hwr')
+
+
+def energy_scan_finished(pk, ip, rm, sample):
+    socketio.emit('energy_scan_result', {'pk': pk, 'ip': ip, 'rm': rm}, namespace='/hwr')
 
 
 def queue_interleaved_started():

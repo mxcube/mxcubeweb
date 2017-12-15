@@ -42,9 +42,7 @@ export default class QueueControl extends React.Component {
         [QUEUE_RUNNING]: [
           { text: 'Pause', class: 'btn-warning', action: this.props.pause, key: 2 },
         ],
-        [QUEUE_STOPPED]: [
-          { text: 'Mount Next Sample', class: 'btn-default', action: this.nextSample, key: 2 }
-        ],
+        [QUEUE_STOPPED]: [],
         [QUEUE_PAUSED]: [
           { text: 'Resume', class: 'btn-success', action: this.props.unpause, key: 2 }
         ],
@@ -52,7 +50,7 @@ export default class QueueControl extends React.Component {
           { text: 'New Sample', class: 'btn-primary', action: this.showForm, key: 1 },
         ],
         LastSample: [
-          { text: 'Finish', class: 'btn-primary', action: this.unMountSample, key: 1 }
+          { text: 'Finish', class: 'btn-primary', action: this.nextSample, key: 1 },
         ]
       }
     };
@@ -63,8 +61,13 @@ export default class QueueControl extends React.Component {
   }
 
   nextSample() {
-    if (this.props.todoList[0]) {
-      this.props.runSample(this.props.todoList[0]);
+    const idx = this.props.queue.indexOf(this.props.mounted);
+    this.props.setEnabledSample([this.props.queue[idx]], false);
+
+    if (this.props.queue[idx + 1]) {
+      this.props.runSample(this.props.queue[idx + 1]);
+    } else {
+      this.props.sendUnmountSample(this.props.sampleList[this.props.queue[idx]]);
     }
   }
 
@@ -107,13 +110,28 @@ export default class QueueControl extends React.Component {
   }
 
   render() {
+    const idx = this.props.queue.indexOf(this.props.mounted);
+    let nextSample = [];
+
+    if (this.props.queue[idx + 1]) {
+      const sampleData = this.props.sampleList[this.props.queue[idx + 1]];
+      const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+      const proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} - ` : '';
+
+      nextSample = [{ text: `Next Sample (${proteinAcronym}${sampleName})`,
+                      class: 'btn-default',
+                      action: this.nextSample,
+                      key: 2 }];
+    }
+
+    this.sampleState.options[QUEUE_STOPPED] = nextSample;
+
     const sampleId = this.props.mounted;
     const queueOptions = this.state.options[this.props.queueStatus];
-
     let sampleQueueOptions = [];
 
     if (sampleId) {
-      if (this.props.todoList.length === 0 && this.props.queueStatus === QUEUE_STOPPED) {
+      if (this.props.queue.length === (idx + 1) && this.props.queueStatus === QUEUE_STOPPED) {
         sampleQueueOptions = this.sampleState.options.LastSample;
       } else {
         sampleQueueOptions = this.sampleState.options[this.props.queueStatus];

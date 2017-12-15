@@ -81,7 +81,6 @@ class Characterisation extends React.Component {
           <Modal.Title>Characterisation</Modal.Title>
         </Modal.Header>
           <Modal.Body>
-            <FieldsHeader title="Data location" />
             <Form horizontal>
               <StaticField label="Path" data={this.props.path} />
               <StaticField label="Filename" data={this.props.filename} />
@@ -91,8 +90,8 @@ class Characterisation extends React.Component {
                 </Col>
               </Row>
               <Row>
-                <Col xs={8}>
-                  <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
+                <Col xs={12}>
+                  <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
                 </Col>
                 {this.props.taskData.sampleID ?
                   (<Col xs={4}>
@@ -157,22 +156,23 @@ class Characterisation extends React.Component {
                   />
                   <CheckboxField propName="opt_sad" label="Optimised SAD" />
                 </FieldsRow>
-                <FieldsRow>
-                  <SelectField
-                    propName="strategy_complexity"
-                    label="Strategy complexity"
-                    list={['SINGLE', 'FEW', 'MANY']}
-                  />
-                </FieldsRow>
+                <SelectField
+                  col1="4" col2="3"
+                  propName="strategy_complexity"
+                  label="Strategy complexity"
+                  list={['SINGLE', 'FEW', 'MANY']}
+                />
               </Form>
             </CollapsableRows>
 
             <FieldsHeader title="Crystal" />
             <CollapsableRows>
               <Form horizontal>
-                <FieldsRow>
-                  <SelectField propName="space_group" label="Space group" list={SPACE_GROUPS} />
-                </FieldsRow>
+                <SelectField col1="3" col2="3"
+                  propName="space_group"
+                  label="Space group"
+                  list={SPACE_GROUPS}
+                />
                 <FieldsRow>
                   <InputField propName="min_crystal_vdim" label="Min" />
                   <InputField propName="max_crystal_vdim" label="Max" />

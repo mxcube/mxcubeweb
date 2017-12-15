@@ -78,18 +78,22 @@ export const CheckboxField = ({ propName, label, defaultChecked }) => (
    />
 );
 
-export const SelectField = ({ propName, label, list }) => (
+export const SelectField = ({ propName, label, list, col1, col2 }) => (
    <Field name={propName}
      component={ (prop) =>
        <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
-         <Col xs={prop.col1 || 8} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
+         <Col xs={col1 || 8} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
            {label}
          </Col>
-         <Col xs={prop.col2 || 4}>
+         <Col xs={col2 || 4}>
            <FormControl componentClass="select" value={prop.input.value}
              onChange={prop.input.onChange} {...prop}
            >
-             {list.map((val, i) => <option key={i} value={val}>{val}</option>)}
+             {list.map((val, i) => {
+               const lbl = Array.isArray(val) ? val[0] : val;
+               const v = Array.isArray(val) ? val[1] : val;
+               return (<option key={i} value={v}>{lbl}</option>);
+             })}
            </FormControl>
          </Col>
        </FormGroup>

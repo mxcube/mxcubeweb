@@ -26,8 +26,14 @@ export const CLICK_CENTRING = 0;
 
 
 export function isCollected(task) {
-  return task.state & TASK_UNCOLLECTED;
+  return (task.state & TASK_COLLECTED) === TASK_COLLECTED;
 }
+
+
+export function isUnCollected(task) {
+  return task.state === TASK_UNCOLLECTED;
+}
+
 
 export const SPACE_GROUPS =
     ['', 'P1', 'P2', 'P21', 'C2', 'P222', 'P2221', 'P21212',
