@@ -1619,16 +1619,6 @@ def execute_entry_with_id(sid, tindex=None):
 
     if tindex in ['undefined', 'None', 'null', None]:
         node_id = current_queue[sid]["queueID"]
-        enabled_entries = []
-
-        for sampleID in current_queue["sample_order"]:
-            if current_queue[sampleID].get("checked", False):
-                enabled_entries.append(sampleID)
-
-        enabled_entries.pop(enabled_entries.index(sid))
-        mxcube.TEMP_DISABLED = enabled_entries
-        enable_sample_entries(enabled_entries, False)
-        enable_sample_entries([sid], True)
 
         # The queue does not run the mount defined by the sample entry if it has no
         # tasks, so in order function as expected; just mount the sample
@@ -1637,6 +1627,17 @@ def execute_entry_with_id(sid, tindex=None):
             scutils.mount_sample_clean_up(current_queue[sid])
             mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
         else:
+            enabled_entries = []
+
+            for sampleID in current_queue["sample_order"]:
+                if current_queue[sampleID].get("checked", False):
+                    enabled_entries.append(sampleID)
+
+            enabled_entries.pop(enabled_entries.index(sid))
+            mxcube.TEMP_DISABLED = enabled_entries
+            enable_sample_entries(enabled_entries, False)
+            enable_sample_entries([sid], True)
+
             mxcube.queue.queue_hwobj.execute()
     else:
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
