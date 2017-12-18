@@ -2,6 +2,9 @@
   <ws_root>
     https://your.lims.org
   </ws_root>
+  <base_result_url>
+    https://your.limsresults.org
+  </base_result_url>
   <ws_username></ws_username>
   <ws_password></ws_password>
   <loginType>proposal</loginType>

@@ -268,6 +268,12 @@ def get_default_subdir(sample_data):
 
     return subdir
 
+def get_dc_link(col_id):
+    link = mxcube.rest_lims.dc_link(col_id)
+    if not link:
+        link = mxcube.db_connection.dc_link(col_id)
+
+    return link
 
 def convert_to_dict(ispyb_object):
     d = {}
