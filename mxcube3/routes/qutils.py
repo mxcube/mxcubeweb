@@ -309,7 +309,7 @@ def _handle_dc(sample_node, node, include_lims_data=True):
         limsres = mxcube.rest_lims.get_dc(lims_id)
 
     # Always add link to data, (no request made)
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -348,7 +348,7 @@ def _handle_wf(sample_node, node):
     # Always add link to data, (no request made)
     limsres = {}
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
     res = {"label": parameters['label'],
            "type": "Workflow",
@@ -446,7 +446,7 @@ def _handle_char(sample_node, node):
     # Always add link to data, (no request made)
     limsres = {}
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
     originID, task = _handle_diffraction_plan(node, sample_node)
 

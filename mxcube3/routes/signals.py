@@ -9,6 +9,7 @@ from mxcube3 import app as mxcube
 from mxcube3.routes import Utils
 from mxcube3.routes import qutils
 from mxcube3.routes import scutils
+from mxcube3.routes import limsutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
 from sample_changer.Container import Pin
@@ -189,7 +190,7 @@ def get_task_state(entry):
         limsres = {}
 
     try:
-        limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+        limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
     except Exception:
         limsres["limsTaskLink"] = "#"
         msg = "Could not get lims link for collection with id: %s" % lims_id
