@@ -215,6 +215,7 @@ def get_initial_state():
     else:
         global_state = {}
         cmdstate = "SC maintenance controller not defined"
+        cmds = []
         msg = ''
 
     contents = get_sc_contents()
@@ -233,8 +234,8 @@ def get_initial_state():
     initial_state = {'state': state,
                      'loaded_sample': loaded_sample,
                      'contents': contents,
-                     'global_state': global_state,
-                     'cmds': {'cmds': cmdstate},
+                     'global_state': {'global_state': global_state, 'commands_state': cmdstate},
+                     'cmds': {'cmds': cmds},
                      'msg' : msg
                     }
     return jsonify(initial_state)

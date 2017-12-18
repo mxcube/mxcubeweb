@@ -9,7 +9,8 @@
   <object href="/udiff_omega" role="omega_axis"/>
   <object href="/udiff_kappa" role="kappa_axis"/>
   <object href="/udiff_kappaphi" role="kappa_phi_axis"/>
-  <object href="/sc-mockup" role="sample_changer"/>    
+  <object href="/sc-mockup" role="sample_changer"/>   
+  <object href="/sc_maint_mockup" role="sample_changer_maintenance"/>   
   <!--object href="/plate-manipulator" role="plate_manipulator"/-->
   <object href="/resolution-mockup" role="resolution"/>
   <object href="/energy-mockup" role="energy"/>
