@@ -309,7 +309,15 @@ def _handle_dc(sample_node, node, include_lims_data=True):
         limsres = mxcube.rest_lims.get_dc(lims_id)
 
     # Always add link to data, (no request made)
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    try:
+        if mxcube.db_connection.use_exi:
+            limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+        else:
+            limsres["limsTaskLink"] = mxcube.db_connection.dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
 
     res = {"label": "Data Collection",
            "type": "DataCollection",
@@ -348,7 +356,15 @@ def _handle_wf(sample_node, node):
     # Always add link to data, (no request made)
     limsres = {}
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    try:
+        if mxcube.db_connection.use_exi:
+            limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+        else:
+            limsres["limsTaskLink"] = mxcube.db_connection.dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
 
     res = {"label": parameters['label'],
            "type": "Workflow",
@@ -446,7 +462,15 @@ def _handle_char(sample_node, node):
     # Always add link to data, (no request made)
     limsres = {}
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
-    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+    try:
+	if mxcube.db_connection.use_exi:
+	    limsres["limsTaskLink"] = mxcube.rest_lims.dc_link(lims_id)
+	else:
+	    limsres["limsTaskLink"] = mxcube.db_connection.dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
 
     originID, task = _handle_diffraction_plan(node, sample_node)
 
@@ -1311,7 +1335,6 @@ def add_data_collection(node_id, task):
     set_dc_params(dc_model, dc_entry, task, sample_model)
 
     pt = dc_model.acquisitions[0].path_template
-
     if mxcube.queue.check_for_path_collisions(pt):
         msg = "[QUEUE] data collection could not be added to sample: "
         msg += "path collision"
@@ -1642,8 +1665,8 @@ def execute_entry_with_id(sid, tindex=None):
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
         node, entry = get_entry(node_id)
-        # in order to fill lims data, we execute first the parent (group_id missing)
-        parent_id = node.get_parent()._node_id
+	# in order to fill lims data, we execute first the parent (group_id missing)
+	parent_id = node.get_parent()._node_id
 
         node, entry = get_entry(parent_id)
 
