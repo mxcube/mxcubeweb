@@ -186,16 +186,16 @@ def request_control():
     """
     data = request.get_json()
 
+    remote_addr = remote_access.remote_addr()
+
     # Is someone already asking for control
     for observer in remote_access.OBSERVERS.values():
-        if observer["requestsControl"]:
+        if observer["requestsControl"] and observer["host"] != remote_addr:
             msg = "Another user is already asking for control"
             return make_response(msg, 409)
 
-    remote_addr = remote_access.remote_addr()
-
     remote_access.OBSERVERS[remote_addr]["name"] = data["name"]
-    remote_access.OBSERVERS[remote_addr]["requestsControl"] = True
+    remote_access.OBSERVERS[remote_addr]["requestsControl"] = data["control"]
     remote_access.OBSERVERS[remote_addr]["message"] = data["message"]
 
     data = remote_access.OBSERVERS.values()

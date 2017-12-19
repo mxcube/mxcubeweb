@@ -35,7 +35,10 @@ class Observer extends React.Component {
   }
 
   cancelControlRequest() {
-    this.props.requestControl(false);
+    const message = this.message.value;
+    const name = this.name.value;
+
+    this.props.requestControl(false, message, name, this.props.login.loginInfo);
   }
 
   render() {
@@ -43,7 +46,7 @@ class Observer extends React.Component {
           <FormGroup>
             <ControlLabel>Name</ControlLabel>
             <FormControl
-              ref={(ref) => {this.name = ref; }}
+              inputRef={(ref) => {this.name = ref; }}
               type="text"
               defaultValue={this.getName()}
             />
@@ -51,7 +54,7 @@ class Observer extends React.Component {
           <FormGroup>
             <ControlLabel>Message</ControlLabel>
             <FormControl
-              ref={(ref) => {this.message = ref;}}
+              inputRef={(ref) => {this.message = ref;}}
               componentClass="textarea"
               defaultValue="Please give me control"
               rows="3"
