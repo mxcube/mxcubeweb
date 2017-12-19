@@ -540,7 +540,7 @@ class SampleGridViewContainer extends React.Component {
           />
           {this.props.loading ?
             <div className="center-in-box" style={{ zIndex: 1200 }} >
-                <img src={loader} className="img-responsive" alt="" width="430" />
+                <img src={loader} className="img-responsive" alt="" />
               </div>
             : null
           }

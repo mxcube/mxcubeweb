@@ -34,7 +34,7 @@ class Main extends React.Component {
           (<div
             onMouseDown={this.handleClick}
             style={{
-              backgroundColor: 'rgba(10,10,10,0.1)',
+              backgroundImage: 'url(\'../img/diagonal-noise.png\')',
               zIndex: 10000,
               position: 'fixed',
               padding: 0,

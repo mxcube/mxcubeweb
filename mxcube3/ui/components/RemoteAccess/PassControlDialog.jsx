@@ -58,6 +58,7 @@ export class PassControlDialog extends React.Component {
         show={this.show()}
         backdrop="static"
         onHide={this.onHide}
+        style={{ zIndex: 10001 }}
       >
         <Modal.Header>
           <Modal.Title>

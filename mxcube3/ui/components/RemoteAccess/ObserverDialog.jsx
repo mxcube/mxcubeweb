@@ -50,6 +50,7 @@ export class ObserverDialog extends React.Component {
         backdrop="static"
         show={this.show()}
         onHide={this.onHide}
+        style={{ zIndex: 10001 }}
       >
         <Modal.Header>
           <Modal.Title>
