@@ -155,7 +155,7 @@ def mount_sample_clean_up(sample):
                 mxcube.sample_changer.load(sample['sampleID'], wait=False)
             elif mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
               mxcube.sample_changer.load(sample['sampleID'], wait=False)
-              mxcube.shapes.clear_all()
+        mxcube.shapes.clear_all()
 
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
