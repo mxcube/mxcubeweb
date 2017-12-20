@@ -16,11 +16,13 @@ export default class MXNavbar extends React.Component {
   }
 
   render() {
-    const raStyle = (this.props.remoteAccessMaster ? { color: 'white' } : {});
+    const raStyle = (this.props.remoteAccess.master ? { color: 'white' } : {});
     const proposal = this.props.userInfo.proposalList ?
         this.props.userInfo.proposalList.find(this.findProposal) : '';
     const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
-        `Proposal: ${proposal.Proposal.number}` : '');
+                      `Proposal: ${proposal.Proposal.number}` : '');
+
+    const numObservers = this.props.remoteAccess.observers.length;
 
     document.title = `MxCuBE-3 ${propInfo}`;
 
@@ -48,7 +50,9 @@ export default class MXNavbar extends React.Component {
         <Nav pullRight>
           <LinkContainer to="/remoteaccess">
             <NavItem eventKey={6}>
-              <span style={ raStyle } className="fa fa-lg fa-universal-access" />
+              <span style={ raStyle } className="fa fa-lg fa-universal-access">
+                {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
+              </span>
             </NavItem>
           </LinkContainer>
           <NavItem eventKey={7} onClick={this.props.signOut}>

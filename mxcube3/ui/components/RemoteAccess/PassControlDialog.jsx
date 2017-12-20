@@ -58,6 +58,7 @@ export class PassControlDialog extends React.Component {
         show={this.show()}
         backdrop="static"
         onHide={this.onHide}
+        style={{ zIndex: 10001 }}
       >
         <Modal.Header>
           <Modal.Title>
@@ -65,20 +66,21 @@ export class PassControlDialog extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          User {observer.name} is asking for control, message:
+          User "{observer.name}" is asking for control, message:
           <div style={ { marginLeft: '2em', marginTop: '1em', marginBottom: '1em' } }>
             "{observer.message}"
           </div>
         </Modal.Body>
         <Modal.Footer>
           <FormControl
-            ref={(ref) => { this.message = ref; }}
+            inputRef={(ref) => { this.message = ref; }}
             defaultValue="Here you go !"
             type="textarea"
             placeholder="Message"
             rows="3"
           />
-          <Button onClick={this.accept}> Give control to {observer.name} </Button>
+          <br />
+          <Button onClick={this.accept}> Give control to "{observer.name}" </Button>
           <Button onClick={this.reject}> Deny control </Button>
         </Modal.Footer>
       </Modal>);
