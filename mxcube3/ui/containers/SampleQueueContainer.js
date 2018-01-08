@@ -14,6 +14,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
+import * as BeamlineActions from '../actions/beamline';
 
 function mapStateToProps(state) {
   return {
@@ -43,7 +44,8 @@ function mapDispatchToProps(dispatch) {
     queueActions: bindActionCreators(QueueActions, dispatch),
     queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch)
+    showForm: bindActionCreators(showTaskForm, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
   };
 }
 
@@ -102,6 +104,10 @@ export default class SampleQueueContainer extends React.Component {
       selectItem,
       showList
     } = this.props.queueGUIActions;
+    const {
+      sendPrepareForNewSample
+    } = this.props.beamlineActions;
+
 
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
@@ -211,6 +217,7 @@ export default class SampleQueueContainer extends React.Component {
               showForm={showForm}
               queueStatus={queueStatus}
               showList={showList}
+              sendPrepareForNewSample={sendPrepareForNewSample}
             />
             <UserMessage
               messages={this.props.userMessages}
