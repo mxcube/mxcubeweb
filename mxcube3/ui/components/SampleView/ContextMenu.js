@@ -308,7 +308,10 @@ export default class ContextMenu extends React.Component {
   }
 
   hideContextMenu() {
-    document.getElementById('contextMenu').style.display = 'none';
+    const ctxMenu = document.getElementById('contextMenu');
+    if (ctxMenu) {
+      ctxMenu.style.display = 'none';
+    }
   }
 
   listOptions(type) {

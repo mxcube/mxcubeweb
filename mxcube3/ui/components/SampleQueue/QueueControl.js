@@ -110,18 +110,26 @@ export default class QueueControl extends React.Component {
   }
 
   render() {
-    const idx = this.props.queue.indexOf(this.props.mounted);
     let nextSample = [];
+    let idx = -1;
+    if (this.props.queue) {
+      idx = this.props.queue.indexOf(this.props.mounted);
 
-    if (this.props.queue[idx + 1]) {
-      const sampleData = this.props.sampleList[this.props.queue[idx + 1]];
-      const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
-      const proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} - ` : '';
+      if (this.props.queue[idx + 1]) {
+        const sampleData = this.props.sampleList[this.props.queue[idx + 1]];
+        const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+        const proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} - ` : '';
 
-      nextSample = [{ text: `Next Sample (${proteinAcronym}${sampleName})`,
+        nextSample = [{ text: `Next Sample (${proteinAcronym}${sampleName})`,
+                        class: 'btn-default',
+                        action: this.nextSample,
+                        key: 2 }];
+      } else {
+        nextSample = [{ text: 'There is not next sample',
                       class: 'btn-default',
-                      action: this.nextSample,
+                      action: '',
                       key: 2 }];
+      }
     }
 
     this.sampleState.options[QUEUE_STOPPED] = nextSample;
@@ -129,8 +137,7 @@ export default class QueueControl extends React.Component {
     const sampleId = this.props.mounted;
     const queueOptions = this.state.options[this.props.queueStatus];
     let sampleQueueOptions = [];
-
-    if (sampleId) {
+    if (sampleId && this.props.queue) {
       if (this.props.queue.length === (idx + 1) && this.props.queueStatus === QUEUE_STOPPED) {
         sampleQueueOptions = this.sampleState.options.LastSample;
       } else {
