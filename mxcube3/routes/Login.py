@@ -166,15 +166,18 @@ def loginInfo():
 
     if res["loginType"].lower() != 'user' and login_info:
         # autoselect proposal
+
         limsutils.select_proposal(LOGGED_IN_USER)
         res["selectedProposal"] = LOGGED_IN_USER
         logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
 
 
     # Get all the files in the root data dir for this user
-    if not mxcube.INITIAL_FILE_LIST:
+    root_path = mxcube.session.get_base_image_directory()
+
+    if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
         ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
-        root_path = mxcube.session.get_base_image_directory()
+
         mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
 
     return jsonify(res)
