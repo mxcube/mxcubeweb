@@ -214,12 +214,8 @@ def get_proposal_info(proposal):
 
 
 def select_proposal(proposal):
-    if not proposal.lower().startswith('mx'):
-	aux_prop = "{}{}".format('mx', proposal)
-    else:
-	aux_prop = proposal
-    
-    proposal_info = get_proposal_info(aux_prop)
+    proposal_info = get_proposal_info(proposal)
+
     logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal)
     logging.getLogger('HWR').info("[LIMS] Proposal info: %s" % proposal_info)
     if mxcube.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
@@ -230,7 +226,7 @@ def select_proposal(proposal):
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
         mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
-        mxcube.session.session_id = proposal_info.get('Session')[0].get('session').get('sessionId')
+        mxcube.session.session_id = proposal_info.get('Session')[0].get('sessionId')
 
         if hasattr(mxcube.session, 'prepare_directories'):
             try:
