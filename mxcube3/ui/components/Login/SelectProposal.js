@@ -38,7 +38,7 @@ class SelectProposal extends React.Component {
     const proposals = this.props.data.proposalList.map((prop) => ({
       Number: prop.Proposal.code + prop.Proposal.number,
       Person: prop.Person.familyName,
-      Session: prop.Session[0].session.startDate.split(' ')[0]
+      Session: prop.Session[0].startDate.split(' ')[0]
     }));
 
     return (

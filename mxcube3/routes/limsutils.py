@@ -166,7 +166,7 @@ def lims_login(loginID, password):
         for prop in session['proposal_list']:
             # if len(prop['Session']) == 0:
             todays_session = mxcube.db_connection.get_todays_session(prop)
-            prop['Session'] = [todays_session]
+            prop['Session'] = [todays_session['session']]
             # elif not prop['Session'][0]['scheduled']:
             #     todays_session = mxcube.db_connection.get_todays_session(prop)
             #     prop['Session'] = [todays_session]
