@@ -79,7 +79,7 @@ def handle_auto_mount_next(entry):
             msg = "Not mounting next sample automatically (Auto mount next)"
             logging.getLogger('user_level_log').info(msg)
 
-def minidiff_phase_changed(*args):
+def diffractometer_phase_changed(*args):
     data = {'msg': 'Diffractometer phase changed',
            'phase': args
           }
