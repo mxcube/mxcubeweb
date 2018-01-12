@@ -11,7 +11,7 @@ def init_signals():
     callback method.
     """
     diffractometer = mxcube.diffractometer
-    diffractometer.connect("minidiffPhaseChanged", signals.diffractometer_phase_changed)
+    diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/phase", methods=['GET'])
