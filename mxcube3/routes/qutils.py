@@ -232,8 +232,7 @@ def get_node_state(node_id):
 
     executed = node.is_executed()
     enabled = node.is_enabled()
-    failed = entry._execution_failed
-
+    failed = entry.status == FAILED
     curr_entry = mxcube.queue.queue_hwobj.get_current_entry()
     running = mxcube.queue.queue_hwobj.is_executing and \
               (curr_entry == entry or curr_entry == entry._parent_container)

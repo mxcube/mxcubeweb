@@ -1,9 +1,17 @@
 from flask import Response, jsonify, request, session
 from mxcube3 import app as mxcube
-from mxcube3.routes import Utils
+from mxcube3.routes import Utils, signals
 
 import json
 import logging
+
+def init_signals():
+    """
+    Connect all the relevant hwobj signals with the corresponding
+    callback method.
+    """
+    diffractometer = mxcube.diffractometer
+    diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/phase", methods=['GET'])

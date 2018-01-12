@@ -8,7 +8,8 @@ import {
   startClickCentring,
   updateShapes,
   setPixelsPerMm,
-  videoMessageOverlay
+  videoMessageOverlay,
+  setCurrentPhase
 } from './actions/sampleview';
 import { setBeamlineAttrAction,
          setMachInfo } from './actions/beamline';
@@ -275,6 +276,10 @@ class ServerIO {
 
     this.hwrSocket.on('sc_contents_update', () => {
       this.dispatch(updateSCContents());
+    });
+
+    this.hwrSocket.on('diff_phase_changed', (data) => {
+      this.dispatch(setCurrentPhase(data.phase));
     });
 
     this.hwrSocket.on('new_plot', (plotInfo) => {
