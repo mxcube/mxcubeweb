@@ -111,10 +111,10 @@ export default class QueueControl extends React.Component {
 
   render() {
     let nextSample = [];
-    let idx = -1;
+    let queueOptions = [];
+    let sampleQueueOptions = [];
     if (this.props.queue) {
-      idx = this.props.queue.indexOf(this.props.mounted);
-
+      const idx = this.props.queue.indexOf(this.props.mounted);
       if (this.props.queue[idx + 1]) {
         const sampleData = this.props.sampleList[this.props.queue[idx + 1]];
         const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
@@ -124,27 +124,20 @@ export default class QueueControl extends React.Component {
                         class: 'btn-default',
                         action: this.nextSample,
                         key: 2 }];
-      } else {
-        nextSample = [{ text: 'There is not next sample',
-                      class: 'btn-default',
-                      action: '',
-                      key: 2 }];
+      }
+
+      this.sampleState.options[QUEUE_STOPPED] = nextSample;
+
+      const sampleId = this.props.mounted;
+      queueOptions = this.state.options[this.props.queueStatus];
+      if (sampleId) {
+        if (this.props.queue.length === (idx + 1) && this.props.queueStatus === QUEUE_STOPPED) {
+          sampleQueueOptions = this.sampleState.options.LastSample;
+        } else {
+          sampleQueueOptions = this.sampleState.options[this.props.queueStatus];
+        }
       }
     }
-
-    this.sampleState.options[QUEUE_STOPPED] = nextSample;
-
-    const sampleId = this.props.mounted;
-    const queueOptions = this.state.options[this.props.queueStatus];
-    let sampleQueueOptions = [];
-    if (sampleId && this.props.queue) {
-      if (this.props.queue.length === (idx + 1) && this.props.queueStatus === QUEUE_STOPPED) {
-        sampleQueueOptions = this.sampleState.options.LastSample;
-      } else {
-        sampleQueueOptions = this.sampleState.options[this.props.queueStatus];
-      }
-    }
-
     return (
       <div className="m-tree">
         <div className="list-head">
