@@ -137,11 +137,11 @@ export class TaskItem extends React.Component {
           <div className="row" style={ { paddingTop: '0.5em' } } >
             <span className="col-sm-6">
               <b>First image: </b>
-              <img ref="fimage" alt="First" src={fImageUrl} />
+              <img ref="fimage" alt="First" src={fImageUrl} width="90%" />
             </span>
             <span className="col-sm-6">
               <b>Last image: </b>
-              <img ref="limage" alt="Last" src={lImageUrl} />
+              <img ref="limage" alt="Last" src={lImageUrl} width="90%" />
             </span>
           </div>
         </div>
