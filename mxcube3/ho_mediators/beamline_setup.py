@@ -765,7 +765,7 @@ class MachineInfoHOMediator(HOMediatorBase):
 
     @Utils.RateLimited(0.1)
     def _state_change(self, *args, **kwargs):
-        self.value_change(*args, **kwargs)
+        self.value_change(self.get(), **kwargs)
 
     def get(self):
         return {"current": self.get_current(),
