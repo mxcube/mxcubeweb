@@ -39,7 +39,7 @@ export default class TaskItem extends Component {
                      borderBottom: '1px solid #DDD',
                      padding: '0.5em' } }
       >
-        <a href={link} target="_blank">Results</a>
+        <a href={link} target="_blank">View Results in ISPyB</a>
       </div>
     );
   }
