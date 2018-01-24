@@ -159,7 +159,7 @@ def queue_get():
               409: On error, could not retrieve queue
     """
     logging.getLogger('HWR').info('[QUEUE] queue_get called')
-    resp = qutils.queue_to_json_response()
+    resp = qutils.queue_to_json_response(include_lims_data = True)
     resp.status_code = 200
     return resp
 

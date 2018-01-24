@@ -133,7 +133,7 @@ def load_queue_from_dict(queue_dict):
         queue_add_item(item_list)
 
 
-def queue_to_dict(node=None):
+def queue_to_dict(node=None, include_lims_data=False):
     """
     Returns the dictionary representation of the queue
 
@@ -161,12 +161,13 @@ def queue_to_dict(node=None):
     if not node:
         node = mxcube.queue.get_model_root()
 
-    res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
+    res = reduce(lambda x, y: x.update(y) or x,
+                 queue_to_dict_rec(node, include_lims_data), {})
 
     return res
 
 
-def queue_to_json(node=None):
+def queue_to_json(node=None, include_lims_data=False):
     """
     Returns the json representation of the queue
 
@@ -194,11 +195,13 @@ def queue_to_json(node=None):
     if not node:
         node = mxcube.queue.get_model_root()
 
-    res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
+    res = reduce(lambda x, y: x.update(y) or x,
+                 queue_to_dict_rec(node, include_lims_data), {})
+
     return json.dumps(res, sort_keys=True, indent=4)
 
 
-def queue_to_json_response(node=None):
+def queue_to_json_response(node=None, include_lims_data=False):
     """
     Returns the http json response object with the json representation of the
     queue as data.
@@ -211,7 +214,9 @@ def queue_to_json_response(node=None):
     if not node:
         node = mxcube.queue.get_model_root()
 
-    res = reduce(lambda x, y: x.update(y) or x, queue_to_dict_rec(node), {})
+    res = reduce(lambda x, y: x.update(y) or x,
+                 queue_to_dict_rec(node, include_lims_data), {})
+
     return jsonify(res)
 
 
@@ -276,7 +281,7 @@ def get_queue_state():
     return res
 
 
-def _handle_dc(sample_node, node, include_lims_data=True):
+def _handle_dc(sample_node, node, include_lims_data=False):
     parameters = node.as_dict()
     parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
@@ -536,6 +541,8 @@ def _handle_sample(node):
               'location': location,
               'sampleName': node.get_name(),
               'proteinAcronym': node.crystals[0].protein_acronym,
+              'defaultPrefix': limsutils.get_default_prefix(node, False),
+              'defaultSubDir': limsutils.get_default_subdir(node),
               'type': 'Sample',
               'checked': enabled,
               'state': state,
@@ -544,7 +551,7 @@ def _handle_sample(node):
     return {node.loc_str: sample}
 
 
-def queue_to_dict_rec(node):
+def queue_to_dict_rec(node, include_lims_data=False):
     """
     Parses node recursively and builds a representation of the queue based on
     python dictionaries.
@@ -585,7 +592,7 @@ def queue_to_dict_rec(node):
             result.append(_handle_char(sample_node, node))
         elif isinstance(node, qmo.DataCollection):
             sample_node = node_index(node)['sample_node']
-            result.append(_handle_dc(sample_node, node))
+            result.append(_handle_dc(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.Workflow):
             sample_node = node.get_parent().get_parent()
             result.append(_handle_wf(sample_node, node))
@@ -1311,10 +1318,10 @@ def add_data_collection(node_id, task):
 
     pt = dc_model.acquisitions[0].path_template
 
-    if mxcube.queue.check_for_path_collisions(pt):
-        msg = "[QUEUE] data collection could not be added to sample: "
-        msg += "path collision"
-        raise Exception(msg)
+#    if mxcube.queue.check_for_path_collisions(pt):
+#        msg = "[QUEUE] data collection could not be added to sample: "
+#        msg += "path collision"
+#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
@@ -1346,10 +1353,10 @@ def add_workflow(node_id, task):
 
     pt = wf_model.path_template
 
-    if mxcube.queue.check_for_path_collisions(pt):
-        msg = "[QUEUE] data collection could not be added to sample: "
-        msg += "path collision"
-        raise Exception(msg)
+#    if mxcube.queue.check_for_path_collisions(pt):
+#        msg = "[QUEUE] data collection could not be added to sample: "
+#        msg += "path collision"
+#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
@@ -1422,10 +1429,10 @@ def add_xrf_scan(node_id, task):
 
     pt = xrf_model.path_template
 
-    if mxcube.queue.check_for_path_collisions(pt):
-        msg = "[QUEUE] data collection could not be added to sample: "
-        msg += "path collision"
-        raise Exception(msg)
+#    if mxcube.queue.check_for_path_collisions(pt):
+#        msg = "[QUEUE] data collection could not be added to sample: "
+#        msg += "path collision"
+#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
@@ -1457,10 +1464,10 @@ def add_energy_scan(node_id, task):
 
     pt = escan_model.path_template
 
-    if mxcube.queue.check_for_path_collisions(pt):
-        msg = "[QUEUE] data collection could not be added to sample: "
-        msg += "path collision"
-        raise Exception(msg)
+#    if mxcube.queue.check_for_path_collisions(pt):
+#        msg = "[QUEUE] data collection could not be added to sample: "
+#        msg += "path collision"
+#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)

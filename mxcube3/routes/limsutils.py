@@ -52,7 +52,7 @@ def sample_list_sync_sample(lims_sample):
 def synch_sample_list_with_queue(current_queue=None):
 
     if not current_queue:
-        current_queue = qutils.queue_to_dict()
+        current_queue = qutils.queue_to_dict(include_lims_data=True)
 
     sample_order = current_queue.get("sample_order", [])
 
@@ -242,20 +242,27 @@ def select_proposal(proposal):
 
 
 def get_default_prefix(sample_data, generic_name):
-    sample = qmo.Sample()
-    sample.code = sample_data.get("code", "")
-    sample.name = sample_data.get("sampleName", "")
-    sample.location = sample_data.get("location", "").split(':')
-    sample.lims_id = sample_data.get("limsID", -1)
-    sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
+    if isinstance(sample_data, dict):
+        sample = qmo.Sample()
+        sample.code = sample_data.get("code", "")
+        sample.name = sample_data.get("sampleName", "")
+        sample.location = sample_data.get("location", "").split(':')
+        sample.lims_id = sample_data.get("limsID", -1)
+        sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
+    else:
+        sample = sample_data
 
     return mxcube.session.get_default_prefix(sample, generic_name)
 
 def get_default_subdir(sample_data):
     subdir = ""
 
-    sample_name = sample_data.get("sampleName", "")
-    protein_acronym = sample_data.get("proteinAcronym", "")
+    if isinstance(sample_data, dict):
+        sample_name = sample_data.get("sampleName", "")
+        protein_acronym = sample_data.get("proteinAcronym", "")
+    else:
+        sample_name = sample_data.name
+        protein_acronym = sample_data.crystals[0].protein_acronym
 
     if protein_acronym:
         subdir = "%s/%s-%s/" %(protein_acronym, protein_acronym, sample_name)
