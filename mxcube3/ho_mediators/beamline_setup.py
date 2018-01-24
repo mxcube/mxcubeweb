@@ -101,68 +101,68 @@ class _BeamlineSetupMediator(object):
             energy = self.getObjectByRole("energy")
             attributes.update({"energy": energy.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get energy info")
+            logging.getLogger("HWR").error("Failed to get energy info")
 
         try:
             wavelength = self.getObjectByRole("wavelength")
             attributes.update({"wavelength": wavelength.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get energy info")
+            logging.getLogger("HWR").error("Failed to get energy info")
         try:
             transmission = self.getObjectByRole("transmission")
             attributes.update({"transmission": transmission.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get transmission info")
+            logging.getLogger("HWR").error("Failed to get transmission info")
 
         try:
             resolution = self.getObjectByRole("resolution")
             attributes.update({"resolution": resolution.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get resolution info")
+            logging.getLogger("HWR").error("Failed to get resolution info")
 
         try:
             fast_shutter = self.getObjectByRole("fast_shutter")
             attributes.update({"fast_shutter": fast_shutter.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get fast_shutter info")
+            logging.getLogger("HWR").error("Failed to get fast_shutter info")
 
         try:
             safety_shutter = self.getObjectByRole("safety_shutter")
             attributes.update({"safety_shutter": safety_shutter.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get safety_shutter info")
+            logging.getLogger("HWR").error("Failed to get safety_shutter info")
 
         try:
             beamstop = self.getObjectByRole("beamstop")
             attributes.update({"beamstop": beamstop.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get beamstop info")
+            logging.getLogger("HWR").error("Failed to get beamstop info")
 
         try:
             detdist = self.getObjectByRole("dtox")
             attributes.update({"detdist": detdist.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get detdist info")
+            logging.getLogger("HWR").error("Failed to get detdist info")
 
         try:
             machinfo = self.getObjectByRole("mach_info")
             attributes.update({"machinfo": machinfo.dict_repr()})
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get mach_info info")
+            logging.getLogger("HWR").error("Failed to get mach_info info")
 
         try:
             flux = self.getObjectByRole("flux")
             attributes.update({"flux": flux.dict_repr()})
 
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get photon flux")
+            logging.getLogger("HWR").error("Failed to get photon flux")
 
         try:
             cryo = self.getObjectByRole("cryo")
             attributes.update({"cryo": cryo.dict_repr()})
 
         except Exception:
-            logging.getLogger("HWR").exception("Failed to get cryo")
+            logging.getLogger("HWR").error("Failed to get cryo")
 
         return {"attributes": attributes}
 
@@ -540,7 +540,12 @@ class DuoStateHOMediator(HOMediatorBase):
 
     def msg(self):
         state = self._get_state()
-        msg = self.STATES.STATE_TO_MSG_STR.get(state, "---")
+        try:
+            msg = self.STATES.STATE_TO_MSG_STR.get(state, "---")
+        except:
+            msg = ''
+            logging.getLogger("HWR").error("Failed to get beamline attribute message")
+
         return msg
 
     def dict_repr(self):
