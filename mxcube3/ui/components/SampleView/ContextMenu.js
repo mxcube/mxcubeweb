@@ -58,7 +58,7 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Add Energy Scan',
           action: () => this.showModal('EnergyScan'),
-          key: 'energy_Scan'
+          key: 'energy_scan'
         },
         {
           text: 'Go To Point',
@@ -131,6 +131,13 @@ export default class ContextMenu extends React.Component {
         ...workflowTasks.line,
       ],
       LINE: [
+        {
+          text: 'Add Helical Scan',
+          action: () => this.showModal('Helical'),
+          key: 'helical'
+        },
+        ...workflowTasks.line,
+        workflowTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete Line', action: () => this.removeShape(), key: 4 }
       ],
       GridGroup: [
