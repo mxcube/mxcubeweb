@@ -30,8 +30,11 @@ const validate = (values, props) => {
   if (values.osc_start === '') {
     errors.osc_start = 'field empty';
   }
-  if (values.exp_time === '' || values.exp_time > props.acqParametersLimits.exposure_time ||
-      parseFloat(values.exp_time, 10) < 0) {
+
+  const exptimemin = props.acqParametersLimits.exposure_time[0];
+  const exptimemax = props.acqParametersLimits.exposure_time[1];
+  if (values.exp_time === '' || parseFloat(values.exp_time, 10) > exptimemax ||
+      parseFloat(values.exp_time, 10) < exptimemin) {
     errors.exp_time = 'Exposure time out of allowed limit';
   }
   if (!(currRes > resMin && currRes < resMax)) {
