@@ -65,7 +65,7 @@ def queue_stop():
         try:
             qe.stop()
         except Exception as ex:
-            print 'exception...', ex
+            print str(ex)
 
         logging.getLogger('user_level_log').info('Queue execution was aborted, ' + str(qe.get_data_model()))
 
@@ -462,7 +462,7 @@ def get_default_dc_params():
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -503,7 +503,7 @@ def get_default_char_acq_params():
             'skip_existing_images': False,
             'take_snapshots': True,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
             'strategy_complexity': 'SINGLE',
             'account_rad_damage': True,
             'opt_sad': False,
@@ -556,11 +556,12 @@ def get_default_mesh_params():
             'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
             'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
         },
         })    
     resp.status_code = 200
     return resp
+
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
@@ -719,7 +720,7 @@ def create_diff_plan(sid):
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
             'prefix': 'foo',
             'shape': 'P1'#-1
         },
