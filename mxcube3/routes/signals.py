@@ -147,6 +147,7 @@ def loaded_sample_changed(sample):
     # If sample is not Pin, Sample pin just return
     if not (isinstance(sample, Pin) or isinstance(sample, Sample)):
         return
+
     if sample is not None:
         address = sample.getAddress()
         barcode = sample.getID()
@@ -187,8 +188,12 @@ def sc_maintenance_update(state_list, cmd_state, message):
 def centring_started(method, *args):
     msg = {'method': method}
 
-    if method != CENTRING_METHOD.LOOP:
-        socketio.emit('sample_centring', msg, namespace='/hwr')
+    if method in ['Computer automatic']:
+        msg = {'method': CENTRING_METHOD.LOOP}
+    elif method in ['Manual 3-click' ]:
+        msg = {'method': CENTRING_METHOD.MANUAL}
+
+    socketio.emit('sample_centring', msg, namespace='/hwr')
 
 
 def get_task_state(entry):
