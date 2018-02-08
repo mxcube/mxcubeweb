@@ -87,11 +87,6 @@ class DataCollection extends React.Component {
            >
              Default Parameters
            </Button>
-           <Button bsSize="xsmall" bsStyle="default"
-             onClick={this.resetParameters}
-           >
-             Reset Form
-           </Button>
           </ButtonToolbar>
          <ButtonToolbar className="pull-right">
            <Button bsStyle="success"
@@ -221,20 +216,15 @@ class DataCollection extends React.Component {
                 <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
               <FieldsRow>
-                <SelectField
-                  propName="beam_size"
-                  label="Beam size"
-                  list={this.props.apertureList}
-                />
+                <CheckboxField propName="shutterless" label="Shutterless" />
+                <CheckboxField propName="inverse_beam" label="Inverse beam" />
+              </FieldsRow>
+              <FieldsRow>
                 <SelectField
                   propName="detector_mode"
                   label="Detector mode"
                   list={['0', 'C18', 'C2']}
                 />
-              </FieldsRow>
-              <FieldsRow>
-                <CheckboxField propName="shutterless" label="Shutterless" />
-                <CheckboxField propName="inverse_beam" label="Inverse beam" />
               </FieldsRow>
             </CollapsableRows>
           </Form>
