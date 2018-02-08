@@ -391,7 +391,7 @@ class WavelengthHOMediator(HOMediatorBase):
         self._precision = 4
 
     @Utils.RateLimited(6)
-    def _value_change(pos, wl):
+    def _value_change(self, pos, wl, *args, **kwargs):
         self.value_change(wl)
 
     def set(self, value):
@@ -757,14 +757,14 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 class MachineInfoHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(MachineInfoHOMediator, self).__init__(ho, name)
-        ho.connect("valueChanged", self._state_change)
+        ho.connect("valueChanged", self._value_change)
         self._precision = 1
 
     def set(self, value):
         pass
 
     @Utils.RateLimited(0.1)
-    def _state_change(self, *args, **kwargs):
+    def _value_change(self, *args, **kwargs):
         self.value_change(self.get(), **kwargs)
 
     def get(self):
@@ -817,11 +817,15 @@ class PhotonFluxHOMediator(HOMediatorBase):
         super(PhotonFluxHOMediator, self).__init__(ho, name)
 
         try:
-            ho.connect("valueChanged", self.state_change)
+            ho.connect("valueChanged", self._value_change)
         except:
             pass
 
         self._precision = 1
+
+    @Utils.RateLimited(6)
+    def _value_change(self, *args, **kwargs):
+        self.value_change(*args, **kwargs)
 
     def set(self, value):
         pass
@@ -865,22 +869,32 @@ class CryoHOMediator(HOMediatorBase):
         super(CryoHOMediator, self).__init__(ho, name)
 
         try:
-            ho.connect("valueChanged", self._state_change)
+            ho.connect("valueChanged", self._value_change)
+        except:
+            pass
+
+        try:
+            ho.connect("stateChanged", self._state_change)
         except:
             pass
 
         self._precision = 1
 
-    @Utils.RateLimited(0.1)
-    def _state_change(self, *args, **kwargs):
+    @Utils.RateLimited(1)
+    def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
+
+    @Utils.RateLimited(1)
+    def _state_change(self, *args, **kwargs):
+        self.state_change(*args, **kwargs)
+
 
     def set(self, value):
         pass
 
     def get(self):
         try:
-            value = self._ho.getValue()
+            value = self._ho.get_value()
         except Exception as ex:
             value = '0'
 
