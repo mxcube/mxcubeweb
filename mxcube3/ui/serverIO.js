@@ -41,6 +41,8 @@ import { setSCState,
 
 import { setEnergyScanResult } from './actions/taskResults';
 
+import { CLICK_CENTRING } from './constants';
+
 class ServerIO {
 
   constructor() {
@@ -198,10 +200,15 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('sample_centring', () => {
-      this.dispatch(startClickCentring());
-      const msg = '3-Click Centring: <br /> Select centered position or center';
-      this.dispatch(videoMessageOverlay(true, msg));
+    this.hwrSocket.on('sample_centring', (data) => {
+      if (data.method === CLICK_CENTRING) {
+        this.dispatch(startClickCentring());
+        const msg = '3-Click Centring: <br /> Select centered position or center';
+        this.dispatch(videoMessageOverlay(true, msg));
+      } else {
+        const msg = 'Auto loop centring: <br /> Save position or re-center';
+        this.dispatch(videoMessageOverlay(true, msg));
+      }
     });
 
     this.hwrSocket.on('disconnect', () => {
