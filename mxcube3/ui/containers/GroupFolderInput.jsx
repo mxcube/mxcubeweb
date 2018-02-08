@@ -33,7 +33,7 @@ class GroupFolderInput extends React.Component {
 
   render() {
     return (
-      <div>
+      <span>
         <ControlLabel>Group path:</ControlLabel>
         <Form inline onSubmit={e => { e.preventDefault(); }} >
           <FormGroup bsSize="small" validationState={this.state.validationState}>
@@ -51,7 +51,7 @@ class GroupFolderInput extends React.Component {
             Set
           </Button>
         </Form>
-      </div>
+      </span>
     );
   }
 }
