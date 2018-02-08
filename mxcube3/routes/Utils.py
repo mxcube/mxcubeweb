@@ -153,9 +153,11 @@ def get_centring_motors_info():
 
     return ret
 
-def _snapshot_received(snapshot_jpg):
+def _snapshot_received(data):
+    snapshot_jpg = data.get("data", "")
+
     global SNAPSHOT
-    SNAPSHOT = base64.b64decode(snapshot_jpg.split(",")[1])
+    SNAPSHOT = base64.b64decode(snapshot_jpg)
     SNAPSHOT_RECEIVED.set()
 
 def _do_take_snapshot(filename):
