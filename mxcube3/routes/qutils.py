@@ -397,8 +397,7 @@ def _handle_xrf(sample_node, node):
            "queueID": queueID,
            "sampleQueueID": sample_node._node_id,
            "checked": node.is_enabled(),
-           "state": state,
-           "result": model.result.mca_data
+           "state": state
            }
 
     return res
