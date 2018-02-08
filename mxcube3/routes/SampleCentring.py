@@ -365,6 +365,8 @@ def update_shapes():
             shape_data["pixels_per_mm"] = mxcube.diffractometer.get_pixels_per_mm()
             shape_data["beam_pos"] = (beam_info_dict.get("position")[0],
                                       beam_info_dict.get("position")[1])
+            shape_data["beam_width"] = beam_info_dict.get("size_x", 0)
+            shape_data["beam_height"] = beam_info_dict.get("size_y", 0)
 
             # Shape does not have any refs, create a new Centered position
             if not refs:
