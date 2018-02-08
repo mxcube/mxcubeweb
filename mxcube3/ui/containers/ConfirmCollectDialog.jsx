@@ -54,7 +54,8 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   onOkClick() {
-    this.props.sendRunQueue(this.props.queue.autoMountNext, this.props.queue.current.sampleID);
+    const sample = this.props.queue.current.sampleID || this.props.queue.queue[0];
+    this.props.sendRunQueue(this.props.queue.autoMountNext, sample);
     this.props.hide();
   }
 
