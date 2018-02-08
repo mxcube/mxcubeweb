@@ -26,7 +26,7 @@ export default class ContextMenu extends React.Component {
                                    key: `wf-${wf.wfname}` });
       } else if (wf.requires.includes('line')) {
         workflowTasks.line.push({ text: wf.wfname,
-                                  action: () => this.showModal('Workflow', wf),
+                                  action: () => this.createLine('Workflow', wf),
                                   key: `wf-${wf.wfname}` });
       } else if (wf.requires.includes('grid')) {
         workflowTasks.grid.push({ text: wf.wfname,
@@ -125,14 +125,12 @@ export default class ContextMenu extends React.Component {
         },
         {
           text: 'Add Helical Scan',
-          action: () => this.createLine(),
+          action: () => this.createLine('Helical'),
           key: 'helical'
         },
-        ...workflowTasks.point,
+        ...workflowTasks.line,
       ],
       LINE: [
-        ...workflowTasks.line,
-        workflowTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete Line', action: () => this.removeShape(), key: 4 }
       ],
       GridGroup: [
@@ -246,8 +244,9 @@ export default class ContextMenu extends React.Component {
   savePoint() {
     if (this.props.clickCentring) {
       this.props.sampleActions.stopClickCentring();
-      this.props.sampleActions.sendAcceptCentring();
     }
+
+    this.props.sampleActions.sendAcceptCentring();
     this.props.sampleActions.showContextMenu(false);
   }
 
@@ -299,12 +298,12 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.toggleDrawGrid();
   }
 
-  createLine() {
+  createLine(modal, wf = {}) {
     const { shape } = this.props;
 
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id },
-      (s) => {this.showModal('Helical', {}, s);});
+      (s) => {this.showModal(modal, wf, s);});
   }
 
   hideContextMenu() {
