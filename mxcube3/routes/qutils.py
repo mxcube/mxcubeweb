@@ -886,6 +886,7 @@ def add_sample(sample_id, item):
     sample_model.loc_str = sample_id
     sample_model.free_pin_mode = item['location'] == 'Manual'
     sample_model.set_name(item['sampleName'])
+    sample_model.name = item['sampleName']
 
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
@@ -897,7 +898,7 @@ def add_sample(sample_id, item):
         item["defaultSubDir"] = limsutils.get_default_subdir(item)
         sample = limsutils.sample_list_update_sample(sample_id, item)
 
-    sample_entry = qe.SampleQueueEntry(Mock(), sample_model)
+    sample_entry = qe.SampleQueueEntry(view=Mock(), data_model=sample_model)
     enable_entry(sample_entry, True)
 
     mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
@@ -1235,7 +1236,7 @@ def _create_xrf(task):
     return xrf_model, xrf_entry
 
 
-def _create_energy_scan(task):
+def _create_energy_scan(task, sample_model):
     """
     Creates a energy scan model and its corresponding queue entry from
     a dict with collection parameters.
@@ -1244,7 +1245,7 @@ def _create_energy_scan(task):
     :returns: The tuple (model, entry)
     :rtype: Tuple
     """
-    escan_model = qmo.EnergyScan()
+    escan_model = qmo.EnergyScan(sample=sample_model)
     escan_model.set_origin(ORIGIN_MX3)
     escan_entry = qe.EnergyScanQueueEntry(Mock(), escan_model)
 
@@ -1458,7 +1459,7 @@ def add_energy_scan(node_id, task):
     :rtype: int
     """
     sample_model, sample_entry = get_entry(node_id)
-    escan_model, escan_entry = _create_energy_scan(task)
+    escan_model, escan_entry = _create_energy_scan(task, sample_model)
     set_energy_scan_params(escan_model, escan_entry, task, sample_model)
 
     pt = escan_model.path_template
