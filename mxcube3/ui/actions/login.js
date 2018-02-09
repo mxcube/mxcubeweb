@@ -30,6 +30,19 @@ export function selectProposal(prop) {
   };
 }
 
+export function sendMail(sender, content) {
+  fetch('mxcube/api/v0.1/send_feedback', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({ sender, content })
+  });
+}
+
+
 export function postProposal(number) {
   return fetch('mxcube/api/v0.1/lims/proposal', {
     method: 'POST',

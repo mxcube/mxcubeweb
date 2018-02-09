@@ -48,15 +48,20 @@ export default class MXNavbar extends React.Component {
           </LinkContainer>
         </Nav>
         <Nav pullRight>
+          <LinkContainer to="/help">
+            <NavItem eventKey={5}>
+              <span className="fa fa-lg fa-question-circle" /> Help
+            </NavItem>
+          </LinkContainer>
           <LinkContainer to="/remoteaccess">
             <NavItem eventKey={6}>
               <span style={ raStyle } className="fa fa-lg fa-universal-access">
                 {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
-              </span>
+              </span> RA
             </NavItem>
           </LinkContainer>
           <NavItem eventKey={7} onClick={this.props.signOut}>
-            <span className="fa fa-lg fa-sign-out" />
+            <span className="fa fa-lg fa-sign-out" /> Sign out
           </NavItem>
         </Nav>
       </Navbar>
