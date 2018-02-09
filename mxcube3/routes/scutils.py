@@ -157,7 +157,10 @@ def mount_sample_clean_up(sample):
               mxcube.sample_changer.load(sample['sampleID'], wait=True)
 
         mxcube.shapes.clear_all()
-        mxcube.diffractometer.startCentringMethod(mxcube.diffractometer.C3D_MODE)
+
+        if sample['location'] != 'Manual':
+            C3D_MODE = mxcube.diffractometer.C3D_MODE
+            mxcube.diffractometer.startCentringMethod(C3D_MODE)
 
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
