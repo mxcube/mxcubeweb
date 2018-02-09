@@ -527,6 +527,7 @@ def get_default_char_params():
     resp.status_code = 200
     return resp
 
+
 @mxcube.route("/mxcube/api/v0.1/queue/mesh", methods=['GET'])
 def get_default_mesh_params():
     """
@@ -559,6 +560,25 @@ def get_default_mesh_params():
             'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
         },
         })    
+    resp.status_code = 200
+    return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/xrf", methods=['GET'])
+def get_default_xrf_parameters():
+    """
+    returns the default values for a xrf scan
+    """
+    int_time =  mxcube.beamline.getObjectByRole('xrf_spectrum').\
+                getProperty('default_integration_time', '5').strip()
+
+    try:
+        int(int_time)
+    except ValueError:
+        int_time = 5
+
+    resp = jsonify({"countTime": int_time})
+
     resp.status_code = 200
     return resp
 
