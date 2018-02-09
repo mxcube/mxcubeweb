@@ -1103,8 +1103,8 @@ def set_xrf_params(model, entry, task_data, sample_model):
     """
     params = task_data['parameters']
 
-    # Needs to be taken from XML configuration files if institute dependent
-    ftype = "dat"
+    ftype = mxcube.beamline.getObjectByRole('xrf_spectrum').\
+            getProperty('file_suffix', 'dat').strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
@@ -1151,8 +1151,8 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     """
     params = task_data['parameters']
 
-    # Needs to be taken from XML configuration files if institute dependent
-    ftype = "raw"
+    ftype = mxcube.beamline.getObjectByRole('energyscan').\
+            getProperty('file_suffix', 'raw').strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
