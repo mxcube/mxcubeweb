@@ -277,7 +277,7 @@ export default class SampleImage extends React.Component {
     if (!this._keyPressed) {
       this._keyPressed = event.key;
 
-      if (this._keyPressed === 'Delete') {
+      if (this._keyPressed === 'Delete' && document.activeElement.tagName === 'BODY') {
         this.removeShapes();
       }
 
@@ -787,7 +787,7 @@ export default class SampleImage extends React.Component {
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
               {...this.props}
-              canvas={this.canvas}
+              canvas={ this.canvas }
             />
             {this.centringMessage()}
             <canvas id="canvas" className="coveringCanvas" />
