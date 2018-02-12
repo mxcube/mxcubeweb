@@ -316,6 +316,7 @@ export class SampleGridItem extends React.Component {
         ref="sampleItem"
         className={classes}
         onClick={this.sampleItemOnClick}
+        style={{ width: `${SAMPLE_ITEM_WIDTH}px`, height: `${SAMPLE_ITEM_HEIGHT}px` }}
       >
         {this.moveArrows()}
         {this.itemControls()}
