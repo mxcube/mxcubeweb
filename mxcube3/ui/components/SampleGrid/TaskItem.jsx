@@ -129,9 +129,9 @@ export class TaskItem extends React.Component {
 
           <div className="row">
             <span className="col-sm-2">Flux at start:</span>
-            <span className="col-sm-4">{sFlux || '-'}e+9 (Giga) ph/s</span>
+            <span className="col-sm-4">{sFlux || '-'} ph/s</span>
             <span className="col-sm-2">Flux at end</span>
-            <span className="col-sm-4">{eFlux || '-'}e+9 (Giga) ph/s</span>
+            <span className="col-sm-4">{eFlux || '-'} ph/s</span>
           </div>
 
           <div className="row" style={ { paddingTop: '0.5em' } } >
@@ -153,7 +153,6 @@ export class TaskItem extends React.Component {
 
   title() {
     const task = this.props.taskData;
-    const point = task.parameters.point !== -1 ? ` at P-${task.parameters.point}` : '';
     let taskStatus = 'To be collected';
 
     if (task.state === TASK_RUNNING) {
@@ -162,7 +161,7 @@ export class TaskItem extends React.Component {
       taskStatus = 'Collected';
     }
 
-    return `${task.label}${point} (${taskStatus})`;
+    return `${task.label} (${taskStatus})`;
   }
 
   stateClass() {
