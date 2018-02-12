@@ -38,7 +38,7 @@ def sample_list_sync_sample(lims_sample):
     sample_to_update = None
 
     # LIMS sample has code, check if the code was read by SC
-    if lims_code and scutils.sc_contetns_from_code_get(lims_code):
+    if lims_code and scutils.sc_contents_from_code_get(lims_code):
         sample_to_update = scutils.sc_contents_from_code_get(lims_code)
     elif lims_location:
         # Asume that the samples have been put in the right place of the SC
