@@ -266,8 +266,9 @@ export default class ContextMenu extends React.Component {
       this.props.sampleActions.sendAbortCentring();
     }
 
-    this.props.sampleActions.sendDeleteShape(this.props.shape.id);
-    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleActions.sendDeleteShape(this.props.shape.id).then(() => {
+      this.props.sampleActions.showContextMenu(false);
+    });
   }
 
   measureDistance() {
