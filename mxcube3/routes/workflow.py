@@ -7,15 +7,16 @@ from flask import Response, jsonify, request
 @mxcube.route("/mxcube/api/v0.1/workflow", methods=['GET'])
 def workflow():
     workflows = {}
+    try:
+        for wf in mxcube.workflow.get_available_workflows():
+            # Rename name and path to wfname and wfpath in order to avoid name
+            # clashes
+            wf["wfname"] = wf.pop("name")
+            wf["wfpath"] = wf.pop("path")
 
-    for wf in mxcube.workflow.get_available_workflows():
-        # Rename name and path to wfname and wfpath in order to avoid name
-        # clashes
-        wf["wfname"] = wf.pop("name")
-        wf["wfpath"] = wf.pop("path")
-
-        workflows[wf["wfname"]] = wf
-
+            workflows[wf["wfname"]] = wf
+    except Exception:
+        pass
     
     return jsonify({"workflows": workflows})
 
