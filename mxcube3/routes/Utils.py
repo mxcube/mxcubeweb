@@ -244,7 +244,8 @@ def send_mail(_from, to, subject, content):
     try:
         error_dict = smtp.sendmail(_from, to.split(','), email_msg)
     except smtplib.SMTPException, e:
-        logging.getLogger().error("Could not send mail: %s" % str(e))
+        msg = "Could not send mail to %s, content %s, error was: %s"
+        logging.getLogger().error(msg % (to, content, str(e)))
     finally:
         smtp.quit()
 
