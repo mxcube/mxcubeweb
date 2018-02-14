@@ -173,7 +173,20 @@ export default (state = initialState, action) => {
                              { distancePoints: [],
                                clickCentringPoints: [],
                                gridList: [],
-                               gridCount: 0 }
+                               gridCount: 0,
+                               selectedShapes: []
+                              }
+         );
+      }
+    case 'SET_CURRENT_SAMPLE':
+      {
+        return Object.assign({}, state,
+                             { distancePoints: [],
+                               clickCentringPoints: [],
+                               gridList: [],
+                               gridCount: 0,
+                               selectedShapes: []
+                              }
          );
       }
     case 'CLEAR_QUEUE':
