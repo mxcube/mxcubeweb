@@ -1,5 +1,4 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Panel, Button, FormGroup, Form, FormControl, ControlLabel } from 'react-bootstrap';
 
@@ -14,7 +13,9 @@ export class HelpContainer extends React.Component {
   }
 
   sendMail() {
-    this.props.sendMail(this.sender.value, this.content.value);
+    sendMail(this.sender.value, this.content.value);
+    this.sender.value = '';
+    this.content.value = '';
   }
 
   render() {
@@ -98,13 +99,7 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    sendMail: bindActionCreators(sendMail, dispatch)
-  };
-}
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToProps
 )(HelpContainer);
