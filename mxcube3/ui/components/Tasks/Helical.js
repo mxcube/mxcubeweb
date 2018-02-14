@@ -157,11 +157,6 @@ class Helical extends React.Component {
                  >
                  Default Parameters
                  </Button>
-                 <Button bsSize="xsmall" bsStyle="default"
-                   onClick={this.resetParameters}
-                 >
-                   Reset Form
-                 </Button>
                </ButtonToolbar>
                <ButtonToolbar className="pull-right">
                <Button bsStyle="success"

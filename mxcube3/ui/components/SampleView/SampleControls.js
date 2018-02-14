@@ -42,7 +42,7 @@ export default class SampleControls extends React.Component {
     imgDataURI = this.props.canvas.toDataURL({ format: 'jpeg' });
     this.props.canvas.setBackgroundImage(0);
     this.props.canvas.renderAll();
-    return imgDataURI;
+    return { data: imgDataURI.slice(23) };
   }
 
   takeSnapShot() {

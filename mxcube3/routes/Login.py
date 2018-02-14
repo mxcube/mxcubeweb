@@ -1,5 +1,6 @@
 import logging
 import os
+import Utils
 
 from flask import session, request, jsonify, make_response
 from mxcube3 import app as mxcube
@@ -256,5 +257,16 @@ def request_control_response():
 
         socketio.emit("observersChanged", observers, namespace='/hwr')
         socketio.emit("setMaster", data, namespace='/hwr')
+
+    return make_response("", 200)
+
+@mxcube.route("/mxcube/api/v0.1/send_feedback", methods=["POST"])
+def send_feedback():
+    global LOGGED_IN_USER
+
+    sender_data = request.get_json()
+    sender_data["LOGGED_IN_USER"]=LOGGED_IN_USER
+
+    Utils.send_feedback(sender_data)
 
     return make_response("", 200)

@@ -45,6 +45,7 @@ import { showConfirmClearQueueDialog } from '../actions/general';
 import { showTaskForm } from '../actions/taskForm';
 import SampleGridContainer from './SampleGridContainer';
 import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
+import QueueSettings from './QueueSettings.jsx';
 
 import { SAMPLE_ITEM_WIDTH,
          SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
@@ -188,14 +189,14 @@ class SampleGridViewContainer extends React.Component {
   showTaskForm(formName, extraParams = {}) {
     let prefix = '';
     const path = '';
-    let subdir = '';
+    let subdir = `${this.props.queue.groupFolder}`;
 
     if (Object.keys(this.props.selected).length === 1) {
       prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
-      subdir = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
+      subdir += this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
     } else {
       prefix = this.props.defaultParameters[formName.toLowerCase()].prefixTemplate;
-      subdir = this.props.defaultParameters[formName.toLowerCase()].subDirTemplate;
+      subdir += this.props.defaultParameters[formName.toLowerCase()].subDirTemplate;
     }
 
     const parameters = { parameters: {
@@ -420,6 +421,7 @@ class SampleGridViewContainer extends React.Component {
         className="btn btn-success pull-right"
         onClick={this.startCollect}
         disabled={this.isCollectDisabled()}
+        style={{ marginLeft: '1em' }}
       >
         {collectText}
         <Glyphicon glyph="chevron-right" />
@@ -427,7 +429,11 @@ class SampleGridViewContainer extends React.Component {
 
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       button = (
-        <Button className="btn btn-danger pull-right" onClick={this.props.sendStopQueue}>
+        <Button
+          className="btn btn-danger pull-right"
+          onClick={this.props.sendStopQueue}
+          style={{ marginLeft: '1em' }}
+        >
           <b> Stop queue </b>
         </Button>);
     }
@@ -598,7 +604,7 @@ class SampleGridViewContainer extends React.Component {
                   </OverlayTrigger>
                 </Form>
               </Col>
-              <Col xs={7}>
+              <Col xs={6}>
                 <Form inline>
                   <FormGroup>
                     <ControlLabel>Filter: &nbsp;</ControlLabel>
@@ -631,8 +637,9 @@ class SampleGridViewContainer extends React.Component {
                   </SplitButton>
                 </Form>
               </Col>
-              <Col xs={1} className="pull-right">
+              <Col xs={2} className="pull-right">
                 {this.collectButton()}
+                <QueueSettings / >
               </Col>
             </Row>
           </Sticky>

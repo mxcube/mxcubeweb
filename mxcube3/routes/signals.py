@@ -13,6 +13,7 @@ from mxcube3.routes import limsutils
 from mxcube3.remote_access import safe_emit
 from sample_changer.GenericSampleChanger import SampleChangerState
 from sample_changer.Container import Pin
+from sample_changer.GenericSampleChanger import Sample
 from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
 from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED, queue_to_dict
@@ -137,9 +138,16 @@ def sc_state_changed(*args):
     socketio.emit('sc_state', state_str, namespace='/hwr')
 
 def loaded_sample_changed(sample):
-    if not isinstance(sample, Pin):
-        return
+    # If sample is a "No sample loaded value" None or ''
+    if sample in [None, '']:
+        msg = {'signal': 'loadReady', 'location': ''}
+        socketio.emit('sc', msg, namespace='/hwr')
+        socketio.emit("loaded_sample_changed", {'address': '', 'barcode': ''}, namespace="/hwr")
     
+    # If sample is not Pin, Sample pin just return
+    if not (isinstance(sample, Pin) or isinstance(sample, Sample)):
+        return
+
     if sample is not None:
         address = sample.getAddress()
         barcode = sample.getID()
@@ -180,8 +188,12 @@ def sc_maintenance_update(state_list, cmd_state, message):
 def centring_started(method, *args):
     msg = {'method': method}
 
-    if method != CENTRING_METHOD.LOOP:
-        socketio.emit('sample_centring', msg, namespace='/hwr')
+    if method in ['Computer automatic']:
+        msg = {'method': CENTRING_METHOD.LOOP}
+    elif method in ['Manual 3-click' ]:
+        msg = {'method': CENTRING_METHOD.MANUAL}
+
+    socketio.emit('sample_centring', msg, namespace='/hwr')
 
 
 def get_task_state(entry):

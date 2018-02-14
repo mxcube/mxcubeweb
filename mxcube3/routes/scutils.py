@@ -98,13 +98,13 @@ def mount_sample(beamline_setup_hwobj,
                 # if sample could not be loaded, but no exception is raised, let's skip the sample
                 raise QueueSkippEntryException("Sample changer could not load sample", "")
 
-    loaded_sample_changed(sample_mount_device.getLoadedSample())
-
     if not sample_mount_device.hasLoadedSample():
         #Disables all related collections
         logging.getLogger('user_level_log').info("Sample not loaded")
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
+        loaded_sample_changed(sample_mount_device.getLoadedSample())
+
         logging.getLogger('user_level_log').info("Sample loaded")
         dm = beamline_setup_hwobj.diffractometer_hwobj
         if dm is not None:
@@ -152,10 +152,15 @@ def mount_sample_clean_up(sample):
 
         if sample['location'] != 'Manual':
             if not mxcube.sample_changer.getLoadedSample():
-                mxcube.sample_changer.load(sample['sampleID'], wait=False)
+                mxcube.sample_changer.load(sample['sampleID'], wait=True)
             elif mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
-              mxcube.sample_changer.load(sample['sampleID'], wait=False)
+              mxcube.sample_changer.load(sample['sampleID'], wait=True)
+
         mxcube.shapes.clear_all()
+
+        if sample['location'] != 'Manual':
+            C3D_MODE = mxcube.diffractometer.C3D_MODE
+            mxcube.diffractometer.startCentringMethod(C3D_MODE)
 
     except Exception:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')

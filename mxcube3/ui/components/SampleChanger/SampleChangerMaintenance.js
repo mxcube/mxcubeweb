@@ -37,10 +37,6 @@ export class SampleChangerActionButton extends React.Component {
 export class SampleChangerActionGroup extends React.Component {
   render() {
     return (
-      // <Well>
-         // <div>{this.props.name}</div>
-         // <ButtonGroup>{this.props.buttons}</ButtonGroup>
-      // <Well>
       <Panel header={this.props.name}>
          <ButtonGroup>{this.props.buttons}</ButtonGroup>
       </Panel>
@@ -94,13 +90,12 @@ export default class SampleChangerMaintenance extends React.Component {
 
     return (
        <div>
-       <Panel className="actionHeader">
-       <span>Commands</span>
-       </Panel>
-       { groups }
-       <Panel>
-       <span className="scMessage">{ msg }</span>
-       </Panel>
+         { groups }
+         { msg ? (
+           <Panel header="Status message">
+             <span className="scMessage">{ msg }</span>
+           </Panel>) : null
+         }
        </div>
     );
   }

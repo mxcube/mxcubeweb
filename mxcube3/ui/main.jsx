@@ -10,6 +10,7 @@ import SampleChangerContainer from './containers/SampleChangerContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
 import RemoteAccessContainer from './containers/RemoteAccessContainer';
+import HelpContainer from './containers/HelpContainer';
 import Main from './components/Main';
 import { createStore, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
@@ -106,6 +107,7 @@ export default class App extends React.Component {
                 <Route path="samplechanger" component={SampleChangerContainer} />
                 <Route path="logging" component={LoggerContainer} />
                 <Route path="remoteaccess" component={RemoteAccessContainer} />
+                <Route path="help" component={HelpContainer} />
               </Route>
             </Router>
           </Provider>);

@@ -65,7 +65,7 @@ def queue_stop():
         try:
             qe.stop()
         except Exception as ex:
-            print 'exception...', ex
+            print str(ex)
 
         logging.getLogger('user_level_log').info('Queue execution was aborted, ' + str(qe.get_data_model()))
 
@@ -159,7 +159,7 @@ def queue_get():
               409: On error, could not retrieve queue
     """
     logging.getLogger('HWR').info('[QUEUE] queue_get called')
-    resp = qutils.queue_to_json_response()
+    resp = qutils.queue_to_json_response(include_lims_data = True)
     resp.status_code = 200
     return resp
 
@@ -462,7 +462,7 @@ def get_default_dc_params():
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
         },
         'limits': mxcube.beamline.get_acquisition_limit_values()
     })
@@ -503,7 +503,7 @@ def get_default_char_acq_params():
             'skip_existing_images': False,
             'take_snapshots': True,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
             'strategy_complexity': 'SINGLE',
             'account_rad_damage': True,
             'opt_sad': False,
@@ -526,6 +526,7 @@ def get_default_char_params():
     resp = jsonify(mxcube.beamline.get_default_characterisation_parameters().as_dict())
     resp.status_code = 200
     return resp
+
 
 @mxcube.route("/mxcube/api/v0.1/queue/mesh", methods=['GET'])
 def get_default_mesh_params():
@@ -556,11 +557,38 @@ def get_default_mesh_params():
             'cell_counting': mxcube.beamline['default_mesh_values'].getProperty('cell_counting', 'zig-zag'),
             'cell_spacing': mxcube.beamline['default_mesh_values'].getProperty('cell_spacing', 'None'),
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
         },
         })    
     resp.status_code = 200
     return resp
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/xrf", methods=['GET'])
+def get_default_xrf_parameters():
+    """
+    returns the default values for a xrf scan
+    """
+    int_time = 5
+
+    try:
+        int_time =  mxcube.beamline.getObjectByRole('xrf_spectrum').\
+                    getProperty('default_integration_time', '5').strip()
+        try:
+            int(int_time)
+        except ValueError:
+            pass
+
+    except Exception:
+        msg = "Failed to get object with role: %s" % name
+        msg += "cannot get default values for XRF"
+        logging.getLogger("HWR").exception(msg)
+
+    resp = jsonify({"countTime": int_time})
+
+    resp.status_code = 200
+    return resp
+
 
 
 @mxcube.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
@@ -719,7 +747,7 @@ def create_diff_plan(sid):
             'helical': False,
             'mesh': False,
             'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{NAME}-{ACRONYM}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
             'prefix': 'foo',
             'shape': 'P1'#-1
         },

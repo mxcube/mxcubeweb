@@ -340,7 +340,7 @@ export function sendAddShape(shapeData = {}, successCb = null) {
 
 export function sendUpdateShapes(shapes) {
   return function (dispatch) {
-    fetch('/mxcube/api/v0.1/sampleview/shapes', {
+    return fetch('/mxcube/api/v0.1/sampleview/shapes', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -361,7 +361,7 @@ export function sendUpdateShapes(shapes) {
 
 export function sendDeleteShape(id) {
   return function (dispatch) {
-    fetch(`/mxcube/api/v0.1/sampleview/shapes/${id}`, {
+    return fetch(`/mxcube/api/v0.1/sampleview/shapes/${id}`, {
       method: 'DELETE',
       headers: {
         Accept: 'application/json',

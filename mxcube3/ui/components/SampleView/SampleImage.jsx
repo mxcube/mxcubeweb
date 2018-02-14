@@ -277,7 +277,7 @@ export default class SampleImage extends React.Component {
     if (!this._keyPressed) {
       this._keyPressed = event.key;
 
-      if (this._keyPressed === 'Delete') {
+      if (this._keyPressed === 'Delete' && document.activeElement.tagName === 'BODY') {
         this.removeShapes();
       }
 
@@ -379,7 +379,8 @@ export default class SampleImage extends React.Component {
         } else if (pointList.length > 2) {
           ctxMenuObj = { type: 'GROUP', id: pointList };
         } else if (gridList.length === 1) {
-          ctxMenuObj = { type: 'GridGroupSaved', gridData: gridList[0], id: gridList[0] };
+          const gridData = this.props.grids[gridList[0]];
+          ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
         } else if (lineList.length !== 0) {
           ctxMenuObj = { type: 'LINE', id: lineList };
         }
@@ -390,13 +391,13 @@ export default class SampleImage extends React.Component {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
 
-          this.selectShape([obj], false);
+          this.selectShape([obj], true);
 
           if (obj.type === 'GridGroup') {
             let gridData = this.props.grids[obj.id];
 
             if (gridData) {
-              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData };
+              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
             } else {
               gridData = this.drawGridPlugin.currentGridData();
               ctxMenuObj = { type: 'GridGroup', gridData, id: obj.id };
@@ -787,7 +788,7 @@ export default class SampleImage extends React.Component {
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
               {...this.props}
-              canvas={this.canvas}
+              canvas={ this.canvas }
             />
             {this.centringMessage()}
             <canvas id="canvas" className="coveringCanvas" />

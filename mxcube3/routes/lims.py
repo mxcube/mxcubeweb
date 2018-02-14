@@ -12,7 +12,7 @@ def proposal_samples(proposal_id):
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
     lims_samples = mxcube.db_connection.get_samples(proposal_id, None)
-    samples_info_list = [limsutils.convert_to_dict(x) for x in lims_samples]
+    samples_info_list = lims_samples
     mxcube.LIMS_SAMPLE_DATA = {}
 
     for sample_info in samples_info_list:
@@ -23,7 +23,7 @@ def proposal_samples(proposal_id):
 
         try:
             basket = int(sample_info["containerSampleChangerLocation"])
-        except (TypeError, ValueError):
+        except (TypeError, ValueError, KeyError):
             continue
         else:
             if mxcube.sample_changer.__class__.__TYPE__ in ['HCD', 'FlexHCD', 'RoboDiff']:

@@ -10,6 +10,7 @@ const initialState = {
     characterisation: {},
     helical: {},
     mesh: {},
+    xrfscan: {},
     interleaved: { subWedgeSize: 10 }
   }
 };
@@ -121,8 +122,11 @@ export default (state = initialState, action) => {
               ...action.data.dcParameters,
               ...state.defaultParameters.helical },
             mesh: {
-              ...action.data.dcParameters,
-              ...action.data.meshParameters },
+              ...action.data.meshParameters,
+              ...state.defaultParameters.meshParameters },
+            xrfscan: {
+              ...action.data.xrfParameters,
+              ...state.defaultParameters.xrfParameters },
             workflow: {
               ...action.data.dcParameters,
               ...state.defaultParameters.workflow },
@@ -140,8 +144,11 @@ export default (state = initialState, action) => {
               ...action.data.dcParameters,
               ...state.defaultParameters.helical },
             mesh: {
-              ...action.data.dcParameters,
-              ...action.data.meshParameters },
+              ...action.data.meshParameters,
+              ...state.defaultParameters.meshParameters },
+            xrfscan: {
+              ...action.data.xrfParameters,
+              ...state.defaultParameters.xrfParameters },
             workflow: {
               ...action.data.dcParameters,
               ...state.defaultParameters.workflow },

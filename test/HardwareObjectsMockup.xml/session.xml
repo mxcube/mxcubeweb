@@ -3,6 +3,7 @@
  <synchrotron_name>ESRF</synchrotron_name>
  <endstation_name>mxcube3test</endstation_name>
  <beamline_name>mxcube3test</beamline_name>
+ <email_extension>esrf.fr</email_extension>
 
   <proposals>
     <proposal>
@@ -53,6 +54,8 @@
    <archive_folder>pyarch</archive_folder>
    <precission>4</precission>
   </file_info>
+
+  <feedback_email>test@...</feedback_email>
 
 </object>
 

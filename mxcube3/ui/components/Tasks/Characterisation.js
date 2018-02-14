@@ -115,19 +115,14 @@ class Characterisation extends React.Component {
               </FieldsRow>
               <FieldsRow>
                 <InputField propName="exp_time" type="number" label="Exposure time (s)" />
-                <SelectField
-                  propName="beam_size"
-                  label="Beam size"
-                  list={this.props.apertureList}
-                />
-              </FieldsRow>
-              <FieldsRow>
-                <InputField propName="osc_range" type="number" label="Oscillation range" />
                 <InputField propName="resolution" type="number" label="Resolution (Å)" />
               </FieldsRow>
               <FieldsRow>
-                <InputField propName="osc_start" type="number" label="Oscillation start" />
+                <InputField propName="osc_range" type="number" label="Oscillation range" />
                 <InputField propName="energy" type="number" label="Energy (keV)" />
+              </FieldsRow>
+              <FieldsRow>
+                <InputField propName="osc_start" type="number" label="Oscillation start" />
               </FieldsRow>
               <CollapsableRows>
                 <FieldsRow>
@@ -191,11 +186,6 @@ class Characterisation extends React.Component {
                 onClick={this.defaultParameters}
               >
               Default Parameters
-              </Button>
-              <Button bsSize="xsmall" bsStyle="default"
-                onClick={this.resetParameters}
-              >
-                Reset Form
               </Button>
              </ButtonToolbar>
              <ButtonToolbar className="pull-right">
