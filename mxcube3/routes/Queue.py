@@ -569,13 +569,20 @@ def get_default_xrf_parameters():
     """
     returns the default values for a xrf scan
     """
-    int_time =  mxcube.beamline.getObjectByRole('xrf_spectrum').\
-                getProperty('default_integration_time', '5').strip()
+    int_time = 5
 
     try:
-        int(int_time)
-    except ValueError:
-        int_time = 5
+        int_time =  mxcube.beamline.getObjectByRole('xrf_spectrum').\
+                    getProperty('default_integration_time', '5').strip()
+        try:
+            int(int_time)
+        except ValueError:
+            pass
+
+    except Exception:
+        msg = "Failed to get object with role: %s" % name
+        msg += "cannot get default values for XRF"
+        logging.getLogger("HWR").exception(msg)
 
     resp = jsonify({"countTime": int_time})
 
