@@ -4,6 +4,10 @@ import { Panel, Button, FormGroup, Form, FormControl, ControlLabel } from 'react
 
 import { sendMail } from '../actions/login';
 
+import characterisation from '../help_videos/mx3-characterisation.ogv';
+import interleaved from '../help_videos/mx3-interleaved.ogv';
+import mesh from '../help_videos/mx3-mesh.ogv';
+
 export class HelpContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -65,7 +69,7 @@ export class HelpContainer extends React.Component {
               <span>
                 <b>Characterisation </b> <br />
                 <video width="230" height="132" controls>
-                  <source src={"../help_videos/mx3-characterisation.ogv"} type="video/mp4" />
+                  <source src={characterisation} type="video/mp4" />
                 </video>
               </span>
             </div>
@@ -73,7 +77,7 @@ export class HelpContainer extends React.Component {
               <span>
                 <b>Interleaved </b> <br />
                 <video width="230" height="132" controls>
-                  <source src={"../help_videos/mx3-interleaved.ogv"} type="video/mp4" />
+                  <source src={interleaved} type="video/mp4" />
                 </video>
               </span>
             </div>
@@ -81,7 +85,7 @@ export class HelpContainer extends React.Component {
               <span>
                 <b>Mesh </b> <br />
                 <video width="230" height="132" controls>
-                  <source src={"../help_videos/mx3-mesh.ogv"} type="video/mp4" />
+                  <source src={mesh} type="video/mp4" />
                 </video>
               </span>
             </div>
