@@ -50,7 +50,6 @@ def sample_list_sync_sample(lims_sample):
 
 
 def synch_sample_list_with_queue(current_queue=None):
-
     if not current_queue:
         current_queue = qutils.queue_to_dict(include_lims_data=True)
 
@@ -87,8 +86,11 @@ def sample_list_update_sample(loc, sample):
 def apply_template(params, sample_model, path_template):
     # Apply subdir template if used:
     if '{' in params.get('subdir', ''):
-        params['subdir'] = params['subdir'].format(NAME=sample_model.get_name(),
-                                                   ACRONYM=sample_model.crystals[0].protein_acronym)
+        if sample_model.crystals[0].protein_acronym:
+            params['subdir'] = params['subdir'].format(NAME=sample_model.get_name(),
+                ACRONYM=sample_model.crystals[0].protein_acronym)
+        else:
+              params['subdir'] = sample_model.get_name()
 
         if params['subdir'].endswith('-'):
             params['subdir'] = sample_model.get_name()
@@ -247,6 +249,7 @@ def get_default_prefix(sample_data, generic_name):
 
     return mxcube.session.get_default_prefix(sample, generic_name)
 
+
 def get_default_subdir(sample_data):
     subdir = ""
 
@@ -264,12 +267,14 @@ def get_default_subdir(sample_data):
 
     return subdir
 
+
 def get_dc_link(col_id):
     link = mxcube.rest_lims.dc_link(col_id)
     if not link:
         link = mxcube.db_connection.dc_link(col_id)
 
     return link
+
 
 def convert_to_dict(ispyb_object):
     d = {}
