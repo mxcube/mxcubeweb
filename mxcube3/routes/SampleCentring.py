@@ -128,6 +128,19 @@ def init_signals():
         except Exception as ex:
             logging.getLogger('HWR').exception(str(ex))
 
+    def zoom_state_cb(state, motor='zoom', **kw):
+        movable = Utils.get_movable_state_and_position('zoom')
+        signals.motor_state_callback(movable['zoom'], **kw)
+
+    setattr(dm, "_%s_state_callback" % motor, zoom_state_cb)
+
+    try:
+        zoom_motor_hwobj = dm.getObjectByRole('zoom')
+        zoom_motor_hwobj.connect(zoom_motor_hwobj, 'predefinedPositionChanged', zoom_state_cb)
+    except Exception as ex:
+        logging.getLogger('HWR').exception(str(ex))
+
+
     dm.connect("centringStarted", signals.centring_started)
     dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
     dm.connect(dm, "centringFailed", wait_for_centring_finishes)

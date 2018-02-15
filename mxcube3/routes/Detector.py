@@ -12,7 +12,7 @@ def get_detector_info():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    filetype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    filetype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     if filetype is None:
         filetype = 'cbf'
         logging.getLogger('HWR').warning('Detector file format not specified. Setting as cbf.')

@@ -58,7 +58,7 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Add Energy Scan',
           action: () => this.showModal('EnergyScan'),
-          key: 'energy_Scan'
+          key: 'energy_scan'
         },
         {
           text: 'Go To Point',
@@ -131,6 +131,13 @@ export default class ContextMenu extends React.Component {
         ...workflowTasks.line,
       ],
       LINE: [
+        {
+          text: 'Add Helical Scan',
+          action: () => this.showModal('Helical'),
+          key: 'helical'
+        },
+        ...workflowTasks.line,
+        workflowTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete Line', action: () => this.removeShape(), key: 4 }
       ],
       GridGroup: [
@@ -177,6 +184,21 @@ export default class ContextMenu extends React.Component {
   showModal(modalName, wf = {}, _shape = null) {
     const { sampleID, defaultParameters, shape, sampleData } = this.props;
     const sid = _shape ? _shape.id : shape.id;
+    if (Array.isArray(sid)) {
+      // we remove any line
+      // in case we have selected (by drawing a box) two points
+      // that already have a line [P1, P2, L1]
+      // we do not want to add a DC/Char to a line
+
+      const points = sid.filter(x => x.match(/P*/)[0]);
+      const containsPoints = points.length > 0;
+      const lines = sid.filter(x => x.match(/L*/)[0]);
+      const containsLine = lines.length > 0;
+
+      if (containsPoints && containsLine) {
+        lines.map(x => sid.splice(sid.indexOf(x), 1));
+      }
+    }
 
     if (this.props.clickCentring) {
       this.props.sampleActions.stopClickCentring();
@@ -301,10 +323,19 @@ export default class ContextMenu extends React.Component {
 
   createLine(modal, wf = {}) {
     const { shape } = this.props;
+    const sid = shape.id;
+
+    const lines = sid.filter(x => x.match(/L*/)[0]);
+    const containsLine = lines.length > 0;
+
+    if (containsLine) {
+      // e.g. [P1, P2, L1]
+      lines.map(x => sid.splice(sid.indexOf(x), 1));
+    }
 
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id },
-      (s) => {this.showModal(modal, wf, s);});
+      (s) => {this.showModal('Helical', {}, s);});
   }
 
   hideContextMenu() {

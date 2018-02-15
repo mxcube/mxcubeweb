@@ -721,7 +721,7 @@ def create_diff_plan(sid):
     from mock import Mock
 
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
-    ftype = mxcube.beamline.detector_hwobj.getProperty('fileSuffix')
+    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
 
