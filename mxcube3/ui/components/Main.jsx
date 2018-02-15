@@ -11,6 +11,8 @@ import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
+import diagonalNoise from '../img/diagonal-noise.png';
+
 
 class Main extends React.Component {
   constructor(props) {
@@ -34,7 +36,7 @@ class Main extends React.Component {
           (<div
             onMouseDown={this.handleClick}
             style={{
-              backgroundImage: 'url(\'../img/diagonal-noise.png\')',
+              backgroundImage: `url(${diagonalNoise})`,
               zIndex: 10000,
               position: 'fixed',
               padding: 0,

@@ -81,6 +81,15 @@ var config = {
             }
           }
         ]
+      },
+      {
+        test: /\.(ogv)$/,
+        use: [
+               {
+                 loader: 'file-loader',
+                 options: {}
+	       }
+             ]
       }
     ]
   },
