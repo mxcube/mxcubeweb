@@ -265,7 +265,7 @@ def get_queue_state():
                 queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
               }
     """
-    queue = queue_to_dict()
+    queue = queue_to_dict(include_lims_data=True)
     sample_order = queue.get("sample_order", [])
 
     res = { "current": scutils.get_current_sample().get('sampleID', ''),
@@ -275,7 +275,7 @@ def get_queue_state():
             "numSnapshots": mxcube.NUM_SNAPSHOTS,
             "groupFolder": mxcube.session.get_group_name(),
             "queue": sample_order,
-            "sampleList": limsutils.sample_list_get(),
+            "sampleList": limsutils.sample_list_get(current_queue=queue),
             "queueStatus": queue_exec_state() }
 
     return res
@@ -293,6 +293,7 @@ def _handle_dc(sample_node, node, include_lims_data=False):
 
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
+
     parameters['subdir'] = parameters['path'].\
         split(mxcube.session.get_base_image_directory())[1][1:]
 
@@ -408,6 +409,7 @@ def _handle_energy_scan(sample_node, node):
     parameters = {"element": node.element_symbol,
                   "edge": node.edge,
                   "shape": -1}
+
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
@@ -515,7 +517,7 @@ def _handle_interleaved(sample_node, node):
 
     return res
 
-def _handle_sample(node):
+def _handle_sample(node, include_lims_data=False):
     location = 'Manual' if node.free_pin_mode else node.loc_str
     enabled, state = get_node_state(node._node_id)
     children_states = []
@@ -545,7 +547,7 @@ def _handle_sample(node):
               'type': 'Sample',
               'checked': enabled,
               'state': state,
-              'tasks': queue_to_dict_rec(node)}
+              'tasks': queue_to_dict_rec(node, include_lims_data)}
 
     return {node.loc_str: sample}
 
@@ -581,7 +583,7 @@ def queue_to_dict_rec(node, include_lims_data=False):
             if len(result) == 0:
                 result = [{'sample_order': []}]
 
-            result.append(_handle_sample(node))
+            result.append(_handle_sample(node, include_lims_data))
 
             if node.is_enabled():
                 result[0]['sample_order'].append(node.loc_str)
@@ -605,7 +607,7 @@ def queue_to_dict_rec(node, include_lims_data=False):
             sample_node = node.get_parent()
             result.append(_handle_interleaved(sample_node, node))
         else:
-            result.extend(queue_to_dict_rec(node))
+            result.extend(queue_to_dict_rec(node, include_lims_data))
 
     return result
 
