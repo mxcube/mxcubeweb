@@ -177,11 +177,9 @@ button[disabled] {
 
 
 .samples-grid-item-selected {
-    border: 2px dashed #337ab7 !important;
+    border: 2px dashed #616161 !important;
     padding: 4px;
 }
-
-
 
 .btn-link {
     color: #333 !important;
