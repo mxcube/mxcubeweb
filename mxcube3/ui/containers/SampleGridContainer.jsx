@@ -507,6 +507,7 @@ class SampleGridContainer extends React.Component {
    */
   sampleItemPickButtonOnClickHandler(e, sampleID) {
     e.stopPropagation();
+
     // Is sample already in the set of selected samples, add all those samples
     // to queue
     if (this.sampleItemIsSelected(sampleID)) {

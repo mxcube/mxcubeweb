@@ -30,6 +30,11 @@ export default class SampleControls extends React.Component {
   }
 
   toggleDrawGrid() {
+    // Cancel click centering before draw grid is started
+    if (this.props.clickCentring) {
+      this.props.sampleActions.sendAbortCentring();
+    }
+
     this.props.sampleActions.toggleDrawGrid();
   }
 
@@ -55,6 +60,12 @@ export default class SampleControls extends React.Component {
   toggleCentring() {
     const { sendStartClickCentring, sendAbortCentring } = this.props.sampleActions;
     const { clickCentring } = this.props;
+
+    // If draw grid tool enabled, disable it before starting centering
+    if (this.props.drawGrid) {
+      this.props.sampleActions.toggleDrawGrid();
+    }
+
     if (clickCentring) {
       sendAbortCentring();
     } else {

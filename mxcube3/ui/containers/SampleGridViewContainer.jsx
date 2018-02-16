@@ -329,7 +329,10 @@ class SampleGridViewContainer extends React.Component {
     const samplesToRemove = [];
     for (const sampleID of sampleIDList) {
       if (this.inQueue(sampleID)) {
-        samplesToRemove.push(sampleID);
+        // Do not remove currently mounted sample
+        if (this.props.queue.current.sampleID !== sampleID) {
+          samplesToRemove.push(sampleID);
+        }
       } else {
         samples.push(sampleID);
       }

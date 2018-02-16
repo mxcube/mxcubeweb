@@ -124,6 +124,10 @@
   border: 1px solid Transparent;
 }
 
+button[disabled] {
+  opacity: 0.2;
+}
+
 .samples-grid-item-button:hover {
   border: 1px solid #888;
 }
@@ -173,11 +177,9 @@
 
 
 .samples-grid-item-selected {
-    border: 2px dashed #337ab7 !important;
+    border: 2px dashed #616161 !important;
     padding: 4px;
 }
-
-
 
 .btn-link {
     color: #333 !important;
