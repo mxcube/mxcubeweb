@@ -12,6 +12,8 @@ import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
+import ForceLogoutDialog from '../containers/ForceLogoutDialog';
+
 import diagonalNoise from '../img/diagonal-noise.png';
 import { sendChatMessage, getAllChatMessages,
          resetChatMessageCount } from '../actions/remoteAccess';
@@ -85,6 +87,7 @@ class Main extends React.Component {
         <ErrorNotificationPanel />
         <ResumeQueueDialog />
         <ConnectionLostDialog />
+        <ForceLogoutDialog />
         <ObserverDialog />
         <PassControlDialog />
         <ConfirmCollectDialog />

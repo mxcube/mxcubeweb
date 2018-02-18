@@ -23,6 +23,12 @@ export function hideProposalsForm() {
   };
 }
 
+export function showForceLogoutDialog(show = true) {
+  return {
+    type: 'SHOW_FORCE_LOGOUT_DIALOG', show
+  };
+}
+
 export function selectProposal(prop) {
   return {
     type: 'SELECT_PROPOSAL',
@@ -101,7 +107,6 @@ export function signOut() {
   return { type: 'SIGNOUT' };
 }
 
-
 export function signIn(proposal, password) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/login', {
@@ -145,6 +150,12 @@ export function doSignOut() {
       dispatch(clearAll());
       browserHistory.push('/login');
     });
+  };
+}
+
+export function forceSignOut() {
+  return function (dispatch) {
+    dispatch(showForceLogoutDialog(true));
   };
 }
 
