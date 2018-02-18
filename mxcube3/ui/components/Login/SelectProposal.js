@@ -61,7 +61,7 @@ class SelectProposal extends React.Component {
             <Button bsStyle="default"
               onClick={this.handleCancel}
             >
-              Sing Out
+              Sign Out
             </Button>
             <Button bsStyle="primary" className="pull-right"
               disabled={this.props.selectedProposal === ''}
