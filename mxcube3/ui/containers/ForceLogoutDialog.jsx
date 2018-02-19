@@ -30,7 +30,6 @@ export class ForceLogoutDialog extends React.Component {
       <Modal
         backdrop="static"
         dialogClassName="modal-dialog-center"
-        style="modal-warning"
         show={this.props.show}
         onHide={this.handleCancel}
       >
