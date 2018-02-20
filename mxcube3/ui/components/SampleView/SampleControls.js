@@ -26,7 +26,10 @@ export default class SampleControls extends React.Component {
 
 
   setZoom(option) {
-    this.props.sampleActions.sendZoomPos(option.target.value);
+    const newZoom = parseInt(option.target.value, 10);
+    if (this.props.motors.zoom.position !== newZoom) {
+      this.props.sampleActions.sendZoomPos(newZoom);
+    }
   }
 
   toggleDrawGrid() {
