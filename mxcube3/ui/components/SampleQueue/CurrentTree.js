@@ -139,6 +139,7 @@ export default class CurrentTree extends React.Component {
                   progress={this.props.displayData[taskData.queueID].progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
+                  shapes={this.props.shapes}
                 />);
             } else if (taskData.type === 'XRFScan') {
               task =
@@ -183,6 +184,7 @@ export default class CurrentTree extends React.Component {
                   progress={this.props.displayData[taskData.queueID].progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
+                  shapes={this.props.shapes}
                 />);
             } else if (taskData.type === 'Characterisation') {
               task =
@@ -205,6 +207,7 @@ export default class CurrentTree extends React.Component {
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   addTask={this.props.addTask}
+                  shapes={this.props.shapes}
                 />);
             } else {
               task =
@@ -226,6 +229,7 @@ export default class CurrentTree extends React.Component {
                   progress={this.props.displayData[taskData.queueID].progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
+                  shapes={this.props.shapes}
                 />);
             }
 
