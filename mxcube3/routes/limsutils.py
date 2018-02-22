@@ -14,6 +14,9 @@ from flask import session
 def new_sample_list():
     return {"sampleList": {}, 'sampleOrder': []}
 
+def init_sample_list():
+    sample_list_set(new_sample_list())
+
 def sample_list_set(sample_list):
     mxcube.SAMPLE_LIST = sample_list
 
