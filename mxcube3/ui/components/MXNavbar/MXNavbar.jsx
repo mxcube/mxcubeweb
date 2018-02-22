@@ -12,7 +12,7 @@ export default class MXNavbar extends React.Component {
   }
 
   findProposal(prop) {
-    return `${prop.code}${prop.number}` === this.props.selectedProposal;
+    return `${prop.Proposal.code}${prop.Proposal.number}` === this.props.selectedProposal;
   }
 
   render() {
@@ -20,7 +20,7 @@ export default class MXNavbar extends React.Component {
     const proposal = this.props.userInfo.proposalList ?
         this.props.userInfo.proposalList.find(this.findProposal) : '';
     const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
-          `Proposal: ${proposal.code.toUpperCase()}${proposal.number}` : '');
+          `Proposal: ${proposal.Proposal.code.toUpperCase()}${proposal.Proposal.number}` : '');
 
     const numObservers = this.props.remoteAccess.observers.length;
 

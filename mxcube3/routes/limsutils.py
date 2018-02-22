@@ -186,8 +186,8 @@ def lims_login(loginID, password):
             logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
             return dict({'status': {'code': '0'}})
 
-        login_res['proposalList'] =  [login_res['Proposal']]
         session['proposal_list'] = [proposal]
+        login_res['proposalList'] =  [proposal]
 
     logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
 
