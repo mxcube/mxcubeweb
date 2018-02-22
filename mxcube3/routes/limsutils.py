@@ -177,18 +177,16 @@ def lims_login(loginID, password):
 
     else:
         try:
-            login_data = mxcube.db_connection.login(loginID, password)
-            status = login_data['status']
-
+            login_res = mxcube.db_connection.login(loginID, password)
             proposal = mxcube.db_connection.\
-                       get_proposal(login_data['Proposal']['code'],
-                                    login_data['Proposal']['number'])
+                       get_proposal(login_res['Proposal']['code'],
+                                    login_res['Proposal']['number'])
+
         except:
             logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
             return dict({'status': {'code': '0'}})
 
-        login_res['proposalList'] = [proposal]
-        login_res['status'] = status
+        login_res['proposalList'] =  [login_res['Proposal']]
         session['proposal_list'] = [proposal]
 
     logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
@@ -273,6 +271,7 @@ def get_default_subdir(sample_data):
 
 def get_dc_link(col_id):
     link = mxcube.rest_lims.dc_link(col_id)
+
     if not link:
         link = mxcube.db_connection.dc_link(col_id)
 
