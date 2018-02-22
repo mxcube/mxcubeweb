@@ -78,7 +78,7 @@ export class SampleGridItem extends React.Component {
         overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
       >
         <button
-          disabled={this.props.current}
+          disabled={this.props.current && this.props.picked}
           className="samples-grid-item-button"
           onClick={this.pickButtonOnClick}
           onMouseUp={this.pickButtonMouseUp}
