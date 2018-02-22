@@ -170,7 +170,7 @@ def lims_login(loginID, password):
 
         if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None):
             dummy = mxcube.session.commissioning_fake_proposal
-    	    session['proposal_list'].append(dummy)
+            session['proposal_list'].append(dummy)
 
         login_res['proposalList'] = session['proposal_list']
         login_res['status'] = {"code": "ok", "msg": "Successful login"}
