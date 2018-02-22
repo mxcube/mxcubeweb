@@ -335,7 +335,7 @@ export default class ContextMenu extends React.Component {
 
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id },
-      (s) => {this.showModal('Helical', {}, s);});
+      (s) => {this.showModal('Helical', wf, s);});
   }
 
   hideContextMenu() {
