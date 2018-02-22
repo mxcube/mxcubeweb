@@ -264,6 +264,7 @@ class SampleGridContainer extends React.Component {
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
+                  getLimsDataForTask={getLimsDataForTask}
                 />))
               }
             </SampleGridItem>
@@ -367,6 +368,7 @@ class SampleGridContainer extends React.Component {
     // First case is included for clarity since the two options
     // cancel each other out. Dont do anything same as both false. Otherwise
     // apply filter.
+
     if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
       includeItem = true;
     } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {

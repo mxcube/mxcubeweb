@@ -19,6 +19,7 @@ import { setActionState,
          plotEnd } from './actions/beamlineActions';
 import { setStatus,
          addTaskResultAction,
+         updateTaskLimsData,
          addTaskAction,
          sendStopQueue,
          setCurrentSample,
@@ -134,6 +135,10 @@ class ServerIO {
 
     this.hwrSocket.on('energy_scan_result', (data) => {
       this.dispatch(setEnergyScanResult(data.pk, data.ip, data.rm));
+    });
+
+    this.hwrSocket.on('update_task_lims_data', (record) => {
+      this.dispatch(updateTaskLimsData(record.sample, record.taskIndex, record.limsResultData));
     });
 
     this.hwrSocket.on('task', (record, callback) => {
