@@ -76,6 +76,7 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keyup', this.keyUp, false);
 
     this.initJSMpeg();
+    window.initJSMpeg = this.initJSMpeg;
   }
 
   componentWillReceiveProps(nextProps) {
