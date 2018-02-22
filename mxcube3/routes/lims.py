@@ -51,7 +51,7 @@ def get_quality_indicator_plot(dc_id):
     data = mxcube.rest_lims.get_quality_indicator_plot(dc_id)
     data = StringIO.StringIO(data)
     data.seek(0)
-    return send_file(data, attachment_filename=fname, as_attachment=True)
+    return send_file(data, attachment_filename="qind", as_attachment=True)
 
 
 @mxcube.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=['GET'])
