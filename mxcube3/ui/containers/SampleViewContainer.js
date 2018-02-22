@@ -110,6 +110,7 @@ class SampleViewContainer extends Component {
                   current={this.props.current}
                   sampleList={this.props.sampleList}
                   proposal={this.props.proposal}
+                  busy={this.props.queueState === QUEUE_RUNNING}
                 />
               </div>
               <div className="col-xs-4" style={ { display: 'flex' } }>

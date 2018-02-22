@@ -24,7 +24,7 @@
 }
 
 .sample-controlls{
-    z-index: 1000;
+    z-index: 500;
     margin: auto;
     opacity: 1;
     border-radius: 3px;
@@ -226,4 +226,13 @@
     color: rgb(255,255,255);
     border-radius: 4px;
     padding: 0.2em;
+}
+
+
+.sample-video-busy {
+    position: absolute;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    float: left;
 }
