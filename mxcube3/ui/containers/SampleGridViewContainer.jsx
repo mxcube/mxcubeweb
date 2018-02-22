@@ -238,7 +238,11 @@ class SampleGridViewContainer extends React.Component {
       return;
     }
 
-    this.props.syncSamples(proposalId);
+    if (Object.keys(this.props.sampleList).length === 0) {
+      this.props.getSamples().then(() => { this.props.syncSamples(proposalId); });
+    } else {
+      this.props.syncSamples(proposalId);
+    }
   }
 
 
