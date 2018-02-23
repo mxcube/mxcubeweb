@@ -61,7 +61,13 @@ export class HelpContainer extends React.Component {
               </Form>
             </span>
           </Panel>
-
+          <Panel header="About MXCuBE3">
+            <span>
+              Version: {/* eslint-disable no-undef */ VERSION.BRANCH}
+              <br />
+              Commit hash: { VERSION.COMMITHASH /* eslint-enable no-undef */}
+            </span>
+          </Panel>
         </div>
         <div className="col-xs-6">
           <Panel header="Video Tutorials">

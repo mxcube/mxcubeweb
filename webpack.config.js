@@ -1,6 +1,9 @@
 var webpack = require("webpack");
 var path = require('path');
 var backend_server = require('./backend_server.js');
+var GitRevisionPlugin = require('git-revision-webpack-plugin');
+var gitRevisionPlugin = new GitRevisionPlugin();
+
 
 var config = {
   entry: {
@@ -112,15 +115,22 @@ var config = {
       }
     ]
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'NODE_ENV': '"dev"'
+      },
+      'VERSION': { 'COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
+                   'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) }
+    })
+  ],
   externals: {
-    'guiConfig': JSON.stringify(require('./config.gui.prod.js'))
+    'guiConfig': JSON.stringify(require('./config.gui.prod.js')),
   },
   resolve: {
     modules: [ path.join(__dirname, "mxcube3/ui"), "node_modules" ],
     extensions: ['.js', '.jsx']
-  },
+  }
 }
 
 module.exports = config;
-
-

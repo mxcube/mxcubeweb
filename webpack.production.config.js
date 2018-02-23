@@ -2,6 +2,9 @@ var webpack = require("webpack");
 var path = require('path');
 var backend_server = require('./backend_server.js');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+var GitRevisionPlugin = require('git-revision-webpack-plugin');
+var gitRevisionPlugin = new GitRevisionPlugin();
+
 
 var config = {
     entry: {
@@ -97,12 +100,14 @@ var config = {
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': '"production"'
-      }
+      },
+      'VERSION': { 'COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
+                   'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) }
     }),
     new UglifyJSPlugin()
   ],
   externals: {
-    'guiConfig': JSON.stringify(require('./config.gui.prod.js'))
+    'guiConfig': JSON.stringify(require('./config.gui.prod.js')),
   },
   resolve: {
     modules: [ path.join(__dirname, "mxcube3/ui"), "node_modules" ],
