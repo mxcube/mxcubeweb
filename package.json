@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "npm run dev",
-    "dev": "./node_modules/.bin/webpack-dev-server",
+    "dev": "NODE_ENV=dev ./node_modules/.bin/webpack-dev-server --env.dev --config webpack.config.js",
     "build": "NODE_ENV=production ./node_modules/.bin/webpack -p --config webpack.production.config.js && cp mxcube3/ui/index.html mxcube3/static/",
     "esformatter": "./node_modules/.bin/esformatter",
     "lint": "eslint . --ext .js --ext .jsx"
@@ -73,6 +73,7 @@
     "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.8.4",
     "font-awesome-webpack2": "0.0.6",
+    "git-revision-webpack-plugin": "^2.5.1",
     "http-server": "0.8.5",
     "image-webpack-loader": "^3.4.2",
     "imagemin-gifsicle": "^5.2.0",
