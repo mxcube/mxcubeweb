@@ -11,13 +11,13 @@ import {
   layout,
 } from 'react-stonecutter';
 
-import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected } from '../constants';
+import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
 
 import { toggleMovableAction,
          selectSamplesAction,
          sendSetSampleOrderAction } from '../actions/sampleGrid';
 
-import { deleteTask, sendMountSample } from '../actions/queue';
+import { deleteTask, sendMountSample, getLimsDataForTask } from '../actions/queue';
 
 import { unloadSample } from '../actions/sampleChanger';
 
@@ -264,6 +264,7 @@ class SampleGridContainer extends React.Component {
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
+                  getLimsDataForTask={getLimsDataForTask}
                 />))
               }
             </SampleGridItem>
@@ -367,6 +368,7 @@ class SampleGridContainer extends React.Component {
     // First case is included for clarity since the two options
     // cancel each other out. Dont do anything same as both false. Otherwise
     // apply filter.
+
     if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
       includeItem = true;
     } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {
@@ -404,6 +406,7 @@ class SampleGridContainer extends React.Component {
       fi &= locationFilter.startsWith(this.props.filterOptions.puckFilter.toLowerCase());
       fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
       fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
+      fi &= this.mutualExclusiveFilterOption(sample, 'limsSamples', '', hasLimsData);
     }
 
     return fi;

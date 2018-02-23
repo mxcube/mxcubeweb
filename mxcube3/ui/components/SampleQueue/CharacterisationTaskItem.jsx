@@ -22,6 +22,7 @@ export default class TaskItem extends Component {
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
     this.showDiffPlan = this.showDiffPlan.bind(this);
+    this.pointIDString = this.pointIDString.bind(this);
     this.state = {
       overInput: false,
       selected: false
@@ -29,10 +30,15 @@ export default class TaskItem extends Component {
   }
 
   getResult(state, data) {
-    if (state !== TASK_COLLECTED) {
+    if (this.props.data.state !== TASK_COLLECTED) {
       return (<span></span>);
     }
-    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
+
+    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '#';
+
+    if (link === '#') {
+      return (<span></span>);
+    }
 
     return (
       <div style={ { borderLeft: '1px solid #DDD',
@@ -82,7 +88,6 @@ export default class TaskItem extends Component {
     } else {
       tasks.forEach((t) => {
         const pars = {
-          // ...this.props.taskData,
           type: 'DataCollection',
           label: 'Data Collection',
           helical: false,
@@ -133,7 +138,11 @@ export default class TaskItem extends Component {
 
     wedges.forEach((wedge) => {
       if ((wedge.parameters.shape !== -1) && res.indexOf(`${wedge.parameters.shape}`) < 0) {
-        res += `${wedge.parameters.shape} `;
+        try {
+          res += `${this.props.shapes.shapes[wedge.parameters.shape].name} `;
+        } catch (e) {
+          res += 'NOCP';
+        }
       }
     });
 

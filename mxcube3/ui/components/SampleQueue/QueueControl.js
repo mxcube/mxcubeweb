@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap';
 import { QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED, QUEUE_STARTED } from '../../constants';
 
 import QueueSettings from '../../containers/QueueSettings.jsx';
+import loader from '../../img/busy-indicator.gif';
 
 
 export default class QueueControl extends React.Component {
@@ -118,6 +119,10 @@ export default class QueueControl extends React.Component {
         }
       }
     }
+
+    const running = this.props.queueStatus === QUEUE_RUNNING;
+    const showBusyIndicator = running ? 'inline' : 'none';
+
     return (
       <div className="m-tree">
         <div className="list-head">
@@ -129,6 +134,11 @@ export default class QueueControl extends React.Component {
               {sampleQueueOptions.map((option) => this.renderSampleOptions(option))}
             </span>
           </div>
+          <img
+            src={loader}
+            style={{ display: showBusyIndicator, marginLeft: '25%' }}
+            role="presentation"
+          />
           <QueueSettings />
         </div>
       </div>

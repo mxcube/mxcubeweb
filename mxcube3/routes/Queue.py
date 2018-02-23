@@ -141,6 +141,7 @@ def queue_clear():
               409: Queue could not be started
     """
     mxcube.diffractometer.savedCentredPos = []
+    limsutils.init_sample_list()
     mxcube.queue = qutils.new_queue()
     logging.getLogger('HWR').info('[QUEUE] Cleared  ' +
                                   str(mxcube.queue.get_model_root()._name))
@@ -288,6 +289,18 @@ def queue_set_sample_order():
     qutils.set_sample_order(sample_order)
     limsutils.sample_list_set_order(sample_order)
     logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % qutils.queue_to_json())
+    return Response(status=200)
+
+
+@mxcube.route("/mxcube/api/v0.1/queue/get_lims_data_for_task", methods=['POST'])
+def get_lims_data_for_task():
+    qid = request.get_json().get("qid", "")
+
+    if qid:
+        model, entry = qutils.get_entry(qid)
+        if entry:
+            signals.update_task_result(entry)
+
     return Response(status=200)
 
 

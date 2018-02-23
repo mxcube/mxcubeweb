@@ -113,6 +113,17 @@ export default class SampleControls extends React.Component {
         <span className={`fa ${autoScaleGClass}`} /> Auto Scale
       </MenuItem>));
 
+    items.push((
+      <MenuItem
+        eventKey="3"
+        key="reset"
+        onClick={() => {
+          window.initJSMpeg();
+        }}
+      >
+        <span className="fa fa-redo" /> Reset
+      </MenuItem>));
+
     return items;
   }
 

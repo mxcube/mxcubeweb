@@ -81,7 +81,7 @@ export function setSamplesInfoAction(sampleInfoList) {
 export function sendGetSampleList() {
   return function (dispatch) {
     dispatch(setLoading(true, 'Please wait', 'Retrieving sample changer contents', true));
-    fetch('mxcube/api/v0.1/sample_changer/samples_list', { credentials: 'include' })
+    return fetch('mxcube/api/v0.1/sample_changer/samples_list', { credentials: 'include' })
                         .then(response => response.json())
                         .then(res => {
                           const sampleList = res.sampleList;

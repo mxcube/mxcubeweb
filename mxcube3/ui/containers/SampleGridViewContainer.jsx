@@ -118,6 +118,7 @@ class SampleGridViewContainer extends React.Component {
       notInQueue: this.props.filterOptions.notInQueue,
       collected: this.props.filterOptions.collected,
       notCollected: this.props.filterOptions.notCollected,
+      limsSamples: this.props.filterOptions.limsSamples,
       filterText: this.props.filterOptions.text,
       puckFilter: this.props.filterOptions.puckFilter
     };
@@ -237,7 +238,11 @@ class SampleGridViewContainer extends React.Component {
       return;
     }
 
-    this.props.syncSamples(proposalId);
+    if (Object.keys(this.props.sampleList).length === 0) {
+      this.props.getSamples().then(() => { this.props.syncSamples(proposalId); });
+    } else {
+      this.props.syncSamples(proposalId);
+    }
   }
 
 
@@ -249,6 +254,7 @@ class SampleGridViewContainer extends React.Component {
             this.props.filterOptions.notInQueue ||
             this.props.filterOptions.collected ||
             this.props.filterOptions.notCollected ||
+            this.props.filterOptions.limsSamples ||
             (this.props.filterOptions.text.length > 0));
   }
 
@@ -263,6 +269,7 @@ class SampleGridViewContainer extends React.Component {
       notInQueue: { notInQueue: e.target.checked },
       collected: { collected: e.target.checked },
       notCollected: { notCollected: e.target.checked },
+      limsSamples: { limsSamples: e.target.checked },
       filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() }
     };
 
@@ -278,6 +285,7 @@ class SampleGridViewContainer extends React.Component {
                         notInQueue: false,
                         collected: false,
                         notCollected: false,
+                        limsFilter: false,
                         filterText: '' });
   }
 
@@ -520,6 +528,25 @@ class SampleGridViewContainer extends React.Component {
                         >
                           Not Collected
                         </Checkbox>
+                      </Col>
+                    </Row>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col xs={12}>
+                    <Row>
+                      <Col xs={6}>
+                        <Checkbox
+                          inline
+                          id="limsSamples"
+                          checked={this.getFilterOptionValue('limsSamples')}
+                          onChange={this.sampleGridFilter}
+                        >
+                          LIMS Samples
+                        </Checkbox>
+                      </Col>
+                      <Col xs={6}>
+                        <span />
                       </Col>
                     </Row>
                   </Col>

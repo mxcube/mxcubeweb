@@ -19,6 +19,7 @@ import { setActionState,
          plotEnd } from './actions/beamlineActions';
 import { setStatus,
          addTaskResultAction,
+         updateTaskLimsData,
          addTaskAction,
          sendStopQueue,
          setCurrentSample,
@@ -136,6 +137,10 @@ class ServerIO {
       this.dispatch(setEnergyScanResult(data.pk, data.ip, data.rm));
     });
 
+    this.hwrSocket.on('update_task_lims_data', (record) => {
+      this.dispatch(updateTaskLimsData(record.sample, record.taskIndex, record.limsResultData));
+    });
+
     this.hwrSocket.on('task', (record, callback) => {
       if (callback) {
         callback();
@@ -179,6 +184,7 @@ class ServerIO {
       if (record.Signal === 'DisableSample') {
         this.dispatch(setSampleAttribute(record.sampleID, 'checked', false));
       } else {
+        window.initJSMpeg();
         this.dispatch(setStatus(record.Signal));
       }
     });

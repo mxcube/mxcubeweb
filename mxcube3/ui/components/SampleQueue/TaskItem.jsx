@@ -21,6 +21,7 @@ export default class TaskItem extends Component {
     this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
+    this.pointIDString = this.pointIDString.bind(this);
     this.state = {
       overInput: false,
       selected: false
@@ -83,7 +84,11 @@ export default class TaskItem extends Component {
 
     wedges.forEach((wedge) => {
       if ((wedge.parameters.shape !== -1) && res.indexOf(`${wedge.parameters.shape}`) < 0) {
-        res += `${wedge.parameters.shape} `;
+        try {
+          res += `${this.props.shapes.shapes[wedge.parameters.shape].name} `;
+        } catch (e) {
+          res += 'NOCP';
+        }
       }
     });
 
@@ -203,7 +208,7 @@ export default class TaskItem extends Component {
         >
           <b>
             <span className="node-name" style={{ display: 'flex' }} >
-              {this.pointIDString(wedges)} {data.label}
+              {this.pointIDString(wedges)}: {data.label}
               { state === TASK_RUNNING ? this.progressBar() : null }
             </span>
           </b>

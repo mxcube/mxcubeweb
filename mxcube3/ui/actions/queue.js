@@ -550,6 +550,10 @@ export function addTaskResultAction(sampleID, taskIndex, state, progress, limsRe
   return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress, limsResultData, queueID };
 }
 
+export function updateTaskLimsData(sampleID, taskIndex, limsResultData) {
+  return { type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex, limsResultData };
+}
+
 
 export function sendUnmountSample(sample) {
   return function (dispatch) {
@@ -705,6 +709,7 @@ export function sendSetNumSnapshots(numSnapshots) {
     });
   };
 }
+
 export function sendSetGroupFolder(path) {
   return function (dispatch) {
     fetch('/mxcube/api/v0.1/queue/group_folder', {
@@ -724,4 +729,16 @@ export function sendSetGroupFolder(path) {
       dispatch(setGroupFolder(response.path));
     });
   };
+}
+
+export function getLimsDataForTask(qid) {
+  fetch('mxcube/api/v0.1/queue/get_lims_data_for_task', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({ qid })
+  });
 }

@@ -217,13 +217,37 @@ def get_task_state(entry):
     msg = {'Signal': '',
            'Message': '',
            'taskIndex': node_index['idx'],
-           'queueID': last_queue_node()['queue_id'],
+           'queueID': node_id,
            'sample': node_index['sample'],
            'limsResultData': limsres,
            'state': state,
            'progress': 1}
 
     return msg
+
+
+def update_task_result(entry):
+    node_index = qutils.node_index(entry.get_data_model())
+    node_id = entry.get_data_model()._node_id
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, 'null')
+
+    try:
+        limsres = mxcube.rest_lims.get_dc(lims_id)
+    except:
+        limsres = {}
+
+    try:
+        limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
+    except Exception:
+        limsres["limsTaskLink"] = "#"
+        msg = "Could not get lims link for collection with id: %s" % lims_id
+        logging.getLogger("HWR").error(msg)
+
+    msg = { 'sample': node_index['sample'],
+            'taskIndex': node_index['idx'],
+            'limsResultData': limsres }
+
+    socketio.emit('update_task_lims_data', msg, namespace='/hwr')
 
 
 def queue_execution_entry_finished(entry):

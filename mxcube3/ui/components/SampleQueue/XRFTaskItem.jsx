@@ -27,6 +27,7 @@ export default class XRFTaskItem extends Component {
     this.showPlotModal = this.showPlotModal.bind(this);
     this.open = this.open.bind(this);
     this.close = this.close.bind(this);
+    this.pointIDString = this.pointIDString.bind(this);
 
     this.state = {
       overInput: false,
@@ -147,8 +148,13 @@ export default class XRFTaskItem extends Component {
     let res = '';
 
     if (parameters.shape !== -1) {
-      res = `${parameters.shape} `;
+      try {
+        res = `${this.props.shapes.shapes[parameters.shape].name} `;
+      } catch (e) {
+        res = '';
+      }
     }
+
     return res;
   }
 

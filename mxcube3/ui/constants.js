@@ -35,6 +35,11 @@ export function isUnCollected(task) {
 }
 
 
+export function hasLimsData(sample) {
+  return sample.limsID !== undefined;
+}
+
+
 export const SPACE_GROUPS =
     ['', 'P1', 'P2', 'P21', 'C2', 'P222', 'P2221', 'P21212',
      'P212121', 'C222 ', 'C2221', 'F222', 'I222', 'I212121',
@@ -49,4 +54,3 @@ export const SPACE_GROUPS =
 
 
 /* eslint-enable no-unused-vars */
-

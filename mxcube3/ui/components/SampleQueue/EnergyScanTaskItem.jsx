@@ -21,6 +21,7 @@ export default class EnergyScanTaskItem extends Component {
     this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
+    this.pointIDString = this.pointIDString.bind(this);
     this.state = {
       overInput: false,
       selected: false
@@ -82,8 +83,13 @@ export default class EnergyScanTaskItem extends Component {
     let res = '';
 
     if (parameters.shape !== -1) {
-      res = `${parameters.shape} `;
+      try {
+        res = `${this.props.shapes.shapes[parameters.shape].name} `;
+      } catch (e) {
+        res = '';
+      }
     }
+
     return res;
   }
 

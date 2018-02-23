@@ -24,6 +24,7 @@ const INITIAL_STATE = { selected: {},
                                          collected: false,
                                          notCollected: false,
                                          puckFilter: '',
+                                         limsFilter: false,
                                          useFilter: false } };
 
 
@@ -126,6 +127,24 @@ export default (state = INITIAL_STATE, action) => {
               checked: false,
               limsResultData: action.limsResultData,
               state: action.state
+            },
+            ...state.sampleList[action.sampleID].tasks.slice(action.taskIndex + 1)
+          ]
+        }
+      };
+
+      return Object.assign({}, state, { sampleList });
+    }
+    case 'UPDATE_TASK_LIMS_DATA': {
+      const sampleList = {
+        ...state.sampleList,
+        [action.sampleID]: {
+          ...state.sampleList[action.sampleID],
+          tasks: [
+            ...state.sampleList[action.sampleID].tasks.slice(0, action.taskIndex),
+            {
+              ...state.sampleList[action.sampleID].tasks[action.taskIndex],
+              limsResultData: action.limsResultData,
             },
             ...state.sampleList[action.sampleID].tasks.slice(action.taskIndex + 1)
           ]
