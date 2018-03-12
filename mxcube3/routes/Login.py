@@ -107,9 +107,12 @@ def signout():
             mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
     LOGGED_IN_USER = None
+
     if remote_access.is_master(session.sid):
         state_storage.flush()
         remote_access.flush()
+    else:
+        remote_access.remove_observer()
 
     session.clear()
 
