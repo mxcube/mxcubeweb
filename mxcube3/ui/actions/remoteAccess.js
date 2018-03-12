@@ -57,3 +57,27 @@ export function showObserverDialog(show = true) {
 export function setObservers(observers) {
   return { type: 'SET_OBSERVERS', observers };
 }
+
+
+export function sendChatMessage(message, sid) {
+  return fetch('mxcube/api/v0.1/chat', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({ message, sid })
+  });
+}
+
+export function getAllChatMessages() {
+  return fetch('mxcube/api/v0.1/chat', {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json'
+    }
+  }).then((response) => response.json());
+}
