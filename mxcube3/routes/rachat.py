@@ -10,8 +10,13 @@ MESSAGES = []
 
 
 def _append_message(message, sid):
+    user =  observer_name()
+
+    if not user:
+        user = "*"  + session["loginInfo"]["loginID"]
+
     data = {"message": message, "sid": sid,
-            "user": observer_name(), "host":remote_addr(),
+            "user": user, "host":remote_addr(),
             "date": datetime.datetime.now().strftime("%H:%M")}
 
     MESSAGES.append(data)
@@ -19,7 +24,6 @@ def _append_message(message, sid):
 
 
 def _get_all_messages():
-    print("GETTING ALL MESSAGES %s" % str(MESSAGES))
     return MESSAGES
 
 
@@ -30,8 +34,6 @@ def append_message():
 
     if message and sid:
         _append_message(message, sid)
-
-    print("ADDED MESSAGE %s" % message)
 
     return Response(status=200)
 

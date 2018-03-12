@@ -244,14 +244,18 @@ class ServerIO {
 
     this.hwrSocket.on('observersChanged', (data) => {
       this.dispatch(setObservers(data));
+    });
 
-      data.forEach((observer) => {
-        if (observer.name !== undefined && observer.host !== undefined) {
-          addResponseMessage(`${observer.name} (${observer.host}) connected.`);
-        } else if (observer.name !== undefined) {
-          addResponseMessage(`(${observer.host}) is connecting ...`);
-        }
-      });
+    this.hwrSocket.on('observerLogout', (observer) => {
+      addResponseMessage(`**${observer.name}** (${observer.host}) disconnected.`);
+    });
+
+    this.hwrSocket.on('observerLogin', (observer) => {
+      if (observer.name && observer.host) {
+        addResponseMessage(`**${observer.name}** (${observer.host}) connected.`);
+      } else {
+        addResponseMessage(`${observer.host} connecting.`);
+      }
     });
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {
