@@ -13,6 +13,7 @@ import SampleQueueContainer from './SampleQueueContainer';
 import { QUEUE_RUNNING } from '../constants';
 import config from 'guiConfig';
 
+
 class SampleViewContainer extends Component {
 
   render() {
@@ -79,7 +80,7 @@ class SampleViewContainer extends Component {
                   steps={motorSteps}
                   stop={sendStopMotor}
                 />
-                </div>
+              </div>
               <div className="col-xs-7">
                 <ContextMenu
                   {...this.props.contextMenu}
@@ -138,7 +139,8 @@ function mapStateToProps(state) {
     workflows: state.workflow.workflows,
     cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
     cellSpacing: state.taskForm.defaultParameters.mesh.cell_spacing,
-    proposal: state.login.selectedProposal
+    proposal: state.login.selectedProposal,
+    remoteAccess: state.remoteAccess
   };
 }
 

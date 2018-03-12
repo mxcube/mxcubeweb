@@ -35,6 +35,8 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
 
+import { addResponseMessage } from 'react-chat-widget';
+
 import { setSCState,
          setLoadedSample,
          setSCGlobalState,
@@ -98,6 +100,13 @@ class ServerIO {
         this.dispatch(addUserMessage(record, 'queue'));
       } else {
         this.dispatch(addUserMessage(record));
+      }
+    });
+
+    this.hwrSocket.on('ra_chat_message', (record) => {
+      const sid = store.getState().remoteAccess.sid;
+      if (record.sid !== sid) {
+        addResponseMessage(`${record.date} **${record.user}:** \n\n ${record.message}`);
       }
     });
 
@@ -235,6 +244,14 @@ class ServerIO {
 
     this.hwrSocket.on('observersChanged', (data) => {
       this.dispatch(setObservers(data));
+
+      data.forEach((observer) => {
+        if (observer.name !== undefined && observer.host !== undefined) {
+          addResponseMessage(`${observer.name} (${observer.host}) connected.`);
+        } else if (observer.name !== undefined) {
+          addResponseMessage(`(${observer.host}) is connecting ...`);
+        }
+      });
     });
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {

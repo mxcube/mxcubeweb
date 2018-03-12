@@ -115,7 +115,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     ### Importing all REST-routes
     from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
-                        lims, qutils, workflow, Detector)
+                        lims, qutils, workflow, Detector, rachat)
 
     ### Install server-side UI state storage
     from mxcube3 import state_storage
