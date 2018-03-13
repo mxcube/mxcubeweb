@@ -64,7 +64,7 @@ class SelectProposal extends React.Component {
               Sign Out
             </Button>
             <Button bsStyle="primary" className="pull-right"
-              disabled={this.props.selectedProposal === ''}
+              disabled={typeof this.props.selectedProposal === 'undefined'}
               onClick={this.sendProposal}
             >
               Select Proposal
