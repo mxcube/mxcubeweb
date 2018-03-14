@@ -114,7 +114,7 @@ def signout():
     qutils.save_queue(session)
     mxcube.queue = qutils.new_queue()
     mxcube.shapes.clear_all()
-    qutils.reset_queue_settings()
+    qutils.init_queue_settings()
     if hasattr(mxcube.session, 'clear_session'):
         mxcube.session.clear_session()
 

@@ -1754,7 +1754,7 @@ def is_interleaved(node):
         node.interleave_num_images > 0
 
 
-def reset_queue_settings():
+def init_queue_settings():
     mxcube.NUM_SNAPSHOTS = mxcube.collect.getProperty('num_snapshots', 4)
     mxcube.AUTO_MOUNT_SAMPLE = mxcube.collect.getProperty('auto_mount_sample', False)
     mxcube.AUTO_ADD_DIFFPLAN = mxcube.collect.getProperty('auto_add_diff_plan', False)
