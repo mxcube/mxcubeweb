@@ -180,7 +180,7 @@ def stream_video(camera_hwobj):
     while True:
         try:
             camera_hwobj.new_frame.wait()
-            yield 'Content-type: image/jpeg\n\n' + SAMPLE_IMAGE + "\n--!>"
+            yield '--!>\nContent-type: image/jpeg\n\n' + SAMPLE_IMAGE
         except Exception:
             pass
 
