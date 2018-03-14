@@ -4,6 +4,8 @@ import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
+import warn from './warning';
+
 import { FieldsHeader,
          StaticField,
          InputField,
@@ -213,7 +215,8 @@ class Characterisation extends React.Component {
 
 Characterisation = reduxForm({
   form: 'characterisation',
-  validate
+  validate,
+  warn
 })(Characterisation);
 
 const selector = formValueSelector('characterisation');

@@ -8,6 +8,16 @@ import { Row,
          ControlLabel,
          Button } from 'react-bootstrap';
 
+function validation(error, warning) {
+  let state = null;
+  if (error) {
+    state = 'error';
+  } else if (warning) {
+    state = 'warning';
+  }
+  return state;
+}
+
 export const FieldsHeader = ({ title }) => (
   <Row>
     <Col xs={12}>
@@ -30,7 +40,9 @@ export const StaticField = ({ label, data }) => (
 );
 
 const ReduxInputField = (prop) => (
-       <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
+       <FormGroup controlId={prop.input.name}
+         validationState={validation(prop.meta.error, prop.meta.warning)}
+       >
          <Col xs={prop.col1 || 8} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
            {prop.label}
          </Col>
