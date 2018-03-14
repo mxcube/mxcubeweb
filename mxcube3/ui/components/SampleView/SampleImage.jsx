@@ -498,7 +498,7 @@ export default class SampleImage extends React.Component {
       if (e.deltaY > 0 && motors.zoom.position < 10) {
         // zoom in
         sendZoomPos(motors.zoom.position + 1);
-      } else if (e.deltaY < 0 && motors.zoom.position > 0) {
+      } else if (e.deltaY < 0 && motors.zoom.position > 1) {
         // zoom out
         sendZoomPos(motors.zoom.position - 1);
       }
