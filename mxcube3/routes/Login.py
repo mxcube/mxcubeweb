@@ -54,26 +54,39 @@ def login():
        200: On success
        409: Error, could not log in
     """
-    global LOGGED_IN_USER
+    params = request.get_json()
+    loginID = params.get("proposal", "")
+    password = params.get("password", "")
 
-    content = request.get_json()
-    loginID = content['proposal']
-    password = content['password']
+    try:
+        if logged_in_users() and loginID not in logged_in_users():
+            return deny_access("Another user is already logged in")
 
-    if LOGGED_IN_USER is not None and LOGGED_IN_USER != loginID:
-        data = {"code": "", "msg": "Another user is already logged in"}
-        resp = jsonify(data)
-        resp.code = 409
-        return resp
+        login_res = limsutils.lims_login(loginID, password)
+        info = {"valid": limsutils.lims_valid_login(login_res),
+                "local": is_local_host(),
+                "existing_session": limsutils.lims_existing_session(login_res),
+                "inhouse": limsutils.lims_is_inhouse(login_res)}
 
-    login_res = limsutils.lims_login(loginID, password)
+        if limsutils.lims_valid_login(login_res) and is_local_host():
+            msg = "[LOGIN] Valid login from local host (%s)" % str(info)
+            logging.getLogger("HWR").info(msg)
+        elif limsutils.lims_valid_login(login_res) and \
+             limsutils.lims_existing_session(login_res):
+            msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
+            msg += msg % (remote_access.remote_addr(), str(info))
+            logging.getLogger("HWR").info(msg)
+        else:
+            logging.getLogger("HWR").info("Invalid login %s" % info)
+            return deny_access(str(info))
+    except:
+        return deny_access("")
+    else:
+        add_user(create_user(loginID, remote_access.remote_addr(), session.sid))
 
-    if login_res['status']['code'] == 'ok':
         session['loginInfo'] = {'loginID': loginID,
                                 'password': password,
                                 'loginRes': login_res}
-
-        LOGGED_IN_USER = loginID
 
         # Create a new queue just in case any previous queue was not cleared
         # properly
@@ -84,11 +97,11 @@ def login():
         # qutils.load_queue(session)
         # logging.getLogger('HWR').info('Loaded queue')
         logging.getLogger('HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
-
+        
         if not remote_access.MASTER:
             remote_access.set_master(session.sid)
 
-    return jsonify(login_res['status'])
+        return jsonify(login_res['status'])
 
 
 @mxcube.route("/mxcube/api/v0.1/signout")
@@ -96,8 +109,6 @@ def signout():
     """
     Signout from Mxcube3 and reset the session
     """
-    global LOGGED_IN_USER
-
     qutils.save_queue(session)
     mxcube.queue = qutils.new_queue()
     mxcube.shapes.clear_all()
@@ -106,7 +117,7 @@ def signout():
         if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
             mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
-    LOGGED_IN_USER = None
+    remove_user(session.sid)
 
     if remote_access.is_master(session.sid):
         state_storage.flush()

@@ -1,4 +1,5 @@
 import logging
+import socket
 
 from flask import request, session
 from mxcube3 import socketio
