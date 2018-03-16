@@ -11,11 +11,15 @@ import qutils
 from mxcube3 import app as mxcube
 from flask import session
 
+
+
 def new_sample_list():
     return {"sampleList": {}, 'sampleOrder': []}
 
+
 def init_sample_list():
     sample_list_set(new_sample_list())
+
 
 def sample_list_set(sample_list):
     mxcube.SAMPLE_LIST = sample_list
@@ -134,6 +138,16 @@ def strip_prefix(pt, prefix):
         prefix = prefix[:-(len(pt.mad_prefix) + 1)]
 
     return prefix
+
+
+def lims_existing_session(login_res):
+    return not login_res.get("Session", {}).get("new_session_flag", True)
+
+def lims_is_inhouse(login_res):
+    return login_res.get("Session", {}).get("is_inhouse", False)
+
+def lims_valid_login(login_res):
+    return login_res['status']['code'] == 'ok'
 
 
 def lims_login(loginID, password):

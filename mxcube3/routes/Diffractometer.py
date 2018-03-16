@@ -15,6 +15,7 @@ def init_signals():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/phase", methods=['GET'])
+@mxcube.restrict
 def get_phase():
     """
     Retrieve the current phase in the diffractometer.
@@ -30,6 +31,7 @@ def get_phase():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/phaselist", methods=['GET'])
+@mxcube.restrict
 def get_phase_list():
     """
     Retrieve the available phases in the diffractometer.
@@ -44,6 +46,7 @@ def get_phase_list():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/phase", methods=['PUT'])
+@mxcube.restrict
 def set_phase():
     """
     Set the phase in the diffractometer.
@@ -65,6 +68,7 @@ def set_phase():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/platemode", methods=['GET'])
+@mxcube.restrict
 def md_in_plate_mode():
     """
     md_in_plate_mode: check if diffractometer is in plate mode or not
@@ -78,6 +82,7 @@ def md_in_plate_mode():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/movables/state", methods=['GET'])
+@mxcube.restrict
 def get_movables_state():
     ret = Utils.get_centring_motors_info()
 
@@ -89,6 +94,7 @@ def get_movables_state():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['PUT'])
+@mxcube.restrict
 def set_aperture():
     """
     Move the aperture motor.
@@ -108,6 +114,7 @@ def set_aperture():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['GET'])
+@mxcube.restrict
 def get_aperture():
     ret = {}
 
@@ -125,6 +132,7 @@ def get_aperture():
 
 
 @mxcube.route("/mxcube/api/v0.1/diffractometer/info", methods=['GET'])
+@mxcube.restrict
 def get_diffractometer_info():
     ret = {}
 

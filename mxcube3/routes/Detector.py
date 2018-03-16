@@ -4,6 +4,7 @@ from mxcube3 import app as mxcube
 import logging
 
 @mxcube.route("/mxcube/api/v0.1/detector", methods=['GET'])
+@mxcube.restrict
 def get_detector_info():
     """
     Retrieves general info from the detector.

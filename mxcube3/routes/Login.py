@@ -2,15 +2,17 @@ import logging
 import os
 import Utils
 
-from flask import session, request, jsonify, make_response
+from flask import session, request, jsonify, make_response, Response
 from mxcube3 import app as mxcube
 from mxcube3.routes import qutils
 from mxcube3.routes import limsutils
 from mxcube3 import remote_access, state_storage
+from mxcube3.remote_access import is_local_host
 from mxcube3 import socketio
 from scandir import scandir
 
-LOGGED_IN_USER = None
+from loginutils import (create_user, add_user, remove_user, get_user_by_sid,
+                        logged_in_users, deny_access)
 
 
 def scantree(path, include):
@@ -131,6 +133,7 @@ def signout():
 
 
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
+@mxcube.restrict
 def loginInfo():
     """
     Retrieve session/login info
@@ -151,16 +154,10 @@ def loginInfo():
        200: On success
        409: Error, could not log in
     """
-    global LOGGED_IN_USER
     login_info = session.get("loginInfo")
 
     if login_info is not None:
         login_id = login_info["loginID"]
-
-        if LOGGED_IN_USER is not None and LOGGED_IN_USER != login_id:
-            return make_response("", 409)
-
-        LOGGED_IN_USER = login_id
 
         if not remote_access.MASTER:
             remote_access.set_master(session.sid)
@@ -179,11 +176,10 @@ def loginInfo():
            "observerName": remote_access.observer_name()
            }
 
+    # Autoselect proposal
     if res["loginType"].lower() != 'user' and login_info:
-        # autoselect proposal
-
-        limsutils.select_proposal(LOGGED_IN_USER)
-        res["selectedProposal"] = LOGGED_IN_USER
+        limsutils.select_proposal(get_user_by_sid(session.sid)["loginID"])
+        res["selectedProposal"] = get_user_by_sid(session.sid)["loginID"]
         logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
 
 
@@ -276,10 +272,9 @@ def request_control_response():
 
 @mxcube.route("/mxcube/api/v0.1/send_feedback", methods=["POST"])
 def send_feedback():
-    global LOGGED_IN_USER
 
     sender_data = request.get_json()
-    sender_data["LOGGED_IN_USER"]=LOGGED_IN_USER
+    sender_data["LOGGED_IN_USER"] = get_user_by_sid(session.sid)["loginID"]
 
     Utils.send_feedback(sender_data)
 
