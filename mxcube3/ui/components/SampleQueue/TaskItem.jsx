@@ -76,7 +76,11 @@ export default class TaskItem extends Component {
   showForm() {
     const { data, sampleId } = this.props;
     const { type, parameters } = data;
-    this.props.showForm(type, sampleId, data, parameters.shape);
+    if (parameters.helical) {
+      this.props.showForm('Helical', sampleId, data, parameters.shape);
+    } else {
+      this.props.showForm(type, sampleId, data, parameters.shape);
+    }
   }
 
   pointIDString(wedges) {

@@ -11,7 +11,9 @@ export default class PhaseInput extends React.Component {
   }
 
   sendPhase(event) {
-    this.props.sendPhase(event.target.value);
+    if (event.target.value !== 'Unknown') {
+      this.props.sendPhase(event.target.value);
+    }
   }
 
   render() {
