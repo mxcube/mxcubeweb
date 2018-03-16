@@ -34,6 +34,17 @@ def RateLimited(maxPerSecond):
     return decorate
 
 
+
+def valid_login_only(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not get_user_by_sid(session.sid):
+            return Response(status=404)
+        else:
+            return f(*args, **kwargs)
+    return wrapped
+
+
 def _proposal_id(session):
     try:
         return int(session["loginInfo"]["loginRes"]["Proposal"]["number"])

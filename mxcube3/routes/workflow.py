@@ -5,6 +5,7 @@ from flask import Response, jsonify, request
 
 
 @mxcube.route("/mxcube/api/v0.1/workflow", methods=['GET'])
+@mxcube.restrict
 def workflow():
     workflows = {}
     try:
@@ -22,6 +23,7 @@ def workflow():
 
 
 @mxcube.route("/mxcube/api/v0.1/workflow", methods=['POST'])
+@mxcube.restrict
 def sumbit_parameters():
     data = request.get_json()
     mxcube.workflow.set_values_map(data)
@@ -29,6 +31,7 @@ def sumbit_parameters():
 
 # This route is only for testing
 @mxcube.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=['GET'])
+@mxcube.restrict
 def workflow_dialog(wf):
     dialog = {
         "properties": {

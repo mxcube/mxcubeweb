@@ -28,6 +28,7 @@ def _get_all_messages():
 
 
 @mxcube.route("/mxcube/api/v0.1/chat", methods=["POST"])
+@mxcube.restrict
 def append_message():
     message = request.get_json().get("message", "")
     sid = request.get_json().get("sid", "")
@@ -38,5 +39,6 @@ def append_message():
     return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/chat", methods=["GET"])
+@mxcube.restrict
 def get_all_mesages():
     return jsonify({"messages": MESSAGES})

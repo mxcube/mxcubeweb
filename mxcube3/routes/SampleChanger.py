@@ -62,6 +62,7 @@ def get_sc_contents():
     return contents
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
+@mxcube.restrict
 def get_samples_list():
     samples_list = mxcube.sample_changer.getSampleList()
     samples = {}
@@ -108,12 +109,14 @@ def get_samples_list():
     return jsonify(limsutils.sample_list_get())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/state", methods=['GET'])
+@mxcube.restrict
 def get_sc_state():
     state = mxcube.sample_changer.getStatus().upper()
 
     return jsonify({'state': state})
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/loaded_sample", methods=['GET'])
+@mxcube.restrict
 def get_loaded_sample():
     sample = mxcube.sample_changer.getLoadedSample()
 
@@ -127,21 +130,25 @@ def get_loaded_sample():
     return jsonify({'address': address, 'barcode': barcode})
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
+@mxcube.restrict
 def get_sc_contents_view():
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/select/<loc>", methods=['GET'])
+@mxcube.restrict
 def select_location(loc):
     mxcube.sample_changer.select(loc)
     return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/scan/<loc>", methods=['GET'])
+@mxcube.restrict
 def scan_location(loc):
     # do a recursive scan
     mxcube.sample_changer.scan(loc, True)
     return get_sc_contents()
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
+@mxcube.restrict
 def mount_sample(loc):
     scutils.set_sample_to_be_mounted(loc)
     mxcube.sample_changer.load(loc)
@@ -150,18 +157,21 @@ def mount_sample(loc):
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
+@mxcube.restrict
 def unmount_sample(loc):
     mxcube.sample_changer.unload(loc, wait=True)
     set_current_sample(None)
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount_current/", methods=['GET'])
+@mxcube.restrict
 def unmount_current():
     mxcube.sample_changer.unload(None, wait=True)
     set_current_sample(None)
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
+@mxcube.restrict
 def mount_sample_clean_up():
     try:
         scutils.mount_sample_clean_up(request.get_json())
@@ -171,6 +181,7 @@ def mount_sample_clean_up():
         return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount", methods=['POST'])
+@mxcube.restrict
 def unmount_sample_clean_up():
     try:
         scutils.unmount_sample_clean_up(request.get_json())
@@ -180,6 +191,7 @@ def unmount_sample_clean_up():
         return Response(status=200)
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/get_maintenance_cmds", methods=['GET'])
+@mxcube.restrict
 def get_maintenance_cmds():
     try:
         if mxcube.sc_maintenance is not None:
@@ -192,6 +204,7 @@ def get_maintenance_cmds():
         return jsonify(cmds=ret)
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/get_global_state", methods=['GET'])
+@mxcube.restrict
 def get_global_state():
     try:
         if mxcube.sc_maintenance is not None:
@@ -205,6 +218,7 @@ def get_global_state():
         return jsonify(state=state, commands_state=cmdstate, message=msg)
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/get_initial_state", methods=['GET'])
+@mxcube.restrict
 def get_initial_state():
     if mxcube.sc_maintenance is not None:
         ret = mxcube.sc_maintenance.get_global_state()
@@ -241,6 +255,7 @@ def get_initial_state():
     return jsonify(initial_state)
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/send_command/<cmdparts>", methods=['GET'])
+@mxcube.restrict
 def send_command(cmdparts):
     try:
         ret = mxcube.sc_maintenance.send_command(cmdparts)

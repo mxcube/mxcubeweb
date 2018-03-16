@@ -8,6 +8,7 @@ from . import limsutils
 from . import qutils
 
 @mxcube.route("/mxcube/api/v0.1/lims/samples/<proposal_id>", methods=['GET'])
+@mxcube.restrict
 def proposal_samples(proposal_id):
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
@@ -39,6 +40,7 @@ def proposal_samples(proposal_id):
 
 
 @mxcube.route("/mxcube/api/v0.1/lims/dc/thumbnail/<image_id>", methods=['GET'])
+@mxcube.restrict
 def get_dc_thumbnail(image_id):
     fname, data = mxcube.rest_lims.get_dc_thumbnail(image_id)
     data = StringIO.StringIO(data)
@@ -47,6 +49,7 @@ def get_dc_thumbnail(image_id):
 
 
 @mxcube.route("/mxcube/api/v0.1/lims/quality_indicator_plot/<dc_id>", methods=['GET'])
+@mxcube.restrict
 def get_quality_indicator_plot(dc_id):
     data = mxcube.rest_lims.get_quality_indicator_plot(dc_id)
     data = StringIO.StringIO(data)
@@ -55,12 +58,14 @@ def get_quality_indicator_plot(dc_id):
 
 
 @mxcube.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=['GET'])
+@mxcube.restrict
 def get_dc(dc_id):
     data = mxcube.rest_lims.get_dc_(dc_id)
     return jsonify(data)
 
 
 @mxcube.route("/mxcube/api/v0.1/lims/proposal", methods=['POST'])
+@mxcube.restrict
 def set_proposal():
     """
     Set the selected proposal.
@@ -74,6 +79,7 @@ def set_proposal():
 
 
 @mxcube.route("/mxcube/api/v0.1/lims/proposal", methods=['GET'])
+@mxcube.restrict
 def get_proposal():
     """
     Return the currently selected proposal. (The proposal list is part of the login_res)

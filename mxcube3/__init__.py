@@ -112,8 +112,13 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
       if log_file:
           logger.addHandler(log_file_handler)
 
+    from routes import loginutils
+
+    # Make the valid_login_only decorator available on app object
+    app.restrict = loginutils.valid_login_only
+
     ### Importing all REST-routes
-    from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
+    from routes import (Main, Beamline, Login, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
                         lims, qutils, workflow, Detector, rachat)
 
@@ -159,6 +164,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
         app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
         app.TEMP_DISABLED = []
+        app.USERS = {}
 
         # set up streaming
         from mxcube3.video import streaming
