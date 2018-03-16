@@ -82,16 +82,24 @@ def set_master_id(data):
     if data['master']:
         MASTER_ROOM = request.sid
         emit_pending_events()
-    else:       
-        OBSERVERS[remote_addr()] = {"host": remote_addr(),
-                                    "name": data["name"],
-                                    "requestsControl": False,
-                                    "message": '',
-                                    "sid": session.sid}
+    else:
+        data =  {"host": remote_addr(),
+                 "name": data["name"],
+                 "requestsControl": False,
+                 "message": '',
+                 "sid": session.sid}
 
+        OBSERVERS[remote_addr()] = data
+
+        socketio.emit("observerLogin", data, namespace='/hwr')
         socketio.emit("observersChanged", OBSERVERS.values(), namespace='/hwr')
     
     return session.sid
+
+def remove_observer():
+    observer = OBSERVERS.pop(remote_addr())
+    socketio.emit("observerLogout", observer, namespace='/hwr')
+    socketio.emit("observersChanged", OBSERVERS.values(), namespace='/hwr')
 
 def observer_name():
     global OBSERVERS
@@ -105,4 +113,9 @@ def observer_name():
     return observer_name
 
 def remote_addr():
-    return str(request.headers.get('x-forwarded-for', request.remote_addr))
+    hdr = request.headers.get('x-forwarded-for', request.remote_addr)
+
+    return str(hdr).split(',')[-1]
+
+def is_local_host():
+    return remote_addr() in socket.gethostbyname_ex(socket.gethostname())[2]
