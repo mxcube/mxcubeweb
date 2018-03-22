@@ -87,14 +87,22 @@ class BeamlineSetupContainer extends React.Component {
                    Energy:
                  </td>
                 <td style={{ fontWeight: 'bold' }}>
-                  <PopInput
+                  { this.props.data.attributes.energy.readonly ?
+                    (<LabeledValue
+                      name=""
+                      value={this.props.data.attributes.energy.value}
+                    />)
+                    :
+                  (<PopInput
                     name=""
                     pkey="energy"
                     suffix="keV"
                     data={ this.props.data.attributes.energy }
                     onSave= { this.setAttribute }
                     onCancel= { this.onCancelHandler }
-                  />
+                  />)
+                  }
+
                 </td>
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
                   Resolution:
@@ -137,7 +145,13 @@ class BeamlineSetupContainer extends React.Component {
                   Wavelength:
                 </td>
                 <td>
-                  <PopInput
+                  { this.props.data.attributes.wavelength.readonly ?
+                    (<LabeledValue
+                      name=""
+                      value={this.props.data.attributes.wavelength.value}
+                    />)
+                    :
+                  (<PopInput
                     name=""
                     pkey="wavelength"
                     placement="left"
@@ -145,7 +159,8 @@ class BeamlineSetupContainer extends React.Component {
                     data={this.props.data.attributes.wavelength}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
-                  />
+                  />)
+                  }
                 </td>
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
                   Detector:

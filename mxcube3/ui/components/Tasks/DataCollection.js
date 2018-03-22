@@ -194,7 +194,12 @@ class DataCollection extends React.Component {
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="energy" type="number" label="Energy" />
+            <InputField
+              disabled={this.props.beamline.attributes.energy.readonly}
+              propName="energy"
+              type="number"
+              label="Energy"
+            />
               <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
             { this.props.taskResult.energyScan.length > 0 ?
@@ -288,6 +293,7 @@ DataCollection = connect(state => {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,

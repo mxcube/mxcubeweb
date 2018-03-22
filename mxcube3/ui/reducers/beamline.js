@@ -22,7 +22,8 @@ export const INITIAL_STATE = {
       name: 'fast_shutter',
       value: 'undefined',
       state: 'undefined',
-      msg: 'UNKNOWN'
+      msg: 'UNKNOWN',
+      readonly: false
     },
     safety_shutter: {
       limits: [
@@ -33,7 +34,8 @@ export const INITIAL_STATE = {
       name: 'safety_shutter',
       value: 'undefined',
       state: 'undefined',
-      msg: 'UNKNOWN'
+      msg: 'UNKNOWN',
+      readonly: false
     },
     beamstop: {
       limits: [
@@ -44,7 +46,8 @@ export const INITIAL_STATE = {
       name: 'beamstop',
       value: 'undefined',
       state: 'undefined',
-      msg: 'UNKNOWN'
+      msg: 'UNKNOWN',
+      readonly: false
     },
     capillary: {
       limits: [
@@ -55,7 +58,8 @@ export const INITIAL_STATE = {
       name: 'capillary',
       value: 'undefined',
       state: 'undefined',
-      msg: 'UNKNOWN'
+      msg: 'UNKNOWN',
+      readonly: false
     },
     energy: {
       limits: [
@@ -66,7 +70,20 @@ export const INITIAL_STATE = {
       name: 'energy',
       value: '0',
       state: STATE.IDLE,
-      msg: ''
+      msg: '',
+      readonly: false
+    },
+    wavelength: {
+      limits: [
+        0,
+        1000,
+        0.1
+      ],
+      name: 'energy',
+      value: '0',
+      state: STATE.IDLE,
+      msg: '',
+      readonly: false
     },
     resolution: {
       limits: [
@@ -77,7 +94,8 @@ export const INITIAL_STATE = {
       name: 'resolution',
       value: '0',
       state: STATE.IDLE,
-      msg: ''
+      msg: '',
+      readonly: false
     },
     transmission: {
       limits: [
@@ -88,7 +106,8 @@ export const INITIAL_STATE = {
       name: 'transmission',
       value: '0',
       state: STATE.IDLE,
-      msg: ''
+      msg: '',
+      readonly: false
     },
     flux: {
       limits: [
@@ -99,7 +118,8 @@ export const INITIAL_STATE = {
       name: 'flux',
       value: '0',
       state: 'STATE.IDLE',
-      msg: 'UNKNOWN'
+      msg: 'UNKNOWN',
+      readonly: false
     },
     cryo: {
       limits: [
@@ -110,14 +130,16 @@ export const INITIAL_STATE = {
       name: 'cryo',
       value: '0',
       state: 'STATE.IDLE',
-      msg: 'UNKNOWN'
+      msg: 'UNKNOWN',
+      readonly: false
     },
     machinfo: {
       limits: [],
       name: 'machinfo',
       value: { current: -1, message: '', fillmode: '' },
       state: 'STATE.IDLE',
-      msg: 'UNKNOWN'
+      msg: 'UNKNOWN',
+      readonly: false
     },
   },
   motors: {

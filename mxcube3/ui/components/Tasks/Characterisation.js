@@ -118,8 +118,13 @@ class Characterisation extends React.Component {
                 <InputField propName="resolution" type="number" label="Resolution (Å)" />
               </FieldsRow>
               <FieldsRow>
-                <InputField propName="osc_range" type="number" label="Oscillation range" />
-                <InputField propName="energy" type="number" label="Energy (keV)" />
+            <InputField propName="osc_range" type="number" label="Oscillation range" />
+            <InputField
+              disabled={this.props.beamline.attributes.energy.readonly}
+              propName="energy"
+              type="number"
+              label="Energy"
+            />
               </FieldsRow>
               <FieldsRow>
                 <InputField propName="osc_start" type="number" label="Oscillation start" />
@@ -234,6 +239,7 @@ Characterisation = connect(state => {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
