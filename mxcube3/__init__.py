@@ -1,29 +1,40 @@
 from __future__ import absolute_import
+
+import cPickle as pickle
+import mock
+import os
+import logging
+import sys
+import time
+import traceback
+
+import gevent
+
+from optparse import OptionParser
+from logging import StreamHandler, NullHandler
+from logging.handlers import TimedRotatingFileHandler
+
 from flask import Flask, request, session
 from flask_socketio import SocketIO
 from flask_session import Session
-from optparse import OptionParser
 
-import os
-import sys
-import logging
-import time
-from logging import StreamHandler, NullHandler
-from logging.handlers import TimedRotatingFileHandler
-import cPickle as pickle
-import gevent
-import traceback
-import mock
+
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
-sys.modules["ShapeHistory"] = mock.MagicMock()
+
+# To make "from HardwareRepository import ..." possible
+sys.path.insert(0, os.path.dirname(__file__))
+from HardwareRepository import HardwareRepository as hwr, removeLoggingHandlers
+
+XML_DIR = os.path.join(os.path.join(os.path.dirname(__file__), os.pardir),
+                       "test/HardwareObjectsMockup.xml/")
 
 opt_parser = OptionParser()
 opt_parser.add_option("-r", "--repository",
                       dest="hwr_directory",
                       help="Hardware Repository XML files path",
-                      default=os.path.join(os.path.join(os.path.dirname(__file__), os.pardir), 'test/HardwareObjectsMockup.xml/'))
+                      default= XML_DIR)
 opt_parser.add_option("-l", "--log-file",
                       dest="log_file",
                       help="Hardware Repository log file name",
@@ -49,41 +60,92 @@ opt_parser.add_option("-p", "--plotting",
                       help="Plotting HWR file, defaults to /plotting",
                       default='/plotting')
 
-
 cmdline_options, args = opt_parser.parse_args()
 
-t0 = time.time()
+INIT_EVENT = gevent.event.Event()
 
-app = Flask(__name__, static_url_path='')
-app.config['SESSION_TYPE'] = "redis"
-app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
-app.config['SECRET_KEY'] = "nosecretfornow"
-def exception_handler(e):
-    err_msg = "Uncaught exception while calling %s" % request.path
-    logging.getLogger("exceptions").exception(err_msg)
-    return err_msg+": "+traceback.format_exc(), 409
-app.register_error_handler(Exception, exception_handler)
-sess = Session()
-sess.init_app(app)
-app.debug = False
+def complete_initialization(app):
+    app.beamline = get_hardware_object(hwr, cmdline_options.beamline_setup)
+    app.xml_rpc_server = get_hardware_object(hwr, 'xml-rpc-server')
+    app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
+    app.plotting = hwr.getHardwareObject(cmdline_options.plotting)
 
-socketio = SocketIO(manage_session=False)
-socketio.init_app(app)
+    app.session = get_hardware_object(app.beamline, "session")
+    app.collect = get_hardware_object(app.beamline, "collect")
+    app.workflow = get_hardware_object(app.beamline, "workflow")
+    app.shapes = get_hardware_object(app.beamline, "shape_history")
+    app.diffractometer = get_hardware_object(app.beamline, "diffractometer")
+    app.db_connection =  get_hardware_object(app.beamline, "lims_client")
+    app.sample_changer = get_hardware_object(app.beamline, "sample_changer")
+    app.sc_maintenance = get_hardware_object(app.beamline, "sample_changer_maintenance")
+    app.rest_lims = get_hardware_object(app.beamline, "lims_rest_client")
 
-# the following test prevents Flask from initializing twice
-# (because of the Reloader)
-if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    ###Initialization of the HardwareObjects
-    # this is to allow Hardware Objects to do
-    # 'from HardwareRepository import ...'
-    sys.path.insert(0, os.path.dirname(__file__))
-    from HardwareRepository import HardwareRepository as hwr, removeLoggingHandlers
+    Utils.enable_snapshots(app.collect)
+    init_app_state(app)
+    init_sample_video(app)
+
+    try:
+        SampleCentring.init_signals()
+        SampleChanger.init_signals()
+        Beamline.init_signals()
+        Diffractometer.init_signals()
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+
+    INIT_EVENT.set()
+
+
+def get_hardware_object(obj, name):
+    ho = None
+
+    try:
+        if hasattr(obj, "getHardwareObject"):
+            ho = obj.getHardwareObject(name)
+        else:
+            ho = obj.getObjectByRole(name)
+    except:
+        msg = "Could not get hardwre object corresponding to %s, " % name.upper()
+        msg += "Verify that all related hardware is responding properly"
+        logging.getLogger("HWR").error(msg)
+
+    return ho
+
+
+def init_app_state(app):
+    from queue_entry import CENTRING_METHOD
+
+    # SampleID of currently mounted sample
+    app.CURRENTLY_MOUNTED_SAMPLE = None
+    app.SAMPLE_TO_BE_MOUNTED = ''
+    app.AUTO_MOUNT_SAMPLE = False
+    app.AUTO_ADD_DIFFPLAN = False
+    app.CENTRING_METHOD = CENTRING_METHOD.LOOP
+    app.NUM_SNAPSHOTS = app.collect.getProperty('num_snapshots', 4)
+    app.NODE_ID_TO_LIMS_ID = {}
+    app.INITIAL_FILE_LIST = []
+    app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
+    app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
+    app.TEMP_DISABLED = []
+
+    app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
+    app.queue = qutils.new_queue()
+
+def init_sample_video(app):
+    # set up streaming
+    from mxcube3.video import streaming
+
+    try:
+        streaming.init(app.diffractometer.camera, cmdline_options.video_device)
+    except Exception as ex:
+        msg = "Coult not initialize video from %s, error was: " % cmdline_options.video_device
+        msg += str(ex)
+        logging.getLogger('HWR').info(msg)
+        app.VIDEO_DEVICE = None
+    else:
+        app.VIDEO_DEVICE = cmdline_options.video_device
+
+def init_logging():
     removeLoggingHandlers()
-    hwr.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
-
-    hwr_directory = cmdline_options.hwr_directory
-    hwr = hwr.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
-    hwr.connect()
 
     log_formatter = logging.Formatter('%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s')
     log_file = cmdline_options.log_file
@@ -112,81 +174,46 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
       if log_file:
           logger.addHandler(log_file_handler)
 
-    from routes import loginutils
+def exception_handler(e):
+    err_msg = "Uncaught exception while calling %s" % request.path
+    logging.getLogger("exceptions").exception(err_msg)
+    return err_msg + ": " + traceback.format_exc(), 409
 
-    # Make the valid_login_only decorator available on app object
-    app.restrict = loginutils.valid_login_only
 
-    ### Importing all REST-routes
-    from routes import (Main, Beamline, Login, Mockups, Utils,
+t0 = time.time()
+
+app = Flask(__name__,  static_url_path='')
+app.debug = False
+
+app.config['SESSION_TYPE'] = "redis"
+app.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
+app.config['SECRET_KEY'] = "nosecretfornow"
+app.register_error_handler(Exception, exception_handler)
+
+sess = Session()
+sess.init_app(app)
+
+socketio = SocketIO(manage_session=False)
+socketio.init_app(app)
+
+# the following test prevents Flask from initializing twice
+# (because of the Reloader)
+if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    hwr_directory = cmdline_options.hwr_directory
+    hwr.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
+    hwr = hwr.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
+    hwr.connect()
+
+    init_logging()
+
+    # Importing all REST-routes
+    from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
                         lims, qutils, workflow, Detector, rachat)
 
-    ### Install server-side UI state storage
+    # Install server-side UI state storage
     from mxcube3 import state_storage
 
-    from queue_entry import CENTRING_METHOD
-
-    def complete_initialization(app):
-        app.beamline = hwr.getHardwareObject(cmdline_options.beamline_setup)
-        app.xml_rpc_server = hwr.getHardwareObject('xml-rpc-server')
-        app.session = app.beamline.getObjectByRole("session")
-        app.collect = app.beamline.getObjectByRole("collect")
-        app.workflow = app.beamline.getObjectByRole("workflow")
-        app.shapes = app.beamline.getObjectByRole("shape_history")
-
-        Utils.enable_snapshots(app.collect)
-
-        app.diffractometer = app.beamline.getObjectByRole("diffractometer")
-
-        if getattr(app.diffractometer, 'centring_motors_list', None) is None:
-            # centring_motors_list is the list of roles corresponding to diffractometer motors
-            app.diffractometer.centring_motors_list = app.diffractometer.getPositions().keys()
-
-        app.db_connection = app.beamline.getObjectByRole("lims_client")
-        app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
-        app.sample_changer = app.beamline.getObjectByRole("sample_changer")
-        app.sc_maintenance = app.beamline.getObjectByRole("sample_changer_maintenance")
-        app.rest_lims = app.beamline.getObjectByRole("lims_rest_client")
-        app.queue = qutils.new_queue()
-        app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
-        app.plotting = hwr.getHardwareObject(cmdline_options.plotting)
-
-        # SampleID of currently mounted sample
-        app.CURRENTLY_MOUNTED_SAMPLE = None
-        app.SAMPLE_TO_BE_MOUNTED = ''
-        app.AUTO_MOUNT_SAMPLE = False
-        app.AUTO_ADD_DIFFPLAN = False
-        app.CENTRING_METHOD = CENTRING_METHOD.LOOP
-        app.NUM_SNAPSHOTS = app.collect.getProperty('num_snapshots', 4)
-        app.NODE_ID_TO_LIMS_ID = {}
-        app.INITIAL_FILE_LIST = []
-        app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
-        app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
-        app.TEMP_DISABLED = []
-        app.USERS = {}
-
-        # set up streaming
-        from mxcube3.video import streaming
-
-        try:
-            streaming.init(app.diffractometer.camera, cmdline_options.video_device)
-        except RuntimeError as ex:
-            logging.getLogger('HWR').info(str(ex))
-            app.VIDEO_DEVICE = None
-        else:
-            app.VIDEO_DEVICE = cmdline_options.video_device
-
-        try:
-            SampleCentring.init_signals()
-            SampleChanger.init_signals()
-            Beamline.init_signals()
-            Diffractometer.init_signals()
-        except Exception:
-            sys.excepthook(*sys.exc_info())
-
-        logging.getLogger("HWR").info("MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0))
-    # starting from here, requests can be received by server;
-    # however, objects are not all initialized, so requests can return errors
-    # TODO: synchronize web UI with server operation status
     gevent.spawn(complete_initialization, app)
+    INIT_EVENT.wait()
+    logging.getLogger("HWR").info("MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0))
