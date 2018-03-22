@@ -114,6 +114,7 @@ def signout():
     qutils.save_queue(session)
     mxcube.queue = qutils.new_queue()
     mxcube.shapes.clear_all()
+    qutils.reset_queue_settings()
 
     if mxcube.CURRENTLY_MOUNTED_SAMPLE:
         if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
