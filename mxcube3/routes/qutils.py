@@ -1788,3 +1788,8 @@ def add_default_sample():
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
     else:
         queue_add_item([sample])
+
+def reset_queue_settings():
+    mxcube.NUM_SNAPSHOTS = mxcube.collect.getProperty('num_snapshots', 4)
+    mxcube.AUTO_MOUNT_SAMPLE = mxcube.collect.getProperty('auto_mount_sample', False)
+    mxcube.AUTO_ADD_DIFFPLAN = mxcube.collect.getProperty('auto_add_diff_plan', False)

@@ -265,6 +265,42 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     # Install server-side UI state storage
     from mxcube3 import state_storage
 
+        # SampleID of currently mounted sample
+        app.CURRENTLY_MOUNTED_SAMPLE = None
+        app.SAMPLE_TO_BE_MOUNTED = ''
+        app.AUTO_MOUNT_SAMPLE = app.collect.getProperty('auto_mount_sample', False)
+        app.AUTO_ADD_DIFFPLAN = app.collect.getProperty('auto_add_diff_plan', False)
+        app.CENTRING_METHOD = CENTRING_METHOD.LOOP
+        app.NUM_SNAPSHOTS = app.collect.getProperty('num_snapshots', 4)
+        app.NODE_ID_TO_LIMS_ID = {}
+        app.INITIAL_FILE_LIST = []
+        app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
+        app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
+        app.TEMP_DISABLED = []
+
+        # set up streaming
+        from mxcube3.video import streaming
+
+        try:
+            streaming.init(app.diffractometer.camera, cmdline_options.video_device)
+        except RuntimeError as ex:
+            logging.getLogger('HWR').info(str(ex))
+            app.VIDEO_DEVICE = None
+        else:
+            app.VIDEO_DEVICE = cmdline_options.video_device
+
+        try:
+            SampleCentring.init_signals()
+            SampleChanger.init_signals()
+            Beamline.init_signals()
+            Diffractometer.init_signals()
+        except Exception:
+            sys.excepthook(*sys.exc_info())
+
+        logging.getLogger("HWR").info("MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0))
+    # starting from here, requests can be received by server;
+    # however, objects are not all initialized, so requests can return errors
+    # TODO: synchronize web UI with server operation status
     gevent.spawn(complete_initialization, app)
     INIT_EVENT.wait()
     logging.getLogger("HWR").info("MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0))
