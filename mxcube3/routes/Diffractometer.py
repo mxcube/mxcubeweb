@@ -1,6 +1,6 @@
 from flask import Response, jsonify, request, session
 from mxcube3 import app as mxcube
-from mxcube3.routes import Utils, signals
+from mxcube3.routes import Utils, signals, beamlineutils
 
 import json
 import logging
@@ -106,9 +106,9 @@ def set_aperture():
     params = request.data
     params = json.loads(params)
     new_pos = params['diameter']
-    aperture_motor = mxcube.diffractometer.getObjectByRole('aperture')
+    beam_definer = beamlineutils.get_beam_definer()
     logging.getLogger('HWR').info("Changing aperture diameter to: %s" % new_pos)
-    aperture_motor.moveToPosition(int(new_pos))
+    beam_definer.moveToPosition(new_pos)
 
     return Response(status=200)
 
@@ -118,7 +118,7 @@ def set_aperture():
 def get_aperture():
     ret = {}
 
-    aperture = mxcube.diffractometer.getObjectByRole('aperture')
+    bd = beamlineutils.get_beam_definer()
     aperture_list = aperture.getPredefinedPositionsList()
     current_aperture = aperture.getCurrentPositionName()
 
