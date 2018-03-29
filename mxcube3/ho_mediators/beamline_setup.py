@@ -310,7 +310,7 @@ class EnergyHOMediator(HOMediatorBase):
     """
     def __init__(self, ho, name=''):
         super(EnergyHOMediator, self).__init__(ho, name)
-        ho.connect("positionChanged", self._value_change)
+        ho.connect("energyChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
         self._precision = 4
 
