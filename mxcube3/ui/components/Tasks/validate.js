@@ -14,8 +14,17 @@ const validate = (values, props) => {
   const limitsMax = props.attributes.resolution.limits.map(value => value[2]);
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
-  const resMin = everpolate.linear(currEnergy, energies, limitsMin);
-  const resMax = everpolate.linear(currEnergy, energies, limitsMax);
+
+  let resMin = 0;
+  let resMax = 0;
+
+  if (energies.length > 2) {
+    resMin = everpolate.linear(currEnergy, energies, limitsMin);
+    resMax = everpolate.linear(currEnergy, energies, limitsMax);
+  } else {
+    resMin = props.attributes.resolution.limits[0];
+    resMax = props.attributes.resolution.limits[1];
+  }
 
   if (values.num_images === '' ||
       parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images ||
@@ -37,13 +46,18 @@ const validate = (values, props) => {
       parseFloat(values.exp_time, 10) < exptimemin) {
     errors.exp_time = 'Exposure time out of allowed limit';
   }
-  if (!(currRes > resMin && currRes < resMax)) {
+
+  if (!(currRes > resMin && currRes <= resMax)) {
     errors.resolution = 'Resolution outside working range';
   }
-  if (!(currEnergy > props.attributes.energy.limits[0] &&
-        currEnergy < props.attributes.energy.limits[1])) {
-    errors.energy = 'Energy outside working range';
+
+  if (energies.length > 2) {
+    if (!(currEnergy > props.attributes.energy.limits[0] &&
+          currEnergy < props.attributes.energy.limits[1])) {
+      errors.energy = 'Energy outside working range';
+    }
   }
+
   if (!(currTransmission >= 0 && currTransmission <= 100)) {
     errors.transmission = 'Transmission outside working range';
   }
