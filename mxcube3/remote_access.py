@@ -68,13 +68,14 @@ def connect():
 @socketio.on('disconnect', namespace='/hwr')
 def disconnect():
     global DISCONNECT_HANDLED, MASTER_ROOM
+    logging.getLogger('HWR').info('Client disconnected, remote address: %s' %request.remote_addr)
 
     if is_master(session.sid) and MASTER_ROOM == request.sid and \
            mxcube.queue.queue_hwobj.is_executing():
 
         DISCONNECT_HANDLED = False
         mxcube.queue.queue_hwobj.pause(True)
-        logging.getLogger('HWR').info('Client disconnected, pausing queue')
+        logging.getLogger('HWR').info('Client disconnected, remote address: %s, pausing queue' %request.remote_addr)
 
 @socketio.on('setRaMaster', namespace='/hwr')
 def set_master_id(data):
