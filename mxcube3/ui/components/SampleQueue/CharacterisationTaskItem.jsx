@@ -84,7 +84,7 @@ export default class TaskItem extends Component {
       delete data.diffractionPlan[0].sampleID;
       const { type, parameters } = data.diffractionPlan[0];
 
-      this.props.showForm(type, [sampleId], data.diffractionPlan[0], parameters.shape);
+      this.props.showForm(type, sampleId, data.diffractionPlan[0], parameters.shape);
     } else {
       tasks.forEach((t) => {
         const pars = {
