@@ -1034,7 +1034,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params['collection_software'] = 'MXCuBE - 3.0'
     beamline_params['sample_node_id'] = sample_model._node_id
     beamline_params['sample_lims_id'] = sample_model.lims_id
-    beamline_params['beamline'] = mxcube.beamline.session_hwobj.beamline_name
+    beamline_params['beamline'] = mxcube.beamline.session_hwobj.endstation_name
 
     params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
     params_list.insert(0, params["wfpath"])
