@@ -139,17 +139,18 @@ class Characterisation extends React.Component {
                 </FieldsRow>
               </CollapsableRows>
             </Form>
-
             <FieldsHeader title="Characterisation" />
-            <CollapsableRows>
               <Form horizontal>
                 <FieldsRow>
                   <CheckboxField
-                    defaultChecked="True"
+                    defaultChecked
                     propName="account_rad_damage"
                     label="Account for radiation damage"
                   />
-                  <CheckboxField propName="opt_sad" label="Optimised SAD" />
+                  <CheckboxField
+                    propName="opt_sad"
+                    label="Optimised SAD"
+                  />
                 </FieldsRow>
                 <SelectField
                   col1="4" col2="3"
@@ -158,8 +159,6 @@ class Characterisation extends React.Component {
                   list={['SINGLE', 'FEW', 'MANY']}
                 />
               </Form>
-            </CollapsableRows>
-
             <FieldsHeader title="Crystal" />
             <CollapsableRows>
               <Form horizontal>
