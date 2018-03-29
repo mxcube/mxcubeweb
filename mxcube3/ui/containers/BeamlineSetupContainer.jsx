@@ -47,7 +47,7 @@ class BeamlineSetupContainer extends React.Component {
     const acts = [];
     for (let key in this.props.data.attributes) {
       if (this.props.data.attributes[key].type === 'DUOSTATE') {
-        acts.push(<Col key={key} sm={1} smPush={2}>
+        acts.push(<Col key={key} sm={2}>
                     <InOutSwitch2
                       onText={ this.props.data.attributes[key].commands[0] }
                       offText={ this.props.data.attributes[key].commands[1] }
@@ -89,6 +89,7 @@ class BeamlineSetupContainer extends React.Component {
                 <td style={{ fontWeight: 'bold' }}>
                   { this.props.data.attributes.energy.readonly ?
                     (<LabeledValue
+                      suffix="keV"
                       name=""
                       value={this.props.data.attributes.energy.value}
                     />)
@@ -136,6 +137,7 @@ class BeamlineSetupContainer extends React.Component {
                 <td>
                   <LabeledValue
                     name=""
+                    suffix="K"
                     value={this.props.data.attributes.cryo.value}
                   />
                 </td>
@@ -147,6 +149,7 @@ class BeamlineSetupContainer extends React.Component {
                 <td>
                   { this.props.data.attributes.wavelength.readonly ?
                     (<LabeledValue
+                      suffix="&Aring;"
                       name=""
                       value={this.props.data.attributes.wavelength.value}
                     />)
@@ -180,6 +183,7 @@ class BeamlineSetupContainer extends React.Component {
                 </td>
                 <td>
                   <LabeledValue
+                    suffix="ph/s"
                     name=""
                     value={this.props.data.attributes.flux.value}
                   />
@@ -191,11 +195,13 @@ class BeamlineSetupContainer extends React.Component {
               </tr>
             </Table>
             </Col>
-            {this.createActuatorComponent()}
-            <Col sm={1} smPush={2}>
-              <MachInfo
-                info={this.props.data.attributes.machinfo.value}
-              />
+            <Col sm={5} smPush={2}>
+              {this.createActuatorComponent()}
+              <Col sm={2}>
+                <MachInfo
+                  info={this.props.data.attributes.machinfo.value}
+                />
+              </Col>
             </Col>
           </Row>
         </Col>

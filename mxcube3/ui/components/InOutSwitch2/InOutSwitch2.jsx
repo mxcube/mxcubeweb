@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Label, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Label, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 
 export default class InOutSwitch2 extends React.Component {
@@ -54,26 +54,24 @@ export default class InOutSwitch2 extends React.Component {
                             borderRadius: '0px', color: '#000' };
 
     return (
-        <Row>
-          <Col xs={12}>
-            <OverlayTrigger
-              ref="overlay"
-              rootClose
-              trigger="click"
-              placement="bottom"
-              overlay={(<Popover id={`${this.props.labelText} popover`}>{btn}</Popover>)}
+      <div>
+        <OverlayTrigger
+          ref="overlay"
+          rootClose
+          trigger="click"
+          placement="bottom"
+          overlay={(<Popover id={`${this.props.labelText} popover`}>{btn}</Popover>)}
+        >
+          <div onContextMenu={this.onRightLinkClick}>
+            <Label
+              style={{ display: 'block', marginBottom: '3px' }}
             >
-              <div onContextMenu={this.onRightLinkClick}>
-                <Label
-                  style={{ display: 'block', marginBottom: '3px' }}
-                >
-                  {this.props.labelText}
-                </Label>
-                <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data.msg}</Label>
-              </div>
-            </OverlayTrigger>
-          </Col>
-        </Row>
+              {this.props.labelText}
+            </Label>
+            <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data.msg}</Label>
+          </div>
+        </OverlayTrigger>
+      </div>
     );
   }
 }
