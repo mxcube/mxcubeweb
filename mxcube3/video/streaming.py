@@ -11,8 +11,7 @@ import time
 import types
 import json
 
-
-import PIL
+from PIL import Image
 import v4l2
 
 VIDEO_DEVICE = None
@@ -96,7 +95,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
         if img.startswith('\xff\xd8\xff\xe0\x00\x10JFIF'):
             # jpeg image
             strbuf = cStringIO.StringIO(img)
-            img = PIL.Image.open(strbuf)
+            img = Image.open(strbuf)
             img = img.tobytes()
 
     if VIDEO_DEVICE:
@@ -189,7 +188,7 @@ def tango_lima_video_plugin(camera, video_device):
             def take_snapshot(self, path, bw=False):
                 width, height, raw_data = \
                     self.parse_image_data(self.device.video_last_image)
-                img = PIL.Image.frombytes("RGB", (width, height), raw_data)
+                img = Image.frombytes("RGB", (width, height), raw_data)
                 
                 if bw:
                     img.convert("1")
