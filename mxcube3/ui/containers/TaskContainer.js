@@ -61,6 +61,7 @@ class TaskContainer extends React.Component {
       const taskIndex = this.props.sampleList[sampleIds].tasks.indexOf(taskData);
       this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
     }
+
     this.props.updateDefaultParameters(params);
   }
 

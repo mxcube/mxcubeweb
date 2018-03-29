@@ -291,13 +291,13 @@ DataCollection = connect(state => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds ?
+      resolution: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.resolution :
         state.beamline.attributes.resolution.value),
-      energy: (state.taskForm.sampleIds ?
+      energy: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.energy :
         state.beamline.attributes.energy.value),
-      transmission: (state.taskForm.sampleIds ?
+      transmission: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.transmission :
         state.beamline.attributes.transmission.value)
     }
