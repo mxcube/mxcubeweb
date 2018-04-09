@@ -114,7 +114,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
         if not VIDEO_STREAM_PROCESS or VIDEO_STREAM_PROCESS.poll() is not None:
             sfpath = os.path.join(os.path.dirname(__file__), "streaming_processes.py")
             python_executable = os.sep.join(os.path.dirname(os.__file__).split(os.sep)[:-2]+["bin", "python"])
-            VIDEO_STREAM_PROCESS = subprocess.Popen([python_executable, sfpath, VIDEO_DEVICE.name, VIDEO_SIZE])
+            VIDEO_STREAM_PROCESS = subprocess.Popen([python_executable, sfpath, VIDEO_DEVICE.name, VIDEO_SIZE], close_fds=True)
 
 
 def get_available_sizes(camera):
