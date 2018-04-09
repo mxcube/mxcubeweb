@@ -681,7 +681,9 @@ export default class SampleImage extends React.Component {
 
   initJSMpeg() {
     const canvas = document.getElementById('sample-img');
-    const source = `ws://${document.location.hostname}:4042/`;
+    /* eslint-disable no-undef */
+    const source = !VIDEO_STREAM_URL ? `ws://${document.location.hostname}:4042/` : VIDEO_STREAM_URL;
+    /* eslint-enable no-undef */
 
     if (this.player) {
       this.player.destroy();
