@@ -58,7 +58,7 @@ export const DisplayField = ({ label, value }) => (
       </FormGroup>
 );
 
-export const CheckboxField = ({ propName, label, defaultChecked }) => (
+export const CheckboxField = ({ propName, label, defaultChecked = false }) => (
    <Field name={propName}
      component={ (prop) =>
        <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>

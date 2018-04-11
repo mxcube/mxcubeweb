@@ -1034,7 +1034,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params['collection_software'] = 'MXCuBE - 3.0'
     beamline_params['sample_node_id'] = sample_model._node_id
     beamline_params['sample_lims_id'] = sample_model.lims_id
-    beamline_params['beamline'] = mxcube.beamline.session_hwobj.beamline_name
+    beamline_params['beamline'] = mxcube.beamline.session_hwobj.endstation_name
 
     params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
     params_list.insert(0, params["wfpath"])
@@ -1062,23 +1062,8 @@ def set_char_params(model, entry, task_data, sample_model):
     defaults = et.fromstring(mxcube.beamline.getObjectByRole("data_analysis").
                              edna_default_input)
 
-    model.characterisation_parameters.aimed_completness = float(defaults.find(
-        ".diffractionPlan/aimedCompleteness/value").text)
-
-    model.characterisation_parameters.aimed_i_sigma = float(defaults.find(
-        ".diffractionPlan/aimedIOverSigmaAtHighestResolution/value").text)
-
-    model.characterisation_parameters.aimed_resolution = float(defaults.find(
-        ".diffractionPlan/aimedResolution/value").text)
-
-    model.characterisation_parameters.max_crystal_vdim = float(defaults.find(
-        "./sample/size/x/value").text)
-
-    model.characterisation_parameters.min_crystal_vdim = float(defaults.find(
-        ".sample/size/y/value").text)
-
-    model.characterisation_parameters.rad_suscept = float(defaults.find(
-            ".sample/susceptibility/value").text)
+    edna_defaults = mxcube.beamline.get_default_characterisation_parameters()
+    model.characterisation_parameters = edna_defaults
 
     try:
         params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(params["strategy_complexity"])

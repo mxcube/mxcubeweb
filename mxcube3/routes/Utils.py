@@ -70,13 +70,13 @@ def get_light_state_and_intensity():
             hwobj_switch = mxcube.diffractometer.getObjectByRole(light + "Switch")
             switch_state = 1 if hwobj_switch.getActuatorState() == "in" else 0
 
-        ret.update({light: {"name": light, 
+        ret.update({light: {"name": light,
                             "state": hwobj.getState(),
                             "position": hwobj.getPosition(),
                             "limits": hwobj.getLimits()},
-                    light + "Switch": {"name": light + "Switch", 
+                    light + "Switch": {"name": light + "Switch",
                                        "state": 2,
-                                       "position": switch_state} 
+                                       "position": switch_state}
                     })
 
     return ret
@@ -149,12 +149,23 @@ def get_movable_limits(item_name):
     except Exception:
         logging.getLogger("HWR").exception("[UTILS.GET_MOVABLE_LIMIT] could not get item '%s'" % item_name)
 
+
+_centring_motors_memo = None;
+def get_centring_motors():
+    global _centring_motors_memo
+
+    if not _centring_motors_memo:
+        _centring_motors_memo = mxcube.diffractometer.getPositions().keys()
+
+    return _centring_motors_memo
+
+
 def get_centring_motors_info():
     # the centring motors are: ["phi", "focus", "phiz", "phiy",
     # "zoom", "sampx", "sampy", "kappa", "kappa_phi"]
 
     ret = dict()
-    for name in mxcube.diffractometer.centring_motors_list:
+    for name in get_centring_motors():
         motor_info = get_movable_state_and_position(name)
 
         if motor_info and motor_info[name]["position"] is not None:

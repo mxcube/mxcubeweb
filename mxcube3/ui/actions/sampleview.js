@@ -363,13 +363,14 @@ export function sendDeleteShape(id) {
   return function (dispatch) {
     return fetch(`/mxcube/api/v0.1/sampleview/shapes/${id}`, {
       method: 'DELETE',
+      credentials: 'include',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
       }
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error('Server refused to delete line');
+        throw new Error('Server refused to delete shape');
       }
     }).then(() => {
       dispatch(deleteShape(id));

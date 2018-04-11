@@ -36,13 +36,21 @@ def get_aperture():
     :rtype: tuple
     """
     aperture_list, current_aperture = [], None
-    aperture = mxcube.diffractometer.getObjectByRole("aperture")
+    aperture = get_beam_definer()
 
     if aperture is not None:
         aperture_list = aperture.getPredefinedPositionsList()
         current_aperture = aperture.getCurrentPositionName()
 
     return aperture_list, current_aperture
+
+
+def get_beam_definer():
+    bd = mxcube.beamline.getObjectByRole("beam_info").beam_definer_hwobj or \
+         mxcube.beamline.getObjectByRole("beam_info").aperture_hwobj
+
+    return bd
+
 
 
 def get_viewport_info():

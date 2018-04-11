@@ -49,7 +49,7 @@ class SampleViewContainer extends Component {
 
     const apertureControl = (
       <div>
-      <p className="motor-name">Aperture Control:</p>
+      <p className="motor-name">Beam size:</p>
       <ApertureInput
         aperture={this.props.sampleViewState.currentAperture}
         apertureList={this.props.sampleViewState.apertureList}

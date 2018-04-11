@@ -11,8 +11,7 @@ import time
 import types
 import json
 
-
-import PIL
+from PIL import Image
 import v4l2
 
 VIDEO_DEVICE = None
@@ -96,7 +95,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
         if img.startswith('\xff\xd8\xff\xe0\x00\x10JFIF'):
             # jpeg image
             strbuf = cStringIO.StringIO(img)
-            img = PIL.Image.open(strbuf)
+            img = Image.open(strbuf)
             img = img.tobytes()
 
     if VIDEO_DEVICE:
@@ -115,7 +114,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
         if not VIDEO_STREAM_PROCESS or VIDEO_STREAM_PROCESS.poll() is not None:
             sfpath = os.path.join(os.path.dirname(__file__), "streaming_processes.py")
             python_executable = os.sep.join(os.path.dirname(os.__file__).split(os.sep)[:-2]+["bin", "python"])
-            VIDEO_STREAM_PROCESS = subprocess.Popen([python_executable, sfpath, VIDEO_DEVICE.name, VIDEO_SIZE])
+            VIDEO_STREAM_PROCESS = subprocess.Popen([python_executable, sfpath, VIDEO_DEVICE.name, VIDEO_SIZE], close_fds=True)
 
 
 def get_available_sizes(camera):
@@ -189,7 +188,7 @@ def tango_lima_video_plugin(camera, video_device):
             def take_snapshot(self, path, bw=False):
                 width, height, raw_data = \
                     self.parse_image_data(self.device.video_last_image)
-                img = PIL.Image.frombytes("RGB", (width, height), raw_data)
+                img = Image.frombytes("RGB", (width, height), raw_data)
                 
                 if bw:
                     img.convert("1")

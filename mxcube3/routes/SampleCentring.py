@@ -83,7 +83,7 @@ def init_signals():
     """
     dm = mxcube.diffractometer
 
-    for motor in dm.centring_motors_list:
+    for motor in Utils.get_centring_motors():
         @Utils.RateLimited(3)
         def pos_cb(pos, motor=motor, **kw):
             movable = Utils.get_movable_state_and_position(motor)
@@ -354,14 +354,14 @@ def update_shapes():
     params = request.get_json()
     shapes = params.get("shapes", [])
     updated_shapes = []
-    
+
     for s in shapes:
         shape_data = from_camel(s);
         pos = []
-    
+
         # Get the shape if already exists
         shape = mxcube.shapes.get_shape(shape_data.get("id", -1))
-        
+
         # If shape does not exist add it
         if not shape:
             refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
@@ -659,7 +659,7 @@ def click():
                                            click_position['y'],
                                            click_position['x'],
                                            click_position['y'])
-        centring_click()   
+        centring_click()
     else:
         if not centring_clicks_left():
             centring_reset_click_count()
@@ -685,7 +685,7 @@ def wait_for_centring_finishes(*args, **kwargs):
 
     # If centering is valid add the point, otherwise remove it
     if centring_status['valid']:
-    	motor_positions = centring_status["motors"]
+        motor_positions = centring_status["motors"]
         motor_positions.pop('zoom', None)
         motor_positions.pop('beam_y', None)
         motor_positions.pop('beam_x', None)
@@ -761,5 +761,5 @@ def set_centring_method():
 
     logging.getLogger('HWR.MX3').info(msg)
 
-        
+
     return Response(status=200)

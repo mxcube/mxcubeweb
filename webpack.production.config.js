@@ -102,7 +102,8 @@ var config = {
         'NODE_ENV': '"production"'
       },
       'VERSION': { 'COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
-                   'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) }
+                   'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) },
+      'VIDEO_STREAM_URL': 'ws://localhost:4042/'
     }),
     new UglifyJSPlugin()
   ],

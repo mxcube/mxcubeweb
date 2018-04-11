@@ -26,7 +26,7 @@ export default class LabeledValue extends React.Component {
                        fontSize: '100%', borderRadius: '0px', color: '#000',
                        padding: '0px' }}
             >
-              {this.props.value}
+              {this.props.value} {this.props.suffix}
             </Label>
           </div>
         </span>
@@ -38,5 +38,6 @@ export default class LabeledValue extends React.Component {
 LabeledValue.defaultProps = {
   extraInfo: {},
   value: 0,
-  name: ''
+  name: '',
+  suffix: ''
 };

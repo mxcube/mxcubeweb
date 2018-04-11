@@ -118,8 +118,13 @@ class Characterisation extends React.Component {
                 <InputField propName="resolution" type="number" label="Resolution (Å)" />
               </FieldsRow>
               <FieldsRow>
-                <InputField propName="osc_range" type="number" label="Oscillation range" />
-                <InputField propName="energy" type="number" label="Energy (keV)" />
+            <InputField propName="osc_range" type="number" label="Oscillation range" />
+            <InputField
+              disabled={this.props.beamline.attributes.energy.readonly}
+              propName="energy"
+              type="number"
+              label="Energy"
+            />
               </FieldsRow>
               <FieldsRow>
                 <InputField propName="osc_start" type="number" label="Oscillation start" />
@@ -139,17 +144,18 @@ class Characterisation extends React.Component {
                 </FieldsRow>
               </CollapsableRows>
             </Form>
-
             <FieldsHeader title="Characterisation" />
-            <CollapsableRows>
               <Form horizontal>
                 <FieldsRow>
                   <CheckboxField
-                    defaultChecked="True"
+                    defaultChecked
                     propName="account_rad_damage"
                     label="Account for radiation damage"
                   />
-                  <CheckboxField propName="opt_sad" label="Optimised SAD" />
+                  <CheckboxField
+                    propName="opt_sad"
+                    label="Optimised SAD"
+                  />
                 </FieldsRow>
                 <SelectField
                   col1="4" col2="3"
@@ -158,8 +164,6 @@ class Characterisation extends React.Component {
                   list={['SINGLE', 'FEW', 'MANY']}
                 />
               </Form>
-            </CollapsableRows>
-
             <FieldsHeader title="Crystal" />
             <CollapsableRows>
               <Form horizontal>
@@ -235,16 +239,17 @@ Characterisation = connect(state => {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds ?
+      resolution: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.resolution :
         state.beamline.attributes.resolution.value),
-      energy: (state.taskForm.sampleIds ?
+      energy: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.energy :
         state.beamline.attributes.energy.value),
-      transmission: (state.taskForm.sampleIds ?
+      transmission: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.transmission :
         state.beamline.attributes.transmission.value)
     }

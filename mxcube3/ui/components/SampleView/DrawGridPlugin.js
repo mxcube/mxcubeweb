@@ -450,6 +450,10 @@ export default class DrawGridPlugin {
 
     if (mode === 'zig-zag') {
       count = this.zigZagCellCount(currentRow, currentCol, numRows, numCols);
+    } else if (mode === 'top-down-zig-zag') {
+      count = this.topDownZigZagCellCount(currentRow, currentCol, numRows, numCols);
+    } else if (mode === 'top-down') {
+      count = this.topDownCellCount(currentRow, currentCol, numRows, numCols);
     } else if (mode === 'inverse-zig-zag') {
       count = this.inverseZigZagCellCount(currentRow, currentCol, numRows, numCols);
     } else {
@@ -480,6 +484,34 @@ export default class DrawGridPlugin {
     return (currentRow + 1) + currentCol * numCols;
   }
 
+  /**
+   * top down zig zag indexing of cells (see countCells for doc)
+   * 1 6 7
+   * 2 5 8
+   * 3 4 9
+   */
+  topDownZigZagCellCount(currentRow, currentCol, numRows) {
+    let cellCount = (currentCol + 1) + currentRow * numRows;
+
+    if (currentRow % 2 !== 0) {
+      cellCount = numRows * (currentRow + 1) - currentCol;
+    }
+
+    return cellCount;
+  }
+
+
+ /**
+   * top down indexing of cells (see countCells for doc)
+   * 1 6 7
+   * 2 5 8
+   * 3 4 9
+   */
+  topDownCellCount(currentRow, currentCol, numRows) {
+    const cellCount = (currentCol + 1) + currentRow * numRows;
+
+    return cellCount;
+  }
 
   /**
    * inverse bottom up indexing of cells (see countCells for doc)

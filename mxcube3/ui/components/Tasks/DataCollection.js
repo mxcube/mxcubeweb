@@ -194,7 +194,12 @@ class DataCollection extends React.Component {
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="energy" type="number" label="Energy" />
+            <InputField
+              disabled={this.props.beamline.attributes.energy.readonly}
+              propName="energy"
+              type="number"
+              label="Energy"
+            />
               <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
             { this.props.taskResult.energyScan.length > 0 ?
@@ -288,16 +293,17 @@ DataCollection = connect(state => {
     path: `${state.queue.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
+    beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds ?
+      resolution: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.resolution :
         state.beamline.attributes.resolution.value),
-      energy: (state.taskForm.sampleIds ?
+      energy: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.energy :
         state.beamline.attributes.energy.value),
-      transmission: (state.taskForm.sampleIds ?
+      transmission: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.transmission :
         state.beamline.attributes.transmission.value)
     }
