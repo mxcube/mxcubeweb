@@ -8,6 +8,7 @@ export default class TodoTree extends React.Component {
     super(props);
     this.setSearchWord = this.setSearchWord.bind(this);
     this.showAddSampleForm = this.showAddSampleForm.bind(this);
+    this.mountAndSwitchTab = this.mountAndSwitchTab.bind(this);
     this.state = { searchWord: '' };
   }
 
@@ -18,6 +19,11 @@ export default class TodoTree extends React.Component {
   showAddSampleForm() {
     this.props.sendPrepareForNewSample();
     this.props.showForm('AddSample');
+    this.props.showList('current');
+  }
+
+  mountAndSwitchTab(sampleData) {
+    this.props.mount(sampleData);
     this.props.showList('current');
   }
 
@@ -74,7 +80,7 @@ export default class TodoTree extends React.Component {
                         <Button
                           className="pull-right"
                           bsSize="xs"
-                          onClick={() => this.props.mount(sampleData)}
+                          onClick={() => this.mountAndSwitchTab(sampleData)}
                         >
                           Mount
                         </Button>
