@@ -325,8 +325,11 @@ class EnergyHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(EnergyHOMediator, self).__init__(ho, name)
         if ho.tunable:
-            ho.connect("energyChanged", self._value_change)
-            ho.connect("stateChanged", self.state_change)
+            try:
+                ho.connect("energyChanged", self._value_change)
+                ho.energy_motor.connect("stateChanged", self.state_change)
+            except:
+                pass
 
         self._precision = 4
 
@@ -405,8 +408,11 @@ class WavelengthHOMediator(HOMediatorBase):
         super(WavelengthHOMediator, self).__init__(ho, name)
 
         if ho.tunable:
-            ho.connect("energyChanged", self._value_change)
-            ho.energy_motor.connect("stateChanged", self.state_change)
+            try:
+                ho.connect("energyChanged", self._value_change)
+                ho.energy_motor.connect("stateChanged", self.state_change)
+            except:
+                pass
 
         self._precision = 4
 
