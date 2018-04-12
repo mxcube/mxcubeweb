@@ -213,7 +213,7 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     app.restrict = loginutils.valid_login_only
 
     # Importing all REST-routes
-    from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
+    from routes import (Main, Login, Beamline, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
                         lims, qutils, workflow, Detector, rachat)
 
