@@ -121,7 +121,8 @@ def signout():
         mxcube.session.clear_session()
 
     qutils.reset_queue_settings()
-    mxcube.session.clear_session()
+    if hasattr(mxcube.session, 'clear_session'):
+        mxcube.session.clear_session()
 
     if mxcube.CURRENTLY_MOUNTED_SAMPLE:
         if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
