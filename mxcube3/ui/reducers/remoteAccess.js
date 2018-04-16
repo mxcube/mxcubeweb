@@ -4,7 +4,9 @@ const initialState = {
   sid: null,
   observerName: null,
   requestingControl: false,
-  observers: []
+  observers: [],
+  allowRemote: false,
+  showObserverDialog: false
 };
 
 export default (state = initialState, action) => {
@@ -23,6 +25,14 @@ export default (state = initialState, action) => {
       {
         return Object.assign({}, state, { observers: action.observers });
       }
+    case 'SHOW_OBSERVER_DIALOG':
+      {
+        return Object.assign({}, state, { showObserverDialog: action.show });
+      }
+    case 'SET_ALLOW_REMOTE':
+      {
+        return Object.assign({}, state, { allowRemote: action.observers });
+      }
     case 'REQUEST_CONTROL':
       {
         return Object.assign({}, state, { requestingControl: action.control });
@@ -33,7 +43,8 @@ export default (state = initialState, action) => {
                  observers: action.data.remoteAccess.observers,
                  master: action.data.remoteAccess.master,
                  observerName: action.data.remoteAccess.observerName,
-                 sid: action.data.remoteAccess.sid };
+                 sid: action.data.remoteAccess.sid,
+                 allowRemote: action.data.remoteAccess.allowRemote };
       }
     default:
       return state;

@@ -181,7 +181,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const observers = fetch('mxcube/api/v0.1/login/observers', {
+    const remoteAccess = fetch('mxcube/api/v0.1/ra', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -224,7 +224,7 @@ export function getInitialState() {
         json => { state.loadedSample = json.loaded_sample; return json; }).then(
         json => { state.sampleChangerCommands = json.cmds; return json; }).then(
         json => { state.sampleChangerGlobalState = json.global_state; return json; }).catch(notify),
-      observers.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
+      remoteAccess.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
       workflow.then(parse).then(json => { state.workflow = json; }).catch(notify)
     ];
 

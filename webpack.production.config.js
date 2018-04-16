@@ -103,7 +103,7 @@ var config = {
       },
       'VERSION': { 'COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
                    'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) },
-      'VIDEO_STREAM_URL': 'ws://localhost:4042/'
+      'VIDEO_STREAM_URL': '"ws://localhost:4042/"'
     }),
     new UglifyJSPlugin()
   ],
