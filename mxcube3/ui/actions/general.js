@@ -181,7 +181,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const remoteAccess = fetch('mxcube/api/v0.1/ra/remoteaccess', {
+    const remoteAccess = fetch('mxcube/api/v0.1/ra', {
       method: 'GET',
       credentials: 'include',
       headers: {

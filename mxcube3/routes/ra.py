@@ -83,7 +83,7 @@ def toggle_operator(new_op_sid, message):
     socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
 
 
-@mxcube.route("/mxcube/api/v0.1/ra/remoteaccess", methods=["GET"])
+@mxcube.route("/mxcube/api/v0.1/ra", methods=["GET"])
 @mxcube.restrict
 def observers():
     """
