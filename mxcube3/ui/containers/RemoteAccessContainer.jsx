@@ -1,25 +1,55 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import Observer from '../components/RemoteAccess/Observer';
-import Master from '../components/RemoteAccess/Master';
+import { Panel, Checkbox } from 'react-bootstrap';
+
+import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
+import UserList from '../components/RemoteAccess/UserList';
+
+import { sendAllowRemote } from '../actions/remoteAccess';
 
 export class RemoteAccessContainer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.enableRemoteAccessOnClick = this.enableRemoteAccessOnClick.bind(this);
+  }
 
-  getContent() {
-    let content = (<Master />);
+  getRAOptions() {
+    let content = (<div className="col-xs-4">
+                     <Panel header="RA Options">
+                       <Checkbox
+                         onClick={this.enableRemoteAccessOnClick}
+                         defaultChecked={this.props.remoteAccess.allowRemote}
+                       >
+                         Enable remote access
+                       </Checkbox>
+                     </Panel>
+                   </div>);
 
-    if (!this.props.remoteAccess.master) {
-      content = (<Observer />);
+    if (!this.props.login.loginInfo.loginRes.Session.is_inhouse) {
+      content = null;
     }
 
     return content;
   }
 
+  enableRemoteAccessOnClick(e) {
+    this.props.sendAllowRemote(e.target.checked);
+  }
+
   render() {
     return (
       <div className="col-xs-12">
-        {this.getContent()}
+        { !this.props.remoteAccess.master ?
+          (<div className="col-xs-4">
+            <RequestControlForm />
+           </div>) : null
+        }
+        <div className="col-xs-4">
+          <UserList />
+        </div>
+        {this.getRAOptions()}
       </div>
     );
   }
@@ -28,10 +58,18 @@ export class RemoteAccessContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    remoteAccess: state.remoteAccess
+    remoteAccess: state.remoteAccess,
+    login: state.login
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    sendAllowRemote: bindActionCreators(sendAllowRemote, dispatch)
   };
 }
 
 export default connect(
-    mapStateToProps,
+   mapStateToProps,
+   mapDispatchToProps
 )(RemoteAccessContainer);
