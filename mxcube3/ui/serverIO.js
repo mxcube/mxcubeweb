@@ -255,7 +255,7 @@ class ServerIO {
       if (observer.name && observer.host) {
         addResponseMessage(`**${observer.name}** (${observer.host}) connected.`);
       } else {
-        addResponseMessage(`${observer.host} connecting.`);
+        addResponseMessage(`${observer.host} connecting ...`);
       }
     });
 
