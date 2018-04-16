@@ -47,17 +47,7 @@ def take_control():
     if not session['loginInfo']['loginRes']['Session']['is_inhouse']:
         return make_response("", 409)
 
-    current_op = loginutils.get_operator()
-
-    new_op = loginutils.get_user_by_sid(session.sid)
-    loginutils.set_operator(new_op["sid"])
-
-    observers = loginutils.get_observers()
-    new_op["message"] = "You have taken control"
-
-    socketio.emit("observersChanged", observers, namespace='/hwr')
-    socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace='/hwr')
-    socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
+    toggle_operator(session.sid, "You were given control")
 
     return make_response("", 200)
 
@@ -73,20 +63,24 @@ def give_control():
        not session['loginInfo']['loginRes']['Session']['is_inhouse']:
         return make_response("", 409)
 
-    current_op = loginutils.get_operator()
     sid = request.get_json().get("sid")
+    toggle_operator(sid, "You were given control")
 
-    new_op = loginutils.get_user_by_sid(sid)
+    return make_response("", 200)
+
+
+def toggle_operator(new_op_sid, message):
+    current_op = loginutils.get_operator()
+
+    new_op = loginutils.get_user_by_sid(new_op_sid)
     loginutils.set_operator(new_op["sid"])
+    new_op["message"] = message
 
     observers = loginutils.get_observers()
-    new_op["message"] = "You were given control"
 
     socketio.emit("observersChanged", observers, namespace='/hwr')
     socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace='/hwr')
     socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
-
-    return make_response("", 200)
 
 
 @mxcube.route("/mxcube/api/v0.1/ra/remoteaccess", methods=["GET"])
@@ -224,5 +218,6 @@ def set_observer(data):
         observer["name"] = name
 
     socketio.emit("observersChanged", observers, namespace='/hwr')
+    socketio.emit("observerLogin", observer, include_self=False, namespace='/hwr')
 
     return session.sid
