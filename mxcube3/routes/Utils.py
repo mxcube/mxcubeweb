@@ -1,7 +1,4 @@
 import logging
-from mxcube3 import app as mxcube
-from mxcube3 import remote_access
-from mxcube3 import socketio
 import time
 import gevent
 import gevent.event
@@ -12,6 +9,10 @@ import os
 import sys
 import email.Utils
 import smtplib
+
+from mxcube3 import app as mxcube
+from mxcube3 import socketio
+from mxcube3.routes import loginutils
 
 
 SNAPSHOT_RECEIVED = gevent.event.Event()
@@ -187,14 +188,14 @@ def _snapshot_received(data):
 
 def _do_take_snapshot(filename):
     SNAPSHOT_RECEIVED.clear()
+    rid = loginutils.get_operator["socketio_sid"]
 
-    socketio.emit("take_xtal_snapshot", namespace="/hwr", room=remote_access.MASTER_ROOM, callback=_snapshot_received)
+    socketio.emit("take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received)
 
     SNAPSHOT_RECEIVED.wait(timeout=30)
 
     with file(filename, "wb") as snapshot_file:
       snapshot_file.write(SNAPSHOT)
-    
 
 def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
     if snapshots is None:

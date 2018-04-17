@@ -34,6 +34,7 @@ import { setLoading,
 import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
+import { doSignOut } from './actions/login';
 
 import { addResponseMessage } from 'react-chat-widget';
 
@@ -79,12 +80,12 @@ class ServerIO {
     });
   }
 
-  setRemoteAccessMaster(cb) {
-    this.hwrSocket.emit('setRaMaster', { master: true, name: null }, cb);
+  setRemoteAccessMaster(name, cb) {
+    this.hwrSocket.emit('setRaMaster', { master: true, name }, cb);
   }
 
-  setRemoteAccessObserver(observer, name, cb) {
-    this.hwrSocket.emit('setRaMaster', { master: false, name }, cb);
+  setRemoteAccessObserver(name, cb) {
+    this.hwrSocket.emit('setRaObserver', { master: true, name }, cb);
   }
 
   listen(store) {
@@ -254,7 +255,15 @@ class ServerIO {
       if (observer.name && observer.host) {
         addResponseMessage(`**${observer.name}** (${observer.host}) connected.`);
       } else {
-        addResponseMessage(`${observer.host} connecting.`);
+        addResponseMessage(`${observer.host} connecting ...`);
+      }
+    });
+
+    this.hwrSocket.on('forceSignoutObservers', () => {
+      const ra = store.getState().remoteAccess;
+
+      if (!ra.master) {
+        this.dispatch(doSignOut());
       }
     });
 
@@ -263,24 +272,26 @@ class ServerIO {
     });
 
     this.hwrSocket.on('setMaster', (data) => {
-      const ra = store.getState().remoteAccess;
+      const state = store.getState();
+      const ra = state.remoteAccess;
 
-      if (ra.sid === data.sid && !ra.master) {
-        // Given control
-        this.dispatch(setMaster(true));
+      // Given control
+      if (!ra.master) {
+        this.dispatch(setMaster(true, data.name, data.sid));
         this.dispatch(setLoading(true, 'You were given control', data.message));
-      } else if (ra.sid === data.sid && ra.master) {
-        // Keep control
-        this.dispatch(setMaster(true));
-      } else if (!ra.master) {
-        // Control was denied
-        if (ra.requestingControl) {
-          this.dispatch(setLoading(true, 'You were denied control', data.message));
-          this.dispatch(requestControlAction(false));
-        }
-      } else if (ra.master) {
-        // Lost control
-        this.dispatch(setMaster(false));
+      }
+    });
+
+    this.hwrSocket.on('setObserver', (data) => {
+      const state = store.getState();
+      const ra = state.remoteAccess;
+
+      // Control was denied by master or control was taken by force
+      if (ra.requestingControl) {
+        this.dispatch(setLoading(true, 'You were denied control', data.message));
+        this.dispatch(requestControlAction(false));
+      } else {
+        this.dispatch(setMaster(false, data.name, data.sid));
       }
     });
 

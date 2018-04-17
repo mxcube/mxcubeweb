@@ -125,6 +125,7 @@ def init_app_state(app):
     app.TEMP_DISABLED = []
     app.USERS = {}
     qutils.init_queue_settings()
+    app.ALLOW_REMOTE = False
 
     app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
     app.queue = qutils.new_queue()
@@ -211,9 +212,9 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     app.restrict = loginutils.valid_login_only
 
     # Importing all REST-routes
-    from routes import (Main, Login, Beamline, Collection, Mockups, Utils,
+    from routes import (Main, Login, Beamline, Mockups, Utils,
                         SampleCentring, SampleChanger, Diffractometer, Queue,
-                        lims, qutils, workflow, Detector, rachat)
+                        lims, qutils, workflow, Detector, ra)
 
     # Install server-side UI state storage
     from mxcube3 import state_storage

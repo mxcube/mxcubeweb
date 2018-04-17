@@ -1,15 +1,33 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Form, ControlLabel, FormControl, Button, FormGroup } from 'react-bootstrap';
+import { Form, ControlLabel, FormControl, Button, FormGroup, Panel } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
-import { requestControl } from '../../actions/remoteAccess';
+import { requestControl, sendTakeControl } from '../../actions/remoteAccess';
 
-class Observer extends React.Component {
+class RequestControlForm extends React.Component {
   constructor(props) {
     super(props);
     this.askForControl = this.askForControl.bind(this);
     this.cancelControlRequest = this.cancelControlRequest.bind(this);
+    this.getTakeControlOption = this.getTakeControlOption.bind(this);
+    this.takeControlOnClick = this.takeControlOnClick.bind(this);
+  }
+
+  componentDidUpdate()	{
+    this.name.value = this.props.remoteAccess.observerName;
+  }
+
+  getTakeControlOption() {
+    let content = (<span style={{ marginLeft: '1em' }}>
+                     <Button onClick={this.takeControlOnClick}>Take control</Button>
+                   </span>);
+
+    if (!this.props.login.loginInfo.loginRes.Session.is_inhouse) {
+      content = null;
+    }
+
+    return content;
   }
 
   getName() {
@@ -22,6 +40,10 @@ class Observer extends React.Component {
     }
 
     return name;
+  }
+
+  takeControlOnClick() {
+    this.props.sendTakeControl();
   }
 
   askForControl() {
@@ -42,7 +64,9 @@ class Observer extends React.Component {
   }
 
   render() {
-    return (<Form>
+    return (
+      <Panel header="Request control">
+        <Form>
           <FormGroup>
             <ControlLabel>Name</ControlLabel>
             <FormControl
@@ -59,14 +83,16 @@ class Observer extends React.Component {
               defaultValue="Please give me control"
               rows="3"
             />
-          </FormGroup>
-          <Button
-            bsStyle="primary"
-            onClick={this.askForControl}
-          >
-            Ask for control
-          </Button>
-    </Form>);
+            </FormGroup>
+            <Button
+              bsStyle="primary"
+              onClick={this.askForControl}
+            >
+              Ask for control
+            </Button>
+            {this.getTakeControlOption()}
+        </Form>
+      </Panel>);
   }
 }
 
@@ -81,11 +107,12 @@ function mapDispatchToProps(dispatch) {
   return {
     askForControlDialog: bindActionCreators(setLoading, dispatch),
     requestControl: bindActionCreators(requestControl, dispatch),
+    sendTakeControl: bindActionCreators(sendTakeControl, dispatch)
   };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Observer);
+)(RequestControlForm);
 
