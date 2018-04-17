@@ -10,7 +10,7 @@ from mxcube3.routes import Utils
 from mxcube3.routes import qutils
 from mxcube3.routes import scutils
 from mxcube3.routes import limsutils
-from mxcube3.routes.remote_access import safe_emit
+from mxcube3.routes.loginutils import safe_emit
 
 from sample_changer.GenericSampleChanger import SampleChangerState
 from sample_changer.Container import Pin
