@@ -27,7 +27,10 @@ export class RemoteAccessContainer extends React.Component {
                      </Panel>
                    </div>);
 
-    if (!this.props.login.loginInfo.loginRes.Session.is_inhouse) {
+
+    const loginRes = this.props.login.loginInfo.loginRes;
+
+    if (loginRes && !loginRes.Session.is_inhouse) {
       content = null;
     }
 
