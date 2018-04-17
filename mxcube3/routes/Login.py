@@ -62,18 +62,28 @@ def login():
     password = params.get("password", "")
 
     try:
-        if logged_in_users() and loginID not in logged_in_users():
-            return deny_access("Another user is already logged in")
-
-        if not mxcube.ALLOW_REMOTE and logged_in_users():
-            return deny_access("Remote access disabled")
-
         login_res = limsutils.lims_login(loginID, password)
+        inhouse = limsutils.lims_is_inhouse(login_res)
+
         info = {"valid": limsutils.lims_valid_login(login_res),
                 "local": is_local_host(),
                 "existing_session": limsutils.lims_existing_session(login_res),
-                "inhouse": limsutils.lims_is_inhouse(login_res)}
+                "inhouse": inhouse}
 
+        _logged_in_users = logged_in_users(exclude_inhouse=True)
+        
+        # Only allow in-house log-in from local host
+        if inhouse and not (inhouse and is_local_host()):
+            return deny_access("In-house only allowed from localhost")
+        # Only allow other users to log-in if they are from the same proposal
+        elif _logged_in_users and (loginID not in _logged_in_users):
+            return deny_access("Another user is already logged in")
+
+        # Only allow local login when remote is disabled
+        if not mxcube.ALLOW_REMOTE and not is_local_host():
+            return deny_access("Remote access disabled")
+
+        # Only allow remote logins with existing sessions
         if limsutils.lims_valid_login(login_res) and is_local_host():
             msg = "[LOGIN] Valid login from local host (%s)" % str(info)
             logging.getLogger("HWR").info(msg)
