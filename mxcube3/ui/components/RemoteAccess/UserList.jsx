@@ -24,7 +24,7 @@ class UserList extends React.Component {
                </Button>
              </div>)
             :
-            null
+            (<div className="col-xs-4"><span>&nbsp;</span></div>)
           }
         </div>
       ));

@@ -58,9 +58,6 @@ def queue_stop():
               200: On success
               409: Queue could not be stopped
     """
-    import pdb
-    pdb.set_trace()
-
     if mxcube.queue.queue_hwobj._root_task is not None:
         mxcube.queue.queue_hwobj.stop()
     else:

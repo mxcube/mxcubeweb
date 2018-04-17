@@ -188,7 +188,7 @@ def _snapshot_received(data):
 
 def _do_take_snapshot(filename):
     SNAPSHOT_RECEIVED.clear()
-    rid = loginutils.get_operator["socketio_sid"]
+    rid = loginutils.get_operator()["socketio_sid"]
 
     socketio.emit("take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received)
 

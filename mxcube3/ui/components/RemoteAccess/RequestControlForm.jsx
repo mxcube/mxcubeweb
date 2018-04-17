@@ -23,7 +23,9 @@ class RequestControlForm extends React.Component {
                      <Button onClick={this.takeControlOnClick}>Take control</Button>
                    </span>);
 
-    if (!this.props.login.loginInfo.loginRes.Session.is_inhouse) {
+    const loginRes = this.props.login.loginInfo.loginRes;
+
+    if (loginRes && !loginRes.Session.is_inhouse) {
       content = null;
     }
 

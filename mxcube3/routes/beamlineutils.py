@@ -46,10 +46,12 @@ def get_aperture():
 
 
 def get_beam_definer():
-    if hasattr(mxcube.beamline.getObjectByRole("beam_info"), "beam_definer_hwobj"):
-        bd = mxcube.beamline.getObjectByRole("beam_info").beam_definer_hwobj
+    beam_info = mxcube.beamline.getObjectByRole("beam_info") 
+
+    if hasattr(beam_info, "beam_definer_hwobj") and beam_info.beam_definer_hwobj:
+        bd = beam_info.beam_definer_hwobj
     else:
-        bd = mxcube.beamline.getObjectByRole("beam_info").aperture_hwobj
+        bd = beam_info.aperture_hwobj
 
     return bd
 

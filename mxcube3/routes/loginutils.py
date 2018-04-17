@@ -69,8 +69,14 @@ def is_operator(sid):
     return user and user["sid"] == sid
 
 
-def logged_in_users():
-    return [user["loginID"] for user in mxcube.USERS.itervalues()]
+def logged_in_users(exclude_inhouse=False):
+    users = [user["loginID"] for user in mxcube.USERS.itervalues()]
+
+    if exclude_inhouse:
+        ih_users =["%s%s"% (p, c) for (p, c) in mxcube.session.in_house_users]
+        users = [user for user in users if user not in ih_users]
+
+    return users
 
 
 def set_operator(sid):
@@ -153,4 +159,7 @@ def remote_addr():
 
 
 def is_local_host():
-    return remote_addr() in socket.gethostbyname_ex(socket.gethostname())[2]
+    localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
+    localhost_list.append("127.0.0.1")
+
+    return remote_addr() in localhost_list
