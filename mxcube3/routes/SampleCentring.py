@@ -272,8 +272,7 @@ def move_to_centred_position(point_id):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    point = mxcube.shapes.get_shape('point_id')
-
+    point = mxcube.shapes.get_shape(point_id)
     if point:
         motor_positions = point.get_centred_position().as_dict()
         mxcube.diffractometer.move_to_motors_positions(motor_positions)

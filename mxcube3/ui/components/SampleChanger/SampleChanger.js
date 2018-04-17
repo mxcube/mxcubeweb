@@ -110,9 +110,10 @@ export class SampleChangerTreeItem extends React.Component {
   constructor(props) {
     super(props);
     this.itemClicked = this.itemClicked.bind(this);
-    this.state = { allow_control: false };
+    this.state = { allow_control: false, dropdownIsOpen: false };
     this.loadSample = this.loadSample.bind(this);
     this.unloadSample = this.unloadSample.bind(this);
+    this.toggleDropdown = this.toggleDropdown.bind(this);
   }
 
   itemClicked() {
@@ -122,11 +123,17 @@ export class SampleChangerTreeItem extends React.Component {
   }
 
   loadSample() {
+    this.toggleDropdown();
     this.props.load(this.props.label);
   }
 
   unloadSample() {
+    this.toggleDropdown();
     this.props.unload(this.props.label);
+  }
+
+  toggleDropdown() {
+    this.setState({ dropdownIsOpen: !this.state.dropdownIsOpen });
   }
 
 
@@ -145,6 +152,8 @@ export class SampleChangerTreeItem extends React.Component {
               style={{ fontStyle: 'italic', padding: '0.2em 0.2em' }}
               title={`${this.props.dm}`}
               bsStyle="link"
+              onToggle={this.toggleDropdown}
+              open={this.state.dropdownIsOpen}
             >
               <li role="heading" className="dropdown-header">
                 <b>Position {this.props.label}</b>

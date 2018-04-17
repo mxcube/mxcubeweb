@@ -117,16 +117,14 @@ def init_app_state(app):
     # SampleID of currently mounted sample
     app.CURRENTLY_MOUNTED_SAMPLE = None
     app.SAMPLE_TO_BE_MOUNTED = ''
-    app.AUTO_MOUNT_SAMPLE = False
-    app.AUTO_ADD_DIFFPLAN = False
     app.CENTRING_METHOD = CENTRING_METHOD.LOOP
-    app.NUM_SNAPSHOTS = app.collect.getProperty('num_snapshots', 4)
     app.NODE_ID_TO_LIMS_ID = {}
     app.INITIAL_FILE_LIST = []
     app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
     app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
     app.TEMP_DISABLED = []
     app.USERS = {}
+    qutils.init_queue_settings()
     app.ALLOW_REMOTE = False
 
     app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))

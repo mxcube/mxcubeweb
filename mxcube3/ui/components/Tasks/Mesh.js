@@ -9,6 +9,8 @@ import { Modal,
          ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
+import warn from './warning';
+
 import { FieldsHeader,
          StaticField,
          InputField,
@@ -201,7 +203,8 @@ class Mesh extends React.Component {
 
 Mesh = reduxForm({
   form: 'mesh',
-  validate
+  validate,
+  warn
 })(Mesh);
 
 const selector = formValueSelector('helical');
