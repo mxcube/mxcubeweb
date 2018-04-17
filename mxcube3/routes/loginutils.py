@@ -159,4 +159,7 @@ def remote_addr():
 
 
 def is_local_host():
-    return remote_addr() in socket.gethostbyname_ex(socket.gethostname())[2]
+    localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
+    localhost_list.append("127.0.0.1")
+
+    return remote_addr() in localhost_list
