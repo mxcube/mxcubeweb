@@ -5,6 +5,14 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var GitRevisionPlugin = require('git-revision-webpack-plugin');
 var gitRevisionPlugin = new GitRevisionPlugin();
 
+var VIDEO_STREAM_URL = false;
+
+try {
+  VIDEO_STREAM_URL = JSON.stringify(require('./config.video_url.prod.js'));
+} catch (e) {
+  console.log("WARNING: VIDEO_STREAM_URL not set");
+}
+
 
 var config = {
     entry: {

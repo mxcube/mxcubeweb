@@ -4,6 +4,13 @@ var backend_server = require('./backend_server.js');
 var GitRevisionPlugin = require('git-revision-webpack-plugin');
 var gitRevisionPlugin = new GitRevisionPlugin();
 
+var VIDEO_STREAM_URL = false;
+
+try {
+  VIDEO_STREAM_URL = JSON.stringify(require('./config.video_url.dev.js'));
+} catch (e) {
+  console.log("WARNING: VIDEO_STREAM_URL not set");
+}
 
 var config = {
   entry: {
@@ -122,7 +129,7 @@ var config = {
       },
       'VERSION': { 'COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
                    'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) },
-      'VIDEO_STREAM_URL': '"ws://localhost:4042/"'
+      'VIDEO_STREAM_URL': VIDEO_STREAM_URL
     })
   ],
   externals: {
