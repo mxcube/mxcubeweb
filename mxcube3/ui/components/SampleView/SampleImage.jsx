@@ -51,6 +51,7 @@ export default class SampleImage extends React.Component {
   componentDidMount() {
     // Create fabric and set image background to sample
     this.canvas = new fabric.Canvas('canvas', { defaultCursor: 'crosshair' });
+    this.canvas.renderOnAddRemove = false;
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', (option) => this.leftClick(option));
@@ -128,6 +129,8 @@ export default class SampleImage extends React.Component {
                                  this.props.imageRatio
                                 );
     }
+
+    this.drawGridPlugin.onCellMouseOver(options, this.canvas);
   }
 
   onMouseUp() {
@@ -696,7 +699,6 @@ export default class SampleImage extends React.Component {
       this.player.play();
     }
   }
-
 
   preventAction(e) {
     e.preventDefault();
