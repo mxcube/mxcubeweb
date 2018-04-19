@@ -73,7 +73,7 @@ class ServerIO {
   }
 
   connectStateSocket(statePersistor) {
-    this.uiStateSocket = io.connect(`http://${document.domain}:${location.port}/ui_state`);
+    this.uiStateSocket = io.connect(`//${document.domain}:${location.port}/ui_state`);
 
     this.uiStateSocket.on('state_update', (newState) => {
       statePersistor.rehydrate(JSON.parse(newState));
@@ -91,8 +91,8 @@ class ServerIO {
   listen(store) {
     this.dispatch = store.dispatch;
 
-    this.hwrSocket = io.connect(`http://${document.domain}:${location.port}/hwr`);
-    this.loggingSocket = io.connect(`http://${document.domain}:${location.port}/logging`);
+    this.hwrSocket = io.connect(`//${document.domain}:${location.port}/hwr`);
+    this.loggingSocket = io.connect(`//${document.domain}:${location.port}/logging`);
 
     this.loggingSocket.on('log_record', (record) => {
       this.dispatch(addLogRecord(record));
