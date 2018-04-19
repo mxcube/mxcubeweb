@@ -397,6 +397,13 @@ export default class DrawGridPlugin {
   }
 
 
+  clearMouseOverGridLabel(canvas) {
+    if (this.mouseOverGridLabel) {
+      canvas.remove(this.mouseOverGridLabel);
+      this.mouseOverGridLabel = [];
+    }
+  }
+
   onCellMouseOver(options, canvas) {
     if (options.target && options.target.get('type') === 'GridGroup') {
       options.target.forEachObject((obj) => {
@@ -404,10 +411,7 @@ export default class DrawGridPlugin {
           const mpoint = new fabric.Point(options.e.offsetX, options.e.offsetY);
 
           if (obj.containsPoint(mpoint, null, true)) {
-            if (this.mouseOverGridLabel) {
-              canvas.remove(this.mouseOverGridLabel);
-              this.mouseOverGridLabel = [];
-            }
+            this.clearMouseOverGridLabel(canvas);
 
             const objCenterX = obj.aCoords.tl.x + obj.width / 2;
 
@@ -455,7 +459,7 @@ export default class DrawGridPlugin {
             this.mouseOverGridLabel = new GridGroup(this.mouseOverGridLabel, {
               hasBorders: false,
               hasControls: false,
-              selectable: true,
+              selectable: false,
               lockMovementX: true,
               lockMovementY: true,
               lockScalingX: true,

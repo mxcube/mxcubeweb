@@ -425,6 +425,8 @@ export default class SampleImage extends React.Component {
   leftClick(option) {
     let objectFound = false;
 
+    this.drawGridPlugin.clearMouseOverGridLabel(this.canvas);
+
     if (option.target && option.target.type === 'group') {
       const group = this.canvas.getActiveGroup();
       const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
