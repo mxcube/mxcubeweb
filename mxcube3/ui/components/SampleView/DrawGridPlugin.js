@@ -51,6 +51,8 @@ export default class DrawGridPlugin {
     this.drawing = false;
     this.gridSaved = true;
     this.shapeGroup = null;
+    this.include_cell_labels = false;
+    this.mouseOverGridLabel = [];
     this.overlayLevel = 0.2;
     this.imageRatio = 1;
     this.gridData = _GridData();
@@ -204,13 +206,17 @@ export default class DrawGridPlugin {
    * @param {FabricCanvas} canvas
    */
   repaint(canvas) {
-    const shape = this.shapeFromGridData(this.gridData);
-    if (this.shapeGroup) {
-      canvas.remove(this.shapeGroup);
+    if (this.drawing) {
+      const shape = this.shapeFromGridData(this.gridData);
+
+      if (this.shapeGroup) {
+        canvas.remove(this.shapeGroup);
+      }
+
+      this.shapeGroup = shape.shapeGroup;
+      this.gridData = shape.gridData;
     }
 
-    this.shapeGroup = shape.shapeGroup;
-    this.gridData = shape.gridData;
     canvas.add(this.shapeGroup);
     canvas.renderAll();
   }
@@ -289,7 +295,6 @@ export default class DrawGridPlugin {
           [left + cellTW * nw, top,
            left + cellTW * nw, top + gridData.height / imageRatio],
           {
-            strokeDashArray: strokeArray,
             stroke: color,
             hasControls: false,
             selectable: false
@@ -301,42 +306,53 @@ export default class DrawGridPlugin {
           [left, top + (cellTH) * nh,
            left + gridData.width / imageRatio, top + (cellTH) * nh],
           {
-            strokeDashArray: strokeArray,
             stroke: color,
             hasControls: false,
             selectable: false
           }));
       }
 
-      for (let nw = 0; nw < gridData.numCols; nw++) {
-        for (let nh = 0; nh < gridData.numRows; nh++) {
-          shapes.push(new fabric.Ellipse({
-            left: left + gridData.cellHSpace / 2 + (cellTW) * nw,
-            top: top + gridData.cellVSpace / 2 + (cellTH) * nh,
-            width: cellWidth,
-            height: cellHeight,
-            fill: fillingMatrix[nw][nh],
-            stroke: 'rgba(0,0,0,0)',
-            hasControls: false,
-            selectable: false,
-            originX: 'left',
-            originY: 'top',
-            rx: cellWidth / 2,
-            ry: cellHeight / 2
-          }));
+      if (!this.drawing) {
+        for (let nw = 0; nw < gridData.numCols; nw++) {
+          for (let nh = 0; nh < gridData.numRows; nh++) {
+            const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
+                                              gridData.numRows, gridData.numCols);
 
-          const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
-                                            gridData.numRows, gridData.numCols);
+            shapes.push(new fabric.Ellipse({
+              left: left + gridData.cellHSpace / 2 + (cellTW) * nw,
+              top: top + gridData.cellVSpace / 2 + (cellTH) * nh,
+              width: cellWidth,
+              height: cellHeight,
+              fill: fillingMatrix[nw][nh],
+              stroke: 'rgba(0,0,0,0)',
+              hasControls: false,
+              selectable: false,
+              hasRotatingPoint: false,
+              lockMovementX: true,
+              lockMovementY: true,
+              lockScalingX: true,
+              lockScalingY: true,
+              lockRotation: true,
+              hoverCursor: 'pointer',
+              originX: 'left',
+              originY: 'top',
+              rx: cellWidth / 2,
+              ry: cellHeight / 2,
+              cell: cellCount
+            }));
 
-          shapes.push(new fabric.Text(cellCount, {
-            left: left + gridData.cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
-            top: top + gridData.cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
-            originX: 'center',
-            originY: 'center',
-            fill: 'rgba(0, 0, 200, 1)',
-            fontFamily: 'Helvetica',
-            fontSize: 18
-          }));
+            if (this.include_cell_labels) {
+              shapes.push(new fabric.Text(cellCount, {
+                left: left + gridData.cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
+                top: top + gridData.cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
+                originX: 'center',
+                originY: 'center',
+                fill: 'rgba(0, 0, 200, 1)',
+                fontFamily: 'Helvetica',
+                fontSize: 18
+              }));
+            }
+          }
         }
       }
     }
@@ -372,12 +388,91 @@ export default class DrawGridPlugin {
       lockMovementY: true,
       lockScalingX: true,
       lockScalingY: true,
-      lockRotatio: true,
+      lockRotation: true,
       hoverCursor: 'pointer',
       id: gd.id
     });
 
     return { shapeGroup, gridData };
+  }
+
+
+  clearMouseOverGridLabel(canvas) {
+    if (this.mouseOverGridLabel) {
+      canvas.remove(this.mouseOverGridLabel);
+      this.mouseOverGridLabel = [];
+    }
+  }
+
+  onCellMouseOver(options, canvas) {
+    if (options.target && options.target.get('type') === 'GridGroup') {
+      options.target.forEachObject((obj) => {
+        if (obj.get('type') === 'ellipse') {
+          const mpoint = new fabric.Point(options.e.offsetX, options.e.offsetY);
+
+          if (obj.containsPoint(mpoint, null, true)) {
+            this.clearMouseOverGridLabel(canvas);
+
+            const objCenterX = obj.aCoords.tl.x + obj.width / 2;
+
+            this.mouseOverGridLabel.push(new fabric.Ellipse({
+              left: objCenterX,
+              top: options.e.offsetY - 20,
+              width: 40,
+              height: 40,
+              stroke: 'rgba(0, 0, 0, 1)',
+              fill: 'rgba(0, 0, 200, 0.4)',
+              hasControls: false,
+              selectable: false,
+              hasRotatingPoint: false,
+              lockMovementX: true,
+              lockMovementY: true,
+              lockScalingX: true,
+              lockScalingY: true,
+              lockRotation: true,
+              hoverCursor: 'pointer',
+              originX: 'center',
+              originY: 'center',
+              rx: 20,
+              ry: 20
+            }));
+
+            this.mouseOverGridLabel.push(
+              new fabric.Text(obj.cell, {
+                left: objCenterX,
+                top: options.e.offsetY - 20,
+                originX: 'center',
+                originY: 'center',
+                fill: 'rgba(200, 0, 0, 1)',
+                fontFamily: 'Helvetica',
+                fontSize: 18,
+                hasControls: false,
+                selectable: false,
+                hasRotatingPoint: false,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true
+              }));
+
+            this.mouseOverGridLabel = new GridGroup(this.mouseOverGridLabel, {
+              hasBorders: false,
+              hasControls: false,
+              selectable: false,
+              lockMovementX: true,
+              lockMovementY: true,
+              lockScalingX: true,
+              lockScalingY: true,
+              lockRotation: true,
+              hoverCursor: 'pointer',
+            });
+
+            canvas.add(this.mouseOverGridLabel);
+            canvas.renderAll();
+          }
+        }});
+    }
   }
 
   /**
