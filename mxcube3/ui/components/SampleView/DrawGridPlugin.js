@@ -217,8 +217,10 @@ export default class DrawGridPlugin {
       this.gridData = shape.gridData;
     }
 
-    canvas.add(this.shapeGroup);
-    canvas.renderAll();
+    if (this.shapeGroup) {
+      canvas.add(this.shapeGroup);
+      canvas.renderAll();
+    }
   }
 
   heatMapColorForValue(gd, value) {

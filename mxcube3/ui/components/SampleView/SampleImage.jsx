@@ -145,7 +145,7 @@ export default class SampleImage extends React.Component {
   }
 
   getGridForm() {
-    let spacingDiv = [];
+    let spacingControls = [];
     if (this.props.cellSpacing !== 'None' && this.props.cellSpacing !== undefined) {
       let cellSpacingChoiceArray = this.props.cellSpacing.split(',');
 
@@ -153,14 +153,14 @@ export default class SampleImage extends React.Component {
         choice.charAt(0).toUpperCase() + choice.slice(1)
       );
 
-      spacingDiv = cellSpacingChoiceArray.map((choice) =>
+      spacingControls = cellSpacingChoiceArray.map((choice) =>
         (
           <FormGroup>
             <ControlLabel>{choice} Spacing:</ControlLabel>
             <FormControl
               style={{ width: '50px', marginRight: '1em' }}
               type="text"
-              value={choice === 'Horizontal' ?
+              defaultValue={choice === 'Horizontal' ?
                 this.gridCellSpacing()[0] : this.gridCellSpacing()[1]}
               onChange={choice === 'Horizontal' ?
                 this.setHCellSpacing : this.setVCellSpacing}
@@ -173,7 +173,7 @@ export default class SampleImage extends React.Component {
     const gridForm = (
         <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
           <Form inline>
-            { spacingDiv }
+            { spacingControls }
             <FormGroup>
             <ControlLabel>Overlay: </ControlLabel>
             <FormControl
@@ -202,7 +202,8 @@ export default class SampleImage extends React.Component {
     const gridData = this.selectedGrid();
 
     if (gridData) {
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, value);
+      const pixelValue = ((value / 1000) * (this.props.pixelsPerMm[0]));
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, pixelValue);
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.selectedGrid() === null && this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(null, value);
@@ -217,7 +218,8 @@ export default class SampleImage extends React.Component {
     const gridData = this.selectedGrid();
 
     if (gridData) {
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, value, gridData.cellVSpace);
+      const pixelValue = ((value / 1000) * (this.props.pixelsPerMm[1]));
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, pixelValue, gridData.cellVSpace);
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.selectedGrid() === null && this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(value, null);
