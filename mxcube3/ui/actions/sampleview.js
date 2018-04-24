@@ -193,6 +193,26 @@ export function centringClicksLeft(clicksLeft) {
   return { type: 'CENTRING_CLICKS_LEFT', clicksLeft };
 }
 
+
+export function sendRotateToShape(sid) {
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/shapes/rotate_to', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ sid })
+    }).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to rotate grid.'));
+      }
+    });
+  };
+}
+
+
 export function sendStartClickCentring() {
   return function (dispatch, getState) {
     const { queue } = getState();

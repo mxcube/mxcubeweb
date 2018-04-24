@@ -428,6 +428,38 @@ zoom_levels = ["Zoom 0", "Zoom 1", "Zoom 2", "Zoom 3", "Zoom 4", "Zoom 5",
                "Zoom 6", "Zoom 7", "Zoom 8", "Zoom 9", "Zoom 10"]
 
 
+@mxcube.route("/mxcube/api/v0.1/shapes/rotate_to", methods=['POST'])
+@mxcube.restrict
+def rotate_to():
+    """
+      Rotate Phi to the position where the given shape was defined
+
+        :parameter sid: The shape id
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
+    """
+    resp = Response(status=409)
+    sid = request.get_json().get("sid", -1)
+
+    if sid:
+        shape = mxcube.shapes.get_shape(sid)
+        cp = shape.get_centred_position()
+        phi_value = round(float(cp.as_dict().get("phi", None)), 3)
+
+        if phi_value:
+            phi_motor = mxcube.diffractometer.centringPhi
+
+            try:
+                phi_motor.move(phi_value)
+            except:
+                pass
+            else:
+                resp.status_code = 200
+
+    return resp
+
+
 @mxcube.route("/mxcube/api/v0.1/sampleview/zoom", methods=['PUT'])
 @mxcube.restrict
 def move_zoom_motor():

@@ -21,11 +21,11 @@ const GridGroup = fabric.util.createClass(fabric.Group, {
  */
 function _GridData() {
   return { screenCoord: [0, 0],
-           top: null, left: null,
-           width: null, height: null,
-           cellWidth: null, cellHeight: null,
+           top: 0, left: 0,
+           width: 0, height: 0,
+           cellWidth: 0, cellHeight: 0,
            cellVSpace: 0, cellHSpace: 0,
-           numCols: null, numRows: null,
+           numCols: 0, numRows: 0,
            cellCountFun: null, selected: false,
            id: null, result: null };
 }
@@ -79,9 +79,9 @@ export default class DrawGridPlugin {
    * @param {float} cellWidth
    * @param {float} cellHeight
    */
-  setCellSize(cellWidth, cellHeight) {
-    this.gridData.cellWidth = cellWidth;
-    this.gridData.cellHeight = cellHeight;
+  setCellSize(cellWidth, cellHeight, scale) {
+    this.gridData.cellWidth = cellWidth * scale;
+    this.gridData.cellHeight = cellHeight * scale;
   }
 
 
@@ -94,15 +94,15 @@ export default class DrawGridPlugin {
    * @param {float} hSpace - horizontal space
    * @param {float} VSpace - vertical space
    */
-  setCellSpace(gd, snapToGrid, hSpace, vSpace) {
+  setCellSpace(gd, snapToGrid, hSpace, vSpace, scale) {
     const gridData = { ...gd };
 
-    if (vSpace !== null && !isNaN(vSpace)) { gridData.cellVSpace = vSpace; }
-    if (hSpace !== null && !isNaN(hSpace)) { gridData.cellHSpace = hSpace; }
+    if (vSpace !== null && !isNaN(vSpace)) { gridData.cellVSpace = vSpace * scale; }
+    if (hSpace !== null && !isNaN(hSpace)) { gridData.cellHSpace = hSpace * scale; }
 
     if (snapToGrid) {
-      const cellTW = gridData.cellWidth + gridData.cellHSpace;
-      const cellTH = gridData.cellHeight + gridData.cellVSpace;
+      const cellTW = gridData.cellWidth + gridData.cellHSpace * scale;
+      const cellTH = gridData.cellHeight + gridData.cellVSpace * scale;
 
       gridData.width = gridData.numCols * cellTW;
       gridData.height = gridData.numRows * cellTH;
@@ -118,13 +118,12 @@ export default class DrawGridPlugin {
    * @param {float} hSpace
    * @param {float} vSpace
    */
-  setCurrentCellSpace(hSpace, vSpace) {
-    this.gridData = this.setCellSpace(this.gridData, this.snapToGrid, hSpace, vSpace);
+  setCurrentCellSpace(hSpace, vSpace, scale) {
+    this.gridData = this.setCellSpace(this.gridData, this.snapToGrid, hSpace, vSpace, scale);
   }
 
-  setGridOverlay(gd, level) {
+  setGridOverlay(level) {
     this.overlayLevel = level;
-    return gd;
   }
 
   initializeGridResult(gridData) {
@@ -153,7 +152,7 @@ export default class DrawGridPlugin {
    * @param {boolean} snapToGrid - True if grid is defined by whole cells,
    *                               false if fractions of a cell is allowed
    */
-  startDrawing(options, canvas, snapToGrid = true) {
+  startDrawing(options, canvas, scale, snapToGrid = true) {
     if (!canvas.getActiveObject() && !this.drawing) {
       this.snapToGrid = snapToGrid;
       this.drawing = true;
@@ -171,18 +170,19 @@ export default class DrawGridPlugin {
    * @param {float} x - bottom x coordinate of grid, (mouse x position)
    * @param {float} y - bottom y coordinate of grid, (mouse y position)
    */
-  update(canvas, x, y, imageRatio) {
+  update(canvas, x, y) {
     const [left, top] = this.gridData.screenCoord;
     const validPosition = x > left && y > top;
     const draw = this.drawing && validPosition;
-    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace / imageRatio;
-    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace / imageRatio;
+
+    const cellTW = this.gridData.cellWidth + this.gridData.cellHSpace * 2;
+    const cellTH = this.gridData.cellHeight + this.gridData.cellVSpace * 2;
 
     let width = Math.abs(x - left);
     let height = Math.abs(y - top);
 
-    const numCols = Math.ceil(width / this.gridData.cellWidth);
-    const numRows = Math.ceil(height / this.gridData.cellHeight);
+    const numCols = Math.ceil(width / (cellTW));
+    const numRows = Math.ceil(height / (cellTH));
 
     if (this.snapToGrid) {
       width = numCols * cellTW;
@@ -206,16 +206,14 @@ export default class DrawGridPlugin {
    * @param {FabricCanvas} canvas
    */
   repaint(canvas) {
-    if (this.drawing) {
-      const shape = this.shapeFromGridData(this.gridData);
+    const shape = this.shapeFromGridData(this.gridData);
 
-      if (this.shapeGroup) {
-        canvas.remove(this.shapeGroup);
-      }
-
-      this.shapeGroup = shape.shapeGroup;
-      this.gridData = shape.gridData;
+    if (this.shapeGroup) {
+      canvas.remove(this.shapeGroup);
     }
+
+    this.shapeGroup = shape.shapeGroup;
+    this.gridData = shape.gridData;
 
     if (this.shapeGroup) {
       canvas.add(this.shapeGroup);
@@ -275,27 +273,35 @@ export default class DrawGridPlugin {
    * @param {GridData} gd
    * @return {Object} {shapeGroup, gridData}
    */
-  shapeFromGridData(gd, imageRatio = 1) {
+  shapeFromGridData(gd, scale = 1) {
     const gridData = { ...gd };
     let [left, top] = gd.screenCoord;
-    left = left / imageRatio;
-    top = top / imageRatio;
-    const shapes = [];
-    const cellWidth = (gridData.cellWidth) / imageRatio;
-    const cellHeight = (gridData.cellHeight) / imageRatio;
-    const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
 
-    const cellTW = cellWidth + (gridData.cellHSpace / imageRatio);
-    const cellTH = cellHeight + (gridData.cellVSpace / imageRatio);
+    left = left * scale;
+    top = top * scale;
+
+    const shapes = [];
+    const cellWidth = gridData.cellWidth * scale;
+    const cellHeight = gridData.cellHeight * scale;
+    const cellHSpace = gridData.cellHSpace * scale;
+    const cellVSpace = gridData.cellVSpace * scale;
+
+    const cellTW = cellWidth + (cellHSpace * 2);
+    const cellTH = cellHeight + (cellVSpace * 2);
+
+    const height = cellTH * gridData.numRows;
+    const width = cellTW * gridData.numCols;
 
     const color = gridData.selected ? 'rgba(0,255,0,1)' : 'rgba(0,0,100,0.8)';
     const strokeArray = gridData.selected ? [] : [5, 5];
+    const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
 
-    if (cellWidth > 0 && cellHeight > 0) {
+
+    if (cellTW > 0 && cellTH > 0) {
       for (let nw = 1; nw < gridData.numCols; nw++) {
         shapes.push(new fabric.Line(
           [left + cellTW * nw, top,
-           left + cellTW * nw, top + gridData.height / imageRatio],
+           left + cellTW * nw, top + height],
           {
             stroke: color,
             hasControls: false,
@@ -306,7 +312,7 @@ export default class DrawGridPlugin {
       for (let nh = 1; nh < gridData.numRows; nh++) {
         shapes.push(new fabric.Line(
           [left, top + (cellTH) * nh,
-           left + gridData.width / imageRatio, top + (cellTH) * nh],
+           left + width, top + (cellTH) * nh],
           {
             stroke: color,
             hasControls: false,
@@ -321,8 +327,8 @@ export default class DrawGridPlugin {
                                               gridData.numRows, gridData.numCols);
 
             shapes.push(new fabric.Ellipse({
-              left: left + gridData.cellHSpace / 2 + (cellTW) * nw,
-              top: top + gridData.cellVSpace / 2 + (cellTH) * nh,
+              left: left + cellHSpace + (cellTW) * nw,
+              top: top + cellVSpace + (cellTH) * nh,
               width: cellWidth,
               height: cellHeight,
               fill: fillingMatrix[nw][nh],
@@ -345,8 +351,8 @@ export default class DrawGridPlugin {
 
             if (this.include_cell_labels) {
               shapes.push(new fabric.Text(cellCount, {
-                left: left + gridData.cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
-                top: top + gridData.cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
+                left: left + cellHSpace + (cellTW) * nw + cellWidth / 2,
+                top: top + cellVSpace + (cellTH) * nh + cellHeight / 2,
                 originX: 'center',
                 originY: 'center',
                 fill: 'rgba(0, 0, 200, 1)',
@@ -362,8 +368,8 @@ export default class DrawGridPlugin {
     shapes.push(new fabric.Rect({
       left,
       top,
-      width: gridData.width / imageRatio,
-      height: gridData.height / imageRatio,
+      width,
+      height,
       fill: 'rgba(0,0,0,0)',
       strokeDashArray: strokeArray,
       stroke: color,
@@ -374,7 +380,7 @@ export default class DrawGridPlugin {
 
     if (gridData.name) {
       shapes.push(new fabric.Text(gridData.name, {
-        left: left + gridData.width / imageRatio,
+        left: left + width,
         top: top - 20,
         fill: color,
         fontFamily: 'Helvetica',
@@ -391,6 +397,7 @@ export default class DrawGridPlugin {
       lockScalingX: true,
       lockScalingY: true,
       lockRotation: true,
+      visible: gridData.state !== 'HIDDEN',
       hoverCursor: 'pointer',
       id: gd.id
     });
@@ -495,10 +502,21 @@ export default class DrawGridPlugin {
   }
 
   /**
-  * Save current grid
+  * Save a grid, reset any scaling to original scale
   */
-  saveGrid() {
-    this.gridSaved = true;
+  saveGrid(_gd, scale = 1) {
+    const gd = { ..._gd };
+
+    gd.cellHeight = gd.cellHeight / scale;
+    gd.cellWidth = gd.cellWidth / scale;
+    gd.cellHSpace = gd.cellHSpace / scale;
+    gd.cellVSpace = gd.cellVSpace / scale;
+    gd.width = gd.width / scale;
+    gd.height = gd.height / scale;
+    gd.screenCoord[0] = gd.screenCoord[0] / scale;
+    gd.screenCoord[1] = gd.screenCoord[1] / scale;
+
+    return gd;
   }
 
   /**

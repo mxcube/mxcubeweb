@@ -1,9 +1,11 @@
 import './SampleView.css';
 import React from 'react';
+import Draggable from 'react-draggable';
 import { Form, FormGroup, FormControl, ControlLabel } from 'react-bootstrap';
 import { makePoints, makeLines, makeImageOverlay, makeCross } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
+import GridForm from './GridForm';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
@@ -24,7 +26,8 @@ export default class SampleImage extends React.Component {
     this.setHCellSpacing = this.setHCellSpacing.bind(this);
     this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.gridCellSpacing = this.gridCellSpacing.bind(this);
-    this.setGridOverlay = this.setGridOverlay.bind(this);
+    this.setGridOverlayOpacity = this.setGridOverlayOpacity.bind(this);
+    this.getGridOverlayOpacity = this.getGridOverlayOpacity.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
     this.updateGridResults = this.updateGridResults.bind(this);
@@ -37,6 +40,7 @@ export default class SampleImage extends React.Component {
     this.clearSelection = this.clearSelection.bind(this);
     this.selectShapeEvent = this.selectShapeEvent.bind(this);
     this.clearSelectionEvent = this.clearSelectionEvent.bind(this);
+    this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
     this._keyPressed = null;
     this.gridStarted = false;
@@ -51,7 +55,6 @@ export default class SampleImage extends React.Component {
   componentDidMount() {
     // Create fabric and set image background to sample
     this.canvas = new fabric.Canvas('canvas', { defaultCursor: 'crosshair' });
-    this.canvas.renderOnAddRemove = false;
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', (option) => this.leftClick(option));
@@ -114,8 +117,8 @@ export default class SampleImage extends React.Component {
         this.canvas.remove(this.centringCross[1]);
       }
 
-      this.centringCross = makeCross((options.e.layerX + 1.5) * this.props.imageRatio,
-                                     (options.e.layerY + 1) * this.props.imageRatio,
+      this.centringCross = makeCross((options.e.layerX + 1.5) / this.props.imageRatio,
+                                     (options.e.layerY + 1) / this.props.imageRatio,
                                      this.props.imageRatio,
                                      this.canvas.width, this.canvas.height);
 
@@ -171,6 +174,7 @@ export default class SampleImage extends React.Component {
     }
 
     const gridForm = (
+      <Draggable>
         <div className="dropdown-menu" id="gridForm" style={{ zIndex: 1001, padding: '0.5em' }}>
           <Form inline>
             { spacingControls }
@@ -190,7 +194,8 @@ export default class SampleImage extends React.Component {
             />
             </FormGroup>
           </Form>
-        </div>);
+        </div>
+      </Draggable>);
 
     return gridForm;
   }
@@ -203,10 +208,11 @@ export default class SampleImage extends React.Component {
 
     if (gridData) {
       const pixelValue = ((value / 1000) * (this.props.pixelsPerMm[0]));
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, pixelValue);
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, pixelValue,
+                                                  this.props.imageRatio);
       this.props.sampleActions.sendUpdateShapes([gd]);
-    } else if (this.selectedGrid() === null && this.props.drawGrid) {
-      this.drawGridPlugin.setCurrentCellSpace(null, value);
+    } else if (this.props.drawGrid) {
+      this.drawGridPlugin.setCurrentCellSpace(null, value, this.props.imageRatio);
       this.drawGridPlugin.repaint(this.canvas);
     }
   }
@@ -216,32 +222,30 @@ export default class SampleImage extends React.Component {
     if (isNaN(value)) { value = ''; }
 
     const gridData = this.selectedGrid();
+    const pixelValue = ((value / 1000) * (this.props.pixelsPerMm[1]));
 
     if (gridData) {
-      const pixelValue = ((value / 1000) * (this.props.pixelsPerMm[1]));
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, pixelValue, gridData.cellVSpace);
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, pixelValue, gridData.cellVSpace,
+                                                  this.props.imageRatio);
       this.props.sampleActions.sendUpdateShapes([gd]);
-    } else if (this.selectedGrid() === null && this.props.drawGrid) {
-      this.drawGridPlugin.setCurrentCellSpace(value, null);
+    } else if (this.props.drawGrid) {
+      this.drawGridPlugin.setCurrentCellSpace(value, null, this.props.imageRatio);
       this.drawGridPlugin.repaint(this.canvas);
     }
   }
 
-  setGridOverlay(e) {
+  setGridOverlayOpacity(e) {
     let value = parseFloat(e.target.value);
+
     if (isNaN(value)) { value = '1'; }
-    const gridData = this.selectedGrid();
-    if (gridData) {
-      const gd = this.drawGridPlugin.setGridOverlay(gridData, value);
-      this.props.sampleActions.setOverlay(value);
-      this.drawGridPlugin.repaint(this.canvas);
-      // Note: I am missing sth, next line needed for update the state and triggering
-      // the component rendering, this.props.sampleActions.setOverlay alone not doing that
-      this.props.sampleActions.updateShapes([gd]);
-    }
+
+    this.drawGridPlugin.setGridOverlay(value);
+    this.props.sampleActions.setOverlay(value);
+    this.drawGridPlugin.repaint(this.canvas);
+    this.renderSampleView(this.props);
   }
 
-  getGridOverlay() {
+  getGridOverlayOpacity() {
     let overlay = 1.0;
     if (this.selectedGrid() !== null) {
       const gridData = this.selectedGrid();
@@ -272,11 +276,18 @@ export default class SampleImage extends React.Component {
       hSpace = this.drawGridPlugin.currentGridData().cellHSpace;
     }
 
-    return [hSpace, vSpace];
+    return [hSpace * 1000 / this.props.pixelsPerMm[0],
+            vSpace * 1000 / this.props.pixelsPerMm[1]];
   }
 
   selectedGrid() {
-    return this.props.selectedGrids[0];
+    let grid = null;
+
+    if (this.props.selectedGrids.length) {
+      grid = this.props.selectedGrids[0];
+    }
+
+    return grid;
   }
 
   keyDown(event) {
@@ -319,15 +330,15 @@ export default class SampleImage extends React.Component {
 
     // Only move to beam if the click was done directly on the canvas.
     if (e.target.tagName === 'CANVAS' && e.shiftKey) {
-      sendGoToBeam(e.layerX * imageRatio, e.layerY * imageRatio);
+      sendGoToBeam(e.layerX / imageRatio, e.layerY / imageRatio);
     }
   }
 
   drawCanvas(imageRatio) {
     // Getting the size of screen
     const { width, height } = this.props;
-    const w = width / imageRatio;
-    const h = height / imageRatio;
+    const w = width * imageRatio;
+    const h = height * imageRatio;
     // Set the size of the original html Canvas
     const canvasWindow = document.getElementById('canvas');
     canvasWindow.width = w;
@@ -406,6 +417,7 @@ export default class SampleImage extends React.Component {
               ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
             } else {
               gridData = this.drawGridPlugin.currentGridData();
+              gridData = this.drawGridPlugin.saveGrid(gridData, this.props.imageRatio);
               ctxMenuObj = { type: 'GridGroup', gridData, id: obj.id };
             }
           } else {
@@ -466,12 +478,11 @@ export default class SampleImage extends React.Component {
     }
 
     if (clickCentring) {
-      sampleActions.sendCentringPoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
+      sampleActions.sendCentringPoint(option.e.layerX / imageRatio, option.e.layerY / imageRatio);
     } else if (measureDistance) {
-      sampleActions.addDistancePoint(option.e.layerX * imageRatio, option.e.layerY * imageRatio);
-    } else if (this.props.drawGrid && this.drawGridPlugin.saved()) {
-      this.drawGridPlugin.startDrawing(option, this.canvas);
-      this.showGridForm();
+      sampleActions.addDistancePoint(option.e.layerX / imageRatio, option.e.layerY / imageRatio);
+    } else if (this.props.drawGrid) {
+      this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
     }
   }
 
@@ -513,13 +524,12 @@ export default class SampleImage extends React.Component {
   }
 
   configureGrid() {
-    const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0] / this.props.imageRatio;
-    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[1] / this.props.imageRatio;
-    this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY);
+    const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0];
+    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[1];
+    this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY, this.props.imageRatio);
     this.drawGridPlugin.setCellCounting(this.props.cellCounting);
 
     if (!this.props.drawGrid) {
-      this.hideGridForm();
       this.drawGridPlugin.reset();
     }
   }
@@ -528,30 +538,6 @@ export default class SampleImage extends React.Component {
     const gd = this.selectedGrid();
     if (gd) {
       this.drawGridPlugin.setGridResult(gd.result);
-    }
-  }
-
-  showGridForm() {
-    let left = null;
-    let top = null;
-
-    const gridData = this.selectedGrid();
-    const gridForm = document.getElementById('gridForm');
-
-    if (gridData) {
-      left = gridData.screenCoord[0] / this.props.imageRatio;
-      top = gridData.screenCoord[1] / this.props.imageRatio;
-    } else if (this.selectedGrid() === null && this.props.drawGrid) {
-      left = this.drawGridPlugin.currentGridData().left;
-      top = this.drawGridPlugin.currentGridData().top;
-    }
-
-    if (gridForm && left && top) {
-      gridForm.style.top = `${(top - 70)}px`;
-      gridForm.style.left = `${(left + 15)}px`;
-      gridForm.style.display = 'block';
-    } else {
-      this.hideGridForm();
     }
   }
 
@@ -645,10 +631,21 @@ export default class SampleImage extends React.Component {
   }
 
   saveGrid() {
-    this.drawGridPlugin.initializeGridResult();
-    this.props.sampleActions.addGrid(this.drawGridPlugin.currentGridData());
-    this.drawGridPlugin.saveGrid();
-    this.props.sampleActions.toggleDrawGrid();
+    const gd = this.drawGridPlugin.saveGrid(this.drawGridPlugin.currentGridData());
+    this.props.sampleActions.sendAddShape({ t: 'G', ...gd });
+    this.drawGridPlugin.reset();
+  }
+
+  toggleGridVisibility(id) {
+    const grid = this.props.grids[id];
+
+    if (grid.state === 'HIDDEN') {
+      grid.state = 'SAVED';
+    } else {
+      grid.state = 'HIDDEN';
+    }
+
+    this.props.sampleActions.updateShapes([grid]);
   }
 
   centringMessage() {
@@ -691,6 +688,11 @@ export default class SampleImage extends React.Component {
     /* eslint-disable no-undef */
     const source = !VIDEO_STREAM_URL ? `ws://${document.location.hostname}:4042/` : VIDEO_STREAM_URL;
     /* eslint-enable no-undef */
+
+    if (this.player) {
+      this.player.destroy();
+      this.player = null;
+    }
 
     if (this.player) {
       this.player.destroy();
@@ -790,20 +792,17 @@ export default class SampleImage extends React.Component {
     }
 
     this.canvas.setActiveGroup(new fabric.Group(aShapes, { originX: 'center', originY: 'center' }));
-
     this.canvas.renderAll();
   }
 
   render() {
     this.configureGrid();
-    this.showGridForm();
     this.updateGridResults();
 
     const showBusyIndicator = this.props.busy ? 'block' : 'none';
 
     return (
       <div>
-        {this.getGridForm()}
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">
             <div
@@ -812,6 +811,23 @@ export default class SampleImage extends React.Component {
               onClick={this.preventAction}
               className="sample-video-busy"
               style={{ display: showBusyIndicator }}
+            />
+            <GridForm
+              show={this.props.drawGrid}
+              getGridOverlayOpacity={this.getGridOverlayOpacity}
+              setGridOverlayOpacity={this.setGridOverlayOpacity}
+              cellSpacing={this.props.cellSpacing}
+              gridCellSpacing={this.gridCellSpacing}
+              setHCellSpacing={this.setHCellSpacing}
+              setVCellSpacing={this.setVCellSpacing}
+              gridList={this.props.grids}
+              currentGrid={this.drawGridPlugin.currentGridData()}
+              removeGrid={this.props.sampleActions.sendDeleteShape}
+              saveGrid={this.saveGrid}
+              toggleVisibility={this.toggleGridVisibility}
+              rotateTo={this.props.sampleActions.sendRotateToShape}
+              selectGrid={this.selectShape}
+              selectedGrids={this.props.selectedGrids.map(grid => grid.id)}
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
