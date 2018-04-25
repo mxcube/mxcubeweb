@@ -518,13 +518,14 @@ def xrf_task_progress(taskId, progress):
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
-def send_shapes(update_positions = False, movable=None):
+def send_shapes(update_positions = False, movable={}):
     shape_dict = {}
 
     for shape in mxcube.shapes.get_shapes():
         if update_positions:
-            if not (shape.t == "G" and movable["name"] == "phi"):
-                shape.update_position(mxcube.diffractometer.motor_positions_to_screen)
+            if not (shape.t == "G" and movable.get("name", None) == "phi"):
+                shape.update_position(mxcube.diffractometer.\
+                    motor_positions_to_screen)
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})

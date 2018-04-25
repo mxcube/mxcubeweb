@@ -448,10 +448,8 @@ def rotate_to():
         phi_value = round(float(cp.as_dict().get("phi", None)), 3)
 
         if phi_value:
-            phi_motor = mxcube.diffractometer.centringPhi
-
             try:
-                phi_motor.move(phi_value)
+                mxcube.diffractometer.centringPhi.move(phi_value)
             except:
                 pass
             else:

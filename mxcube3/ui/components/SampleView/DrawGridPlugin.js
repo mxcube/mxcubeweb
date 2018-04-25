@@ -181,8 +181,8 @@ export default class DrawGridPlugin {
     let width = Math.abs(x - left);
     let height = Math.abs(y - top);
 
-    const numCols = Math.ceil(width / (cellTW));
-    const numRows = Math.ceil(height / (cellTH));
+    const numCols = Math.ceil(width / cellTW);
+    const numRows = Math.ceil(height / cellTH);
 
     if (this.snapToGrid) {
       width = numCols * cellTW;
@@ -312,7 +312,7 @@ export default class DrawGridPlugin {
       for (let nh = 1; nh < gridData.numRows; nh++) {
         shapes.push(new fabric.Line(
           [left, top + (cellTH) * nh,
-           left + width, top + (cellTH) * nh],
+           left + width, top + cellTH * nh],
           {
             stroke: color,
             hasControls: false,
@@ -327,8 +327,8 @@ export default class DrawGridPlugin {
                                               gridData.numRows, gridData.numCols);
 
             shapes.push(new fabric.Ellipse({
-              left: left + cellHSpace + (cellTW) * nw,
-              top: top + cellVSpace + (cellTH) * nh,
+              left: left + cellHSpace + cellTW * nw,
+              top: top + cellVSpace + cellTH * nh,
               width: cellWidth,
               height: cellHeight,
               fill: fillingMatrix[nw][nh],
