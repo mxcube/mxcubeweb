@@ -5,7 +5,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var GitRevisionPlugin = require('git-revision-webpack-plugin');
 var gitRevisionPlugin = new GitRevisionPlugin();
 
-var VIDEO_STREAM_URL = false;
+var VIDEO_STREAM_URL = '"ws://localhost:4042/"';
 
 try {
   VIDEO_STREAM_URL = JSON.stringify(require('./config.video_url.prod.js'));
@@ -111,7 +111,8 @@ var config = {
       },
       'VERSION': { 'COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
                    'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) },
-      'VIDEO_STREAM_URL': '"ws://localhost:4042/"'
+      'VIDEO_STREAM_URL': VIDEO_STREAM_URL,
+      'VIDEO_STREAM_ON_LOCAL_HOST': true
     }),
     new UglifyJSPlugin()
   ],

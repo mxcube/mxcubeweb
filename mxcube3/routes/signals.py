@@ -518,12 +518,14 @@ def xrf_task_progress(taskId, progress):
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
-def send_shapes(update_positions = False):
+def send_shapes(update_positions = False, movable={}):
     shape_dict = {}
 
     for shape in mxcube.shapes.get_shapes():
         if update_positions:
-            shape.update_position(mxcube.diffractometer.motor_positions_to_screen)
+            if not (shape.t == "G" and movable.get("name", None) == "phi"):
+                shape.update_position(mxcube.diffractometer.\
+                    motor_positions_to_screen)
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})
@@ -542,7 +544,7 @@ def motor_state_callback(movable, sender=None, **kw):
         motor_position_callback(movable)
 
         # Re calculate positions for shapes after motor finished to move
-        send_shapes(update_positions = True)
+        send_shapes(update_positions = True, movable=movable)
 
         # Update the pixels per mm if it was the zoom motor that moved
         if movable["name"] == "zoom":

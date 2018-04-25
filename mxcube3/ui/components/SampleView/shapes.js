@@ -158,8 +158,8 @@ export function makeScale(height, scaleLengthX, scaleLengthY, color, text) {
 
 export function makeCross(x, y, imageRatio, width, height) {
   return [
-    makeLine(x / imageRatio, 0, x / imageRatio, height, 'rgba(255,255,0,0.5)', 2, false),
-    makeLine(0, y / imageRatio, width, y / imageRatio, 'rgba(255,255,0,0.5)', 2, false)
+    makeLine(x * imageRatio, 0, x * imageRatio, height, 'rgba(255,255,0,0.5)', 2, false),
+    makeLine(0, y * imageRatio, width, y * imageRatio, 'rgba(255,255,0,0.5)', 2, false)
   ];
 }
 
@@ -174,12 +174,12 @@ export function makeBeam(posX, posY, sizeX, sizeY, shape) {
 }
 
 export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
-  const a = p1.x - p2.x;
-  const b = p1.y - p2.y;
-  const length = parseInt(Math.sqrt(a * a + b * b) / ppMm * 1000, 10);
+  const a = (p1.x - p2.x) / ppMm[0];
+  const b = (p1.y - p2.y) / ppMm[1];
+  const length = parseInt(Math.sqrt(a * a + b * b) * 1000, 10);
   return [
-    makeLine(p1.x / iR, p1.y / iR, p2.x / iR, p2.y / iR, color, width, false),
-    makeText(p2.x / iR, p2.y / iR, 12, color, `${length} µm`)
+    makeLine(p1.x * iR, p1.y * iR, p2.x * iR, p2.y * iR, color, width, false),
+    makeText(p2.x * iR, p2.y * iR, 12, color, `${length} µm`)
   ];
 }
 
@@ -199,8 +199,8 @@ export function makePoints(points, imageRatio) {
         case 'SAVED':
           fabricPoints.push(
             ...makePoint(
-              x / imageRatio,
-              y / imageRatio,
+              x * imageRatio,
+              y * imageRatio,
               id,
               points[id].selected ? '#88ff5b' : '#e4ff09',
               'SAVED',
@@ -212,8 +212,8 @@ export function makePoints(points, imageRatio) {
         case 'TMP':
           fabricPoints.push(
             ...makePoint(
-              x / imageRatio,
-              y / imageRatio,
+              x * imageRatio,
+              y * imageRatio,
               id,
               'white',
               'TMP',
@@ -250,10 +250,10 @@ export function makeLines(lines, imageRatio) {
     const [x1, y1, x2, y2] = line.screenCoord;
 
     fabricLines.push(...pointLine(
-      x1 / imageRatio,
-      y1 / imageRatio,
-      x2 / imageRatio,
-      y2 / imageRatio,
+      x1 * imageRatio,
+      y1 * imageRatio,
+      x2 * imageRatio,
+      y2 * imageRatio,
       line.selected ? '#88ff5b' : '#e4ff09',
       line.selected ? 3 : 2,
       true,
@@ -267,15 +267,15 @@ export function makeLines(lines, imageRatio) {
 
 export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
   const imageOverlay = [];
-  const scaleLengthX = 0.05 * ppMm[0] / iR;
-  const scaleLengthY = 0.05 * ppMm[1] / iR;
+  const scaleLengthX = 0.05 * ppMm[0] * iR;
+  const scaleLengthY = 0.05 * ppMm[1] * iR;
 
   imageOverlay.push(
     ...makeBeam(
-      bP[0] / iR,
-      bP[1] / iR,
-      bSi.x * ppMm[0] / iR,
-      bSi.y * ppMm[1] / iR,
+      bP[0] * iR,
+      bP[1] * iR,
+      bSi.x * ppMm[0] * iR,
+      bSi.y * ppMm[1] * iR,
       bSh
       )
     );

@@ -106,7 +106,7 @@ export default (state = initialState, action) => {
     }
     case 'SET_IMAGE_RATIO':
       {
-        return { ...state, imageRatio: state.width / action.clientWidth };
+        return { ...state, imageRatio: action.clientWidth / state.width };
       }
     case 'SET_VIDEO_SIZE':
       {
@@ -114,7 +114,7 @@ export default (state = initialState, action) => {
       }
     case 'TOGGLE_AUTO_SCALE':
       {
-        const imageRatio = state.autoScale ? 1 : state.width / action.width;
+        const imageRatio = state.autoScale ? 1 : action.width / state.width;
         return { ...state, autoScale: !state.autoScale, imageRatio };
       }
     case 'SET_APERTURE':
