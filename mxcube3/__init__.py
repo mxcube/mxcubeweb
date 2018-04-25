@@ -60,6 +60,18 @@ opt_parser.add_option("-p", "--plotting",
                       help="Plotting HWR file, defaults to /plotting",
                       default='/plotting')
 
+opt_parser.add_option("-w", "--ra",
+                      action="store_true",
+                      dest="allow_remote",
+                      help="Enable remote access",
+                      default=False)
+
+opt_parser.add_option("-t", "--ra-timeout",
+                      action="store_true",
+                      dest="ra_timeout",
+                      help="Timeout gives control",
+                      default=False)
+
 cmdline_options, args = opt_parser.parse_args()
 
 INIT_EVENT = gevent.event.Event()
@@ -125,7 +137,8 @@ def init_app_state(app):
     app.TEMP_DISABLED = []
     app.USERS = {}
     qutils.init_queue_settings()
-    app.ALLOW_REMOTE = False
+    app.ALLOW_REMOTE = cmdline_options.allow_remote
+    app.TIMEOUT_GIVES_CONTROL = cmdline_options.ra_timeout
 
     app.empty_queue = pickle.dumps(hwr.getHardwareObject(cmdline_options.queue_model))
     app.queue = qutils.new_queue()

@@ -83,6 +83,7 @@ def set_operator(sid):
     # Clear previous operator
     for user in users().itervalues():
         user["operator"] = False
+        user["requestsControl"] = False
 
     get_user_by_sid(sid)["operator"] = True
 
