@@ -834,6 +834,7 @@ export default class SampleImage extends React.Component {
             <SampleControls
               {...this.props}
               canvas={ this.canvas }
+              imageRatio={ this.props.imageRatio }
             />
             {this.centringMessage()}
             <canvas id="canvas" className="coveringCanvas" />

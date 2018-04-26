@@ -44,17 +44,19 @@ export default class SampleControls extends React.Component {
   doTakeSnapshot() {
     const img = document.getElementById('sample-img');
     const fimg = new fabric.Image(img);
+    fimg.scale(this.props.imageRatio);
     let imgDataURI = '';
     this.props.canvas.setBackgroundImage(fimg);
     this.props.canvas.renderAll();
     imgDataURI = this.props.canvas.toDataURL({ format: 'jpeg' });
     this.props.canvas.setBackgroundImage(0);
     this.props.canvas.renderAll();
-    return { data: imgDataURI.slice(23) };
+    return { data: imgDataURI.slice(23), mime: imgDataURI.slice(0, 23) };
   }
 
   takeSnapShot() {
-    document.getElementById('downloadLink').href = this.doTakeSnapshot();
+    const img = this.doTakeSnapshot();
+    document.getElementById('downloadLink').href = img.mime + img.data;
     const sampleName = this.props.sampleList[this.props.current.sampleID].sampleName;
     const filename = `${this.props.proposal}-${sampleName}.jpeg`;
     document.getElementById('downloadLink').download = filename;
