@@ -7,22 +7,25 @@ import { Panel, Checkbox } from 'react-bootstrap';
 import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
 import UserList from '../components/RemoteAccess/UserList';
 
-import { sendAllowRemote } from '../actions/remoteAccess';
+import { sendAllowRemote, sendTimeoutGivesControl } from '../actions/remoteAccess';
 
 export class RemoteAccessContainer extends React.Component {
-  constructor(props) {
-    super(props);
-    this.enableRemoteAccessOnClick = this.enableRemoteAccessOnClick.bind(this);
-  }
-
   getRAOptions() {
     let content = (<div className="col-xs-4">
                      <Panel header="RA Options">
                        <Checkbox
-                         onClick={this.enableRemoteAccessOnClick}
+                         onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
                          defaultChecked={this.props.remoteAccess.allowRemote}
+                         checked={this.props.remoteAccess.allowRemote}
                        >
                          Enable remote access
+                       </Checkbox>
+                       <Checkbox
+                         onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
+                         defaultChecked={this.props.remoteAccess.timeoutGivesControl}
+                         checked={this.props.remoteAccess.timeoutGivesControl}
+                       >
+                         Timeout gives control
                        </Checkbox>
                      </Panel>
                    </div>);
@@ -35,10 +38,6 @@ export class RemoteAccessContainer extends React.Component {
     }
 
     return content;
-  }
-
-  enableRemoteAccessOnClick(e) {
-    this.props.sendAllowRemote(e.target.checked);
   }
 
   render() {
@@ -68,7 +67,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendAllowRemote: bindActionCreators(sendAllowRemote, dispatch)
+    sendAllowRemote: bindActionCreators(sendAllowRemote, dispatch),
+    sendTimeoutGivesControl: bindActionCreators(sendTimeoutGivesControl, dispatch)
   };
 }
 

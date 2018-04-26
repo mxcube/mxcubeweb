@@ -88,6 +88,10 @@ export function setAllowRemoteAccess(allow) {
   return { type: 'SET_ALLOW_REMOTE', allow };
 }
 
+export function setTimeoutGivesControl(timeoutGivesControl) {
+  return { type: 'SET_TIMEOUT_GIVES_CONTROL', timeoutGivesControl };
+}
+
 export function sendAllowRemote(allow) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/ra/allow_remote', {
@@ -103,6 +107,24 @@ export function sendAllowRemote(allow) {
     dispatch(setAllowRemoteAccess(allow));
   };
 }
+
+
+export function sendTimeoutGivesControl(timeoutGivesControl) {
+  return function (dispatch) {
+    fetch('mxcube/api/v0.1/ra/timeout_gives_control', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ timeoutGivesControl })
+    });
+
+    dispatch(setTimeoutGivesControl(timeoutGivesControl));
+  };
+}
+
 
 export function setObservers(observers) {
   return { type: 'SET_OBSERVERS', observers };

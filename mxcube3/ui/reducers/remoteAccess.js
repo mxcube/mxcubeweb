@@ -6,6 +6,7 @@ const initialState = {
   requestingControl: false,
   observers: [],
   allowRemote: false,
+  timeoutGivesControl: false,
   showObserverDialog: false
 };
 
@@ -31,7 +32,11 @@ export default (state = initialState, action) => {
       }
     case 'SET_ALLOW_REMOTE':
       {
-        return Object.assign({}, state, { allowRemote: action.observers });
+        return Object.assign({}, state, { allowRemote: action.allow });
+      }
+    case 'SET_TIMEOUT_GIVES_CONTROL':
+      {
+        return Object.assign({}, state, { timeoutGivesControl: action.timeoutGivesControl });
       }
     case 'REQUEST_CONTROL':
       {
@@ -44,7 +49,8 @@ export default (state = initialState, action) => {
                  master: action.data.remoteAccess.master,
                  observerName: action.data.remoteAccess.observerName,
                  sid: action.data.remoteAccess.sid,
-                 allowRemote: action.data.remoteAccess.allowRemote };
+                 allowRemote: action.data.remoteAccess.allowRemote,
+                 timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl };
       }
     default:
       return state;
