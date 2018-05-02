@@ -201,7 +201,7 @@ def execute_entry_with_id(sid, tindex):
                  409, queue entry could not be executed
     """
     try:
-        qutils.execute_entry_with_id(sid, tindex)                
+        qutils.execute_entry_with_id(sid, tindex)
     except:
         return Response(status=409)
     else:
@@ -515,37 +515,35 @@ def get_default_char_acq_params():
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
 
-    resp = jsonify({
-        'acq_parameters': {
-            'first_image': acq_parameters.first_image,
-            'num_images': acq_parameters.num_images,
-            'osc_start': acq_parameters.osc_start,
-            'osc_range': acq_parameters.osc_range,
-            'kappa': acq_parameters.kappa,
-            'kappa_phi': acq_parameters.kappa_phi,
-            'overlap': acq_parameters.overlap,
-            'exp_time': acq_parameters.exp_time,
-            'num_passes': acq_parameters.num_passes,
-            'resolution': acq_parameters.resolution,
-            'energy': acq_parameters.energy,
-            'transmission': acq_parameters.transmission,
-            'shutterless': False,
-            'detector_mode': acq_parameters.detector_mode,
-            'inverse_beam': False,
-            'take_dark_current': True,
-            'skip_existing_images': False,
-            'take_snapshots': True,
-            'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
-            'strategy_complexity': 'SINGLE',
-            'account_rad_damage': True,
-            'opt_sad': False,
-            'min_crystal_vdim': 0.05,
-            'max_crystal_vdim': 0.05,
-            'min_crystal_vphi': 0,
-            'max_crystal_vphi': 90,  
-        },
-        })
+
+    char_defaults = mxcube.beamline.get_default_characterisation_parameters().\
+                    as_dict()
+
+    acq_defaults = {
+        'first_image': acq_parameters.first_image,
+        'num_images': acq_parameters.num_images,
+        'osc_start': acq_parameters.osc_start,
+        'osc_range': acq_parameters.osc_range,
+        'kappa': acq_parameters.kappa,
+        'kappa_phi': acq_parameters.kappa_phi,
+        'overlap': acq_parameters.overlap,
+        'exp_time': acq_parameters.exp_time,
+        'num_passes': acq_parameters.num_passes,
+        'resolution': acq_parameters.resolution,
+        'energy': acq_parameters.energy,
+        'transmission': acq_parameters.transmission,
+        'shutterless': False,
+        'detector_mode': acq_parameters.detector_mode,
+        'inverse_beam': False,
+        'take_dark_current': True,
+        'skip_existing_images': False,
+        'take_snapshots': True,
+        'prefixTemplate': '{PREFIX}_{POSITION}',
+        'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}', }
+
+    char_defaults.update(acq_defaults)
+
+    resp = jsonify({ 'acq_parameters':char_defaults })
 
     resp.status_code = 200
     return resp
@@ -594,7 +592,7 @@ def get_default_mesh_params():
             'prefixTemplate': '{PREFIX}_{POSITION}',
             'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
         },
-        })    
+        })
     resp.status_code = 200
     return resp
 
@@ -800,7 +798,7 @@ def create_diff_plan(sid):
     }
 
     sample_model, sample_entry = qutils.get_entry(sid)
-    dc_model, dc_entry = qutils._create_dc(task)    
+    dc_model, dc_entry = qutils._create_dc(task)
     qutils.set_dc_params(dc_model, dc_entry, task, sample_model)
     pt = dc_model.acquisitions[0].path_template
 

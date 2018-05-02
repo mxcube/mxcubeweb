@@ -47,16 +47,21 @@ const ReduxInputField = (prop) => (
            {prop.label}
          </Col>
          <Col xs={prop.col2 || 4}>
-           <FormControl value={prop.input.value} onChange={prop.input.onChange} {...prop} />
+           <FormControl
+             disabled={prop.disabled}
+             value={prop.input.value}
+             onChange={prop.input.onChange}
+             {...prop}
+           />
          </Col>
        </FormGroup>
 );
 
 export const InputField = (prop) => (
-   <Field name={prop.propName}
-     component={ReduxInputField}
-     {...prop}
-   />
+  <Field name={prop.propName}
+    component={ReduxInputField}
+    {...prop}
+  />
 );
 
 export const DisplayField = ({ label, value }) => (
@@ -70,7 +75,7 @@ export const DisplayField = ({ label, value }) => (
       </FormGroup>
 );
 
-export const CheckboxField = ({ propName, label, defaultChecked = false }) => (
+export const CheckboxField = ({ propName, label, disabled }) => (
    <Field name={propName}
      component={ (prop) =>
        <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
@@ -78,12 +83,13 @@ export const CheckboxField = ({ propName, label, defaultChecked = false }) => (
            {label}
          </Col>
          <Col xs={prop.col2 || 4}>
-            <Checkbox
-              defaultChecked={defaultChecked}
-              value={prop.input.value}
-              onChange={prop.input.onChange}
-              {...prop}
-            />
+           <Checkbox
+             defaultChecked={prop.input.value}
+             value={prop.input.value}
+             disabled={disabled}
+             onChange={prop.input.onChange}
+             {...prop}
+           />
          </Col>
        </FormGroup>
      }
@@ -139,20 +145,20 @@ export class CollapsableRows extends React.Component {
       { this.state.collapsed ? '' : this.props.children }
       <Row>
         <Col xs={12}>
-          <center>
+            <center>
             { this.state.collapsed ?
               <Button bsStyle="link"
                 onClick={() => {this.setState({ collapsed: false });}}
               >
                 <a>
-                  <i className="glyphicon glyphicon-option-horizontal" aria-hidden="true"></i>
+                  Show
                 </a>
               </Button> :
               <Button bsStyle="link"
                 onClick={() => {this.setState({ collapsed: true });}}
               >
                 <a>
-                  <i className="glyphicon glyphicon-option-vertical" aria-hidden="true"></i>
+                  Hide
                 </a>
               </Button>
             }
