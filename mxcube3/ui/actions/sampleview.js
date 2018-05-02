@@ -140,7 +140,8 @@ export function setVideoSize(width, height) {
           width: json.imageWidth,
           height: json.imageHeight,
           pixelsPerMm: json.pixelsPerMm,
-          beamPosition: json.position
+          beamPosition: json.position,
+          sourceScale: json.scale
         });
       });
     }

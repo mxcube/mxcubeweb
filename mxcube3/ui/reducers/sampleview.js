@@ -14,6 +14,7 @@ const initialState = {
   autoScale: true,
   imageRatio: 0,
   pixelsPerMm: [0, 0],
+  sourceScale: 1,
   motorSteps: {
     focusStep: 0.1,
     phiStep: 90,
@@ -98,7 +99,8 @@ export default (state = initialState, action) => {
           width: action.width,
           height: action.height,
           pixelsPerMm: action.pixelsPerMm,
-          beamPosition: action.beamPosition
+          beamPosition: action.beamPosition,
+          sourceScale: action.sourceScale
         };
       }
     case 'CENTRING_CLICKS_LEFT': {
@@ -221,7 +223,8 @@ export default (state = initialState, action) => {
           beamSize: { x: action.data.beamInfo.size_x, y: action.data.beamInfo.size_y },
           phaseList: action.data.phaseList,
           currentPhase: action.data.currentPhase,
-          pixelsPerMm: action.data.Camera.pixelsPerMm
+          pixelsPerMm: action.data.Camera.pixelsPerMm,
+          sourceScale: action.data.Camera.scale
         };
       }
     default:

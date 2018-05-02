@@ -17,7 +17,7 @@ import config from 'guiConfig';
 class SampleViewContainer extends Component {
 
   render() {
-    const { imageRatio, motorSteps } = this.props.sampleViewState;
+    const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleID = this.props.current.sampleID;
     const [points, lines, grids] = [{}, {}, {}];
@@ -90,7 +90,7 @@ class SampleViewContainer extends Component {
                   sampleID={sampleID}
                   sampleData={this.props.sampleList[sampleID]}
                   defaultParameters={this.props.defaultParameters}
-                  imageRatio={imageRatio}
+                  imageRatio={imageRatio * sourceScale}
                   workflows={this.props.workflows}
                   savedPointId={this.props.sampleViewState.savedPointId}
                   groupFolder={this.props.groupFolder}
@@ -100,6 +100,7 @@ class SampleViewContainer extends Component {
                   sampleActions={this.props.sampleViewActions}
                   {...this.props.sampleViewState}
                   {...this.props.beamline}
+                  imageRatio={imageRatio * sourceScale}
                   contextMenuVisible={this.props.contextMenu.show}
                   shapes={this.props.shapes}
                   points={points}
