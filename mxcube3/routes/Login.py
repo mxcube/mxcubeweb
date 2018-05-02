@@ -70,13 +70,14 @@ def login():
                 "existing_session": limsutils.lims_existing_session(login_res),
                 "inhouse": inhouse}
 
-        _logged_in_users = logged_in_users(exclude_inhouse=True)
+        _users = logged_in_users(exclude_inhouse=True)
         
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
             return deny_access("In-house only allowed from localhost")
+
         # Only allow other users to log-in if they are from the same proposal
-        elif _logged_in_users and (loginID not in _logged_in_users):
+        if (not inhouse) and _users and (loginID not in _users):
             return deny_access("Another user is already logged in")
 
         # Only allow local login when remote is disabled
