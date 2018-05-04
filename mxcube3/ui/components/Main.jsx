@@ -15,6 +15,7 @@ import diagonalNoise from '../img/diagonal-noise.png';
 import { sendChatMessage, getAllChatMessages } from '../actions/remoteAccess.js';
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import './rachat.css';
+import 'react-chat-widget/lib/styles.css';
 
 class Main extends React.Component {
   constructor(props) {
