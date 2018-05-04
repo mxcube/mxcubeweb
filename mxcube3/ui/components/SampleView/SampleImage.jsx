@@ -128,8 +128,7 @@ export default class SampleImage extends React.Component {
     if (options.e.buttons > 0) {
       this.drawGridPlugin.update(this.canvas,
                                  options.e.layerX,
-                                 options.e.layerY,
-                                 this.props.imageRatio
+                                 options.e.layerY
                                 );
     }
 
@@ -207,9 +206,7 @@ export default class SampleImage extends React.Component {
     const gridData = this.selectedGrid();
 
     if (gridData) {
-      const pixelValue = ((value / 1000) * (this.props.pixelsPerMm[0]));
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, pixelValue,
-                                                  this.props.imageRatio);
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, value);
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(null, value, this.props.imageRatio);
@@ -222,11 +219,9 @@ export default class SampleImage extends React.Component {
     if (isNaN(value)) { value = ''; }
 
     const gridData = this.selectedGrid();
-    const pixelValue = ((value / 1000) * (this.props.pixelsPerMm[1]));
 
     if (gridData) {
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, pixelValue, gridData.cellVSpace,
-                                                  this.props.imageRatio);
+      const gd = this.drawGridPlugin.setCellSpace(gridData, true, value, gridData.cellVSpace);
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(value, null, this.props.imageRatio);
@@ -482,7 +477,7 @@ export default class SampleImage extends React.Component {
     } else if (measureDistance) {
       sampleActions.addDistancePoint(option.e.layerX / imageRatio, option.e.layerY / imageRatio);
     } else if (this.props.drawGrid) {
-      this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
+      this.drawGridPlugin.startDrawing(option, this.canvas);
     }
   }
 
@@ -524,8 +519,10 @@ export default class SampleImage extends React.Component {
   }
 
   configureGrid() {
-    const cellSizeX = this.props.beamSize.x * this.props.pixelsPerMm[0];
-    const cellSizeY = this.props.beamSize.y * this.props.pixelsPerMm[1];
+    const cellSizeX = this.props.beamSize.x * 1000;
+    const cellSizeY = this.props.beamSize.y * 1000;
+    this.drawGridPlugin.setScale(this.props.imageRatio);
+    this.drawGridPlugin.setPixelsPerMM(this.props.pixelsPerMm);
     this.drawGridPlugin.setCellSize(cellSizeX, cellSizeY, this.props.imageRatio);
     this.drawGridPlugin.setCellCounting(this.props.cellCounting);
 
@@ -755,6 +752,9 @@ export default class SampleImage extends React.Component {
     // Grids already defined (drawn)
     Object.values(grids).forEach((gd) => {
       const gridData = { ...gd };
+      gridData.scale = imageRatio;
+      gridData.pixelsPerMMX = pixelsPerMm[0];
+      gridData.pixelsPerMMY = pixelsPerMm[1];
       fabricSelectables.push(this.drawGridPlugin.shapeFromGridData(
         gridData, imageRatio).shapeGroup);
     });
