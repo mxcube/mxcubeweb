@@ -1058,13 +1058,6 @@ def set_char_params(model, entry, task_data, sample_model):
     params = task_data['parameters']
     set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
 
-    # Set default characterisation values taken from ednadefaults xml file
-    defaults = et.fromstring(mxcube.beamline.getObjectByRole("data_analysis").
-                             edna_default_input)
-
-    edna_defaults = mxcube.beamline.get_default_characterisation_parameters()
-    model.characterisation_parameters = edna_defaults
-
     try:
         params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(params["strategy_complexity"])
     except ValueError:

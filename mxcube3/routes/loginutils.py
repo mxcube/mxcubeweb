@@ -80,13 +80,17 @@ def logged_in_users(exclude_inhouse=False):
 
 
 def set_operator(sid):
+    from mxcube3.routes.limsutils import select_proposal
+
     # Clear previous operator
     for user in users().itervalues():
         user["operator"] = False
         user["requestsControl"] = False
 
-    get_user_by_sid(sid)["operator"] = True
+    user = get_user_by_sid(sid)
+    user["operator"] = True
 
+    select_proposal(user["loginID"])
 
 def users():
     return mxcube.USERS

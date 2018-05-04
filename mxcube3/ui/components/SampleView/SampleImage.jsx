@@ -334,11 +334,11 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  drawCanvas(imageRatio) {
+  drawCanvas(imageRatio, sourceScale) {
     // Getting the size of screen
     const { width, height } = this.props;
-    const w = width * imageRatio;
-    const h = height * imageRatio;
+    const w = width * imageRatio / sourceScale;
+    const h = height * imageRatio / sourceScale;
     // Set the size of the original html Canvas
     const canvasWindow = document.getElementById('canvas');
     canvasWindow.width = w;
@@ -726,9 +726,10 @@ export default class SampleImage extends React.Component {
       points,
       lines,
       grids,
-      pixelsPerMm
+      pixelsPerMm,
+      sourceScale
     } = nextProps;
-    this.drawCanvas(imageRatio);
+    this.drawCanvas(imageRatio, sourceScale);
     this.canvas.add(...makeImageOverlay(
       imageRatio,
       pixelsPerMm,

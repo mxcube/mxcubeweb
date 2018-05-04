@@ -9,7 +9,6 @@ import warn from './warning';
 import { FieldsHeader,
          StaticField,
          InputField,
-         CheckboxField,
          SelectField,
          FieldsRow,
          CollapsableRows } from './fields';
@@ -223,10 +222,6 @@ class DataCollection extends React.Component {
                 <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
               <FieldsRow>
-                <CheckboxField propName="shutterless" label="Shutterless" />
-                <CheckboxField propName="inverse_beam" label="Inverse beam" />
-              </FieldsRow>
-              <FieldsRow>
                 <SelectField
                   propName="detector_mode"
                   label="Detector mode"
@@ -244,7 +239,7 @@ class DataCollection extends React.Component {
                   label="Space group"
                   list={SPACE_GROUPS}
                 />
-                <b> Unit Cell </b>
+                <b> Unit Cell: </b>
                 <FieldsRow>
                   <InputField col1="1" col2="5" propName="cellA" label="a" />
                   <InputField col1="1" col2="5" propName="cellB" label="b" />

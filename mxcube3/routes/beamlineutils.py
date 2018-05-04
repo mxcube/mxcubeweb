@@ -22,7 +22,6 @@ def get_beam_info():
         # the correct beam posiition
         width, height, scale = streaming.video_size()
         position = beam_info.get_beam_position()
-        position = position[0] * scale, position[1] * scale
         beam_info_dict["position"] = position
 
     return beam_info_dict
