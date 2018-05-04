@@ -4,6 +4,7 @@ import logging
 # We are patching queue_entry.mount_sample at the end of this file.
 import queue_entry
 import qutils
+import signals
 
 from mxcube3 import app as mxcube
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
@@ -31,20 +32,28 @@ def sc_contents_from_location_get(loc):
 
 
 def set_current_sample(sample):
-    mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
+    try:
+        sample = mxcube.SC_CONTENTS.get("FROM_LOCATION")[sample]
+        mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
+    except:
+        mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
+	
+    logging.getLogger('HWR').info('[SC] Setting currenly mounted sample to %s' %sample)
 
-    import signals
     signals.set_current_sample(sample)
 
 
 def get_current_sample():
     current_queue = qutils.queue_to_dict()
     
-    if mxcube.CURRENTLY_MOUNTED_SAMPLE and \
-       mxcube.CURRENTLY_MOUNTED_SAMPLE["sampleID"] in  current_queue:
-        return mxcube.CURRENTLY_MOUNTED_SAMPLE
-    else:
-        return {}
+    logging.getLogger('HWR').info('[SC] Getting currenly mounted sample %s' %mxcube.CURRENTLY_MOUNTED_SAMPLE)
+    try:
+        if mxcube.CURRENTLY_MOUNTED_SAMPLE and \
+            mxcube.CURRENTLY_MOUNTED_SAMPLE["sampleID"] in  current_queue:
+            return mxcube.CURRENTLY_MOUNTED_SAMPLE
+    except:
+        return {"sampleID": None}
+    return {"sampleID": None}
 
 
 def get_sample_info(location):
