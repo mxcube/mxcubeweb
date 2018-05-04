@@ -136,6 +136,11 @@ def sc_state_changed(*args):
    
     # emit also brut sample changer state for those interested
     state_str = SampleChangerState.STATE_DESC.get(new_state, "Unknown").upper()
+    if new_state == SampleChangerState.Ready:
+        msg = {'signal': 'loadReady',
+               'location': location,
+               'message': 'Sample changer ready'}
+        socketio.emit('sc', msg, namespace='/hwr')
     socketio.emit('sc_state', state_str, namespace='/hwr')
 
 def loaded_sample_changed(sample):
