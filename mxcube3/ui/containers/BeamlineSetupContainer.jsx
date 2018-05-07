@@ -225,7 +225,7 @@ class BeamlineSetupContainer extends React.Component {
               <Col sm={2}>
                 <LabeledValue
                   suffix=""
-                  name="Samplechanger"
+                  name="Sample changer"
                   value={this.props.sampleChanger.state}
                   level={this.props.sampleChanger.state === 'READY' ? 'info' : 'warning'}
                   look={"vertical"}
