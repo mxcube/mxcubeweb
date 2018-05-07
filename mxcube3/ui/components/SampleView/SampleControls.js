@@ -172,6 +172,34 @@ export default class SampleControls extends React.Component {
           />
           <span className="sample-controll-label">3-click Centring</span>
           </li>
+          <li>
+            <OverlayTrigger trigger="click" rootClose placement="bottom"
+              overlay={(
+                <span className="slider-overlay" style={{ marginTop: '20px' }}>
+                  <input
+                    style={{ top: '20px' }}
+                    className="bar"
+                    type="range"
+                    step="0.1"
+                    min={motors.focus.limits[0]} max={motors.focus.limits[1]}
+                    defaultValue={motors.focus.position}
+                    disabled={motors.focus.state !== 2}
+                    onMouseUp={(e) =>
+                      this.props.sampleActions.sendMotorPosition('focus', e.target.value)}
+                    name="focusSlider"
+                  />
+                </span>)}
+            >
+              <Button
+                name="focus"
+                type="button"
+                data-toggle="tooltip"
+                title="Focus"
+                className="fa fa-adjust sample-controll"
+              />
+            </OverlayTrigger>
+            <span className="sample-controll-label">Focus</span>
+          </li>
           <OverlayTrigger trigger="click" rootClose placement="bottom"
             overlay={(
               <span className="slider-overlay">
@@ -192,7 +220,6 @@ export default class SampleControls extends React.Component {
                 10
               </span>)}
           >
-
           <li>
             <Button
               type="button"

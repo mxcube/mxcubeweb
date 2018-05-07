@@ -143,19 +143,19 @@ export const INITIAL_STATE = {
     },
   },
   motors: {
-    focus: { position: 0, state: 0 },
-    phi: { position: 0, state: 0 },
-    phiy: { position: 0, state: 0 },
-    phiz: { position: 0, state: 0 },
-    sampx: { position: 0, state: 0 },
-    sampy: { position: 0, state: 0 },
-    BackLight: { position: 0, state: 0 },
-    FrontLight: { position: 0, state: 0 },
-    BackLightSwitch: { position: 0, state: 0 },
-    FrontLightSwitch: { position: 0, state: 0 },
-    kappa: { position: 0, state: 0 },
-    kappa_phi: { position: 0, state: 0 },
-    zoom: { position: 0, state: 0 }
+    focus: { position: 0, state: 0, limits: [0, 1] },
+    phi: { position: 0, state: 0, limits: [0, 1] },
+    phiy: { position: 0, state: 0, limits: [0, 1] },
+    phiz: { position: 0, state: 0, limits: [0, 1] },
+    sampx: { position: 0, state: 0, limits: [0, 1] },
+    sampy: { position: 0, state: 0, limits: [0, 1] },
+    BackLight: { position: 0, state: 0, limits: [0, 1] },
+    FrontLight: { position: 0, state: 0, limits: [0, 1] },
+    BackLightSwitch: { position: 0, state: 0, limits: [0, 1] },
+    FrontLightSwitch: { position: 0, state: 0, limits: [0, 1] },
+    kappa: { position: 0, state: 0, limits: [0, 1] },
+    kappa_phi: { position: 0, state: 0, limits: [0, 1] },
+    zoom: { position: 0, state: 0, limits: [0, 1] }
   },
   beamlineActionsList: [],
   currentBeamlineAction: { show: false, messages: [], arguments: [] },
@@ -210,7 +210,8 @@ export default (state = INITIAL_STATE, action) => {
       };
     case 'SAVE_MOTOR_POSITION':
       return { ...state, motors: { ...state.motors, [action.name]:
-                                   { position: action.value,
+                                   { ...state.motors[action.name],
+                                     position: action.value,
                                      state: state.motors[action.name].state }
                                  }
              };
@@ -218,8 +219,9 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state,
                motorInputDisable: action.value !== 2,
                motors: { ...state.motors, [action.name]:
-                                   { position: state.motors[action.name].position,
-                                     state: action.value }
+                         { ...state.motors[action.name],
+                           position: state.motors[action.name].position,
+                           state: action.value }
                        }
              };
     case 'SET_INITIAL_STATE':
