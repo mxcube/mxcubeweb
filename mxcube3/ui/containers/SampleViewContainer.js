@@ -74,8 +74,8 @@ class SampleViewContainer extends Component {
                 <MotorControl
                   save={sendMotorPosition}
                   saveStep={setStepSize}
-                  motors={this.props.beamline.motors}
-                  motorsDisabled={ this.props.beamline.motorInputDisable ||
+                  motors={this.props.motors}
+                  motorsDisabled={ this.props.motorInputDisable ||
                                    this.props.queueState === QUEUE_RUNNING }
                   steps={motorSteps}
                   stop={sendStopMotor}
@@ -85,7 +85,7 @@ class SampleViewContainer extends Component {
                 <ContextMenu
                   {...this.props.contextMenu}
                   sampleActions={this.props.sampleViewActions}
-                  beamline={this.props.beamline}
+                  availableMethods={this.props.availableMethods}
                   showForm={this.props.showForm}
                   sampleID={sampleID}
                   sampleData={this.props.sampleList[sampleID]}
@@ -99,7 +99,7 @@ class SampleViewContainer extends Component {
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
                   {...this.props.sampleViewState}
-                  {...this.props.beamline}
+                  motors={this.props.motors}
                   imageRatio={imageRatio * sourceScale}
                   contextMenuVisible={this.props.contextMenu.show}
                   shapes={this.props.shapes}
@@ -134,7 +134,9 @@ function mapStateToProps(state) {
     queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
-    beamline: state.beamline,
+    motorInputDisable: state.beamline.motorInputDisable,
+    motors: state.beamline.motors,
+    availableMethods: state.beamline.availableMethods,
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
     workflows: state.workflow.workflows,
