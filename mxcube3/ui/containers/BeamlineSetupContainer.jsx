@@ -20,6 +20,7 @@ class BeamlineSetupContainer extends React.Component {
     this.setAttribute = this.setAttribute.bind(this);
     this.onCancelHandler = this.onCancelHandler.bind(this);
     this.createActuatorComponent = this.createActuatorComponent.bind(this);
+    this.dmState = this.dmState.bind(this);
   }
 
 
@@ -63,7 +64,23 @@ class BeamlineSetupContainer extends React.Component {
     return acts;
   }
 
+
+  dmState() {
+    let state = 'READY';
+
+    const notReady = Object.values(this.props.data.motors).
+            filter((motor) => motor.state !== 2);
+
+    if (notReady.length !== 0) {
+      state = 'BUSY';
+    }
+
+    return state;
+  }
+
   render() {
+    const dmState = this.dmState();
+
     return (
       <Row style={{
         paddingTop: '0.5em',
@@ -196,6 +213,24 @@ class BeamlineSetupContainer extends React.Component {
             </Table>
             </Col>
             <Col sm={5} smPush={1}>
+              <Col sm={2}>
+                <LabeledValue
+                  suffix=""
+                  name="Diffractometer"
+                  value={dmState}
+                  level={dmState === 'READY' ? 'info' : 'warning'}
+                  look={"vertical"}
+                />
+              </Col>
+              <Col sm={2}>
+                <LabeledValue
+                  suffix=""
+                  name="Samplechanger"
+                  value={this.props.sampleChanger.state}
+                  level={this.props.sampleChanger.state === 'READY' ? 'info' : 'warning'}
+                  look={"vertical"}
+                />
+              </Col>
               {this.createActuatorComponent()}
               <Col sm={2}>
                 <MachInfo
@@ -213,7 +248,8 @@ class BeamlineSetupContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    data: state.beamline
+    data: state.beamline,
+    sampleChanger: state.sampleChanger
   };
 }
 
