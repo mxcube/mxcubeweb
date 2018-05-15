@@ -9,6 +9,7 @@ import ResumeQueueDialog from '../containers/ResumeQueueDialog';
 import ConnectionLostDialog from '../containers/ConnectionLostDialog';
 import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
+import BeamlineCamera from './BeamlineCamera/BeamlineCamera.jsx';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
@@ -16,6 +17,7 @@ import { sendChatMessage, getAllChatMessages } from '../actions/remoteAccess.js'
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import './rachat.css';
 import 'react-chat-widget/lib/styles.css';
+import config from 'guiConfig';
 
 class Main extends React.Component {
   constructor(props) {
@@ -88,6 +90,9 @@ class Main extends React.Component {
             badge={2}
             handleNewUserMessage={this.handleNewUserMessage}
           />) : null
+        }
+        { config.beamlineCameras ?
+        <BeamlineCamera cameras={config.beamlineCameras} /> : null
         }
       </div>
     );

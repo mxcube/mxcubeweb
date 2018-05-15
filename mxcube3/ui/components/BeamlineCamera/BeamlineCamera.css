@@ -1,0 +1,37 @@
+.camera-container {
+  bottom: 0;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+      flex-direction: column;
+  margin: 0 100px 20px 0;
+  max-width: 370px;
+  position: fixed;
+  right: 0;
+  z-index: 9999;
+}
+
+.camera-popover{
+    max-width:500px;
+    height:250px;    
+}
+
+.camera-launcher {
+  position: fixed;
+  top: -10px;
+  right: -5px;
+  background-color: #ff0000;
+  color: #fff;
+  width: 25px;
+  height: 25px;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 50%;
+}
+
+.button-circle {
+    width: 60px;
+    height: 60px;
+    padding: 10px 16px;
+    border-radius: 50%;
+}
