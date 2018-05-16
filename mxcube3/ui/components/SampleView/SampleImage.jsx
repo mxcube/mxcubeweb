@@ -46,7 +46,7 @@ export default class SampleImage extends React.Component {
     this.player = null;
     this.centringCross = [];
     this.removeShapes = this.removeShapes.bind(this);
-}
+  }
 
   componentDidMount() {
     // Create fabric and set image background to sample

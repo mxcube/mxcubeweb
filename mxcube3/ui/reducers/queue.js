@@ -9,7 +9,8 @@ const initialState = {
   autoAddDiffPlan: false,
   centringMethod: CLICK_CENTRING,
   numSnapshots: 4,
-  groupFolder: ''
+  groupFolder: '',
+  rootPath: ''
 };
 
 export default (state = initialState, action) => {
@@ -73,6 +74,9 @@ export default (state = initialState, action) => {
     }
     case 'SET_GROUP_FOLDER': {
       return { ...state, groupFolder: action.path };
+    }
+    case 'SET_ROOT_PATH': {
+      return { ...state, rootPath: action.path };
     }
     case 'CLEAR_ALL':
       {

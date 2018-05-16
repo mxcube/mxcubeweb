@@ -24,7 +24,8 @@ import { setStatus,
          sendStopQueue,
          setCurrentSample,
          addDiffractionPlanAction,
-         setSampleAttribute } from './actions/queue';
+         setSampleAttribute,
+         setRootPath } from './actions/queue';
 import { collapseItem,
          showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading,
@@ -277,9 +278,11 @@ class ServerIO {
 
       // Given control
       if (!ra.master) {
-        this.dispatch(setMaster(true, data.name, data.sid));
         this.dispatch(setLoading(true, 'You were given control', data.message));
+        this.dispatch(setRootPath(data.rootPath));
       }
+
+      this.dispatch(setMaster(true, data.name));
     });
 
     this.hwrSocket.on('setObserver', (data) => {
@@ -290,9 +293,10 @@ class ServerIO {
       if (ra.requestingControl) {
         this.dispatch(setLoading(true, 'You were denied control', data.message));
         this.dispatch(requestControlAction(false));
-      } else {
-        this.dispatch(setMaster(false, data.name, data.sid));
+        this.dispatch(setRootPath(data.rootPath));
       }
+
+      this.dispatch(setMaster(false, data.name));
     });
 
     this.hwrSocket.on('take_xtal_snapshot', (unused, cb) => {

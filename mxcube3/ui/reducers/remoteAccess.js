@@ -19,7 +19,7 @@ export default (state = initialState, action) => {
             master: action.master,
             sid: action.sid,
             observerName: action.name,
-            requestingControl: false
+            requestingControl: false,
           });
       }
     case 'SET_OBSERVERS':
