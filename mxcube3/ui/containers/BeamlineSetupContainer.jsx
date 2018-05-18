@@ -195,7 +195,7 @@ class BeamlineSetupContainer extends React.Component {
               </tr>
             </Table>
             </Col>
-            <Col sm={5} smPush={2}>
+            <Col sm={5} smPush={1}>
               {this.createActuatorComponent()}
               <Col sm={2}>
                 <MachInfo

@@ -54,7 +54,11 @@ export default class QueueControl extends React.Component {
 
   nextSample() {
     const idx = this.props.queue.indexOf(this.props.mounted);
-    this.props.setEnabledSample([this.props.queue[idx]], false);
+
+    if (idx !== -1) {
+      // a sample is mounted but not in the queue.
+      this.props.setEnabledSample([this.props.queue[idx]], false);
+    }
 
     if (this.props.queue[idx + 1]) {
       this.props.runSample(this.props.queue[idx + 1]);
