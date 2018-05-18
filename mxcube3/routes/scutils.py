@@ -4,7 +4,6 @@ import logging
 # We are patching queue_entry.mount_sample at the end of this file.
 import queue_entry
 import qutils
-import signals
 
 from mxcube3 import app as mxcube
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
@@ -40,6 +39,7 @@ def set_current_sample(sample):
 	
     logging.getLogger('HWR').info('[SC] Setting currenly mounted sample to %s' %sample)
 
+    from signals import set_current_sample
     signals.set_current_sample(sample)
 
 
