@@ -73,7 +73,10 @@ def logged_in_users(exclude_inhouse=False):
     users = [user["loginID"] for user in mxcube.USERS.itervalues()]
 
     if exclude_inhouse:
-        ih_users =["%s%s"% (p, c) for (p, c) in mxcube.session.in_house_users]
+        if type(mxcube.session.in_house_users[0]) == tuple:
+            ih_users =["%s%s"% (p, c) for (p, c) in mxcube.session.in_house_users]
+        else:
+            ih_users = mxcube.session.in_house_users
         users = [user for user in users if user not in ih_users]
 
     return users
