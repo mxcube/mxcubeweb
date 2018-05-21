@@ -167,8 +167,17 @@ def remote_addr():
     return str(hdr).split(',')[-1]
 
 
+def is_local_network(ip):
+    localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
+    localhost_range = '.'.join(localhost.split('.')[0:2])
+    private_address = '.'.join(ip.split('.')[0:2])
+
+    return private_address == localhost_range
+
 def is_local_host():
     localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
     localhost_list.append("127.0.0.1")
 
-    return remote_addr() in localhost_list
+    remote_addres = remote_addr()
+
+    return remote_addres in localhost_list or is_local_network(remote_addres)
