@@ -93,7 +93,8 @@ def set_operator(sid):
     user = get_user_by_sid(sid)
     user["operator"] = True
 
-    select_proposal(user["loginID"])
+    if mxcube.db_connection.loginType.lower() != 'user':
+        select_proposal(user["loginID"])
 
 def users():
     return mxcube.USERS
