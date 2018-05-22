@@ -48,7 +48,7 @@ class BeamlineSetupContainer extends React.Component {
     const acts = [];
     for (let key in this.props.data.attributes) {
       if (this.props.data.attributes[key].type === 'DUOSTATE') {
-        acts.push(<Col key={key} sm={2}>
+        acts.push(<Col key={key} sm={2} className="pull-right">
                     <InOutSwitch2
                       onText={ this.props.data.attributes[key].commands[0] }
                       offText={ this.props.data.attributes[key].commands[1] }
@@ -79,8 +79,6 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   render() {
-    const dmState = this.dmState();
-
     return (
       <Row style={{
         paddingTop: '0.5em',
@@ -213,28 +211,19 @@ class BeamlineSetupContainer extends React.Component {
             </Table>
             </Col>
             <Col sm={5} smPush={1}>
-              <Col sm={2}>
-                <LabeledValue
-                  suffix=""
-                  name="Diffractometer"
-                  value={dmState}
-                  level={dmState === 'READY' ? 'info' : 'warning'}
-                  look={"vertical"}
+              <Col sm={2} className="pull-right">
+                <MachInfo
+                  info={this.props.data.attributes.machinfo.value}
                 />
               </Col>
-              <Col sm={2}>
+              {this.createActuatorComponent()}
+              <Col sm={2} className="pull-right">
                 <LabeledValue
                   suffix=""
                   name="Sample changer"
                   value={this.props.sampleChanger.state}
                   level={this.props.sampleChanger.state === 'READY' ? 'info' : 'warning'}
                   look={"vertical"}
-                />
-              </Col>
-              {this.createActuatorComponent()}
-              <Col sm={2}>
-                <MachInfo
-                  info={this.props.data.attributes.machinfo.value}
                 />
               </Col>
             </Col>

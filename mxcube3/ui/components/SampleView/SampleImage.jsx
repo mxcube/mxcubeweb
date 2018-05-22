@@ -716,7 +716,8 @@ export default class SampleImage extends React.Component {
       });
     }
 
-    this.canvas.setActiveObject(new fabric.Group(aShapes, { originX: 'center', originY: 'center' }));
+    this.canvas.setActiveObject(new fabric.Group(aShapes,
+      { originX: 'center', originY: 'center' }));
     this.canvas.renderAll();
   }
 
