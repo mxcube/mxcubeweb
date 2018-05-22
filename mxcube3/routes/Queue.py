@@ -614,9 +614,9 @@ def get_default_xrf_parameters():
             pass
 
     except Exception:
-        msg = "Failed to get object with role: %s" % name
+        msg = "Failed to get object with role: xrf_spectrum. "
         msg += "cannot get default values for XRF"
-        logging.getLogger("HWR").exception(msg)
+        logging.getLogger("HWR").error(msg)
 
     resp = jsonify({"countTime": int_time})
 

@@ -162,19 +162,19 @@ def request_control_response():
     if not data['giveControl']:
         data["sid"] = session.sid
 
-        # Reset request of observer, since it was denied
-        observers = loginutils.get_observers()
+        socketio.emit("setObserver", new_op, room=new_op["socketio_sid"], namespace='/hwr')
     else:
         # Find the user asking for control and remove her from observers
         # and make her master
         loginutils.set_operator(new_op["sid"])
-        observers = loginutils.get_observers()
+
         new_op["message"] = data["message"]
-
+        
+        socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace='/hwr')
+        socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
+    
     new_op["requestsControl"] = False
-
-    socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace='/hwr')
-    socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
+    observers = loginutils.get_observers()
     socketio.emit("observersChanged", observers, namespace='/hwr')
 
     return make_response("", 200)
