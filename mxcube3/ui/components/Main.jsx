@@ -57,7 +57,7 @@ class Main extends React.Component {
             onMouseDown={this.handleClick}
             style={{
               backgroundImage: `url(${diagonalNoise})`,
-              zIndex: 10000,
+              zIndex: 9998,
               position: 'fixed',
               padding: 0,
               margin: 0,
