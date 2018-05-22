@@ -24,7 +24,7 @@ export class HelpContainer extends React.Component {
 
   render() {
     return (
-      <div className="col-xs-12" style={{ marginTop: '2em' }}>
+      <div className="col-xs-12" style={{ marginTop: '2em', zIndex: 9999 }}>
         <div className="col-xs-4">
           <Panel header="Local Contact">
             <span>
