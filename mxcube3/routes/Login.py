@@ -108,6 +108,7 @@ def login():
         # Create a new queue just in case any previous queue was not cleared
         # properly
         mxcube.queue = qutils.new_queue()
+        qutils.add_default_sample()
 
         # For the moment not loading queue from persistent storage (redis),
         # uncomment to enable loading.

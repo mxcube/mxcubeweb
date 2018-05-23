@@ -164,13 +164,13 @@ export default class ContextMenu extends React.Component {
       ]
     };
 
-    Object.keys(this.props.beamline.availableMethods).forEach((key) => {
-      if (!this.props.beamline.availableMethods[key]) {
+    Object.keys(this.props.availableMethods).forEach((key) => {
+      if (!this.props.availableMethods[key]) {
         Object.keys(options).forEach((k) => (
           options[k] = options[k].filter((e) => {
             let res = true;
-            if (Object.keys(this.props.beamline.availableMethods).includes(e.key)) {
-              res = this.props.beamline.availableMethods[e.key];
+            if (Object.keys(this.props.availableMethods).includes(e.key)) {
+              res = this.props.availableMethods[e.key];
             }
             return res;
           })

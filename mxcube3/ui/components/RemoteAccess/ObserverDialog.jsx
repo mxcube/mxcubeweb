@@ -20,6 +20,12 @@ export class ObserverDialog extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.name && this.name.value === '') {
+      this.name.value = this.props.loginInfo.selectedProposal.toUpperCase();
+    }
+  }
+
   onHide() { }
 
   show() {
@@ -30,7 +36,7 @@ export class ObserverDialog extends React.Component {
     const name = this.name.value;
 
     if (name) {
-      this.props.setMaster(false, name, this.props.remoteAccess.sid);
+      this.props.setMaster(false, name);
     }
 
     this.props.hide();
@@ -66,7 +72,7 @@ export class ObserverDialog extends React.Component {
           <FormControl
             inputRef={(ref) => { this.name = ref; }}
             type="text"
-            placeholder="Your name"
+            default={this.props.loginInfo.selectedProposal}
           />
           <Button onClick={this.accept}> OK </Button>
         </Modal.Footer>
@@ -77,6 +83,7 @@ export class ObserverDialog extends React.Component {
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
+    loginInfo: state.login.loginInfo
   };
 }
 

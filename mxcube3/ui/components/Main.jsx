@@ -85,7 +85,6 @@ class Main extends React.Component {
           (<Widget
             title="Chat"
             subtitle=""
-            badge={2}
             handleNewUserMessage={this.handleNewUserMessage}
           />) : null
         }

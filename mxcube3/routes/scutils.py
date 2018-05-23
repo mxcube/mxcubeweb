@@ -40,7 +40,7 @@ def set_current_sample(sample):
     logging.getLogger('HWR').info('[SC] Setting currenly mounted sample to %s' %sample)
 
     from signals import set_current_sample
-    signals.set_current_sample(sample)
+    set_current_sample(sample)
 
 
 def get_current_sample():

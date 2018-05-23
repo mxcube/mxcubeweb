@@ -20,7 +20,7 @@
     "classnames": "^2.2.0",
     "dygraphs": "^2.0.0",
     "everpolate": "0.0.3",
-    "fabric": "^1.7.19",
+    "fabric": "^2.2.4",
     "font-awesome": "^4.4.0",
     "history": "1.17.x",
     "isomorphic-fetch": "^2.2.0",

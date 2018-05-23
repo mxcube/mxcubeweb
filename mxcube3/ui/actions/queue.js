@@ -56,6 +56,12 @@ export function setGroupFolder(path) {
   return { type: 'SET_GROUP_FOLDER', path };
 }
 
+
+export function setRootPath(path) {
+  return { type: 'SET_ROOT_PATH', path };
+}
+
+
 export function addSamplesToQueueAction(samplesData) {
   return { type: 'ADD_SAMPLES_TO_QUEUE', samplesData };
 }

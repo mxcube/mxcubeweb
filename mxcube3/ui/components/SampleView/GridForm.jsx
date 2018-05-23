@@ -12,6 +12,8 @@ export default class GridForm extends React.Component {
 
     for (const grid of Object.values(this.props.gridList)) {
       const selectedStyle = this.props.selectedGrids.includes(grid.id) ? 'selected' : '';
+      const vdim = grid.numRows * (grid.cellHeight + grid.cellVSpace);
+      const hdim = grid.numCols * (grid.cellWidth + grid.cellHSpace);
 
       gridControlList.push((
         <tr
@@ -27,6 +29,12 @@ export default class GridForm extends React.Component {
           </td>
           <td>
             {grid.cellHSpace.toFixed(2)}
+          </td>
+          <td>
+            {vdim} x {hdim}
+          </td>
+          <td>
+            ({grid.numRows * grid.numCols})
           </td>
           <td>
             <Button
@@ -74,7 +82,7 @@ export default class GridForm extends React.Component {
               <FormControl
                 style={{ width: '50px' }}
                 type="text"
-                defaultValue={this.props.gridCellSpacing()[1]}
+                defaultValue={0}
                 onChange={this.props.setVCellSpacing}
               />
             </Form>
@@ -84,10 +92,14 @@ export default class GridForm extends React.Component {
               <FormControl
                 style={{ width: '50px' }}
                 type="text"
-                defaultValue={this.props.gridCellSpacing()[0]}
+                defaultValue={0}
                 onChange={this.props.setHCellSpacing}
               />
             </Form>
+          </td>
+          <td>
+          </td>
+          <td>
           </td>
           <td>
           </td>
@@ -105,7 +117,7 @@ export default class GridForm extends React.Component {
 
   render() {
     const gridForm = (
-      <Draggable defaultPosition={{ x: 100, y: 100 }} cancel={"form"}>
+      <Draggable defaultPosition={{ x: 20, y: 50 }} cancel={"form"}>
         <div className="gridform">
           <div className="col-xs-8">
             <Table
@@ -120,10 +132,16 @@ export default class GridForm extends React.Component {
                     Name
                   </th>
                   <th>
-                    V-Space
+                    V-Space (µm)
                   </th>
                   <th>
-                    H-Space
+                    H-Space (µm)
+                  </th>
+                  <th>
+                    Dim (µm)
+                  </th>
+                  <th>
+                    #Cells
                   </th>
                   <th />
                   <th />

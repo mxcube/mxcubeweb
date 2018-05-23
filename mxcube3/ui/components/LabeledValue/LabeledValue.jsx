@@ -6,25 +6,32 @@ import './style.css';
 
 export default class LabeledValue extends React.Component {
   render() {
-    let bsStyle = 'info';
+    let labelStyle = { backgroundColor: 'transparent', display: 'block',
+                       marginBottom: '3px', color: '#000' };
+    let valueStyle = { backgroundColor: 'transparent', display: 'block-inline',
+                       fontSize: '100%', borderRadius: '0px', color: '#000',
+                       padding: '0px' };
+
+    if (this.props.look === 'vertical') {
+      labelStyle = { display: 'block', marginBottom: '3px' };
+      valueStyle = { display: 'block', fontSize: '100%', borderRadius: '0px' };
+    }
+
     return (
       <div>
         <span>
           <div>
             <Label
               bsStyle="default"
-              style={{ backgroundColor: 'transparent', display: 'block',
-                       marginBottom: '3px', color: '#000' }}
+              style={ labelStyle }
             >
               {this.props.name}
             </Label>
           </div>
           <div>
             <Label
-              bsStyle={bsStyle}
-              style={{ backgroundColor: 'transparent', display: 'block-inline',
-                       fontSize: '100%', borderRadius: '0px', color: '#000',
-                       padding: '0px' }}
+              bsStyle={this.props.level}
+              style={ valueStyle }
             >
               {this.props.value} {this.props.suffix}
             </Label>
@@ -39,5 +46,7 @@ LabeledValue.defaultProps = {
   extraInfo: {},
   value: 0,
   name: '',
-  suffix: ''
+  suffix: '',
+  look: 'horizontal',
+  level: 'info'
 };
