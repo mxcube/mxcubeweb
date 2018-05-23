@@ -1753,7 +1753,7 @@ def init_queue_settings():
     mxcube.AUTO_ADD_DIFFPLAN = mxcube.collect.getProperty('auto_add_diff_plan', False)
 
 
-def add_defualt_sample():
+def add_default_sample():
     sample = { "sampleID": "1",
                "sampleName": "noname",
                "proteinAcronym": "noacronym",
