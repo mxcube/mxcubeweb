@@ -48,7 +48,8 @@ class Main extends React.Component {
 
   render() {
     const showReadOnlyDiv = !this.props.remoteAccess.master &&
-            this.props.location.pathname !== '/remoteaccess';
+            this.props.location.pathname !== '/remoteaccess' &&
+            this.props.location.pathname !== '/help';
 
     return (
       <div>
