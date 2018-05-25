@@ -8,6 +8,8 @@ import characterisation from '../help_videos/mx3-characterisation.ogv';
 import interleaved from '../help_videos/mx3-interleaved.ogv';
 import mesh from '../help_videos/mx3-mesh.ogv';
 
+import config from 'guiConfig';
+
 export class HelpContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -23,18 +25,42 @@ export class HelpContainer extends React.Component {
   }
 
   render() {
+    const links = config.helpLinks.map((link) =>
+      <div><a target="_blank" href={link.url}>{link.name}</a></div>
+    );
+
     return (
       <div className="col-xs-12" style={{ marginTop: '2em', zIndex: 9999 }}>
         <div className="col-xs-4">
-          <Panel header="Local Contact">
+          <Panel header={
+            <div>
+              <span>Help Links</span>
+              <span className="glyphicon glyphicon-info-sign pull-right" ></span>
+            </div>}
+          >
+            <span>
+            {links}
+            </span>
+          </Panel>
+          <Panel header={
+            <div>
+              <span>Local Contact</span>
+              <span className="glyphicon glyphicon-user pull-right" ></span>
+            </div>}
+          >
             <span>
               Name: <br />
               Email: <br />
               Tel: <br />
             </span>
           </Panel>
-          <Panel header="Contact us">
-            <span>
+          <Panel header={
+            <div>
+              <span>Local Contact</span>
+              <span className="glyphicon glyphicon-envelope pull-right" ></span>
+            </div>}
+          >
+           <span>
               <Form>
                 <FormGroup>
                   <ControlLabel>Your email, Name or Proposal</ControlLabel>
