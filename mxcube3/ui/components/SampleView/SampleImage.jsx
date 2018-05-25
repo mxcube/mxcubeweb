@@ -261,7 +261,7 @@ export default class SampleImage extends React.Component {
     canvasWindow.height = h;
     // Set the size of the created FabricJS Canvas
     this.canvas.setDimensions({ width: w, height: h });
-    this.canvas.renderAll();
+    this.canvas.requestRenderAll();
     this.canvas.clear();
 
     // Set size of the Image from MD2
@@ -283,12 +283,12 @@ export default class SampleImage extends React.Component {
     let objectFound = false;
 
     // Existing selection clicked
-    if (group && group.containsPoint(clickPoint)) {
+    if (group && group.type === 'activeSelection' && group.containsPoint(clickPoint)) {
       const shapes = group.getObjects();
-      this.canvas.discardActiveObject();
+      // this.canvas.discardActiveObject();
 
       group.getObjects().forEach((obj) => {
-        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+        if (!objectFound && obj.containsPoint(clickPoint, null, true) && obj.selectable) {
           objectFound = true;
         }
       });
@@ -306,9 +306,9 @@ export default class SampleImage extends React.Component {
         if (pointList.length === 2) {
           ctxMenuObj = { type: 'HELICAL', id: this.props.selectedShapes };
         } else if (pointList.length === 1 && this.props.points[pointList[0]].state === 'SAVED') {
-          ctxMenuObj = { type: 'SAVED', id: pointList };
+          ctxMenuObj = { type: 'SAVED', id: pointList[0] };
         } else if (pointList.length === 1 && this.props.points[pointList[0]].state === 'TMP') {
-          ctxMenuObj = { type: 'TMP', id: pointList };
+          ctxMenuObj = { type: 'TMP', id: pointList[0] };
         } else if (pointList.length > 2) {
           ctxMenuObj = { type: 'GROUP', id: pointList };
         } else if (gridList.length === 1) {
@@ -319,7 +319,7 @@ export default class SampleImage extends React.Component {
         }
       }
     } else {
-      // One or several individual objects clicked
+      // Individual object clicked
       this.canvas.forEachObject((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
@@ -632,8 +632,6 @@ export default class SampleImage extends React.Component {
   }
 
   renderSampleView(nextProps) {
-    const group = this.canvas.getActiveObject();
-    const selection = this.canvas.getActiveObject();
     const {
       imageRatio,
       beamPosition,
@@ -694,31 +692,27 @@ export default class SampleImage extends React.Component {
     // single item selection
     const aShapes = [];
 
-    if (group) {
-      const groupIDs = group.getObjects().map((shape) => shape.id);
+    fabricSelectables.forEach((obj) => {
+      const shape = obj;
+      if (this.props.selectedShapes.includes(shape.id)) {
+        aShapes.push(shape);
+        shape.active = true;
+      }
+    });
 
-      fabricSelectables.forEach((obj) => {
-        const shape = obj;
-        if (groupIDs.includes(shape.id)) {
-          aShapes.push(shape);
-          shape.active = true;
-        }
-      });
-    } else if (selection) {
-      fabricSelectables.forEach((s) => {
-        const shape = s;
-        const shapeData = this.props.shapes[shape.id];
+    const sel = new fabric.ActiveSelection(aShapes, {
+      canvas: this.canvas,
+      hasRotatingPoint: false,
+      lockMovementX: true,
+      lockMovementY: true,
+      lockScalingX: true,
+      lockScalingY: true,
+      lockRotation: true,
+      hoverCursor: 'pointer'
+    });
 
-        if (shapeData && shapeData.selected) {
-          shape.active = true;
-          aShapes.push(shape);
-        }
-      });
-    }
-
-    this.canvas.setActiveObject(new fabric.Group(aShapes,
-      { originX: 'center', originY: 'center' }));
-    this.canvas.renderAll();
+    this.canvas.setActiveObject(sel);
+    this.canvas.requestRenderAll();
   }
 
   render() {

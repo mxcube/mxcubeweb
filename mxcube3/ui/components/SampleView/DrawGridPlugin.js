@@ -248,7 +248,7 @@ export default class DrawGridPlugin {
 
     if (this.shapeGroup) {
       canvas.add(this.shapeGroup);
-      canvas.renderAll();
+      canvas.requestRenderAll();
     }
   }
 
@@ -513,7 +513,7 @@ export default class DrawGridPlugin {
             });
 
             canvas.add(this.mouseOverGridLabel);
-            canvas.renderAll();
+            canvas.requestRenderAll();
           }
         }});
     }
