@@ -149,13 +149,13 @@ export default class XRFTaskItem extends Component {
 
     if (parameters.shape !== -1) {
       try {
-        res = `${this.props.shapes.shapes[parameters.shape].name} `;
+        res = `${this.props.shapes.shapes[parameters.shape].name}: `;
       } catch (e) {
         res = '';
       }
     }
 
-    return res;
+    return `${res}`;
   }
 
   path(parameters) {
@@ -167,7 +167,7 @@ export default class XRFTaskItem extends Component {
         trigger="click"
         placement="top"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '600px', width: 'auto' }}>
+        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '2000px', width: 'auto' }}>
                     <input
                       type="text"
                       onFocus={(e) => {e.target.select();}}
@@ -176,7 +176,7 @@ export default class XRFTaskItem extends Component {
                     />
                   </Popover>)}
       >
-        <a>
+        <a onClick={(e) => (e.stopPropagation())}>
           { value }
         </a>
       </OverlayTrigger>);

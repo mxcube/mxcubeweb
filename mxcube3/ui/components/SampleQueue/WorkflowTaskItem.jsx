@@ -84,9 +84,9 @@ export default class WorkflowTaskItem extends Component {
 
     if (parameters.shape !== -1) {
       try {
-        res = `${this.props.shapes.shapes[parameters.shape].name} `;
+        res = `${this.props.shapes.shapes[parameters.shape].name}: `;
       } catch (e) {
-        res = 'NOCP';
+        res = '';
       }
     }
 
@@ -94,15 +94,15 @@ export default class WorkflowTaskItem extends Component {
   }
 
   path(parameters) {
-    const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
+    const value = `...${path.slice(-30)}`;
 
     return (
       <OverlayTrigger
         trigger="click"
         placement="top"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '600px', width: 'auto' }}>
+        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '2000px', width: 'auto' }}>
                     <input
                       type="text"
                       onFocus={(e) => {e.target.select();}}
@@ -111,7 +111,7 @@ export default class WorkflowTaskItem extends Component {
                     />
                   </Popover>)}
       >
-        <a>
+        <a onClick={(e) => (e.stopPropagation())}>
           { value }
         </a>
       </OverlayTrigger>);
@@ -199,7 +199,7 @@ export default class WorkflowTaskItem extends Component {
                   style={ { padding: '0.5em' } }
                   onClick={this.showForm}
                 >
-                  <b>Path:</b> { this.path(parameters) }
+                  <b>Workflow path:</b> { this.path(parameters) }
                 </div>
               </div>
               {this.getResult(state)}
