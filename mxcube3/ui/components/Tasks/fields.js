@@ -18,6 +18,29 @@ function validation(error, warning) {
   return state;
 }
 
+function errorIndicator(error, warning) {
+  let icon = null;
+  if (error) {
+    icon = (
+      <span className="glyphicon glyphicon-remove"
+        title={error}
+        style={{ color: 'red' }}
+      >
+      </span>
+     );
+  } else if (warning) {
+    icon = (
+      <span className="glyphicon glyphicon-exclamation-sign"
+        title={warning}
+        style={{ color: 'orange' }}
+      >
+      </span>
+     );
+  }
+  return icon;
+}
+
+
 export const FieldsHeader = ({ title }) => (
   <Row>
     <Col xs={12}>
@@ -53,6 +76,9 @@ const ReduxInputField = (prop) => (
              onChange={prop.input.onChange}
              {...prop}
            />
+         </Col>
+         <Col xs={1} style={{ marginLeft: '-30px', marginTop: '10px' }}>
+          {errorIndicator(prop.meta.error, prop.meta.warning)}
          </Col>
        </FormGroup>
 );
