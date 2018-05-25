@@ -8,34 +8,12 @@ from mxcube3 import state_storage
 from mxcube3.routes import qutils
 from mxcube3.routes import limsutils
 from mxcube3 import socketio
-from scandir import scandir
+
 
 from loginutils import (create_user, add_user, remove_user, get_user_by_sid,
                         logged_in_users, deny_access, users, set_operator,
                         get_operator, is_operator, get_observer_name,
                         is_local_host, remote_addr, get_observers)
-
-
-def scantree(path, include):
-    res = []
-
-    try:
-        res = _scantree_rec(path, include, [])
-    except OSError as ex:
-        pass
-
-    return res
-
-
-def _scantree_rec(path, include=[], files=[]):
-    for entry in scandir(path):
-        if entry.is_dir(follow_symlinks=False):
-            _scantree_rec(entry.path, include, files)
-        elif entry.is_file():
-            if os.path.splitext(entry.path)[1][1:] in include:
-                files.append(entry.path)
-
-    return files
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -71,7 +49,7 @@ def login():
                 "inhouse": inhouse}
 
         _users = logged_in_users(exclude_inhouse=True)
-        
+
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
             return deny_access("In-house only allowed from localhost")
@@ -99,7 +77,7 @@ def login():
     except:
         return deny_access("")
     else:
-        add_user(create_user(loginID, remote_addr(), session.sid))
+        add_user(create_user(loginID, remote_addr(), session.sid, login_res))
 
         session['loginInfo'] = {'loginID': loginID,
                                 'password': password,
@@ -108,7 +86,6 @@ def login():
         # Create a new queue just in case any previous queue was not cleared
         # properly
         mxcube.queue = qutils.new_queue()
-        qutils.add_default_sample()
 
         # For the moment not loading queue from persistent storage (redis),
         # uncomment to enable loading.
@@ -168,14 +145,7 @@ def loginInfo():
        409: Error, could not log in
     """
     login_info = session.get("loginInfo")
-
-    if login_info is not None:
-        login_id = login_info["loginID"]
-
-        if not get_operator():
-            set_opeator(session.sid)
-
-        session['loginInfo'] = login_info
+#    session['loginInfo'] = login_info
 
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
@@ -184,25 +154,12 @@ def loginInfo():
            "beamline_name": mxcube.session.beamline_name,
            "loginType": mxcube.db_connection.loginType.title(),
            "loginRes": login_info,
-           "queue": qutils.queue_to_dict(),
+#           "queue": qutils.queue_to_dict(),
            "master": is_operator(session.sid),
            "observerName": get_observer_name()
            }
 
-    # Autoselect proposal
-    if res["loginType"].lower() != 'user' and login_info:
-        limsutils.select_proposal(get_user_by_sid(session.sid)["loginID"])
-        res["selectedProposal"] = get_user_by_sid(session.sid)["loginID"]
-        logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
-
-
-    # Get all the files in the root data dir for this user
-    root_path = mxcube.session.get_base_image_directory()
-
-    if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
-        ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
-
-        mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
+    res["selectedProposal"] = get_user_by_sid(session.sid)["loginID"]
 
     return jsonify(res)
 
