@@ -89,14 +89,14 @@ export default class TaskItem extends Component {
     wedges.forEach((wedge) => {
       if ((wedge.parameters.shape !== -1) && res.indexOf(`${wedge.parameters.shape}`) < 0) {
         try {
-          res += `${this.props.shapes.shapes[wedge.parameters.shape].name} `;
+          res += `${this.props.shapes.shapes[wedge.parameters.shape].name}`;
         } catch (e) {
-          res += 'NOCP';
+          res += '-';
         }
       }
     });
 
-    return res;
+    return `${res}: `;
   }
 
   wedgePath(wedge) {
@@ -212,7 +212,7 @@ export default class TaskItem extends Component {
         >
           <b>
             <span className="node-name" style={{ display: 'flex' }} >
-              {this.pointIDString(wedges)}: {data.label}
+              {this.pointIDString(wedges)} {data.label}
               { state === TASK_RUNNING ? this.progressBar() : null }
             </span>
           </b>
