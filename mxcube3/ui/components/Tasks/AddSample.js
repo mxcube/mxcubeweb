@@ -76,12 +76,12 @@ class AddSample extends React.Component {
                 autoFocus
                 label="Sample Name"
                 inputRef={(input) => {this.sampleName = input;}}
-                col1="4" col2="8"
+                col1="4" col2="7"
               />
               <InputField propName="proteinAcronym"
                 label="Protein Acronym"
                 inputRef={(input) => {this.proteinAcronym = input;}}
-                col1="4" col2="8"
+                col1="4" col2="7"
                 onKeyPress={this.handleKeyPress}
               />
             </FieldsRow>
