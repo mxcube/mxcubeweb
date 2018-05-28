@@ -18,6 +18,29 @@ function validation(error, warning) {
   return state;
 }
 
+function errorIndicator(error, warning) {
+  let icon = null;
+  if (error) {
+    icon = (
+      <span className="glyphicon glyphicon-remove"
+        title={error}
+        style={{ color: 'red' }}
+      >
+      </span>
+     );
+  } else if (warning) {
+    icon = (
+      <span className="glyphicon glyphicon-exclamation-sign"
+        title={warning}
+        style={{ color: 'orange' }}
+      >
+      </span>
+     );
+  }
+  return icon;
+}
+
+
 export const FieldsHeader = ({ title }) => (
   <Row>
     <Col xs={12}>
@@ -43,7 +66,7 @@ const ReduxInputField = (prop) => (
        <FormGroup controlId={prop.input.name}
          validationState={validation(prop.meta.error, prop.meta.warning)}
        >
-         <Col xs={prop.col1 || 8} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
+         <Col xs={prop.col1 || 7} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
            {prop.label}
          </Col>
          <Col xs={prop.col2 || 4}>
@@ -54,6 +77,11 @@ const ReduxInputField = (prop) => (
              {...prop}
            />
          </Col>
+         {prop.meta.error || prop.meta.warning ?
+         <Col xs={1} style={{ marginTop: '10px', paddingLeft: '0px' }}>
+          {errorIndicator(prop.meta.error, prop.meta.warning)}
+         </Col> : null
+         }
        </FormGroup>
 );
 
@@ -100,7 +128,7 @@ export const SelectField = ({ propName, label, list, col1, col2 }) => (
    <Field name={propName}
      component={ (prop) =>
        <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
-         <Col xs={col1 || 8} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
+         <Col xs={col1 || 7} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
            {label}
          </Col>
          <Col xs={col2 || 4}>
