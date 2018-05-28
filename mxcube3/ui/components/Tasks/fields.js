@@ -66,7 +66,7 @@ const ReduxInputField = (prop) => (
        <FormGroup controlId={prop.input.name}
          validationState={validation(prop.meta.error, prop.meta.warning)}
        >
-         <Col xs={prop.col1 || 8} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
+         <Col xs={prop.col1 || 7} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
            {prop.label}
          </Col>
          <Col xs={prop.col2 || 4}>
@@ -77,9 +77,11 @@ const ReduxInputField = (prop) => (
              {...prop}
            />
          </Col>
-         <Col xs={1} style={{ marginLeft: '-30px', marginTop: '10px' }}>
+         {prop.meta.error || prop.meta.warning ?
+         <Col xs={1} style={{ marginTop: '10px', paddingLeft: '0px' }}>
           {errorIndicator(prop.meta.error, prop.meta.warning)}
-         </Col>
+         </Col> : null
+         }
        </FormGroup>
 );
 
@@ -126,7 +128,7 @@ export const SelectField = ({ propName, label, list, col1, col2 }) => (
    <Field name={propName}
      component={ (prop) =>
        <FormGroup controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null }>
-         <Col xs={col1 || 8} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
+         <Col xs={col1 || 7} componentClass={ControlLabel} style={{ textAlign: 'left' }}>
            {label}
          </Col>
          <Col xs={col2 || 4}>

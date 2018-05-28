@@ -167,13 +167,13 @@ class DataCollection extends React.Component {
                 <InputField propName="prefix" label="Prefix" col1="2" col2="6" />
               </Col>
               {this.props.taskData.sampleID ?
-                (<Col xs={4}>
+                (<Col xs={8}>
                    <InputField
                      propName="run_number"
                      disabled
                      label="Run number"
                      col1="4"
-                     col2="8"
+                     col2="3"
                    />
                  </Col>)
                : null}
