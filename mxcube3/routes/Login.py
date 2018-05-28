@@ -123,7 +123,6 @@ def signout():
 
 
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
-@mxcube.restrict
 def loginInfo():
     """
     Retrieve session/login info
