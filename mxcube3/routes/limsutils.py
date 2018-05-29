@@ -3,6 +3,8 @@ import types
 import sys
 import logging
 import copy
+import os
+from scandir import scandir
 
 import queue_model_objects_v1 as qmo
 import scutils
@@ -11,6 +13,27 @@ import qutils
 from mxcube3 import app as mxcube
 from flask import session
 
+
+def scantree(path, include):
+    res = []
+
+    try:
+        res = _scantree_rec(path, include, [])
+    except OSError as ex:
+        pass
+
+    return res
+
+
+def _scantree_rec(path, include=[], files=[]):
+    for entry in scandir(path):
+        if entry.is_dir(follow_symlinks=False):
+            _scantree_rec(entry.path, include, files)
+        elif entry.is_file():
+            if os.path.splitext(entry.path)[1][1:] in include:
+                files.append(entry.path)
+
+    return files
 
 
 def new_sample_list():
@@ -214,7 +237,7 @@ def lims_login(loginID, password):
             return ERROR_CODE
 
         session['proposal_list'] = [proposal]
-        login_res['proposalList'] =  [proposal]
+        login_res['proposalList'] = [proposal]
 
     logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
 
@@ -225,13 +248,16 @@ def get_proposal_info(proposal):
     """
     Search for the given proposal in the proposal list.
     """
-    logging.getLogger('HWR').info("[LIMS] Serching for proposal: %s" % proposal)
-    for prop in session.get('proposal_list', []):
-        _p = "%s%s" % (prop.get('Proposal').get('code', '').lower(),
-                       prop.get('Proposal').get('number', ''))
+    from mxcube3.routes.loginutils import users
 
-        if _p == proposal.lower():
-            return prop
+    for user in users().itervalues():   
+        logging.getLogger('HWR').info("[LIMS] Serching for proposal: %s" % proposal)
+        for prop in user["limsData"].get('proposalList', []):
+            _p = "%s%s" % (prop.get('Proposal').get('code', '').lower(),
+                           prop.get('Proposal').get('number', ''))
+
+            if _p == proposal.lower():
+                return prop
 
     return {}
 
@@ -259,6 +285,14 @@ def select_proposal(proposal):
             except:
                 logging.getLogger('HWR').info('[LIMS] Error creating data directories, %s'
                                               % sys.exc_info()[1])
+
+        # Get all the files in the root data dir for this user
+        root_path = mxcube.session.get_base_image_directory()
+
+        if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
+            ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
+            mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
+                
         return True
     else:
         return False

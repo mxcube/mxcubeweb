@@ -92,7 +92,7 @@ def complete_initialization(app):
     app.sc_maintenance = get_hardware_object(app.beamline, "sample_changer_maintenance")
     app.rest_lims = get_hardware_object(app.beamline, "lims_rest_client")
 
-    Utils.enable_snapshots(app.collect)
+    Utils.enable_snapshots(app.collect, app.diffractometer)
     init_app_state(app)
     init_sample_video(app)
 

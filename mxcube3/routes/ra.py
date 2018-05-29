@@ -1,17 +1,31 @@
 # -*- coding: utf-8 -*-
 import gevent
-from flask import session, jsonify, Response, request, make_response
+import logging
+from flask import (session, jsonify, Response, request, make_response,
+                   copy_current_request_context)
+
 
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from mxcube3.routes import loginutils
-
+from mxcube3.routes import limsutils
 
 @mxcube.route("/mxcube/api/v0.1/ra/request_control", methods=["POST"])
 @mxcube.restrict
 def request_control():
     """
     """
+    @copy_current_request_context
+    def handle_timeout_gives_control(sid, timeout=30):
+        gevent.sleep(timeout)
+
+        if mxcube.TIMEOUT_GIVES_CONTROL:
+            user = loginutils.get_user_by_sid(sid)
+
+            # Pass control to user if still waiting
+            if user.get("requestsControl"):
+                toggle_operator(sid, "Timeout expired, you have control")
+
     data = request.get_json()
     remote_addr = loginutils.remote_addr()
 
@@ -28,23 +42,11 @@ def request_control():
     user["message"] = data["message"]
 
     observers = loginutils.get_observers()
-    gevent.spawn(handle_timeout_gives_control, session.sid, 10)
+    gevent.spawn(handle_timeout_gives_control, session.sid, timeout=10)
 
     socketio.emit("observersChanged", observers, namespace='/hwr')
 
     return make_response("", 200)
-
-
-def handle_timeout_gives_control(sid, timeout=30):
-    gevent.sleep(timeout)
-
-    if mxcube.TIMEOUT_GIVES_CONTROL:
-        user = loginutils.get_user_by_sid(sid)
-
-        # Pass control to user if still waiting
-        if user.get("requestsControl"):
-            toggle_operator(sid, "Timeout expired, you have control")
-
 
 
 @mxcube.route("/mxcube/api/v0.1/ra/take_control", methods=["POST"])

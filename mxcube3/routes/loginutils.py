@@ -15,10 +15,10 @@ DISCONNECT_HANDLED = True
 MESSAGES = []
 
 
-def create_user(loginID, host, sid):
+def create_user(loginID, host, sid, lims_data=None):
     return {"loginID": loginID, "host": host, "sid": sid, "name": "",
             "operator": False, "requestsControl": False, "message": "",
-            "socketio_sid": None}
+            "socketio_sid": None, "limsData": lims_data}
 
 
 def add_user(user):
@@ -38,6 +38,7 @@ def remove_user(sid):
 
 def get_user_by_sid(sid):
     return mxcube.USERS.get(sid, None)
+
 
 def deny_access(msg):
     resp = jsonify({"msg": msg})

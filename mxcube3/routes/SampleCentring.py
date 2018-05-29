@@ -52,7 +52,7 @@ def centring_remove_current_point():
         CENTRING_POINT_ID = None
 
 
-def centring_add_current_point():
+def centring_add_current_point(*args):
     global CENTRING_POINT_ID
     shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
     if shape:
@@ -131,6 +131,7 @@ def init_signals():
     dm.connect("centringStarted", signals.centring_started)
     dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
     dm.connect(dm, "centringFailed", wait_for_centring_finishes)
+    dm.connect("centringAccepted", centring_add_current_point)
 
     global CLICK_LIMIT
     CLICK_LIMIT = int(mxcube.beamline.\
@@ -732,7 +733,6 @@ def accept_centring():
     Accept the centring position.
     """
     mxcube.diffractometer.acceptCentring()
-    centring_add_current_point()
     return Response(status=200)
 
 

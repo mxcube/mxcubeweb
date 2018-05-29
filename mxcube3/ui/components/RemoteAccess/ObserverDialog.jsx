@@ -22,7 +22,11 @@ export class ObserverDialog extends React.Component {
 
   componentDidUpdate() {
     if (this.name && this.name.value === '') {
-      this.name.value = this.props.loginInfo.selectedProposal.toUpperCase();
+      try {
+        this.name.value = this.props.loginInfo.loginRes.Person.familyName.toUpperCase();
+      } catch (err) {
+        this.name.value = this.props.loginInfo.loginRes.status.msg;
+      }
     }
   }
 

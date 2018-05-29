@@ -197,6 +197,9 @@ def _do_take_snapshot(filename):
     with file(filename, "wb") as snapshot_file:
       snapshot_file.write(SNAPSHOT)
 
+def save_snapshot(self, filename):
+     _do_take_snapshot(filename)
+
 def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
     if snapshots is None:
         # called via AbstractCollect
@@ -252,9 +255,9 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 move_omega_relative(90)
 
 
-def enable_snapshots(collect_object):
-    # patch collect object
+def enable_snapshots(collect_object, diffractometer_object):
     collect_object.take_crystal_snapshots = types.MethodType(take_snapshots, collect_object)
+    diffractometer_object.save_snapshot = types.MethodType(save_snapshot, diffractometer_object)
 
 
 def send_mail(_from, to, subject, content):

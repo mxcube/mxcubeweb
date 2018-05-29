@@ -17,13 +17,13 @@ const warn = (values, props) => {
   const transThreshold = blTrans * 0.01;
 
   if (blEnergy - energyThreshold > energy || energy > blEnergy + energyThreshold) {
-    warnings.energy = 'Energy mismatch';
+    warnings.energy = 'Entered energy is different from current energy';
   }
   if (blResolution - resThreshold > resolution || resolution > blResolution + resThreshold) {
-    warnings.resolution = 'resolution mismatch';
+    warnings.resolution = 'Entered resolution is different from current resolution';
   }
   if (blTrans - transThreshold > trans || trans > blTrans + transThreshold) {
-    warnings.transmission = 'transmission mismatch';
+    warnings.transmission = 'Entered transmission is different from current transmission';
   }
   return warnings;
 };

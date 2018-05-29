@@ -279,9 +279,9 @@ class ServerIO {
       // Given control
       if (!ra.master) {
         this.dispatch(setLoading(true, 'You were given control', data.message));
-        this.dispatch(setRootPath(data.rootPath));
       }
 
+      this.dispatch(setRootPath(data.rootPath));
       this.dispatch(setMaster(true, data.name));
     });
 
@@ -293,9 +293,9 @@ class ServerIO {
       if (ra.requestingControl) {
         this.dispatch(setLoading(true, 'You were denied control', data.message));
         this.dispatch(requestControlAction(false));
-        this.dispatch(setRootPath(data.rootPath));
       }
 
+      this.dispatch(setRootPath(data.rootPath));
       this.dispatch(setMaster(false, data.name));
     });
 

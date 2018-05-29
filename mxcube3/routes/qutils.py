@@ -294,8 +294,8 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
-    parameters['subdir'] = parameters['path'].\
-        split(mxcube.session.get_base_image_directory())[1][1:]
+    parameters['subdir'] = os.path.join(*parameters["path"].\
+      split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.acquisitions[0].path_template
 
@@ -339,8 +339,8 @@ def _handle_wf(sample_node, node):
 
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = parameters['path'].\
-        split(mxcube.session.get_base_image_directory())[1][1:]
+    parameters['subdir'] = os.path.join(*parameters["path"].\
+        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.path_template
 
@@ -378,9 +378,9 @@ def _handle_xrf(sample_node, node):
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = parameters['path'].\
-        split(mxcube.session.get_base_image_directory())[1][1:]
-
+    parameters['subdir'] = os.path.join(*parameters["path"].\
+        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    
     pt = node.path_template
 
     parameters['fileName'] = pt.get_image_file_name().\
@@ -413,9 +413,9 @@ def _handle_energy_scan(sample_node, node):
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = parameters['path'].\
-        split(mxcube.session.get_base_image_directory())[1][1:]
-
+    parameters['subdir'] = os.path.join(*parameters["path"].\
+        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    
     pt = node.path_template
 
     parameters['fileName'] = pt.get_image_file_name().\

@@ -76,12 +76,13 @@ const ReduxInputField = (prop) => (
              onChange={prop.input.onChange}
              {...prop}
            />
-         </Col>
-         {prop.meta.error || prop.meta.warning ?
-         <Col xs={1} style={{ marginTop: '10px', paddingLeft: '0px' }}>
-          {errorIndicator(prop.meta.error, prop.meta.warning)}
-         </Col> : null
-         }
+	</Col>
+	{prop.meta.error || prop.meta.warning ?
+         <span style={{ top: '7px', left: '-10px', position: 'relative' }}>
+            {errorIndicator(prop.meta.error, prop.meta.warning)}
+          </span> : null
+        }
+
        </FormGroup>
 );
 
