@@ -31,7 +31,7 @@ class BeamlineActionsContainer extends React.Component {
     this.newPlotDisplayed = this.newPlotDisplayed.bind(this);
   }
 
-  startAction(cmdName) {
+  startAction(cmdName, showOutput = true) {
     const parameters = [];
 
     this.props.actionsList.some((cmd) => {
@@ -49,7 +49,7 @@ class BeamlineActionsContainer extends React.Component {
     });
 
     this.plotIdByAction[this.props.currentAction.name] = null;
-    this.props.startAction(cmdName, parameters);
+    this.props.startAction(cmdName, parameters, showOutput);
   }
 
   stopAction(cmdName) {
@@ -86,16 +86,19 @@ class BeamlineActionsContainer extends React.Component {
                }
 
                return (
-                  <MenuItem eventKey={i} key={i}>{cmdUsername}
-                  <BeamlineActionControl cmdName={cmdName}
-                    start={this.startAction}
-                    stop={this.stopAction}
-                    showOutput={this.showOutput}
-                    state={cmdState}
-                    disabled={disabled}
-                    arguments={cmd.arguments}
-                  />
-               </MenuItem>);
+                 <MenuItem eventKey={i} key={i}>
+                   <span><b>{cmdUsername}</b></span>
+                   <BeamlineActionControl cmdName={cmdName}
+                     start={this.startAction}
+                     stop={this.stopAction}
+                     showOutput={this.showOutput}
+                     state={cmdState}
+                     disabled={disabled}
+                     arguments={cmd.arguments}
+                     type={cmd.type}
+                     data={cmd.data}
+                   />
+                 </MenuItem>);
              })}
             </DropdownButton>
         </Col>
