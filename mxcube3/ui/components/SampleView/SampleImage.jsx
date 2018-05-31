@@ -347,9 +347,7 @@ export default class SampleImage extends React.Component {
       this.canvas.discardActiveObject();
     }
 
-    if (!this.props.busy) {
-      showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);
-    }
+    showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);
   }
 
   leftClick(option) {
@@ -719,19 +717,10 @@ export default class SampleImage extends React.Component {
     this.configureGrid();
     this.updateGridResults();
 
-    const showBusyIndicator = this.props.busy ? 'block' : 'none';
-
     return (
       <div>
         <div className="outsideWrapper" id="outsideWrapper">
           <div className="insideWrapper" id="insideWrapper">
-            <div
-              onMouseDown={this.preventAction}
-              onContextMenu={this.preventAction}
-              onClick={this.preventAction}
-              className="sample-video-busy"
-              style={{ display: showBusyIndicator }}
-            />
             <GridForm
               show={this.props.drawGrid}
               getGridOverlayOpacity={this.getGridOverlayOpacity}

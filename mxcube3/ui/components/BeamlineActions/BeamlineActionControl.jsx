@@ -18,8 +18,9 @@ export default class BeamlineActionControl extends React.Component {
           <Button bsSize="small"
             bsStyle = {bsStyle}
             disabled = {this.props.disabled}
-            onClick = { this.props.state !== RUNNING ? () => this.props.start(this.props.cmdName, showOutput) :
-            () => this.props.stop(this.props.cmdName) }
+            onClick = { this.props.state !== RUNNING ?
+                        () => this.props.start(this.props.cmdName, showOutput) :
+                        () => this.props.stop(this.props.cmdName) }
           >
           <b>{label}</b>
           </Button> : ''
