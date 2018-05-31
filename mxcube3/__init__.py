@@ -76,25 +76,46 @@ cmdline_options, args = opt_parser.parse_args()
 
 INIT_EVENT = gevent.event.Event()
 
+def exit_with_error(msg):
+    logging.getLogger("HWR").error(traceback.format_exc())
+
+    if msg:
+        logging.getLogger("HWR").error(msg)
+
+    msg = "Could not initialize one or several hardware objects, stopped "
+    msg += "at first error !"
+
+    logging.getLogger("HWR").error(msg)
+    logging.getLogger("HWR").error("Quitting server !")
+    sys.exit(-1)
+
+
 def complete_initialization(app):
-    app.beamline = get_hardware_object(hwr, cmdline_options.beamline_setup)
-    app.xml_rpc_server = get_hardware_object(hwr, 'xml-rpc-server')
-    app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
-    app.plotting = hwr.getHardwareObject(cmdline_options.plotting)
+    try:
+        app.beamline = get_hardware_object(hwr, cmdline_options.beamline_setup)
+        app.xml_rpc_server = get_hardware_object(hwr, 'xml-rpc-server')
+        app.actions = hwr.getHardwareObject(cmdline_options.beamline_actions)
+        app.plotting = hwr.getHardwareObject(cmdline_options.plotting)
 
-    app.session = get_hardware_object(app.beamline, "session")
-    app.collect = get_hardware_object(app.beamline, "collect")
-    app.workflow = get_hardware_object(app.beamline, "workflow")
-    app.shapes = get_hardware_object(app.beamline, "shape_history")
-    app.diffractometer = get_hardware_object(app.beamline, "diffractometer")
-    app.db_connection =  get_hardware_object(app.beamline, "lims_client")
-    app.sample_changer = get_hardware_object(app.beamline, "sample_changer")
-    app.sc_maintenance = get_hardware_object(app.beamline, "sample_changer_maintenance")
-    app.rest_lims = get_hardware_object(app.beamline, "lims_rest_client")
+        app.session = get_hardware_object(app.beamline, "session")
+        app.collect = get_hardware_object(app.beamline, "collect")
+        app.workflow = get_hardware_object(app.beamline, "workflow")
+        app.shapes = get_hardware_object(app.beamline, "shape_history")
+        app.diffractometer = get_hardware_object(app.beamline, "diffractometer")
+        app.db_connection =  get_hardware_object(app.beamline, "lims_client")
+        app.sample_changer = get_hardware_object(app.beamline, "sample_changer")
+        app.sc_maintenance = get_hardware_object(app.beamline, "sample_changer_maintenance")
+        app.rest_lims = get_hardware_object(app.beamline, "lims_rest_client")
 
-    Utils.enable_snapshots(app.collect, app.diffractometer)
-    init_app_state(app)
-    init_sample_video(app)
+        Utils.enable_snapshots(app.collect, app.diffractometer)
+        init_app_state(app)
+        init_sample_video(app)
+    except:
+        msg = "Could not initialize one or several hardware objects, "
+        msg += "stopped at firsr error ! \n"
+        msg += "Make sure that all devices servers are running \n"
+        msg += "Make sure that the detector software is running \n"
+        exit_with_error(msg)
 
     try:
         SampleCentring.init_signals()
@@ -116,9 +137,12 @@ def get_hardware_object(obj, name):
         else:
             ho = obj.getObjectByRole(name)
     except:
-        msg = "Could not get hardwre object corresponding to %s, " % name.upper()
-        msg += "Verify that all related hardware is responding properly"
-        logging.getLogger("HWR").error(msg)
+        msg = "Could not initialize hardware object corresponding to %s \n"
+        msg = msg % name.upper()
+        msg += "Make sure that all related device servers are running \n"
+        msg += "Make sure that the detector software is running \n"
+
+        exit_with_error(msg)
 
     return ho
 
@@ -212,10 +236,14 @@ socketio.init_app(app)
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    hwr_directory = cmdline_options.hwr_directory
-    hwr.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
-    hwr = hwr.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
-    hwr.connect()
+    try:
+        hwr_directory = cmdline_options.hwr_directory
+        hwr.addHardwareObjectsDirs([os.path.join(os.path.dirname(__file__), 'HardwareObjects')])
+        hwr = hwr.HardwareRepository(os.path.abspath(os.path.expanduser(hwr_directory)))
+        hwr.connect()
+    except:
+        print(traceback.format_exc())
+
 
     init_logging()
 
