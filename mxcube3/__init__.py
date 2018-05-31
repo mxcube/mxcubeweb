@@ -112,7 +112,7 @@ def complete_initialization(app):
         init_sample_video(app)
     except:
         msg = "Could not initialize one or several hardware objects, "
-        msg += "stopped at firsr error ! \n"
+        msg += "stopped at first error ! \n"
         msg += "Make sure that all devices servers are running \n"
         msg += "Make sure that the detector software is running \n"
         exit_with_error(msg)
