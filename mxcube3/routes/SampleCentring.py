@@ -55,6 +55,15 @@ def centring_remove_current_point():
 def centring_add_current_point(*args):
     global CENTRING_POINT_ID
     shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+
+    # There is no current centered point shape when the centring is done
+    # by software like Workflows, so we add one.
+    if not shape:
+        motors = args[1]['motors']
+        x, y = mxcube.diffractometer.motor_positions_to_screen(motors)
+        centring_update_current_point(motors, x, y)
+        shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+
     if shape:
         shape.state = "SAVED"
         signals.send_shapes(update_positions = False)
