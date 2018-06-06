@@ -1,16 +1,16 @@
 import React from 'react';
 import { Button, ButtonToolbar, Glyphicon } from 'react-bootstrap';
-import { RUNNING } from '../../constants';
+import { RUNNING, twoStateActuatorIsActive, TWO_STATE_ACTUATOR } from '../../constants';
 
 export default class BeamlineActionControl extends React.Component {
   render() {
     let bsStyle = this.props.state === RUNNING ? 'danger' : 'primary';
     let label = this.props.state === RUNNING ? 'Stop' : 'Run';
-    const showOutput = this.props.type !== 'INOUT';
+    const showOutput = this.props.type !== TWO_STATE_ACTUATOR;
 
     if (this.props.type === 'INOUT') {
       label = this.props.data.toUpperCase();
-      bsStyle = this.props.data === 'in' ? 'success' : 'danger';
+      bsStyle = twoStateActuatorIsActive(this.props.data) ? 'success' : 'danger';
     }
 
     return (<ButtonToolbar>

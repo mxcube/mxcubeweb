@@ -24,6 +24,8 @@ export const RUNNING = 0x1;
 export const AUTO_LOOP_CENTRING = 1;
 export const CLICK_CENTRING = 0;
 
+export const TWO_STATE_ACTUATOR = 'INOUT';
+
 
 export function isCollected(task) {
   return (task.state & TASK_COLLECTED) === TASK_COLLECTED;
@@ -37,6 +39,10 @@ export function isUnCollected(task) {
 
 export function hasLimsData(sample) {
   return sample.limsID !== undefined;
+}
+
+export function twoStateActuatorIsActive(state) {
+  return ['in', 'on', 'enabled'].includes(state.toLower());
 }
 
 
