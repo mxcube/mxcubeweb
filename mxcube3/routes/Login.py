@@ -144,7 +144,6 @@ def loginInfo():
        409: Error, could not log in
     """
     login_info = session.get("loginInfo")
-#    session['loginInfo'] = login_info
 
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
@@ -153,12 +152,17 @@ def loginInfo():
            "beamline_name": mxcube.session.beamline_name,
            "loginType": mxcube.db_connection.loginType.title(),
            "loginRes": login_info,
-#           "queue": qutils.queue_to_dict(),
            "master": is_operator(session.sid),
            "observerName": get_observer_name()
            }
 
-    res["selectedProposal"] = get_user_by_sid(session.sid)["loginID"]
+    user = get_user_by_sid(session.sid)
+
+    if user:
+        res["selectedProposal"] = user["loginID"]
+    else:
+        res["selectedProposal"] = {}
+
 
     return jsonify(res)
 
