@@ -141,6 +141,7 @@ def sc_state_changed(*args):
                'location': location,
                'message': 'Sample changer ready'}
         socketio.emit('sc', msg, namespace='/hwr')
+
     socketio.emit('sc_state', state_str, namespace='/hwr')
 
 def loaded_sample_changed(sample):
@@ -525,12 +526,10 @@ def xrf_task_progress(taskId, progress):
 
 def send_shapes(update_positions = False, movable={}):
     shape_dict = {}
-
     for shape in mxcube.shapes.get_shapes():
         if update_positions:
-            if not (shape.t == "G" and movable.get("name", None) == "phi"):
-                shape.update_position(mxcube.diffractometer.\
-                    motor_positions_to_screen)
+            shape.update_position(mxcube.diffractometer.\
+                                  motor_positions_to_screen)
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})

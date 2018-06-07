@@ -125,14 +125,18 @@ def mount_sample(beamline_setup_hwobj,
                           " user to center sample"
                     log.warning(msg)
                     dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
-                elif centring_method == CENTRING_METHOD.LOOP:
+                elif centring_method in [CENTRING_METHOD.LOOP,
+                                         CENTRING_METHOD.FULLY_AUTOMATIC]:
                     dm.startCentringMethod(dm.C3D_MODE)
-                    msg = "Centring in progress. Please save" +\
-                          " the suggested centring or re-center"
+
+                    if mxcube.AUTO_MOUNT_SAMPLE:
+                        dm.acceptCentring()
+                        msg = "Centring saved automatically"
+                    else:
+                        msg = "Centring in progress. Please save" +\
+                              " the suggested centring or re-center"
+
                     log.warning(msg)
-                elif centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
-                    log.info("Centring sample, please wait.")
-                    dm.startCentringMethod(dm.C3D_MODE)
                 else:
                     dm.start_centring_method(dm.MANUAL3CLICK_MODE)
 

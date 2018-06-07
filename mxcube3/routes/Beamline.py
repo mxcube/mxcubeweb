@@ -78,7 +78,9 @@ def beamline_get_all_attributes():
           if argtype == 'combo':
             args[-1]["items"] = cmd.getComboArgumentItems(argname)
 
-        actions.append({ "name": cmd.name(), "username": cmd.userName(), "state": READY, "arguments": args, "messages": [] })
+        actions.append({ "name": cmd.name(), "username": cmd.userName(),
+                         "state": READY, "arguments": args, "messages": [],
+                         "type": cmd.type, "data": cmd.value()})
 
     data.update({'availableMethods': ho.get_available_methods()})
     data.update({'path': mxcube.session.get_base_image_directory(), 'actionsList': actions })
@@ -159,7 +161,7 @@ def beamline_run_action(name):
                 err = str(sys.exc_info()[1])
                 return make_response(err, 520)
             else:
-                return make_response("", 200)
+                return make_response("{}", 200)
     else:
         return make_response("Action cannot run: command '%s` does not exist" % name, 520)
 

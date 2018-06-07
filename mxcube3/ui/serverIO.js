@@ -304,7 +304,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('beamline_action', (data) => {
-      this.dispatch(setActionState(data.name, data.state));
+      this.dispatch(setActionState(data.name, data.state, data.data));
     });
 
     this.hwrSocket.on('sc_state', (state) => {

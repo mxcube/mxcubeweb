@@ -2,8 +2,8 @@ import fetch from 'isomorphic-fetch';
 import { RUNNING } from '../constants';
 import { checkStatus, parseJSON } from '../requests';
 
-export function setActionState(cmdName, state) {
-  return { type: 'ACTION_SET_STATE', cmdName, state };
+export function setActionState(cmdName, state, data) {
+  return { type: 'ACTION_SET_STATE', cmdName, state, data };
 }
 
 export function showActionOutput(cmdName) {
@@ -18,12 +18,15 @@ export function setArgumentValue(cmdName, argIndex, value) {
   return { type: 'ACTION_SET_ARGUMENT', cmdName, argIndex, value };
 }
 
-export function startAction(cmdName, parameters) {
+export function startAction(cmdName, parameters, showOutput = true) {
   const url = `mxcube/api/v0.1/beamline/${cmdName}/run`;
 
   return (dispatch) => {
     dispatch(setActionState(cmdName, RUNNING));
-    dispatch(showActionOutput(cmdName));
+
+    if (showOutput) {
+      dispatch(showActionOutput(cmdName));
+    }
 
     fetch(url, {
       method: 'POST',
