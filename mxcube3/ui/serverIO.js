@@ -212,7 +212,6 @@ class ServerIO {
       } else if (record.signal === 'loadReady') {
         this.dispatch(setLoading(false, 'SC Ready',
                                  record.message, true, () => (this.dispatch(sendStopQueue()))));
-        this.dispatch(setCurrentSample(record.location));
       }
     });
 
