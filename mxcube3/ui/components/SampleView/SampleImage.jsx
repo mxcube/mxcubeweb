@@ -221,6 +221,18 @@ export default class SampleImage extends React.Component {
     return overlay;
   }
 
+  getGridCellCenter(gridGroup, clickPoint) {
+    const cell = this.drawGridPlugin.getClickedCell(gridGroup, clickPoint);
+    let cellCenter = [];
+
+    if (cell) {
+      cellCenter = [(cell.aCoords.tl.x + cell.width / 2) / this.props.imageRatio,
+                    (cell.aCoords.tl.y + cell.height / 2) / this.props.imageRatio];
+    }
+
+    return cellCenter;
+  }
+
   selectedGrid() {
     let grid = null;
 
@@ -289,12 +301,11 @@ export default class SampleImage extends React.Component {
     this.canvas.requestRenderAll();
     this.canvas.clear();
 
-    // Set size of the Image from MD2
+    // Set size of the Image from
     document.getElementById('sample-img').style.height = `${h}px`;
     document.getElementById('sample-img').style.width = `${w}px`;
     document.getElementById('insideWrapper').style.height = `${h}px`;
   }
-
 
   rightClick(e) {
     e.preventDefault();
@@ -338,7 +349,8 @@ export default class SampleImage extends React.Component {
           ctxMenuObj = { type: 'GROUP', id: pointList };
         } else if (gridList.length === 1) {
           const gridData = this.props.grids[gridList[0]];
-          ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
+          const cellCenter = this.getGridCellCenter(group.getObjects()[0], clickPoint);
+          ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
         } else if (lineList.length !== 0) {
           ctxMenuObj = { type: 'LINE', id: lineList };
         }
@@ -349,13 +361,14 @@ export default class SampleImage extends React.Component {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
 
-          this.selectShape([obj], true);
+          this.selectShape([obj], e.ctrlKey);
 
           if (obj.type === 'GridGroup') {
             let gridData = this.props.grids[obj.id];
 
             if (gridData) {
-              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
+              const cellCenter = this.getGridCellCenter(obj, clickPoint);
+              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
             } else {
               gridData = this.drawGridPlugin.currentGridData();
               gridData = this.drawGridPlugin.saveGrid(gridData);

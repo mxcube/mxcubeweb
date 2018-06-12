@@ -454,7 +454,7 @@ export default class DrawGridPlugin {
         if (obj.get('type') === 'ellipse') {
           const mpoint = new fabric.Point(options.e.offsetX, options.e.offsetY);
 
-          if (obj.containsPoint(mpoint, null, true)) {
+          if (obj.containsPoint(mpoint, null, true) && obj.cell) {
             this.clearMouseOverGridLabel(canvas);
 
             const objCenterX = obj.aCoords.tl.x + obj.width / 2;
@@ -517,6 +517,20 @@ export default class DrawGridPlugin {
           }
         }});
     }
+  }
+
+  getClickedCell(shapeGroup, clickPoint) {
+    let cell = null;
+
+    shapeGroup.forEachObject((obj) => {
+      if (obj.get('type') === 'ellipse') {
+        if (obj.containsPoint(clickPoint, null, true)) {
+          cell = obj;
+        }
+      }
+    });
+
+    return cell;
   }
 
   /**

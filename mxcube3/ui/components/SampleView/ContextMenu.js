@@ -224,29 +224,9 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.showContextMenu(false);
   }
 
-  calculateCellCenter(x, y, gridData, imageRatio) {
-    let [x0, y0] = gridData.screenCoord;
-    let { cellWidth, cellHeight } = gridData;
-
-    x0 = x0 * imageRatio;
-    y0 = y0 * imageRatio;
-    cellWidth = cellWidth * imageRatio;
-    cellHeight = cellHeight * imageRatio;
-
-    const hCell = Math.floor((x - x0) * cellWidth);
-    const vCell = Math.floor((y - y0) * cellHeight);
-    const xCell = (hCell + 0.5) * cellWidth + x0;
-    const yCell = (vCell + 0.5) * cellHeight + y0;
-    return [xCell / imageRatio, yCell / imageRatio];
-  }
-
   createCollectionOnCell() {
-    const [x, y] = this.calculateCellCenter(this.props.x,
-                                            this.props.y,
-                                            this.props.shape.gridData,
-                                            this.props.imageRatio
-                                            );
-    this.createPoint(x, y);
+    const cellCenter = this.props.shape.cellCenter;
+    this.createPoint(cellCenter[0], cellCenter[1]);
     this.props.sampleActions.showContextMenu(false);
   }
 
