@@ -61,52 +61,13 @@ def get_sc_contents():
 
     return contents
 
+
 @mxcube.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
 @mxcube.restrict
-def get_samples_list():
-    samples_list = mxcube.sample_changer.getSampleList()
-    samples = {}
-    samplesByCoords = {}
-    order = []
-
-    for s in samples_list:
-        if not s.isPresent():
-            continue
-        if s.isLoaded():
-            state = SAMPLE_MOUNTED
-        elif s.hasBeenLoaded():
-            state = COLLECTED
-        else:
-            state = UNCOLLECTED
-        sample_dm = s.getID() or ""
-        coords = s.getCoords()
-        sample_data = {"sampleID": s.getAddress(),
-                       "location": s.getAddress(),
-                       "sampleName": "Sample-%s" % s.getAddress(),
-                       "code": sample_dm,
-                       "loadable": True,
-                       "state": state,
-                       "tasks": [],
-                       "type": "Sample"}
-        order.append(coords)
-        samplesByCoords[coords] = sample_data['sampleID']
-
-        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-        sample_data["defaultSubDir"] = limsutils.get_default_subdir(sample_data)
-
-        samples[s.getAddress()] = sample_data
-        scutils.sc_contents_add(sample_data)
-
-        if sample_data["state"] == SAMPLE_MOUNTED:
-            scutils.set_current_sample(sample_data)
-
-    # sort by location, using coords tuple
-    order.sort()
-    sample_list = { 'sampleList': samples,
-                    'sampleOrder': [samplesByCoords[coords] for coords in order] }
-    
-    limsutils.sample_list_set(sample_list)
+def get_sample_list():
+    scutils.get_sample_list()
     return jsonify(limsutils.sample_list_get())
+
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/state", methods=['GET'])
 @mxcube.restrict
