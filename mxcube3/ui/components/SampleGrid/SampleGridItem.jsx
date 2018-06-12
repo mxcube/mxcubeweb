@@ -32,7 +32,11 @@ export class SampleGridItem extends React.Component {
 
 
   componentDidMount() {
-    this.refs.sampleItem.addEventListener('contextmenu', (e) => this.contextMenu(e), false);
+    this.refs.sampleItem.addEventListener('contextmenu', this.contextMenu, false);
+  }
+
+  componentWillUnmount() {
+    this.refs.sampleItem.removeEventListener('contextmenu', this.contextMenu);
   }
 
   contextMenu(e) {

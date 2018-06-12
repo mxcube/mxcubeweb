@@ -195,7 +195,6 @@ class ServerIO {
       if (record.Signal === 'DisableSample') {
         this.dispatch(setSampleAttribute(record.sampleID, 'checked', false));
       } else {
-        window.initJSMpeg();
         this.dispatch(setStatus(record.Signal));
       }
     });
