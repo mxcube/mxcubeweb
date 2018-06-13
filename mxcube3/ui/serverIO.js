@@ -195,7 +195,6 @@ class ServerIO {
       if (record.Signal === 'DisableSample') {
         this.dispatch(setSampleAttribute(record.sampleID, 'checked', false));
       } else {
-        window.initJSMpeg();
         this.dispatch(setStatus(record.Signal));
       }
     });
@@ -213,7 +212,6 @@ class ServerIO {
       } else if (record.signal === 'loadReady') {
         this.dispatch(setLoading(false, 'SC Ready',
                                  record.message, true, () => (this.dispatch(sendStopQueue()))));
-        this.dispatch(setCurrentSample(record.location));
       }
     });
 

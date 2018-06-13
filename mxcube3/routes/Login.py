@@ -7,6 +7,7 @@ from mxcube3 import app as mxcube
 from mxcube3 import state_storage
 from mxcube3.routes import qutils
 from mxcube3.routes import limsutils
+from mxcube3.routes import scutils
 from mxcube3 import socketio
 
 
@@ -86,6 +87,14 @@ def login():
         # Create a new queue just in case any previous queue was not cleared
         # properly
         mxcube.queue = qutils.new_queue()
+
+        sample = mxcube.sample_changer.getLoadedSample()
+
+        # If A sample is mounted, get sample changer contents and add mounted
+        # sample to the queue
+        if sample:
+            scutils.get_sample_list()
+            qutils.queue_add_item([mxcube.CURRENTLY_MOUNTED_SAMPLE])
 
         # For the moment not loading queue from persistent storage (redis),
         # uncomment to enable loading.

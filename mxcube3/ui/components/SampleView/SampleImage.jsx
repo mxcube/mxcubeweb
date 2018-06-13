@@ -18,14 +18,19 @@ export default class SampleImage extends React.Component {
     super(props);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.leftClick = this.leftClick.bind(this);
+    this.rightClick = this.rightClick.bind(this);
     this.setImageRatio = this.setImageRatio.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.keyUp = this.keyUp.bind(this);
+    this.wheel = this.wheel.bind(this);
+    this.goToBeam = this.goToBeam.bind(this);
     this.setHCellSpacing = this.setHCellSpacing.bind(this);
     this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.setGridOverlayOpacity = this.setGridOverlayOpacity.bind(this);
     this.getGridOverlayOpacity = this.getGridOverlayOpacity.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
+    this.getGridCellCenter = this.getGridCellCenter.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
     this.updateGridResults = this.updateGridResults.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
@@ -38,11 +43,11 @@ export default class SampleImage extends React.Component {
     this.clearSelectionEvent = this.clearSelectionEvent.bind(this);
     this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
+    this.drawGridPlugin = new DrawGridPlugin();
     this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;
     this.lineGroup = null;
-    this.drawGridPlugin = new DrawGridPlugin();
     this.player = null;
     this.centringCross = [];
     this.removeShapes = this.removeShapes.bind(this);
@@ -53,20 +58,20 @@ export default class SampleImage extends React.Component {
     this.canvas = new fabric.Canvas('canvas', { defaultCursor: 'crosshair' });
 
     // Bind leftClick to function
-    this.canvas.on('mouse:down', (option) => this.leftClick(option));
-    this.canvas.on('mouse:move', (options) => this.onMouseMove(options));
-    this.canvas.on('mouse:up', (options) => this.onMouseUp(options));
+    this.canvas.on('mouse:down', this.leftClick);
+    this.canvas.on('mouse:move', this.onMouseMove);
+    this.canvas.on('mouse:up', this.onMouseUp);
 
-    this.canvas.on('selection:created', (e) => this.selectShapeEvent(e));
-    this.canvas.on('selection:cleared', (e) => this.clearSelectionEvent(e));
+    this.canvas.on('selection:created', this.selectShapeEvent);
+    this.canvas.on('selection:cleared', this.clearSelectionEvent);
 
     // Bind rigth click to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
-    imageOverlay.addEventListener('contextmenu', (e) => this.rightClick(e), false);
+    imageOverlay.addEventListener('contextmenu', this.rightClick, false);
     // Bind mouse scroll up/down to function manually with javascript
-    imageOverlay.addEventListener('wheel', (e) => this.wheel(e), false);
+    imageOverlay.addEventListener('wheel', this.wheel, false);
     // Bind mouse double click to function manually with javascript
-    imageOverlay.addEventListener('dblclick', (e) => this.goToBeam(e), false);
+    imageOverlay.addEventListener('dblclick', this.goToBeam, false);
 
     this.setImageRatio();
 
@@ -76,7 +81,6 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keyup', this.keyUp, false);
 
     this.initJSMpeg();
-    window.initJSMpeg = this.initJSMpeg;
   }
 
   componentWillReceiveProps(nextProps) {
@@ -102,10 +106,31 @@ export default class SampleImage extends React.Component {
   }
 
   componentWillUnmount() {
-    // Important to remove listener if component isn't active
+    // Remove JSMpeg player
+
+    if (this.player) {
+      this.player.destroy();
+      this.player = null;
+    }
+
+    if(this.canvas) {
+      this.canvas.dispose()
+    }
+
+    this.canvas.off('mouse:down', this.leftClick);
+    this.canvas.off('mouse:move', this.onMouseMove);
+    this.canvas.off('mouse:up', this.onMouseUp);
+    this.canvas.off('selection:created', this.selectShapeEvent);
+    this.canvas.off('selection:cleared', this.clearSelectionEvent);
+
     document.removeEventListener('keydown', this.keyDown);
     document.removeEventListener('keyup', this.keyUp);
     window.removeEventListener('resize', this.setImageRatio);
+
+    const imageOverlay = document.getElementById('insideWrapper');
+    imageOverlay.removeEventListener('contextmenu', this.rightClick);
+    imageOverlay.removeEventListener('wheel', this.wheel);
+    imageOverlay.removeEventListener('dblclick', this.goToBeam);
   }
 
   onMouseMove(options) {
@@ -196,6 +221,18 @@ export default class SampleImage extends React.Component {
     return overlay;
   }
 
+  getGridCellCenter(gridGroup, clickPoint) {
+    const cell = this.drawGridPlugin.getClickedCell(gridGroup, clickPoint);
+    let cellCenter = [];
+
+    if (cell) {
+      cellCenter = [(cell.aCoords.tl.x + cell.width / 2) / this.props.imageRatio,
+                    (cell.aCoords.tl.y + cell.height / 2) / this.props.imageRatio];
+    }
+
+    return cellCenter;
+  }
+
   selectedGrid() {
     let grid = null;
 
@@ -264,12 +301,11 @@ export default class SampleImage extends React.Component {
     this.canvas.requestRenderAll();
     this.canvas.clear();
 
-    // Set size of the Image from MD2
+    // Set size of the Image from
     document.getElementById('sample-img').style.height = `${h}px`;
     document.getElementById('sample-img').style.width = `${w}px`;
     document.getElementById('insideWrapper').style.height = `${h}px`;
   }
-
 
   rightClick(e) {
     e.preventDefault();
@@ -313,7 +349,8 @@ export default class SampleImage extends React.Component {
           ctxMenuObj = { type: 'GROUP', id: pointList };
         } else if (gridList.length === 1) {
           const gridData = this.props.grids[gridList[0]];
-          ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
+          const cellCenter = this.getGridCellCenter(group.getObjects()[0], clickPoint);
+          ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
         } else if (lineList.length !== 0) {
           ctxMenuObj = { type: 'LINE', id: lineList };
         }
@@ -324,13 +361,14 @@ export default class SampleImage extends React.Component {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = true;
 
-          this.selectShape([obj], true);
+          this.selectShape([obj], e.ctrlKey);
 
           if (obj.type === 'GridGroup') {
             let gridData = this.props.grids[obj.id];
 
             if (gridData) {
-              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id };
+              const cellCenter = this.getGridCellCenter(obj, clickPoint);
+              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
             } else {
               gridData = this.drawGridPlugin.currentGridData();
               gridData = this.drawGridPlugin.saveGrid(gridData);

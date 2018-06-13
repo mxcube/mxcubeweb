@@ -340,13 +340,16 @@ def collect_image_taken(frame):
                'sample': node['sample'],
                'state': RUNNING if progress < 1 else COLLECTED,
                'progress': progress}
-
-        logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
-
         try:
-            safe_emit('task', msg, namespace='/hwr')
+            _emit_progress(msg)
         except Exception:
             logging.getLogger("HWR").error('error sending message: ' + str(msg))
+
+
+@Utils.RateLimited(0.5)
+def _emit_progress(msg):
+    logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
+    safe_emit('task', msg, namespace='/hwr')
 
 
 def collect_oscillation_failed(owner=None, status=FAILED, state=None,
