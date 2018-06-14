@@ -233,7 +233,7 @@ class SampleGridViewContainer extends React.Component {
     let proposalId;
 
     try {
-      proposalId = this.props.loginData.proposalList[0].Proposal.proposalId;
+      proposalId = this.props.loginData.selectedProposalID;
     } catch (e) {
       return;
     }
@@ -703,7 +703,7 @@ class SampleGridViewContainer extends React.Component {
  */
 function mapStateToProps(state) {
   return {
-    loginData: state.login.data,
+    loginData: state.login,
     queue: state.queue,
     loading: state.queueGUI.loading,
     selected: state.sampleGrid.selected,

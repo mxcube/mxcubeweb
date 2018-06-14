@@ -3,7 +3,8 @@ const initialState = {
   loggedIn: false,
   data: {},
   showProposalsForm: false,
-  selectedProposal: ''
+  selectedProposal: '',
+  selectedProposalID: ''
 };
 
 export default (state = initialState, action) => {
@@ -33,9 +34,18 @@ export default (state = initialState, action) => {
       }
     case 'SELECT_PROPOSAL':
       {
+        const proposals = state.data.proposalList;
+
+        const propInfo = proposals.find(prop => {
+          const name = `${prop.Proposal.code}${prop.Proposal.number}`;
+          return name === action.proposal;
+        });
+        const propId = propInfo.Proposal.proposalId;
+
         return {
           ...state,
           selectedProposal: action.proposal,
+          selectedProposalID: propId
         };
       }
     case 'HIDE_PROPOSALS_FORM':
