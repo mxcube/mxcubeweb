@@ -2,7 +2,7 @@ import logging
 import os
 import Utils
 
-from flask import session, request, jsonify, make_response, Response
+from flask import session, request, jsonify, make_response, Response, redirect
 from mxcube3 import app as mxcube
 from mxcube3 import state_storage
 from mxcube3.routes import qutils
@@ -173,8 +173,14 @@ def loginInfo():
         res["selectedProposal"] = {}
 
 
-    return jsonify(res)
+    # Redirect the user to login page if for some reason logged out
+    # i.e. server restart
+    if not user:
+        response = redirect("/login", code=302)
+    else:
+        response = jsonify(res)
 
+    return response
 
 @mxcube.route("/mxcube/api/v0.1/send_feedback", methods=["POST"])
 @mxcube.restrict
