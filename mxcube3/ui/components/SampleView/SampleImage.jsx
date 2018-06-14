@@ -106,15 +106,8 @@ export default class SampleImage extends React.Component {
   }
 
   componentWillUnmount() {
-    // Remove JSMpeg player
-
-    if (this.player) {
-      this.player.destroy();
-      this.player = null;
-    }
-
-    if(this.canvas) {
-      this.canvas.dispose()
+    if (this.canvas) {
+      this.canvas.dispose();
     }
 
     this.canvas.off('mouse:down', this.leftClick);
