@@ -184,6 +184,24 @@ class _BeamlineSetupMediator(object):
 
         return {"elements": elements}
 
+    def get_acquisition_limit_values(self):
+        _limits = self._bl.get_acquisition_limit_values()
+        limits = {}
+
+        for key, value in _limits.iteritems():
+            if isinstance(value, str) and ',' in value:
+                try:
+                    limits[key] = map(float, _limits[key].split(','))
+                except:
+                    msg = '[BEAMLINE_SETUP] Could not get limits for %s,' % key
+                    msg += ' using -10000, 10000'
+                    logging.getLogger('HWR').info(msg)
+                    limits[key] = [-10000, 10000]
+            else:
+                limits[key] = value
+
+        return limits
+
 
 class HOMediatorBase(object):
     def __init__(self, ho, name=""):

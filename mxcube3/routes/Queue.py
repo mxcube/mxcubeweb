@@ -10,12 +10,13 @@ import QueueManager
 from flask import Response, jsonify, request, session
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
+from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
+
 import qutils
 import scutils
 import limsutils
 
 qm = QueueManager.QueueManager('Mxcube3')
-
 
 @mxcube.route("/mxcube/api/v0.1/queue/start", methods=['PUT'])
 @mxcube.restrict
@@ -464,12 +465,13 @@ def add_centring(id):
 def get_default_dc_params():
     """
     returns the default values for an acquisition (data collection).
-    TODO: implement as_dict in the qmo.AcquisitionParameters
     """
     acq_parameters = mxcube.beamline.get_default_acquisition_parameters()
     ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
     n = int(mxcube.session["file_info"].getProperty("precision", 4))
+
+    bl = BeamlineSetupMediator(mxcube.beamline)
 
     resp = jsonify({
         'acq_parameters': {
@@ -496,7 +498,7 @@ def get_default_dc_params():
             'prefixTemplate': '{PREFIX}_{POSITION}',
             'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
         },
-        'limits': mxcube.beamline.get_acquisition_limit_values()
+        'limits': bl.get_acquisition_limit_values()
     })
 
     resp.status_code = 200
