@@ -1,4 +1,5 @@
 import React from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Grid } from 'react-bootstrap';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
@@ -12,16 +13,19 @@ import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
-import { sendChatMessage, getAllChatMessages } from '../actions/remoteAccess.js';
+import { sendChatMessage, getAllChatMessages,
+         resetChatMessageCount } from '../actions/remoteAccess.js';
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
-import './rachat.css';
 import 'react-chat-widget/lib/styles.css';
+import './rachat.css';
+
 
 class Main extends React.Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.handleNewUserMessage = this.handleNewUserMessage.bind(this);
+    this.onChatContainerClick = this.onChatContainerClick.bind(this);
   }
 
   componentDidMount() {
@@ -34,6 +38,10 @@ class Main extends React.Component {
         }
       });
     });
+  }
+
+  onChatContainerClick() {
+    this.props.resetChatMessageCount();
   }
 
   handleNewUserMessage(message) {
@@ -82,13 +90,16 @@ class Main extends React.Component {
         <Grid fluid>
             {this.props.children}
         </Grid>
-        { this.props.remoteAccess.observers.length > 0 ?
-          (<Widget
-            title="Chat"
-            subtitle=""
-            handleNewUserMessage={this.handleNewUserMessage}
-          />) : null
-        }
+        <span onClick={this.onChatContainerClick}>
+          { this.props.remoteAccess.observers.length > 0 ?
+             (<Widget
+               title="Chat"
+               subtitle=""
+               badge={this.props.remoteAccess.chatMessageCount}
+               handleNewUserMessage={this.handleNewUserMessage}
+             />) : null
+          }
+        </span>
       </div>
     );
   }
@@ -100,6 +111,14 @@ function mapStateToProps(state) {
   };
 }
 
+function mapDispatchToProps(dispatch) {
+  return {
+    resetChatMessageCount: bindActionCreators(resetChatMessageCount, dispatch)
+  };
+}
+
+
 export default connect(
-  mapStateToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(Main);
