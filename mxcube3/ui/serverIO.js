@@ -34,7 +34,8 @@ import { setLoading,
 
 import { showWorkflowParametersDialog } from './actions/workflow';
 
-import { setObservers, setMaster, requestControlAction } from './actions/remoteAccess';
+import { setObservers, setMaster, requestControlAction,
+         incChatMessageCount } from './actions/remoteAccess';
 import { doSignOut } from './actions/login';
 
 import { addResponseMessage } from 'react-chat-widget';
@@ -109,6 +110,7 @@ class ServerIO {
       const sid = store.getState().remoteAccess.sid;
       if (record.sid !== sid) {
         addResponseMessage(`${record.date} **${record.user}:** \n\n ${record.message}`);
+        this.dispatch(incChatMessageCount());
       }
     });
 

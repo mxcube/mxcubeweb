@@ -2,7 +2,7 @@
   z-index: 10001;
 }
 
-.conversation-container > .header {
+.conversation-container .header {
   background-color: #f4f7f9;
   padding: 0px 0px;
   border-bottom: 1px solid #ddd;
@@ -34,4 +34,27 @@
   background-color: #fff;
   padding: 10px;
   width: 100%;
+}
+
+.messages-container > .message > .response {
+  margin-left: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .095);
+  background-color: #fff;
+  padding: 10px;
+  width: 100%;
+}
+
+.widget-container .launcher {
+  background-color: #3766ad;
+  border: 1px solid #000;
+}
+
+.launcher .badge {
+  width: 22px;
+  height: 22px;
+  line-height: 14px;
+  background-color: #0366d6;
+  border: 1px solid #000;
 }

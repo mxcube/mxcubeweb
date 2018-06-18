@@ -152,3 +152,13 @@ export function getAllChatMessages() {
     }
   }).then((response) => response.json());
 }
+
+
+export function resetChatMessageCount() {
+  return { type: 'RESET_CHAT_MESSAGE_COUNT' };
+}
+
+
+export function incChatMessageCount() {
+  return { type: 'INC_CHAT_MESSAGE_COUNT' };
+}
