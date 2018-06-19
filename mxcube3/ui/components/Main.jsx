@@ -23,8 +23,6 @@ import { LimsResultDialog } from './Lims/LimsResultDialog';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
-import 'react-chat-widget/lib/styles.css';
-
 
 class Main extends React.Component {
   constructor(props) {
