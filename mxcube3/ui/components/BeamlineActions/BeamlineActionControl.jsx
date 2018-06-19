@@ -9,7 +9,7 @@ export default class BeamlineActionControl extends React.Component {
     const showOutput = this.props.type !== TWO_STATE_ACTUATOR;
 
     if (this.props.type === 'INOUT') {
-      label = this.props.data.toUpperCase();
+      label = String(this.props.data).toUpperCase();
       bsStyle = twoStateActuatorIsActive(this.props.data) ? 'success' : 'danger';
     }
 
