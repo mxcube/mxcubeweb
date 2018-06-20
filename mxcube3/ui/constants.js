@@ -42,7 +42,7 @@ export function hasLimsData(sample) {
 }
 
 export function twoStateActuatorIsActive(state) {
-  return ['in', 'on', 'enabled'].includes(state.toLower());
+  return ['in', 'on', 'enabled'].includes(String(state).toLowerCase());
 }
 
 
