@@ -108,6 +108,7 @@ export function loadSample(address) {
       credentials: 'include'
     }).then(response => {
       if (response.status >= 400) {
+        dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error(`Error while  sample loading sample @ ${address}`);
       }
 
