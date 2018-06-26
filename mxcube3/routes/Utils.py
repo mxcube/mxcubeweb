@@ -269,6 +269,15 @@ def send_mail(_from, to, subject, content):
 
     try:
         error_dict = smtp.sendmail(_from, to.split(','), email_msg)
+
+        if error_dict:
+            msg = "Could not send mail to %s, content %s, error was: %s"
+            msg = msg % (to, content, str(error_dict))
+            logging.getLogger().error(msg)
+        else:
+            msg = "Feedback sent to %s, msg: \n %s" % (to, content)
+            logging.getLogger("HWR").info(msg)
+
     except smtplib.SMTPException, e:
         msg = "Could not send mail to %s, content %s, error was: %s"
         logging.getLogger().error(msg % (to, content, str(e)))
@@ -297,7 +306,7 @@ def send_feedback(sender_data):
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
-    to = mxcube.session.getProperty("feedback_email", "")
+    to = mxcube.session.getProperty("feedback_email", "") + ',%s' % _sender
     subject="[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)
     content = sender_data.get("content", "")
 
