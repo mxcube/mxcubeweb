@@ -126,7 +126,6 @@ def apply_template(params, sample_model, path_template):
             params['subdir'] = sample_model.get_name()
 
     if '{' in params.get('prefix', ''):
-        sample = sample_list_get(sample_model.loc_str)
         sample = mxcube.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
         prefix = get_default_prefix(sample, False)
         shape = params["shape"] if params["shape"] > 0 else '';
