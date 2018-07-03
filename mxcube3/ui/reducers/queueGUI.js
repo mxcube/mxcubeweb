@@ -39,18 +39,6 @@ export default (state = initialState, action) => {
         }
       });
 
-      const nodesToBeRemoved = [];
-
-      existingNodes.forEach((node) => {
-        if (sourceNodes.indexOf(node) === -1) {
-          nodesToBeRemoved.push(node);
-        }
-      });
-
-      nodesToBeRemoved.forEach((nodeID) => {
-        delete displayData[nodeID];
-      });
-
       return { ...state, displayData };
     }
     case 'ADD_TASKS': {
