@@ -21,7 +21,6 @@ import { setStatus,
          addTaskResultAction,
          updateTaskLimsData,
          addTaskAction,
-         sendStopQueue,
          setCurrentSample,
          addDiffractionPlanAction,
          setSampleAttribute,
@@ -204,16 +203,16 @@ class ServerIO {
     this.hwrSocket.on('sc', (record) => {
       if (record.signal === 'operatingSampleChanger') {
         this.dispatch(setLoading(true, 'Sample changer in operation',
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+                                 record.message, false));
       } else if ((record.signal === 'loadingSample' || record.signal === 'loadedSample')) {
         this.dispatch(setLoading(true, `Loading sample ${record.location}`,
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+                                 record.message, false));
       } else if (record.signal === 'unLoadingSample' || record.signal === 'unLoadedSample') {
         this.dispatch(setLoading(true, `Unloading sample ${record.location}`,
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+                                 record.message, false));
       } else if (record.signal === 'loadReady') {
         this.dispatch(setLoading(false, 'SC Ready',
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+                                 record.message, false));
       }
     });
 
