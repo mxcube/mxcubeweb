@@ -110,6 +110,13 @@ export default class SampleImage extends React.Component {
       this.canvas.dispose();
     }
 
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) {
+      if (this.player) {
+        this.player.destroy();
+        this.player = null;
+      }
+    }
+
     this.canvas.off('mouse:down', this.leftClick);
     this.canvas.off('mouse:move', this.onMouseMove);
     this.canvas.off('mouse:up', this.onMouseUp);
