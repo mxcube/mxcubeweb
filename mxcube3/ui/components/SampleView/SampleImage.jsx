@@ -80,6 +80,7 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keydown', this.keyDown, false);
     document.addEventListener('keyup', this.keyUp, false);
 
+    window.initJSMpeg = this.initJSMpeg;
     this.initJSMpeg();
   }
 
@@ -131,6 +132,8 @@ export default class SampleImage extends React.Component {
     imageOverlay.removeEventListener('contextmenu', this.rightClick);
     imageOverlay.removeEventListener('wheel', this.wheel);
     imageOverlay.removeEventListener('dblclick', this.goToBeam);
+
+    window.initJSMpeg = null;
   }
 
   onMouseMove(options) {

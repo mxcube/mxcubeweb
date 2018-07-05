@@ -124,6 +124,7 @@ export default class SampleControls extends React.Component {
         key="reset"
         onClick={() => {
           window.initJSMpeg();
+          this.props.sampleActions.setVideoSize(this.props.width, this.props.height);
         }}
       >
         <span className="fa fa-redo" /> Reset
