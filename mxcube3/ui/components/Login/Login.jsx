@@ -24,7 +24,7 @@ export default class LoginComponent extends React.Component {
     const username = this.loginID.value;
     const password = this.password.value;
     this.props.setLoading(true);
-    this.props.signIn(username, password);
+    this.props.signIn(username.toLowerCase(), password);
   }
 
   handleKeyPress(target) {
