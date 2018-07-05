@@ -120,8 +120,11 @@ def apply_template(params, sample_model, path_template):
             params['subdir'] = params['subdir'].format(NAME=sample_model.get_name(),
                 ACRONYM=sample_model.crystals[0].protein_acronym)
         else:
-              params['subdir'] = sample_model.get_name()
+              stripped = params["subdir"][0: params["subdir"].find('{')]
+              params['subdir'] = stripped + sample_model.get_name()
 
+        # The template was only applied partially if subdir ends with '-'
+        # probably because either acronym or protein name is null in LIMS
         if params['subdir'].endswith('-'):
             params['subdir'] = sample_model.get_name()
 
