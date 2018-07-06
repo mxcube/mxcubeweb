@@ -105,6 +105,7 @@ export function sendMountSample(sampleData) {
         body: JSON.stringify(sampleData)
       }).then((response) => {
         if (response.status >= 400) {
+          dispatch(showErrorPanel(true, response.headers.get('message')));
           throw new Error('Server refused to mount sample');
         }
       });
@@ -573,6 +574,7 @@ export function sendUnmountSample(sample) {
       body: JSON.stringify(sample)
     }).then((response) => {
       if (response.status >= 400) {
+        dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error('Server refused to unmount sample');
       } else {
         dispatch(clearCurrentSample());

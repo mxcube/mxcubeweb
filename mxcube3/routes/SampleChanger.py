@@ -122,6 +122,13 @@ def mount_sample(loc):
 def unmount_sample(loc):
     mxcube.sample_changer.unload(loc, wait=True)
     set_current_sample(None)
+    try:
+        mxcube.sample_changer.unload(loc, wait=True)
+        set_current_sample(None)
+    except Exception as ex:
+	    return 'Cannot load sample', 409, {'Content-Type': 'application/json',
+					   'message': str(ex)	
+					}
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/unmount_current/", methods=['GET'])
@@ -129,6 +136,13 @@ def unmount_sample(loc):
 def unmount_current():
     mxcube.sample_changer.unload(None, wait=True)
     set_current_sample(None)
+    try:
+        mxcube.sample_changer.unload(None, wait=True)
+        set_current_sample(None)
+    except Exception as ex:
+        return 'Cannot unload sample', 409, {'Content-Type': 'application/json',
+					   'message': str(ex)	
+					}
     return jsonify(get_sc_contents())
 
 @mxcube.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
@@ -136,8 +150,10 @@ def unmount_current():
 def mount_sample_clean_up():
     try:
         scutils.mount_sample_clean_up(request.get_json())
-    except Exception:
-        return Response(status=409)
+    except Exception as ex:
+        return 'Cannot load sample', 409, {'Content-Type': 'application/json',
+					   'message': str(ex)	
+					}
     else:
         return Response(status=200)
 
@@ -146,8 +162,10 @@ def mount_sample_clean_up():
 def unmount_sample_clean_up():
     try:
         scutils.unmount_sample_clean_up(request.get_json())
-    except Exception:
-        return Response(status=409)
+    except Exception as ex:
+        return 'Cannot unload sample', 409, {'Content-Type': 'application/json',
+					   'message': str(ex)	
+					}
     else:
         return Response(status=200)
 
