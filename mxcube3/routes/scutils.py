@@ -100,6 +100,7 @@ def get_current_sample():
             return mxcube.CURRENTLY_MOUNTED_SAMPLE
     except:
         return {"sampleID": None}
+
     return {"sampleID": None}
 
 
@@ -205,6 +206,15 @@ def mount_sample(beamline_setup_hwobj,
 
 def mount_sample_clean_up(sample):
     try:
+        sid = get_current_sample().get("sampleID", False)
+        current_queue = qutils.queue_to_dict()
+
+        # We remove the current sample from the queue, if we are moving from
+        # one sample to another and the current sample is in the queue
+        if sid and current_queue[sid]:
+            node_id = current_queue[sid]["queueID"]
+            qutils.set_enabled_entry(node_id, False)
+
         msg = '[SC] mounting %s (%r)' % (sample['location'], sample['sampleID'])
         logging.getLogger('HWR').info(msg)
 
