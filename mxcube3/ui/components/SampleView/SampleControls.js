@@ -3,6 +3,7 @@ import React from 'react';
 import { OverlayTrigger, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import 'fabric';
 const fabric = window.fabric;
+import config from 'guiConfig';
 
 export default class SampleControls extends React.Component {
 
@@ -172,6 +173,7 @@ export default class SampleControls extends React.Component {
           />
           <span className="sample-controll-label">3-click Centring</span>
           </li>
+          {config.focusControlOnCanvas ?
           <li>
             <OverlayTrigger trigger="click" rootClose placement="bottom"
               overlay={(
@@ -199,7 +201,7 @@ export default class SampleControls extends React.Component {
               />
             </OverlayTrigger>
             <span className="sample-controll-label">Focus</span>
-          </li>
+          </li> : null}
           <OverlayTrigger trigger="click" rootClose placement="bottom"
             overlay={(
               <span className="slider-overlay">
