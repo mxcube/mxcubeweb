@@ -1,6 +1,6 @@
 # MXCuBE 3 (web)
 
-MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), since then it has been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of mxCuBE with the following partners:
+MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), since then it has been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
 
 * ESRF
 * [Soleil](http://www.synchrotron-soleil.fr/)
