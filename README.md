@@ -35,7 +35,7 @@ For the web development we are using the branch 2.1, as well as a set of Hardwar
 
 ### Installation and testing
 
-Follow the instructions [here](https://github.com/mxcube/mxcube/blob/master/docs/source/installation_instructions_web.rst)
+Follow the instructions [here](https://github.com/mxcube/mxcube3/wiki)
 
 
 
