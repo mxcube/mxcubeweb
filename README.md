@@ -1,6 +1,6 @@
 # MXCuBE 3 (web)
 
- |
+ Data collection           | Sample grid
 :-------------------------:|:-------------------------:
 ![datacollection-view](https://user-images.githubusercontent.com/4331447/42496925-d983bf3e-8427-11e8-890e-898dda649101.png)|![samplegrid-view](https://user-images.githubusercontent.com/4331447/42496937-e8547b34-8427-11e8-9447-645e6d7f1dc5.png)
 
