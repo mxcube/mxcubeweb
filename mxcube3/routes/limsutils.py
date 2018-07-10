@@ -97,6 +97,13 @@ def synch_sample_list_with_queue(current_queue=None):
             if data.get("proteinAcronym", ""):
                 sample.pop("proteinAcronym")
 
+            # defaultSubDir and prefix are derived from proteinAcronym
+            # and/or sampleName so make sure that those are removed from
+            # queue sample so that they can be updated if changed.
+            if data.get("proteinAcronym", "") or data.get("sampleName", ""):
+                sample.pop("defaultPrefix")
+                sample.pop("defaultSubDir")
+
             sample_list_update_sample(loc, sample)
 
 
