@@ -1,5 +1,5 @@
 # MXCuBE 3
-![mx3](http://mxcube.github.io/mxcube/img/mxcube_logo20.png)
+<div style="text-align:center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" /></div>
 
 MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
 
