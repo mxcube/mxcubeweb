@@ -47,6 +47,7 @@ def get_sample_list():
 
         if sample_data["state"] == qutils.SAMPLE_MOUNTED:
             set_current_sample(sample_data)
+            qutils.queue_add_item([mxcube.CURRENTLY_MOUNTED_SAMPLE])
 
     # sort by location, using coords tuple
     order.sort()
@@ -83,7 +84,7 @@ def set_current_sample(sample):
         mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
     except:
         mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
-	
+
     logging.getLogger('HWR').info('[SC] Setting currenly mounted sample to %s' %sample)
 
     from signals import set_current_sample
@@ -92,7 +93,7 @@ def set_current_sample(sample):
 
 def get_current_sample():
     current_queue = qutils.queue_to_dict()
-    
+
     logging.getLogger('HWR').info('[SC] Getting currenly mounted sample %s' %mxcube.CURRENTLY_MOUNTED_SAMPLE)
     try:
         if mxcube.CURRENTLY_MOUNTED_SAMPLE and \
