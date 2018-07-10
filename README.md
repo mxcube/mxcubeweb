@@ -1,5 +1,5 @@
 # MXCuBE 3 (web)
-MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), since then it has been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
+MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
 
 * ESRF
 * [Soleil](http://www.synchrotron-soleil.fr/)
@@ -23,15 +23,9 @@ Latest information about the MXCuBE project can be found in the
 
 ### Technologies in use
 
-For the backend we are using Python-flask as the microwebframework, with the SocketIO library for handling internal messages of the Hardware Objects (see below). The backend provides a Rest like API.
+The backend is built on a Python-flask micro-framework, a library called SocketIO is further used to provide a bi-directional communication channel between backend and client. The backend exposes a REST API to the client.
 
-And for the client interface a react based development, configured through webpack for an easy developemnt. Among others, we are also using socket-io and  bootstrap.
-
-### HardwareObjects
-
-As the Qt version, the Hardware objects are self-contained pieces of software code with links to the underlying instrumentation control software. Their purpose is to provide a way for an application to interact with an instrument (e.g. sample changer) or motor (e.g. monochromator rotation axis). It is common for one hardware object to interact with more than one piece of underlying control software in order to implement a workflow which uses multiple hardware components or procedures. There are methods for creating hardware objects which are configured using eXtensible Markup Language (XML) files loaded through a server. Only one instance of a hardware object runs for a given piece of instrumentation and this instance is available to handle requests made by other hardware objects or bricks. A hardware object provides a Python application programming interface (API) and handles asynchronous communication between other hardware objects by emitting signals.
-
-For the web development we are using the branch 2.1, as well as a set of HardwareObject mockups so no real hardware is needed, [repository](https://github.com/mxcube/HardwareObjects).
+The client is implemented in ECMAScript6 and HTML5. React, Boostrap and FabricJS are the main libraries used for the UI development
 
 ### Installation and testing
 
