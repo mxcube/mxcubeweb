@@ -13,7 +13,7 @@ MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromole
 
 Version 3 is developed as a web application and runs in any recent browser. The application is further built using standard web technologies and does not require any third party plugins to be installed in order to function. 
 
-The underlaying beamline control layer is implemented using Hardware Objects. MXCuBE3 uses Hardware Objects 2.2 which is compatable with both the older Qt3 application and the new Web application. The original project is based on Qt (Qt3 initially but moving to Qt4), see the [main repository](https://github.com/mxcube/mxcube). 
+The underlaying beamline control layer is implemented using Hardware Objects. MXCuBE3 uses [Hardware Objects 2.2](https://github.com/mxcube/HardwareRepository/tree/2.2) which is compatable with both the older Qt3 application and the new Web application. The original project is based on Qt (Qt3 initially but moving to Qt4), see the [main repository](https://github.com/mxcube/mxcube). 
 
 Latest information about the MXCuBE project can be found in the
 [project webpage](http://mxcube.github.io/mxcube/).
