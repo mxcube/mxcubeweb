@@ -311,7 +311,7 @@ def get_default_prefix(sample_data, generic_name):
     if isinstance(sample_data, dict):
         sample = qmo.Sample()
         sample.code = sample_data.get("code", "")
-        sample.name = sample_data.get("sampleName", "")
+        sample.name = sample_data.get("sampleName", "").replace(':', '-')
         sample.location = sample_data.get("location", "").split(':')
         sample.lims_id = sample_data.get("limsID", -1)
         sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
@@ -336,7 +336,7 @@ def get_default_subdir(sample_data):
     else:
         subdir = "%s/" % sample_name
 
-    return subdir
+    return subdir.replace(':', '-')
 
 
 def get_dc_link(col_id):
