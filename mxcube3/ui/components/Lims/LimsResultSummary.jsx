@@ -1,50 +1,45 @@
 import React from 'react';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
-import { LimsResultSummary } from '../Lims/LimsResultSummary';
+import fetch from 'isomorphic-fetch';
 
-import './SampleGrid.css';
-import { TASK_COLLECTED,
-         TASK_COLLECT_FAILED,
-         TASK_COLLECT_WARNING,
-         TASK_RUNNING,
-         isUnCollected } from '../../constants';
+import { isUnCollected } from '../../constants';
 
 import loader from '../../img/busy-indicator.gif';
 
-export class TaskItem extends React.Component {
+export class LimsResultSummary extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.taskItemOnClick = this.taskItemOnClick.bind(this);
-    this.deleteButtonOnClick = this.deleteButtonOnClick.bind(this);
-
-    this.tagName = this.tagName.bind(this);
-    this.summary = this.summary.bind(this);
-    this.title = this.title.bind(this);
-    this.stateClass = this.stateClass.bind(this);
-    this.result = this.result.bind(this);
+  componentDidUpdate() {
+    this.getResults(this.props.taskData);
   }
 
-  tagName() {
-    const type = this.props.taskData.type;
-    let res = 'DC';
+  getResults(taskData) {
+    const task = this.props.taskData;
 
-    if (type === 'DataCollection') {
-      res = 'DC';
-    } else if (type === 'Characterisation') {
-      res = 'C';
-    } else if (type === 'Workflow') {
-      res = 'AS';
-    } else if (type === 'XRFScan') {
-      res = 'XRF';
-    } else if (type === 'EnergyScan') {
-      res = 'ESCAN';
+    if (!isUnCollected(task) && task.limsResultData) {
+      const resultContList = document.getElementsByClassName('result-container');
+
+      fetch('mxcube/api/v0.1/lims/results', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(taskData)
+      }).then((response) => {
+        if (response.status >= 400) {
+          return false;
+        }
+
+        return response.json();
+      }).then((data) => {
+        for (let i = 0; i < resultContList.length; i++) {
+          resultContList[i].innerHTML = data.result;
+        }
+      });
     }
-
-    return res;
   }
 
-  summary() {
+  taskSummary() {
     const task = this.props.taskData;
     let filePath = this.props.taskData.parameters.fullPath;
     return (
@@ -77,7 +72,7 @@ export class TaskItem extends React.Component {
    );
   }
 
-  result() {
+  limsResult() {
     const task = this.props.taskData;
     let content = (<div></div>);
     let lImageUrl = '';
@@ -168,107 +163,11 @@ export class TaskItem extends React.Component {
     return content;
   }
 
-  title() {
-    const task = this.props.taskData;
-    let taskStatus = 'To be collected';
-
-    if (task.state === TASK_RUNNING) {
-      taskStatus = 'In progress';
-    } else if (task.state === TASK_COLLECTED) {
-      taskStatus = 'Collected';
-    }
-
-    return `${task.label} (${taskStatus})`;
-  }
-
-  stateClass() {
-    const task = this.props.taskData;
-
-    let cls = 'btn-primary';
-
-    if (task.state === TASK_RUNNING) {
-      cls = 'btn-warning';
-    } if (task.state === TASK_COLLECT_FAILED) {
-      cls = 'btn-danger';
-    } if (task.state === TASK_COLLECT_WARNING) {
-      cls = 'btn-danger';
-    } else if (task.state === TASK_COLLECTED) {
-      cls = 'btn-success';
-    }
-
-    return cls;
-  }
-
-  popoverPosition() {
-    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    let result = 'bottom';
-
-    if (this.refs.sampleItem) {
-      if (parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
-        result = 'bottom';
-      } else {
-        result = 'top';
-      }
-    }
-
-    return result;
-  }
-
-
-  taskItemOnClick() {
-    const task = this.props.taskData;
-    this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', task);
-  }
-
-
-  deleteButtonOnClick(e) {
-    if (this.props.deleteButtonOnClick) {
-      this.props.deleteButtonOnClick(e, this.props.taskData.sampleID, this.props.taskIndex);
-    }
-  }
-
-
   render() {
-    const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
-    const task = this.props.taskData;
-
     return (
-      <div key={this.props.taskIndex} className="sample-grid-task-item">
-        <OverlayTrigger
-          trigger={['hover']}
-          rootClose="true"
-          ref="taskSummaryPopoverTrigger"
-          placement={this.popoverPosition()}
-          onEnter={() => {this.props.getLimsDataForTask(task.queueID);}}
-          overlay={(
-            <Popover
-              id="taskSummaryPopover"
-              style={{ minWidth: '700px', paddingBottom: '1em' }}
-              title={(<b>{this.title()}</b>)}
-            >
-              <LimsResultSummary taskData={this.props.taskData} />
-            </Popover>) }
-        >
-          <span
-            className={`${this.stateClass()} label`}
-            style={style}
-            onClick={this.taskItemOnClick}
-          >
-            {this.tagName()}
-            {
-             task.state !== TASK_COLLECTED ?
-             (<i className="fa fa-times" onClick={this.deleteButtonOnClick} />) :
-             (<span />)
-            }
-          </span>
-        </OverlayTrigger>
+      <div className="lims-result-summary">
+        <div className="result-container"></div>
       </div>
     );
   }
 }
-
-
-TaskItem.defaultProps = {
-  taskData: {},
-  taskIndex: '',
-};

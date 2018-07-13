@@ -23,6 +23,9 @@ import { unloadSample } from '../actions/sampleChanger';
 
 import { showTaskForm } from '../actions/taskForm';
 
+import { showDialog } from '../actions/general';
+
+
 import { SampleGridItem,
          SAMPLE_ITEM_WIDTH,
          SAMPLE_ITEM_HEIGHT,
@@ -261,6 +264,7 @@ class SampleGridContainer extends React.Component {
                 <TaskItem
                   key={i}
                   taskItemOnClick={this.taskItemOnClickHandler}
+                  showDialog={this.props.showDialog}
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
@@ -832,6 +836,7 @@ function mapDispatchToProps(dispatch) {
     unloadSample: bindActionCreators(unloadSample, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
+    showDialog: bindActionCreators(showDialog, dispatch)
   };
 }
 

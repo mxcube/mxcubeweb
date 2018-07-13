@@ -230,6 +230,7 @@ export default class CurrentTree extends React.Component {
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
+                  showDialog={this.props.showDialog}
                 />);
             }
 

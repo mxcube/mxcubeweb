@@ -14,8 +14,11 @@ import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
 import { sendChatMessage, getAllChatMessages,
-         resetChatMessageCount } from '../actions/remoteAccess.js';
+         resetChatMessageCount } from '../actions/remoteAccess';
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
+import { showDialog } from '../actions/general';
+import { LimsResultDialog } from './Lims/LimsResultDialog';
+
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
 
@@ -86,6 +89,11 @@ class Main extends React.Component {
         <PassControlDialog />
         <ConfirmCollectDialog />
         <WorkflowParametersDialog />
+        <LimsResultDialog
+          show={this.props.general.dialogType === 'LIMS_RESULT_DIALOG'}
+          taskData={this.props.general.dialogData}
+          onHide={() => this.props.showDialog(false)}
+        />
         <MXNavbarContainer location={this.props.location} />
         <Grid fluid>
             {this.props.children}
@@ -107,13 +115,15 @@ class Main extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    remoteAccess: state.remoteAccess
+    remoteAccess: state.remoteAccess,
+    general: state.general
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    resetChatMessageCount: bindActionCreators(resetChatMessageCount, dispatch)
+    resetChatMessageCount: bindActionCreators(resetChatMessageCount, dispatch),
+    showDialog: bindActionCreators(showDialog, dispatch)
   };
 }
 

@@ -1,0 +1,91 @@
+<div>
+  <div>
+    <div style="margin-bottom: 0.5em">
+      <b>Path: {{ data.parameters.fullPath }}</b>
+    </div>
+    <div style="margin-bottom: 0.5em">
+      <b>Status: {{ data.limsResultData.runStatus }}</b>
+    </div>
+    <hr/>
+    <div style="margin-bottom: 0.5em">
+      <h4>Parameters:</h4>
+    </div>
+    <table style="border-spacing: 2em 0; border-collapse: separate">
+      <tr>
+        <td style="color:#585858"><b>Oscillation range:</b></td>
+        <td><b>{{ "%0.2f" | format(data.parameters.osc_range | float) }}&deg;</b></td>
+        <td style="color:#585858"><b>First image</b></td>
+        <td><b>{{ data.parameters.first_image }}</b></td>
+      </tr>
+      <tr>
+        <td style="color:#585858"><b>Oscillation start:</b></td>
+        <td><b>{{ "%0.2f" | format(data.parameters.osc_start | float) }} &deg;</b></td>
+        <td style="color:#585858"><b>Number of images</b></td>
+        <td><b>{{ data.parameters.num_images }}</b></td>
+      </tr>
+      <tr>
+        <td style="color:#585858"><b>Exposure time:</b></td>
+        <td><b>{{ "%0.3f" | format(data.parameters.exp_time | float) }}s</b></td>
+        <td style="color:#585858"><b>Transmission</b></td>
+        <td><b>{{ "%0.2f" | format(data.parameters.transmission | float) }} %</b></td>
+      </tr>
+      <tr>
+        <td style="color:#585858"><b>Energy:</b></td>
+        <td><b>{{ "%0.3f" | format(data.parameters.energy | float) }} KeV</b></td>
+        <td style="color:#585858"><b>Wavelength:</b></td>
+        <td><b>{{ "%0.4f" | format(data.limsResultData.wavelength | float) }} Å</b></td>
+      </tr>
+      <tr>
+        <td style="color:#585858"><b>Resolution:</b></td>
+        <td><b>{{ "%0.3f" | format(data.parameters.resolution | float) }} Å</b></td>
+      </tr>
+    </table>
+  </div>
+  <hr/>
+  <div  style="margin-bottom: 0.5em">
+    <h4>Collect summary:</h4>
+    <table style="border-spacing: 2em 0; border-collapse: separate">
+      <tr>
+        <td style="color:#585858"><b>Start time:</b></td>
+        <td><b>{{ data.limsResultData.startTime }}</b></td>
+        <td style="color:#585858"><b>End time</b></td>
+        <td><b>{{ data.limsResultData.endTime }}</b></td>
+      </tr>
+      <tr>
+        <td style="color:#585858"><b>Flux at start:</b></td>
+        <td><b>{{ data.limsResultData.flux / 10**12}} e+12 ph/s </b></td>
+        <td style="color:#585858"><b>Flux at end</b></td>
+        <td><b>{{ data.limsResultData.flux_end / 10**12}} e+12 ph/s</b></td>
+      </tr>
+      <tr>
+        <td style="color:#585858"><b>Resolution at collect</b></td>
+        <td><b>{{ "%0.3f" | format(data.limsResultData.resolution | float) }} Å</b></td>
+        <td style="color:#585858"><b>Resolution at corner:</b></td>
+        <td><b>{{ "%0.3f" | format(data.limsResultData.resolutionAtCorner | float) }} Å</b></td>
+      </tr>
+    </table>
+  </div>
+  <div class="row" style="padding-top: 0.5em; margin-bottom: 0.5em"} >
+    <span class="col-sm-4">
+      <b>Quality Indictor: </b>
+      <img ref="fimage" alt="Quality Indicator"
+        src={{ "/mxcube/api/v0.1/lims/quality_indicator_plot/" ~ data.limsResultData.dataCollectionId }}
+        width="90%"
+      />
+    </span>
+    <span class="col-sm-4">
+      <b>First image: </b>
+      <img ref="fimage" alt="First"
+        src={{ "/mxcube/api/v0.1/lims/dc/image/" ~ data.limsResultData.firstImageId }}
+        width="90%"
+      />
+    </span>
+    <span class="col-sm-4">
+      <b>Last image: </b>
+      <img ref="limage" alt="Last"
+        src={{ "/mxcube/api/v0.1/lims/dc/image/" ~ data.limsResultData.lastImageId }}
+        width="90%"
+      />
+    </span>
+  </div>
+</div>

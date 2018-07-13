@@ -2,7 +2,7 @@
 import StringIO
 import logging
 
-from flask import jsonify, Response, send_file, request
+from flask import jsonify, Response, send_file, request, render_template
 from mxcube3 import app as mxcube
 from . import limsutils
 from . import qutils
@@ -48,6 +48,15 @@ def get_dc_thumbnail(image_id):
     return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
+@mxcube.route("/mxcube/api/v0.1/lims/dc/image/<image_id>", methods=['GET'])
+@mxcube.restrict
+def get_dc_image(image_id):
+    fname, data = mxcube.rest_lims.get_dc_image(image_id)
+    data = StringIO.StringIO(data)
+    data.seek(0)
+    return send_file(data, attachment_filename=fname, as_attachment=True)
+
+
 @mxcube.route("/mxcube/api/v0.1/lims/quality_indicator_plot/<dc_id>", methods=['GET'])
 @mxcube.restrict
 def get_quality_indicator_plot(dc_id):
@@ -60,7 +69,7 @@ def get_quality_indicator_plot(dc_id):
 @mxcube.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=['GET'])
 @mxcube.restrict
 def get_dc(dc_id):
-    data = mxcube.rest_lims.get_dc_(dc_id)
+    data = mxcube.rest_lims.get_dc(dc_id)
     return jsonify(data)
 
 
@@ -87,3 +96,20 @@ def get_proposal():
     proposal_info = limsutils.get_proposal_info(mxcube.session.proposal_code)
 
     return jsonify({"Proposal": proposal_info})
+
+
+
+@mxcube.route("/mxcube/api/v0.1/lims/results", methods=['POST'])
+@mxcube.restrict
+def get_results():
+    """
+    """
+    data = request.get_json()
+    result = ''
+
+    if data:
+        result = render_template("lims-result.html", data=data)
+
+    return jsonify({"result": result})
+
+
