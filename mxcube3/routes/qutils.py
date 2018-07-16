@@ -331,7 +331,7 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     return res
 
 
-def _handle_wf(sample_node, node):
+def _handle_wf(sample_node, node, include_lims_data):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
     parameters = node.parameters
@@ -350,9 +350,15 @@ def _handle_wf(sample_node, node):
     parameters['fullPath'] = os.path.join(parameters['path'],
                                           parameters['fileName'])
 
-    # Always add link to data, (no request made)
     limsres = {}
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, 'null')
+
+    # Only add data from lims if explicitly asked for, since
+    # its a operation that can take some time.
+    if include_lims_data and mxcube.rest_lims:
+        limsres = mxcube.rest_lims.get_dc(lims_id)
+
+    # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
     res = {"label": parameters['label'],
@@ -380,7 +386,7 @@ def _handle_xrf(sample_node, node):
 
     parameters['subdir'] = os.path.join(*parameters["path"].\
         split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
-    
+
     pt = node.path_template
 
     parameters['fileName'] = pt.get_image_file_name().\
@@ -415,7 +421,7 @@ def _handle_energy_scan(sample_node, node):
 
     parameters['subdir'] = os.path.join(*parameters["path"].\
         split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
-    
+
     pt = node.path_template
 
     parameters['fileName'] = pt.get_image_file_name().\
@@ -438,7 +444,7 @@ def _handle_energy_scan(sample_node, node):
     return res
 
 
-def _handle_char(sample_node, node):
+def _handle_char(sample_node, node, include_lims_data=False):
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
     refp = _handle_dc(sample_node, node.reference_image_collection)['parameters']
@@ -448,9 +454,15 @@ def _handle_char(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
-    # Always add link to data, (no request made)
     limsres = {}
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(queueID, 'null')
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, 'null')
+
+    # Only add data from lims if explicitly asked for, since
+    # its a operation that can take some time.
+    if include_lims_data and mxcube.rest_lims:
+        limsres = mxcube.rest_lims.get_dc(lims_id)
+
+    # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
     originID, task = _handle_diffraction_plan(node, sample_node)
@@ -590,13 +602,13 @@ def queue_to_dict_rec(node, include_lims_data=False):
 
         elif isinstance(node, qmo.Characterisation):
             sample_node = node.get_parent().get_parent()
-            result.append(_handle_char(sample_node, node))
+            result.append(_handle_char(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.DataCollection):
             sample_node = node_index(node)['sample_node']
             result.append(_handle_dc(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.Workflow):
             sample_node = node.get_parent().get_parent()
-            result.append(_handle_wf(sample_node, node))
+            result.append(_handle_wf(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.XRFSpectrum):
             sample_node = node.get_parent().get_parent()
             result.append(_handle_xrf(sample_node, node))

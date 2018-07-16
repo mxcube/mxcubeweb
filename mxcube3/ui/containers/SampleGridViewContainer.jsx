@@ -542,7 +542,7 @@ class SampleGridViewContainer extends React.Component {
                           checked={this.getFilterOptionValue('limsSamples')}
                           onChange={this.sampleGridFilter}
                         >
-                          LIMS Samples
+                          ISPyB Samples
                         </Checkbox>
                       </Col>
                       <Col xs={6}>

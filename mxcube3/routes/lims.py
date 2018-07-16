@@ -6,6 +6,7 @@ from flask import jsonify, Response, send_file, request, render_template
 from mxcube3 import app as mxcube
 from . import limsutils
 from . import qutils
+from . import signals
 
 @mxcube.route("/mxcube/api/v0.1/lims/samples/<proposal_id>", methods=['GET'])
 @mxcube.restrict
@@ -31,11 +32,11 @@ def proposal_samples(proposal_id):
                 cell = int(round((basket+0.5)/3.0))
                 puck = basket-3*(cell-1)
                 sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
-            
+
         lims_location = sample_info["containerSampleChangerLocation"] + ":%02d" % int(sample_info["sampleLocation"])
         sample_info["lims_location"] = lims_location
         limsutils.sample_list_sync_sample(sample_info)
-       
+
     return jsonify(limsutils.sample_list_get())
 
 
@@ -104,12 +105,17 @@ def get_proposal():
 def get_results():
     """
     """
-    data = request.get_json()
-    result = ''
+qid = request.get_json().get("qid", None)
+    r =  jsonify({"result": {}})
 
-    if data:
-        result = render_template("lims-result.html", data=data)
+    if qid:
+        model, entry = qutils.get_entry(qid)
+        data = qutils.queue_to_dict([model], True)
+        signals.update_task_result(entry)
 
-    return jsonify({"result": result})
+        try:
+            r = jsonify({"result": render_template("lims-result.html", data=data)})
+        except:
+            r =  Response(status=400)
 
-
+    return r

@@ -17,7 +17,7 @@ import { toggleMovableAction,
          selectSamplesAction,
          sendSetSampleOrderAction } from '../actions/sampleGrid';
 
-import { deleteTask, sendMountSample, getLimsDataForTask } from '../actions/queue';
+import { deleteTask, sendMountSample } from '../actions/queue';
 
 import { unloadSample } from '../actions/sampleChanger';
 
@@ -268,7 +268,6 @@ class SampleGridContainer extends React.Component {
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
-                  getLimsDataForTask={getLimsDataForTask}
                 />))
               }
             </SampleGridItem>

@@ -28,7 +28,7 @@ export class LimsResultDialog extends React.Component {
 
     return (
       <span>
-        <a href={link} target="_blank">More details</a>
+        <a href={link} target="_blank">View results in ISPyB</a>
       </span>
     );
   }

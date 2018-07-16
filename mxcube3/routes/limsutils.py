@@ -259,7 +259,7 @@ def get_proposal_info(proposal):
     """
     from mxcube3.routes.loginutils import users
 
-    for user in users().itervalues():   
+    for user in users().itervalues():
         logging.getLogger('HWR').info("[LIMS] Serching for proposal: %s" % proposal)
         for prop in user["limsData"].get('proposalList', []):
             _p = "%s%s" % (prop.get('Proposal').get('code', '').lower(),
@@ -279,7 +279,7 @@ def select_proposal(proposal):
     if mxcube.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
         if hasattr(mxcube.session, 'set_in_commissioning'):
             mxcube.session.set_in_commissioning(proposal_info)
-    	    logging.getLogger('HWR').info("[LIMS] Commissioning proposal flag set.")
+            logging.getLogger('HWR').info("[LIMS] Commissioning proposal flag set.")
 
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
@@ -301,7 +301,7 @@ def select_proposal(proposal):
         if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
             ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
             mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
-                
+
         return True
     else:
         return False

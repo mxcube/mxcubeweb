@@ -308,19 +308,6 @@ def queue_set_sample_order():
     return Response(status=200)
 
 
-@mxcube.route("/mxcube/api/v0.1/queue/get_lims_data_for_task", methods=['POST'])
-@mxcube.restrict
-def get_lims_data_for_task():
-    qid = request.get_json().get("qid", "")
-
-    if qid:
-        model, entry = qutils.get_entry(qid)
-        if entry:
-            signals.update_task_result(entry)
-
-    return Response(status=200)
-
-
 @mxcube.route("/mxcube/api/v0.1/queue/<sample_id>", methods=['PUT'])
 @mxcube.restrict
 def update_sample(sample_id):

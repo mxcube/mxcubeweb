@@ -239,7 +239,6 @@ export class TaskItem extends React.Component {
           rootClose="true"
           ref="taskSummaryPopoverTrigger"
           placement={this.popoverPosition()}
-          onEnter={() => {this.props.getLimsDataForTask(task.queueID);}}
           overlay={(
             <Popover
               id="taskSummaryPopover"

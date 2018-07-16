@@ -7,14 +7,14 @@ import loader from '../../img/busy-indicator.gif';
 
 export class LimsResultSummary extends React.Component {
 
-  componentDidUpdate() {
+  componentDidMount() {
     this.getResults(this.props.taskData);
   }
 
   getResults(taskData) {
     const task = this.props.taskData;
 
-    if (!isUnCollected(task) && task.limsResultData) {
+    if (!isUnCollected(task)) {
       const resultContList = document.getElementsByClassName('result-container');
 
       fetch('mxcube/api/v0.1/lims/results', {
@@ -24,7 +24,7 @@ export class LimsResultSummary extends React.Component {
           Accept: 'application/json',
           'Content-type': 'application/json'
         },
-        body: JSON.stringify(taskData)
+        body: JSON.stringify({ qid: taskData.queueID })
       }).then((response) => {
         if (response.status >= 400) {
           return false;
@@ -72,100 +72,12 @@ export class LimsResultSummary extends React.Component {
    );
   }
 
-  limsResult() {
-    const task = this.props.taskData;
-    let content = (<div></div>);
-    let lImageUrl = '';
-    let fImageUrl = '';
-    let qIndUrl = '';
-
-    const r = task.limsResultData;
-
-    if (!isUnCollected(task) && task.limsResultData &&
-        Object.keys(task.limsResultData).length > 0) {
-      if (task.limsResultData.firstImageId) {
-        fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
-        fImageUrl += task.limsResultData.firstImageId.toString();
-      }
-
-      if (task.limsResultData.lastImageId) {
-        lImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
-        lImageUrl += task.limsResultData.lastImageId.toString();
-      }
-
-      if (task.limsResultData.dataCollectionId) {
-        qIndUrl = '/mxcube/api/v0.1/lims/quality_indicator_plot/';
-        qIndUrl += task.limsResultData.dataCollectionId.toString();
-      }
-
-      const sFlux = parseInt(r.flux, 10) / Math.pow(10, 9);
-      const eFlux = parseInt(r.flux_end, 10) / Math.pow(10, 9);
-
-      content = (
-        <div>
-          <div
-            className="row"
-            style={ { paddingLeft: '1em', paddingTop: '1em', paddingBottom: '0.2em' } }
-          >
-            <b>Status: {r.runStatus}</b>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-3">Resolution at collect</span>
-            <span className="col-sm-3">{`${r.resolution || '-'} Å`}</span>
-            <span className="col-sm-3">Resolution at corner:</span>
-            <span className="col-sm-3">{`${r.resolutionAtCorner || '-'} Å`}</span>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-3">Wavelength</span>
-            <span className="col-sm-3">{`${r.wavelength || '-'} Å`}</span>
-            <span className="col-sm-3"> </span>
-            <span className="col-sm-3"> </span>
-          </div>
-
-          <div className="row" style={ { paddingTop: '1em' } }>
-            <span className="col-sm-2">Start time:</span>
-            <span className="col-sm-4">{r.startTime || '-'}</span>
-            <span className="col-sm-2">End time</span>
-            <span className="col-sm-4">{r.endTime || '-'}</span>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-2">Flux at start:</span>
-            <span className="col-sm-4">{sFlux || '-'} ph/s</span>
-            <span className="col-sm-2">Flux at end</span>
-            <span className="col-sm-4">{eFlux || '-'} ph/s</span>
-          </div>
-
-          <div className="row" style={ { paddingTop: '0.5em' } } >
-            <span className="col-sm-4">
-              <b>Quality Indictor: </b>
-              <img ref="fimage" alt="First" src={qIndUrl} width="90%" />
-            </span>
-            <span className="col-sm-4">
-              <b>First image: </b>
-              <img ref="fimage" alt="First" src={fImageUrl} width="90%" />
-            </span>
-            <span className="col-sm-4">
-              <b>Last image: </b>
-              <img ref="limage" alt="Last" src={lImageUrl} width="90%" />
-            </span>
-          </div>
-        </div>
-      );
-    } else if (!isUnCollected(task)) {
-      content = (<span>
-                   <img src={loader} role="presentation" />  Fetching data, please wait
-                 </span>);
-    }
-
-    return content;
-  }
-
   render() {
+    const task = this.props.taskData;
+
     return (
       <div className="lims-result-summary">
+        { isUnCollected(task) ? this.taskSummary() : null }
         <div className="result-container"></div>
       </div>
     );
