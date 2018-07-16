@@ -203,16 +203,16 @@ class ServerIO {
     this.hwrSocket.on('sc', (record) => {
       if (record.signal === 'operatingSampleChanger') {
         this.dispatch(setLoading(true, 'Sample changer in operation',
-                                 record.message, false));
+				 record.message, true, () => (this.dispatch(sendStopQueue()))));
       } else if ((record.signal === 'loadingSample' || record.signal === 'loadedSample')) {
         this.dispatch(setLoading(true, `Loading sample ${record.location}`,
-                                 record.message, false));
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
       } else if (record.signal === 'unLoadingSample' || record.signal === 'unLoadedSample') {
         this.dispatch(setLoading(true, `Unloading sample ${record.location}`,
-                                 record.message, false));
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
       } else if (record.signal === 'loadReady') {
         this.dispatch(setLoading(false, 'SC Ready',
-                                 record.message, false));
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
       }
     });
 
