@@ -208,6 +208,7 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   addTask={this.props.addTask}
                   shapes={this.props.shapes}
+                  showDialog={this.props.showDialog}
                 />);
             } else {
               task =
@@ -230,6 +231,7 @@ export default class CurrentTree extends React.Component {
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
+                  showDialog={this.props.showDialog}
                 />);
             }
 

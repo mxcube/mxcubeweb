@@ -736,15 +736,3 @@ export function sendSetGroupFolder(path) {
     });
   };
 }
-
-export function getLimsDataForTask(qid) {
-  fetch('mxcube/api/v0.1/queue/get_lims_data_for_task', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json'
-    },
-    body: JSON.stringify({ qid })
-  });
-}

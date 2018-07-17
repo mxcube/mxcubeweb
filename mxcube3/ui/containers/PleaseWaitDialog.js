@@ -59,7 +59,7 @@ export class PleaseWaitDialog extends React.Component {
   renderFooter() {
     let footer = (
       <Modal.Footer>
-        <Button onClick={this.getHideFun()}>OK</Button>
+        <Button onClick={this.getHideFun()}>Hide</Button>
       </Modal.Footer>
     );
 

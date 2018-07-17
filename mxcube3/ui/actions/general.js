@@ -52,10 +52,9 @@ export function showErrorPanel(show, message = '') {
   };
 }
 
-
-export function showDialog(show, title = '', message = '') {
+export function showDialog(show, t, title = '', data = null) {
   return {
-    type: 'SHOW_DIALOG', show, title, message
+    type: 'SHOW_DIALOG', show, t, title, data
   };
 }
 

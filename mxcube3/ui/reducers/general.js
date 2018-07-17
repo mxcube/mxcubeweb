@@ -5,8 +5,9 @@ const initialState = {
   loading: false,
   showErrorPanel: false,
   errorMessage: '',
-  dialogMessage: '',
+  dialogData: '',
   dialogTitle: '',
+  dialogType: '',
   showDialog: false,
   userMessages: [],
   showConnectionLostDialog: false,
@@ -34,8 +35,9 @@ export default (state = initialState, action) => {
         return {
           ...state,
           showDialog: action.show,
+          dialogType: action.t,
           dialogTitle: action.title,
-          dialogMessage: action.message
+          dialogData: action.data
         };
       }
     case 'ADD_USER_MESSAGE':

@@ -94,7 +94,6 @@ def login():
         # sample to the queue
         if sample:
             scutils.get_sample_list()
-            qutils.queue_add_item([mxcube.CURRENTLY_MOUNTED_SAMPLE])
 
         # For the moment not loading queue from persistent storage (redis),
         # uncomment to enable loading.

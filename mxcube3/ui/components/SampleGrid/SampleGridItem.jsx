@@ -337,8 +337,8 @@ export class SampleGridItem extends React.Component {
               {this.sampleInformation()}
             </Popover>)}
         >
-          <a href={limsLink} ref="pacronym" className="protein-acronym" data-type="text"
-            data-pk="1" data-url="/post" data-title="Enter protein acronym"
+          <a href={limsLink} target="_blank" ref="pacronym" className="protein-acronym"
+            data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym"
           >
             {this.sampleDisplayName()}
           </a>

@@ -80,6 +80,7 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keydown', this.keyDown, false);
     document.addEventListener('keyup', this.keyUp, false);
 
+    window.initJSMpeg = this.initJSMpeg;
     this.initJSMpeg();
   }
 
@@ -110,6 +111,13 @@ export default class SampleImage extends React.Component {
       this.canvas.dispose();
     }
 
+    if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) {
+      if (this.player) {
+        this.player.destroy();
+        this.player = null;
+      }
+    }
+
     this.canvas.off('mouse:down', this.leftClick);
     this.canvas.off('mouse:move', this.onMouseMove);
     this.canvas.off('mouse:up', this.onMouseUp);
@@ -124,6 +132,8 @@ export default class SampleImage extends React.Component {
     imageOverlay.removeEventListener('contextmenu', this.rightClick);
     imageOverlay.removeEventListener('wheel', this.wheel);
     imageOverlay.removeEventListener('dblclick', this.goToBeam);
+
+    window.initJSMpeg = null;
   }
 
   onMouseMove(options) {

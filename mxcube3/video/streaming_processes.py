@@ -41,6 +41,7 @@ def start(device, scale):
     FNULL = open(os.devnull, 'w')
     ffmpeg = subprocess.Popen(["ffmpeg",
                                "-f", "v4l2",
+                               "-framerate", "15",
                                "-i", device,                              
                                "-vf", scale,
                                "-f", "mpegts",

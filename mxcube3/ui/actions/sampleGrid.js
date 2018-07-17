@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
+import { setQueue } from './queue';
 
 
 export function updateSampleList(sampleList, order) {
@@ -88,6 +89,7 @@ export function sendGetSampleList() {
                           const sampleOrder = res.sampleOrder;
 
                           dispatch(updateSampleList(sampleList, sampleOrder));
+                          dispatch(setQueue(res));
                           dispatch(setLoading(false));
                         }, () => {
                           dispatch(setLoading(false));
@@ -107,6 +109,7 @@ export function sendSyncSamples(proposalId) {
               const sampleOrder = json.sampleOrder;
 
               dispatch(updateSampleList(sampleList, sampleOrder));
+              dispatch(setQueue(json));
               dispatch(setLoading(false));
             }, () => {
               dispatch(setLoading(false));

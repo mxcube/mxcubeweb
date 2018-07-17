@@ -97,6 +97,13 @@ def synch_sample_list_with_queue(current_queue=None):
             if data.get("proteinAcronym", ""):
                 sample.pop("proteinAcronym")
 
+            # defaultSubDir and prefix are derived from proteinAcronym
+            # and/or sampleName so make sure that those are removed from
+            # queue sample so that they can be updated if changed.
+            if data.get("proteinAcronym", "") or data.get("sampleName", ""):
+                sample.pop("defaultPrefix")
+                sample.pop("defaultSubDir")
+
             sample_list_update_sample(loc, sample)
 
 
@@ -120,13 +127,15 @@ def apply_template(params, sample_model, path_template):
             params['subdir'] = params['subdir'].format(NAME=sample_model.get_name(),
                 ACRONYM=sample_model.crystals[0].protein_acronym)
         else:
-              params['subdir'] = sample_model.get_name()
+              stripped = params["subdir"][0: params["subdir"].find('{')]
+              params['subdir'] = stripped + sample_model.get_name()
 
+        # The template was only applied partially if subdir ends with '-'
+        # probably because either acronym or protein name is null in LIMS
         if params['subdir'].endswith('-'):
             params['subdir'] = sample_model.get_name()
 
     if '{' in params.get('prefix', ''):
-        sample = sample_list_get(sample_model.loc_str)
         sample = mxcube.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
         prefix = get_default_prefix(sample, False)
         shape = params["shape"] if params["shape"] > 0 else '';
@@ -250,7 +259,7 @@ def get_proposal_info(proposal):
     """
     from mxcube3.routes.loginutils import users
 
-    for user in users().itervalues():   
+    for user in users().itervalues():
         logging.getLogger('HWR').info("[LIMS] Serching for proposal: %s" % proposal)
         for prop in user["limsData"].get('proposalList', []):
             _p = "%s%s" % (prop.get('Proposal').get('code', '').lower(),
@@ -270,7 +279,7 @@ def select_proposal(proposal):
     if mxcube.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
         if hasattr(mxcube.session, 'set_in_commissioning'):
             mxcube.session.set_in_commissioning(proposal_info)
-    	    logging.getLogger('HWR').info("[LIMS] Commissioning proposal flag set.")
+            logging.getLogger('HWR').info("[LIMS] Commissioning proposal flag set.")
 
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
@@ -292,7 +301,7 @@ def select_proposal(proposal):
         if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
             ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
             mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
-                
+
         return True
     else:
         return False
@@ -302,7 +311,7 @@ def get_default_prefix(sample_data, generic_name):
     if isinstance(sample_data, dict):
         sample = qmo.Sample()
         sample.code = sample_data.get("code", "")
-        sample.name = sample_data.get("sampleName", "")
+        sample.name = sample_data.get("sampleName", "").replace(':', '-')
         sample.location = sample_data.get("location", "").split(':')
         sample.lims_id = sample_data.get("limsID", -1)
         sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
@@ -327,7 +336,7 @@ def get_default_subdir(sample_data):
     else:
         subdir = "%s/" % sample_name
 
-    return subdir
+    return subdir.replace(':', '-')
 
 
 def get_dc_link(col_id):

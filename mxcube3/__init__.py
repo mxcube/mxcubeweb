@@ -219,7 +219,8 @@ def exception_handler(e):
 
 t0 = time.time()
 
-app = Flask(__name__,  static_url_path='')
+template_dir = os.path.join(os.path.dirname(__file__), "templates")
+app = Flask(__name__,  static_url_path='', template_folder=template_dir)
 app.debug = False
 
 app.config['SESSION_TYPE'] = "redis"

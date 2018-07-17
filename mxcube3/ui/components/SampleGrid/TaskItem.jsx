@@ -1,5 +1,6 @@
 import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGrid.css';
 import { TASK_COLLECTED,
@@ -214,15 +215,9 @@ export class TaskItem extends React.Component {
   }
 
 
-  taskItemOnClick(e) {
+  taskItemOnClick() {
     const task = this.props.taskData;
-
-    if (task.state === 0) {
-      this.props.taskItemOnClick(e, task);
-    } else {
-      const limsLink = task.limsResultData.limsTaskLink ? task.limsResultData.limsTaskLink : '';
-      window.open(limsLink);
-    }
+    this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', task);
   }
 
 
@@ -244,15 +239,13 @@ export class TaskItem extends React.Component {
           rootClose="true"
           ref="taskSummaryPopoverTrigger"
           placement={this.popoverPosition()}
-          onEnter={() => {this.props.getLimsDataForTask(task.queueID);}}
           overlay={(
             <Popover
               id="taskSummaryPopover"
               style={{ minWidth: '700px', paddingBottom: '1em' }}
               title={(<b>{this.title()}</b>)}
             >
-              {this.summary()}
-              {this.result()}
+              <LimsResultSummary taskData={this.props.taskData} />
             </Popover>) }
         >
           <span

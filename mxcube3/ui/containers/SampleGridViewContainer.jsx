@@ -542,7 +542,7 @@ class SampleGridViewContainer extends React.Component {
                           checked={this.getFilterOptionValue('limsSamples')}
                           onChange={this.sampleGridFilter}
                         >
-                          LIMS Samples
+                          ISPyB Samples
                         </Checkbox>
                       </Col>
                       <Col xs={6}>
@@ -571,7 +571,7 @@ class SampleGridViewContainer extends React.Component {
             message="This will remove all samples (and collections) from the grid,
                      are you sure you would like to continue ?"
             onOk={this.props.sendClearQueue}
-            show={this.props.confirmClearQueueDialog}
+            show={this.props.general.showConfirmClearQueueDialog}
             hide={this.props.confirmClearQueueHide}
           />
           {this.props.loading ?
@@ -711,7 +711,7 @@ function mapStateToProps(state) {
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
     sampleChanger: state.sampleChanger,
-    confirmClearQueueDialog: state.general.showConfirmClearQueueDialog
+    general: state.general
   };
 }
 

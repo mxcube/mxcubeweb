@@ -15,6 +15,19 @@ const validate = (values, props) => {
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
+  /* eslint-disable no-useless-escape */
+  const validPath = props.path.match(/^[-\w\-\/\_]+$/);
+  const validFname = props.filename.match(/^[-\w\-\#\_\[\]]+$/);
+  /* eslint-enable no-useless-escape */
+
+  if (!validFname) {
+    errors.prefix = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+  }
+
+  if (!validPath) {
+    errors.subdir = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+  }
+
   let resMin = 0;
   let resMax = 0;
 

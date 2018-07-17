@@ -16,7 +16,7 @@ const initialState = {
   pixelsPerMm: [0, 0],
   sourceScale: 1,
   motorSteps: {
-    focusStep: 0.1,
+    focusStep: 0.01,
     phiStep: 90,
     phiyStep: 0.1,
     phizStep: 0.1,

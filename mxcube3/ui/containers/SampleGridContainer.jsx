@@ -17,11 +17,14 @@ import { toggleMovableAction,
          selectSamplesAction,
          sendSetSampleOrderAction } from '../actions/sampleGrid';
 
-import { deleteTask, sendMountSample, getLimsDataForTask } from '../actions/queue';
+import { deleteTask, sendMountSample } from '../actions/queue';
 
 import { unloadSample } from '../actions/sampleChanger';
 
 import { showTaskForm } from '../actions/taskForm';
+
+import { showDialog } from '../actions/general';
+
 
 import { SampleGridItem,
          SAMPLE_ITEM_WIDTH,
@@ -261,10 +264,10 @@ class SampleGridContainer extends React.Component {
                 <TaskItem
                   key={i}
                   taskItemOnClick={this.taskItemOnClickHandler}
+                  showDialog={this.props.showDialog}
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
-                  getLimsDataForTask={getLimsDataForTask}
                 />))
               }
             </SampleGridItem>
@@ -832,6 +835,7 @@ function mapDispatchToProps(dispatch) {
     unloadSample: bindActionCreators(unloadSample, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
+    showDialog: bindActionCreators(showDialog, dispatch)
   };
 }
 

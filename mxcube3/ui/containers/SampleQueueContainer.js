@@ -9,9 +9,9 @@ import * as QueueActions from '../actions/queue';
 import * as QueueGUIActions from '../actions/queueGUI';
 import * as SampleViewActions from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
-import { DragDropContext as dragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 import { Nav, NavItem } from 'react-bootstrap';
+import { showDialog } from '../actions/general';
+
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
 import * as BeamlineActions from '../actions/beamline';
@@ -47,12 +47,11 @@ function mapDispatchToProps(dispatch) {
     queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
-    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
+    showDialog: bindActionCreators(showDialog, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch)
   };
 }
 
-
-@dragDropContext(HTML5Backend)
 @connect(mapStateToProps, mapDispatchToProps)
 export default class SampleQueueContainer extends React.Component {
 
@@ -208,6 +207,7 @@ export default class SampleQueueContainer extends React.Component {
               plotsData={this.props.plotsData}
               plotsInfo={this.props.plotsInfo}
               shapes={this.props.shapes}
+              showDialog={this.props.showDialog}
             />
             <TodoTree
               show={visibleList === 'todo'}
