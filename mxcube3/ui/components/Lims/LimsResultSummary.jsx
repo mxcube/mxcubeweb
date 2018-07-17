@@ -3,8 +3,6 @@ import fetch from 'isomorphic-fetch';
 
 import { isUnCollected } from '../../constants';
 
-import loader from '../../img/busy-indicator.gif';
-
 export class LimsResultSummary extends React.Component {
 
   componentDidMount() {
