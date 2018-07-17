@@ -105,7 +105,7 @@ def get_proposal():
 def get_results():
     """
     """
-qid = request.get_json().get("qid", None)
+    qid = request.get_json().get("qid", None)
     r =  jsonify({"result": {}})
 
     if qid:
