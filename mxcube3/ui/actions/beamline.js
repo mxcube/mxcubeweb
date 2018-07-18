@@ -1,6 +1,4 @@
 import fetch from 'isomorphic-fetch';
-
-
 // The different states a beamline attribute can assume.
 export const STATE = {
   IDLE: 'READY',
@@ -109,4 +107,3 @@ export function sendPrepareForNewSample() {
     });
   };
 }
-

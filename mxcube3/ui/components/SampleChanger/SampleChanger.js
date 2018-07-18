@@ -268,7 +268,9 @@ export default class SampleChanger extends React.Component {
          <span style={{ marginLeft: '1em' }}>{abortButton}</span>
          {current}
          <div style={{ marginBottom: '1em' }} />
+         <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
          {nodes}
+         </div>
        </Panel>
     );
   }

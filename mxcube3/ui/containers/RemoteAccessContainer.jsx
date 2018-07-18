@@ -33,7 +33,7 @@ export class RemoteAccessContainer extends React.Component {
 
     const loginRes = this.props.login.loginInfo.loginRes;
 
-    if (loginRes && !loginRes.Session.is_inhouse) {
+    if (loginRes && loginRes.Session && !loginRes.Session.is_inhouse) {
       content = null;
     }
 

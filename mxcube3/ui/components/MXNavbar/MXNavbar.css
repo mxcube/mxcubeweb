@@ -1,3 +1,8 @@
+.navbar-fixed-top {
+  position:sticky !important;
+  top:0 !important;
+}
+
 .navbar li {
   font-weight: bold;
   letter-spacing: 0.5px;
