@@ -20,13 +20,15 @@ class SampleViewContainer extends Component {
     const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
     const sampleID = this.props.current.sampleID;
-    const [points, lines, grids] = [{}, {}, {}];
+    const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
 
     Object.keys(this.props.shapes).forEach((key) => {
       const shape = this.props.shapes[key];
       if (shape.t === 'P') {
         points[shape.id] = shape;
+      } else if (shape.t === '2DP') {
+        twoDPoints[shape.id] = shape;
       } else if (shape.t === 'L') {
         lines[shape.id] = shape;
       } else if (shape.t === 'G') {
@@ -104,6 +106,7 @@ class SampleViewContainer extends Component {
                   contextMenuVisible={this.props.contextMenu.show}
                   shapes={this.props.shapes}
                   points={points}
+                  twoDPoints={twoDPoints}
                   lines={lines}
                   grids={grids}
                   selectedGrids={selectedGrids}

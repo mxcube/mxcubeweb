@@ -68,12 +68,12 @@ export default class MotorInput extends React.Component {
       'input-bg-onlimit': this.props.state === 5
     });
 
-    let data = { state: 'IMMEDIATE', value: step };
+    let data = { state: 'IMMEDIATE', value: step, step: 0.1 };
 
     return (
         <div className="motor-input-container">
           <p className="motor-name">{this.props.label}</p>
-          <form className="form-group" onSubmit={this.handleKey} noValidate>
+          <form style={{ display: 'inline' }} onSubmit={this.handleKey} noValidate>
             <div
               className="rw-widget rw-numberpicker rw-widget-no-right-border"
               style={ { width: '90px', display: 'inline-block' } }
@@ -120,15 +120,16 @@ export default class MotorInput extends React.Component {
                 cursor: 'pointer',
                 backgroundColor: '#EAEAEA' }}
             >
-              {(this.props.saveStep && this.props.state === 2) ?
+              {(this.props.saveStep && this.props.state === 2 && !this.props.inplace) ?
                <PopInput
                  pkey={`${motorName.toLowerCase()}Step`}
                  data={data}
                  onSave={this.props.saveStep}
                  suffix={suffix}
+                 inputSize="75px"
                  style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
                />
-               : null
+                 : null
               }
               {this.props.state !== 2 ?
                 <Button
@@ -141,8 +142,25 @@ export default class MotorInput extends React.Component {
                 </Button>
                 : null
               }
+              {(this.props.saveStep && this.props.state === 2 && this.props.inplace) ?
+                <span>{this.props.step} {suffix}</span> : null
+              }
             </span>
           </form>
+          {(this.props.inplace) ?
+            <span style={{ position: 'relative', left: '43px' }}>
+              <PopInput
+                pkey={`${motorName.toLowerCase()}Step`}
+                data={data}
+                onSave={this.props.saveStep}
+                suffix={suffix}
+                inputSize="31px"
+                inplace
+                style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
+              />
+           </span>
+             : null
+            }
         </div>
       );
   }

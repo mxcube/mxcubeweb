@@ -23,7 +23,9 @@ const initialState = {
     sampxStep: 0.1,
     sampyStep: 0.1,
     kappaStep: 0.1,
-    kappaphiStep: 0.1
+    kappaphiStep: 0.1,
+    sample_verticalStep: 0.1,
+    sample_horizontalStep: 0.1
   },
   apertureList: [],
   currentAperture: 0,

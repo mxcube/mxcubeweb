@@ -156,9 +156,14 @@ def get_movable_limits(item_name):
 _centring_motors_memo = None;
 def get_centring_motors():
     global _centring_motors_memo
-
+    
     if not _centring_motors_memo:
         _centring_motors_memo = mxcube.diffractometer.getPositions().keys()
+
+        # Adding the two pseudo motors for sample alignment in the microscope
+        # view
+        _centring_motors_memo += ["sample_vertical", "sample_horizontal"]
+
 
     return _centring_motors_memo
 
