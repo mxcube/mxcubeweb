@@ -4,7 +4,6 @@ import fetch from 'isomorphic-fetch';
 import { isUnCollected } from '../../constants';
 
 export class LimsResultSummary extends React.Component {
-
   componentDidMount() {
     this.getResults(this.props.taskData);
   }
@@ -13,7 +12,7 @@ export class LimsResultSummary extends React.Component {
     const task = this.props.taskData;
 
     if (!isUnCollected(task)) {
-      const resultContList = document.getElementsByClassName('result-container');
+      const resultCont = this.refs.resultContainer;
 
       fetch('mxcube/api/v0.1/lims/results', {
         method: 'POST',
@@ -30,9 +29,7 @@ export class LimsResultSummary extends React.Component {
 
         return response.json();
       }).then((data) => {
-        for (let i = 0; i < resultContList.length; i++) {
-          resultContList[i].innerHTML = data.result;
-        }
+        resultCont.innerHTML = data.result;
       });
     }
   }
@@ -72,11 +69,19 @@ export class LimsResultSummary extends React.Component {
 
   render() {
     const task = this.props.taskData;
+    const scale = this.props.scale || 1;
+    let style = {};// resize: 'both', overflow: 'auto' };
+
+//    if (scale !== 1) {
+//      style = { zoom: scale };
+//    }
 
     return (
-      <div className="lims-result-summary">
+      <div ref="limsResultSummary" className="lims-result-summary" style={ style }>
         { isUnCollected(task) ? this.taskSummary() : null }
-        <div className="result-container"></div>
+        <div ref="resultContainer" className="result-container" style= {{ overflow: 'hidden' }}>
+          Loading results, please wait ...
+        </div>
       </div>
     );
   }

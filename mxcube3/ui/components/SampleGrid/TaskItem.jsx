@@ -245,7 +245,7 @@ export class TaskItem extends React.Component {
               style={{ minWidth: '700px', paddingBottom: '1em' }}
               title={(<b>{this.title()}</b>)}
             >
-              <LimsResultSummary taskData={this.props.taskData} />
+              <LimsResultSummary taskData={this.props.taskData} scale="0.5" />
             </Popover>) }
         >
           <span

@@ -140,6 +140,7 @@ export default class CurrentTree extends React.Component {
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
+                  showDialog={this.props.showDialog}
                 />);
             } else if (taskData.type === 'XRFScan') {
               task =
@@ -163,6 +164,7 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   plotsData={this.props.plotsData}
                   plotsInfo={this.props.plotsInfo}
+                  showDialog={this.props.showDialog}
                 />);
             } else if (taskData.type === 'EnergyScan') {
               task =
@@ -185,6 +187,7 @@ export default class CurrentTree extends React.Component {
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
+                  showDialog={this.props.showDialog}
                 />);
             } else if (taskData.type === 'Characterisation') {
               task =
