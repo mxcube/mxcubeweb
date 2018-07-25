@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 
 import MotorInput from './MotorInput';
-import HorVerTranslationControls from './HorVerTranslationControls';
+import TwoAxisTranslationControl from './TwoAxisTranslationControl';
 
 import './motor.css';
 
@@ -124,14 +124,16 @@ export default class MotorControl extends React.Component {
 
     return (
       <div>
-        <HorVerTranslationControls
-          save={save}
-          saveStep={saveStep}
-          motors={this.props.motors}
-          motorsDisabled={ this.props.motorsDisabled}
-          steps={this.props.steps}
-          stop={stop}
-        />
+        <div style={{ marginLeft: '15px' }}>
+          <TwoAxisTranslationControl
+            save={save}
+            saveStep={saveStep}
+            motors={this.props.motors}
+            motorsDisabled={ this.props.motorsDisabled}
+            steps={this.props.steps}
+            stop={stop}
+          />
+        </div>
         { this.state.showAll ?
           <div>
             { this.renderAllMotors() }

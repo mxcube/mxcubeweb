@@ -3,7 +3,7 @@ import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import MotorInput from './MotorInput';
 import './motor.css';
 
-export default class HorVerTranslationControls extends React.Component {
+export default class TwoAxisTranslationControl extends React.Component {
 
   constructor(props) {
     super(props);

@@ -102,6 +102,7 @@ class SampleViewContainer extends Component {
                   sampleActions={this.props.sampleViewActions}
                   {...this.props.sampleViewState}
                   motors={this.props.motors}
+                  steps={motorSteps}
                   imageRatio={imageRatio * sourceScale}
                   contextMenuVisible={this.props.contextMenu.show}
                   shapes={this.props.shapes}

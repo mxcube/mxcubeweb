@@ -229,12 +229,17 @@ input::-webkit-inner-spin-button {
 
 
 .arrow-control {
-    padding-left: 15px;
 }
 
 .arrow-control .arrow {
     width: 3em;
     height: 3em;
+}
+
+.arrow-control .arrow-small {
+    width: 2em;
+    height: 2em;
+    padding: 0px;
 }
 
 
@@ -259,6 +264,12 @@ input::-webkit-inner-spin-button {
 
 .arrow-control .arrow i {
     font-size: 25px;
+    font-weight: bold;
+    margin-left: 0px;
+}
+
+.arrow-control .arrow-small i {
+    font-size: 21px;
     font-weight: bold;
     margin-left: 0px;
 }
