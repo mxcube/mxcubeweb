@@ -270,7 +270,7 @@ export default class PopInput extends React.Component {
 PopInput.defaultProps = {
   className: '',
   dataType: 'number',
-  inputSize: '110px',
+  inputSize: '80px',
   name: '',
   title: '',
   suffix: '',

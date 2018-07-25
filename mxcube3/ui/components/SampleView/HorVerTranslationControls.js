@@ -17,8 +17,8 @@ export default class HorVerTranslationControls extends React.Component {
   }
 
   renderMotorSettings() {
-    return (<Popover title="Sample alignment motors">
-              <div className="col-sm-12">
+    return (<Popover title={(<b>Sample alignment motors</b>)}>
+              <div>
                 <MotorInput
                   save={this.props.save}
                   value={this.props.motors.sample_vertical.position}
@@ -33,8 +33,6 @@ export default class HorVerTranslationControls extends React.Component {
                   disabled={this.props.motorsDisabled}
                   inplace
                 />
-              </div>
-              <div className="col-sm-12">
                 <MotorInput
                   save={this.props.save}
                   value={this.props.motors.sample_horizontal.position}

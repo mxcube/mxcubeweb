@@ -74,6 +74,7 @@ export default class MotorInput extends React.Component {
         <div className="motor-input-container">
           <p className="motor-name">{this.props.label}</p>
           <form style={{ display: 'inline' }} onSubmit={this.handleKey} noValidate>
+            <div style={{ display: 'inline-block', width: '124px' }}>
             <div
               className="rw-widget rw-numberpicker rw-widget-no-right-border"
               style={ { width: '90px', display: 'inline-block' } }
@@ -146,15 +147,16 @@ export default class MotorInput extends React.Component {
                 <span>{this.props.step} {suffix}</span> : null
               }
             </span>
+          </div>
           </form>
           {(this.props.inplace) ?
-            <span style={{ position: 'relative', left: '43px' }}>
+            <span style={{ position: 'relative', marginLeft: '10px' }}>
               <PopInput
                 pkey={`${motorName.toLowerCase()}Step`}
                 data={data}
                 onSave={this.props.saveStep}
                 suffix={suffix}
-                inputSize="31px"
+                inputSize="50px"
                 inplace
                 style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
               />
