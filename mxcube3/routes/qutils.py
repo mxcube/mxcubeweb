@@ -6,6 +6,7 @@ import redis
 import itertools
 import xml.etree.ElementTree as et
 import Utils
+import logging
 
 import queue_model_objects_v1 as qmo
 import queue_entry as qe
@@ -48,12 +49,13 @@ def build_prefix_path_dict(path_list):
     prefix_path_dict = {}
 
     for path in path_list:
-        path, run_number, img_number = qmo.PathTemplate.interpret_path(path)
+        try:
+            path, run_number, img_number = qmo.PathTemplate.interpret_path(path)
+        except ValueError:
+            logging.getLogger('HWR').info('[QUEUE] Warning, failed to interpret path: "%s", please check path' % path)
+            path, run_number, image_number = (path, 0, 0)
 
-        if path in prefix_path_dict and  prefix_path_dict[path] < run_number:
-            prefix_path_dict[path] = run_number
-        else:
-            prefix_path_dict[path] = run_number
+        prefix_path_dict[path] = run_number
 
     return prefix_path_dict
 
