@@ -33,10 +33,11 @@ class Plot1D extends React.Component {
       } else {
         const plotId = nextProps.lastPlotId;
         const plotInfo = nextProps.plotsInfo[plotId];
-
-        if (plotInfo.end) {
-          // do not display an old plot
-          return;
+        if (plotInfo) {
+          if (plotInfo.end) {
+            // do not display an old plot
+            return;
+          }
         }
 
         this.setPlot(plotId);
