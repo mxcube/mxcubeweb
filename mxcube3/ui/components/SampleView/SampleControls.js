@@ -1,5 +1,6 @@
 import './SampleView.css';
 import React from 'react';
+import OneAxisTranslationControl from './OneAxisTranslationControl';
 import { OverlayTrigger, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import 'fabric';
 const fabric = window.fabric;
@@ -136,6 +137,7 @@ export default class SampleControls extends React.Component {
 
   render() {
     const motors = this.props.motors;
+
     return (
       <div style={ { display: 'flex', position: 'absolute', width: '100%' } } >
         <div className="sample-controlls text-center" >
@@ -179,17 +181,16 @@ export default class SampleControls extends React.Component {
             <OverlayTrigger trigger="click" rootClose placement="bottom"
               overlay={(
                 <span className="slider-overlay" style={{ marginTop: '20px' }}>
-                  <input
-                    style={{ top: '20px' }}
-                    className="bar"
-                    type="range"
-                    step="0.1"
+                  <OneAxisTranslationControl
+                    save={this.props.sampleActions.sendMotorPosition}
+                    value={motors.focus.position}
                     min={motors.focus.limits[0]} max={motors.focus.limits[1]}
-                    defaultValue={motors.focus.position}
-                    disabled={motors.focus.state !== 2}
-                    onMouseUp={(e) =>
-                      this.props.sampleActions.sendMotorPosition('focus', e.target.value)}
-                    name="focusSlider"
+                    step={this.props.steps.focusStep}
+                    motorName="focus"
+                    suffix="mm"
+                    decimalPoints="3"
+                    state={this.props.motors.focus.state}
+                    disabled={this.props.motorsDisabled}
                   />
                 </span>)}
             >

@@ -155,7 +155,9 @@ export const INITIAL_STATE = {
     FrontLightSwitch: { position: 0, state: 0, limits: [0, 1] },
     kappa: { position: 0, state: 0, limits: [0, 1] },
     kappa_phi: { position: 0, state: 0, limits: [0, 1] },
-    zoom: { position: 0, state: 0, limits: [0, 1] }
+    zoom: { position: 0, state: 0, limits: [0, 1] },
+    sample_horizontal: { position: 0, state: 0, limits: [0, 1] },
+    sample_vertical: { position: 0, state: 0, limits: [0, 1] }
   },
   beamlineActionsList: [],
   currentBeamlineAction: { show: false, messages: [], arguments: [] },

@@ -159,8 +159,15 @@ export default class ContextMenu extends React.Component {
         { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
         { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
         { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
-        workflowTasks.grid.none > 0 ? { text: 'divider', key: 4 } : {},
-        ...workflowTasks.none
+        { text: 'divider', key: 4 },
+        { text: 'Data Collection (Limited OSC)',
+          action: () => this.createPointAndShowModal('DataCollection'), key: 5 },
+        { text: 'Characterisation (1 Image)',
+          action: () => this.createPointAndShowModal('Characterisation', { num_imags: 1 }),
+          key: 6 },
+        { text: 'divider', key: 7 },
+        ...workflowTasks.none,
+        workflowTasks.grid.none > 0 ? { text: 'divider', key: 7 } : {},
       ]
     };
 
@@ -181,8 +188,11 @@ export default class ContextMenu extends React.Component {
     return options;
   }
 
-  showModal(modalName, wf = {}, _shape = null) {
-    const { sampleID, defaultParameters, shape, sampleData } = this.props;
+  showModal(modalName, wf = {}, _shape = null, extraParams = {}) {
+    const { sampleID, shape, sampleData, defaultParameters } = this.props;
+
+    Object.assign(defaultParameters, extraParams);
+
     const sid = _shape ? _shape.id : shape.id;
     if (Array.isArray(sid)) {
       // we remove any line
@@ -239,8 +249,8 @@ export default class ContextMenu extends React.Component {
     }
   }
 
-  createPoint(x, y) {
-    this.props.sampleActions.sendAddShape({ screenCoord: [x, y], t: 'P', state: 'SAVED' });
+  createPoint(x, y, cb = null) {
+    this.props.sampleActions.sendAddShape({ screenCoord: [x, y], t: '2DP', state: 'SAVED' }, cb);
   }
 
   savePoint() {
@@ -289,6 +299,13 @@ export default class ContextMenu extends React.Component {
     const gd = { ...this.props.shape.gridData };
     this.props.sampleActions.sendAddShape({ t: 'G', ...gd });
     this.props.sampleActions.toggleDrawGrid();
+  }
+
+  createPointAndShowModal(name, extraParams = {}) {
+    const { x, y, imageRatio } = this.props;
+    this.props.sampleActions.showContextMenu(false);
+    this.createPoint(x / imageRatio, y / imageRatio,
+                     (shape) => this.showModal(name, {}, shape, extraParams));
   }
 
   createLine(modal, wf = {}) {

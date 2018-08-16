@@ -12,10 +12,14 @@
   <object role="kappa_phi" hwrid="./udiff_kappaphi"></object>
   <object role="beam_info" hwrid="./beam-info"></object>
 
+  <device role="sample_vertical" hwrid="/udiff_sampx"/>
+  <device role="sample_horizontal" hwrid="/udiff_sampy"/>
+
   <object role="backlight" href="./udiff_backlight"/>
   <object role="backlightswitch" href="./udiff_backlightswitch"/>
   <object role="frontlight" href="./udiff_frontlight"/>
   <object role="frontlightswitch" href="./udiff_frontlightswitch"/>
+  
 
   <others>
     <object role="camera" hwrid="./md_camera"></object>

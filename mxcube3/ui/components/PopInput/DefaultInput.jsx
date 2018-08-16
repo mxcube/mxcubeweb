@@ -44,7 +44,7 @@ export default class DefaultInput extends React.Component {
 
   render() {
     return (
-      <Form inline onSubmit={this.submit}>
+      <Form inline onSubmit={this.submit} noValidate>
         <div className="rw-widget rw-numberpicker"
           style={ { width: Number(this.props.inputSize) + 10, display: 'inline-block' } }
         >
@@ -80,9 +80,13 @@ export default class DefaultInput extends React.Component {
           <Button bsStyle="primary" className="btn-sm" onClick={this.save}>
             <i className="glyphicon glyphicon-ok" />
           </Button>
-          <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
-            <i className="glyphicon glyphicon-remove" />
-          </Button>
+          { !this.props.inplace ?
+            <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+              <i className="glyphicon glyphicon-remove" />
+            </Button>
+            :
+            null
+          }
         </ButtonToolbar>
       </Form>
     );

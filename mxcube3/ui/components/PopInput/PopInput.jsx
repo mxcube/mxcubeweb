@@ -92,7 +92,7 @@ export default class PopInput extends React.Component {
       // Only update if value actually changed
       this.props.onSave(this.props.pkey, value);
     }
-    if (this.props.data.state === 'IMMEDIATE') {
+    if (this.props.data.state === 'IMMEDIATE' && this.refs.overlay) {
       this.refs.overlay.hide();
     }
   }
@@ -124,7 +124,7 @@ export default class PopInput extends React.Component {
       this.props.onCancel(this.props.pkey);
     }
 
-    if (!this.isBusy()) {
+    if (!this.isBusy() && this.refs.overlay) {
       this.refs.overlay.hide();
     }
   }
@@ -152,6 +152,7 @@ export default class PopInput extends React.Component {
         step={this.props.data.step}
         dataType={this.props.dataType}
         inputSize={this.props.inputSize}
+        inplace={this.props.inplace}
       />);
 
     input = this.getChild('input') || input;
@@ -204,8 +205,8 @@ export default class PopInput extends React.Component {
       stateClass = 'input-bg-fault';
     }
 
-    const popover = (
-      <Popover ref="popover" id={title} title={title}>
+    const popoverContent = (
+      <span>
         <div className={`${inputVisibility} popinput-form-container`}>
           {this.inputComponent()}
         </div>
@@ -213,6 +214,11 @@ export default class PopInput extends React.Component {
         <div ref="loadingDiv" className={`${busyVisibility} popinput-input-loading`} >
           {this.busyComponent()}
         </div>
+      </span>);
+
+    const popover = (
+      <Popover ref="popover" id={title} title={title}>
+        { popoverContent }
       </Popover>);
 
     let value = this.props.data.value ? parseFloat(this.props.data.value) : '-';
@@ -221,27 +227,39 @@ export default class PopInput extends React.Component {
       value = value.toFixed(parseInt(this.props.data.precision, 10));
     }
 
-
     return (
       <div style={this.props.style} className={`${this.props.className} popinput-input-container`}>
         { this.props.name ?
-          <span className={`popinput-input-label ${this.props.ref}`}>
+          <span
+            className={`popinput-input-label ${this.props.ref}`}
+          >
             {this.props.name}:
           </span> : null
         }
-        <span className={`popinput-input-value ${this.props.pkey}`}>
-          <OverlayTrigger ref="overlay" trigger="click" rootClose placement={this.props.placement}
-            overlay={popover}
+          <span
+            className={`popinput-input-value ${this.props.pkey}`}
           >
-            <a
-              ref="valueLabel"
-              onContextMenu={this.onLinkClick}
-              key="valueLabel"
-              className={`popinput-input-link ${linkClass} ${stateClass}`}
-            >
-              {value} {this.props.suffix}
-            </a>
-          </OverlayTrigger>
+            { this.props.inplace ?
+              <span>
+                { popoverContent }
+              </span>
+              :
+              <OverlayTrigger
+                ref="overlay" trigger="click"
+                rootClose
+                placement={this.props.placement}
+                overlay={popover}
+              >
+                <a
+                  ref="valueLabel"
+                  onContextMenu={this.onLinkClick}
+                  key="valueLabel"
+                  className={`popinput-input-link ${linkClass} ${stateClass}`}
+                >
+                  {value} {this.props.suffix}
+                </a>
+              </OverlayTrigger>
+            }
         </span>
       </div>
     );
@@ -252,7 +270,7 @@ export default class PopInput extends React.Component {
 PopInput.defaultProps = {
   className: '',
   dataType: 'number',
-  inputSize: '110',
+  inputSize: '80px',
   name: '',
   title: '',
   suffix: '',
@@ -262,5 +280,5 @@ PopInput.defaultProps = {
   pkey: undefined,
   onSave: undefined,
   onCancel: undefined,
-  data: { value: 0, state: 'ABORTED', msg: '' }
+  data: { value: 0, state: 'ABORTED', msg: '', step: 0.1 }
 };

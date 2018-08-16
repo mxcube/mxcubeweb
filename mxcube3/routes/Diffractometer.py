@@ -85,7 +85,6 @@ def md_in_plate_mode():
 @mxcube.restrict
 def get_movables_state():
     ret = Utils.get_centring_motors_info()
-
     ret.update(Utils.get_light_state_and_intensity())
 
     resp = jsonify(ret)

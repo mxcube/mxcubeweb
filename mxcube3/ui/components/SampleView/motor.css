@@ -7,7 +7,7 @@
     font-size: 1.0em;
     margin-bottom: 0px;
     font-weight: bold;
-    display: inline;
+    display: block;
 }
 
 .motor-value{
@@ -225,4 +225,56 @@ input::-webkit-inner-spin-button {
 }
 .sample-controll-label{
     display: block;
+}
+
+
+.arrow-control {
+}
+
+.arrow-control .arrow {
+    width: 3em;
+    height: 3em;
+}
+
+.arrow-control .arrow-small {
+    width: 2em;
+    height: 2em;
+    padding: 0px;
+}
+
+
+.arrow-control .arrow-up {
+    display: block;
+    position: relative;
+    left: 3em;
+    margin-left: 4px;
+}
+
+
+.arrow-control .arrow-down {
+    display: block;
+    position: relative;
+    left: 3em;
+    margin-left: 4px;    
+}
+
+.arrow-control .arrow-settings{
+    margin: 4px;
+}
+
+.arrow-control .arrow i {
+    font-size: 25px;
+    font-weight: bold;
+    margin-left: 0px;
+}
+
+.arrow-control .arrow-small i {
+    font-size: 21px;
+    font-weight: bold;
+    margin-left: 0px;
+}
+
+.arrow-control .arrow-settings i {
+    font-size: 20px;
+    font-weight: normal;
 }

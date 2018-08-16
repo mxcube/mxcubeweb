@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { makePoints, makeLines, makeImageOverlay, makeCross } from './shapes';
+import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
@@ -679,6 +679,7 @@ export default class SampleImage extends React.Component {
       clickCentring,
       distancePoints,
       points,
+      twoDPoints,
       lines,
       grids,
       pixelsPerMm,
@@ -704,6 +705,7 @@ export default class SampleImage extends React.Component {
 
     const fabricSelectables = [
       ...makePoints(points, imageRatio),
+      ...makeTwoDPoints(twoDPoints, imageRatio),
       ...makeLines(lines, imageRatio)
     ];
 
