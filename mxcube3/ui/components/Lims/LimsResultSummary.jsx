@@ -69,12 +69,7 @@ export class LimsResultSummary extends React.Component {
 
   render() {
     const task = this.props.taskData;
-    const scale = this.props.scale || 1;
     let style = {};// resize: 'both', overflow: 'auto' };
-
-//    if (scale !== 1) {
-//      style = { zoom: scale };
-//    }
 
     return (
       <div ref="limsResultSummary" className="lims-result-summary" style={ style }>

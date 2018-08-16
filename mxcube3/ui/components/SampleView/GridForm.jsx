@@ -37,15 +37,7 @@ export default class GridForm extends React.Component {
             ({grid.numRows * grid.numCols})
           </td>
           <td>
-            <Button
-              className="btn-sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                this.props.toggleVisibility(grid.id);
-              }}
-            >
-              {grid.state === 'HIDDEN' ? 'Show' : 'Hide '}
-            </Button>
+            { grid.motorPositions.phi.toFixed(2) }&deg;
           </td>
           <td>
             <Button
@@ -56,6 +48,17 @@ export default class GridForm extends React.Component {
               }}
             >
               Rotate to
+            </Button>
+          </td>
+          <td>
+            <Button
+              className="btn-sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                this.props.toggleVisibility(grid.id);
+              }}
+            >
+              {grid.state === 'HIDDEN' ? 'Show' : 'Hide '}
             </Button>
           </td>
           <td>
@@ -106,6 +109,8 @@ export default class GridForm extends React.Component {
           <td>
           </td>
           <td>
+          </td>
+          <td>
             <Button className="btn-sm" onClick={() => this.props.saveGrid()}>
               +
             </Button>
@@ -142,6 +147,9 @@ export default class GridForm extends React.Component {
                   </th>
                   <th>
                     #Cells
+                  </th>
+                  <th>
+                    &Omega;
                   </th>
                   <th />
                   <th />

@@ -1,2 +1,4 @@
 <object class="Shapes">
+  <object href="/minidiff-mockup" role="diffractometer"/>
+  <hide_grid_threshold>5</hide_grid_threshold>
 </object>
