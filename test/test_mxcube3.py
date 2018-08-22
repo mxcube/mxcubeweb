@@ -8,7 +8,6 @@ from gevent import monkey
 monkey.patch_all(thread=False, subprocess=False)
 sys.path.append('./')
 
-# from flaskr import flaskr
 from mxcube3 import app as mxcube
 
 @pytest.fixture
