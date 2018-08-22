@@ -19,11 +19,16 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'SHOW_FORM':
       {
+        const taskData = action.taskData;
+        if (action.taskData.parameters.shape === -1) {
+          taskData.parameters.shape = action.pointID;
+        }
+
         return {
           ...state,
           showForm: action.name,
           sampleIds: action.sampleIDs,
-          taskData: action.taskData,
+          taskData: { ...taskData },
           pointID: action.pointID
         };
       }
@@ -79,6 +84,8 @@ export default (state = initialState, action) => {
         let type = action.data.type.toLowerCase();
         if (action.data.helical) {
           type = 'helical';
+        } else if (action.data.mesh) {
+          type = 'mesh';
         }
         return {
           ...state,
