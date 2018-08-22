@@ -259,6 +259,19 @@ export default class ContextMenu extends React.Component {
     }
 
     this.props.sampleActions.sendAcceptCentring();
+    // associate the newly saved shape to an existing task with -1 shape.
+    // Fixes issues when the task is added before a shape
+    const tasks = this.props.sampleData.tasks;
+    if (tasks.length > 0) {
+      tasks.forEach((task) => {
+        const parameters = task.parameters;
+        if (parameters.shape === -1) {
+          parameters.shape = this.props.shape.id;
+          this.props.updateTask(this.props.sampleData.sampleID, task.taskIndex, parameters, false);
+        }
+      });
+    }
+
     this.props.sampleActions.showContextMenu(false);
   }
 
