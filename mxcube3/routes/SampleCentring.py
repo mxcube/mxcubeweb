@@ -59,10 +59,13 @@ def centring_add_current_point(*args):
     # There is no current centered point shape when the centring is done
     # by software like Workflows, so we add one.
     if not shape:
-        motors = args[1]['motors']
-        x, y = mxcube.diffractometer.motor_positions_to_screen(motors)
-        centring_update_current_point(motors, x, y)
-        shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+        try:
+            motors = args[1]['motors']
+            x, y = mxcube.diffractometer.motor_positions_to_screen(motors)
+            centring_update_current_point(motors, x, y)
+            shape = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+        except Exception:
+            logging.getLogger('HWR').exception("Centring failed !")
 
     if shape:
         shape.state = "SAVED"
@@ -72,8 +75,9 @@ def centring_add_current_point(*args):
 
 def centring_update_current_point(motor_positions, x, y):
     global CENTRING_POINT_ID
-    if CENTRING_POINT_ID:
-        point = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+    point = mxcube.shapes.get_shape(CENTRING_POINT_ID)
+
+    if point:
         point.move_to_mpos([motor_positions], [x, y])
     else:
         point = mxcube.shapes.\

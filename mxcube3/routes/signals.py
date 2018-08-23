@@ -168,9 +168,14 @@ def loaded_sample_changed(sample):
         # recreate the dict with the sample info
         q = queue_to_dict()
         sampleID = sample.getAddress()
-        sample_data = q.get(sampleID, {})
-    
-        scutils.set_current_sample(sample_data)
+        sample_data = q.get(sampleID, {'sampleID': sampleID})
+
+        if mxcube.sample_changer.hasLoadedSample():
+            scutils.set_current_sample(sample_data)
+        else:
+            scutils.set_current_sample(None)
+            address = ''
+
         msg = {'signal': 'loadReady', 'location': address}
         socketio.emit('sc', msg, namespace='/hwr')
         socketio.emit("loaded_sample_changed", {'address': address, 'barcode': barcode}, namespace="/hwr")
