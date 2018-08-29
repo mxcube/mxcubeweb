@@ -225,7 +225,7 @@ def mount_sample_clean_up(sample):
             elif mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
                 res = mxcube.sample_changer.load(sample['sampleID'], wait=True)
 
-            if res:
+            if res and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP:
                 logging.getLogger('HWR').info('Starting autoloop centring ...')
                 C3D_MODE = mxcube.diffractometer.C3D_MODE
                 mxcube.diffractometer.startCentringMethod(C3D_MODE)
@@ -251,7 +251,7 @@ def mount_sample_clean_up(sample):
                 node_id = current_queue[sid]["queueID"]
                 qutils.set_enabled_entry(node_id, False)
 
-        return res
+    return res
 
 
 def unmount_sample_clean_up(sample):
