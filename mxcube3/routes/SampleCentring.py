@@ -720,7 +720,12 @@ def wait_for_centring_finishes(*args, **kwargs):
     Executed when a centring is finished. It updates the temporary
     centred point.
     """
-    centring_status = args[1]
+
+    try:
+        centring_status = args[1]
+    except IndexError:
+        centring_status = {'valid': False}
+
     # we do not send/save any centring data if there is no sample
     # to avoid the 2d centring when no sample is mounted
     if scutils.get_current_sample().get('sampleID', '') == '':
