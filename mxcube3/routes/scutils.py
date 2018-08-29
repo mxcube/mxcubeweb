@@ -240,7 +240,9 @@ def mount_sample_clean_up(sample):
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         raise RuntimeError(str(ex))
     else:
-        if res:
+        # Clean up if the new sample was mounted or the current sample was
+        # unmounted and the new one, for some reason, failed to mount
+        if res or (not res and not mxcube.sample_changer.getLoadedSample()):
             mxcube.shapes.clear_all()
 
             # We remove the current sample from the queue, if we are moving from
