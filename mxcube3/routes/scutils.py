@@ -92,17 +92,8 @@ def set_current_sample(sample):
 
 
 def get_current_sample():
-    current_queue = qutils.queue_to_dict()
-    sample = {"sampleID": None}
-
-    try:
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE and \
-            mxcube.CURRENTLY_MOUNTED_SAMPLE["sampleID"] in current_queue:
-            sample = mxcube.CURRENTLY_MOUNTED_SAMPLE
-    except:
-        pass
-
-    logging.getLogger('HWR').info('[SC] Getting currenly mounted sample %s' % sample)
+    sample = mxcube.CURRENTLY_MOUNTED_SAMPLE
+    logging.getLogger('HWR').info('[SC] Getting currently mounted sample %s' % sample)
 
     return sample 
 
@@ -207,6 +198,7 @@ def mount_sample(beamline_setup_hwobj,
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
 
+
 def mount_sample_clean_up(sample):
     res = None
 
@@ -218,7 +210,7 @@ def mount_sample_clean_up(sample):
         current_queue = qutils.queue_to_dict()
 
         set_sample_to_be_mounted(sample['sampleID'])
-        
+
         if sample['location'] != 'Manual':           
             if not mxcube.sample_changer.getLoadedSample():
                 res = mxcube.sample_changer.load(sample['sampleID'], wait=True)
@@ -231,7 +223,6 @@ def mount_sample_clean_up(sample):
                 mxcube.diffractometer.startCentringMethod(C3D_MODE)
             elif not mxcube.sample_changer.getLoadedSample():
                 set_current_sample(None)
-                
         else:
             set_current_sample(sample)
             res = True
