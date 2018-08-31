@@ -733,7 +733,10 @@ class SampleGridContainer extends React.Component {
       <MenuItem divider />,
       <MenuItem header><span><Glyphicon glyph="minus" /> Remove </span></MenuItem>,
       <MenuItem eventKey="1" onClick={this.props.removeSelectedSamples}>
-        Remove tasks
+        Dequeue Samples
+      </MenuItem>,
+      <MenuItem eventKey="1" onClick={this.props.removeSelectedTasks}>
+        Remove Tasks
       </MenuItem>,
     ];
   }
