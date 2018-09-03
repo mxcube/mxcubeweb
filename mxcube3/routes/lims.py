@@ -20,6 +20,7 @@ def proposal_samples(proposal_id):
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
     lims_samples = mxcube.db_connection.get_samples(proposal_id, None)
+
     samples_info_list = lims_samples
     mxcube.LIMS_SAMPLE_DATA = {}
 
@@ -39,9 +40,13 @@ def proposal_samples(proposal_id):
                 puck = basket-3*(cell-1)
                 sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
 
-        lims_location = sample_info["containerSampleChangerLocation"] + ":%02d" % int(sample_info["sampleLocation"])
-        sample_info["lims_location"] = lims_location
-        limsutils.sample_list_sync_sample(sample_info)
+        try:
+            lims_location = sample_info["containerSampleChangerLocation"] + ":%02d" % int(sample_info["sampleLocation"])
+        except:
+            logging.getLogger('HWR').info('[LIMS] Could not parse sample loaction from LIMS, (perhaps not set ?)')
+        else:
+            sample_info["lims_location"] = lims_location
+            limsutils.sample_list_sync_sample(sample_info)
 
     return jsonify(limsutils.sample_list_get())
 
