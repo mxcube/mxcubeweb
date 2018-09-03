@@ -367,15 +367,14 @@ class SampleGridViewContainer extends React.Component {
   }
 
   /**
-   * Removes selected tasks
+   * Removes all tasks of selected samples
    */
   removeSelectedTasks() {
     for (const sampleID of Object.keys(this.props.selected)) {
       if (this.inQueue(sampleID)) {
-        for (const task of Object.keys(this.props.sampleList[sampleID].tasks.reverse())) {
-          //this.props.deleteTask(sampleID, this.props.sampleList[sampleID].tasks[task].taskIndex);
+        this.props.sampleList[sampleID].tasks.forEach(() => {
           this.props.deleteTask(sampleID, 0);
-        }
+        });
       }
     }
   }
