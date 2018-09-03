@@ -30,7 +30,10 @@ export class LimsResultSummary extends React.Component {
 
         return response.json();
       }).then((data) => {
-        resultCont.innerHTML = data.result;
+        if (data.result !== undefined && data.result !== null &&
+            data.result !== 'undefined' && data.result !== 'null') {
+          resultCont.innerHTML = data.result;
+        }
       });
     }
   }
