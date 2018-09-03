@@ -1,7 +1,7 @@
 import React from 'react';
 import fetch from 'isomorphic-fetch';
 
-import { isUnCollected } from '../../constants';
+import { isUnCollected, taskHasLimsData } from '../../constants';
 
 export class LimsResultSummary extends React.Component {
   componentDidMount() {
@@ -13,6 +13,7 @@ export class LimsResultSummary extends React.Component {
 
     if (!isUnCollected(task)) {
       const resultCont = this.refs.resultContainer;
+      resultCont.innerHTML = "Loading results, please wait ...";
 
       fetch('mxcube/api/v0.1/lims/results', {
         method: 'POST',
@@ -73,9 +74,8 @@ export class LimsResultSummary extends React.Component {
 
     return (
       <div ref="limsResultSummary" className="lims-result-summary" style={ style }>
-        { isUnCollected(task) ? this.taskSummary() : null }
+        { !taskHasLimsData(task) ? this.taskSummary() : null }
         <div ref="resultContainer" className="result-container" style= {{ overflow: 'hidden' }}>
-          Loading results, please wait ...
         </div>
       </div>
     );
