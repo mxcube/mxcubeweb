@@ -92,7 +92,7 @@ def set_current_sample(sample):
 
 
 def get_current_sample():
-    sample = mxcube.CURRENTLY_MOUNTED_SAMPLE
+    sample = mxcube.CURRENTLY_MOUNTED_SAMPLE or {}
     logging.getLogger('HWR').info('[SC] Getting currently mounted sample %s' % sample)
 
     return sample 
