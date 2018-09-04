@@ -111,7 +111,7 @@ class BeamlineActionsContainer extends React.Component {
               {this.props.currentAction.username}
             </Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body style={{ height: '500px', overflowY: 'auto' }}>
               { this.props.currentAction.arguments.map((arg, i) =>
                 <Row>
                   <Col xs={2} component="ControlLabel">{arg.name}</Col>

@@ -35,7 +35,8 @@ import {
   deleteSamplesFromQueue,
   setEnabledSample,
   addSamplesToQueue,
-  sendStopQueue
+  sendStopQueue,
+  deleteTask,
 } from '../actions/queue';
 
 import { StickyContainer, Sticky } from 'react-sticky';
@@ -77,6 +78,7 @@ class SampleGridViewContainer extends React.Component {
     this.inQueue = this.inQueue.bind(this);
     this.inQueueDeleteElseAddSamples = this.inQueueDeleteElseAddSamples.bind(this);
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
+    this.removeSelectedTasks = this.removeSelectedTasks.bind(this);
 
     this.collectButton = this.collectButton.bind(this);
     this.startCollect = this.startCollect.bind(this);
@@ -358,8 +360,21 @@ class SampleGridViewContainer extends React.Component {
    */
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
-      if (this.inQueue(sampleID)) {
+      if (this.inQueue(sampleID) && sampleID !== this.props.sampleChanger.loadedSample.address) {
         this.props.setEnabledSample([sampleID], false);
+      }
+    }
+  }
+
+  /**
+   * Removes all tasks of selected samples
+   */
+  removeSelectedTasks() {
+    for (const sampleID of Object.keys(this.props.selected)) {
+      if (this.inQueue(sampleID)) {
+        this.props.sampleList[sampleID].tasks.forEach(() => {
+          this.props.deleteTask(sampleID, 0);
+        });
       }
     }
   }
@@ -683,6 +698,7 @@ class SampleGridViewContainer extends React.Component {
             inQueue={this.inQueue}
             inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
             removeSelectedSamples={this.removeSelectedSamples}
+            removeSelectedTasks={this.removeSelectedTasks}
             gridWidth={this.calcGridWidth()}
           />
         </div>
@@ -725,6 +741,7 @@ function mapDispatchToProps(dispatch) {
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     setEnabledSample: (qidList, value) => dispatch(setEnabledSample(qidList, value)),
+    deleteTask: (qid, taskIndex) => dispatch(deleteTask(qid, taskIndex)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     sendStopQueue: () => dispatch(sendStopQueue()),

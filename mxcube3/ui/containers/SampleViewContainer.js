@@ -7,6 +7,7 @@ import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
+import { updateTask } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
@@ -87,6 +88,7 @@ class SampleViewContainer extends Component {
                 <ContextMenu
                   {...this.props.contextMenu}
                   sampleActions={this.props.sampleViewActions}
+                  updateTask={this.props.updateTask}
                   availableMethods={this.props.availableMethods}
                   showForm={this.props.showForm}
                   sampleID={sampleID}
@@ -154,6 +156,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    updateTask: bindActionCreators(updateTask, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch)
   };
 }
