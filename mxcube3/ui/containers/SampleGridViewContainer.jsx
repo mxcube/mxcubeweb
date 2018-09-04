@@ -360,7 +360,7 @@ class SampleGridViewContainer extends React.Component {
    */
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
-      if (this.inQueue(sampleID)) {
+      if (this.inQueue(sampleID) && sampleID !== this.props.sampleChanger.loadedSample.address) {
         this.props.setEnabledSample([sampleID], false);
       }
     }
