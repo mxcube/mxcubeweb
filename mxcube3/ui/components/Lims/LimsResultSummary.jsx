@@ -13,7 +13,7 @@ export class LimsResultSummary extends React.Component {
 
     if (!isUnCollected(task)) {
       const resultCont = this.refs.resultContainer;
-      resultCont.innerHTML = "Loading results, please wait ...";
+      resultCont.innerHTML = 'Loading results, please wait ...';
 
       fetch('mxcube/api/v0.1/lims/results', {
         method: 'POST',
