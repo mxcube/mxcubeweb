@@ -85,17 +85,20 @@ def toggle_operator(new_op_sid, message):
     new_op = loginutils.get_user_by_sid(new_op_sid)
     loginutils.set_operator(new_op["sid"])
     new_op["message"] = message
-    current_op["message"] = message
 
     observers = loginutils.get_observers()
 
     # Append the new data path so that it can be updated on the client
     new_op["rootPath"] = mxcube.session.get_base_image_directory()
-    current_op["rootPath"] = mxcube.session.get_base_image_directory()
+
+    # Current op might have logged out, while this is happening
+    if current_op:
+        current_op["rootPath"] = mxcube.session.get_base_image_directory()
+        current_op["message"] = message
+        socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
 
     socketio.emit("observersChanged", observers, namespace='/hwr')
     socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace='/hwr')
-    socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
 
 
 def remain_observer(observer_sid, message):
@@ -239,10 +242,10 @@ def set_observer(data):
     observers = loginutils.get_observers()
     observer = loginutils.get_user_by_sid(session.sid)
 
-    if name:
+    if observer and name :
         observer["name"] = name
+        socketio.emit("observerLogin", observer, include_self=False, namespace='/hwr')
 
     socketio.emit("observersChanged", observers, namespace='/hwr')
-    socketio.emit("observerLogin", observer, include_self=False, namespace='/hwr')
 
     return session.sid
