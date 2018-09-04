@@ -27,9 +27,9 @@ export class LimsResultDialog extends React.Component {
             this.props.taskData.limsResultData.limsTaskLink : '';
 
     return (
-      <span>
+      <div style={{ margin: '1em' }}>
         <a href={link} target="_blank">View results in ISPyB</a>
-      </span>
+      </div>
     );
   }
 

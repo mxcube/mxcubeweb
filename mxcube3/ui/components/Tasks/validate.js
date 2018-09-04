@@ -75,11 +75,10 @@ const validate = (values, props) => {
     errors.transmission = 'Transmission outside working range';
   }
 
-  if (props.pointID !== -1) {
-    if (props.pointID.includes('2D') && props.form === 'characterisation' &&
-        parseFloat(values.num_images) !== 1) {
-      errors.num_images = 'Only 1 image allowed when characterizing from a 2D-point';
-    }}
+  if (props.pointID !== -1 && props.pointID.includes('2D') && props.form === 'characterisation' &&
+      parseFloat(values.num_images) !== 1) {
+    errors.num_images = 'Only 1 image allowed when characterizing from a 2D-point';
+  }
 
   return errors;
 };

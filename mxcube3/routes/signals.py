@@ -145,32 +145,27 @@ def sc_state_changed(*args):
     socketio.emit('sc_state', state_str, namespace='/hwr')
 
 def loaded_sample_changed(sample):
-    # If sample is a "No sample loaded value" None or ''
-    if sample in [None, '']:
-        msg = {'signal': 'loadReady', 'location': ''}
-        socketio.emit('sc', msg, namespace='/hwr')
-        socketio.emit("loaded_sample_changed", {'address': '', 'barcode': ''}, namespace="/hwr")
-    
-    # If sample is not Pin, Sample pin just return
-    if not (isinstance(sample, Pin) or isinstance(sample, Sample)):
-        return
-
-    if sample is not None:
+    if hasattr(sample, "getAddress"):
         address = sample.getAddress()
         barcode = sample.getID()
     else:
         address = ''
         barcode = ''
 
-    logging.getLogger("HWR").info('loaded sample changed now is: ' + address)
+    logging.getLogger("HWR").info('Loaded sample changed now is: ' + address)
  
     try:
         # recreate the dict with the sample info
         q = queue_to_dict()
-        sampleID = sample.getAddress()
-        sample_data = q.get(sampleID, {})
-    
-        scutils.set_current_sample(sample_data)
+        sampleID = address
+        sample_data = q.get(sampleID, {'sampleID': sampleID})
+
+        if mxcube.sample_changer.hasLoadedSample():
+            scutils.set_current_sample(sample_data)
+        else:
+            scutils.set_current_sample(None)
+            address = ''
+
         msg = {'signal': 'loadReady', 'location': address}
         socketio.emit('sc', msg, namespace='/hwr')
         socketio.emit("loaded_sample_changed", {'address': address, 'barcode': barcode}, namespace="/hwr")

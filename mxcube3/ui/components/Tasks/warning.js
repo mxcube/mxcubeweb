@@ -32,11 +32,9 @@ const warn = (values, props) => {
     warnings.osc_start = 'Oscillation start angle is different from current omega';
   }
 
-  if (props.pointID !== -1) {
-    if (props.pointID.includes('2D') &&
-        (parseFloat(values.osc_range) * parseFloat(values.num_images)) > 5) {
-      warnings.osc_range = 'The given oscillation range might be to large for this centering';
-    }
+  if (props.pointID !== -1 && props.pointID.includes('2D') &&
+      (parseFloat(values.osc_range) * parseFloat(values.num_images)) > 5) {
+    warnings.osc_range = 'The given oscillation range might be to large for this centering';
   }
 
   return warnings;

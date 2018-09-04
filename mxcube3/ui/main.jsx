@@ -82,8 +82,7 @@ export default class App extends React.Component {
     const persistor = persistStore(store,
            { blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
                          'form', 'login', 'general', 'logger', 'shapes',
-                         'sampleView', 'workflow', 'taskResult',
-                         'sampleChangerMaintenance'],
+                         'sampleView', 'taskResult', 'sampleChangerMaintenance'],
              storage: new ServerStorage() },
              () => {
                /* eslint-disable react/no-set-state */

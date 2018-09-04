@@ -18,6 +18,8 @@
   "dependencies": {
     "bootstrap": "3.3.5",
     "classnames": "^2.2.0",
+    "dustjs-helpers": "^1.7.4",
+    "dustjs-linkedin": "^2.7.5",
     "dygraphs": "^2.0.0",
     "everpolate": "0.0.3",
     "fabric": "^2.2.4",

@@ -151,7 +151,7 @@ def init_app_state(app):
     from queue_entry import CENTRING_METHOD
 
     # SampleID of currently mounted sample
-    app.CURRENTLY_MOUNTED_SAMPLE = None
+    app.CURRENTLY_MOUNTED_SAMPLE = {}
     app.SAMPLE_TO_BE_MOUNTED = ''
     app.CENTRING_METHOD = CENTRING_METHOD.LOOP
     app.NODE_ID_TO_LIMS_ID = {}

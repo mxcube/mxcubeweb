@@ -17,7 +17,7 @@ import { toggleMovableAction,
          selectSamplesAction,
          sendSetSampleOrderAction } from '../actions/sampleGrid';
 
-import { deleteTask, sendMountSample } from '../actions/queue';
+import { deleteTask, sendMountSample, addSampleAndMount } from '../actions/queue';
 
 import { unloadSample } from '../actions/sampleChanger';
 
@@ -708,8 +708,7 @@ class SampleGridContainer extends React.Component {
     });
 
     if (sampleData) {
-      this.props.sendMountSample(sampleData);
-      this.props.addSelectedSamplesToQueue();
+      this.props.addSampleAndMount(sampleData);
       this.props.router.push('datacollection');
     }
   }
@@ -838,6 +837,7 @@ function mapDispatchToProps(dispatch) {
     unloadSample: bindActionCreators(unloadSample, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
+    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch)
   };
 }

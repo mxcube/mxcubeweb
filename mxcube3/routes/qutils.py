@@ -1623,8 +1623,13 @@ def execute_entry_with_id(sid, tindex=None):
         # tasks, so in order function as expected; just mount the sample
         if (not len(current_queue[sid]["tasks"])) and \
            sid != scutils.get_current_sample().get('sampleID', ''):
-            scutils.mount_sample_clean_up(current_queue[sid])
-            mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
+
+            try:
+                scutils.mount_sample_clean_up(current_queue[sid])
+            except:
+                mxcube.queue.queue_hwobj.emit('queue_execution_failed', (None,))
+            else:
+                mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
         else:
             enabled_entries = []
 
@@ -1777,5 +1782,9 @@ def add_default_sample():
                "loadable": True,
                "tasks": [] }
 
-    queue_add_item([sample]);
-    scutils.mount_sample_clean_up(sample)
+    try:
+        scutils.mount_sample_clean_up(sample)
+    except Exception as ex:
+        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
+    else:
+        queue_add_item([sample])

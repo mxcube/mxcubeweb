@@ -85,24 +85,17 @@ def set_current_sample(sample):
     except:
         mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
 
-    logging.getLogger('HWR').info('[SC] Setting currenly mounted sample to %s' %sample)
+    logging.getLogger('HWR').info('[SC] Setting currenly mounted sample to %s' % sample)
 
     from signals import set_current_sample
     set_current_sample(sample)
 
 
 def get_current_sample():
-    current_queue = qutils.queue_to_dict()
+    sample = mxcube.CURRENTLY_MOUNTED_SAMPLE or {}
+    logging.getLogger('HWR').info('[SC] Getting currently mounted sample %s' % sample)
 
-    logging.getLogger('HWR').info('[SC] Getting currenly mounted sample %s' %mxcube.CURRENTLY_MOUNTED_SAMPLE)
-    try:
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE and \
-            mxcube.CURRENTLY_MOUNTED_SAMPLE["sampleID"] in current_queue:
-            return mxcube.CURRENTLY_MOUNTED_SAMPLE
-    except:
-        return {"sampleID": None}
-
-    return {"sampleID": None}
+    return sample 
 
 
 def get_sample_info(location):
@@ -205,42 +198,51 @@ def mount_sample(beamline_setup_hwobj,
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
 
+
 def mount_sample_clean_up(sample):
+    res = None
+
     try:
-        sid = get_current_sample().get("sampleID", False)
-        current_queue = qutils.queue_to_dict()
-
-        # We remove the current sample from the queue, if we are moving from
-        # one sample to another and the current sample is in the queue
-        if sid and current_queue[sid]:
-            node_id = current_queue[sid]["queueID"]
-            qutils.set_enabled_entry(node_id, False)
-
         msg = '[SC] mounting %s (%r)' % (sample['location'], sample['sampleID'])
         logging.getLogger('HWR').info(msg)
 
+        sid = get_current_sample().get("sampleID", False)
+        current_queue = qutils.queue_to_dict()
+
         set_sample_to_be_mounted(sample['sampleID'])
 
-        if sample['location'] != 'Manual':
+        if sample['location'] != 'Manual':           
             if not mxcube.sample_changer.getLoadedSample():
-                mxcube.sample_changer.load(sample['sampleID'], wait=True)
+                res = mxcube.sample_changer.load(sample['sampleID'], wait=True)
             elif mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
-              mxcube.sample_changer.load(sample['sampleID'], wait=True)
+                res = mxcube.sample_changer.load(sample['sampleID'], wait=True)
 
-        mxcube.shapes.clear_all()
+            if res and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP:
+                logging.getLogger('HWR').info('Starting autoloop centring ...')
+                C3D_MODE = mxcube.diffractometer.C3D_MODE
+                mxcube.diffractometer.startCentringMethod(C3D_MODE)
+            elif not mxcube.sample_changer.getLoadedSample():
+                set_current_sample(None)
+        else:
+            set_current_sample(sample)
+            res = True
 
-        if sample['location'] != 'Manual':
-            C3D_MODE = mxcube.diffractometer.C3D_MODE
-            mxcube.diffractometer.startCentringMethod(C3D_MODE)
-
-    except Exception:
+    except Exception as ex:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
-        set_current_sample(None)
-        raise
+        raise RuntimeError(str(ex))
     else:
-        # Clearing centered position
-        set_current_sample(sample)
-        logging.getLogger('HWR').info('[SC] mounted %s' % sample)
+        # Clean up if the new sample was mounted or the current sample was
+        # unmounted and the new one, for some reason, failed to mount
+        if res or (not res and not mxcube.sample_changer.getLoadedSample()):
+            mxcube.shapes.clear_all()
+
+            # We remove the current sample from the queue, if we are moving from
+            # one sample to another and the current sample is in the queue
+            if sid and current_queue[sid]:
+                node_id = current_queue[sid]["queueID"]
+                qutils.set_enabled_entry(node_id, False)
+
+    return res
 
 
 def unmount_sample_clean_up(sample):
