@@ -90,7 +90,7 @@ export function sendAddQueueItem(items) {
 }
 
 
-export function sendMountSample(sampleData) {
+export function sendMountSample(sampleData, successCb = null) {
   return function (dispatch, getState) {
     const state = getState();
 
@@ -107,10 +107,14 @@ export function sendMountSample(sampleData) {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, response.headers.get('message')));
           throw new Error('Server refused to mount sample');
+        } else {
+          setCurrentSample(sampleData.sampleID);
+
+          if (successCb) {
+            successCb();
+          }
         }
       });
-    } else {
-      setCurrentSample(sampleData.sampleID);
     }
   };
 }
@@ -135,17 +139,18 @@ export function addSamplesToQueue(sampleDataList) {
 
 export function addSampleAndMount(sampleData) {
   return function (dispatch) {
-    sendAddQueueItem([sampleData]).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to add sample'));
-      }
+    dispatch(sendMountSample(sampleData, () => {
+      sendAddQueueItem([sampleData]).then((response) => {
+        if (response.status >= 400) {
+          dispatch(showErrorPanel(true, 'Server refused to add sample'));
+        }
 
-      return response.json();
-    }).then((data) => {
-      dispatch(setQueue(data));
-      dispatch(selectSamplesAction([sampleData.sampleID]));
-      dispatch(sendMountSample(sampleData));
-    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+        return response.json();
+      }).then((data) => {
+        dispatch(setQueue(data));
+        dispatch(selectSamplesAction([sampleData.sampleID]));
+      }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+    }));
   };
 }
 
