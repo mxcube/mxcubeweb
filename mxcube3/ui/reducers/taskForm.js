@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
     case 'SHOW_FORM':
       {
         const taskData = action.taskData;
-        if (action.taskData.parameters.shape === -1) {
+        if (Object.keys(action.taskData).length !== 0 && action.taskData.parameters.shape === -1) {
           taskData.parameters.shape = action.pointID;
         }
 
