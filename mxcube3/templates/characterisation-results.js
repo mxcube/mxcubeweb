@@ -12,6 +12,8 @@ function assemble_result(data) {
     });
   }
 
+  html = `<div style="zoom: 0.8;">${html}</div>`
+
   console.log(html);
 }
 
