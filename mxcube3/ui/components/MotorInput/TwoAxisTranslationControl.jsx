@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { MOTOR_STATE } from '../../constants';
 import MotorInput from './MotorInput';
 import './motor.css';
 
@@ -63,14 +64,16 @@ export default class TwoAxisTranslationControl extends React.Component {
         <div style={{ marginBottom: '1em' }}></div>
         <Button
           onClick={() => this.stepChange('sample_vertical', sample_verticalStep, 1)}
-          disabled={this.props.motors.sample_vertical.state !== 2 || this.props.motorsDisabled}
+          disabled={this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
+          this.props.motorsDisabled}
           className="arrow arrow-up"
         >
           <i className="fa fa-angle-up" />
         </Button>
         <Button
           className="arrow arrow-left"
-          disabled={this.props.motors.sample_horizontal.state !== 2 || this.props.motorsDisabled}
+          disabled={this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
+           this.props.motorsDisabled}
           onClick={() => this.stepChange('sample_horizontal', sample_horizontalStep, -1)}
         >
           <i className="fa fa-angle-left" />
@@ -86,14 +89,16 @@ export default class TwoAxisTranslationControl extends React.Component {
         </OverlayTrigger>
         <Button
           className="arrow arrow-right"
-          disabled={this.props.motors.sample_horizontal.state !== 2 || this.props.motorsDisabled}
+          disabled={this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
+           this.props.motorsDisabled}
           onClick={() => this.stepChange('sample_horizontal', sample_horizontalStep, 1)}
         >
           <i className="fa fa-angle-right" />
         </Button>
         <Button
           className="arrow arrow-down"
-          disabled={this.props.motors.sample_vertical.state !== 2 || this.props.motorsDisabled}
+          disabled={this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
+           this.props.motorsDisabled}
           onClick={() => this.stepChange('sample_vertical', sample_verticalStep, -1)}
         >
           <i className="fa fa-angle-down" />
