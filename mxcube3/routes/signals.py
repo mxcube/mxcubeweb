@@ -1,6 +1,6 @@
 import logging
 
-import queue_model_objects_v1 as qmo
+import queue_model_objects as qmo
 import queue_entry as qe
 import json
 
