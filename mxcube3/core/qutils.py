@@ -10,9 +10,9 @@ import re
 from mock import Mock
 
 
-import queue_model_objects_v1 as qmo
+import queue_model_objects as qmo
 import queue_entry as qe
-import queue_model_enumerables_v1 as qme
+import queue_model_enumerables as qme
 
 
 from mxcube3 import mxcube

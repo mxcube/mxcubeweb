@@ -108,8 +108,8 @@ def get_aperture():
     aperture = get_beam_definer()
 
     if aperture is not None:
-        aperture_list = aperture.getPredefinedPositionsList()
-        current_aperture = aperture.getCurrentPositionName()
+        aperture_list = aperture.get_diameter_list()
+        current_aperture = aperture.get_diameter_size()
 
     return aperture_list, current_aperture
 
@@ -345,7 +345,7 @@ def set_aperture(pos):
     beam_definer = get_beam_definer()
     msg = "Changing aperture diameter to: %s" % pos
     logging.getLogger("MX3.HWR").info(msg)
-    beam_definer.moveToPosition(pos)
+    beam_definer.set_diameter_size(float(pos))
 
 
 def diffractometer_get_info():
