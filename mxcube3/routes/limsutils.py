@@ -149,6 +149,22 @@ def apply_template(params, sample_model, path_template):
     # prefix. So we strip those before setting the actual base_prefix.
     params['prefix'] = strip_prefix(path_template, params['prefix'])
 
+    if params["prefix"]:
+        path_template.base_prefix = params['prefix']
+    else:
+        path_template.base_prefix = mxcube.session.\
+            get_default_prefix(sample_model, False)
+
+    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+                             params.get('subdir', ''))
+
+    path_template.directory = full_path
+
+
+def expand_variables(pt, extra_vars):
+    if hasattr(mxcube.session, "expand_variables"):
+        mxcube.session.expand_variables(pt, extra_vars)
+
 
 def strip_prefix(pt, prefix):
     """
@@ -322,21 +338,7 @@ def get_default_prefix(sample_data, generic_name):
 
 
 def get_default_subdir(sample_data):
-    subdir = ""
-
-    if isinstance(sample_data, dict):
-        sample_name = sample_data.get("sampleName", "")
-        protein_acronym = sample_data.get("proteinAcronym", "")
-    else:
-        sample_name = sample_data.name
-        protein_acronym = sample_data.crystals[0].protein_acronym
-
-    if protein_acronym:
-        subdir = "%s/%s-%s/" %(protein_acronym, protein_acronym, sample_name)
-    else:
-        subdir = "%s/" % sample_name
-
-    return subdir.replace(':', '-')
+    return mxcube.session.get_default_subdir(sample_data)
 
 
 def get_dc_link(col_id):

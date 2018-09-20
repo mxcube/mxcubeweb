@@ -12,7 +12,7 @@ import queue_model_objects_v1 as qmo
 import queue_entry as qe
 import queue_model_enumerables_v1 as qme
 
-from flask import jsonify
+from flask import jsonify, session
 from mock import Mock
 from mxcube3 import app as mxcube
 from mxcube3 import socketio
@@ -296,8 +296,9 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-      split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    if mxcube.session.raw_data_folder_name:
+        parameters['subdir'] = os.path.join(*parameters["path"].\
+          split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.acquisitions[0].path_template
 
@@ -341,8 +342,9 @@ def _handle_wf(sample_node, node, include_lims_data):
 
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    if mxcube.session.raw_data_folder_name:
+        parameters['subdir'] = os.path.join(*parameters["path"].\
+            split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.path_template
 
@@ -386,8 +388,9 @@ def _handle_xrf(sample_node, node):
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    if mxcube.session.raw_data_folder_name:
+        parameters['subdir'] = os.path.join(*parameters["path"].\
+            split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.path_template
 
@@ -421,8 +424,9 @@ def _handle_energy_scan(sample_node, node):
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    if mxcube.session.raw_data_folder_name:
+        parameters['subdir'] = os.path.join(*parameters["path"].\
+            split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.path_template
 
@@ -949,17 +953,6 @@ def set_dc_params(model, entry, task_data, sample_model):
 
     limsutils.apply_template(params, sample_model, acq.path_template)
 
-    if params["prefix"]:
-        acq.path_template.base_prefix = params['prefix']
-    else:
-        acq.path_template.base_prefix = mxcube.session.\
-            get_default_prefix(sample_model, False)
-
-    full_path = os.path.join(mxcube.session.get_base_image_directory(),
-                             params.get('subdir', ''))
-
-    acq.path_template.directory = full_path
-
     process_path = os.path.join(mxcube.session.get_base_process_directory(),
                                 params.get('subdir', ''))
     acq.path_template.process_directory = process_path
@@ -1008,6 +1001,10 @@ def set_dc_params(model, entry, task_data, sample_model):
     # run number for existing items.
     if not params.get("queueID", ""):
         acq.path_template.run_number = get_run_number(acq.path_template)
+
+    extra_vars = {"sample_name": sample_model.get_name(),
+                  "proposal_id": Utils._proposal_id(session),}
+    limsutils.expand_variables(acq.path_template, extra_vars)
 
     model.set_enabled(task_data['checked'])
     entry.set_enabled(task_data['checked'])
