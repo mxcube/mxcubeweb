@@ -5,25 +5,27 @@ import queue_entry as qe
 import json
 
 from mxcube3 import socketio
-from mxcube3 import app as mxcube
-from mxcube3.routes import Utils
-from mxcube3.routes import qutils
-from mxcube3.routes import scutils
-from mxcube3.routes import limsutils
-from mxcube3.routes.loginutils import safe_emit
+from mxcube3 import mxcube
+from mxcube3 import blcontrol
+from mxcube3.core import utils
+from mxcube3.core import qutils
+from mxcube3.core import scutils
+from mxcube3.core import limsutils
+
+from mxcube3.core.loginutils import safe_emit
 
 from sample_changer.GenericSampleChanger import SampleChangerState
-from sample_changer.Container import Pin
-from sample_changer.GenericSampleChanger import Sample
-from mxcube3.ho_mediators.beamline_setup import BeamlineSetupMediator
 
-from qutils import READY, RUNNING, FAILED, COLLECTED, WARNING, UNCOLLECTED, queue_to_dict
+from mxcube3.core.beamline_setup import BeamlineSetupMediator
+from mxcube3.core.qutils import (READY, RUNNING, FAILED, COLLECTED,
+                                         WARNING, queue_to_dict)
 from queue_entry import CENTRING_METHOD
-from mxcube3.routes.transportutils import to_camel, from_camel
+from mxcube3.core.utils import to_camel
 
 
 def last_queue_node():
-    node = mxcube.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
+    node = blcontrol.queue.queue_hwobj.\
+        _current_queue_entries[-1].get_data_model()
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
@@ -40,7 +42,7 @@ def last_queue_node():
 beam_signals = ['beamPosChanged', 'beamInfoChanged']
 
 centringSignals = ['centringInvalid', 'newAutomaticCentringPoint', 'centringStarted',
-                   'centringAccepted','centringMoving', 'centringFailed', 'centringSuccessful',
+                   'centringAccepted', 'centringMoving', 'centringFailed', 'centringSuccessful',
                    'centringSnapshots']
 
 task_signals = {  # missing egyscan, xrf, etc...
@@ -81,12 +83,15 @@ def handle_auto_mount_next(entry):
             msg = "Not mounting next sample automatically (Auto mount next)"
             logging.getLogger('user_level_log').info(msg)
 
+
 def diffractometer_phase_changed(*args):
     data = {'msg': 'Diffractometer phase changed',
-           'phase': args
-          }
-    logging.getLogger('user_level_log').info('Diffractometer phase changed to %s' %args)
+            'phase': args
+            }
+    logging.getLogger('user_level_log').info(
+        'Diffractometer phase changed to %s' % args)
     socketio.emit('diff_phase_changed', data, namespace='/hwr')
+
 
 def sc_state_changed(*args):
     new_state = args[0]
@@ -96,7 +101,7 @@ def sc_state_changed(*args):
         old_state = args[1]
 
     location, sc_location, msg = '', '',  None
-    loaded_sample = mxcube.sample_changer.getLoadedSample()
+    loaded_sample = blcontrol.sample_changer.getLoadedSample()
 
     # Handle inconsistent API getLoadedSample sometimes returns a sampleID
     # and other times an object.
@@ -129,11 +134,11 @@ def sc_state_changed(*args):
         msg = {'signal': signal,
                'location': location,
                'message': message}
-    
+
     if msg:
         logging.getLogger("HWR").info('emitting sc state changed: ' + str(msg))
         socketio.emit('sc', msg, namespace='/hwr')
-   
+
     # emit also brut sample changer state for those interested
     state_str = SampleChangerState.STATE_DESC.get(new_state, "Unknown").upper()
     if new_state == SampleChangerState.Ready:
@@ -144,6 +149,7 @@ def sc_state_changed(*args):
 
     socketio.emit('sc_state', state_str, namespace='/hwr')
 
+
 def loaded_sample_changed(sample):
     if hasattr(sample, "getAddress"):
         address = sample.getAddress()
@@ -153,14 +159,14 @@ def loaded_sample_changed(sample):
         barcode = ''
 
     logging.getLogger("HWR").info('Loaded sample changed now is: ' + address)
- 
+
     try:
         # recreate the dict with the sample info
         q = queue_to_dict()
         sampleID = address
         sample_data = q.get(sampleID, {'sampleID': sampleID})
 
-        if mxcube.sample_changer.hasLoadedSample():
+        if blcontrol.sample_changer.hasLoadedSample():
             scutils.set_current_sample(sample_data)
         else:
             scutils.set_current_sample(None)
@@ -168,31 +174,38 @@ def loaded_sample_changed(sample):
 
         msg = {'signal': 'loadReady', 'location': address}
         socketio.emit('sc', msg, namespace='/hwr')
-        socketio.emit("loaded_sample_changed", {'address': address, 'barcode': barcode}, namespace="/hwr")
+        socketio.emit("loaded_sample_changed", {
+                      'address': address, 'barcode': barcode}, namespace="/hwr")
     except Exception, msg:
-        logging.getLogger("HWR").error('error setting loaded sample: %s' + str(msg))
+        logging.getLogger("HWR").error(
+            'error setting loaded sample: %s' + str(msg))
+
 
 def set_current_sample(sample):
     if not sample:
         sample = {"sampleID": ''}
 
-    socketio.emit("set_current_sample", sample , namespace="/hwr")
+    socketio.emit("set_current_sample", sample, namespace="/hwr")
+
 
 def sc_contents_update():
     socketio.emit("sc_contents_update")
 
+
 def sc_maintenance_update(state_list, cmd_state, message):
     try:
-        socketio.emit("sc_maintenance_update", {'state': json.dumps(state_list), 'commands_state': json.dumps(cmd_state), 'message': message}, namespace="/hwr")
-    except Exception,msg:
+        socketio.emit("sc_maintenance_update", {'state': json.dumps(
+            state_list), 'commands_state': json.dumps(cmd_state), 'message': message}, namespace="/hwr")
+    except Exception, msg:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
+
 
 def centring_started(method, *args):
     msg = {'method': method}
 
     if method in ['Computer automatic']:
         msg = {'method': CENTRING_METHOD.LOOP}
-    elif method in ['Manual 3-click' ]:
+    elif method in ['Manual 3-click']:
         msg = {'method': CENTRING_METHOD.MANUAL}
 
     socketio.emit('sample_centring', msg, namespace='/hwr')
@@ -205,7 +218,7 @@ def get_task_state(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, 'null')
 
     try:
-        limsres = mxcube.rest_lims.get_dc(lims_id)
+        limsres = blcontrol.rest_lims.get_dc(lims_id)
     except:
         limsres = {}
 
@@ -234,7 +247,7 @@ def update_task_result(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, 'null')
 
     try:
-        limsres = mxcube.rest_lims.get_dc(lims_id)
+        limsres = blcontrol.rest_lims.get_dc(lims_id)
     except:
         limsres = {}
 
@@ -245,9 +258,9 @@ def update_task_result(entry):
         msg = "Could not get lims link for collection with id: %s" % lims_id
         logging.getLogger("HWR").error(msg)
 
-    msg = { 'sample': node_index['sample'],
-            'taskIndex': node_index['idx'],
-            'limsResultData': limsres }
+    msg = {'sample': node_index['sample'],
+           'taskIndex': node_index['idx'],
+           'limsResultData': limsres}
 
     socketio.emit('update_task_lims_data', msg, namespace='/hwr')
 
@@ -259,7 +272,8 @@ def queue_execution_entry_finished(entry):
         safe_emit('task', get_task_state(entry), namespace='/hwr')
 
     if isinstance(entry, qe.SampleQueueEntry):
-        msg = {'Signal': 'DisableSample', 'sampleID': entry.get_data_model().loc_str}
+        msg = {'Signal': 'DisableSample',
+               'sampleID': entry.get_data_model().loc_str}
         safe_emit('queue', msg, namespace='/hwr')
 
 
@@ -291,7 +305,7 @@ def queue_execution_paused(state):
         msg = {'Signal': 'QueuePaused', 'Message': 'Queue execution paused'}
     else:
         msg = {'Signal': 'QueueRunning', 'Message': 'Queue execution paused'}
-    
+
     safe_emit('queue', msg, namespace='/hwr')
 
 
@@ -319,7 +333,8 @@ def collect_oscillation_started(*args):
         try:
             safe_emit('task', msg, namespace='/hwr')
         except Exception:
-            logging.getLogger("HWR").error('error sending message: ' + str(msg))
+            logging.getLogger("HWR").error(
+                'error sending message: ' + str(msg))
 
 
 def collect_image_taken(frame):
@@ -338,10 +353,11 @@ def collect_image_taken(frame):
         try:
             _emit_progress(msg)
         except Exception:
-            logging.getLogger("HWR").error('error sending message: ' + str(msg))
+            logging.getLogger("HWR").error(
+                'error sending message: ' + str(msg))
 
 
-@Utils.RateLimited(0.5)
+@utils.RateLimited(0.5)
 def _emit_progress(msg):
     logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
     safe_emit('task', msg, namespace='/hwr')
@@ -355,7 +371,7 @@ def collect_oscillation_failed(owner=None, status=FAILED, state=None,
 
     if not qutils.is_interleaved(node["node"]):
         try:
-            limsres = mxcube.rest_lims.get_dc(lims_id)
+            limsres = blcontrol.rest_lims.get_dc(lims_id)
         except:
             limsres = {}
 
@@ -368,11 +384,12 @@ def collect_oscillation_failed(owner=None, status=FAILED, state=None,
                'progress': 0}
 
         logging.getLogger('HWR').debug('[TASK CALLBACK] ' + str(msg))
-        
+
         try:
             safe_emit('task', msg, namespace='/hwr')
         except Exception:
-            logging.getLogger("HWR").error('error sending message: ' + str(msg))
+            logging.getLogger("HWR").error(
+                'error sending message: ' + str(msg))
 
 
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
@@ -395,7 +412,8 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
         try:
             safe_emit('task', msg, namespace='/hwr')
         except Exception:
-            logging.getLogger("HWR").error('error sending message: ' + str(msg))
+            logging.getLogger("HWR").error(
+                'error sending message: ' + str(msg))
 
 
 def collect_ended(owner, success, message):
@@ -417,7 +435,8 @@ def collect_ended(owner, success, message):
         try:
             safe_emit('task', msg, namespace='/hwr')
         except Exception:
-            logging.getLogger("HWR").error('error sending message: ' + str(msg))
+            logging.getLogger("HWR").error(
+                'error sending message: ' + str(msg))
 
 
 def collect_started(*args, **kwargs):
@@ -438,7 +457,8 @@ def collect_started(*args, **kwargs):
         try:
             safe_emit('task', msg, namespace='/hwr')
         except Exception:
-            logging.getLogger("HWR").error('error sending message: ' + str(msg))
+            logging.getLogger("HWR").error(
+                'error sending message: ' + str(msg))
 
 
 def grid_result_available(shape):
@@ -446,7 +466,8 @@ def grid_result_available(shape):
 
 
 def energy_scan_finished(pk, ip, rm, sample):
-    socketio.emit('energy_scan_result', {'pk': pk, 'ip': ip, 'rm': rm}, namespace='/hwr')
+    socketio.emit('energy_scan_result', {
+                  'pk': pk, 'ip': ip, 'rm': rm}, namespace='/hwr')
 
 
 def queue_interleaved_started():
@@ -506,6 +527,7 @@ def queue_interleaved_sw_done(data):
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
+
 def xrf_task_progress(taskId, progress):
     node = last_queue_node()
 
@@ -522,11 +544,13 @@ def xrf_task_progress(taskId, progress):
     except Exception:
         logging.getLogger("HWR").error('error sending message: ' + str(msg))
 
-def send_shapes(update_positions = False, movable={}):
+
+def send_shapes(update_positions=False, movable={}):
+
     shape_dict = {}
-    for shape in mxcube.shapes.get_shapes():
+    for shape in blcontrol.shapes.get_shapes():
         if update_positions:
-            shape.update_position(mxcube.diffractometer.\
+            shape.update_position(blcontrol.diffractometer.
                                   motor_positions_to_screen)
 
         s = to_camel(shape.as_dict())
@@ -540,25 +564,29 @@ def motor_position_callback(movable):
 
 
 def motor_state_callback(movable, sender=None, **kw):
+
     if movable["state"] == 2:
         # Re emit the position when the motor have finished to move
         # so that we are always sure that we have sent the final position
         motor_position_callback(movable)
 
         # Re calculate positions for shapes after motor finished to move
-        send_shapes(update_positions = True, movable=movable)
+        send_shapes(update_positions=True, movable=movable)
 
         # Update the pixels per mm if it was the zoom motor that moved
         if movable["name"] == "zoom":
-            ppm = mxcube.diffractometer.get_pixels_per_mm()
-            socketio.emit('update_pixels_per_mm', {"pixelsPerMm": ppm}, namespace='/hwr')
+            ppm = blcontrol.diffractometer.get_pixels_per_mm()
+            socketio.emit('update_pixels_per_mm', {
+                          "pixelsPerMm": ppm}, namespace='/hwr')
 
     socketio.emit('motor_state', movable, namespace='/hwr')
 
+
 def beam_changed(*args, **kwargs):
+
     ret = {}
     signal = kwargs['signal']
-    beam_info = mxcube.beamline.getObjectByRole("beam_info")
+    beam_info = blcontrol.beamline.getObjectByRole("beam_info")
 
     if beam_info is None:
         logging.getLogger('HWR').error("beamInfo is not defined")
@@ -578,7 +606,8 @@ def beam_changed(*args, **kwargs):
     try:
         socketio.emit('beam_changed', {'data': ret}, namespace='/hwr')
     except Exception:
-        logging.getLogger("HWR").exception('error sending message: %s' + str(msg))
+        logging.getLogger("HWR").exception(
+            'error sending message: %s' + str(msg))
 
 
 def beamline_action_start(name):
@@ -586,7 +615,8 @@ def beamline_action_start(name):
     try:
         socketio.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
+        logging.getLogger("HWR").exception(
+            "error sending beamline action message: %s", msg)
 
 
 def beamline_action_done(name, result):
@@ -594,7 +624,8 @@ def beamline_action_done(name, result):
     try:
         socketio.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
+        logging.getLogger("HWR").exception(
+            "error sending beamline action message: %s", msg)
     else:
         logging.getLogger('user_level_log').info('%s done.', name)
 
@@ -604,18 +635,21 @@ def beamline_action_failed(name):
     try:
         socketio.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").exception("error sending beamline action message: %s", msg)
+        logging.getLogger("HWR").exception(
+            "error sending beamline action message: %s", msg)
     else:
         logging.getLogger('user_level_log').error('Action %s failed !', name)
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineSetupMediator(mxcube.beamline).getObjectByRole("safety_shutter")
+    ho = BeamlineSetupMediator(
+        blcontrol.beamline).getObjectByRole("safety_shutter")
     data = ho.dict_repr()
     try:
         socketio.emit("beamline_value_change", data, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(data))
+
 
 def mach_info_changed(values):
     try:
@@ -623,29 +657,35 @@ def mach_info_changed(values):
     except Exception:
         logging.getLogger("HWR").error('error sending message: %s' + str(msg))
 
+
 def new_plot(plot_info):
     try:
         socketio.emit("new_plot", plot_info, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").error('error sending new_plot message: %s', plot_info)
+        logging.getLogger("HWR").error(
+            'error sending new_plot message: %s', plot_info)
 
-@Utils.RateLimited(1)
+
+@utils.RateLimited(1)
 def plot_data(data, last_index=[0], **kwargs):
     data_data = data["data"]
     if last_index[0] > len(data_data):
-      last_index = [0]
+        last_index = [0]
 
     data["data"] = data_data[last_index[0]:]
 
     try:
         socketio.emit("plot_data", data, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").exception('error sending plot_data message for plot %s', data['id'])
+        logging.getLogger("HWR").exception(
+            'error sending plot_data message for plot %s', data['id'])
     else:
         last_index[0] += len(data_data)
+
 
 def plot_end(data):
     try:
         socketio.emit("plot_end", data, namespace="/hwr")
     except Exception:
-        logging.getLogger("HWR").error('error sending plot_end message for plot %s', data['id'])
+        logging.getLogger("HWR").error(
+            'error sending plot_end message for plot %s', data['id'])

@@ -1,0 +1,166 @@
+import signals
+
+from flask import Response, jsonify, request
+from mxcube3 import server
+from mxcube3 import blcontrol
+from mxcube3.core import limsutils
+from mxcube3.core import scutils
+
+from mxcube3.core.qutils import UNCOLLECTED, SAMPLE_MOUNTED, COLLECTED
+from mxcube3.core.scutils import set_current_sample
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=['GET'])
+@server.restrict
+def get_sample_list():
+    scutils.get_sample_list()
+    return jsonify(limsutils.sample_list_get())
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/state", methods=['GET'])
+@server.restrict
+def get_sc_state():
+    state = blcontrol.sample_changer.getStatus().upper()
+    return jsonify({'state': state})
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/loaded_sample", methods=['GET'])
+@server.restrict
+def get_loaded_sample():
+    address, barcode = scutils.get_loaded_sample()
+    return jsonify({'address': address, 'barcode': barcode})
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/contents", methods=['GET'])
+@server.restrict
+def get_sc_contents_view():
+    return jsonify(scutils.get_sc_contents())
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/select/<loc>", methods=['GET'])
+@server.restrict
+def select_location(loc):
+    blcontrol.sample_changer.select(loc)
+    return scutils.get_sc_contents()
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/scan/<loc>", methods=['GET'])
+@server.restrict
+def scan_location(loc):
+    # do a recursive scan
+    blcontrol.sample_changer.scan(loc, True)
+    return scutils.get_sc_contents()
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
+@server.restrict
+def mount_sample(loc):
+    return jsonify(scutils.mount_sample())
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])
+@server.restrict
+def unmount_sample(loc):
+    blcontrol.sample_changer.unload(loc, wait=True)
+    set_current_sample(None)
+    try:
+        blcontrol.sample_changer.unload(loc, wait=True)
+        set_current_sample(None)
+    except Exception as ex:
+        return 'Cannot load sample', 409, {'Content-Type': 'application/json',
+                                           'message': str(ex)
+                                           }
+    return jsonify(scutils.get_sc_contents())
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/unmount_current/", methods=['GET'])
+@server.restrict
+def unmount_current():
+    try:
+        res = scutils.unmount_current(None, wait=True)
+    except Exception as ex:
+        res = 'Cannot unload sample', 409, {'Content-Type': 'application/json',
+                                            'message': str(ex)
+                                            }
+    return jsonify(res)
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
+@server.restrict
+def mount_sample_clean_up():
+    resp = Response(status=200)
+
+    try:
+        res = scutils.mount_sample_clean_up(request.get_json())
+    except Exception as ex:
+        resp = ('Cannot load sample', 409,
+                {'Content-Type': 'application/json', 'message': str(ex)})
+    else:
+        if not res:
+            resp = ('No sample loaded', 409,
+                    {'Content-Type': 'application/json',
+                     'message': 'Could not mount sample: No sample on given position or empty vial ?'})
+    return resp
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/unmount", methods=['POST'])
+@server.restrict
+def unmount_sample_clean_up():
+    try:
+        scutils.unmount_sample_clean_up(request.get_json())
+    except Exception as ex:
+        return 'Cannot unload sample', 409, {'Content-Type': 'application/json',
+                                             'message': str(ex)}
+    return Response(status=200)
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/get_maintenance_cmds", methods=['GET'])
+@server.restrict
+def get_maintenance_cmds():
+    try:
+        ret = scutils.get_maintenance_cmds()
+    except Exception as ex:
+        return Response(status=409)
+    else:
+        return jsonify(cmds=ret)
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/get_global_state", methods=['GET'])
+@server.restrict
+def get_global_state():
+    try:
+        ret = scutils.get_global_state()
+
+        if ret:
+            state, cmdstate, msg = ret
+        else:
+            return jsonify(ret)
+
+    except Exception as ex:
+        return Response(status=409)
+    else:
+        return jsonify(state=state, commands_state=cmdstate, message=msg)
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/get_initial_state", methods=['GET'])
+@server.restrict
+def get_initial_state():
+    return jsonify(scutils.get_initial_state())
+
+
+@server.route("/mxcube/api/v0.1/sample_changer/send_command/<cmdparts>", methods=['GET'])
+@server.restrict
+def send_command(cmdparts):
+    try:
+        ret = blcontrol.sc_maintenance.send_command(cmdparts)
+    except Exception as ex:
+        msg = str(ex)
+        msg = msg.replace("\n", " - ")
+        return ('Cannot execute command',
+                406,
+                {'Content-Type': 'application/json',
+                 'message': msg
+                 }
+                )
+    else:
+        return jsonify(response=ret)

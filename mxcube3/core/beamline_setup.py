@@ -10,8 +10,8 @@ import ShutterMockup
 
 from numpy import arange
 from mxcube3 import socketio
-from mxcube3 import app as mxcube
-from mxcube3.routes import Utils
+
+import utils
 
 from .statedefs import (MOTOR_STATE, INOUT_STATE, TANGO_SHUTTER_STATE,
                         MICRODIFF_INOUT_STATE, BEAMSTOP_STATE)
@@ -22,6 +22,8 @@ BEAMLINE_SETUP = None
 # mediator object and its corresponding hardware objects, so that the signal
 # system wont cleanup signal handlers. (PyDispatcher removes signal handlers
 # when a object is garbage collected)
+
+
 def BeamlineSetupMediator(*args):
     global BEAMLINE_SETUP
 
@@ -38,6 +40,7 @@ class _BeamlineSetupMediator(object):
     functionality should eventually be included in the hardware objects or
     other suitable places once the UI part have stabilized.
     """
+
     def __init__(self, beamline_setup):
         self._bl = beamline_setup
         self._ho_dict = {}
@@ -316,7 +319,7 @@ class HOMediatorBase(object):
 
         return data
 
-    # Dont't limit rate this method with Utils.LimitRate, all sub-classes
+    # Dont't limit rate this method with utils.LimitRate, all sub-classes
     # will share this method thus all updates wont be sent if limit rated.
     # Rather LimitRate the function calling this one.
     def value_change(self, *args, **kwargs):
@@ -332,7 +335,8 @@ class HOMediatorBase(object):
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
+        socketio.emit("beamline_value_change",
+                      self.dict_repr(), namespace="/hwr")
 
 
 class EnergyHOMediator(HOMediatorBase):
@@ -340,6 +344,7 @@ class EnergyHOMediator(HOMediatorBase):
     Mediator for Energy Hardware Object, a web socket is used communicate
     information on longer running processes.
     """
+
     def __init__(self, ho, name=''):
         super(EnergyHOMediator, self).__init__(ho, name)
         if ho.tunable:
@@ -351,7 +356,7 @@ class EnergyHOMediator(HOMediatorBase):
 
         self._precision = 4
 
-    @Utils.RateLimited(6)
+    @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
@@ -417,11 +422,13 @@ class EnergyHOMediator(HOMediatorBase):
     def read_only(self):
         return not self._ho.tunable
 
+
 class WavelengthHOMediator(HOMediatorBase):
     """
     Mediator for wavelength Hardware Object, a web socket is used communicate
     information on longer running processes.
     """
+
     def __init__(self, ho, name=''):
         super(WavelengthHOMediator, self).__init__(ho, name)
 
@@ -434,7 +441,7 @@ class WavelengthHOMediator(HOMediatorBase):
 
         self._precision = 4
 
-    @Utils.RateLimited(6)
+    @utils.RateLimited(6)
     def _value_change(self, pos, wl, *args, **kwargs):
         self.value_change(wl)
 
@@ -510,7 +517,7 @@ class DuoStateHOMediator(HOMediatorBase):
             self.STATES = MICRODIFF_INOUT_STATE
             ho.connect("actuatorStateChanged", self.state_change)
         elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-             isinstance(self._ho, ShutterMockup.ShutterMockup):
+                isinstance(self._ho, ShutterMockup.ShutterMockup):
             self.STATES = TANGO_SHUTTER_STATE
             ho.connect("shutterStateChanged", self.state_change)
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
@@ -525,7 +532,7 @@ class DuoStateHOMediator(HOMediatorBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             state = self._ho.getActuatorState()
         elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-             isinstance(self._ho, ShutterMockup.ShutterMockup):
+                isinstance(self._ho, ShutterMockup.ShutterMockup):
             state = self._ho.state_value_str
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
             state = self._ho.getPosition()
@@ -540,7 +547,7 @@ class DuoStateHOMediator(HOMediatorBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorOut()
         elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-             isinstance(self._ho, ShutterMockup.ShutterMockup):
+                isinstance(self._ho, ShutterMockup.ShutterMockup):
             self._ho.closeShutter()
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
             self._ho.moveToPosition("out")
@@ -551,13 +558,12 @@ class DuoStateHOMediator(HOMediatorBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorIn()
         elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-             isinstance(self._ho, ShutterMockup.ShutterMockup):
+                isinstance(self._ho, ShutterMockup.ShutterMockup):
             self._ho.openShutter()
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
             self._ho.moveToPosition("in")
         elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
             self._ho.actuatorOut()
-
 
     def commands(self):
         cmds = ["In", "Out"]
@@ -565,7 +571,7 @@ class DuoStateHOMediator(HOMediatorBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             cmds = ["Open", "Close"]
         elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-             isinstance(self._ho, ShutterMockup.ShutterMockup):
+                isinstance(self._ho, ShutterMockup.ShutterMockup):
             cmds = ["Open", "Close"]
 
         return cmds
@@ -591,7 +597,8 @@ class DuoStateHOMediator(HOMediatorBase):
             msg = self.STATES.STATE_TO_MSG_STR.get(state, "---")
         except:
             msg = ''
-            logging.getLogger("HWR").error("Failed to get beamline attribute message")
+            logging.getLogger("HWR").error(
+                "Failed to get beamline attribute message")
 
         return msg
 
@@ -632,7 +639,7 @@ class TransmissionHOMediator(HOMediatorBase):
 
         return trans_limits
 
-    @Utils.RateLimited(6)
+    @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
@@ -679,7 +686,7 @@ class ResolutionHOMediator(HOMediatorBase):
         ho.connect("stateChanged", self.state_change)
         self._precision = 3
 
-    @Utils.RateLimited(6)
+    @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
@@ -743,7 +750,7 @@ class ResolutionHOMediator(HOMediatorBase):
 
             for energy in x:
                 res_min, res_max = self._calc_res(radius, energy, pos_min),\
-                                   self._calc_res(radius, energy, pos_max)
+                    self._calc_res(radius, energy, pos_max)
                 limits.append((energy, res_min, res_max))
         else:
             limits = self.limits()
@@ -777,7 +784,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
         self._precision = 3
 
-    @Utils.RateLimited(6)
+    @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
@@ -822,7 +829,7 @@ class MachineInfoHOMediator(HOMediatorBase):
     def set(self, value):
         pass
 
-    @Utils.RateLimited(0.1)
+    @utils.RateLimited(0.1)
     def _value_change(self, *args, **kwargs):
         self.value_change(self.get(), **kwargs)
 
@@ -830,7 +837,6 @@ class MachineInfoHOMediator(HOMediatorBase):
         return {"current": self.get_current(),
                 "message": self.get_message(),
                 "fillmode": self.get_fill_mode()}
-
 
     def get_message(self):
         try:
@@ -882,7 +888,7 @@ class PhotonFluxHOMediator(HOMediatorBase):
 
         self._precision = 1
 
-    @Utils.RateLimited(6)
+    @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
@@ -924,6 +930,7 @@ class PhotonFluxHOMediator(HOMediatorBase):
 
         return data
 
+
 class CryoHOMediator(HOMediatorBase):
     def __init__(self, ho, name=''):
         super(CryoHOMediator, self).__init__(ho, name)
@@ -940,14 +947,13 @@ class CryoHOMediator(HOMediatorBase):
 
         self._precision = 1
 
-    @Utils.RateLimited(1)
+    @utils.RateLimited(1)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    @Utils.RateLimited(1)
+    @utils.RateLimited(1)
     def _state_change(self, *args, **kwargs):
         self.state_change(*args, **kwargs)
-
 
     def set(self, value):
         pass

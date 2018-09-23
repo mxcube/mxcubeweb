@@ -1,61 +1,31 @@
 # -*- coding: utf-8 -*-
-from mxcube3 import socketio
-from mxcube3 import app as mxcube
 from flask import Response, jsonify, request
 
+from mxcube3 import socketio
+from mxcube3 import server
 
-@mxcube.route("/mxcube/api/v0.1/workflow", methods=['GET'])
-@mxcube.restrict
+
+from mxcube3.core import wfutils
+
+
+@server.route("/mxcube/api/v0.1/workflow", methods=['GET'])
+@server.restrict
 def workflow():
-    workflows = {}
-    try:
-        for wf in mxcube.workflow.get_available_workflows():
-            # Rename name and path to wfname and wfpath in order to avoid name
-            # clashes
-            wf["wfname"] = wf.pop("name")
-            wf["wfpath"] = wf.pop("path")
-
-            workflows[wf["wfname"]] = wf
-    except Exception:
-        pass
-    
-    return jsonify({"workflows": workflows})
+    return jsonify(wfutils.get_available_workflows())
 
 
-@mxcube.route("/mxcube/api/v0.1/workflow", methods=['POST'])
-@mxcube.restrict
+@server.route("/mxcube/api/v0.1/workflow", methods=['POST'])
+@server.restrict
 def sumbit_parameters():
     data = request.get_json()
-    mxcube.workflow.set_values_map(data)
+    wfutils.submit_parameters(data)
 
 
 # This route is only for testing
-@mxcube.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=['GET'])
-@mxcube.restrict
+@server.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=['GET'])
+@server.restrict
 def workflow_dialog(wf):
-    dialog = {
-        "properties": {
-            "name": {
-                "title":"Task name",
-                "type":"string",
-                "minLength": 2
-                },
-            "description": {
-                "title":"Description",
-                "type":"string",
-                "widget":"textarea"
-                },
-            "dueTo": {
-                "title":"Due to",
-                "type":"string",
-                "widget":"compatible-datetime",
-                "format":"date-time"
-                }
-            },
-        "required":["name"],
-        "dialogName": "Trouble shooting !"
-        }
-    
+    dialog = wfutils.test_workflow_dialog(wf)
     socketio.emit("workflowParametersDialog", dialog, namespace="/hwr")
-    
+
     return Response(status=200)

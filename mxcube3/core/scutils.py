@@ -3,16 +3,34 @@ import logging
 
 # We are patching queue_entry.mount_sample at the end of this file.
 import queue_entry
+
+from mxcube3 import mxcube
+from mxcube3 import blcontrol
+
+import limsutils
 import qutils
 
-from mxcube3 import app as mxcube
+
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 
 
-def get_sample_list():
-    import limsutils
+def init_signals():
+    from mxcube3.routes import signals
 
-    samples_list = mxcube.sample_changer.getSampleList()
+    """Initialize hwobj signals."""
+    blcontrol.sample_changer.connect('stateChanged', signals.sc_state_changed)
+    blcontrol.sample_changer.connect(
+        'loadedSampleChanged', signals.loaded_sample_changed)
+    blcontrol.sample_changer.connect(
+        'contentsUpdated', signals.sc_contents_update)
+
+    if blcontrol.sc_maintenance is not None:
+        blcontrol.sc_maintenance.connect(
+            'globalStateChanged', signals.sc_maintenance_update)
+
+
+def get_sample_list():
+    samples_list = blcontrol.sample_changer.getSampleList()
     samples = {}
     samplesByCoords = {}
     order = []
@@ -39,8 +57,10 @@ def get_sample_list():
         order.append(coords)
         samplesByCoords[coords] = sample_data['sampleID']
 
-        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
-        sample_data["defaultSubDir"] = limsutils.get_default_subdir(sample_data)
+        sample_data["defaultPrefix"] = limsutils.get_default_prefix(
+            sample_data, False)
+        sample_data["defaultSubDir"] = limsutils.get_default_subdir(
+            sample_data)
 
         samples[s.getAddress()] = sample_data
         sc_contents_add(sample_data)
@@ -51,10 +71,53 @@ def get_sample_list():
 
     # sort by location, using coords tuple
     order.sort()
-    sample_list = { 'sampleList': samples,
-                    'sampleOrder': [samplesByCoords[coords] for coords in order] }
+    sample_list = {'sampleList': samples,
+                   'sampleOrder': [samplesByCoords[coords] for coords in order]}
 
     limsutils.sample_list_set(sample_list)
+
+
+def get_sc_contents():
+    def _getElementStatus(e):
+        if e.isLeaf():
+            if e.isLoaded():
+                return "Loaded"
+            if e.hasBeenLoaded():
+                return "Used"
+        if e.isPresent():
+            return "Present"
+        return ""
+
+    def _getElementID(e):
+        if e == blcontrol.sample_changer:
+            if e.getToken() is not None:
+                return e.getToken()
+        else:
+            if e.getID() is not None:
+                return e.getID()
+        return ""
+
+    def _addElement(parent, element):
+        new_element = {"name": element.getAddress(),
+                       "status": _getElementStatus(element),
+                       "id": _getElementID(element),
+                       "selected": element.isSelected()}
+
+        parent.setdefault("children", []).append(new_element)
+
+        if not element.isLeaf():
+            for e in element.getComponents():
+                _addElement(new_element, e)
+
+    root_name = blcontrol.sample_changer.getAddress()
+
+    contents = {"name": root_name}
+
+    for element in blcontrol.sample_changer.getComponents():
+        if element.isPresent():
+            _addElement(contents, element)
+
+    return contents
 
 
 def sc_contents_init():
@@ -85,17 +148,19 @@ def set_current_sample(sample):
     except:
         mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
 
-    logging.getLogger('HWR').info('[SC] Setting currenly mounted sample to %s' % sample)
+    logging.getLogger('HWR').info(
+        '[SC] Setting currenly mounted sample to %s' % sample)
 
-    from signals import set_current_sample
+    from mxcube3.routes.signals import set_current_sample
     set_current_sample(sample)
 
 
 def get_current_sample():
     sample = mxcube.CURRENTLY_MOUNTED_SAMPLE or {}
-    logging.getLogger('HWR').info('[SC] Getting currently mounted sample %s' % sample)
+    logging.getLogger('HWR').info(
+        '[SC] Getting currently mounted sample %s' % sample)
 
-    return sample 
+    return sample
 
 
 def get_sample_info(location):
@@ -110,10 +175,10 @@ def get_sample_to_be_mounted():
     return mxcube.SAMPLE_TO_BE_MOUNTED
 
 
-def mount_sample(beamline_setup_hwobj,
-                 view, data_model,
-                 centring_done_cb, async_result):
-    from signals import loaded_sample_changed
+def queue_mount_sample(beamline_setup_hwobj,
+                       view, data_model,
+                       centring_done_cb, async_result):
+    from mxcube3.routes.signals import loaded_sample_changed
 
     logging.getLogger('user_level_log').info("Loading sample ...")
     log = logging.getLogger("user_level_log")
@@ -137,7 +202,7 @@ def mount_sample(beamline_setup_hwobj,
     beamline_setup_hwobj.shape_history_hwobj.clear_all()
 
     if hasattr(sample_mount_device, '__TYPE__'):
-        if sample_mount_device.__TYPE__ in ['Marvin','CATS']:
+        if sample_mount_device.__TYPE__ in ['Marvin', 'CATS']:
             element = '%d:%02d' % loc
             sample_mount_device.load(sample=element, wait=True)
         elif sample_mount_device.__TYPE__ == "PlateManipulator":
@@ -147,10 +212,11 @@ def mount_sample(beamline_setup_hwobj,
                 # WARNING: explicit test of False return value.
                 # This is to preserve backward compatibility (load_sample was supposed to return None);
                 # if sample could not be loaded, but no exception is raised, let's skip the sample
-                raise QueueSkippEntryException("Sample changer could not load sample", "")
+                raise QueueSkippEntryException(
+                    "Sample changer could not load sample", "")
 
     if not sample_mount_device.hasLoadedSample():
-        #Disables all related collections
+        # Disables all related collections
         logging.getLogger('user_level_log').info("Sample not loaded")
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
@@ -188,7 +254,8 @@ def mount_sample(beamline_setup_hwobj,
                     logging.getLogger('user_level_log').info("Centring done !")
                 else:
                     if centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
-                        raise QueueSkippEntryException("Could not center sample, skipping", "")
+                        raise QueueSkippEntryException(
+                            "Could not center sample, skipping", "")
                     else:
                         raise RuntimeError("Could not center sample")
             except:
@@ -203,7 +270,8 @@ def mount_sample_clean_up(sample):
     res = None
 
     try:
-        msg = '[SC] mounting %s (%r)' % (sample['location'], sample['sampleID'])
+        msg = '[SC] mounting %s (%r)' % (
+            sample['location'], sample['sampleID'])
         logging.getLogger('HWR').info(msg)
 
         sid = get_current_sample().get("sampleID", False)
@@ -211,17 +279,19 @@ def mount_sample_clean_up(sample):
 
         set_sample_to_be_mounted(sample['sampleID'])
 
-        if sample['location'] != 'Manual':           
-            if not mxcube.sample_changer.getLoadedSample():
-                res = mxcube.sample_changer.load(sample['sampleID'], wait=True)
-            elif mxcube.sample_changer.getLoadedSample().getAddress() != sample['location']:
-                res = mxcube.sample_changer.load(sample['sampleID'], wait=True)
+        if sample['location'] != 'Manual':
+            if not blcontrol.sample_changer.getLoadedSample():
+                res = blcontrol.sample_changer.load(
+                    sample['sampleID'], wait=True)
+            elif blcontrol.sample_changer.getLoadedSample().getAddress() != sample['location']:
+                res = blcontrol.sample_changer.load(
+                    sample['sampleID'], wait=True)
 
             if res and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP:
                 logging.getLogger('HWR').info('Starting autoloop centring ...')
-                C3D_MODE = mxcube.diffractometer.C3D_MODE
-                mxcube.diffractometer.startCentringMethod(C3D_MODE)
-            elif not mxcube.sample_changer.getLoadedSample():
+                C3D_MODE = blcontrol.diffractometer.C3D_MODE
+                blcontrol.diffractometer.startCentringMethod(C3D_MODE)
+            elif not blcontrol.sample_changer.getLoadedSample():
                 set_current_sample(None)
         else:
             set_current_sample(sample)
@@ -233,8 +303,8 @@ def mount_sample_clean_up(sample):
     else:
         # Clean up if the new sample was mounted or the current sample was
         # unmounted and the new one, for some reason, failed to mount
-        if res or (not res and not mxcube.sample_changer.getLoadedSample()):
-            mxcube.shapes.clear_all()
+        if res or (not res and not blcontrol.sample_changer.getLoadedSample()):
+            blcontrol.shapes.clear_all()
 
             # We remove the current sample from the queue, if we are moving from
             # one sample to another and the current sample is in the queue
@@ -248,7 +318,7 @@ def mount_sample_clean_up(sample):
 def unmount_sample_clean_up(sample):
     try:
         if not sample['location'] == 'Manual':
-            mxcube.sample_changer.unload(sample['sampleID'], wait=False)
+            blcontrol.sample_changer.unload(sample['sampleID'], wait=False)
         else:
             set_current_sample(None)
 
@@ -258,10 +328,90 @@ def unmount_sample_clean_up(sample):
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
         raise
     else:
-        mxcube.queue.mounted_sample = ''
+        blcontrol.queue.mounted_sample = ''
         set_current_sample(None)
-        mxcube.shapes.clear_all()
+        blcontrol.shapes.clear_all()
+
+
+def mount_sample(loc):
+    set_sample_to_be_mounted(loc)
+    blcontrol.sample_changer.load(loc)
+
+    return get_sc_contents()
+
+
+def unmount_current():
+    blcontrol.sample_changer.unload(None, wait=True)
+    set_current_sample(None)
+
+    return get_sc_contents()
+
+
+def get_loaded_sample():
+    sample = blcontrol.sample_changer.getLoadedSample()
+
+    if sample is not None:
+        address = sample.getAddress()
+        barcode = sample.getID()
+    else:
+        address = ''
+        barcode = ''
+
+    return address, barcode
+
+
+def get_maintenance_cmds():
+    if blcontrol.sc_maintenance is not None:
+        ret = blcontrol.sc_maintenance.get_cmd_info()
+    else:
+        ret = "SC maintenance controller not defined"
+
+    return ret
+
+
+def get_global_state():
+    if blcontrol.sc_maintenance is not None:
+        return blcontrol.sc_maintenance.get_global_state()
+    else:
+        return {}
+
+
+def get_initial_state():
+    if blcontrol.sc_maintenance is not None:
+        ret = blcontrol.sc_maintenance.get_global_state()
+        global_state, cmdstate, msg = ret
+
+        cmds = blcontrol.sc_maintenance.get_cmd_info()
+
+    else:
+        global_state = {}
+        cmdstate = "SC maintenance controller not defined"
+        cmds = []
+        msg = ''
+
+    contents = get_sc_contents()
+    sample = blcontrol.sample_changer.getLoadedSample()
+
+    if sample is not None:
+        address = sample.getAddress()
+        barcode = sample.getID()
+    else:
+        address = ''
+        barcode = ''
+
+    loaded_sample = {'address': address, 'barcode': barcode}
+    state = blcontrol.sample_changer.getStatus().upper()
+
+    initial_state = {'state': state,
+                     'loaded_sample': loaded_sample,
+                     'contents': contents,
+                     'global_state': {'global_state': global_state, 'commands_state': cmdstate},
+                     'cmds': {'cmds': cmds},
+                     'msg': msg
+                     }
+
+    return initial_state
 
 
 # Important, patch queue_entry.mount_sample with the mount_sample defined above
-queue_entry.mount_sample = mount_sample
+queue_entry.mount_sample = queue_mount_sample

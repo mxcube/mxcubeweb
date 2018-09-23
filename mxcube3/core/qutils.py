@@ -4,20 +4,27 @@ import json
 import cPickle as pickle
 import redis
 import itertools
-import xml.etree.ElementTree as et
-import Utils
 import logging
+import re
+
+from flask import jsonify
+from mock import Mock
+
 
 import queue_model_objects_v1 as qmo
 import queue_entry as qe
 import queue_model_enumerables_v1 as qme
 
-from flask import jsonify
-from mock import Mock
-from mxcube3 import app as mxcube
+
+from mxcube3 import mxcube
+from mxcube3 import blcontrol
 from mxcube3 import socketio
-from . import scutils
-from . import limsutils
+
+import limsutils
+import utils
+import scutils
+
+from beamline_setup import BeamlineSetupMediator
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = 'QueuePaused'
@@ -50,9 +57,11 @@ def build_prefix_path_dict(path_list):
 
     for path in path_list:
         try:
-            path, run_number, img_number = qmo.PathTemplate.interpret_path(path)
+            path, run_number, img_number = qmo.PathTemplate.interpret_path(
+                path)
         except ValueError:
-            logging.getLogger('HWR').info('[QUEUE] Warning, failed to interpret path: "%s", please check path' % path)
+            logging.getLogger('HWR').info(
+                '[QUEUE] Warning, failed to interpret path: "%s", please check path' % path)
             path, run_number, image_number = (path, 0, 0)
 
         prefix_path_dict[path] = run_number
@@ -67,7 +76,7 @@ def get_run_number(pt):
     # interested in the prefix path
     fname = pt.get_image_path()
     prefix_path, _, _ = qmo.PathTemplate.interpret_path(fname)
-    run_number = mxcube.queue.get_next_run_number(pt)
+    run_number = blcontrol.queue.get_next_run_number(pt)
 
     if prefix_path in prefix_path_dict:
         rn = run_number + prefix_path_dict[prefix_path]
@@ -121,7 +130,7 @@ def node_index(node):
 
 def load_queue_from_dict(queue_dict):
     """
-    Loads the queue in queue_dict in to the current mxcube queue (mxcube.queue)
+    Loads the queue in queue_dict in to the current blcontrol.queue (blcontrol.queue)
 
     :param dict queue_dict: Queue dictionary, on the same format as returned by
                             queue_to_dict
@@ -161,7 +170,7 @@ def queue_to_dict(node=None, include_lims_data=False):
              the corresponding node.
     """
     if not node:
-        node = mxcube.queue.get_model_root()
+        node = blcontrol.queue.get_model_root()
 
     res = reduce(lambda x, y: x.update(y) or x,
                  queue_to_dict_rec(node, include_lims_data), {})
@@ -195,7 +204,7 @@ def queue_to_json(node=None, include_lims_data=False):
              the corresponding node.
     """
     if not node:
-        node = mxcube.queue.get_model_root()
+        node = blcontrol.queue.get_model_root()
 
     res = reduce(lambda x, y: x.update(y) or x,
                  queue_to_dict_rec(node, include_lims_data), {})
@@ -214,7 +223,7 @@ def queue_to_json_response(node=None, include_lims_data=False):
     :returns: Flask Response object
     """
     if not node:
-        node = mxcube.queue.get_model_root()
+        node = blcontrol.queue.get_model_root()
 
     res = reduce(lambda x, y: x.update(y) or x,
                  queue_to_dict_rec(node, include_lims_data), {})
@@ -240,9 +249,9 @@ def get_node_state(node_id):
     executed = node.is_executed()
     enabled = node.is_enabled()
     failed = entry.status == FAILED
-    curr_entry = mxcube.queue.queue_hwobj.get_current_entry()
-    running = mxcube.queue.queue_hwobj.is_executing and \
-              (curr_entry == entry or curr_entry == entry._parent_container)
+    curr_entry = blcontrol.queue.queue_hwobj.get_current_entry()
+    running = blcontrol.queue.queue_hwobj.is_executing and \
+        (curr_entry == entry or curr_entry == entry._parent_container)
 
     if failed:
         state = FAILED
@@ -270,15 +279,15 @@ def get_queue_state():
     queue = queue_to_dict(include_lims_data=True)
     sample_order = queue.get("sample_order", [])
 
-    res = { "current": scutils.get_current_sample().get('sampleID', ''),
-            "centringMethod": mxcube.CENTRING_METHOD,
-            "autoMountNext": get_auto_mount_sample(),
-            "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
-            "numSnapshots": mxcube.NUM_SNAPSHOTS,
-            "groupFolder": mxcube.session.get_group_name(),
-            "queue": sample_order,
-            "sampleList": limsutils.sample_list_get(current_queue=queue),
-            "queueStatus": queue_exec_state() }
+    res = {"current": scutils.get_current_sample().get('sampleID', ''),
+           "centringMethod": mxcube.CENTRING_METHOD,
+           "autoMountNext": get_auto_mount_sample(),
+           "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
+           "numSnapshots": mxcube.NUM_SNAPSHOTS,
+           "groupFolder": blcontrol.session.get_group_name(),
+           "queue": sample_order,
+           "sampleList": limsutils.sample_list_get(current_queue=queue),
+           "queueStatus": queue_exec_state()}
 
     return res
 
@@ -296,8 +305,8 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-      split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters['subdir'] = os.path.join(*parameters["path"].
+                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.acquisitions[0].path_template
 
@@ -312,8 +321,8 @@ def _handle_dc(sample_node, node, include_lims_data=False):
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(lims_id)
+    if include_lims_data and blcontrol.rest_lims:
+        limsres = blcontrol.rest_lims.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
@@ -341,8 +350,8 @@ def _handle_wf(sample_node, node, include_lims_data):
 
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters['subdir'] = os.path.join(*parameters["path"].
+                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.path_template
 
@@ -357,8 +366,8 @@ def _handle_wf(sample_node, node, include_lims_data):
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(lims_id)
+    if include_lims_data and blcontrol.rest_lims:
+        limsres = blcontrol.rest_lims.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
@@ -386,8 +395,8 @@ def _handle_xrf(sample_node, node):
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters['subdir'] = os.path.join(*parameters["path"].
+                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.path_template
 
@@ -411,6 +420,7 @@ def _handle_xrf(sample_node, node):
 
     return res
 
+
 def _handle_energy_scan(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
@@ -421,8 +431,8 @@ def _handle_energy_scan(sample_node, node):
     parameters.update(node.path_template.as_dict())
     parameters['path'] = parameters['directory']
 
-    parameters['subdir'] = os.path.join(*parameters["path"].\
-        split(mxcube.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters['subdir'] = os.path.join(*parameters["path"].
+                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
 
     pt = node.path_template
 
@@ -449,7 +459,8 @@ def _handle_energy_scan(sample_node, node):
 def _handle_char(sample_node, node, include_lims_data=False):
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
-    refp = _handle_dc(sample_node, node.reference_image_collection)['parameters']
+    refp = _handle_dc(sample_node, node.reference_image_collection)[
+        'parameters']
 
     parameters.update(refp)
 
@@ -461,8 +472,8 @@ def _handle_char(sample_node, node, include_lims_data=False):
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and mxcube.rest_lims:
-        limsres = mxcube.rest_lims.get_dc(lims_id)
+    if include_lims_data and blcontrol.rest_lims:
+        limsres = blcontrol.rest_lims.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
@@ -484,6 +495,7 @@ def _handle_char(sample_node, node, include_lims_data=False):
            }
 
     return res
+
 
 def _handle_diffraction_plan(node, sample_node):
     model, entry = get_entry(node._node_id)
@@ -508,6 +520,7 @@ def _handle_diffraction_plan(node, sample_node):
 
     return (-1, {})
 
+
 def _handle_interleaved(sample_node, node):
     wedges = []
 
@@ -530,6 +543,7 @@ def _handle_interleaved(sample_node, node):
            }
 
     return res
+
 
 def _handle_sample(node, include_lims_data=False):
     location = 'Manual' if node.free_pin_mode else node.loc_str
@@ -634,9 +648,9 @@ def queue_exec_state():
     """
     state = QUEUE_STOPPED
 
-    if mxcube.queue.queue_hwobj.is_paused():
+    if blcontrol.queue.queue_hwobj.is_paused():
         state = QUEUE_PAUSED
-    elif mxcube.queue.queue_hwobj.is_executing():
+    elif blcontrol.queue.queue_hwobj.is_executing():
         state = QUEUE_RUNNING
 
     return state
@@ -650,8 +664,8 @@ def get_entry(id):
     :returns: The tuple model, entry
     :rtype: Tuple
     """
-    model = mxcube.queue.get_node(int(id))
-    entry = mxcube.queue.queue_hwobj.get_entry_with_model(model)
+    model = blcontrol.queue.get_node(int(id))
+    entry = blcontrol.queue.queue_hwobj.get_entry_with_model(model)
     return model, entry
 
 
@@ -668,7 +682,8 @@ def delete_entry(entry):
     parent_entry = entry.get_container()
     parent_entry.dequeue(entry)
     model = entry.get_data_model()
-    mxcube.queue.del_child(model.get_parent(), model)
+    blcontrol.queue.del_child(model.get_parent(), model)
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
 
 def delete_entry_at(item_pos_list):
@@ -735,6 +750,8 @@ def swap_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list[ti2] = sentry._queue_entry_list[ti1]
     sentry._queue_entry_list[ti1] = ti2_temp_entry
 
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+
 
 def move_task_entry(sid, ti1, ti2):
     """
@@ -756,6 +773,8 @@ def move_task_entry(sid, ti1, ti2):
     # Swap queue entry order
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+
 
 def set_sample_order(order):
     """
@@ -767,14 +786,18 @@ def set_sample_order(order):
 
     if sid_list:
         queue_id_list = [current_queue[sid]["queueID"] for sid in sid_list]
-        model_entry_list =  [get_entry(qid) for qid in queue_id_list]
+        model_entry_list = [get_entry(qid) for qid in queue_id_list]
         model_list = [model_entry[0] for model_entry in model_entry_list]
         entry_list = [model_entry[1] for model_entry in model_entry_list]
 
         # Set the order in the queue model
-        mxcube.queue.get_model_root()._children = model_list
+        blcontrol.queue.get_model_root()._children = model_list
         # Set queue entry order
-        mxcube.queue.queue_hwobj._queue_entry_list = entry_list
+        blcontrol.queue.queue_hwobj._queue_entry_list = entry_list
+
+    limsutils.sample_list_set_order(order)
+
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
 
 def queue_add_item(item_list):
@@ -829,6 +852,7 @@ def queue_add_item(item_list):
     res = queue_to_dict()
 
     return res
+
 
 def _queue_add_item_rec(item_list, sample_node_id=None):
     """
@@ -917,8 +941,8 @@ def add_sample(sample_id, item):
     sample_entry = qe.SampleQueueEntry(view=Mock(), data_model=sample_model)
     enable_entry(sample_entry, True)
 
-    mxcube.queue.add_child(mxcube.queue.get_model_root(), sample_model)
-    mxcube.queue.queue_hwobj.enqueue(sample_entry)
+    blcontrol.queue.add_child(blcontrol.queue.get_model_root(), sample_model)
+    blcontrol.queue.queue_hwobj.enqueue(sample_entry)
 
     return sample_model._node_id
 
@@ -935,7 +959,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     params = task_data['parameters']
     acq.acquisition_parameters.set_from_dict(params)
 
-    ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
+    ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
 
     acq.path_template.set_from_dict(params)
@@ -944,23 +968,23 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.start_num = params["first_image"]
     acq.path_template.num_files = params["num_images"]
     acq.path_template.suffix = ftype
-    acq.path_template.precision = '0' + str(mxcube.session["file_info"].\
-        getProperty("precision", 4))
+    acq.path_template.precision = '0' + str(blcontrol.session["file_info"].
+                                            getProperty("precision", 4))
 
     limsutils.apply_template(params, sample_model, acq.path_template)
 
     if params["prefix"]:
         acq.path_template.base_prefix = params['prefix']
     else:
-        acq.path_template.base_prefix = mxcube.session.\
+        acq.path_template.base_prefix = blcontrol.session.\
             get_default_prefix(sample_model, False)
 
-    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
                              params.get('subdir', ''))
 
     acq.path_template.directory = full_path
 
-    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
                                 params.get('subdir', ''))
     acq.path_template.process_directory = process_path
 
@@ -976,9 +1000,9 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2 = qmo.Acquisition()
         model.acquisitions.append(acq2)
 
-        line = mxcube.shapes.get_shape(params["shape"])
+        line = blcontrol.shapes.get_shape(params["shape"])
         p1, p2 = line.refs
-        p1, p2 = mxcube.shapes.get_shape(p1), mxcube.shapes.get_shape(p2)
+        p1, p2 = blcontrol.shapes.get_shape(p1), blcontrol.shapes.get_shape(p2)
         cpos1 = p1.get_centred_position()
         cpos2 = p2.get_centred_position()
 
@@ -986,13 +1010,16 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2.acquisition_parameters.centred_position = cpos2
 
     elif params.get("mesh", False):
-        grid = mxcube.shapes.get_shape(params["shape"])
+        grid = blcontrol.shapes.get_shape(params["shape"])
         acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-        mesh_center = mxcube.beamline['default_mesh_values'].getProperty('mesh_center', 'top-left')
+        mesh_center = blcontrol.beamline['default_mesh_values'].getProperty(
+            'mesh_center', 'top-left')
         if mesh_center == 'top-left':
-            acq.acquisition_parameters.centred_position = grid.get_centred_positions()[0]
+            acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
+                0]
         else:
-            acq.acquisition_parameters.centred_position = grid.get_centred_positions()[1]
+            acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
+                1]
         acq.acquisition_parameters.mesh_steps = grid.get_num_lines()
         acq.acquisition_parameters.num_images = task_data['parameters']['num_images']
 
@@ -1000,7 +1027,7 @@ def set_dc_params(model, entry, task_data, sample_model):
         model.set_requires_centring(False)
 
     elif params["shape"] != -1:
-        point = mxcube.shapes.get_shape(params["shape"])
+        point = blcontrol.shapes.get_shape(params["shape"])
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
@@ -1026,15 +1053,15 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.set_from_dict(params)
     model.path_template.base_prefix = params['prefix']
     model.path_template.num_files = 0
-    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
-        getProperty("precision", 4))
+    model.path_template.precision = '0' + str(blcontrol.session["file_info"].
+                                              getProperty("precision", 4))
 
-    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
                              params.get('subdir', ''))
 
     model.path_template.directory = full_path
 
-    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
@@ -1048,7 +1075,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params['collection_software'] = 'MXCuBE - 3.0'
     beamline_params['sample_node_id'] = sample_model._node_id
     beamline_params['sample_lims_id'] = sample_model.lims_id
-    beamline_params['beamline'] = mxcube.beamline.session_hwobj.endstation_name
+    beamline_params['beamline'] = blcontrol.beamline.session_hwobj.endstation_name
 
     params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
     params_list.insert(0, params["wfpath"])
@@ -1070,10 +1097,12 @@ def set_char_params(model, entry, task_data, sample_model):
     :param dict task_data: Dictionary with new parameters
     """
     params = task_data['parameters']
-    set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
+    set_dc_params(model.reference_image_collection,
+                  entry, task_data, sample_model)
 
     try:
-        params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(params["strategy_complexity"])
+        params["strategy_complexity"] = ["SINGLE", "FEW",
+                                         "MANY"].index(params["strategy_complexity"])
     except ValueError:
         params["strategy_complexity"] = 0
 
@@ -1097,26 +1126,26 @@ def set_xrf_params(model, entry, task_data, sample_model):
     """
     params = task_data['parameters']
 
-    ftype = mxcube.beamline.getObjectByRole('xrf_spectrum').\
-            getProperty('file_suffix', 'dat').strip()
+    ftype = blcontrol.beamline.getObjectByRole('xrf_spectrum').\
+        getProperty('file_suffix', 'dat').strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
-    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
-        getProperty("precision", 4))
+    model.path_template.precision = '0' + str(blcontrol.session["file_info"].
+                                              getProperty("precision", 4))
 
     if params['prefix']:
         model.path_template.base_prefix = params['prefix']
     else:
-        model.path_template.base_prefix = mxcube.session.\
+        model.path_template.base_prefix = blcontrol.session.\
             get_default_prefix(sample_model, False)
 
-    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
                              params.get('subdir', ''))
 
     model.path_template.directory = full_path
 
-    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
@@ -1145,26 +1174,26 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     """
     params = task_data['parameters']
 
-    ftype = mxcube.beamline.getObjectByRole('energyscan').\
-            getProperty('file_suffix', 'raw').strip()
+    ftype = blcontrol.beamline.getObjectByRole('energyscan').\
+        getProperty('file_suffix', 'raw').strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
-    model.path_template.precision = '0' + str(mxcube.session["file_info"].\
-        getProperty("precision", 4))
+    model.path_template.precision = '0' + str(blcontrol.session["file_info"].
+                                              getProperty("precision", 4))
 
     if params['prefix']:
         model.path_template.base_prefix = params['prefix']
     else:
-        model.path_template.base_prefix = mxcube.session.\
+        model.path_template.base_prefix = blcontrol.session.\
             get_default_prefix(sample_model, False)
 
-    full_path = os.path.join(mxcube.session.get_base_image_directory(),
+    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
                              params.get('subdir', ''))
 
     model.path_template.directory = full_path
 
-    process_path = os.path.join(mxcube.session.get_base_process_directory(),
+    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
                                 params.get('subdir', ''))
     model.path_template.process_directory = process_path
 
@@ -1268,7 +1297,7 @@ def add_characterisation(node_id, task):
 
     char_model.set_origin(ORIGIN_MX3)
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
-    char_entry.queue_model_hwobj = mxcube.queue
+    char_entry.queue_model_hwobj = blcontrol.queue
     # Set the characterisation and reference collection parameters
     set_char_params(char_model, char_entry, task, sample_model)
 
@@ -1282,8 +1311,8 @@ def add_characterisation(node_id, task):
     refgroup_model = qmo.TaskGroup()
     refgroup_model.set_origin(ORIGIN_MX3)
 
-    mxcube.queue.add_child(sample_model, refgroup_model)
-    mxcube.queue.add_child(refgroup_model, char_model)
+    blcontrol.queue.add_child(sample_model, refgroup_model)
+    blcontrol.queue.add_child(refgroup_model, char_model)
     refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
     refgroup_entry.set_enabled(True)
@@ -1312,7 +1341,7 @@ def add_data_collection(node_id, task):
 
     pt = dc_model.acquisitions[0].path_template
 
-#    if mxcube.queue.check_for_path_collisions(pt):
+#    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
 #        msg += "path collision"
 #        raise Exception(msg)
@@ -1320,8 +1349,8 @@ def add_data_collection(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    mxcube.queue.add_child(sample_model, group_model)
-    mxcube.queue.add_child(group_model, dc_model)
+    blcontrol.queue.add_child(sample_model, group_model)
+    blcontrol.queue.add_child(group_model, dc_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1347,7 +1376,7 @@ def add_workflow(node_id, task):
 
     pt = wf_model.path_template
 
-#    if mxcube.queue.check_for_path_collisions(pt):
+#    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
 #        msg += "path collision"
 #        raise Exception(msg)
@@ -1355,8 +1384,8 @@ def add_workflow(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    mxcube.queue.add_child(sample_model, group_model)
-    mxcube.queue.add_child(group_model, wf_model)
+    blcontrol.queue.add_child(sample_model, group_model)
+    blcontrol.queue.add_child(group_model, wf_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1386,7 +1415,7 @@ def add_interleaved(node_id, task):
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
     sample_entry.enqueue(group_entry)
-    mxcube.queue.add_child(sample_model, group_model)
+    blcontrol.queue.add_child(sample_model, group_model)
 
     wc = 0
 
@@ -1401,7 +1430,7 @@ def add_interleaved(node_id, task):
         # Disable snapshots for sub-wedges
         dc_model.acquisitions[0].acquisition_parameters.take_snapshots = False
 
-        mxcube.queue.add_child(group_model, dc_model)
+        blcontrol.queue.add_child(group_model, dc_model)
         group_entry.enqueue(dc_entry)
 
     return group_model._node_id
@@ -1423,7 +1452,7 @@ def add_xrf_scan(node_id, task):
 
     pt = xrf_model.path_template
 
-#    if mxcube.queue.check_for_path_collisions(pt):
+#    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
 #        msg += "path collision"
 #        raise Exception(msg)
@@ -1431,8 +1460,8 @@ def add_xrf_scan(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    mxcube.queue.add_child(sample_model, group_model)
-    mxcube.queue.add_child(group_model, xrf_model)
+    blcontrol.queue.add_child(sample_model, group_model)
+    blcontrol.queue.add_child(group_model, xrf_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1458,7 +1487,7 @@ def add_energy_scan(node_id, task):
 
     pt = escan_model.path_template
 
-#    if mxcube.queue.check_for_path_collisions(pt):
+#    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
 #        msg += "path collision"
 #        raise Exception(msg)
@@ -1466,8 +1495,8 @@ def add_energy_scan(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    mxcube.queue.add_child(sample_model, group_model)
-    mxcube.queue.add_child(group_model, escan_model)
+    blcontrol.queue.add_child(sample_model, group_model)
+    blcontrol.queue.add_child(group_model, escan_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1482,31 +1511,33 @@ def new_queue():
     Creates a new queue
     :returns: MxCuBE QueueModel Object
     """
-    queue = pickle.loads(mxcube.empty_queue)
+    queue = pickle.loads(blcontrol.empty_queue)
     queue.diffraction_plan = {}
 
     init_signals(queue)
-    mxcube.xml_rpc_server.queue_hwobj = queue.queue_hwobj
-    mxcube.xml_rpc_server.queue_model_hwobj = queue
+    blcontrol.xml_rpc_server.queue_hwobj = queue.queue_hwobj
+    blcontrol.xml_rpc_server.queue_model_hwobj = queue
+    blcontrol.queue = queue
+
     return queue
 
 
 def save_queue(session, redis=redis.Redis()):
     """
-    Saves the current mxcube queue (mxcube.queue) into a redis database.
+    Saves the current blcontrol.queue (blcontrol.queue) into a redis database.
     The queue that is saved is the pickled result returned by queue_to_dict
 
     :param session: Session to save queue for
     :param redis: Redis database
 
     """
-    proposal_id = Utils._proposal_id(session)
+    proposal_id = utils._proposal_id(session)
 
     if proposal_id is not None:
         # List of samples dicts (containing tasks) sample and tasks have same
         # order as the in queue HO
-        queue = queue_to_dict(mxcube.queue.get_model_root())
-        redis.set("mxcube:queue:%d" % proposal_id, pickle.dumps(queue))
+        queue = queue_to_dict(blcontrol.queue.get_model_root())
+        redis.set("blcontrol.queue:%d" % proposal_id, pickle.dumps(queue))
 
 
 def load_queue(session, redis=redis.Redis()):
@@ -1516,10 +1547,10 @@ def load_queue(session, redis=redis.Redis()):
     :param session: Session for queue to load
     :param redis: Redis database
     """
-    proposal_id = Utils._proposal_id(session)
+    proposal_id = utils._proposal_id(session)
 
     if proposal_id is not None:
-        serialized_queue = redis.get("mxcube:queue:%d" % proposal_id)
+        serialized_queue = redis.get("blcontrol.queue:%d" % proposal_id)
         queue = pickle.loads(serialized_queue)
         load_queue_from_dict(queue)
 
@@ -1581,7 +1612,8 @@ def queue_model_diff_plan_available(char, collection_list):
             setattr(collection, 'shape', origin_model.shape)
 
             task = _handle_dc(sample, collection)
-            task.update({'isDiffractionPlan': True, 'originID': origin_model._node_id})
+            task.update({'isDiffractionPlan': True,
+                         'originID': origin_model._node_id})
             cols.append(task)
 
     socketio.emit('add_diff_plan', {"tasks": cols}, namespace='/hwr')
@@ -1606,6 +1638,7 @@ def set_auto_add_diffplan(autoadd, current_sample=None):
                 model, entry = get_entry(t['queueID'])
                 entry.auto_add_diff_plan = autoadd
 
+
 def execute_entry_with_id(sid, tindex=None):
     """
     Execute the entry at position (sampleID, task index) in queue
@@ -1614,7 +1647,7 @@ def execute_entry_with_id(sid, tindex=None):
     :param int tindex: task index of task within sample with id sampleID
     """
     current_queue = queue_to_dict()
-    mxcube.queue.queue_hwobj.set_pause(False)
+    blcontrol.queue.queue_hwobj.set_pause(False)
 
     if tindex in ['undefined', 'None', 'null', None]:
         node_id = current_queue[sid]["queueID"]
@@ -1627,9 +1660,10 @@ def execute_entry_with_id(sid, tindex=None):
             try:
                 scutils.mount_sample_clean_up(current_queue[sid])
             except:
-                mxcube.queue.queue_hwobj.emit('queue_execution_failed', (None,))
+                blcontrol.queue.queue_hwobj.emit(
+                    'queue_execution_failed', (None,))
             else:
-                mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
+                blcontrol.queue.queue_hwobj.emit('queue_stopped', (None,))
         else:
             enabled_entries = []
 
@@ -1642,7 +1676,7 @@ def execute_entry_with_id(sid, tindex=None):
             enable_sample_entries(enabled_entries, False)
             enable_sample_entries([sid], True)
 
-            mxcube.queue.queue_hwobj.execute()
+            blcontrol.queue.queue_hwobj.execute()
     else:
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
@@ -1652,40 +1686,41 @@ def execute_entry_with_id(sid, tindex=None):
 
         node, entry = get_entry(parent_id)
 
-        mxcube.queue.queue_hwobj._running = True
+        blcontrol.queue.queue_hwobj._running = True
 
-        mxcube.queue.queue_hwobj._is_stopped = False
-        mxcube.queue.queue_hwobj._set_in_queue_flag()
+        blcontrol.queue.queue_hwobj._is_stopped = False
+        blcontrol.queue.queue_hwobj._set_in_queue_flag()
         try:
-            mxcube.queue.queue_hwobj.execute_entry(entry)
+            blcontrol.queue.queue_hwobj.execute_entry(entry)
         except:
-            mxcube.queue.queue_hwobj.emit('queue_execution_failed', (None,))
+            blcontrol.queue.queue_hwobj.emit('queue_execution_failed', (None,))
         finally:
-            mxcube.queue.queue_hwobj._running = False
-            mxcube.queue.queue_hwobj.emit('queue_stopped', (None,))
+            blcontrol.queue.queue_hwobj._running = False
+            blcontrol.queue.queue_hwobj.emit('queue_stopped', (None,))
 
 
 def init_signals(queue):
     """
     Initialize queue hwobj related signals.
     """
-    import signals
+    from mxcube3.routes import signals
 
-    mxcube.collect.connect(mxcube.collect, "collectStarted",
-                           signals.collect_started)
-    mxcube.collect.connect(mxcube.collect, 'collectOscillationStarted',
-                           signals.collect_oscillation_started)
-    mxcube.collect.connect(mxcube.collect, 'collectOscillationFailed',
-                           signals.collect_oscillation_failed)
-    mxcube.collect.connect(mxcube.collect, 'collectImageTaken',
-                           signals.collect_image_taken)
+    blcontrol.collect.connect(blcontrol.collect, "collectStarted",
+                              signals.collect_started)
+    blcontrol.collect.connect(blcontrol.collect, 'collectOscillationStarted',
+                              signals.collect_oscillation_started)
+    blcontrol.collect.connect(blcontrol.collect, 'collectOscillationFailed',
+                              signals.collect_oscillation_failed)
+    blcontrol.collect.connect(blcontrol.collect, 'collectImageTaken',
+                              signals.collect_image_taken)
 
-    mxcube.collect.connect(mxcube.collect, 'collectOscillationFinished',
-                           signals.collect_oscillation_finished)
+    blcontrol.collect.connect(blcontrol.collect, 'collectOscillationFinished',
+                              signals.collect_oscillation_finished)
 
     queue.connect(queue, 'child_added', queue_model_child_added)
 
-    queue.connect(queue, 'diff_plan_available', queue_model_diff_plan_available)
+    queue.connect(queue, 'diff_plan_available',
+                  queue_model_diff_plan_available)
 
     queue.queue_hwobj.connect("queue_execute_started",
                               signals.queue_execution_started)
@@ -1749,7 +1784,8 @@ def get_task_progress(node, pdata):
     if node.is_executed():
         progress = 1
     elif is_interleaved(node):
-        progress = (pdata["current_idx"] + 1) * pdata["sw_size"] / float(pdata["nitems"] * pdata["sw_size"])
+        progress = (pdata["current_idx"] + 1) * pdata["sw_size"] / \
+            float(pdata["nitems"] * pdata["sw_size"])
     elif isinstance(node, qmo.Characterisation):
         dc = node.reference_image_collection
         total = float(dc.acquisitions[0].acquisition_parameters.num_images) * 2
@@ -1767,24 +1803,445 @@ def is_interleaved(node):
 
 
 def init_queue_settings():
-    mxcube.NUM_SNAPSHOTS = mxcube.collect.getProperty('num_snapshots', 4)
-    mxcube.AUTO_MOUNT_SAMPLE = mxcube.collect.getProperty('auto_mount_sample', False)
-    mxcube.AUTO_ADD_DIFFPLAN = mxcube.collect.getProperty('auto_add_diff_plan', False)
+    mxcube.NUM_SNAPSHOTS = blcontrol.collect.getProperty('num_snapshots', 4)
+    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.collect.getProperty(
+        'auto_mount_sample', False)
+    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.collect.getProperty(
+        'auto_add_diff_plan', False)
 
 
 def add_default_sample():
-    sample = { "sampleID": "1",
-               "sampleName": "noname",
-               "proteinAcronym": "noacronym",
-               "type": "Sample",
-               "defaultPrefix": "noname",
-               "location": 'Manual',
-               "loadable": True,
-               "tasks": [] }
+    sample = {"sampleID": "1",
+              "sampleName": "noname",
+              "proteinAcronym": "noacronym",
+              "type": "Sample",
+              "defaultPrefix": "noname",
+              "location": 'Manual',
+              "loadable": True,
+              "tasks": []}
 
     try:
         scutils.mount_sample_clean_up(sample)
     except Exception as ex:
         logging.getLogger('HWR').exception('[SC] sample could not be mounted')
+        logging.getLogger('HWR').exception(str(ex))
     else:
         queue_add_item([sample])
+
+
+def queue_start(sid):
+    """
+    Start execution of the queue.
+
+    :returns: Respons object, status code set to:
+              200: On success
+              409: Queue could not be started
+    """
+    logging.getLogger('HWR').info('[QUEUE] Queue going to start')
+    from mxcube3.routes import signals
+
+    try:
+        # If auto mount sample is false, just run the sample
+        # supplied in the call
+        if not get_auto_mount_sample():
+            if sid > 0:
+                execute_entry_with_id(sid)
+        else:
+            # Making sure all sample entries are enabled before running the
+            # queue qutils.enable_sample_entries(queue["sample_order"], True)
+            blcontrol.queue.queue_hwobj.set_pause(False)
+            blcontrol.queue.queue_hwobj.execute()
+
+    except Exception as ex:
+        signals.queue_execution_failed(ex)
+    else:
+        logging.getLogger('HWR').info('[QUEUE] Queue started')
+
+
+def queue_stop():
+    from mxcube3.routes import signals
+
+    if blcontrol.queue.queue_hwobj._root_task is not None:
+        blcontrol.queue.queue_hwobj.stop()
+    else:
+        qe = blcontrol.queue.queue_hwobj.get_current_entry()
+        # check if a node/tas is executing and stop that one
+        try:
+            qe.stop()
+        except Exception as ex:
+            print str(ex)
+
+        logging.getLogger('user_level_log').info(
+            'Queue execution was aborted, ' + str(qe.get_data_model()))
+
+        blcontrol.queue.queue_hwobj.set_pause(False)
+        # the next two is to avoid repeating the task
+        # TODO: if you now run the queue it will be enabled and run
+        qe.get_data_model().set_executed(True)
+        qe.get_data_model().set_enabled(False)
+        qe._execution_failed = True
+
+        blcontrol.queue.queue_hwobj._is_stopped = True
+        signals.queue_execution_stopped()
+        signals.collect_oscillation_failed()
+
+
+def queue_pause():
+    """
+    Pause the execution of the queue
+    """
+    blcontrol.queue.queue_hwobj.pause(True)
+
+    msg = {'Signal': queue_exec_state(),
+           'Message': 'Queue execution paused',
+           'State': 1}
+
+    logging.getLogger('HWR').info('[QUEUE] Paused')
+
+    return msg
+
+
+def queue_unpause():
+    """
+    Unpause execution of the queue
+
+    :returns: Response object, status code set to:
+              200: On success
+              409: Queue could not be unpause
+    """
+    blcontrol.queue.queue_hwobj.pause(False)
+
+    msg = {'Signal': queue_exec_state(),
+           'Message': 'Queue execution started',
+           'State': 1}
+
+    logging.getLogger('HWR').info('[QUEUE] Resumed')
+
+    return msg
+
+
+def queue_clear():
+    blcontrol.diffractometer.savedCentredPos = []
+    limsutils.init_sample_list()
+    blcontrol.queue = new_queue()
+    msg = '[QUEUE] Cleared  ' + str(blcontrol.queue.get_model_root()._name)
+    logging.getLogger('HWR').info(msg)
+
+
+def set_queue(json_queue, session):
+    # Clear queue
+    blcontrol.diffractometer.savedCentredPos = []
+    blcontrol.queue = new_queue()
+
+    # Set new queue
+    queue_add_item(json_queue)
+    save_queue(session)
+
+
+def queue_update_item(sqid, tqid, data):
+    model, entry = get_entry(tqid)
+    sample_model, sample_entry = get_entry(sqid)
+
+    if data["type"] == "DataCollection":
+        set_dc_params(model, entry, data, sample_model)
+    elif data["type"] == "Characterisation":
+        set_char_params(model, entry, data, sample_model)
+
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+
+    return model
+
+
+def queue_enable_item(qid_list, enabled):
+
+    for qid in qid_list:
+        set_enabled_entry(qid, enabled)
+
+    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+
+
+def update_sample(sid, params):
+
+    sample_node = blcontrol.queue.get_node(sid)
+
+    if sample_node:
+        sample_entry = blcontrol.queue.queue_hwobj.get_entry_with_model(
+            sample_node)
+        # TODO: update here the model with the new 'params'
+        # missing lines...
+        sample_entry.set_data_model(sample_node)
+        logging.getLogger('HWR').info('[QUEUE] sample updated')
+    else:
+        msg = "[QUEUE] Sample with id %s not in queue, can't update" % sid
+        logging.getLogger('HWR').error(msg)
+        raise Exception(msg)
+
+
+def toggle_node(node_id):
+    node = blcontrol.queue.get_node(node_id)
+    entry = blcontrol.queue.queue_hwobj.get_entry_with_model(node)
+    queue = queue_to_dict()
+
+    if isinstance(entry, qe.SampleQueueEntry):
+        # this is a sample entry, thus, go through its checked children and
+        # toggle those
+        if entry.is_enabled():
+            entry.set_enabled(False)
+            node.set_enabled(False)
+        else:
+            entry.set_enabled(True)
+            node.set_enabled(True)
+
+        new_state = entry.is_enabled()
+        for elem in queue[node_id]:
+            child_node = blcontrol.queue.get_node(elem['queueID'])
+            child_entry = blcontrol.queue.queue_hwobj.get_entry_with_model(
+                child_node)
+            if new_state:
+                child_entry.set_enabled(True)
+                child_node.set_enabled(True)
+            else:
+                child_entry.set_enabled(False)
+                child_node.set_enabled(False)
+
+    else:
+        # not a sample so find the parent and toggle directly
+        logging.getLogger('HWR').info(
+            '[QUEUE] toggling entry with id: %s' % node_id)
+        # this is a TaskGroup, so it is not in the parsed queue
+        parent_node = node.get_parent()
+        # go a level up,
+        # this is a TaskGroup for a Char, a sampleQueueEntry if DataCol
+        parent_node = parent_node.get_parent()
+        if isinstance(parent_node, qmo.TaskGroup):
+            parent_node = parent_node.get_parent()
+        parent = parent_node._node_id
+        parent_entry = blcontrol.queue.queue_hwobj.get_entry_with_model(
+            parent_node)
+        # now that we know the sample parent no matter what is the entry
+        # (char, dc) check if the brother&sisters are enabled (and enable the
+        # parent)
+        checked = 0
+
+        for i in queue[parent]:
+            # at least one brother is enabled, no need to change parent
+            if i['queueID'] != node_id and i['checked'] == 1:
+                checked = 1
+                break
+        if entry.is_enabled():
+            entry.set_enabled(False)
+            node.set_enabled(False)
+
+        else:
+            entry.set_enabled(True)
+            node.set_enabled(True)
+
+        new_state = entry.is_enabled()
+        for met in queue[parent]:
+            if int(met.get('queueID')) == node_id:
+                if new_state == 0 and checked == 0:
+                    parent_entry.set_enabled(False)
+                    parent_node.set_enabled(False)
+                elif new_state == 1 and checked == 0:
+                    parent_entry.set_enabled(True)
+                    parent_node.set_enabled(True)
+
+
+def add_centring(_id, params):
+    msg = '[QUEUE] centring add requested with data: ' + str(params)
+    logging.getLogger('HWR').info(msg)
+
+    cent_node = qmo.SampleCentring()
+    cent_entry = qe.SampleCentringQueueEntry()
+    cent_entry.set_data_model(cent_node)
+    cent_entry.set_queue_controller(blcontrol.qm)
+    node = blcontrol.queue.get_node(int(id))
+    entry = blcontrol.queue.queue_hwobj.get_entry_with_model(node)
+    entry._set_background_color = Mock()
+
+    new_node = blcontrol.queue.add_child_at_id(int(id), cent_node)
+    entry.enqueue(cent_entry)
+
+    logging.getLogger('HWR').info('[QUEUE] centring added to sample')
+
+    return {'QueueId': new_node, 'Type': 'Centring', 'Params': params}
+
+
+def get_default_dc_params():
+    """
+    returns the default values for an acquisition (data collection).
+    """
+    acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
+    ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
+    ftype = ftype if ftype else '.?'
+    n = int(blcontrol.session["file_info"].getProperty("precision", 4))
+
+    bl = BeamlineSetupMediator(blcontrol.beamline)
+
+    return {
+        'acq_parameters': {
+            'first_image': acq_parameters.first_image,
+            'num_images': acq_parameters.num_images,
+            'osc_start': acq_parameters.osc_start,
+            'osc_range': acq_parameters.osc_range,
+            'kappa': acq_parameters.kappa,
+            'kappa_phi': acq_parameters.kappa_phi,
+            'overlap': acq_parameters.overlap,
+            'exp_time': acq_parameters.exp_time,
+            'num_passes': acq_parameters.num_passes,
+            'resolution': acq_parameters.resolution,
+            'energy': acq_parameters.energy,
+            'transmission': acq_parameters.transmission,
+            'shutterless': acq_parameters.shutterless,
+            'detector_mode': acq_parameters.detector_mode,
+            'inverse_beam': False,
+            'take_dark_current': True,
+            'skip_existing_images': False,
+            'take_snapshots': True,
+            'helical': False,
+            'mesh': False,
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
+        },
+        'limits': bl.get_acquisition_limit_values()
+    }
+
+
+def get_default_char_acq_params():
+    """
+    returns the default values for a characterisation acquisition.
+    TODO: implement as_dict in the qmo.AcquisitionParameters
+    """
+    acq_parameters = blcontrol.beamline.get_default_char_acq_parameters()
+    ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
+    ftype = ftype if ftype else '.?'
+    n = int(blcontrol.session["file_info"].getProperty("precision", 4))
+
+    char_defaults = blcontrol.beamline.\
+        get_default_characterisation_parameters().as_dict()
+
+    acq_defaults = {
+        'first_image': acq_parameters.first_image,
+        'num_images': acq_parameters.num_images,
+        'osc_start': acq_parameters.osc_start,
+        'osc_range': acq_parameters.osc_range,
+        'kappa': acq_parameters.kappa,
+        'kappa_phi': acq_parameters.kappa_phi,
+        'overlap': acq_parameters.overlap,
+        'exp_time': acq_parameters.exp_time,
+        'num_passes': acq_parameters.num_passes,
+        'resolution': acq_parameters.resolution,
+        'energy': acq_parameters.energy,
+        'transmission': acq_parameters.transmission,
+        'shutterless': False,
+        'detector_mode': acq_parameters.detector_mode,
+        'inverse_beam': False,
+        'take_dark_current': True,
+        'skip_existing_images': False,
+        'take_snapshots': True,
+        'prefixTemplate': '{PREFIX}_{POSITION}',
+        'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}', }
+
+    char_defaults.update(acq_defaults)
+
+    return {'acq_parameters': char_defaults}
+
+
+def get_default_mesh_params():
+    """
+    returns the default values for a mesh.
+    """
+    acq_parameters = blcontrol.beamline.\
+        get_default_acquisition_parameters('default_mesh_values')
+
+    return {
+        'acq_parameters': {
+            'first_image': acq_parameters.first_image,
+            'num_images': acq_parameters.num_images,
+            'osc_start': acq_parameters.osc_start,
+            'osc_range': acq_parameters.osc_range,
+            'kappa': acq_parameters.kappa,
+            'kappa_phi': acq_parameters.kappa_phi,
+            'overlap': acq_parameters.overlap,
+            'exp_time': acq_parameters.exp_time,
+            'num_passes': acq_parameters.num_passes,
+            'resolution': acq_parameters.resolution,
+            'energy': acq_parameters.energy,
+            'transmission': acq_parameters.transmission,
+            'shutterless': acq_parameters.shutterless,
+            'detector_mode': acq_parameters.detector_mode,
+            'inverse_beam': False,
+            'take_dark_current': True,
+            'skip_existing_images': False,
+            'take_snapshots': True,
+            'cell_counting': blcontrol.beamline['default_mesh_values'].
+            getProperty('cell_counting', 'zig-zag'),
+            'cell_spacing': blcontrol.beamline['default_mesh_values'].
+            getProperty('cell_spacing', 'None'),
+            'prefixTemplate': '{PREFIX}_{POSITION}',
+            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
+        },
+    }
+
+
+def get_default_xrf_parameters():
+    int_time = 5
+
+    try:
+        int_time = blcontrol.beamline.getObjectByRole('xrf_spectrum').\
+            getProperty('default_integration_time', '5').strip()
+        try:
+            int(int_time)
+        except ValueError:
+            pass
+
+    except Exception:
+        msg = "Failed to get object with role: xrf_spectrum. "
+        msg += "cannot get default values for XRF"
+        logging.getLogger("HWR").error(msg)
+
+    return {"countTime": int_time}
+
+
+def get_sample(_id):
+    sample = queue_to_dict().get(_id, None)
+
+    if not sample:
+        msg = '[QUEUE] sample info could not be retrieved'
+        logging.getLogger('HWR').error(msg)
+
+    return sample
+
+
+def get_method(sample_id, method_id):
+    sample = queue_to_dict().get(int(id), None)
+
+    if not sample:
+        msg = "[QUEUE] sample info could not be retrieved"
+        logging.getLogger('HWR').error(msg)
+        raise Exception(msg)
+    else:
+        # Find task with queue id method_id
+        for task in sample.tasks:
+            if task['queueID'] == int(method_id):
+                return task
+
+    msg = "[QUEUE] method info could not be retrieved, it does not exits for"
+    msg += " the given sample"
+    logging.getLogger('HWR').exception(msg)
+
+    raise Exception(msg)
+
+
+def set_group_folder(path):
+    if path and path[0] in ["/", "."]:
+        path = path[1:]
+
+    if path and path[-1] != "/":
+        path += "/"
+
+    path = "".join([c for c in path if re.match(r"^[a-zA-Z0-9_/-]*$", c)])
+
+    blcontrol.session.set_user_group(path)
+    root_path = blcontrol.session.get_base_image_directory()
+    return {'path': path, 'rootPath': root_path}

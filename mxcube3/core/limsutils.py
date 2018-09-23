@@ -4,13 +4,14 @@ import sys
 import logging
 import copy
 import os
+import StringIO
 from scandir import scandir
 
 import queue_model_objects_v1 as qmo
-import scutils
-import qutils
 
-from mxcube3 import app as mxcube
+from mxcube3 import mxcube
+from mxcube3 import blcontrol
+
 from flask import session
 
 
@@ -19,7 +20,7 @@ def scantree(path, include):
 
     try:
         res = _scantree_rec(path, include, [])
-    except OSError as ex:
+    except OSError:
         pass
 
     return res
@@ -68,11 +69,11 @@ def sample_list_sync_sample(lims_sample):
     sample_to_update = None
 
     # LIMS sample has code, check if the code was read by SC
-    if lims_code and scutils.sc_contents_from_code_get(lims_code):
-        sample_to_update = scutils.sc_contents_from_code_get(lims_code)
+    if lims_code and mxcube.sc.sc_contents_from_code_get(lims_code):
+        sample_to_update = mxcube.sc.sc_contents_from_code_get(lims_code)
     elif lims_location:
         # Asume that the samples have been put in the right place of the SC
-        sample_to_update = scutils.sc_contents_from_location_get(lims_location)
+        sample_to_update = mxcube.sc_contents_from_location_get(lims_location)
 
     if sample_to_update:
         loc = sample_to_update["sampleID"]
@@ -80,6 +81,8 @@ def sample_list_sync_sample(lims_sample):
 
 
 def synch_sample_list_with_queue(current_queue=None):
+    from mxcube3.core import qutils
+
     if not current_queue:
         current_queue = qutils.queue_to_dict(include_lims_data=True)
 
@@ -125,10 +128,10 @@ def apply_template(params, sample_model, path_template):
     if '{' in params.get('subdir', ''):
         if sample_model.crystals[0].protein_acronym:
             params['subdir'] = params['subdir'].format(NAME=sample_model.get_name(),
-                ACRONYM=sample_model.crystals[0].protein_acronym)
+                                                       ACRONYM=sample_model.crystals[0].protein_acronym)
         else:
-              stripped = params["subdir"][0: params["subdir"].find('{')]
-              params['subdir'] = stripped + sample_model.get_name()
+            stripped = params["subdir"][0: params["subdir"].find('{')]
+            params['subdir'] = stripped + sample_model.get_name()
 
         # The template was only applied partially if subdir ends with '-'
         # probably because either acronym or protein name is null in LIMS
@@ -138,7 +141,7 @@ def apply_template(params, sample_model, path_template):
     if '{' in params.get('prefix', ''):
         sample = mxcube.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
         prefix = get_default_prefix(sample, False)
-        shape = params["shape"] if params["shape"] > 0 else '';
+        shape = params["shape"] if params["shape"] > 0 else ''
         params['prefix'] = params['prefix'].format(PREFIX=prefix,
                                                    POSITION=shape)
 
@@ -164,7 +167,7 @@ def strip_prefix(pt, prefix):
         prefix = prefix[len(pt.reference_image_prefix) + 1:]
 
     if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix):]:
-       prefix = prefix[:-(len(pt.wedge_prefix) + 1)]
+        prefix = prefix[:-(len(pt.wedge_prefix) + 1)]
 
     if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix):]:
         prefix = prefix[:-(len(pt.mad_prefix) + 1)]
@@ -175,8 +178,10 @@ def strip_prefix(pt, prefix):
 def lims_existing_session(login_res):
     return not login_res.get("Session", {}).get("new_session_flag", True)
 
+
 def lims_is_inhouse(login_res):
     return login_res.get("Session", {}).get("is_inhouse", False)
+
 
 def lims_valid_login(login_res):
     return login_res['status']['code'] == 'ok'
@@ -198,16 +203,16 @@ def lims_login(loginID, password):
     ERROR_CODE = dict({'status': {'code': '0'}})
 
     try:
-        mxcube.rest_lims.authenticate(loginID, password)
+        blcontrol.rest_lims.authenticate(loginID, password)
     except:
         logging.getLogger('HWR').error('[LIMS-REST] Could not authenticate')
         return ERROR_CODE
 
-    if mxcube.db_connection.loginType.lower() == 'user':
+    if blcontrol.db_connection.loginType.lower() == 'user':
         try:
-            connection_ok = mxcube.db_connection.echo()
+            connection_ok = blcontrol.db_connection.echo()
             if not connection_ok:
-                mxcube.db_connection.init()
+                blcontrol.db_connection.init()
         except:
             msg = '[LIMS] Connection Error!'
             logging.getLogger('HWR').error(msg)
@@ -215,20 +220,22 @@ def lims_login(loginID, password):
 
         try:
 
-            proposals = mxcube.db_connection.get_proposals_by_user(loginID)
+            proposals = blcontrol.db_connection.get_proposals_by_user(loginID)
 
-            logging.getLogger('HWR').info('[LIMS] Retrieving proposal list for user: %s, proposals: %s' % (loginID, proposals))
+            logging.getLogger('HWR').info(
+                '[LIMS] Retrieving proposal list for user: %s, proposals: %s' % (loginID, proposals))
             session['proposal_list'] = copy.deepcopy(proposals)
         except:
-            logging.getLogger('HWR').error('[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
+            logging.getLogger('HWR').error(
+                '[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
             return ERROR_CODE
 
         for prop in session['proposal_list']:
-            todays_session = mxcube.db_connection.get_todays_session(prop)
+            todays_session = blcontrol.db_connection.get_todays_session(prop)
             prop['Session'] = [todays_session['session']]
 
-        if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None):
-            dummy = mxcube.session.commissioning_fake_proposal
+        if hasattr(blcontrol.session, 'commissioning_fake_proposal') and blcontrol.session.is_inhouse(loginID, None):
+            dummy = blcontrol.session.commissioning_fake_proposal
             session['proposal_list'].append(dummy)
 
         login_res['proposalList'] = session['proposal_list']
@@ -236,10 +243,10 @@ def lims_login(loginID, password):
 
     else:
         try:
-            login_res = mxcube.db_connection.login(loginID, password)
-            proposal = mxcube.db_connection.\
-                       get_proposal(login_res['Proposal']['code'],
-                                    login_res['Proposal']['number'])
+            login_res = blcontrol.db_connection.login(loginID, password)
+            proposal = blcontrol.db_connection.\
+                get_proposal(login_res['Proposal']['code'],
+                             login_res['Proposal']['number'])
 
         except:
             logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
@@ -248,7 +255,8 @@ def lims_login(loginID, password):
         session['proposal_list'] = [proposal]
         login_res['proposalList'] = [proposal]
 
-    logging.getLogger('HWR').info('[LIMS] Logged in, proposal data: %s' % login_res)
+    logging.getLogger('HWR').info(
+        '[LIMS] Logged in, proposal data: %s' % login_res)
 
     return login_res
 
@@ -260,7 +268,8 @@ def get_proposal_info(proposal):
     from mxcube3.routes.loginutils import users
 
     for user in users().itervalues():
-        logging.getLogger('HWR').info("[LIMS] Serching for proposal: %s" % proposal)
+        logging.getLogger('HWR').info(
+            "[LIMS] Serching for proposal: %s" % proposal)
         for prop in user["limsData"].get('proposalList', []):
             _p = "%s%s" % (prop.get('Proposal').get('code', '').lower(),
                            prop.get('Proposal').get('number', ''))
@@ -276,31 +285,38 @@ def select_proposal(proposal):
 
     logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal)
     logging.getLogger('HWR').info("[LIMS] Proposal info: %s" % proposal_info)
-    if mxcube.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
-        if hasattr(mxcube.session, 'set_in_commissioning'):
-            mxcube.session.set_in_commissioning(proposal_info)
-            logging.getLogger('HWR').info("[LIMS] Commissioning proposal flag set.")
+    if blcontrol.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
+        if hasattr(blcontrol.session, 'set_in_commissioning'):
+            blcontrol.session.set_in_commissioning(proposal_info)
+            logging.getLogger('HWR').info(
+                "[LIMS] Commissioning proposal flag set.")
 
     if proposal_info:
-        mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
-        mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
-        mxcube.session.session_id = proposal_info.get('Session')[0].get('sessionId')
+        blcontrol.session.proposal_code = proposal_info.get(
+            'Proposal').get('code', '')
+        blcontrol.session.proposal_number = proposal_info.get(
+            'Proposal').get('number', '')
+        blcontrol.session.session_id = proposal_info.get('Session')[
+            0].get('sessionId')
 
-        if hasattr(mxcube.session, 'prepare_directories'):
+        if hasattr(blcontrol.session, 'prepare_directories'):
             try:
                 logging.getLogger('HWR').info('[LIMS] Creating data directories for proposal %s'
                                               % proposal)
-                mxcube.session.prepare_directories(proposal_info)
+                blcontrol.session.prepare_directories(proposal_info)
             except:
                 logging.getLogger('HWR').info('[LIMS] Error creating data directories, %s'
                                               % sys.exc_info()[1])
 
         # Get all the files in the root data dir for this user
-        root_path = mxcube.session.get_base_image_directory()
+        root_path = blcontrol.session.get_base_image_directory()
 
         if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
-            ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
+            ftype = blcontrol.beamline.detector_hwobj.getProperty(
+                'file_suffix')
             mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
+
+        logging.getLogger('user_log').info('[LIMS] Proposal selected.')
 
         return True
     else:
@@ -314,11 +330,12 @@ def get_default_prefix(sample_data, generic_name):
         sample.name = sample_data.get("sampleName", "").replace(':', '-')
         sample.location = sample_data.get("location", "").split(':')
         sample.lims_id = sample_data.get("limsID", -1)
-        sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
+        sample.crystals[0].protein_acronym = sample_data.get(
+            "proteinAcronym", "")
     else:
         sample = sample_data
 
-    return mxcube.session.get_default_prefix(sample, generic_name)
+    return blcontrol.session.get_default_prefix(sample, generic_name)
 
 
 def get_default_subdir(sample_data):
@@ -332,7 +349,7 @@ def get_default_subdir(sample_data):
         protein_acronym = sample_data.crystals[0].protein_acronym
 
     if protein_acronym:
-        subdir = "%s/%s-%s/" %(protein_acronym, protein_acronym, sample_name)
+        subdir = "%s/%s-%s/" % (protein_acronym, protein_acronym, sample_name)
     else:
         subdir = "%s/" % sample_name
 
@@ -340,12 +357,74 @@ def get_default_subdir(sample_data):
 
 
 def get_dc_link(col_id):
-    link = mxcube.rest_lims.dc_link(col_id)
+    link = blcontrol.rest_lims.dc_link(col_id)
 
     if not link:
-        link = mxcube.db_connection.dc_link(col_id)
+        link = blcontrol.db_connection.dc_link(col_id)
 
     return link
+
+
+def get_dc_thumbnail(image_id):
+    fname, data = blcontrol.rest_lims.get_dc_thumbnail(image_id)
+    data = StringIO.StringIO(data)
+    data.seek(0)
+
+    return fname, data
+
+
+def get_dc_image(image_id):
+    fname, data = blcontrol.rest_lims.get_dc_image(image_id)
+    data = StringIO.StringIO(data)
+    data.seek(0)
+
+    return fname, data
+
+
+def get_quality_indicator_plot(dc_id):
+    data = blcontrol.rest_lims.get_quality_indicator_plot(dc_id)
+    data = StringIO.StringIO(data)
+    data.seek(0)
+
+    return "qind", data
+
+
+def synch_with_lims(proposal_id):
+    # session_id is not used, so we can pass None as second argument to
+    # 'db_connection.get_samples'
+    lims_samples = blcontrol.db_connection.get_samples(proposal_id, None)
+
+    samples_info_list = lims_samples
+    mxcube.LIMS_SAMPLE_DATA = {}
+
+    for sample_info in samples_info_list:
+        sample_info["limsID"] = sample_info.pop("sampleId")
+        sample_info["limsLink"] = blcontrol.rest_lims.sample_link()
+        sample_info["defaultPrefix"] = get_default_prefix(sample_info, False)
+        sample_info["defaultSubDir"] = get_default_subdir(sample_info)
+
+        try:
+            basket = int(sample_info["containerSampleChangerLocation"])
+        except (TypeError, ValueError, KeyError):
+            continue
+        else:
+            if blcontrol.sample_changer.__class__.__TYPE__ in ['HCD', 'FlexHCD', 'RoboDiff']:
+                cell = int(round((basket+0.5)/3.0))
+                puck = basket-3*(cell-1)
+                sample_info["containerSampleChangerLocation"] = "%d:%d" % (
+                    cell, puck)
+
+        try:
+            lims_location = sample_info["containerSampleChangerLocation"] + \
+                ":%02d" % int(sample_info["sampleLocation"])
+        except:
+            logging.getLogger('HWR').info(
+                '[LIMS] Could not parse sample loaction from LIMS, (perhaps not set ?)')
+        else:
+            sample_info["lims_location"] = lims_location
+            sample_list_sync_sample(sample_info)
+
+    return sample_list_get()
 
 
 def convert_to_dict(ispyb_object):
@@ -360,11 +439,11 @@ def convert_to_dict(ispyb_object):
                 val = convert_to_dict(val)
             elif type(val) == types.ListType:
                 val = [convert_to_dict(x)
-                        if type(x) == types.InstanceType else x
-                        for x in val]
+                       if type(x) == types.InstanceType else x
+                       for x in val]
             elif type(val) == types.DictType:
                 val = dict([(k, convert_to_dict(x)
-                            if type(x) == types.InstanceType else x)
+                             if type(x) == types.InstanceType else x)
                             for k, x in val.iteritems()])
 
             d[key] = val
