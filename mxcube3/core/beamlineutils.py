@@ -95,28 +95,6 @@ def diffractometer_init_signals():
         "phaseChanged", signals.diffractometer_phase_changed)
 
 
-def viewport_beam_info():
-    """
-    Returns beam information retrieved by the beam_info hardware object,
-    containing position, size and shape.
-
-    :return: Beam info dictionary with keys: position, shape, size_x, size_y
-    :rtype: dict
-    """
-    beam_info = blcontrol.beamline.getObjectByRole("beam_info")
-    beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
-
-    if beam_info is not None:
-        beam_info_dict.update(beam_info.get_beam_info())
-        # Get the scale of the video stream, so that we can calculate
-        # the correct beam posiition
-        width, height, scale = streaming.video_size()
-        position = beam_info.get_beam_position()
-        beam_info_dict["position"] = position
-
-    return beam_info_dict
-
-
 def get_aperture():
     """
     Returns list of apertures and the one currently used.
@@ -175,7 +153,7 @@ def get_viewport_info():
     width, height, scale = streaming.video_size()
     pixelsPerMm = blcontrol.diffractometer.get_pixels_per_mm()
 
-    beam_info_dict = viewport_beam_info()
+    beam_info_dict = get_beam_info()
 
     data = {"pixelsPerMm": pixelsPerMm,
             "imageWidth": width,
@@ -211,7 +189,7 @@ def beamline_get_all_attributes():
                         "type": cmd.type, "data": cmd.value()})
 
     data.update({'availableMethods': ho.get_available_methods()})
-    data.update({'path': hwr.session.get_base_image_directory(),
+    data.update({'path': blcontrol.session.get_base_image_directory(),
                  'actionsList': actions})
     data.update({'energyScanElements':
                  ho.get_available_elements().get("elements", [])})
@@ -320,20 +298,29 @@ def beamline_get_attribute(name):
 
 def get_beam_info():
     """
-    Beam information: position, size, shape
-    return_data = {"position": , "shape": , "size_x": , "size_y": }
+    Returns beam information retrieved by the beam_info hardware object,
+    containing position, size and shape.
+
+    :return: Beam info dictionary with keys: position, shape, size_x, size_y
+    :rtype: dict
     """
-    beam_info_dict = mxcube.beamlineutils.get_beam_info()
-    aperture_list, current_aperture = mxcube.beamlineutils.get_aperture()
+    beam_info = blcontrol.beamline.getObjectByRole("beam_info")
+    beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
 
-    ret = {'position': beam_info_dict.get("position"),
-           'shape': beam_info_dict.get("shape"),
-           'size_x': beam_info_dict.get("size_x"),
-           'size_y': beam_info_dict.get("size_y"),
-           'apertureList': aperture_list,
-           'currentAperture': current_aperture}
+    if beam_info is not None:
+        beam_info_dict.update(beam_info.get_beam_info())
+        # Get the scale of the video stream, so that we can calculate
+        # the correct beam posiition
+        width, height, scale = streaming.video_size()
+        position = beam_info.get_beam_position()
+        beam_info_dict["position"] = position
 
-    return ret
+    aperture_list, current_aperture = get_aperture()
+
+    beam_info_dict.update({'apertureList': aperture_list,
+                           'currentAperture': current_aperture})
+
+    return beam_info_dict
 
 
 def prepare_beamline_for_sample():

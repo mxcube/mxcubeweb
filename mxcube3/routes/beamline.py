@@ -78,7 +78,7 @@ def beamline_set_attribute(name):
     else:
         code = 520
 
-    response = jsonify(res)
+    response = jsonify(data)
     response.code = code
     return response
 

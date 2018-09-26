@@ -1,6 +1,8 @@
 import os
 import sys
 import logging
+import atexit
+import json
 
 from logging import StreamHandler, NullHandler
 from logging.handlers import TimedRotatingFileHandler
@@ -23,35 +25,40 @@ USERS = {}
 ALLOW_REMOTE = False
 TIMEOUT_GIVES_CONTROL = False
 VIDEO_DEVICE = None
+AUTO_MOUNT_SAMPLE = False
+AUTO_ADD_DIFFPLAN = False
+NUM_SNAPSHOTS = 4
+UI_STATE = dict()
 
 
-def init(cmdline_options):
+def init(allow_remote, ra_timeout, video_device):
     from mxcube3.core import utils
 
     global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
-    ALLOW_REMOTE = cmdline_options.allow_remote
-    TIMEOUT_GIVES_CONTROL = cmdline_options.ra_timeout
+    ALLOW_REMOTE = allow_remote
+    TIMEOUT_GIVES_CONTROL = ra_timeout
 
-    init_sample_video(cmdline_options)
+    init_sample_video(video_device)
     utils.enable_snapshots(blcontrol.collect, blcontrol.diffractometer)
+    init_signal_handlers()
+
+    atexit.register(app_atexit)
 
 
-def init_sample_video(cmdline_options):
+def init_sample_video(video_device):
     global VIDEO_DEVICE
 
     from mxcube3.video import streaming
 
     try:
-        streaming.init(blcontrol.diffractometer.camera,
-                       cmdline_options.video_device)
+        streaming.init(blcontrol.diffractometer.camera, video_device)
     except Exception as ex:
-        msg = "Could not initialize video from %s, error was: " \
-              % cmdline_options.video_device
+        msg = "Could not initialize video from %s, error was: " % video_device
         msg += str(ex)
         logging.getLogger('HWR').info(msg)
         VIDEO_DEVICE = None
     else:
-        VIDEO_DEVICE = cmdline_options.video_device
+        VIDEO_DEVICE = video_device
 
 
 def init_signal_handlers():
@@ -106,3 +113,36 @@ def init_logging(log_file):
 
 def init_state_storage():
     import state_storage
+    state_storage.init()
+
+
+def save_settings():
+    from mxcube3.core import qutils
+
+    queue = qutils.queue_to_dict(blcontrol.queue.get_model_root())
+
+    # For the moment not storing USERS
+
+    data = {"QUEUE": queue,
+            "CURRENTLY_MOUNTED_SAMPLE": CURRENTLY_MOUNTED_SAMPLE,
+            "SAMPLE_TO_BE_MOUNTED": SAMPLE_TO_BE_MOUNTED,
+            "CENTRING_METHOD": CENTRING_METHOD,
+            "NODE_ID_TO_LIMS_ID": NODE_ID_TO_LIMS_ID,
+            "INITIAL_FILE_LIST": INITIAL_FILE_LIST,
+            "SC_CONTENTS": SC_CONTENTS,
+            "SAMPLE_LIST": SAMPLE_LIST,
+            "TEMP_DISABLED": TEMP_DISABLED,
+            "ALLOW_REMOTE": ALLOW_REMOTE,
+            "TIMEOUT_GIVES_CONTROL": TIMEOUT_GIVES_CONTROL,
+            "VIDEO_DEVICE": VIDEO_DEVICE,
+            "AUTO_MOUNT_SAMPLE": AUTO_MOUNT_SAMPLE,
+            "AUTO_ADD_DIFFPLAN": AUTO_ADD_DIFFPLAN,
+            "NUM_SNAPSHOTS": NUM_SNAPSHOTS,
+            "UI_STATE": UI_STATE}
+
+    with open("stored-mxcube-session.json", "w") as fp:
+        json.dump(data, fp)
+
+
+def app_atexit():
+    save_settings()

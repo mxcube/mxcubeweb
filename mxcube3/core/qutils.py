@@ -1537,7 +1537,7 @@ def save_queue(session, redis=redis.Redis()):
         # List of samples dicts (containing tasks) sample and tasks have same
         # order as the in queue HO
         queue = queue_to_dict(blcontrol.queue.get_model_root())
-        redis.set("blcontrol.queue:%d" % proposal_id, pickle.dumps(queue))
+        redis.set("mxcube.queue:%d" % proposal_id, pickle.dumps(queue))
 
 
 def load_queue(session, redis=redis.Redis()):
@@ -1550,7 +1550,7 @@ def load_queue(session, redis=redis.Redis()):
     proposal_id = utils._proposal_id(session)
 
     if proposal_id is not None:
-        serialized_queue = redis.get("blcontrol.queue:%d" % proposal_id)
+        serialized_queue = redis.get("mxcube.queue:%d" % proposal_id)
         queue = pickle.loads(serialized_queue)
         load_queue_from_dict(queue)
 

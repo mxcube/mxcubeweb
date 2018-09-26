@@ -94,8 +94,6 @@ def logged_in_users(exclude_inhouse=False):
 
 
 def set_operator(sid):
-    from mxcube3.routes.limsutils import select_proposal
-
     # Clear previous operator
     for user in users().itervalues():
         user["operator"] = False
@@ -104,8 +102,8 @@ def set_operator(sid):
     user = get_user_by_sid(sid)
     user["operator"] = True
 
-    if blcontrol.db_conection.loginType.lower() != 'user':
-        select_proposal(user["loginID"])
+    if blcontrol.db_connection.loginType.lower() != 'user':
+        limsutils.select_proposal(user["loginID"])
 
 
 def users():
@@ -288,7 +286,7 @@ def login_info(login_info):
 
     res = {"synchrotron_name": blcontrol.session.synchrotron_name,
            "beamline_name": blcontrol.session.beamline_name,
-           "loginType": blcontrol.db_conection.loginType.title(),
+           "loginType": blcontrol.db_connection.loginType.title(),
            "loginRes": login_info,
            "master": is_operator(session.sid),
            "observerName": get_observer_name()

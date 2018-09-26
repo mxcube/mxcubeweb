@@ -30,9 +30,6 @@ def login():
 
     res = loginutils.login(login_id, password)
 
-    import pdb
-    pdb.set_trace()
-
     return jsonify(res)
 
 

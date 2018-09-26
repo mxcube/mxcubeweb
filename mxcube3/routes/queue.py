@@ -293,7 +293,7 @@ def get_default_dc_params():
     """
     returns the default values for an acquisition (data collection).
     """
-    resp = jsonify(qutils.get_defualt_dc_params)
+    resp = jsonify(qutils.get_default_dc_params())
 
     resp.status_code = 200
     return resp

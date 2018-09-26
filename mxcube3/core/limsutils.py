@@ -265,7 +265,7 @@ def get_proposal_info(proposal):
     """
     Search for the given proposal in the proposal list.
     """
-    from mxcube3.routes.loginutils import users
+    from loginutils import users
 
     for user in users().itervalues():
         logging.getLogger('HWR').info(
