@@ -60,7 +60,7 @@ def build_prefix_path_dict(path_list):
             path, run_number, img_number = qmo.PathTemplate.interpret_path(
                 path)
         except ValueError:
-            logging.getLogger('HWR').info(
+            logging.getLogger('MX3.HWR').info(
                 '[QUEUE] Warning, failed to interpret path: "%s", please check path' % path)
             path, run_number, image_number = (path, 0, 0)
 
@@ -683,7 +683,7 @@ def delete_entry(entry):
     parent_entry.dequeue(entry)
     model = entry.get_data_model()
     blcontrol.queue.del_child(model.get_parent(), model)
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
 
 def delete_entry_at(item_pos_list):
@@ -750,7 +750,7 @@ def swap_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list[ti2] = sentry._queue_entry_list[ti1]
     sentry._queue_entry_list[ti1] = ti2_temp_entry
 
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
 
 def move_task_entry(sid, ti1, ti2):
@@ -773,7 +773,7 @@ def move_task_entry(sid, ti1, ti2):
     # Swap queue entry order
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
 
 def set_sample_order(order):
@@ -797,7 +797,7 @@ def set_sample_order(order):
 
     limsutils.sample_list_set_order(order)
 
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
 
 def queue_add_item(item_list):
@@ -1823,8 +1823,8 @@ def add_default_sample():
     try:
         scutils.mount_sample_clean_up(sample)
     except Exception as ex:
-        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
-        logging.getLogger('HWR').exception(str(ex))
+        logging.getLogger('MX3.HWR').exception('[SC] sample could not be mounted')
+        logging.getLogger('MX3.HWR').exception(str(ex))
     else:
         queue_add_item([sample])
 
@@ -1837,7 +1837,7 @@ def queue_start(sid):
               200: On success
               409: Queue could not be started
     """
-    logging.getLogger('HWR').info('[QUEUE] Queue going to start')
+    logging.getLogger('MX3.HWR').info('[QUEUE] Queue going to start')
     from mxcube3.routes import signals
 
     try:
@@ -1855,7 +1855,7 @@ def queue_start(sid):
     except Exception as ex:
         signals.queue_execution_failed(ex)
     else:
-        logging.getLogger('HWR').info('[QUEUE] Queue started')
+        logging.getLogger('MX3.HWR').info('[QUEUE] Queue started')
 
 
 def queue_stop():
@@ -1896,7 +1896,7 @@ def queue_pause():
            'Message': 'Queue execution paused',
            'State': 1}
 
-    logging.getLogger('HWR').info('[QUEUE] Paused')
+    logging.getLogger('MX3.HWR').info('[QUEUE] Paused')
 
     return msg
 
@@ -1915,7 +1915,7 @@ def queue_unpause():
            'Message': 'Queue execution started',
            'State': 1}
 
-    logging.getLogger('HWR').info('[QUEUE] Resumed')
+    logging.getLogger('MX3.HWR').info('[QUEUE] Resumed')
 
     return msg
 
@@ -1925,7 +1925,7 @@ def queue_clear():
     limsutils.init_sample_list()
     blcontrol.queue = new_queue()
     msg = '[QUEUE] Cleared  ' + str(blcontrol.queue.get_model_root()._name)
-    logging.getLogger('HWR').info(msg)
+    logging.getLogger('MX3.HWR').info(msg)
 
 
 def set_queue(json_queue, session):
@@ -1947,7 +1947,7 @@ def queue_update_item(sqid, tqid, data):
     elif data["type"] == "Characterisation":
         set_char_params(model, entry, data, sample_model)
 
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
     return model
 
@@ -1957,7 +1957,7 @@ def queue_enable_item(qid_list, enabled):
     for qid in qid_list:
         set_enabled_entry(qid, enabled)
 
-    logging.getLogger('HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
 
 
 def update_sample(sid, params):
@@ -1970,10 +1970,10 @@ def update_sample(sid, params):
         # TODO: update here the model with the new 'params'
         # missing lines...
         sample_entry.set_data_model(sample_node)
-        logging.getLogger('HWR').info('[QUEUE] sample updated')
+        logging.getLogger('MX3.HWR').info('[QUEUE] sample updated')
     else:
         msg = "[QUEUE] Sample with id %s not in queue, can't update" % sid
-        logging.getLogger('HWR').error(msg)
+        logging.getLogger('MX3.HWR').error(msg)
         raise Exception(msg)
 
 
@@ -2006,7 +2006,7 @@ def toggle_node(node_id):
 
     else:
         # not a sample so find the parent and toggle directly
-        logging.getLogger('HWR').info(
+        logging.getLogger('MX3.HWR').info(
             '[QUEUE] toggling entry with id: %s' % node_id)
         # this is a TaskGroup, so it is not in the parsed queue
         parent_node = node.get_parent()
@@ -2049,7 +2049,7 @@ def toggle_node(node_id):
 
 def add_centring(_id, params):
     msg = '[QUEUE] centring add requested with data: ' + str(params)
-    logging.getLogger('HWR').info(msg)
+    logging.getLogger('MX3.HWR').info(msg)
 
     cent_node = qmo.SampleCentring()
     cent_entry = qe.SampleCentringQueueEntry()
@@ -2062,7 +2062,7 @@ def add_centring(_id, params):
     new_node = blcontrol.queue.add_child_at_id(int(id), cent_node)
     entry.enqueue(cent_entry)
 
-    logging.getLogger('HWR').info('[QUEUE] centring added to sample')
+    logging.getLogger('MX3.HWR').info('[QUEUE] centring added to sample')
 
     return {'QueueId': new_node, 'Type': 'Centring', 'Params': params}
 
@@ -2198,7 +2198,7 @@ def get_default_xrf_parameters():
     except Exception:
         msg = "Failed to get object with role: xrf_spectrum. "
         msg += "cannot get default values for XRF"
-        logging.getLogger("HWR").error(msg)
+        logging.getLogger("MX3.HWR").error(msg)
 
     return {"countTime": int_time}
 
@@ -2208,7 +2208,7 @@ def get_sample(_id):
 
     if not sample:
         msg = '[QUEUE] sample info could not be retrieved'
-        logging.getLogger('HWR').error(msg)
+        logging.getLogger('MX3.HWR').error(msg)
 
     return sample
 
@@ -2218,7 +2218,7 @@ def get_method(sample_id, method_id):
 
     if not sample:
         msg = "[QUEUE] sample info could not be retrieved"
-        logging.getLogger('HWR').error(msg)
+        logging.getLogger('MX3.HWR').error(msg)
         raise Exception(msg)
     else:
         # Find task with queue id method_id
@@ -2228,7 +2228,7 @@ def get_method(sample_id, method_id):
 
     msg = "[QUEUE] method info could not be retrieved, it does not exits for"
     msg += " the given sample"
-    logging.getLogger('HWR').exception(msg)
+    logging.getLogger('MX3.HWR').exception(msg)
 
     raise Exception(msg)
 

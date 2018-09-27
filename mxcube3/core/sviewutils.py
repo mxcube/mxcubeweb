@@ -69,7 +69,7 @@ def centring_add_current_point(*args):
             centring_update_current_point(motors, x, y)
             shape = blcontrol.shapes.get_shape(CENTRING_POINT_ID)
         except Exception:
-            logging.getLogger('HWR').exception("Centring failed !")
+            logging.getLogger('MX3.HWR').exception("Centring failed !")
 
     if shape:
         shape.state = "SAVED"
@@ -142,7 +142,7 @@ def init_signals():
             if movable:
                 signals.motor_position_callback(movable[motor])
             else:
-                logging.getLogger('HWR').exception(
+                logging.getLogger('MX3.HWR').exception(
                     "Could not call position callback for %s" % motor)
 
         def state_cb(state, motor=motor, **kw):
@@ -151,7 +151,7 @@ def init_signals():
             if movable:
                 signals.motor_state_callback(movable[motor], **kw)
             else:
-                logging.getLogger('HWR').exception(
+                logging.getLogger('MX3.HWR').exception(
                     "Could not call state callback for %s" % motor)
 
         setattr(dm, "_%s_pos_callback" % motor, pos_cb)
@@ -181,7 +181,7 @@ def init_signals():
                     motor_sw_hwobj, 'actuatorStateChanged', state_cb)
 
         except Exception as ex:
-            logging.getLogger('HWR').exception(str(ex))
+            logging.getLogger('MX3.HWR').exception(str(ex))
 
     dm.connect("centringStarted", signals.centring_started)
     dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
@@ -369,7 +369,7 @@ def move_zoom_motor(pos):
 
     msg = "Changing zoom level to: %s %s" % (
         pos, zoom_levels[int(pos)])
-    logging.getLogger('HWR').info(msg)
+    logging.getLogger('MX3.HWR').info(msg)
 
     zoom_motor.moveToPosition(zoom_levels[int(pos)])
 
@@ -470,7 +470,7 @@ def start_auto_centring():
         :statuscode: 409: error
     """
     msg = '[Centring] Auto centring method requested'
-    logging.getLogger('HWR.MX3').info(msg)
+    logging.getLogger('MX3.HWR').info(msg)
     blcontrol.diffractometer.startAutoCentring()
 
 
@@ -480,7 +480,7 @@ def start_manual_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    logging.getLogger('HWR.MX3').info('[Centring] 3click method requested')
+    logging.getLogger('MX3.HWR').info('[Centring] 3click method requested')
 
     if blcontrol.diffractometer.currentCentringProcedure:
         blcontrol.diffractometer.cancelCentringMethod()
@@ -491,14 +491,14 @@ def start_manual_centring():
 
 
 def abort_centring():
-    logging.getLogger('HWR.MX3').info('[Centring] Abort method requested')
+    logging.getLogger('MX3.HWR').info('[Centring] Abort method requested')
     blcontrol.diffractometer.cancelCentringMethod()
     centring_remove_current_point()
 
 
 def centring_handle_click(x, y):
     if blcontrol.diffractometer.currentCentringProcedure:
-        logging.getLogger('HWR').info(
+        logging.getLogger('MX3.HWR').info(
             "A click requested, x: %s, y: %s" % (x, y))
         blcontrol.diffractometer.imageClicked(x, y, x, y)
         centring_click()
@@ -518,7 +518,7 @@ def reject_centring():
 
 def move_to_beam(x, y):
     msg = "Moving to beam, A point submitted, x: %s, y: %s" % (x, y)
-    logging.getLogger('HWR').info(msg)
+    logging.getLogger('MX3.HWR').info(msg)
 
     if getattr(blcontrol.diffractometer, 'moveToBeam') is None:
         # v > 2.2, or perhaps start_move_to_beam?
@@ -539,4 +539,4 @@ def set_centring_method(method):
         msg = '[Centring] Using click centring when mounting samples'
         mxcube.CENTRING_METHOD = CENTRING_METHOD.MANUAL
 
-    logging.getLogger('HWR.MX3').info(msg)
+    logging.getLogger('MX3.HWR').info(msg)

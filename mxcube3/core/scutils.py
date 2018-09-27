@@ -148,7 +148,7 @@ def set_current_sample(sample):
     except:
         mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
 
-    logging.getLogger('HWR').info(
+    logging.getLogger('MX3.HWR').info(
         '[SC] Setting currenly mounted sample to %s' % sample)
 
     from mxcube3.routes.signals import set_current_sample
@@ -157,7 +157,7 @@ def set_current_sample(sample):
 
 def get_current_sample():
     sample = mxcube.CURRENTLY_MOUNTED_SAMPLE or {}
-    logging.getLogger('HWR').info(
+    logging.getLogger('MX3.HWR').info(
         '[SC] Getting currently mounted sample %s' % sample)
 
     return sample
@@ -272,7 +272,7 @@ def mount_sample_clean_up(sample):
     try:
         msg = '[SC] mounting %s (%r)' % (
             sample['location'], sample['sampleID'])
-        logging.getLogger('HWR').info(msg)
+        logging.getLogger('MX3.HWR').info(msg)
 
         sid = get_current_sample().get("sampleID", False)
         current_queue = qutils.queue_to_dict()
@@ -288,7 +288,7 @@ def mount_sample_clean_up(sample):
                     sample['sampleID'], wait=True)
 
             if res and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP:
-                logging.getLogger('HWR').info('Starting autoloop centring ...')
+                logging.getLogger('MX3.HWR').info('Starting autoloop centring ...')
                 C3D_MODE = blcontrol.diffractometer.C3D_MODE
                 blcontrol.diffractometer.startCentringMethod(C3D_MODE)
             elif not blcontrol.sample_changer.getLoadedSample():
@@ -298,7 +298,7 @@ def mount_sample_clean_up(sample):
             res = True
 
     except Exception as ex:
-        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
+        logging.getLogger('MX3.HWR').exception('[SC] sample could not be mounted')
         raise RuntimeError(str(ex))
     else:
         # Clean up if the new sample was mounted or the current sample was
@@ -323,9 +323,9 @@ def unmount_sample_clean_up(sample):
             set_current_sample(None)
 
         msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
-        logging.getLogger('HWR').info(msg)
+        logging.getLogger('MX3.HWR').info(msg)
     except Exception:
-        logging.getLogger('HWR').exception('[SC] sample could not be mounted')
+        logging.getLogger('MX3.HWR').exception('[SC] sample could not be mounted')
         raise
     else:
         blcontrol.queue.mounted_sample = ''

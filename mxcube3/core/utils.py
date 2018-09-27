@@ -106,7 +106,7 @@ def get_movable_state_and_position(item_name):
 
         if hwobj is None:
             msg = "[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role '%s'" % item_name
-            logging.getLogger("HWR").error(msg)
+            logging.getLogger("MX3.HWR").error(msg)
             return {item_name: {"name": item_name, "state": None, "position": None}}
         else:
             if hasattr(hwobj, "getCurrentPositionName"):
@@ -123,7 +123,7 @@ def get_movable_state_and_position(item_name):
                                 "state": hwobj.getState(),
                                 "position": pos}}
     except Exception:
-        logging.getLogger("HWR").exception(
+        logging.getLogger("MX3.HWR").exception(
             "[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item '%s'" % item_name)
 
 
@@ -141,7 +141,7 @@ def get_movable_limits(item_name):
         hwobj = blcontrol.diffractometer.getObjectByRole(item_role)
 
         if hwobj is None:
-            logging.getLogger("HWR").error(
+            logging.getLogger("MX3.HWR").error(
                 "[UTILS.GET_MOVABLE_LIMIT] No movable with role '%s'" % item_role)
             limits = ()
         else:
@@ -149,7 +149,7 @@ def get_movable_limits(item_name):
 
             return {item_name: {"limits": limits}}
     except Exception:
-        logging.getLogger("HWR").exception(
+        logging.getLogger("MX3.HWR").exception(
             "[UTILS.GET_MOVABLE_LIMIT] could not get item '%s'" % item_name)
 
 
@@ -245,7 +245,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
             try:
                 self.create_directories(snapshot_directory)
             except Exception:
-                logging.getLogger("HWR").exception(
+                logging.getLogger("MX3.HWR").exception(
                     "Collection: Error creating snapshot directory")
 
         logging.getLogger("user_level_log").info(
@@ -262,7 +262,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                       (snapshot_index + 1)] = snapshot_filename
 
             try:
-                logging.getLogger("HWR").info(
+                logging.getLogger("MX3.HWR").info(
                     "Taking snapshot number: %d" % (snapshot_index + 1))
                 _do_take_snapshot(snapshot_filename)
             except Exception:
@@ -303,7 +303,7 @@ def send_mail(_from, to, subject, content):
             logging.getLogger().error(msg)
         else:
             msg = "Feedback sent to %s, msg: \n %s" % (to, content)
-            logging.getLogger("HWR").info(msg)
+            logging.getLogger("MX3.HWR").info(msg)
 
     except smtplib.SMTPException, e:
         msg = "Could not send mail to %s, content %s, error was: %s"

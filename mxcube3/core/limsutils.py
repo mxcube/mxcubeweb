@@ -205,7 +205,7 @@ def lims_login(loginID, password):
     try:
         blcontrol.rest_lims.authenticate(loginID, password)
     except:
-        logging.getLogger('HWR').error('[LIMS-REST] Could not authenticate')
+        logging.getLogger('MX3.HWR').error('[LIMS-REST] Could not authenticate')
         return ERROR_CODE
 
     if blcontrol.db_connection.loginType.lower() == 'user':
@@ -215,18 +215,18 @@ def lims_login(loginID, password):
                 blcontrol.db_connection.init()
         except:
             msg = '[LIMS] Connection Error!'
-            logging.getLogger('HWR').error(msg)
+            logging.getLogger('MX3.HWR').error(msg)
             return ERROR_CODE
 
         try:
 
             proposals = blcontrol.db_connection.get_proposals_by_user(loginID)
 
-            logging.getLogger('HWR').info(
+            logging.getLogger('MX3.HWR').info(
                 '[LIMS] Retrieving proposal list for user: %s, proposals: %s' % (loginID, proposals))
             session['proposal_list'] = copy.deepcopy(proposals)
         except:
-            logging.getLogger('HWR').error(
+            logging.getLogger('MX3.HWR').error(
                 '[LIMS] Could not retreive proposal list, %s' % sys.exc_info()[1])
             return ERROR_CODE
 
@@ -249,13 +249,13 @@ def lims_login(loginID, password):
                              login_res['Proposal']['number'])
 
         except:
-            logging.getLogger('HWR').error('[LIMS] Could not login to LIMS')
+            logging.getLogger('MX3.HWR').error('[LIMS] Could not login to LIMS')
             return ERROR_CODE
 
         session['proposal_list'] = [proposal]
         login_res['proposalList'] = [proposal]
 
-    logging.getLogger('HWR').info(
+    logging.getLogger('MX3.HWR').info(
         '[LIMS] Logged in, proposal data: %s' % login_res)
 
     return login_res
@@ -268,7 +268,7 @@ def get_proposal_info(proposal):
     from loginutils import users
 
     for user in users().itervalues():
-        logging.getLogger('HWR').info(
+        logging.getLogger('MX3.HWR').info(
             "[LIMS] Serching for proposal: %s" % proposal)
         for prop in user["limsData"].get('proposalList', []):
             _p = "%s%s" % (prop.get('Proposal').get('code', '').lower(),
@@ -283,12 +283,12 @@ def get_proposal_info(proposal):
 def select_proposal(proposal):
     proposal_info = get_proposal_info(proposal)
 
-    logging.getLogger('HWR').info("[LIMS] Selecting proposal: %s" % proposal)
-    logging.getLogger('HWR').info("[LIMS] Proposal info: %s" % proposal_info)
+    logging.getLogger('MX3.HWR').info("[LIMS] Selecting proposal: %s" % proposal)
+    logging.getLogger('MX3.HWR').info("[LIMS] Proposal info: %s" % proposal_info)
     if blcontrol.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
         if hasattr(blcontrol.session, 'set_in_commissioning'):
             blcontrol.session.set_in_commissioning(proposal_info)
-            logging.getLogger('HWR').info(
+            logging.getLogger('MX3.HWR').info(
                 "[LIMS] Commissioning proposal flag set.")
 
     if proposal_info:
@@ -301,11 +301,11 @@ def select_proposal(proposal):
 
         if hasattr(blcontrol.session, 'prepare_directories'):
             try:
-                logging.getLogger('HWR').info('[LIMS] Creating data directories for proposal %s'
+                logging.getLogger('MX3.HWR').info('[LIMS] Creating data directories for proposal %s'
                                               % proposal)
                 blcontrol.session.prepare_directories(proposal_info)
             except:
-                logging.getLogger('HWR').info('[LIMS] Error creating data directories, %s'
+                logging.getLogger('MX3.HWR').info('[LIMS] Error creating data directories, %s'
                                               % sys.exc_info()[1])
 
         # Get all the files in the root data dir for this user
@@ -418,7 +418,7 @@ def synch_with_lims(proposal_id):
             lims_location = sample_info["containerSampleChangerLocation"] + \
                 ":%02d" % int(sample_info["sampleLocation"])
         except:
-            logging.getLogger('HWR').info(
+            logging.getLogger('MX3.HWR').info(
                 '[LIMS] Could not parse sample loaction from LIMS, (perhaps not set ?)')
         else:
             sample_info["lims_location"] = lims_location

@@ -22,11 +22,11 @@ def init_signals():
             for sig in signals.beam_signals:
                 beamInfo.connect(beamInfo, sig, signals.beam_changed)
         else:
-            logging.getLogger('HWR').error("beam_info is not defined")
+            logging.getLogger('MX3.HWR').error("beam_info is not defined")
     except Exception as ex:
         msg = "error connecting to beamline_setup/beam_info hardware object "
         msg += "signals"
-        logging.getLogger('HWR').exception(msg)
+        logging.getLogger('MX3.HWR').exception(msg)
     try:
         actions = blcontrol.actions
         if actions is not None:
@@ -39,11 +39,11 @@ def init_signals():
                 cmd.connectSignal("commandFailed",
                                   signals.beamline_action_failed)
         else:
-            logging.getLogger('HWR').error(
+            logging.getLogger('MX3.HWR').error(
                 "beamline_actions hardware object is not defined")
     except Exception as ex:
         msg = "error connecting to beamline actions hardware object signals"
-        logging.getLogger('HWR').exception(msg)
+        logging.getLogger('MX3.HWR').exception(msg)
 
     try:
         safety_shutter = blcontrol.beamline.getObjectByRole("safety_shutter")
@@ -51,9 +51,9 @@ def init_signals():
             safety_shutter.connect(safety_shutter, 'shutterStateChanged',
                                    signals.safety_shutter_state_changed)
         else:
-            logging.getLogger('HWR').error("safety_shutter is not defined")
+            logging.getLogger('MX3.HWR').error("safety_shutter is not defined")
     except Exception as ex:
-        logging.getLogger('HWR').error(
+        logging.getLogger('MX3.HWR').error(
             "error loading safety_shutter hwo: %s" % str(ex))
 
     try:
@@ -64,7 +64,7 @@ def init_signals():
         blcontrol.plotting.connect(
             blcontrol.plotting, 'plot_end', signals.plot_end)
     except Exception as ex:
-        logging.getLogger('HWR').error(
+        logging.getLogger('MX3.HWR').error(
             "error loading plotting hwo: %s" % str(ex))
 
     try:
@@ -79,7 +79,7 @@ def init_signals():
             blcontrol.beamline.xrf_spectrum_hwobj, 'xrf_task_progress',
             signals.xrf_task_progress)
     except Exception as ex:
-        logging.getLogger('HWR').error(
+        logging.getLogger('MX3.HWR').error(
             "error loading plotting hwo: %s" % str(ex))
 
 
@@ -370,7 +370,7 @@ def get_detector_info():
 
     if filetype is None:
         filetype = 'cbf'
-        logging.getLogger('HWR').warning(
+        logging.getLogger('MX3.HWR').warning(
             'Detector file format not specified. Setting as cbf.')
 
     return filetype

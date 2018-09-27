@@ -221,14 +221,14 @@ def login(login_id, password):
         # Only allow remote logins with existing sessions
         if limsutils.lims_valid_login(login_res) and is_local_host():
             msg = "[LOGIN] Valid login from local host (%s)" % str(info)
-            logging.getLogger("HWR").info(msg)
+            logging.getLogger("MX3.HWR").info(msg)
         elif limsutils.lims_valid_login(login_res) and \
                 limsutils.lims_existing_session(login_res):
             msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
             msg += msg % (remote_addr(), str(info))
-            logging.getLogger("HWR").info(msg)
+            logging.getLogger("MX3.HWR").info(msg)
         else:
-            logging.getLogger("HWR").info("Invalid login %s" % info)
+            logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
             return deny_access(str(info))
     except:
         return deny_access("")
@@ -253,8 +253,8 @@ def login(login_id, password):
         # For the moment not loading queue from persistent storage (redis),
         # uncomment to enable loading.
         # qutils.load_queue(session)
-        # logging.getLogger('HWR').info('Loaded queue')
-        logging.getLogger('HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
+        # logging.getLogger('MX3.HWR').info('Loaded queue')
+        logging.getLogger('MX3.HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
 
         if not get_operator():
             set_operator(session.sid)
