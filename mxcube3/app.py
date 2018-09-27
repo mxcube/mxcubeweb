@@ -1,3 +1,8 @@
+"""
+Module that contains application wide settings and state as well as functions
+for accessing and manipulating those.
+"""
+
 import os
 import sys
 import logging
@@ -8,30 +13,63 @@ from logging import StreamHandler, NullHandler
 from logging.handlers import TimedRotatingFileHandler
 
 from HardwareRepository import removeLoggingHandlers
-from queue_entry import CENTRING_METHOD
+import queue_entry
 
 from mxcube3 import blcontrol
 
-# SampleID of currently mounted sample
+# Below variables used for internal application state
+
+# SampleID and sample data of currently mounted sample
 CURRENTLY_MOUNTED_SAMPLE = {}
+# Sample location of sample that are in process of being mounted
 SAMPLE_TO_BE_MOUNTED = ''
-CENTRING_METHOD = CENTRING_METHOD.LOOP
+# Method used for sample centring
+CENTRING_METHOD = queue_entry.CENTRING_METHOD.LOOP
+# Look up table for finding the limsID for a corresponding queueID (QueueNode)
 NODE_ID_TO_LIMS_ID = {}
+# Initial file list for user, initialized at login, for creating automatic
+# run numbers
 INITIAL_FILE_LIST = []
+# Lookup table for sample changer location to data matrix or
+# data matrix to location
 SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
+# Current sample list, with tasks
 SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
-TEMP_DISABLED = []
+# Users currently logged in
 USERS = {}
-ALLOW_REMOTE = False
-TIMEOUT_GIVES_CONTROL = False
+# Path to video device (i.e. /dev/videoX)
 VIDEO_DEVICE = None
-AUTO_MOUNT_SAMPLE = False
-AUTO_ADD_DIFFPLAN = False
-NUM_SNAPSHOTS = 4
+# Contains the complete client side ui state, managed up state_storage.py
 UI_STATE = dict()
+TEMP_DISABLED = []
+
+
+# Below variables used for application wide settings
+
+# Enabled or Disable remote usage
+ALLOW_REMOTE = False
+# Enable timeout gives control (if ALLOW_REMOTE is True)
+TIMEOUT_GIVES_CONTROL = False
+# Enable automatic Mountie of sample when queue executed in
+# "automatic/pipeline" mode
+AUTO_MOUNT_SAMPLE = False
+# Automatically add and execute diffraction plans coming from
+# characterizations
+AUTO_ADD_DIFFPLAN = False
+# Number of sample snapshots taken before collect
+NUM_SNAPSHOTS = 4
 
 
 def init(allow_remote, ra_timeout, video_device):
+    """
+    Initializes application wide variables, sample video stream, and applies
+
+    :param bool allow_remote: Allow remote usage, True else False
+    :param bool ra_timeout: Timeout gives control, True else False
+    :param bool video_device: Path to video device
+
+    :return None:
+    """
     from mxcube3.core import utils
 
     global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
@@ -46,6 +84,18 @@ def init(allow_remote, ra_timeout, video_device):
 
 
 def init_sample_video(video_device):
+    """
+    Initializes video streaming from video device <video_device>, relies on
+    v4l2loopback kernel module to write the sample video stream to
+    <video_device>.
+
+    The streaming is handled by the streaming module
+
+    :param str video_device: Path to video device, i.e. /dev/videoX
+
+    :return: None
+    """
+
     global VIDEO_DEVICE
 
     from mxcube3.video import streaming
@@ -62,6 +112,10 @@ def init_sample_video(video_device):
 
 
 def init_signal_handlers():
+    """
+    Connects the signal handlers defined in routes/signals.py to the
+    corresponding signals/events
+    """
     from mxcube3.core import beamlineutils
     from mxcube3.core import sviewutils
     from mxcube3.core import scutils
@@ -76,6 +130,12 @@ def init_signal_handlers():
 
 
 def init_logging(log_file):
+    """
+    :param str log_file: Path to log file
+
+    :return: None
+    """
+
     removeLoggingHandlers()
 
     fmt = '%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s'
@@ -98,12 +158,14 @@ def init_logging(log_file):
 
     exception_logger = logging.getLogger("exceptions")
     hwr_logger = logging.getLogger("HWR")
+    mx3_hwr_logger = logging.getLogger("MX3.HWR")
     user_logger = logging.getLogger("user_level_log")
     queue_logger = logging.getLogger("queue_exec")
     stdout_log_handler = StreamHandler(sys.stdout)
     stdout_log_handler.setFormatter(log_formatter)
 
-    for logger in (exception_logger, hwr_logger, user_logger, queue_logger):
+    for logger in (exception_logger, hwr_logger, user_logger,
+                   mx3_hwr_logger, queue_logger):
         logger.addHandler(custom_log_handler)
         logger.addHandler(stdout_log_handler)
 
@@ -112,13 +174,20 @@ def init_logging(log_file):
 
 
 def init_state_storage():
+    """
+    Set up of server side state storage, the UI state of the client is
+    stored on the server
+    """
     import state_storage
     state_storage.init()
 
 
 def save_settings():
-    from mxcube3.core import qutils
+    """
+    Saves all application wide variables to disk, stored-mxcube-session.json
+    """
 
+    from mxcube3.core import qutils
     queue = qutils.queue_to_dict(blcontrol.queue.get_model_root())
 
     # For the moment not storing USERS
@@ -142,6 +211,38 @@ def save_settings():
 
     with open("stored-mxcube-session.json", "w") as fp:
         json.dump(data, fp)
+
+
+def load_settings():
+    """
+    Loads application wide variables from "stored-mxcube-session.json"
+    """
+
+    global CURRENTLY_MOUNTED_SAMPLE, SAMPLE_TO_BE_MOUNTED, CENTRING_METHOD
+    global NODE_ID_TO_LIMS_ID, SC_CONTENTS, SAMPLE_LIST
+    global TEMP_DISABLED, USERS, ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
+    global VIDEO_DEVICE, AUTO_MOUNT_SAMPLE, AUTO_ADD_DIFFPLAN, NUM_SNAPSHOTS
+    global UI_STATE
+
+    with open("stored-mxcube-session.json", "r") as f:
+        data = json.load(f)
+
+    from mxcube3.core import qutils
+    qutils.load_queue_from_dict(data.get("QUEUE", {}))
+
+    CENTRING_METHOD = data.get(
+        "CENTRING_METHOD", queue_entry.CENTRING_METHOD.LOOP)
+    NODE_ID_TO_LIMS_ID = data.get("NODE_ID_TO_LIMS_ID", {})
+    SC_CONTENTS = data.get("SC_CONTENTS",
+                           {"FROM_CODE": {}, "FROM_LOCATION": {}})
+    SAMPLE_LIST = data.get("SAMPLE_LIST",
+                           {"sampleList": {}, 'sampleOrder': []})
+    ALLOW_REMOTE = data.get("ALLOW_REMOTE", False)
+    TIMEOUT_GIVES_CONTROL = data.get("TIMEOUT_GIVES_CONTROL", False)
+    AUTO_MOUNT_SAMPLE = data.get("AUTO_MOUNT_SAMPLE", False)
+    AUTO_ADD_DIFFPLAN = data.get("AUTO_ADD_DIFFPLAN", False)
+    NUM_SNAPSHOTS = data.get("NUM_SNAPSHOTS", False)
+    UI_STATE = data.get("UI_STATE", {})
 
 
 def app_atexit():
