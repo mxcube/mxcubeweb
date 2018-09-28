@@ -16,7 +16,6 @@ from flask import Flask, request
 from flask_socketio import SocketIO
 from flask_session import Session
 
-
 # To make "from HardwareRepository import ..." possible
 fname = os.path.dirname(__file__)
 sys.path.insert(0, fname)
@@ -66,29 +65,6 @@ cmdline_options, args = opt_parser.parse_args()
 INIT_EVENT = gevent.event.Event()
 
 
-def complete_initialization(server):
-    mxcube.init_logging(cmdline_options.log_file)
-    mxcube.blcontrol.init(hwr, cmdline_options.hwr_directory)
-
-    from core import loginutils
-
-    # Make the valid_login_only decorator available on server object
-    server.restrict = loginutils.valid_login_only
-
-    # Install server-side UI state storage
-    mxcube.init_state_storage()
-
-    # Importing REST-routes
-    from routes import (main, login, beamline, mockups, samplecentring,
-                        samplechanger, diffractometer, queue, lims, workflow,
-                        detector, ra)
-
-    mxcube.init(cmdline_options.allow_remote,
-                cmdline_options.ra_timeout,
-                cmdline_options.video_device)
-    INIT_EVENT.set()
-
-
 def exception_handler(e):
     err_msg = "Uncaught exception while calling %s" % request.path
     logging.getLogger("exceptions").exception(err_msg)
@@ -115,8 +91,26 @@ socketio.init_app(server)
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    gevent.spawn(complete_initialization, server)
-    INIT_EVENT.wait()
+    mxcube.init(hwr, cmdline_options.hwr_directory,
+                cmdline_options.allow_remote,
+                cmdline_options.ra_timeout,
+                cmdline_options.video_device,
+                cmdline_options.log_file)
+   
+    from core import loginutils
+
+    # Make the valid_login_only decorator available on server object
+    server.restrict = loginutils.valid_login_only
+
+    # Install server-side UI state storage
+    mxcube.init_state_storage()
+
+    # Importing REST-routes
+    from routes import (main, login, beamline, mockups, samplecentring,
+                        samplechanger, diffractometer, queue, lims, workflow,
+                        detector, ra)
+
+   
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
     logging.getLogger("HWR").info(msg)

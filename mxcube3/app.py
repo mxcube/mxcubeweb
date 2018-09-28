@@ -60,10 +60,12 @@ AUTO_ADD_DIFFPLAN = False
 NUM_SNAPSHOTS = 4
 
 
-def init(allow_remote, ra_timeout, video_device):
+def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     """
     Initializes application wide variables, sample video stream, and applies
 
+    :param hwr: HardwareRepository module
+    :param str hwr_xml_dir: Path to hardware objects
     :param bool allow_remote: Allow remote usage, True else False
     :param bool ra_timeout: Timeout gives control, True else False
     :param bool video_device: Path to video device
@@ -75,6 +77,10 @@ def init(allow_remote, ra_timeout, video_device):
     global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
     ALLOW_REMOTE = allow_remote
     TIMEOUT_GIVES_CONTROL = ra_timeout
+
+    init_logging(log_fpath)
+
+    blcontrol.init(hwr, hwr_xml_dir)
 
     init_sample_video(video_device)
     utils.enable_snapshots(blcontrol.collect, blcontrol.diffractometer)
