@@ -1,4 +1,5 @@
 import React from 'react';
+import config from 'guiConfig';
 
 export default class ContextMenu extends React.Component {
 
@@ -18,6 +19,18 @@ export default class ContextMenu extends React.Component {
 
   menuOptions() {
     const workflowTasks = { point: [], line: [], grid: [], none: [] };
+    let twoDPoints = [];
+
+    if (config.use2dCenteredPoints) {
+      twoDPoints = [{ text: 'divider', key: 4 },
+                    { text: 'Data Collection (Limited OSC)',
+                      action: () => this.createPointAndShowModal('DataCollection'),
+                      key: 5 },
+                    { text: 'Characterisation (1 Image)',
+                      action: () => this.createPointAndShowModal('Characterisation',
+                      { num_imags: 1 }),
+                      key: 6 }];
+    }
 
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires.includes('point')) {
@@ -159,12 +172,7 @@ export default class ContextMenu extends React.Component {
         { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
         { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
         { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
-        { text: 'divider', key: 4 },
-        { text: 'Data Collection (Limited OSC)',
-          action: () => this.createPointAndShowModal('DataCollection'), key: 5 },
-        { text: 'Characterisation (1 Image)',
-          action: () => this.createPointAndShowModal('Characterisation', { num_imags: 1 }),
-          key: 6 },
+        ...twoDPoints,
         { text: 'divider', key: 7 },
         ...workflowTasks.none,
         workflowTasks.grid.none > 0 ? { text: 'divider', key: 7 } : {},
