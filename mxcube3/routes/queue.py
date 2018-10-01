@@ -201,9 +201,8 @@ def queue_delete_item():
 @server.restrict
 def queue_enable_item():
     params = request.get_json()
-    qid_list = params.get("qidList", None),
+    qid_list = params.get("qidList", None)
     enabled = params.get("enabled", False)
-
     qutils.queue_enable_item(qid_list, enabled)
 
     return Response(status=200)

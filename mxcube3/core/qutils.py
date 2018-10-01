@@ -656,7 +656,7 @@ def queue_exec_state():
     return state
 
 
-def get_entry(id):
+def get_entry(_id):
     """
     Retrieves the model and the queue entry for the model node with id <id>
 
@@ -664,7 +664,7 @@ def get_entry(id):
     :returns: The tuple model, entry
     :rtype: Tuple
     """
-    model = blcontrol.queue.get_node(int(id))
+    model = blcontrol.queue.get_node(int(_id))
     entry = blcontrol.queue.queue_hwobj.get_entry_with_model(model)
     return model, entry
 
@@ -1823,7 +1823,8 @@ def add_default_sample():
     try:
         scutils.mount_sample_clean_up(sample)
     except Exception as ex:
-        logging.getLogger('MX3.HWR').exception('[SC] sample could not be mounted')
+        logging.getLogger('MX3.HWR').exception(
+            '[SC] sample could not be mounted')
         logging.getLogger('MX3.HWR').exception(str(ex))
     else:
         queue_add_item([sample])
