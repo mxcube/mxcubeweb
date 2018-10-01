@@ -77,7 +77,7 @@ def run_get_result_script(script_name, url):
 
 
 def result_file_test(prefix):
-    return isfile(join(mxcube.template_folder, prefix))
+    return isfile(join(server.template_folder, prefix))
 
 
 def apply_template(name, data):
@@ -114,7 +114,7 @@ def get_results():
 
                 if url_list:
                     r = jsonify({"result": run_get_result_script(
-                        join(mxcube.template_folder, 'characterisation-results.js'), url_list[0])})
+                        join(server.template_folder, 'characterisation-results.js'), url_list[0])})
                 else:
                     r = apply_template("data-collection-results.html", data)
 
