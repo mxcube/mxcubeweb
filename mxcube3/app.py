@@ -252,4 +252,4 @@ def load_settings():
 
 
 def app_atexit():
-    save_settings()
+    pass
