@@ -4,7 +4,7 @@ import functools
 import logging
 
 from collections import deque
-from flask import session, request, Response, jsonify
+from flask import session, request, Response
 
 from mxcube3 import mxcube
 
@@ -47,12 +47,6 @@ def remove_user(sid):
 
 def get_user_by_sid(sid):
     return mxcube.USERS.get(sid, None)
-
-
-def deny_access(msg):
-    resp = jsonify({"msg": msg})
-    resp.code = 409
-    return resp
 
 
 def get_observers():
@@ -208,15 +202,15 @@ def login(login_id, password):
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
-            return deny_access("In-house only allowed from localhost")
+            raise Exception("In-house only allowed from localhost")
 
         # Only allow other users to log-in if they are from the same proposal
         if (not inhouse) and _users and (login_id not in _users):
-            return deny_access("Another user is already logged in")
+            raise Exception("Another user is already logged in")
 
         # Only allow local login when remote is disabled
         if not mxcube.ALLOW_REMOTE and not is_local_host():
-            return deny_access("Remote access disabled")
+            raise Exception("Remote access disabled")
 
         # Only allow remote logins with existing sessions
         if limsutils.lims_valid_login(login_res) and is_local_host():
@@ -229,9 +223,9 @@ def login(login_id, password):
             logging.getLogger("MX3.HWR").info(msg)
         else:
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
-            return deny_access(str(info))
+            raise Exception(str(info))
     except:
-        return deny_access("")
+        raise Exception("")
     else:
         add_user(create_user(login_id, remote_addr(), session.sid, login_res))
 

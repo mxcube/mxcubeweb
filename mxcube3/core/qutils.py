@@ -7,7 +7,6 @@ import itertools
 import logging
 import re
 
-from flask import jsonify
 from mock import Mock
 
 
@@ -210,25 +209,6 @@ def queue_to_json(node=None, include_lims_data=False):
                  queue_to_dict_rec(node, include_lims_data), {})
 
     return json.dumps(res, sort_keys=True, indent=4)
-
-
-def queue_to_json_response(node=None, include_lims_data=False):
-    """
-    Returns the http json response object with the json representation of the
-    queue as data.
-
-    :param TaskNode node: list of Node objects to get representation for,
-                          queue root used if nothing is passed.
-
-    :returns: Flask Response object
-    """
-    if not node:
-        node = blcontrol.queue.get_model_root()
-
-    res = reduce(lambda x, y: x.update(y) or x,
-                 queue_to_dict_rec(node, include_lims_data), {})
-
-    return jsonify(res)
 
 
 def get_node_state(node_id):

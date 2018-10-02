@@ -106,12 +106,12 @@ def queue_get():
     Get the queue
     :returns: Response object response Content-Type: application/json, json
               object containing the queue on the format returned by
-              queue_to_json_response. The status code is set to:
+              queue_to_dict. The status code is set to:
 
               200: On success
               409: On error, could not retrieve queue
     """
-    resp = qutils.queue_to_json_response(include_lims_data=True)
+    resp = jsonify(qutils.queue_to_dict(include_lims_data=True))
     resp.status_code = 200
     return resp
 
@@ -181,7 +181,7 @@ def queue_update_item(sqid, tqid):
 
     model = qutils.queue_update_item(sqid, tqid, data)
 
-    resp = qutils.queue_to_json_response([model])
+    resp = jsonify(qutils.queue_to_dict([model]))
     resp.status_code = 200
 
     return resp
@@ -393,7 +393,7 @@ def get_method(sample_id, method_id):
 @server.restrict
 def serialize():
     try:
-        return qutils.queue_to_json_response()
+        return jsonify(qutils.queue_to_dict())
     except Exception:
         logging.getLogger("HWR").exception("[QUEUE] cannot serialize")
         return Response(status=409)

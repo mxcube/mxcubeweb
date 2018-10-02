@@ -4,6 +4,12 @@ from mxcube3 import server
 from mxcube3.core import loginutils
 
 
+def deny_access(msg):
+    resp = jsonify({"msg": msg})
+    resp.code = 409
+    return resp
+
+
 @server.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
     """
@@ -28,9 +34,12 @@ def login():
     login_id = params.get("proposal", "")
     password = params.get("password", "")
 
-    res = loginutils.login(login_id, password)
+    try:
+        res = jsonify(loginutils.login(login_id, password))
+    except Exception as ex:
+        res = deny_access(str(ex))
 
-    return jsonify(res)
+    return res
 
 
 @server.route("/mxcube/api/v0.1/signout")
