@@ -305,7 +305,7 @@ def get_default_char_acq_params():
     returns the default values for a characterisation acquisition.
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
-    resp = jsonify({'acq_parameters': qutils.get_default_char_acq_params()})
+    resp = jsonify(qutils.get_default_char_acq_params())
 
     resp.status_code = 200
     return resp

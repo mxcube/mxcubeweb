@@ -17,7 +17,7 @@ from . import signals
 @server.route("/mxcube/api/v0.1/lims/samples/<proposal_id>", methods=['GET'])
 @server.restrict
 def proposal_samples(proposal_id):
-    return jsonify(limsutils.synch_with_lims())
+    return jsonify(limsutils.synch_with_lims(proposal_id))
 
 
 @server.route("/mxcube/api/v0.1/lims/dc/thumbnail/<image_id>", methods=['GET'])

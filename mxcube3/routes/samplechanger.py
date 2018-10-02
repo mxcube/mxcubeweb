@@ -55,7 +55,7 @@ def scan_location(loc):
 @server.route("/mxcube/api/v0.1/sample_changer/mount/<loc>", methods=['GET'])
 @server.restrict
 def mount_sample(loc):
-    return jsonify(scutils.mount_sample())
+    return jsonify(scutils.mount_sample(loc))
 
 
 @server.route("/mxcube/api/v0.1/sample_changer/unmount/<loc>", methods=['GET'])

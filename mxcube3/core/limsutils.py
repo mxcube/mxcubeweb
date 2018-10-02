@@ -64,16 +64,18 @@ def sample_list_get(loc=None, current_queue=None):
 
 
 def sample_list_sync_sample(lims_sample):
+    import scutils
+
     lims_code = lims_sample.get("code", None)
     lims_location = lims_sample.get("lims_location")
     sample_to_update = None
 
     # LIMS sample has code, check if the code was read by SC
-    if lims_code and mxcube.sc.sc_contents_from_code_get(lims_code):
-        sample_to_update = mxcube.sc.sc_contents_from_code_get(lims_code)
+    if lims_code and scutils.sc_contents_from_code_get(lims_code):
+        sample_to_update = scutils.sc_contents_from_code_get(lims_code)
     elif lims_location:
         # Asume that the samples have been put in the right place of the SC
-        sample_to_update = mxcube.sc_contents_from_location_get(lims_location)
+        sample_to_update = scutils.sc_contents_from_location_get(lims_location)
 
     if sample_to_update:
         loc = sample_to_update["sampleID"]

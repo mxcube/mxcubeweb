@@ -19,7 +19,7 @@ def get_available_workflows():
     return {"workflows": workflows}
 
 
-def sumbit_parameters(params):
+def submit_parameters(params):
     blcontrol.workflow.set_values_map(params)
 
 

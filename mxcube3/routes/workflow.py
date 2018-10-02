@@ -19,6 +19,7 @@ def workflow():
 def sumbit_parameters():
     data = request.get_json()
     wfutils.submit_parameters(data)
+    return Response(status=200)
 
 
 # This route is only for testing
