@@ -22,6 +22,7 @@ export default class TaskItem extends Component {
     this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
     this.pointIDString = this.pointIDString.bind(this);
+    this.wedgeParameters = this.wedgeParameters.bind(this);
     this.state = {
       overInput: false,
       selected: false
@@ -76,11 +77,13 @@ export default class TaskItem extends Component {
   }
 
   showForm() {
-    const { data, sampleId } = this.props;
+    const { data, sampleId, shapes } = this.props;
     const { type, parameters } = data;
     if (parameters.helical) {
       this.props.showForm('Helical', sampleId, data, parameters.shape);
     } else if (parameters.mesh) {
+      const shape = shapes.shapes[parameters.shape];
+      data.parameters.cell_count = shape.numCols * shape.numRows;
       this.props.showForm('Mesh', sampleId, data, parameters.shape);
     } else {
       this.props.showForm(type, sampleId, data, parameters.shape);
@@ -130,7 +133,14 @@ export default class TaskItem extends Component {
 
   wedgeParameters(wedge) {
     const parameters = wedge.parameters;
-
+    if (parameters.mesh) {
+      const shapes = this.props.shapes.shapes;
+      if (Object.keys(shapes).length !== 0) {
+        const shape = shapes[wedge.parameters.shape];
+        const cellCount = shape.numRows * shape.numCols;
+        parameters.num_images = cellCount;
+      }
+    }
     return (
       <tr>
         <td><a>{parameters.osc_start.toFixed(2)}</a></td>
