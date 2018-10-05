@@ -366,27 +366,38 @@ export default class SampleImage extends React.Component {
     } else {
       // Individual object clicked
       this.canvas.forEachObject((obj) => {
-        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable &&
+            (obj.type === 'SAVED' || obj.type === 'TMP')) {
           objectFound = true;
 
           this.selectShape([obj], e.ctrlKey);
-
-          if (obj.type === 'GridGroup') {
-            let gridData = this.props.grids[obj.id];
-
-            if (gridData) {
-              const cellCenter = this.getGridCellCenter(obj, clickPoint);
-              ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
-            } else {
-              gridData = this.drawGridPlugin.currentGridData();
-              gridData = this.drawGridPlugin.saveGrid(gridData);
-              ctxMenuObj = { type: 'GridGroup', gridData, id: obj.id };
-            }
-          } else {
-            ctxMenuObj = obj;
-          }
+          ctxMenuObj = obj;
         }
       });
+      if (!objectFound) {
+        this.canvas.forEachObject((obj) => {
+          if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+            objectFound = true;
+
+            this.selectShape([obj], e.ctrlKey);
+
+            if (obj.type === 'GridGroup') {
+              let gridData = this.props.grids[obj.id];
+
+              if (gridData) {
+                const cellCenter = this.getGridCellCenter(obj, clickPoint);
+                ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
+              } else {
+                gridData = this.drawGridPlugin.currentGridData();
+                gridData = this.drawGridPlugin.saveGrid(gridData);
+                ctxMenuObj = { type: 'GridGroup', gridData, id: obj.id };
+              }
+            } else {
+              ctxMenuObj = obj;
+            }
+          }
+        });
+      }
     }
 
     if (!objectFound) {
@@ -711,11 +722,11 @@ export default class SampleImage extends React.Component {
 
     this.canvas.add(...this.centringCross);
 
-    const fabricSelectables = [
-      ...makePoints(points, imageRatio),
-      ...makeTwoDPoints(twoDPoints, imageRatio),
-      ...makeLines(lines, imageRatio)
-    ];
+    const fabricSelectables = [...makeLines(lines, imageRatio)];
+    //  ...makePoints(points, imageRatio),
+    //  ...makeTwoDPoints(twoDPoints, imageRatio),
+    //  ...makeLines(lines, imageRatio)
+    // ];
 
     // Grids already defined (drawn)
     Object.values(grids).forEach((gd) => {
@@ -733,6 +744,10 @@ export default class SampleImage extends React.Component {
     if (this.drawGridPlugin.shapeGroup) {
       fabricSelectables.push(this.drawGridPlugin.shapeGroup);
     }
+
+    // fabricSelectables.push(...makeLines(lines, imageRatio));
+    fabricSelectables.push(...makePoints(points, imageRatio));
+    fabricSelectables.push(...makeTwoDPoints(twoDPoints, imageRatio));
 
     this.canvas.add(...fabricSelectables);
 
@@ -761,6 +776,7 @@ export default class SampleImage extends React.Component {
     });
 
     this.canvas.setActiveObject(sel);
+    // this.canvas.bringToFront(...fabricSelectables[1]);
     this.canvas.requestRenderAll();
   }
 
