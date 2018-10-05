@@ -723,10 +723,6 @@ export default class SampleImage extends React.Component {
     this.canvas.add(...this.centringCross);
 
     const fabricSelectables = [...makeLines(lines, imageRatio)];
-    //  ...makePoints(points, imageRatio),
-    //  ...makeTwoDPoints(twoDPoints, imageRatio),
-    //  ...makeLines(lines, imageRatio)
-    // ];
 
     // Grids already defined (drawn)
     Object.values(grids).forEach((gd) => {
@@ -745,7 +741,7 @@ export default class SampleImage extends React.Component {
       fabricSelectables.push(this.drawGridPlugin.shapeGroup);
     }
 
-    // fabricSelectables.push(...makeLines(lines, imageRatio));
+    // Add points last so they are in front of grids
     fabricSelectables.push(...makePoints(points, imageRatio));
     fabricSelectables.push(...makeTwoDPoints(twoDPoints, imageRatio));
 
@@ -776,7 +772,6 @@ export default class SampleImage extends React.Component {
     });
 
     this.canvas.setActiveObject(sel);
-    // this.canvas.bringToFront(...fabricSelectables[1]);
     this.canvas.requestRenderAll();
   }
 
