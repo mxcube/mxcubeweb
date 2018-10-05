@@ -138,7 +138,7 @@ class Mesh extends React.Component {
               />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" type="number" label="Exposure time per image(ms)" />
+              <InputField propName="exp_time" type="number" label="Exposure time per image(s)" />
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
