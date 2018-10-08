@@ -1,19 +1,17 @@
-import os
 import sys
-import gevent
-import gevent.event
 import pytest
 import json
-from gevent import monkey
-monkey.patch_all(thread=False, subprocess=False)
-sys.path.append('../')
 
 from mxcube3 import server
+
+
+sys.path.append('./')
 
 
 @pytest.fixture
 def client():
     server.config['TESTING'] = True
+
     client = server.test_client()
     data = json.dumps({'proposal': 'idtest000',
                        'password': 'sUpErSaFe'})
@@ -26,10 +24,7 @@ def client():
 
 def test_get_main(client):
     """Test if we can get the home page."""
-
-    rv = client.get('/')
-
-    assert rv.status_code == 200
+    assert client.get('/').status_code == 200
 
 
 def test_get_queue(client):

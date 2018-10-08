@@ -45,8 +45,8 @@ opt_parser.add_option("-l", "--log-file",
 
 opt_parser.add_option("-v", "--video-device",
                       dest="video_device",
-                      help="Video device, defaults to /dev/video0",
-                      default='/dev/video0')
+                      help="Video device, defaults to: No device",
+                      default='')
 
 opt_parser.add_option("-w", "--ra",
                       action="store_true",
@@ -96,7 +96,7 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
                 cmdline_options.ra_timeout,
                 cmdline_options.video_device,
                 cmdline_options.log_file)
-   
+
     from core import loginutils
 
     # Make the valid_login_only decorator available on server object
@@ -109,8 +109,6 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     from routes import (main, login, beamline, mockups, samplecentring,
                         samplechanger, diffractometer, queue, lims, workflow,
                         detector, ra)
-
-   
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
     logging.getLogger("HWR").info(msg)
