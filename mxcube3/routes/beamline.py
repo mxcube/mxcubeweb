@@ -118,7 +118,7 @@ def beamline_get_data_path():
     this is specific for each beamline.
     """
     data = blcontrol.session.get_base_image_directory()
-    return jsonify(data)
+    return jsonify({"path": data})
 
 
 @server.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=['PUT'])

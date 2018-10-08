@@ -83,6 +83,7 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     blcontrol.init(hwr, hwr_xml_dir)
 
     init_sample_video(video_device)
+
     utils.enable_snapshots(blcontrol.collect, blcontrol.diffractometer)
     init_signal_handlers()
 

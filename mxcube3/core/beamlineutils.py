@@ -271,7 +271,7 @@ def beamline_set_attribute(name, data):
         data["state"] = "UNUSABLE"
         data["msg"] = "submitted value out of limits"
         res = False
-        logging.getLogger('BLCONTROL').error(
+        logging.getLogger('MX3.HWR').error(
             "Error setting bl attribute: " + str(ex))
 
     return res, data
@@ -332,7 +332,7 @@ def diffractometer_set_phase(phase):
     try:
         blcontrol.diffractometer.wait_device_ready(30)
     except Exception:
-        logging.getLogger('BLCONTROL').warning('Diffractometer not ready')
+        logging.getLogger('MX3.HWR').warning('Diffractometer not ready')
 
     blcontrol.diffractometer.set_phase(phase)
 
@@ -340,7 +340,7 @@ def diffractometer_set_phase(phase):
 def set_aperture(pos):
     beam_definer = get_beam_definer()
     msg = "Changing aperture diameter to: %s" % pos
-    logging.getLogger('BLCONTROL').info(msg)
+    logging.getLogger('MX3.HWR').info(msg)
     beam_definer.moveToPosition(pos)
 
 
