@@ -1014,7 +1014,7 @@ def set_dc_params(model, entry, task_data, sample_model):
 
     # Only get a run number for new tasks, keep the already existing
     # run number for existing items.
-    if not params.get("queueID", ""):
+    if not task_data.get("queueID", ""):
         acq.path_template.run_number = get_run_number(acq.path_template)
 
     model.set_enabled(task_data['checked'])
