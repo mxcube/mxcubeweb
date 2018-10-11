@@ -138,7 +138,7 @@ def loaded_sample_changed(sample):
     else:
         address = ''
         barcode = ''
-
+    mxcube.shapes.clear_all()
     logging.getLogger("HWR").info('Loaded sample changed now is: ' + address)
 
     try:
