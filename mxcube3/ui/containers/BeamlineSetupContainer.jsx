@@ -9,8 +9,8 @@ import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
 
 import { sendGetAllAttributes,
-         sendSetAttribute,
-         sendAbortCurrentAction } from '../actions/beamline';
+         sendMovablePosition,
+         sendStopMovable } from '../actions/beamline';
 
 
 class BeamlineSetupContainer extends React.Component {
@@ -30,31 +30,31 @@ class BeamlineSetupContainer extends React.Component {
 
 
   onSaveHandler(name, value) {
-    this.props.setAttribute(name, value);
+    this.props.sendMovablePosition(name, value);
   }
 
 
   onCancelHandler(name) {
-    this.props.abortCurrentAction(name);
+    this.props.sendStopMovable(name);
   }
 
 
   setAttribute(name, value) {
-    this.props.setAttribute(name, value);
+    this.props.sendMovablePosition(name, value);
   }
 
 
   createActuatorComponent() {
     const acts = [];
-    for (let key in this.props.data.attributes) {
-      if (this.props.data.attributes[key].type === 'DUOSTATE') {
+    for (let key in this.props.data.movables) {
+      if (this.props.data.movables[key].type === 'DUOSTATE') {
         acts.push(<Col key={key} sm={2} className="pull-right">
                     <InOutSwitch2
-                      onText={ this.props.data.attributes[key].commands[0] }
-                      offText={ this.props.data.attributes[key].commands[1] }
-                      labelText={ this.props.data.attributes[key].label }
+                      onText={ this.props.data.movables[key].commands[0] }
+                      offText={ this.props.data.movables[key].commands[1] }
+                      labelText={ this.props.data.movables[key].label }
                       pkey={ key }
-                      data={ this.props.data.attributes[key] }
+                      data={ this.props.data.movables[key] }
                       onSave={ this.setAttribute }
                     />
                   </Col>
@@ -68,7 +68,7 @@ class BeamlineSetupContainer extends React.Component {
   dmState() {
     let state = 'READY';
 
-    const notReady = Object.values(this.props.data.motors).
+    const notReady = Object.values(this.props.data.movables).
             filter((motor) => motor.state !== 2);
 
     if (notReady.length !== 0) {
@@ -102,18 +102,18 @@ class BeamlineSetupContainer extends React.Component {
                    Energy:
                  </td>
                 <td style={{ fontWeight: 'bold' }}>
-                  { this.props.data.attributes.energy.readonly ?
+                  { this.props.data.movables.energy.readonly ?
                     (<LabeledValue
                       suffix="keV"
                       name=""
-                      value={this.props.data.attributes.energy.value}
+                      value={this.props.data.movables.energy.value}
                     />)
                     :
                   (<PopInput
                     name=""
                     pkey="energy"
                     suffix="keV"
-                    data={ this.props.data.attributes.energy }
+                    data={ this.props.data.movables.energy }
                     onSave= { this.setAttribute }
                     onCancel= { this.onCancelHandler }
                   />)
@@ -128,7 +128,7 @@ class BeamlineSetupContainer extends React.Component {
                     name=""
                     pkey="resolution"
                     suffix="&Aring;"
-                    data={this.props.data.attributes.resolution}
+                    data={this.props.data.movables.resolution}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
@@ -141,7 +141,7 @@ class BeamlineSetupContainer extends React.Component {
                     name=""
                     pkey="transmission"
                     suffix="%"
-                    data={this.props.data.attributes.transmission}
+                    data={this.props.data.movables.transmission}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
@@ -153,7 +153,7 @@ class BeamlineSetupContainer extends React.Component {
                   <LabeledValue
                     name=""
                     suffix="K"
-                    value={this.props.data.attributes.cryo.value}
+                    value={this.props.data.movables.cryo.value}
                   />
                 </td>
               </tr>
@@ -162,11 +162,11 @@ class BeamlineSetupContainer extends React.Component {
                   Wavelength:
                 </td>
                 <td>
-                  { this.props.data.attributes.wavelength.readonly ?
+                  { this.props.data.movables.wavelength.readonly ?
                     (<LabeledValue
                       suffix="&Aring;"
                       name=""
-                      value={this.props.data.attributes.wavelength.value}
+                      value={this.props.data.movables.wavelength.value}
                     />)
                     :
                   (<PopInput
@@ -174,7 +174,7 @@ class BeamlineSetupContainer extends React.Component {
                     pkey="wavelength"
                     placement="left"
                     suffix="&Aring;"
-                    data={this.props.data.attributes.wavelength}
+                    data={this.props.data.movables.wavelength}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />)
@@ -188,7 +188,7 @@ class BeamlineSetupContainer extends React.Component {
                     name=""
                     pkey="detdist"
                     suffix="mm"
-                    data={this.props.data.attributes.detdist}
+                    data={this.props.data.movables.detdist}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
@@ -200,7 +200,7 @@ class BeamlineSetupContainer extends React.Component {
                   <LabeledValue
                     suffix="ph/s"
                     name=""
-                    value={this.props.data.attributes.flux.value}
+                    value={this.props.data.movables.flux.value}
                   />
                 </td>
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
@@ -213,7 +213,7 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={5} smPush={1}>
               <Col sm={2} className="pull-right">
                 <MachInfo
-                  info={this.props.data.attributes.machinfo.value}
+                  info={this.props.data.movables.machinfo.value}
                 />
               </Col>
               {this.createActuatorComponent()}
@@ -246,8 +246,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getAllAttributes: bindActionCreators(sendGetAllAttributes, dispatch),
-    setAttribute: bindActionCreators(sendSetAttribute, dispatch),
-    abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch)
+    sendMovablePosition: bindActionCreators(sendMovablePosition, dispatch),
+    sendStopMovable: bindActionCreators(sendStopMovable, dispatch)
   };
 }
 

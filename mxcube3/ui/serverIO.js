@@ -2,8 +2,6 @@ import io from 'socket.io-client';
 import { addLogRecord } from './actions/logger';
 import {
   setShapes,
-  saveMotorPosition,
-  updateMotorState,
   setBeamInfo,
   startClickCentring,
   updateShapes,
@@ -11,7 +9,9 @@ import {
   videoMessageOverlay,
   setCurrentPhase
 } from './actions/sampleview';
-import { setBeamlineAttrAction,
+import { saveMovablePosition,
+         updateMovable,
+         updateMovableState,
          setMachInfo } from './actions/beamline';
 import { setActionState,
          newPlot,
@@ -115,11 +115,11 @@ class ServerIO {
     });
 
     this.hwrSocket.on('motor_position', (record) => {
-      this.dispatch(saveMotorPosition(record.name, record.position));
+      this.dispatch(saveMovablePosition(record.name, record.value));
     });
 
     this.hwrSocket.on('motor_state', (record) => {
-      this.dispatch(updateMotorState(record.name, record.state));
+      this.dispatch(updateMovableState(record.name, record.state));
     });
 
     this.hwrSocket.on('update_shapes', (record) => {
@@ -139,7 +139,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('beamline_value_change', (data) => {
-      this.dispatch(setBeamlineAttrAction(data));
+      this.dispatch(updateMovable(data.name, data));
     });
 
     this.hwrSocket.on('grid_result_available', (data) => {

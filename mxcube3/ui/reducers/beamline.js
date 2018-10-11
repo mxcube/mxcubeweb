@@ -2,17 +2,17 @@ import { STATE } from '../actions/beamline';
 import { RUNNING } from '../constants';
 
 /**
- *  Initial redux state for beamline attributes, object containing each beamline
+ *  Initial redux state for beamline movables, object containing each beamline
  *  attribute (name, attribute object). Each attribute object in turn have the
  *  follwoing properties:
  *
  *     name:   name of beamline attribute
- *     value:  attributes current value
- *     state:  attributes current state, see STATE for more information
+ *     value:  movables current value
+ *     state:  movables current state, see STATE for more information
  *     msg:    arbitray message describing current state
  */
 export const INITIAL_STATE = {
-  attributes: {
+  movables: {
     fast_shutter: {
       limits: [
         0,
@@ -141,23 +141,21 @@ export const INITIAL_STATE = {
       msg: 'UNKNOWN',
       readonly: false
     },
-  },
-  motors: {
-    focus: { position: 0, state: 0, limits: [0, 1] },
-    phi: { position: 0, state: 0, limits: [0, 1] },
-    phiy: { position: 0, state: 0, limits: [0, 1] },
-    phiz: { position: 0, state: 0, limits: [0, 1] },
-    sampx: { position: 0, state: 0, limits: [0, 1] },
-    sampy: { position: 0, state: 0, limits: [0, 1] },
-    BackLight: { position: 0, state: 0, limits: [0, 1] },
-    FrontLight: { position: 0, state: 0, limits: [0, 1] },
-    BackLightSwitch: { position: 0, state: 0, limits: [0, 1] },
-    FrontLightSwitch: { position: 0, state: 0, limits: [0, 1] },
-    kappa: { position: 0, state: 0, limits: [0, 1] },
-    kappa_phi: { position: 0, state: 0, limits: [0, 1] },
-    zoom: { position: 0, state: 0, limits: [0, 1] },
-    sample_horizontal: { position: 0, state: 0, limits: [0, 1] },
-    sample_vertical: { position: 0, state: 0, limits: [0, 1] }
+    focus: { value: 0, state: 0, limits: [0, 1] },
+    phi: { value: 0, state: 0, limits: [0, 1] },
+    phiy: { value: 0, state: 0, limits: [0, 1] },
+    phiz: { value: 0, state: 0, limits: [0, 1] },
+    sampx: { value: 0, state: 0, limits: [0, 1] },
+    sampy: { value: 0, state: 0, limits: [0, 1] },
+    BackLight: { value: 0, state: 0, limits: [0, 1] },
+    FrontLight: { value: 0, state: 0, limits: [0, 1] },
+    BackLightSwitch: { value: 0, state: 0, limits: [0, 1] },
+    FrontLightSwitch: { value: 0, state: 0, limits: [0, 1] },
+    kappa: { value: 0, state: 0, limits: [0, 1] },
+    kappa_phi: { value: 0, state: 0, limits: [0, 1] },
+    zoom: { value: 0, state: 0, limits: [0, 1] },
+    sample_horizontal: { value: 0, state: 0, limits: [0, 1] },
+    sample_vertical: { value: 0, state: 0, limits: [0, 1] }
   },
   beamlineActionsList: [],
   currentBeamlineAction: { show: false, messages: [], arguments: [] },
@@ -171,67 +169,49 @@ export const INITIAL_STATE = {
 
 
 export default (state = INITIAL_STATE, action) => {
-  let data = {};
-
   switch (action.type) {
     case 'BL_ATTR_GET_ALL':
       return Object.assign({}, state, action.data);
 
-    case 'BL_ATTR_SET':
-      {
-        const attrData = Object.assign(state.attributes[action.data.name] || {}, action.data);
-        return { ...state, attributes: { ...state.attributes,
-                                         [action.data.name]: attrData
-                                       }
-               };
-      }
-    case 'BL_ACT_SET':
-      return { ...state, actuators: { ...state.actuators,
-                                    [action.data.name]: action.data
-                                    }
-             };
-    case 'BL_ATTR_SET_STATE':
-      data = Object.assign({}, state);
-      data.attributes[action.data.name].state = action.data.state;
-      return data;
-
-    case 'SET_MOTOR_MOVING':
+    case 'SET_MOVABLE_MOVING':
       return { ...state,
                motorInputDisable: true,
-               motors: { ...state.motors, [action.name.toLowerCase()]:
-                                   { ...state.motors[action.name.toLowerCase()],
+               movables: { ...state.movables, [action.name.toLowerCase()]:
+                                   { ...state.movables[action.name.toLowerCase()],
                                      state: action.status
                                    }
                        }
              };
-
-    case 'SAVE_MOTOR_POSITIONS':
-      return { ...state,
-                motors: { ...state.motors, ...action.data },
-                zoom: action.data.zoom.position
-      };
-    case 'SAVE_MOTOR_POSITION':
-      return { ...state, motors: { ...state.motors, [action.name]:
-                                   { ...state.motors[action.name],
-                                     position: action.value,
-                                     state: state.motors[action.name].state }
+    case 'SAVE_MOVABLE_VALUE':
+      return { ...state, movables: { ...state.movables, [action.name]:
+                                   { ...state.movables[action.name],
+                                     value: action.value,
+                                     state: state.movables[action.name].state }
                                  }
              };
-    case 'UPDATE_MOTOR_STATE':
+    case 'UPDATE_MOVABLE_STATE':
       return { ...state,
                motorInputDisable: action.value !== 2,
-               motors: { ...state.motors, [action.name]:
-                         { ...state.motors[action.name],
-                           position: state.motors[action.name].position,
+               movables: { ...state.movables, [action.name]:
+                         { ...state.movables[action.name],
+                           value: state.movables[action.name].value,
                            state: action.value }
                        }
              };
+    case 'UPDATE_MOVABLE':
+      {
+        const movableData = Object.assign(state.movables[action.data.name] || {}, action.data);
+
+        return { ...state, movables: { ...state.movables,
+                                       [action.name]: movableData
+                                     }
+               };
+      }
     case 'SET_INITIAL_STATE':
       return { ...INITIAL_STATE,
-        motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
-        attributes: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.attributes },
-        motorsLimits: { ...INITIAL_STATE.motorsLimits,
-                        ...action.data.motorsLimits },
+        movables: { ...INITIAL_STATE.movables, ...action.data.beamlineSetup.movables },
+        movablesLimits: { ...INITIAL_STATE.movablesLimits,
+                        ...action.data.movablesLimits },
         beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0),
         availableMethods: action.data.beamlineSetup.availableMethods,
         energyScanElements: action.data.beamlineSetup.energyScanElements

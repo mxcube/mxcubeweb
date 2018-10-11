@@ -1,7 +1,6 @@
 import sys
 import json
 import logging
-import signals
 
 from flask import Response, jsonify, request, make_response
 
@@ -10,14 +9,17 @@ from mxcube3 import server
 from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 
+ROUTE_PREFIX = "/mxcube/api/v0.1/beamline"
 
-@server.route("/mxcube/api/v0.1/beamline", methods=['GET'])
+
+@server.route(ROUTE_PREFIX, methods=['GET'])
 @server.restrict
 def beamline_get_all_attributes():
-    return jsonify(beamlineutils.beamline_get_all_attributes())
+    ret = beamlineutils.beamline_get_all_attributes()
+    return jsonify(ret)
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=['GET'])
+@server.route(ROUTE_PREFIX + "/procedure/<name>/abort", methods=['GET'])
 @server.restrict
 def beamline_abort_action(name):
     """
@@ -25,7 +27,8 @@ def beamline_abort_action(name):
 
     :param str name: Owner / Actuator of the process/action to abort
 
-    Replies with status code 200 on success and 520 on exceptions.
+    :statuscode: 200: No error
+    :statuscode: 520: On Exception
     """
     try:
         beamlineutils.beamline_abort_action(name)
@@ -37,7 +40,7 @@ def beamline_abort_action(name):
         return make_response("", 200)
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>/run", methods=['POST'])
+@server.route(ROUTE_PREFIX + "/procedure/<name>/run", methods=['POST'])
 @server.restrict
 def beamline_run_action(name):
     """
@@ -46,7 +49,8 @@ def beamline_run_action(name):
 
     :param str name: action to run
 
-    Replies with status code 200 on success and 520 on exceptions.
+    :statuscode: 200: No error
+    :statuscode: 520: On Exception
     """
     try:
         params = request.get_json()["parameters"]
@@ -61,63 +65,88 @@ def beamline_run_action(name):
         return make_response("{}", 200)
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>", methods=['PUT'])
+@server.route(ROUTE_PREFIX + "/movable/<name>/<pos>", methods=['PUT'])
 @server.restrict
-def beamline_set_attribute(name):
+def set_movable(name, pos):
     """
-    Tries to set < name > to value, replies with the following json:
+    Move movable with name <name> to position <pos>
 
-        {name: < name > , value: < value > , msg: < msg > , state: < state >
+    :parameter str name: The motor name for instance: 'Phi', 'Focus', 'PhiZ',
+                         'PhiY', 'Zoom', 'BackLightSwitch','BackLight',
+                         'FrontLightSwitch', 'FrontLight' Sampx', 'Sampy'
 
-    Where msg is an arbitrary msg to user, state is the internal state
-    of the set operation(for the moment, VALID, ABORTED, ERROR).
+    :parameter float pos: new position
 
-    Replies with status code 200 on success and 520 on exceptions.
+    :statuscode: 200: No error
+    :statuscode: 409: On Exception
     """
-    param = json.loads(request.data)
-    res, data = beamlineutils.beamline_set_attribute(name, param)
 
-    if res:
-        code = 200
+    try:
+        data = beamlineutils.set_movable(name, pos)
+    except Exception as ex:
+        return Response('Could not move movable %s' % str(ex),
+                        status=409,
+                        mimetype='application/json')
     else:
-        code = 520
-
-    response = jsonify(data)
-    response.code = code
-    return response
+        response = jsonify(data)
+        response.code = 200
+        return response
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
+@server.route(ROUTE_PREFIX + "/movable/<name>/stop", methods=['PUT'])
+def stop_movable(name):
+    """
+    Stop movable with name <name>
+
+    :parameter str name: The movable name for instance: 'Phi', 'Focus', 'PhiZ',
+                         'PhiY', 'Zoom', 'BackLightSwitch','BackLight',
+                         'FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
+    :statuscode: 200: No error
+    :statuscode: 409: On exception
+    """
+    try:
+        beamlineutils.stop_movable(name)
+        return Response(status=200)
+    except Exception:
+        return Response(status=409)
+
+
+@server.route(ROUTE_PREFIX + "/movable/<name>", methods=['GET'])
 @server.restrict
-def beamline_get_attribute(name):
+def get_movable(name):
     """
-    Retrieves value of attribute < name > , replies with the following json:
+    Get position and state of movable with name <name>
 
-        {name: < name > , value: < value > , msg: < msg > , state: < state >
+    :parameter str name: Name of movable for instance, 'Phi', 'Focus', 'PhiZ',
+                         'PhiY', 'Zoom', 'BackLightSwitch','BackLight',
+                         'FrontLightSwitch', 'FrontLight','Sampx', 'Sampy'
 
-    Where msg is an arbitrary msg to user, state is the internal state
-    of the get operation(for the moment, VALID, ABORTED, ERROR).
+    :response Content-type: application/json,
+                            { name:  { 'state': state,
+                                       'position': position }}
+    :statuscode: 200: No error
+    :statuscode: 409: On exception
 
-    Replies with status code 200 on success and 520 on exceptions.
     """
-    res, data = beamlineutils.beamline_get_attribute(name)
+    try:
+        ret = beamlineutils.get_movable(name)
+        resp = jsonify(ret)
+        resp.status_code = 200
+        return resp
+    except Exception:
+        return Response(status=409)
 
-    response = jsonify(data)
-    response.code = res
-    return response
 
-
-@server.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
+@server.route(ROUTE_PREFIX + "/movables", methods=['GET'])
 @server.restrict
-def get_beam_info():
-    """
-    Beam information: position, size, shape
-    return_data = {"position": , "shape": , "size_x": , "size_y": }
-    """
-    return jsonify(beamlineutils.get_beam_info())
+def get_all_movables():
+    ret = beamlineutils.get_all_movables()
+    resp = jsonify(ret)
+    resp.status_code = 200
+    return resp
 
 
-@server.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
+@server.route(ROUTE_PREFIX + "/datapath", methods=['GET'])
 @server.restrict
 def beamline_get_data_path():
     """
@@ -128,7 +157,7 @@ def beamline_get_data_path():
     return jsonify({"path": data})
 
 
-@server.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=['PUT'])
+@server.route(ROUTE_PREFIX + "/prepare_beamline", methods=['PUT'])
 @server.restrict
 def prepare_beamline_for_sample():
     """
@@ -141,3 +170,13 @@ def prepare_beamline_for_sample():
         logging.getLogger('HWR').error(msg)
         return Response(status=200)
     return Response(status=200)
+
+
+@server.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
+@server.restrict
+def get_beam_info():
+    """
+    Beam information: position, size, shape
+    return_data = {"position": , "shape": , "size_x": , "size_y": }
+    """
+    return jsonify(beamlineutils.get_beam_info())

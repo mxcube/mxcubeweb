@@ -42,7 +42,8 @@ export function hasLimsData(sample) {
 }
 
 export function taskHasLimsData(task) {
-  return task.limsResultData && (task.limsResultData.dataCollectionId || task.limsResultData.dataCollectionGroupId);
+  return task.limsResultData &&
+    (task.limsResultData.dataCollectionId || task.limsResultData.dataCollectionGroupId);
 }
 
 export function twoStateActuatorIsActive(state) {

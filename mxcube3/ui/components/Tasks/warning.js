@@ -1,19 +1,19 @@
 const warn = (values, props) => {
   const warnings = {};
-  if (!props.attributes) {
+  if (!props.movables) {
     // for some reason redux-form is loaded before the initial status
     return warnings;
   }
   const energy = parseFloat(values.energy);
-  const blEnergy = parseFloat(props.attributes.energy.value);
+  const blEnergy = parseFloat(props.movables.energy.value);
   const energyThreshold = blEnergy * 0.01;
 
   const resolution = parseFloat(values.resolution);
-  const blResolution = parseFloat(props.attributes.resolution.value);
+  const blResolution = parseFloat(props.movables.resolution.value);
   const resThreshold = blResolution * 0.01;
 
   const trans = parseFloat(values.transmission);
-  const blTrans = parseFloat(props.attributes.transmission.value);
+  const blTrans = parseFloat(props.movables.transmission.value);
   const transThreshold = blTrans * 0.01;
 
   if (blEnergy - energyThreshold > energy || energy > blEnergy + energyThreshold) {
@@ -28,7 +28,7 @@ const warn = (values, props) => {
     warnings.transmission = 'Entered transmission is different from current transmission';
   }
 
-  if (props.beamline.motors.phi.position !== parseFloat(values.osc_start)) {
+  if (props.beamline.movables.phi.value !== parseFloat(values.osc_start)) {
     warnings.osc_start = 'Oscillation start angle is different from current omega';
   }
 

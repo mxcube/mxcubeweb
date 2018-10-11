@@ -8,7 +8,7 @@ from mxcube3.video import streaming
 from mxcube3 import mxcube
 
 from qutils import READY
-
+import utils
 
 from mxcube3.core.beamline_setup import BeamlineSetupMediator
 
@@ -171,6 +171,7 @@ def beamline_get_all_attributes():
     ho = BeamlineSetupMediator(blcontrol.beamline)
     data = ho.dict_repr()
     actions = list()
+
     try:
         cmds = blcontrol.actions.getCommands()
     except Exception:
@@ -187,6 +188,8 @@ def beamline_get_all_attributes():
         actions.append({"name": cmd.name(), "username": cmd.userName(),
                         "state": READY, "arguments": args, "messages": [],
                         "type": cmd.type, "data": cmd.value()})
+
+    data["movables"].update(get_all_motors())
 
     data.update({'availableMethods': ho.get_available_methods()})
     data.update({'path': blcontrol.session.get_base_image_directory(),
@@ -212,16 +215,6 @@ def beamline_abort_action(name):
     for cmd in cmds:
         if cmd.name() == name:
             cmd.abort()
-
-    # This could be made to give access to arbitrary method of HO, possible
-    # security issues to be discussed.
-    if name.lower() == "detdist":
-        ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole("dtox")
-    else:
-        ho = BeamlineSetupMediator(
-            blcontrol.beamline).getObjectByRole(name.lower())
-
-    ho.stop()
 
 
 def beamline_run_action(name, params):
@@ -252,29 +245,18 @@ def beamline_run_action(name, params):
         raise Exception(msg)
 
 
-def beamline_set_attribute(name, data):
-    """
-    """
-    if name.lower() == "detdist":
-        ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole("dtox")
-    else:
-        ho = BeamlineSetupMediator(
-            blcontrol.beamline).getObjectByRole(name.lower())
+def beamline_set_attribute(name, value):
+    ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole(name)
 
     try:
-        ho.set(data["value"])
+        ho.set(value)
         data = ho.dict_repr()
-        res = True
     except Exception as ex:
-        data = ho.dict_repr()
-        data["value"] = ho.get()
-        data["state"] = "UNUSABLE"
-        data["msg"] = "submitted value out of limits"
-        res = False
-        logging.getLogger('MX3.HWR').error(
-            "Error setting bl attribute: " + str(ex))
+        msg = "Error setting bl attribute: " + str(ex)
+        logging.getLogger('MX3.HWR').error(msg)
+        raise ex
 
-    return res, data
+    return data
 
 
 def beamline_get_attribute(name):
@@ -288,12 +270,9 @@ def beamline_get_attribute(name):
         data = ho.dict_repr()
         res = 200
     except Exception as ex:
-        data["value"] = ""
-        data["state"] = "UNUSABLE"
-        data["msg"] = str(ex)
-        res = 520
+        raise ex
 
-    return res, data
+    return data
 
 
 def get_beam_info():
@@ -374,3 +353,84 @@ def get_detector_info():
             'Detector file format not specified. Setting as cbf.')
 
     return filetype
+
+
+def move_motor(name, pos):
+    motor_hwobj = blcontrol.diffractometer.getObjectByRole(name)
+
+    if motor_hwobj.getState() != 2:
+        raise Exception(name + ' already moving')
+
+    limits = motor_hwobj.getLimits()
+    if not limits[0] <= float(pos) <= limits[1]:
+        raise Exception(name + ' position out of range, ' + str(limits))
+
+    motor_hwobj.move(float(pos))
+
+    return get_motor(name)
+
+
+def stop_motor(name):
+    motor_hwobj = blcontrol.diffractometer.getObjectByRole(name.lower())
+
+    try:
+        motor_hwobj.stop()
+    except Exception as ex:
+        msg = "Could not stop motor '%s'" % name
+        logging.getLogger('MX3.HWR').exception(msg)
+        raise ex
+
+
+def get_motor(name):
+    if 'Light' in name:
+        ret = utils.get_light_state_and_intensity()[name]
+    else:
+        ret = utils.get_movable_state_and_position(name)[name]
+
+    if ret:
+        return ret
+    else:
+        raise Exception("Could not get status of movable")
+
+
+def get_all_motors():
+    ret = utils.get_centring_motors_info()
+    ret.update(utils.get_light_state_and_intensity())
+    return ret
+
+
+def set_movable(name, pos):
+    if name.lower() in blcontrol.diffractometer.getRoles():
+        res = move_motor(name, pos)
+    else:
+        res = beamline_set_attribute(name, pos)
+
+    return res
+
+
+def stop_movable(name):
+    if name.lower() in blcontrol.diffractometer.getRoles():
+        res = stop_motor(name)
+    else:
+        ho = BeamlineSetupMediator(blcontrol.beamline).\
+            getObjectByRole(name.lower())
+
+        res = ho.stop()
+
+    return res
+
+
+def get_movable(name):
+    if name.lower() in blcontrol.diffractometer.getRoles():
+        res = get_motor(name)
+    else:
+        res = beamline_get_attribute(name)
+
+    return res
+
+
+def get_all_movables():
+    ret = beamline_get_all_attributes()["movables"]
+    ret.update(utils.get_centring_motors_info())
+    ret.update(utils.get_light_state_and_intensity())
+    return ret

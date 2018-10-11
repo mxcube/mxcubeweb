@@ -7,6 +7,7 @@ import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
+import * as BeamlineActions from '../actions/beamline';
 import { updateTask } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -19,7 +20,8 @@ class SampleViewContainer extends Component {
 
   render() {
     const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
-    const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
+    const { setStepSize } = this.props.sampleViewActions;
+    const { sendMovablePosition, sendStopMovable } = this.props.beamlineActions;
     const sampleID = this.props.current.sampleID;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
@@ -75,13 +77,13 @@ class SampleViewContainer extends Component {
                 {config.phaseControl ? phaseControl : null }
                 {apertureControl}
                 <MotorControl
-                  save={sendMotorPosition}
+                  save={sendMovablePosition}
                   saveStep={setStepSize}
-                  motors={this.props.motors}
-                  motorsDisabled={ this.props.motorInputDisable ||
+                  movables={this.props.movables}
+                  movablesDisabled={ this.props.motorInputDisable ||
                                    this.props.queueState === QUEUE_RUNNING }
                   steps={motorSteps}
-                  stop={sendStopMotor}
+                  stop={sendStopMovable}
                 />
               </div>
               <div className="col-xs-7">
@@ -102,8 +104,9 @@ class SampleViewContainer extends Component {
                 />
                 <SampleImage
                   sampleActions={this.props.sampleViewActions}
+                  beamlineActions={this.props.beamlineActions}
                   {...this.props.sampleViewState}
-                  motors={this.props.motors}
+                  movables={this.props.movables}
                   steps={motorSteps}
                   imageRatio={imageRatio * sourceScale}
                   contextMenuVisible={this.props.contextMenu.show}
@@ -141,7 +144,7 @@ function mapStateToProps(state) {
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     motorInputDisable: state.beamline.motorInputDisable,
-    motors: state.beamline.motors,
+    movables: state.beamline.movables,
     availableMethods: state.beamline.availableMethods,
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
@@ -156,6 +159,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
     updateTask: bindActionCreators(updateTask, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch)
   };

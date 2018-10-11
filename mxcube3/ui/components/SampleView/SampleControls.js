@@ -29,7 +29,7 @@ export default class SampleControls extends React.Component {
 
   setZoom(option) {
     const newZoom = parseInt(option.target.value, 10);
-    if (this.props.motors.zoom.position !== newZoom) {
+    if (this.props.movables.zoom.value !== newZoom) {
       this.props.sampleActions.sendZoomPos(newZoom);
     }
   }
@@ -81,7 +81,7 @@ export default class SampleControls extends React.Component {
   }
 
   toggleLight(name) {
-    const lighstate = this.props.motors[`${name}Switch`].position;
+    const lighstate = this.props.movables[`${name}Switch`].value;
 
     if (lighstate) {
       this.props.sampleActions.sendLightOff(name);
@@ -136,7 +136,7 @@ export default class SampleControls extends React.Component {
   }
 
   render() {
-    const motors = this.props.motors;
+    const movables = this.props.movables;
 
     return (
       <div style={ { display: 'flex', position: 'absolute', width: '100%' } } >
@@ -182,15 +182,15 @@ export default class SampleControls extends React.Component {
               overlay={(
                 <span className="slider-overlay" style={{ marginTop: '20px' }}>
                   <OneAxisTranslationControl
-                    save={this.props.sampleActions.sendMotorPosition}
-                    value={motors.focus.position}
-                    min={motors.focus.limits[0]} max={motors.focus.limits[1]}
+                    save={this.props.beamlineActions.sendMovablePosition}
+                    value={movables.focus.value}
+                    min={movables.focus.limits[0]} max={movables.focus.limits[1]}
                     step={this.props.steps.focusStep}
                     motorName="focus"
                     suffix="mm"
                     decimalPoints="3"
-                    state={this.props.motors.focus.state}
-                    disabled={this.props.motorsDisabled}
+                    state={this.props.movables.focus.state}
+                    disabled={this.props.movablesDisabled}
                   />
                 </span>)}
             >
@@ -215,8 +215,8 @@ export default class SampleControls extends React.Component {
                   id="zoom-control"
                   min="1" max="10"
                   step="1"
-                  defaultValue={motors.zoom.position}
-                  disabled={motors.zoom.state !== 2}
+                  defaultValue={movables.zoom.value}
+                  disabled={movables.zoom.state !== 2}
                   onMouseUp={this.setZoom}
                   list="volsettings"
                   name="zoomSlider"
@@ -256,7 +256,7 @@ export default class SampleControls extends React.Component {
               title="Backlight On/Off"
               className="fa fa-lightbulb-o sample-controll"
               onClick={this.toggleBackLight}
-              active={motors.BackLightSwitch.position === 1}
+              active={movables.BackLightSwitch.value === 1}
             />
             <OverlayTrigger trigger="click" rootClose placement="bottom"
               overlay={(
@@ -267,10 +267,10 @@ export default class SampleControls extends React.Component {
                     type="range"
                     step="0.1"
                     min="0" max="1"
-                    defaultValue={motors.BackLight.position}
-                    disabled={motors.BackLight.state !== 2}
+                    defaultValue={movables.BackLight.value}
+                    disabled={movables.BackLight.state !== 2}
                     onMouseUp={(e) =>
-                      this.props.sampleActions.sendMotorPosition('BackLight', e.target.value)}
+                      this.props.beamlineActions.sendMovablePosition('BackLight', e.target.value)}
                     name="backlightSlider"
                   />
                 </span>)}
@@ -291,7 +291,7 @@ export default class SampleControls extends React.Component {
               title="Front On/Off"
               className="fa fa-lightbulb-o sample-controll"
               onClick={this.toggleFrontLight}
-              active={motors.FrontLightSwitch.position === 1}
+              active={movables.FrontLightSwitch.value === 1}
             />
             <OverlayTrigger trigger="click" rootClose placement="bottom"
               overlay={(
@@ -301,10 +301,10 @@ export default class SampleControls extends React.Component {
                     type="range"
                     step="0.1"
                     min="0" max="1"
-                    defaultValue={motors.FrontLight.position}
-                    disabled={motors.FrontLight.state !== 2}
+                    defaultValue={movables.FrontLight.value}
+                    disabled={movables.FrontLight.state !== 2}
                     onMouseUp={(e) =>
-                      this.props.sampleActions.sendMotorPosition('FrontLight', e.target.value)}
+                      this.props.beamlineActions.sendMovablePosition('FrontLight', e.target.value)}
                     name="frontLightSlider"
                   />
                 </span>)}

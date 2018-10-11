@@ -23,75 +23,75 @@ def client():
     yield client
 
 
-def test_beamline_get_all_attribute(client):
+def test_beamline_get_all_attributes(client):
     """
     Checks that the data returned has the right structure and if "all"
-    beamline attributes are at least present
+    beamline movables are at least present
     """
     resp = client.get("/mxcube/api/v0.1/beamline")
     data = json.loads(resp.data)
 
-    actual = data.get("attributes").keys()
+    actual = data.get("movables").keys()
 
-    expected = ['safety_shutter', 'beamstop', 'fast_shutter', 'resolution',
-                'energy', 'flux', 'cryo', 'wavelength', 'transmission',
-                'machinfo', 'detdist']
+    minimal = ['sampx', 'sampy', 'safety_shutter', 'energy',
+               'focus', 'wavelength', 'BackLight', 'beamstop', 'detdist',
+               'phi', 'fast_shutter', 'FrontLight', 'transmission', 'zoom',
+               'resolution', 'phiz', 'phiy']
 
-    assert isinstance(data['attributes'], dict)
+    assert isinstance(data['movables'], dict)
     assert isinstance(data['actionsList'], list)
     assert isinstance(data['path'], unicode)
     assert len(data['energyScanElements']) == 31
     assert isinstance(data['availableMethods'], dict)
-    assert actual == expected
+
+    for movable in minimal:
+        assert movable in actual
 
 
-def test_beamline_get_attribute(client):
+def test_get_movable(client):
     """
-    Tests retrieval of all the beamline attributes (one by one), checks that
+    Tests retrieval of all the beamline movables (one by one), checks that
     the data returned at-least contain a minimal set of keys that make up a
-    'beamline attribute'
+    'movable'
     """
-    bl_attrs = ['safety_shutter', 'beamstop', 'fast_shutter', 'resolution',
-                'energy', 'flux', 'cryo', 'wavelength', 'transmission',
-                'machinfo', 'detdist']
+    movables = ['BackLight', 'safety_shutter', 'sampx', 'sampy',  'energy',
+                'focus', 'wavelength', 'beamstop', 'detdist',
+                'phi', 'fast_shutter', 'FrontLight', 'transmission', 'zoom',
+                'resolution', 'phiz', 'phiy']
 
-    for name in bl_attrs:
-        resp = client.get("/mxcube/api/v0.1/beamline/%s" % name)
+    for name in movables:
+        resp = client.get("/mxcube/api/v0.1/beamline/movable/%s" % name)
 
         data = json.loads(resp.data)
-
         # Check for minimal set of attributes
         keys = ['name', 'state', 'value']
 
         for key in keys:
             assert key in data
 
-        assert resp.status_code == 200
 
-
-def test_beamline_set_attribute(client):
+def test_set_movable(client):
     """
-    Tests set on the writable attributes
+    Tests set on movables
 
     Basically only tests that the set command executes without unexpected
-    errors. Reads the attributes current value and sets it to the same, so
-    that the test can be safely executed on a beamline.
+    errors. Reads the movables current value and sets it to the same
     """
-    bl_attrs = ['resolution', 'energy', 'wavelength', 'transmission',
-                'safety_shutter', 'beamstop', 'fast_shutter', 'detdist']
+    movables = ['BackLight', 'safety_shutter', 'sampx', 'sampy',  'energy',
+                'focus', 'wavelength', 'beamstop', 'detdist',
+                'phi', 'fast_shutter', 'FrontLight', 'transmission', 'zoom',
+                'resolution', 'phiz', 'phiy']
 
-    for name in bl_attrs:
-        resp = client.get("/mxcube/api/v0.1/beamline/%s" % name)
+    for name in movables:
+        resp = client.get("/mxcube/api/v0.1/beamline/movable/%s" % name)
         data = json.loads(resp.data)
 
         new_value = data.get("value")
 
-        resp = client.put("/mxcube/api/v0.1/beamline/%s" % name,
-                          data=json.dumps(
-                              {"name": name, "value": new_value}),
-                          content_type='application/json')
+        resp = client.\
+            put("/mxcube/api/v0.1/beamline/movable/%s/%s" % (name, new_value))
 
-        resp = client.get("/mxcube/api/v0.1/beamline/%s" % name)
+        resp = client.get("/mxcube/api/v0.1/beamline/movable/%s" % name)
         data = json.loads(resp.data)
 
         assert data.get("value", None) == new_value

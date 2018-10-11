@@ -422,47 +422,6 @@ def front_light_off():
         motor_hwobj.actuatorOut(wait=False)
 
 
-def move_motor(motid, newpos):
-    motor_hwobj = blcontrol.diffractometer.getObjectByRole(motid.lower())
-
-    if newpos == "stop":
-        motor_hwobj.stop()
-        return True
-    else:
-        if motor_hwobj.getState() != 2:
-            raise Exception(motid + ' already moving')
-
-        limits = motor_hwobj.getLimits()
-        if not limits[0] <= float(newpos) <= limits[1]:
-            raise Exception(motid + ' position out of range, ' + str(limits))
-
-        motor_hwobj.move(float(newpos))
-
-        return True
-
-
-def get_status_of_id(elem_id):
-    """
-    Get position and status of the given element
-        :parameter id: moveable to get its status, 'Phi', 'Focus', 'PhiZ',
-        'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch',
-        'FrontLight','Sampx', 'Sampy'
-        :response Content-type: application/json, {motorname:
-            {'Status': status, 'position': position} }
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-    if 'Light' in elem_id:
-        ret = utils.get_light_state_and_intensity()
-    else:
-        ret = utils.get_movable_state_and_position(elem_id)
-
-    if ret:
-        return ret
-    else:
-        raise Exception("Could not get status of movable")
-
-
 def start_auto_centring():
     """
     Start automatic (lucid) centring procedure.

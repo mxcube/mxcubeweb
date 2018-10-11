@@ -1,4 +1,8 @@
 import fetch from 'isomorphic-fetch';
+
+import { showErrorPanel } from './general';
+
+
 // The different states a beamline attribute can assume.
 export const STATE = {
   IDLE: 'READY',
@@ -6,32 +10,41 @@ export const STATE = {
   ABORT: 'UNUSABLE'
 };
 
+export function updateMovableState(name, value) {
+  return {
+    type: 'UPDATE_MOVABLE_STATE', name, value
+  };
+}
 
-// Action types
-export const BL_ATTR_SET = 'BL_ATTR_SET';
-export const BL_ATTR_GET_ALL = 'BL_ATTR_GET_ALL';
-export const BL_ATTR_SET_STATE = 'BL_ATTR_SET_STATE';
-export const BL_ATTR_MOV_SET_STATE = 'BL_ATTR_MOV_SET_STATE';
-export const BL_ATTR_ACT_SET_STATE = 'BL_ATTR_ACT_SET_STATE';
-export const BL_MACH_INFO = 'BL_MACH_INFO';
-export const BL_ATTR_MOV_SET = 'BL_ATTR_MOV_SET';
-export const BL_ATTR_ACT_SET = 'BL_ATTR_ACT_SET';
+export function updateMovable(name, data) {
+  return {
+    type: 'UPDATE_MOVABLE', name, data
+  };
+}
 
-export function setBeamlineAttrAction(data) {
-  return { type: BL_ATTR_SET, data };
+export function saveMovablePosition(name, value) {
+  return {
+    type: 'SAVE_MOVABLE_VALUE', name, value
+  };
+}
+
+export function setMovableMoving(name, status) {
+  return {
+    type: 'SET_MOVABLE_MOVING', name, status
+  };
 }
 
 export function getBeamlineAttrsAction(data) {
-  return { type: BL_ATTR_GET_ALL, data };
+  return { type: 'BL_ATTR_GET_ALL', data };
 }
 
 export function setMachInfo(info) {
-  return { type: BL_MACH_INFO, info };
+  return { type: 'BL_MACH_INFO', info };
 }
 
 export function busyStateAction(name) {
   return {
-    type: BL_ATTR_SET_STATE,
+    type: 'UPDATE_MOVABLE_STATE',
     data: { name, state: STATE.BUSY }
   };
 }
@@ -56,44 +69,41 @@ export function sendGetAllAttributes() {
   };
 }
 
-
-export function sendSetAttribute(name, value) {
-  const url = `mxcube/api/v0.1/beamline/${name}`;
-
-  return (dispatch) => {
-    dispatch(busyStateAction(name));
-
-    fetch(url, {
+export function sendStopMovable(motorName) {
+  return function () {
+    fetch(`/mxcube/api/v0.1/beamline/movable/${motorName}/stop`, {
       method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
       credentials: 'include',
-      body: JSON.stringify({ name, value })
-    }).then(response => response.json())
-          .then(data => {
-            dispatch(setBeamlineAttrAction(data));
-          }, () => {
-            throw new Error(`PUT ${url} failed`);
-          });
-  };
-}
-
-
-export function sendAbortCurrentAction(name) {
-  return () => {
-    fetch(`mxcube/api/v0.1/beamline/${name}/abort`, {
-      method: 'GET',
       headers: {
         Accept: 'application/json',
         'Content-type': 'application/json'
-      },
-      credentials: 'include'
+      }
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused to stop motor');
+      }
     });
   };
 }
 
+export function sendMovablePosition(name, value) {
+  return function (dispatch) {
+    fetch(`/mxcube/api/v0.1/beamline/movable/${name}/${value}`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    }).then((response) => {
+      if (response.status >= 400) {
+        const msg = `Server refused to set ${name} to ${value}`;
+        dispatch(showErrorPanel(true, msg));
+        throw new Error(msg);
+      }
+    });
+  };
+}
 
 export function sendPrepareForNewSample() {
   return () => {

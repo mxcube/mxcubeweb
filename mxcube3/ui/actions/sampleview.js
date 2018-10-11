@@ -1,11 +1,7 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
+import { setMovableMoving, saveMovablePosition } from './beamline';
 
-export function setMotorMoving(name, status) {
-  return {
-    type: 'SET_MOTOR_MOVING', name, status
-  };
-}
 
 export function setBeamInfo(info) {
   return {
@@ -145,24 +141,6 @@ export function setVideoSize(width, height) {
         });
       });
     }
-  };
-}
-
-export function saveMotorPositions(data) {
-  return {
-    type: 'SAVE_MOTOR_POSITIONS', data
-  };
-}
-
-export function saveMotorPosition(name, value) {
-  return {
-    type: 'SAVE_MOTOR_POSITION', name, value
-  };
-}
-
-export function updateMotorState(name, value) {
-  return {
-    type: 'UPDATE_MOTOR_STATE', name, value
   };
 }
 
@@ -401,7 +379,7 @@ export function sendDeleteShape(id) {
 
 export function sendZoomPos(level) {
   return function (dispatch) {
-    dispatch(setMotorMoving('zoom', 4));
+    dispatch(setMovableMoving('zoom', 4));
     fetch('/mxcube/api/v0.1/sampleview/zoom', {
       method: 'PUT',
       credentials: 'include',
@@ -416,7 +394,7 @@ export function sendZoomPos(level) {
 
 export function sendLightOn(name) {
   return function (dispatch) {
-    dispatch(saveMotorPosition(name, true));
+    dispatch(saveMovablePosition(name, true));
     fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}on`, {
       method: 'PUT',
       credentials: 'include',
@@ -434,7 +412,7 @@ export function sendLightOn(name) {
 
 export function sendLightOff(name) {
   return function (dispatch) {
-    dispatch(saveMotorPosition(name, false));
+    dispatch(saveMovablePosition(name, false));
     fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}off`, {
       method: 'PUT',
       credentials: 'include',
@@ -445,46 +423,6 @@ export function sendLightOff(name) {
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to turn light off'));
-      }
-    });
-  };
-}
-
-export function sendStopMotor(motorName) {
-  return function () {
-    fetch(`/mxcube/api/v0.1/sampleview/${motorName}/stop`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to stop motor');
-      }
-    });
-  };
-}
-
-export function sendMotorPosition(motorName, value) {
-  return function (dispatch) {
-    dispatch(setMotorMoving(motorName, 4));
-    fetch(`/mxcube/api/v0.1/sampleview/${motorName}/${value}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status === 406) {
-        dispatch(showErrorPanel(true, response.headers.get('msg')));
-        dispatch(setMotorMoving(motorName, 2));
-        throw new Error('Server refused to move motors: out of limits');
-      }
-      if (response.status >= 400) {
-        throw new Error('Server refused to move motors');
       }
     });
   };
@@ -564,46 +502,6 @@ export function getSampleImageSize() {
       return response.json();
     }).then((json) => {
       dispatch(saveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
-    });
-  };
-}
-
-export function getMotorPosition(motor) {
-  return function (dispatch) {
-    fetch(`/mxcube/api/v0.1/sampleview/${motor}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to get motor position');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(saveMotorPosition(motor, json[motor].position));
-    });
-  };
-}
-
-export function getMotorPositions() {
-  return function (dispatch) {
-    fetch('/mxcube/api/v0.1/diffractometer/movables/state', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to get motor position');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(saveMotorPositions(json));
     });
   };
 }

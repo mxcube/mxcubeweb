@@ -69,11 +69,11 @@ def get_light_state_and_intensity():
 
         ret.update({light: {"name": light,
                             "state": hwobj.getState(),
-                            "position": hwobj.getPosition(),
+                            "value": hwobj.getPosition(),
                             "limits": hwobj.getLimits()},
                     light + "Switch": {"name": light + "Switch",
                                        "state": 2,
-                                       "position": switch_state}
+                                       "value": switch_state}
                     })
 
     return ret
@@ -107,7 +107,7 @@ def get_movable_state_and_position(item_name):
         if hwobj is None:
             msg = "[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role '%s'" % item_name
             logging.getLogger("MX3.HWR").error(msg)
-            return {item_name: {"name": item_name, "state": None, "position": None}}
+            return {item_name: {"name": item_name, "state": None, "value": None}}
         else:
             if hasattr(hwobj, "getCurrentPositionName"):
                 # a motor similar to zoom
@@ -121,7 +121,7 @@ def get_movable_state_and_position(item_name):
 
             return {item_name: {"name": item_name,
                                 "state": hwobj.getState(),
-                                "position": pos}}
+                                "value": pos}}
     except Exception:
         logging.getLogger("MX3.HWR").exception(
             "[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item '%s'" % item_name)
@@ -177,7 +177,7 @@ def get_centring_motors_info():
     for name in get_centring_motors():
         motor_info = get_movable_state_and_position(name)
 
-        if motor_info and motor_info[name]["position"] is not None:
+        if motor_info and motor_info[name]["value"] is not None:
             ret.update(motor_info)
 
         motor_limits = get_movable_limits(name)
