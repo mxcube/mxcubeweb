@@ -1,7 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { Button, Popover } from 'react-bootstrap';
-import MotorInput from './MotorInput';
+import { Button } from 'react-bootstrap';
 import './motor.css';
 
 export default class OneAxisTranslationControl extends React.Component {
@@ -43,41 +42,6 @@ export default class OneAxisTranslationControl extends React.Component {
     const value = this.props.value;
     const newValue = value + step * operator;
     this.props.save(name, newValue);
-  }
-
-  renderMotorSettings() {
-    return (<Popover title={(<b>Sample alignment motors</b>)}>
-              <div>
-                <MotorInput
-                  save={this.props.save}
-                  value={this.props.motors.sample_vertical.position}
-                  saveStep={this.props.saveStep}
-                  step={this.props.steps.sample_verticalStep}
-                  motorName="sample_vertical"
-                  label="Vertical"
-                  suffix="mm"
-                  decimalPoints="3"
-                  state={this.props.motors.sample_vertical.state}
-                  stop={this.props.stop}
-                  disabled={this.props.motorsDisabled}
-                  inplace
-                />
-                <MotorInput
-                  save={this.props.save}
-                  value={this.props.motors.sample_horizontal.position}
-                  saveStep={this.props.saveStep}
-                  step={this.props.steps.sample_horizontalStep}
-                  motorName="sample_horizontal"
-                  label="Horizontal"
-                  suffix="mm"
-                  decimalPoints="3"
-                  state={this.props.motors.sample_horizontal.state}
-                  stop={this.props.stop}
-                  disabled={this.props.motorsDisabled}
-                  inplace
-                />
-              </div>
-            </Popover>);
   }
 
   render() {

@@ -18,7 +18,7 @@ from sample_changer.GenericSampleChanger import SampleChangerState
 
 from mxcube3.core.beamline_setup import BeamlineSetupMediator
 from mxcube3.core.qutils import (READY, RUNNING, FAILED, COLLECTED,
-                                         WARNING, queue_to_dict)
+                                 WARNING, queue_to_dict)
 from queue_entry import CENTRING_METHOD
 from mxcube3.core.utils import to_camel
 

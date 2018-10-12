@@ -143,13 +143,13 @@ XRFScan = connect(state => {
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.resolution :
-        state.beamline.attributes.resolution.value),
+        state.beamline.movables.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value),
+        state.beamline.movables.energy.value),
       transmission: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.transmission :
-        state.beamline.attributes.transmission.value)
+        state.beamline.movables.transmission.value)
     }
   };
 })(XRFScan);

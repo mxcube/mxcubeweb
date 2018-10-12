@@ -46,7 +46,7 @@ class TANGO_SHUTTER_STATE:
     """
     TO_INOUT_STATE = {"closed": INOUT_STATE.IN,
                       "opened": INOUT_STATE.OUT}
-    
+
     STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OPEN",
                         INOUT_STATE.IN: "CLOSED"}
 
@@ -57,7 +57,7 @@ class MICRODIFF_INOUT_STATE:
     """
     TO_INOUT_STATE = {"in": INOUT_STATE.OUT,
                       "out": INOUT_STATE.IN}
-    
+
     STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OPEN",
                         INOUT_STATE.IN: "CLOSED"}
 

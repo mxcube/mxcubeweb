@@ -2,16 +2,16 @@ const everpolate = require('everpolate');
 
 const validate = (values, props) => {
   const errors = {};
-  if (!props.attributes) {
+  if (!props.movables) {
     // for some reason redux-form is loaded before the initial status
     return errors;
   }
   const currEnergy = parseFloat(values.energy);
   const currRes = parseFloat(values.resolution);
   const currTransmission = parseFloat(values.transmission);
-  const energies = props.attributes.resolution.limits.map(value => value[0]);
-  const limitsMin = props.attributes.resolution.limits.map(value => value[1]);
-  const limitsMax = props.attributes.resolution.limits.map(value => value[2]);
+  const energies = props.movables.resolution.limits.map(value => value[0]);
+  const limitsMin = props.movables.resolution.limits.map(value => value[1]);
+  const limitsMax = props.movables.resolution.limits.map(value => value[2]);
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
@@ -35,8 +35,8 @@ const validate = (values, props) => {
     resMin = everpolate.linear(currEnergy, energies, limitsMin);
     resMax = everpolate.linear(currEnergy, energies, limitsMax);
   } else {
-    resMin = props.attributes.resolution.limits[0];
-    resMax = props.attributes.resolution.limits[1];
+    resMin = props.movables.resolution.limits[0];
+    resMax = props.movables.resolution.limits[1];
   }
 
   if (values.num_images === '' ||
@@ -65,8 +65,8 @@ const validate = (values, props) => {
   }
 
   if (energies.length > 2) {
-    if (!(currEnergy > props.attributes.energy.limits[0] &&
-          currEnergy < props.attributes.energy.limits[1])) {
+    if (!(currEnergy > props.movables.energy.limits[0] &&
+          currEnergy < props.movables.energy.limits[1])) {
       errors.energy = 'Energy outside working range';
     }
   }

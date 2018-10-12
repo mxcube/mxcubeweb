@@ -54,8 +54,10 @@ class _BeamlineSetupMediator(object):
         socketio.emit("workflowParametersDialog", params, namespace="/hwr")
 
     def getObjectByRole(self, name):
+        name = name.lower()
+
         try:
-            if name == "dtox":
+            if name in ["dtox", "detdist"]:
                 # Detector distance retrieved through resolution
                 ho = self._bl.getObjectByRole("resolution")
             elif name == "wavelength":
@@ -83,7 +85,7 @@ class _BeamlineSetupMediator(object):
             return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "beamstop"))
         elif name == "capillary":
             return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "capillary"))
-        elif name == "dtox":
+        elif name in ["dtox", "detdist"]:
             return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "detdist"))
         elif name == "mach_info":
             return self._ho_dict.setdefault(name, MachineInfoHOMediator(ho, "machinfo"))
@@ -98,82 +100,85 @@ class _BeamlineSetupMediator(object):
         """
         :returns: Dictionary value-representation for each beamline attribute
         """
-        attributes = {}
+        movables = {}
 
         try:
             energy = self.getObjectByRole("energy")
-            attributes.update({"energy": energy.dict_repr()})
+            movables.update({"energy": energy.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get energy info")
 
         try:
             wavelength = self.getObjectByRole("wavelength")
-            attributes.update({"wavelength": wavelength.dict_repr()})
+            movables.update({"wavelength": wavelength.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get energy info")
         try:
             transmission = self.getObjectByRole("transmission")
-            attributes.update({"transmission": transmission.dict_repr()})
+            movables.update({"transmission": transmission.dict_repr()})
         except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get transmission info")
+            logging.getLogger("MX3.HWR").error(
+                "Failed to get transmission info")
 
         try:
             resolution = self.getObjectByRole("resolution")
-            attributes.update({"resolution": resolution.dict_repr()})
+            movables.update({"resolution": resolution.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get resolution info")
 
         try:
             fast_shutter = self.getObjectByRole("fast_shutter")
-            attributes.update({"fast_shutter": fast_shutter.dict_repr()})
+            movables.update({"fast_shutter": fast_shutter.dict_repr()})
         except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get fast_shutter info")
+            logging.getLogger("MX3.HWR").error(
+                "Failed to get fast_shutter info")
 
         try:
             safety_shutter = self.getObjectByRole("safety_shutter")
-            attributes.update({"safety_shutter": safety_shutter.dict_repr()})
+            movables.update({"safety_shutter": safety_shutter.dict_repr()})
         except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get safety_shutter info")
+            logging.getLogger("MX3.HWR").error(
+                "Failed to get safety_shutter info")
 
         try:
             beamstop = self.getObjectByRole("beamstop")
-            attributes.update({"beamstop": beamstop.dict_repr()})
+            movables.update({"beamstop": beamstop.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get beamstop info")
 
         try:
             capillary = self.getObjectByRole("capillary")
-            attributes.update({"capillary": capillary.dict_repr()})
+            movables.update({"capillary": capillary.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get capillary info")
 
         try:
             detdist = self.getObjectByRole("dtox")
-            attributes.update({"detdist": detdist.dict_repr()})
+            movables.update({"detdist": detdist.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get detdist info")
 
         try:
             machinfo = self.getObjectByRole("mach_info")
-            attributes.update({"machinfo": machinfo.dict_repr()})
+            movables.update({"machinfo": machinfo.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get mach_info info")
 
         try:
             flux = self.getObjectByRole("flux")
-            attributes.update({"flux": flux.dict_repr()})
+            movables.update({"flux": flux.dict_repr()})
 
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get photon flux")
 
         try:
             cryo = self.getObjectByRole("cryo")
-            attributes.update({"cryo": cryo.dict_repr()})
+            movables.update({"cryo": cryo.dict_repr()})
 
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get cryo")
 
-        return {"attributes": attributes}
+        return {"movables": movables}
 
     def get_available_methods(self):
         return self._bl["available_methods"].getProperties()
@@ -626,18 +631,6 @@ class TransmissionHOMediator(HOMediatorBase):
         ho.connect("attFactorChanged", self.state_change)
         ho.connect("valueChanged", self._value_change)
         self._precision = 3
-
-    def limits(self):
-        """
-        :returns: The transmission limits.
-        """
-        try:
-            trans_limits = self._ho.getLimits()
-        except (AttributeError, TypeError):
-            trans_limits = (0, 100)
-            raise ValueError("Could not get limits")
-
-        return trans_limits
 
     @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):

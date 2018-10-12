@@ -285,52 +285,6 @@ def front_light_off():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/<motid>/<newpos>", methods=['PUT'])
-@server.restrict
-def move_motor(motid, newpos):
-    """
-        Move or Stop the given motor.
-        :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom',
-        'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight',
-        'Sampx', 'Sampy'
-        :parameter newpos: new position, double, stop: string
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-
-    try:
-        sviewutils.move_motor(motid, newpos)
-    except Exception as ex:
-        return ('Could not move motor %s' % str(ex),
-                406,
-                {'Content-Type': 'application/json', 'msg': str(ex)})
-    else:
-        return Response(status=200)
-
-
-@server.route("/mxcube/api/v0.1/sampleview/<elem_id>", methods=['GET'])
-@server.restrict
-def get_status_of_id(elem_id):
-    """
-    Get position and status of the given element
-        :parameter id: moveable to get its status, 'Phi', 'Focus', 'PhiZ',
-        'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch',
-        'FrontLight','Sampx', 'Sampy'
-        :response Content-type: application/json, {motorname:
-            {'Status': status, 'position': position} }
-        :statuscode: 200: no error
-        :statuscode: 409: error
-    """
-
-    try:
-        ret = sviewutils.get_status_of_id(elem_id)
-        resp = jsonify(ret)
-        resp.status_code = 200
-        return resp
-    except Exception:
-        return Response(status=409)
-
-
 @server.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=['PUT'])
 @server.restrict
 def centre_auto():

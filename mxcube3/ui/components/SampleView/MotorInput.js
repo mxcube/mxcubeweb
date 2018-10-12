@@ -59,6 +59,7 @@ export default class MotorInput extends React.Component {
 
   render() {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
+    console.log(motorName);
     const valueCropped = value.toFixed(decimalPoints);
     let inputCSS = cx('form-control rw-input', {
       'input-bg-edited': this.state.edited,

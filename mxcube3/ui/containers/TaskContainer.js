@@ -93,7 +93,7 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
-        attributes={this.props.attributes}
+        movables={this.props.movables}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
       />);
@@ -108,7 +108,7 @@ class TaskContainer extends React.Component {
         hide={this.props.hideTaskParametersForm}
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
-        attributes={this.props.attributes}
+        movables={this.props.movables}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
         taskResult={this.props.taskResult}
@@ -126,7 +126,7 @@ class TaskContainer extends React.Component {
         apertureList={this.props.apertureList}
         rootPath={this.props.path}
         lines={lines}
-        attributes={this.props.attributes}
+        movables={this.props.movables}
         initialParameters={this.props.initialParameters}
         resetTaskParameters={this.props.resetTaskParameters}
       />);
@@ -223,7 +223,7 @@ function mapStateToProps(state) {
     apertureList: state.sampleview.apertureList,
     path: state.queue.rootPath,
     shapes: state.shapes.shapes,
-    attributes: state.beamline.attributes,
+    movables: state.beamline.movables,
     initialParameters: state.taskForm.initialParameters,
     taskResult: state.taskResult
   };

@@ -13,8 +13,8 @@ export default class MotorControl extends React.Component {
   }
 
   horVerTranslationAvailable() {
-    return this.props.motors.sample_vertical.state !== 0 &&
-      this.props.motors.sample_horizontal.state !== 0;
+    return this.props.movables.sample_vertical.state !== 0 &&
+      this.props.movables.sample_horizontal.state !== 0;
   }
 
   renderAllMotors() {
@@ -23,7 +23,7 @@ export default class MotorControl extends React.Component {
       phiz,
       focus,
       sampx,
-      sampy } = this.props.motors;
+      sampy } = this.props.movables;
     const {
       phiyStep,
       phizStep,
@@ -41,7 +41,7 @@ export default class MotorControl extends React.Component {
         <div className="col-sm-12">
           <MotorInput
             save={save}
-            value={focus.position}
+            value={focus.value}
             saveStep={saveStep}
             step={focusStep}
             motorName="Focus"
@@ -50,13 +50,13 @@ export default class MotorControl extends React.Component {
             decimalPoints="3"
             state={focus.state}
             stop={stop}
-            disabled={this.props.motorsDisabled}
+            disabled={this.props.movablesDisabled}
           />
         </div>
         <div className="col-sm-12">
           <MotorInput
             save={save}
-            value={phiy.position}
+            value={phiy.value}
             saveStep={saveStep}
             step={phiyStep}
             motorName="PhiY"
@@ -65,13 +65,13 @@ export default class MotorControl extends React.Component {
             decimalPoints="3"
             state={phiy.state}
             stop={stop}
-            disabled={this.props.motorsDisabled}
+            disabled={this.props.movablesDisabled}
           />
         </div>
         <div className="col-sm-12">
           <MotorInput
             save={save}
-            value={phiz.position}
+            value={phiz.value}
             saveStep={saveStep}
             step={phizStep}
             motorName="PhiZ"
@@ -80,13 +80,13 @@ export default class MotorControl extends React.Component {
             decimalPoints="3"
             state={phiz.state}
             stop={stop}
-            disabled={this.props.motorsDisabled}
+            disabled={this.props.movablesDisabled}
           />
         </div>
         <div className="col-sm-12">
           <MotorInput
             save={save}
-            value={sampx.position}
+            value={sampx.value}
             saveStep={saveStep}
             step={sampxStep}
             motorName="SampX"
@@ -95,13 +95,13 @@ export default class MotorControl extends React.Component {
             decimalPoints="3"
             state={sampx.state}
             stop={stop}
-            disabled={this.props.motorsDisabled}
+            disabled={this.props.movablesDisabled}
           />
         </div>
         <div className="col-sm-12">
           <MotorInput
             save={save}
-            value={sampy.position}
+            value={sampy.value}
             saveStep={saveStep}
             step={sampyStep}
             motorName="SampY"
@@ -110,7 +110,7 @@ export default class MotorControl extends React.Component {
             decimalPoints="3"
             state={sampy.state}
             stop={stop}
-            disabled={this.props.motorsDisabled}
+            disabled={this.props.movablesDisabled}
           />
         </div>
       </div>
@@ -128,8 +128,8 @@ export default class MotorControl extends React.Component {
           <TwoAxisTranslationControl
             save={save}
             saveStep={saveStep}
-            motors={this.props.motors}
-            motorsDisabled={ this.props.motorsDisabled}
+            movables={this.props.movables}
+            movablesDisabled={ this.props.movablesDisabled}
             steps={this.props.steps}
             stop={stop}
           />
@@ -141,7 +141,7 @@ export default class MotorControl extends React.Component {
               style={{ marginLeft: '8px', width: '145px' }}
               onClick={() => {this.setState({ showAll: false });}}
             >
-              <i className="fa fa-cogs" /> Hide motors<i className="fa fa-caret-up" />
+              <i className="fa fa-cogs" /> Hide movables<i className="fa fa-caret-up" />
             </Button>
           </div>
           :
@@ -149,7 +149,7 @@ export default class MotorControl extends React.Component {
             style={{ marginTop: '1em', marginLeft: '8px', width: '145px' }}
             onClick={() => {this.setState({ showAll: true });}}
           >
-            <i className="fa fa-cogs" /> Show motors<i className="fa fa-caret-down" />
+            <i className="fa fa-cogs" /> Show movables<i className="fa fa-caret-down" />
           </Button>
         }
       </div>
@@ -160,7 +160,7 @@ export default class MotorControl extends React.Component {
     const {
       phi,
       kappa,
-      kappa_phi } = this.props.motors;
+      kappa_phi } = this.props.movables;
     const {
       phiStep,
       kappaStep,
@@ -178,14 +178,14 @@ export default class MotorControl extends React.Component {
                 save={save}
                 saveStep={saveStep}
                 step={phiStep}
-                value={phi.position}
+                value={phi.value}
                 motorName="Phi"
                 label="Omega:"
                 suffix="&deg;"
                 decimalPoints="2"
                 state={phi.state}
                 stop={stop}
-                disabled={this.props.motorsDisabled}
+                disabled={this.props.movablesDisabled}
               />
             </div>
 
@@ -194,14 +194,14 @@ export default class MotorControl extends React.Component {
                 save={save}
                 saveStep={saveStep}
                 step={kappaStep}
-                value={kappa.position}
+                value={kappa.value}
                 motorName="Kappa"
                 label="Kappa:"
                 suffix="&deg;"
                 decimalPoints="2"
                 state={kappa.state}
                 stop={stop}
-                disabled={this.props.motorsDisabled}
+                disabled={this.props.movablesDisabled}
               />
             </div>
 
@@ -210,14 +210,14 @@ export default class MotorControl extends React.Component {
                 save={save}
                 saveStep={saveStep}
                 step={kappaphiStep}
-                value={kappa_phi.position}
+                value={kappa_phi.value}
                 motorName="Kappa_phi"
                 label="Phi:"
                 suffix="&deg;"
                 decimalPoints="2"
                 state={kappa_phi.state}
                 stop={stop}
-                disabled={this.props.motorsDisabled}
+                disabled={this.props.movablesDisabled}
               />
             </div>
             { this.horVerTranslationAvailable() ?

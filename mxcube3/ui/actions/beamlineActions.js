@@ -19,7 +19,7 @@ export function setArgumentValue(cmdName, argIndex, value) {
 }
 
 export function startAction(cmdName, parameters, showOutput = true) {
-  const url = `mxcube/api/v0.1/beamline/${cmdName}/run`;
+  const url = `mxcube/api/v0.1/beamline/procedure/${cmdName}/run`;
 
   return (dispatch) => {
     dispatch(setActionState(cmdName, RUNNING));
@@ -43,7 +43,7 @@ export function startAction(cmdName, parameters, showOutput = true) {
 }
 
 export function stopAction(cmdName) {
-  const url = `mxcube/api/v0.1/beamline/${cmdName}/abort`;
+  const url = `mxcube/api/v0.1/beamline/procedure/${cmdName}/abort`;
 
   return () => {
     fetch(url, {

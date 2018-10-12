@@ -75,17 +75,6 @@ def md_in_plate_mode():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/movables/state", methods=['GET'])
-@server.restrict
-def get_movables_state():
-    ret = utils.get_centring_motors_info()
-    ret.update(utils.get_light_state_and_intensity())
-
-    resp = jsonify(ret)
-    resp.status_code = 200
-    return resp
-
-
 @server.route("/mxcube/api/v0.1/diffractometer/aperture", methods=['PUT'])
 @server.restrict
 def set_aperture():

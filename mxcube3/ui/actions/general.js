@@ -84,14 +84,6 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const motors = fetch('mxcube/api/v0.1/diffractometer/movables/state', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    });
     const beamInfo = fetch('mxcube/api/v0.1/beam/info', {
       method: 'GET',
       credentials: 'include',
@@ -199,7 +191,7 @@ export function getInitialState() {
 
     const pchains = [
       queue.then(parse).then(json => { state.queue = json; }).catch(notify),
-      motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
+//      movables.then(parse).then(json => { state.Motors = json; }).catch(notify),
       beamInfo.then(parse).then(json => { state.beamInfo = json; }).catch(notify),
       beamlineSetup.then(parse).then(
         json => { state.beamlineSetup = json; return json; }).then(

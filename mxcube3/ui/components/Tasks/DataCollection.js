@@ -196,7 +196,7 @@ class DataCollection extends React.Component {
             </FieldsRow>
             <FieldsRow>
             <InputField
-              disabled={this.props.beamline.attributes.energy.readonly}
+              disabled={this.props.beamline.movables.energy.readonly}
               propName="energy"
               type="number"
               label="Energy"
@@ -297,16 +297,16 @@ DataCollection = connect(state => {
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.resolution :
-        state.beamline.attributes.resolution.value),
+        state.beamline.movables.resolution.value),
       energy: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value),
+        state.beamline.movables.energy.value),
       transmission: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.transmission :
-        state.beamline.attributes.transmission.value),
+        state.beamline.movables.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array ?
         state.taskForm.taskData.parameters.osc_start :
-        state.beamline.motors.phi.position)
+        state.beamline.movables.phi.value)
     }
   };
 })(DataCollection);
