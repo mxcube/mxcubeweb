@@ -632,18 +632,6 @@ class TransmissionHOMediator(HOMediatorBase):
         ho.connect("valueChanged", self._value_change)
         self._precision = 3
 
-    def limits(self):
-        """
-        :returns: The transmission limits.
-        """
-        try:
-            trans_limits = self._ho.getLimits()
-        except (AttributeError, TypeError):
-            trans_limits = (0, 100)
-            raise ValueError("Could not get limits")
-
-        return trans_limits
-
     @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
