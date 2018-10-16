@@ -18,7 +18,7 @@ from sample_changer.GenericSampleChanger import SampleChangerState
 
 from mxcube3.core.beamline_setup import BeamlineSetupMediator
 from mxcube3.core.qutils import (READY, RUNNING, FAILED, COLLECTED,
-                                         WARNING, queue_to_dict)
+                                 WARNING, queue_to_dict)
 from queue_entry import CENTRING_METHOD
 from mxcube3.core.utils import to_camel
 
@@ -95,59 +95,31 @@ def diffractometer_phase_changed(*args):
 
 def sc_state_changed(*args):
     new_state = args[0]
-    old_state = None
-
-    if len(args) == 2:
-        old_state = args[1]
-
-    location, sc_location, msg = '', '',  None
-    loaded_sample = blcontrol.sample_changer.getLoadedSample()
-
-    # Handle inconsistent API getLoadedSample sometimes returns a sampleID
-    # and other times an object.
-    if isinstance(loaded_sample, str):
-        if not 'None' in loaded_sample:
-            parts = map(int, loaded_sample.split(':'))
-            sc_location = ":".join(["%s" % parts[0], '%0.2d' % parts[1]])
-    elif loaded_sample:
-        sc_location = loaded_sample.getAddress()
-
-    known_location = scutils.get_current_sample().get('sampleID', '')
-    location = known_location if known_location else sc_location
-
-    if new_state == SampleChangerState.Moving:
-        msg = {'signal': 'operatingSampleChanger',
-               'location': '',
-               'message': 'Please wait, operating sample changer'}
-
-    elif new_state in [SampleChangerState.Loading, SampleChangerState.Unloading]:
-        if new_state == SampleChangerState.Loading:
-            location = scutils.get_sample_to_be_mounted()
-            message = 'Please wait, Loading sample %s' % location
-            signal = 'loadingSample'
-
-        elif new_state == SampleChangerState.Unloading:
-            signal = 'unLoadingSample'
-            message = 'Please wait, Unloading sample'
-            scutils.set_current_sample(None)
-
-        msg = {'signal': signal,
-               'location': location,
-               'message': message}
-
-    if msg:
-        logging.getLogger("HWR").info('emitting sc state changed: ' + str(msg))
-        socketio.emit('sc', msg, namespace='/hwr')
-
-    # emit also brut sample changer state for those interested
     state_str = SampleChangerState.STATE_DESC.get(new_state, "Unknown").upper()
-    if new_state == SampleChangerState.Ready:
-        msg = {'signal': 'loadReady',
-               'location': location,
-               'message': 'Sample changer ready'}
-        socketio.emit('sc', msg, namespace='/hwr')
-
     socketio.emit('sc_state', state_str, namespace='/hwr')
+
+
+def sc_load(location):
+    msg = {'signal': 'operatingSampleChanger',
+           'location':  location,
+           'message': 'Please wait, loading sample'}
+
+    socketio.emit('sc', msg, namespace='/hwr')
+
+
+def sc_load_ready(location):
+    msg = {'signal': 'loadReady', 'location': location,
+           'message': 'Sample changer, loaded sample'}
+
+    socketio.emit('sc', msg, namespace='/hwr')
+
+
+def sc_unload(location):
+    msg = {'signal': 'operatingSampleChanger',
+           'location': location,
+           'message': 'Please wait, unloading sample'}
+
+    socketio.emit('sc', msg, namespace='/hwr')
 
 
 def loaded_sample_changed(sample):

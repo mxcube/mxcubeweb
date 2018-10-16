@@ -178,7 +178,7 @@ def get_sample_to_be_mounted():
 def queue_mount_sample(beamline_setup_hwobj,
                        view, data_model,
                        centring_done_cb, async_result):
-    from mxcube3.routes.signals import loaded_sample_changed
+    from mxcube3.routes import signals
 
     logging.getLogger('user_level_log').info("Loading sample ...")
     log = logging.getLogger("user_level_log")
@@ -204,11 +204,15 @@ def queue_mount_sample(beamline_setup_hwobj,
     if hasattr(sample_mount_device, '__TYPE__'):
         if sample_mount_device.__TYPE__ in ['Marvin', 'CATS']:
             element = '%d:%02d' % loc
-            sample_mount_device.load(sample=element, wait=True)
+            sample = {"location": element, "sampleID": element}
+            mount_sample_clean_up(sample)
         elif sample_mount_device.__TYPE__ == "PlateManipulator":
-            sample_mount_device.load_sample(sample_location=loc)
+            sample = {"location": loc, "sampleID": loc}
+            mount_sample_clean_up(sample)
         else:
-            if sample_mount_device.load_sample(holder_length, sample_location=loc, wait=True) == False:
+            sample = {"location": loc, "sampleID": loc}
+
+            if mount_sample_clean_up(sample) is False:
                 # WARNING: explicit test of False return value.
                 # This is to preserve backward compatibility (load_sample was supposed to return None);
                 # if sample could not be loaded, but no exception is raised, let's skip the sample
@@ -220,8 +224,7 @@ def queue_mount_sample(beamline_setup_hwobj,
         logging.getLogger('user_level_log').info("Sample not loaded")
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
-        loaded_sample_changed(sample_mount_device.getLoadedSample())
-
+        signals.loaded_sample_changed(sample_mount_device.getLoadedSample())
         logging.getLogger('user_level_log').info("Sample loaded")
         dm = beamline_setup_hwobj.diffractometer_hwobj
         if dm is not None:
@@ -267,12 +270,17 @@ def queue_mount_sample(beamline_setup_hwobj,
 
 
 def mount_sample_clean_up(sample):
+    from mxcube3.routes import signals
+    sc = blcontrol.sample_changer
+
     res = None
 
     try:
-        msg = '[SC] mounting %s (%r)' % (
-            sample['location'], sample['sampleID'])
+        msg = '[SC] mounting %s (%r)'
+        msg = msg % (sample['location'], sample['sampleID'])
         logging.getLogger('MX3.HWR').info(msg)
+
+        signals.sc_load(sample['location'])
 
         sid = get_current_sample().get("sampleID", False)
         current_queue = qutils.queue_to_dict()
@@ -280,63 +288,83 @@ def mount_sample_clean_up(sample):
         set_sample_to_be_mounted(sample['sampleID'])
 
         if sample['location'] != 'Manual':
-            if not blcontrol.sample_changer.getLoadedSample():
-                res = blcontrol.sample_changer.load(
-                    sample['sampleID'], wait=True)
-            elif blcontrol.sample_changer.getLoadedSample().getAddress() != sample['location']:
-                res = blcontrol.sample_changer.load(
-                    sample['sampleID'], wait=True)
+            if not sc.getLoadedSample():
+                res = sc.load(sample['sampleID'], wait=True)
+            elif sc.getLoadedSample().getAddress() != sample['location']:
+                res = sc.load(sample['sampleID'], wait=True)
 
             if res and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP:
-                logging.getLogger('MX3.HWR').info('Starting autoloop centring ...')
+                msg = 'Starting autoloop centring ...'
+                logging.getLogger('MX3.HWR').info(msg)
                 C3D_MODE = blcontrol.diffractometer.C3D_MODE
                 blcontrol.diffractometer.startCentringMethod(C3D_MODE)
-            elif not blcontrol.sample_changer.getLoadedSample():
+            elif not sc.getLoadedSample():
                 set_current_sample(None)
         else:
             set_current_sample(sample)
             res = True
 
     except Exception as ex:
-        logging.getLogger('MX3.HWR').exception('[SC] sample could not be mounted')
+        logging.getLogger('MX3.HWR').exception(
+            '[SC] sample could not be mounted')
         raise RuntimeError(str(ex))
     else:
         # Clean up if the new sample was mounted or the current sample was
         # unmounted and the new one, for some reason, failed to mount
-        if res or (not res and not blcontrol.sample_changer.getLoadedSample()):
+        if res or (not res and not sc.getLoadedSample()):
             blcontrol.shapes.clear_all()
 
-            # We remove the current sample from the queue, if we are moving from
-            # one sample to another and the current sample is in the queue
+            # We remove the current sample from the queue, if we are moving
+            # from one sample to another and the current sample is in the queue
             if sid and current_queue[sid]:
                 node_id = current_queue[sid]["queueID"]
                 qutils.set_enabled_entry(node_id, False)
+    finally:
+        signals.sc_load_ready(sample['location'])
 
     return res
 
 
 def unmount_sample_clean_up(sample):
+    from mxcube3.routes import signals
+
     try:
+        signals.sc_unload(sample['location'])
+
         if not sample['location'] == 'Manual':
             blcontrol.sample_changer.unload(sample['sampleID'], wait=False)
         else:
             set_current_sample(None)
 
-        msg = '[SC] %s unmounted %s (%r)', sample['location'], sample['sampleID']
+        msg = '[SC] unmounted %s (%s)'
+        msg = msg % (sample['location'], sample['sampleID'])
         logging.getLogger('MX3.HWR').info(msg)
     except Exception:
-        logging.getLogger('MX3.HWR').exception('[SC] sample could not be mounted')
+        msg = '[SC] sample could not be mounted'
+        logging.getLogger('MX3.HWR').exception(msg)
         raise
     else:
         blcontrol.queue.mounted_sample = ''
         set_current_sample(None)
         blcontrol.shapes.clear_all()
+    finally:
+        signals.sc_load_ready(sample['location'])
 
 
-def mount_sample(loc):
-    set_sample_to_be_mounted(loc)
-    blcontrol.sample_changer.load(loc)
+def mount_sample(sample):
+    res = mount_sample_clean_up(sample)
 
+    if not res:
+        msg = 'Could not mount sample: No sample on given '
+        msg += 'position or empty vial ?'
+
+        raise Exception(msg)
+
+    return get_sc_contents()
+
+
+def unmount_sample(sample):
+    unmount_sample_clean_up(sample)
     return get_sc_contents()
 
 

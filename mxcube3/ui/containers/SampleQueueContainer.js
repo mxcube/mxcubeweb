@@ -8,6 +8,7 @@ import QueueControl from '../components/SampleQueue/QueueControl';
 import * as QueueActions from '../actions/queue';
 import * as QueueGUIActions from '../actions/queueGUI';
 import * as SampleViewActions from '../actions/sampleview';
+import * as SampleChangerActions from '../actions/sampleChanger';
 import { showTaskForm } from '../actions/taskForm';
 import { Nav, NavItem } from 'react-bootstrap';
 import { showDialog } from '../actions/general';
@@ -46,6 +47,7 @@ function mapDispatchToProps(dispatch) {
     queueActions: bindActionCreators(QueueActions, dispatch),
     queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    sampleChangerActions: bindActionCreators(SampleChangerActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
     beamlineActions: bindActionCreators(BeamlineActions, dispatch)
@@ -91,7 +93,6 @@ export default class SampleQueueContainer extends React.Component {
       changeTaskOrderAction,
       deleteTask,
       addTask,
-      sendMountSample,
       moveTask,
       setAutoMountSample,
       setAutoAddDiffPlan,
@@ -108,7 +109,9 @@ export default class SampleQueueContainer extends React.Component {
     const {
       sendPrepareForNewSample
     } = this.props.beamlineActions;
-
+    const {
+      loadSample
+    } = this.props.sampleChangerActions;
 
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
@@ -216,7 +219,7 @@ export default class SampleQueueContainer extends React.Component {
               sampleList={sampleList}
               collapseItem={collapseItem}
               displayData={displayData}
-              mount={sendMountSample}
+              mount={loadSample}
               showForm={showForm}
               queueStatus={queueStatus}
               showList={showList}
