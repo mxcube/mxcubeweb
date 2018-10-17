@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 
-import MotorInput from './MotorInput';
-import TwoAxisTranslationControl from './TwoAxisTranslationControl';
+import MotorInput from '../MotorInput/MotorInput';
+import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
 
-import './motor.css';
+import '../MotorInput/motor.css';
 
 export default class MotorControl extends React.Component {
   constructor(props) {
