@@ -1,8 +1,5 @@
 import React from 'react';
-import { Button, ButtonGroup, OverlayTrigger, Popover } from 'react-bootstrap';
-
-import './style.css';
-import '../input.css';
+import { Label, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 
 export default class InOutSwitch extends React.Component {
@@ -10,18 +7,28 @@ export default class InOutSwitch extends React.Component {
     super(props);
     this.setIn = this.setIn.bind(this);
     this.setOut = this.setOut.bind(this);
+    this.onLinkRightClick = this.onLinkRightClick.bind(this);
+    this.onOptionsRightClick = this.onOptionsRightClick.bind(this);
   }
 
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.data !== this.props.data;
+  onLinkRightClick(e) {
+    this.refs.overlay.handleToggle();
+    e.preventDefault();
   }
 
+
+  onOptionsRightClick(e) {
+    this.refs.optionsOverlay.handleToggle();
+    e.preventDefault();
+  }
 
   setIn() {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.pkey, 'in');
     }
+
+    this.refs.overlay.hide();
   }
 
 
@@ -29,57 +36,75 @@ export default class InOutSwitch extends React.Component {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.pkey, 'out');
     }
+
+    this.refs.overlay.hide();
   }
 
 
-  render() {
-    const isIn = this.props.data.state === 'in';
-    const inButtonStyle = isIn ? 'success' : 'default';
-    const outButtonStyle = isIn ? 'default' : 'success';
-    let msgBgStyle = 'input-bg-moving';
+  renderLabel() {
+    let optionsLabel = (
+      <Label
+        style={{ display: 'block', marginBottom: '3px' }}
+      >
+        {this.props.labelText}
+      </Label>);
 
-    if (this.props.data.state === 'in') {
-      msgBgStyle = 'input-bg-ready';
-    } else if (this.props.data.state === 'out') {
-      msgBgStyle = 'input-bg-fault';
+    if (this.props.optionsOverlay) {
+      optionsLabel = (
+         <OverlayTrigger
+           ref="optionsOverlay"
+           rootClose
+           trigger="click"
+           placement="bottom"
+           overlay={ this.props.optionsOverlay }
+         >
+           <div onContextMenu={this.onOptionsRightClick}>
+             <Label
+               style={{ display: 'block', marginBottom: '3px' }}
+             >
+               { this.props.labelText }
+               <span>
+                 <i className="fa fa-cog" />
+               </span>
+             </Label>
+           </div>
+        </OverlayTrigger>);
     }
 
+    return optionsLabel;
+  }
+
+  render() {
+    let msgBgStyle = 'warning';
+    if (this.props.data.state === 'out') {
+      msgBgStyle = 'success';
+    } else if (this.props.data.state === 'in') {
+      msgBgStyle = 'danger';
+    }
+
+    let btn = <Button block bsSize="small" disabled>---</Button>;
+    if (this.props.data.state === 'out') {
+      btn = <Button block bsSize="small" onClick={this.setIn}>{this.props.offText}</Button>;
+    } else if (this.props.data.state === 'in') {
+      btn = <Button block bsSize="small" onClick={this.setOut}>{this.props.onText}</Button>;
+    }
+
+    const msgLabelStyle = { display: 'block', fontSize: '100%',
+                            borderRadius: '0px', color: '#000' };
 
     return (
       <div>
-        <div className="inout-label">
-          {this.props.labelText}
-        </div>
+       {this.renderLabel()}
         <OverlayTrigger
+          ref="overlay"
+          rootClose
+          trigger="click"
           placement="bottom"
-          overlay={(<Popover id={this.props.labelText}>
-                      {this.props.labelText} is:
-                      <div className={`inout-switch-msg ${msgBgStyle}`}>
-                        {this.props.data.msg}
-                      </div>
-                    </Popover>)}
+          overlay={(<Popover id={`${this.props.labelText} popover`}>{btn}</Popover>)}
         >
-        <ButtonGroup>
-
-          <Button
-            className=""
-            bsStyle={inButtonStyle}
-            bsSize="small"
-            onClick={this.setIn}
-            active={isIn}
-          >
-            {this.props.onText}
-          </Button>
-          <Button
-            bsStyle={outButtonStyle}
-            bsSize="small"
-            className=""
-            onClick={this.setOut}
-            active={!isIn}
-          >
-            {this.props.offText}
-          </Button>
-        </ButtonGroup>
+          <div onContextMenu={this.onLinkRightClick}>
+            <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data.msg}</Label>
+          </div>
         </OverlayTrigger>
       </div>
     );

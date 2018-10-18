@@ -19,7 +19,8 @@
   <object role="backlightswitch" href="./udiff_backlightswitch"/>
   <object role="frontlight" href="./udiff_frontlight"/>
   <object role="frontlightswitch" href="./udiff_frontlightswitch"/>
-  
+
+  <object role="beamstop_distance" hwrid="./beamstop-alignment-x"></object>
 
   <others>
     <object role="camera" hwrid="./md_camera"></object>

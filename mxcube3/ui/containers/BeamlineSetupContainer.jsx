@@ -1,12 +1,14 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Table } from 'react-bootstrap';
+import { Row, Col, Table, Popover } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
-import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
+import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
+import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
+import * as SampleViewActions from '../actions/sampleview';
 
 import { sendGetAllAttributes,
          sendSetAttribute,
@@ -43,22 +45,71 @@ class BeamlineSetupContainer extends React.Component {
     this.props.setAttribute(name, value);
   }
 
+  beamstopAlignmentOverlay() {
+    const motors = this.props.beamline.motors;
+    const motorInputList = [];
+    let popover = null;
+
+    const motor = motors.beamstop_distance;
+    const step = this.props.sampleview.motorSteps.beamstop_distance;
+
+    if (motor !== undefined && motor.state !== 0) {
+      motorInputList.push((
+        <div style={{ marginBottom: '1em' }}>
+          <p className="motor-name">Beamstop distance:</p>
+          <OneAxisTranslationControl
+            save={this.props.sampleViewActions.sendMotorPosition}
+            value={motor.position}
+            min={motor.limits[0]} max={motor.limits[1]}
+            step={step}
+            motorName={motor.name}
+            suffix="mm"
+            decimalPoints="3"
+            state={motor.state}
+            disabled={this.props.beamline.motorInputDisable}
+          />
+        </div>
+      ));
+    }
+
+    if (motorInputList.length > 0) {
+      popover = (<Popover>{motorInputList}</Popover>);
+    }
+
+    return popover;
+  }
+
 
   createActuatorComponent() {
     const acts = [];
-    for (let key in this.props.data.attributes) {
-      if (this.props.data.attributes[key].type === 'DUOSTATE') {
-        acts.push(<Col key={key} sm={2} className="pull-right">
-                    <InOutSwitch2
-                      onText={ this.props.data.attributes[key].commands[0] }
-                      offText={ this.props.data.attributes[key].commands[1] }
-                      labelText={ this.props.data.attributes[key].label }
+    for (let key in this.props.beamline.attributes) {
+      if (this.props.beamline.attributes[key].type === 'DUOSTATE') {
+        if (this.props.beamline.attributes[key].label === 'Beamstop') {
+          acts.push(<Col key={key} sm={2} className="pull-right">
+                    <InOutSwitch
+                      onText={ this.props.beamline.attributes[key].commands[0] }
+                      offText={ this.props.beamline.attributes[key].commands[1] }
+                      labelText={ this.props.beamline.attributes[key].label }
                       pkey={ key }
-                      data={ this.props.data.attributes[key] }
+                      data={ this.props.beamline.attributes[key] }
+                      onSave={ this.setAttribute }
+                      optionsOverlay={ this.beamstopAlignmentOverlay() }
+                    />
+                    </Col>
+                   );
+        } else {
+          acts.push(<Col key={key} sm={2} className="pull-right">
+                    <InOutSwitch
+                      onText={ this.props.beamline.attributes[key].commands[0] }
+                      offText={ this.props.beamline.attributes[key].commands[1] }
+                      labelText={ this.props.beamline.attributes[key].label }
+                      pkey={ key }
+                      data={ this.props.beamline.attributes[key] }
                       onSave={ this.setAttribute }
                     />
-                  </Col>
-              );
+                    </Col>
+                   );
+        }
       }
     }
     return acts;
@@ -68,7 +119,7 @@ class BeamlineSetupContainer extends React.Component {
   dmState() {
     let state = 'READY';
 
-    const notReady = Object.values(this.props.data.motors).
+    const notReady = Object.values(this.props.beamline.motors).
             filter((motor) => motor.state !== 2);
 
     if (notReady.length !== 0) {
@@ -89,7 +140,7 @@ class BeamlineSetupContainer extends React.Component {
         <Col sm={12}>
           <Row style={{ display: 'flex', alignItems: 'center' }}>
             <Col sm={1}>
-              <BeamlineActions actionsList={this.props.data.beamlineActionsList} />
+              <BeamlineActions actionsList={this.props.beamline.beamlineActionsList} />
             </Col>
             <Col sm={5} smPush={1}>
               <Table
@@ -102,18 +153,18 @@ class BeamlineSetupContainer extends React.Component {
                    Energy:
                  </td>
                 <td style={{ fontWeight: 'bold' }}>
-                  { this.props.data.attributes.energy.readonly ?
+                  { this.props.beamline.attributes.energy.readonly ?
                     (<LabeledValue
                       suffix="keV"
                       name=""
-                      value={this.props.data.attributes.energy.value}
+                      value={this.props.beamline.attributes.energy.value}
                     />)
                     :
                   (<PopInput
                     name=""
                     pkey="energy"
                     suffix="keV"
-                    data={ this.props.data.attributes.energy }
+                    data={ this.props.beamline.attributes.energy }
                     onSave= { this.setAttribute }
                     onCancel= { this.onCancelHandler }
                   />)
@@ -128,7 +179,7 @@ class BeamlineSetupContainer extends React.Component {
                     name=""
                     pkey="resolution"
                     suffix="&Aring;"
-                    data={this.props.data.attributes.resolution}
+                    data={this.props.beamline.attributes.resolution}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
@@ -141,7 +192,7 @@ class BeamlineSetupContainer extends React.Component {
                     name=""
                     pkey="transmission"
                     suffix="%"
-                    data={this.props.data.attributes.transmission}
+                    data={this.props.beamline.attributes.transmission}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
@@ -153,7 +204,7 @@ class BeamlineSetupContainer extends React.Component {
                   <LabeledValue
                     name=""
                     suffix="K"
-                    value={this.props.data.attributes.cryo.value}
+                    value={this.props.beamline.attributes.cryo.value}
                   />
                 </td>
               </tr>
@@ -162,11 +213,11 @@ class BeamlineSetupContainer extends React.Component {
                   Wavelength:
                 </td>
                 <td>
-                  { this.props.data.attributes.wavelength.readonly ?
+                  { this.props.beamline.attributes.wavelength.readonly ?
                     (<LabeledValue
                       suffix="&Aring;"
                       name=""
-                      value={this.props.data.attributes.wavelength.value}
+                      value={this.props.beamline.attributes.wavelength.value}
                     />)
                     :
                   (<PopInput
@@ -174,7 +225,7 @@ class BeamlineSetupContainer extends React.Component {
                     pkey="wavelength"
                     placement="left"
                     suffix="&Aring;"
-                    data={this.props.data.attributes.wavelength}
+                    data={this.props.beamline.attributes.wavelength}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />)
@@ -188,7 +239,7 @@ class BeamlineSetupContainer extends React.Component {
                     name=""
                     pkey="detdist"
                     suffix="mm"
-                    data={this.props.data.attributes.detdist}
+                    data={this.props.beamline.attributes.detdist}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
@@ -200,7 +251,7 @@ class BeamlineSetupContainer extends React.Component {
                   <LabeledValue
                     suffix="ph/s"
                     name=""
-                    value={this.props.data.attributes.flux.value}
+                    value={this.props.beamline.attributes.flux.value}
                   />
                 </td>
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
@@ -213,7 +264,7 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={5} smPush={1}>
               <Col sm={2} className="pull-right">
                 <MachInfo
-                  info={this.props.data.attributes.machinfo.value}
+                  info={this.props.beamline.attributes.machinfo.value}
                 />
               </Col>
               {this.createActuatorComponent()}
@@ -237,7 +288,8 @@ class BeamlineSetupContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    data: state.beamline,
+    beamline: state.beamline,
+    sampleview: state.sampleview,
     sampleChanger: state.sampleChanger
   };
 }
@@ -246,6 +298,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getAllAttributes: bindActionCreators(sendGetAllAttributes, dispatch),
+    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
     abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch)
   };

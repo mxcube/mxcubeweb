@@ -164,7 +164,9 @@ def get_centring_motors():
 
         # Adding the two pseudo motors for sample alignment in the microscope
         # view
-        _centring_motors_memo += ["sample_vertical", "sample_horizontal"]
+        _centring_motors_memo += ["sample_vertical",
+                                  "sample_horizontal",
+                                  "beamstop_distance"]
 
     return _centring_motors_memo
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import './motor.css';
+import '../MotorInput/motor.css';
 import '../input.css';
 import cx from 'classnames';
 

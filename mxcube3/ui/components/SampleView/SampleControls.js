@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import OneAxisTranslationControl from './OneAxisTranslationControl';
+import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
 import { OverlayTrigger, Button, DropdownButton, MenuItem } from 'react-bootstrap';
 import 'fabric';
 const fabric = window.fabric;
