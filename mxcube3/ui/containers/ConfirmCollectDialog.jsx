@@ -11,7 +11,6 @@ import { Modal,
 
 import { sendRunQueue,
          sendRunSample,
-         sendMountSample,
          setAutoMountSample,
          sendSetCentringMethod,
          sendSetNumSnapshots } from '../actions/queue';
@@ -389,7 +388,6 @@ function mapDispatchToProps(dispatch) {
     hide: bindActionCreators(showConfirmCollectDialog.bind(this, false), dispatch),
     sendRunQueue: bindActionCreators(sendRunQueue, dispatch),
     sendRunSample: bindActionCreators(sendRunSample, dispatch),
-    sendMountSample: bindActionCreators(sendMountSample, dispatch),
     setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
     sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
     sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch)

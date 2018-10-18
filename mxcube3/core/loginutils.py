@@ -183,9 +183,14 @@ def is_local_host():
     localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
     localhost_list.append("127.0.0.1")
 
-    remote_addres = remote_addr()
+    remote_address = remote_addr()
 
-    return remote_addres in localhost_list or is_local_network(remote_addres)
+    # Remote address is sometimes None for instance when using the test
+    # client, no real connection is made, assume that we are local host
+    if remote_address in [None, 'None', '']:
+        remote_address = "127.0.0.1"
+
+    return remote_address in localhost_list or is_local_network(remote_address)
 
 
 def login(login_id, password):
@@ -248,7 +253,8 @@ def login(login_id, password):
         # uncomment to enable loading.
         # qutils.load_queue(session)
         # logging.getLogger('MX3.HWR').info('Loaded queue')
-        logging.getLogger('MX3.HWR').info('[QUEUE] %s ' % qutils.queue_to_json())
+        logging.getLogger('MX3.HWR').info(
+            '[QUEUE] %s ' % qutils.queue_to_json())
 
         if not get_operator():
             set_operator(session.sid)

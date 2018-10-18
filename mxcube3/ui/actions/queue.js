@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
+import { loadSample } from './sampleChanger';
 import { sendAbortCentring, sendUpdateShapes } from './sampleview';
 import { selectSamplesAction, clearSampleGrid } from '../actions/sampleGrid';
 import { TASK_UNCOLLECTED } from '../constants';
@@ -90,36 +91,6 @@ export function sendAddQueueItem(items) {
 }
 
 
-export function sendMountSample(sampleData, successCb = null) {
-  return function (dispatch, getState) {
-    const state = getState();
-
-    if (state.sampleChanger.loadedSample.address !== sampleData.sampleID) {
-      fetch('mxcube/api/v0.1/sample_changer/mount', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(sampleData)
-      }).then((response) => {
-        if (response.status >= 400) {
-          dispatch(showErrorPanel(true, response.headers.get('message')));
-          throw new Error('Server refused to mount sample');
-        } else {
-          setCurrentSample(sampleData.sampleID);
-
-          if (successCb) {
-            successCb();
-          }
-        }
-      });
-    }
-  };
-}
-
-
 export function addSamplesToQueue(sampleDataList) {
   return function (dispatch) {
     dispatch(queueLoading(true));
@@ -139,7 +110,7 @@ export function addSamplesToQueue(sampleDataList) {
 
 export function addSampleAndMount(sampleData) {
   return function (dispatch) {
-    dispatch(sendMountSample(sampleData, () => {
+    dispatch(loadSample(sampleData, () => {
       sendAddQueueItem([sampleData]).then((response) => {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, 'Server refused to add sample'));
@@ -564,28 +535,6 @@ export function addTaskResultAction(sampleID, taskIndex, state, progress, limsRe
 
 export function updateTaskLimsData(sampleID, taskIndex, limsResultData) {
   return { type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex, limsResultData };
-}
-
-
-export function sendUnmountSample(sample) {
-  return function (dispatch) {
-    fetch('mxcube/api/v0.1/sample_changer/unmount', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(sample)
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error('Server refused to unmount sample');
-      } else {
-        dispatch(clearCurrentSample());
-      }
-    });
-  };
 }
 
 

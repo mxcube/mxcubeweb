@@ -12,11 +12,13 @@ from mxcube3.core import beamlineutils
 
 
 @server.route("/mxcube/api/v0.1/beamline", methods=['GET'])
+@server.restrict
 def beamline_get_all_attributes():
     return jsonify(beamlineutils.beamline_get_all_attributes())
 
 
 @server.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=['GET'])
+@server.restrict
 def beamline_abort_action(name):
     """
     Aborts an action in progress.
@@ -36,6 +38,7 @@ def beamline_abort_action(name):
 
 
 @server.route("/mxcube/api/v0.1/beamline/<name>/run", methods=['POST'])
+@server.restrict
 def beamline_run_action(name):
     """
     Starts a beamline action; POST payload is a json-encoded object with
@@ -59,6 +62,7 @@ def beamline_run_action(name):
 
 
 @server.route("/mxcube/api/v0.1/beamline/<name>", methods=['PUT'])
+@server.restrict
 def beamline_set_attribute(name):
     """
     Tries to set < name > to value, replies with the following json:
@@ -84,6 +88,7 @@ def beamline_set_attribute(name):
 
 
 @server.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
+@server.restrict
 def beamline_get_attribute(name):
     """
     Retrieves value of attribute < name > , replies with the following json:
@@ -103,6 +108,7 @@ def beamline_get_attribute(name):
 
 
 @server.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
+@server.restrict
 def get_beam_info():
     """
     Beam information: position, size, shape
@@ -112,6 +118,7 @@ def get_beam_info():
 
 
 @server.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
+@server.restrict
 def beamline_get_data_path():
     """
     Retrieve data directory from the session hwobj,
@@ -122,6 +129,7 @@ def beamline_get_data_path():
 
 
 @server.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=['PUT'])
+@server.restrict
 def prepare_beamline_for_sample():
     """
     Prepare the beamline for a new sample.

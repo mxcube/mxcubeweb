@@ -124,7 +124,8 @@ export class SampleChangerTreeItem extends React.Component {
 
   loadSample() {
     this.toggleDropdown();
-    this.props.load(this.props.label);
+    this.props.load({ sampleID: this.props.label,
+                      location: this.props.label });
   }
 
   unloadSample() {

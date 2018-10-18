@@ -17,7 +17,7 @@ import { toggleMovableAction,
          selectSamplesAction,
          sendSetSampleOrderAction } from '../actions/sampleGrid';
 
-import { deleteTask, sendMountSample, addSampleAndMount } from '../actions/queue';
+import { deleteTask, addSampleAndMount } from '../actions/queue';
 
 import { unloadSample } from '../actions/sampleChanger';
 
@@ -833,7 +833,6 @@ function mapDispatchToProps(dispatch) {
     sendSetSampleOrderAction: (order) => dispatch(sendSetSampleOrderAction(order)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
-    sendMountSample: bindActionCreators(sendMountSample, dispatch),
     unloadSample: bindActionCreators(unloadSample, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
