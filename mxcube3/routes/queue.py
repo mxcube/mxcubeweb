@@ -152,6 +152,13 @@ def execute_entry_with_id(sid, tindex):
         return Response(status=200)
 
 
+@server.route("/mxcube/api/v0.1/queue", methods=['PUT'])    
+@server.restrict    
+def set_queue():    
+    qutils.set_queue(request.get_json(), session)   
+    return Response(status=200) 
+
+
 @server.route("/mxcube/api/v0.1/queue", methods=['POST'])
 @server.restrict
 def queue_add_item():
