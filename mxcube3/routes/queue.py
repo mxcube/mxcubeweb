@@ -156,7 +156,7 @@ def execute_entry_with_id(sid, tindex):
 @server.restrict    
 def set_queue():    
     qutils.set_queue(request.get_json(), session)   
-    return Response(status=200) 
+    return Response(status=200)
 
 
 @server.route("/mxcube/api/v0.1/queue", methods=['POST'])
@@ -253,6 +253,19 @@ def update_sample(sample_id):
         return resp
     except Exception:
         return Response(status=409)
+
+
+@server.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=['PUT'])
+@server.restrict    
+def toggle_node(node_id):   
+    ''' 
+    Toggle a sample or a method checked status  
+        :parameter id: node identifier, integer 
+        :statuscode: 200: no error  
+        :statuscode: 409: node could not be toggled 
+    ''' 
+    qutils.toggle_node(int(node_id))    
+    return Response(status=200)
 
 
 @server.route("/mxcube/api/v0.1/queue/dc", methods=['GET'])
