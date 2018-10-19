@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 
+from gevent import monkey
+monkey.patch_all(thread=False)
+
 import mock
 import os
 import logging
