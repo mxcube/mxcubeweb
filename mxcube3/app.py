@@ -20,25 +20,34 @@ from mxcube3 import blcontrol
 # Below variables used for internal application state
 
 # SampleID and sample data of currently mounted sample
-CURRENTLY_MOUNTED_SAMPLE = {}
+CURRENTLY_MOUNTED_SAMPLE = ''
+
 # Sample location of sample that are in process of being mounted
 SAMPLE_TO_BE_MOUNTED = ''
+
 # Method used for sample centring
 CENTRING_METHOD = queue_entry.CENTRING_METHOD.LOOP
+
 # Look up table for finding the limsID for a corresponding queueID (QueueNode)
 NODE_ID_TO_LIMS_ID = {}
+
 # Initial file list for user, initialized at login, for creating automatic
 # run numbers
 INITIAL_FILE_LIST = []
+
 # Lookup table for sample changer location to data matrix or
 # data matrix to location
 SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
+
 # Current sample list, with tasks
 SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
+
 # Users currently logged in
 USERS = {}
+
 # Path to video device (i.e. /dev/videoX)
 VIDEO_DEVICE = None
+
 # Contains the complete client side ui state, managed up state_storage.py
 UI_STATE = dict()
 TEMP_DISABLED = []

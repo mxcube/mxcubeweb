@@ -136,16 +136,13 @@ def loaded_sample_changed(sample):
         # recreate the dict with the sample info
         q = queue_to_dict()
         sampleID = address
-        sample_data = q.get(sampleID, {'sampleID': sampleID})
 
         if blcontrol.sample_changer.hasLoadedSample():
-            scutils.set_current_sample(sample_data)
+            scutils.set_current_sample(sampleID)
         else:
             scutils.set_current_sample(None)
             address = ''
 
-        msg = {'signal': 'loadReady', 'location': address}
-        socketio.emit('sc', msg, namespace='/hwr')
         socketio.emit("loaded_sample_changed", {
                       'address': address, 'barcode': barcode}, namespace="/hwr")
     except Exception, msg:
@@ -153,10 +150,11 @@ def loaded_sample_changed(sample):
             'error setting loaded sample: %s' + str(msg))
 
 
-def set_current_sample(sample):
-    if not sample:
-        sample = {"sampleID": ''}
+def set_current_sample(sample_id):
+    if not sample_id:
+        sample_id = ''
 
+    sample = {"sampleID": sample_id}
     socketio.emit("set_current_sample", sample, namespace="/hwr")
 
 
