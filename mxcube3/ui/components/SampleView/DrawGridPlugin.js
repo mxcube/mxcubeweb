@@ -133,11 +133,11 @@ export default class DrawGridPlugin {
   }
 
   getCellVSpace(gd) {
-    return (gd.cellVSpace / 1000) * gd.pixelsPerMMX * this.scale * 2;
+    return (gd.cellVSpace / 1000) * gd.pixelsPerMMX * this.scale;
   }
 
   getCellHSpace(gd) {
-    return (gd.cellHSpace / 1000) * gd.pixelsPerMMY * this.scale * 2;
+    return (gd.cellHSpace / 1000) * gd.pixelsPerMMY * this.scale;
   }
 
   /**
