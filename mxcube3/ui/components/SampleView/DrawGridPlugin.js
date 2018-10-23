@@ -432,7 +432,7 @@ export default class DrawGridPlugin {
       lockScalingX: true,
       lockScalingY: true,
       lockRotation: true,
-      visible: gridData.state !== 'HIDDEN',
+      visible: true,
       hoverCursor: 'pointer',
       id: gd.id
     });
