@@ -712,8 +712,8 @@ export default class SampleImage extends React.Component {
     // Grids already defined (drawn)
     Object.values(grids).forEach((gd) => {
       let gridData = { ... gd };
-
-      if (!this.props.busy || !gridData.state === 'HIDDEN') {
+      
+      if (!this.props.busy && gridData.state !== 'HIDDEN') {
         this.drawGridPlugin.setScale(imageRatio);
         gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
         fabricSelectables.push(this.drawGridPlugin.shapeFromGridData(
