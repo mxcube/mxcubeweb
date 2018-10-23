@@ -152,10 +152,10 @@ def execute_entry_with_id(sid, tindex):
         return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue", methods=['PUT'])
-@server.restrict
-def set_queue():
-    qutils.set_queue(request.get_json(), session)
+@server.route("/mxcube/api/v0.1/queue", methods=['PUT'])    
+@server.restrict    
+def set_queue():    
+    qutils.set_queue(request.get_json(), session)   
     return Response(status=200)
 
 
@@ -256,34 +256,16 @@ def update_sample(sample_id):
 
 
 @server.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=['PUT'])
-@server.restrict
-def toggle_node(node_id):
-    '''
-    Toggle a sample or a method checked status
-        :parameter id: node identifier, integer
-        :statuscode: 200: no error
-        :statuscode: 409: node could not be toggled
-    '''
-    qutils.toggle_node(int(node_id))
-
+@server.restrict    
+def toggle_node(node_id):   
+    ''' 
+    Toggle a sample or a method checked status  
+        :parameter id: node identifier, integer 
+        :statuscode: 200: no error  
+        :statuscode: 409: node could not be toggled 
+    ''' 
+    qutils.toggle_node(int(node_id))    
     return Response(status=200)
-
-
-# ##Adding methods to a sample
-def add_centring(_id):
-    '''
-    Add a centring task to the sample with id: <id>, integer.
-    Args: id, current id of the sample where add the method
-            id: int (parsed to int anyway)
-    Return: command sent successfully? http status response, 200 ok,
-        409 something bad happened. Plus:
-       data ={ "CentringId": newId}
-    '''
-    params = request.get_json()
-    res = qutils.add_centring(_id, params)
-    resp = jsonify(res)
-    resp.status_code = 200
-    return resp
 
 
 @server.route("/mxcube/api/v0.1/queue/dc", methods=['GET'])
@@ -343,61 +325,6 @@ def get_default_xrf_parameters():
     resp = jsonify(qutils.get_default_xrf_parameters())
     resp.status_code = 200
     return resp
-
-
-@server.route("/mxcube/api/v0.1/queue/<id>", methods=['GET'])
-@server.restrict
-def get_sample(_id):
-    """
-    Get the information of the given sample.
-        :parameter id: sample identifier, integer
-        :response Content-Type: application/json, object containing the
-            parameter(s) of the sample. Example without parameters
-            {"QueueId": 22, "SampleId": "3:02", "methods": []}
-        :statuscode: 200: no error
-        :statuscode: 409: sample could not be retrieved
-    """
-    sample = qutils.get_sample(int(_id))
-
-    if not sample:
-        return Response(status=409)
-    else:
-        resp = jsonify(sample)
-        resp.status_code = 200
-        return resp
-
-
-@server.route("/mxcube/api/v0.1/queue/<sample_id>/<int:method_id>", methods=['GET'])
-@server.restrict
-def get_method(sample_id, method_id):
-    """
-    Get the information of the given task, beloging to the given sample
-        :parameter sampleid: sample identifier, integer
-        :parameter methodid: task identifier, integer
-        :response Content-Type: application/json, object containing the
-            parameter(s) of the task. Example without parameters
-            {"QueueId": 52,  "Type": 'Centring'...}
-        :statuscode: 200: no error
-        :statuscode: 409: task could not be added to the sample
-    """
-    try:
-        task = qutils.get_method(sample_id, method_id)
-        resp = jsonify(task)
-        resp.status_code = 200
-        return resp
-    except Exception:
-        return Response(status=409)
-
-
-@server.route("/mxcube/api/v0.1/queue/json", methods=["GET"])
-@server.restrict
-def serialize():
-    try:
-        return jsonify(qutils.queue_to_dict())
-    except Exception:
-        logging.getLogger("HWR").exception("[QUEUE] cannot serialize")
-        return Response(status=409)
-
 
 @server.route("/mxcube/api/v0.1/queue/automount", methods=["POST"])
 @server.restrict
