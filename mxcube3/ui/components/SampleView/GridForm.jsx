@@ -34,7 +34,10 @@ export default class GridForm extends React.Component {
             {vdim} x {hdim}
           </td>
           <td>
-            ({grid.numRows * grid.numCols})
+            {grid.numRows * grid.numCols}
+          </td>
+          <td>
+            {grid.numRows}x{grid.numCols}
           </td>
           <td>
             { grid.motorPositions.phi.toFixed(2) }&deg;
@@ -111,6 +114,8 @@ export default class GridForm extends React.Component {
           <td>
           </td>
           <td>
+          </td>
+          <td>
             <Button className="btn-sm" onClick={() => this.props.saveGrid()}>
               +
             </Button>
@@ -149,6 +154,9 @@ export default class GridForm extends React.Component {
                     #Cells
                   </th>
                   <th>
+                    R x C
+                  </th>
+                  <th>
                     &Omega;
                   </th>
                   <th />
@@ -166,7 +174,7 @@ export default class GridForm extends React.Component {
               <FormGroup>
                 <ControlLabel>Opacity: </ControlLabel>
                 <FormControl
-                  style={{ width: '100px', padding: '0', marginLeft: '10px', marginRight: '1em' }}
+                  style={{ width: '100', padding: '0', marginLeft: '10px', marginRight: '1em' }}
                   className="bar"
                   type="range"
                   id="overlay-control"
