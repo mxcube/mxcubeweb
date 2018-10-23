@@ -461,7 +461,7 @@ export default class DrawGridPlugin {
 
             this.mouseOverGridLabel.push(new fabric.Ellipse({
               left: objCenterX,
-              top: options.e.offsetY - 20,
+              top: options.e.offsetY - 25,
               width: 40,
               height: 40,
               stroke: 'rgba(0, 0, 0, 1)',
@@ -484,7 +484,7 @@ export default class DrawGridPlugin {
             this.mouseOverGridLabel.push(
               new fabric.Text(obj.cell, {
                 left: objCenterX,
-                top: options.e.offsetY - 20,
+                top: options.e.offsetY - 25,
                 originX: 'center',
                 originY: 'center',
                 fill: 'rgba(200, 0, 0, 1)',
@@ -509,7 +509,7 @@ export default class DrawGridPlugin {
               lockScalingX: true,
               lockScalingY: true,
               lockRotation: true,
-              hoverCursor: 'pointer',
+              hoverCursor: 'pointer'
             });
 
             canvas.add(this.mouseOverGridLabel);
@@ -696,6 +696,7 @@ export default class DrawGridPlugin {
     if (currentRow !== (numCols - 1) && (numCols - currentRow + 1) % 2 !== 0) {
       cellCount = (numRows * numCols) - (currentRow * numRows) + currentCol - numRows + 1;
     }
+
     return cellCount;
   }
 }
