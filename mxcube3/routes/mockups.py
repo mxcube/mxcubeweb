@@ -1,6 +1,7 @@
 import logging
 
-from flask import session, redirect, url_for, render_template, request
+from flask import (session, redirect, url_for,
+                   render_template, request, Response)
 
 from mxcube3 import server
 from mxcube3 import blcontrol
@@ -90,16 +91,23 @@ def create_diff_plan(sid):
 @server.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=['GET'])
 def shape_mock_result(sid):
     shape = blcontrol.shapes.get_shape(sid)
-    res = {}
+    hm = {}
+    cm = {}
 
     if shape:
         from random import random
 
         for i in range(1, shape.num_rows*shape.num_cols + 1):
-            res[i] = [i, [int(random() * 255), int(random() * 255),
-                          int(random() * 255), int(random())]]
+            hm[i] = ([i, [int(random() * 255), int(random() * 255),
+                          int(random() * 255), int(random())]])
 
-        blcontrol.shapes.set_grid_data(sid, res)
-        signals.grid_result_available(to_camel(shape.as_dict()))
+        for i in range(1, shape.num_rows*shape.num_cols + 1):
+            cm[i] = ([i, [int(random() * 255), int(random() * 255),
+                          int(random() * 255), int(random())]])
+
+    res = {"heatmap": hm, "crystalmap": cm}
+
+    blcontrol.shapes.set_grid_data(sid, res)
+    signals.grid_result_available(to_camel(shape.as_dict()))
 
     return Response(status=200)

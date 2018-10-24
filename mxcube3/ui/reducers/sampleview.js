@@ -36,6 +36,7 @@ const initialState = {
   cinema: false,
   phaseList: [],
   drawGrid: false,
+  gridResultType: 'heatmap',
   videoMessageOverlay: { show: false, msg: '' },
   savedPointId: '',
   selectedShapes: []
@@ -77,6 +78,10 @@ export default (state = initialState, action) => {
         if (!state.drawGrid) { selectedGrids = []; }
 
         return { ...state, drawGrid: !state.drawGrid, selectedGrids };
+      }
+    case 'SET_GRID_RESULT_TYPE':
+      {
+        return { ...state, gridResultType: action.gridResultType };
       }
     case 'MEASURE_DISTANCE':
       {

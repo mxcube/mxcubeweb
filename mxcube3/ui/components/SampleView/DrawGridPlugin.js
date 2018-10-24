@@ -56,6 +56,7 @@ export default class DrawGridPlugin {
     this.overlayLevel = 0.2;
     this.gridData = _GridData();
     this.scale = 0;
+    this.resultType = 'heatmap';
   }
 
   /**
@@ -287,11 +288,20 @@ export default class DrawGridPlugin {
 
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    if (typeof gd.result !== 'undefined' && gd.result !== null && gd.id !== null) {
+    // Asume flat result object to remain compatible with old format only
+    // suporting one type of results
+    let result = gd.result;
+
+    // Use selected result type if it exists
+    if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
+      result = gd.result[this.resultType];
+    }
+
+    if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
       for (let nh = 0; nh < row; nh++) {
         for (let nw = 0; nw < col; nw++) {
           const index = nw + nh * col + 1;
-          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, gd.result[index][1]);
+          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
         }
       }
     }

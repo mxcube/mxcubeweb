@@ -1,7 +1,7 @@
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel,
-         Button, Checkbox, Table } from 'react-bootstrap';
+         Button, Table, Radio } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 
@@ -174,7 +174,7 @@ export default class GridForm extends React.Component {
               <FormGroup>
                 <ControlLabel>Opacity: </ControlLabel>
                 <FormControl
-                  style={{ width: '100', padding: '0', marginLeft: '10px', marginRight: '1em' }}
+                  style={{ width: '100px', padding: '0', marginLeft: '10px', marginRight: '1em' }}
                   className="bar"
                   type="range"
                   id="overlay-control"
@@ -186,9 +186,23 @@ export default class GridForm extends React.Component {
                   name="overlaySlider"
                 />
               </FormGroup>
+              <br />
               <FormGroup>
                 <ControlLabel>Heat map: </ControlLabel>
-                <Checkbox style={{ marginLeft: '10px' }} />
+                <Radio
+                  name="resultType"
+                  onClick={() => this.props.setGridResultType('heatmap')}
+                  style={{ marginLeft: '10px' }}
+                  checked={this.props.gridResultType === 'heatmap'}
+                />
+              <br />
+                <ControlLabel>Crystal map: </ControlLabel>
+                <Radio
+                  name="resultType"
+                  onClick={() => this.props.setGridResultType('crystalmap')}
+                  style={{ marginLeft: '10px' }}
+                  checked={this.props.gridResultType === 'crystalmap'}
+                />
               </FormGroup>
             </Form>
           </div>
