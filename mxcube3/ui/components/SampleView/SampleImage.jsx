@@ -51,6 +51,7 @@ export default class SampleImage extends React.Component {
     this.player = null;
     this.centringCross = [];
     this.removeShapes = this.removeShapes.bind(this);
+    this.setGridResultType = this.setGridResultType.bind(this);
   }
 
   componentDidMount() {
@@ -160,6 +161,10 @@ export default class SampleImage extends React.Component {
 
   onMouseUp() {
     this.drawGridPlugin.endDrawing(null, this.canvas);
+  }
+
+  setGridResultType(resultType) {
+    this.props.sampleActions.setGridResultType(resultType);
   }
 
   setImageRatio() {
@@ -493,6 +498,9 @@ export default class SampleImage extends React.Component {
 
   updateGridResults() {
     const gd = this.selectedGrid();
+
+    this.drawGridPlugin.resultType = this.props.gridResultType;
+
     if (gd) {
       this.drawGridPlugin.setGridResult(gd.result);
     }
@@ -713,7 +721,7 @@ export default class SampleImage extends React.Component {
     Object.values(grids).forEach((gd) => {
       let gridData = { ... gd };
 
-      if (!this.props.busy || !gridData.state === 'HIDDEN') {
+      if (!this.props.busy && gridData.state !== 'HIDDEN') {
         this.drawGridPlugin.setScale(imageRatio);
         gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
         fabricSelectables.push(this.drawGridPlugin.shapeFromGridData(
@@ -779,6 +787,8 @@ export default class SampleImage extends React.Component {
               rotateTo={this.props.sampleActions.sendRotateToShape}
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map(grid => grid.id)}
+              setGridResultType={this.setGridResultType}
+              gridResultType={this.props.gridResultType}
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls

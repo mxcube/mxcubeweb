@@ -56,6 +56,7 @@ export default class DrawGridPlugin {
     this.overlayLevel = 0.2;
     this.gridData = _GridData();
     this.scale = 0;
+    this.resultType = 'heatmap';
   }
 
   /**
@@ -133,11 +134,11 @@ export default class DrawGridPlugin {
   }
 
   getCellVSpace(gd) {
-    return (gd.cellVSpace / 1000) * gd.pixelsPerMMX * this.scale * 2;
+    return (gd.cellVSpace / 1000) * gd.pixelsPerMMX * this.scale;
   }
 
   getCellHSpace(gd) {
-    return (gd.cellHSpace / 1000) * gd.pixelsPerMMY * this.scale * 2;
+    return (gd.cellHSpace / 1000) * gd.pixelsPerMMY * this.scale;
   }
 
   /**
@@ -287,11 +288,20 @@ export default class DrawGridPlugin {
 
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    if (typeof gd.result !== 'undefined' && gd.result !== null && gd.id !== null) {
+    // Asume flat result object to remain compatible with old format only
+    // suporting one type of results
+    let result = gd.result;
+
+    // Use selected result type if it exists
+    if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
+      result = gd.result[this.resultType];
+    }
+
+    if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
       for (let nh = 0; nh < row; nh++) {
         for (let nw = 0; nw < col; nw++) {
           const index = nw + nh * col + 1;
-          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, gd.result[index][1]);
+          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
         }
       }
     }
@@ -432,7 +442,7 @@ export default class DrawGridPlugin {
       lockScalingX: true,
       lockScalingY: true,
       lockRotation: true,
-      visible: gridData.state !== 'HIDDEN',
+      visible: true,
       hoverCursor: 'pointer',
       id: gd.id
     });
@@ -461,7 +471,7 @@ export default class DrawGridPlugin {
 
             this.mouseOverGridLabel.push(new fabric.Ellipse({
               left: objCenterX,
-              top: options.e.offsetY - 20,
+              top: options.e.offsetY - 25,
               width: 40,
               height: 40,
               stroke: 'rgba(0, 0, 0, 1)',
@@ -484,7 +494,7 @@ export default class DrawGridPlugin {
             this.mouseOverGridLabel.push(
               new fabric.Text(obj.cell, {
                 left: objCenterX,
-                top: options.e.offsetY - 20,
+                top: options.e.offsetY - 25,
                 originX: 'center',
                 originY: 'center',
                 fill: 'rgba(200, 0, 0, 1)',
@@ -509,7 +519,7 @@ export default class DrawGridPlugin {
               lockScalingX: true,
               lockScalingY: true,
               lockRotation: true,
-              hoverCursor: 'pointer',
+              hoverCursor: 'pointer'
             });
 
             canvas.add(this.mouseOverGridLabel);
@@ -696,6 +706,7 @@ export default class DrawGridPlugin {
     if (currentRow !== (numCols - 1) && (numCols - currentRow + 1) % 2 !== 0) {
       cellCount = (numRows * numCols) - (currentRow * numRows) + currentCol - numRows + 1;
     }
+
     return cellCount;
   }
 }

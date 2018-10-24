@@ -1,7 +1,7 @@
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel,
-         Button, Checkbox, Table } from 'react-bootstrap';
+         Button, Table, Radio } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 
@@ -34,7 +34,10 @@ export default class GridForm extends React.Component {
             {vdim} x {hdim}
           </td>
           <td>
-            ({grid.numRows * grid.numCols})
+            {grid.numRows * grid.numCols}
+          </td>
+          <td>
+            {grid.numRows}x{grid.numCols}
           </td>
           <td>
             { grid.motorPositions.phi.toFixed(2) }&deg;
@@ -111,6 +114,8 @@ export default class GridForm extends React.Component {
           <td>
           </td>
           <td>
+          </td>
+          <td>
             <Button className="btn-sm" onClick={() => this.props.saveGrid()}>
               +
             </Button>
@@ -149,6 +154,9 @@ export default class GridForm extends React.Component {
                     #Cells
                   </th>
                   <th>
+                    R x C
+                  </th>
+                  <th>
                     &Omega;
                   </th>
                   <th />
@@ -178,9 +186,23 @@ export default class GridForm extends React.Component {
                   name="overlaySlider"
                 />
               </FormGroup>
+              <br />
               <FormGroup>
                 <ControlLabel>Heat map: </ControlLabel>
-                <Checkbox style={{ marginLeft: '10px' }} />
+                <Radio
+                  name="resultType"
+                  onClick={() => this.props.setGridResultType('heatmap')}
+                  style={{ marginLeft: '10px' }}
+                  checked={this.props.gridResultType === 'heatmap'}
+                />
+              <br />
+                <ControlLabel>Crystal map: </ControlLabel>
+                <Radio
+                  name="resultType"
+                  onClick={() => this.props.setGridResultType('crystalmap')}
+                  style={{ marginLeft: '10px' }}
+                  checked={this.props.gridResultType === 'crystalmap'}
+                />
               </FormGroup>
             </Form>
           </div>
