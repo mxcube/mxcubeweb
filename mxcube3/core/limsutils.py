@@ -109,6 +109,15 @@ def synch_sample_list_with_queue(current_queue=None):
                 sample.pop("defaultPrefix")
                 sample.pop("defaultSubDir")
 
+            # Make sure that sample in queue is updated with lims information
+            model, entry = qutils.get_entry(sample["queueID"])
+            model.set_from_dict(data)
+
+            # Update sample location, location is Manual for free pin mode
+            # in MXCuBE3
+            model.loc_str = data.get("sampleID", -1)
+            model.free_pin_mode = data.get('location', '') == 'Manual'
+
             sample_list_update_sample(loc, sample)
 
 
@@ -129,8 +138,9 @@ def apply_template(params, sample_model, path_template):
     # Apply subdir template if used:
     if '{' in params.get('subdir', ''):
         if sample_model.crystals[0].protein_acronym:
-            params['subdir'] = params['subdir'].format(NAME=sample_model.get_name(),
-                                                       ACRONYM=sample_model.crystals[0].protein_acronym)
+            params['subdir'] = params['subdir'].\
+                format(NAME=sample_model.get_name(),
+                       ACRONYM=sample_model.crystals[0].protein_acronym)
         else:
             stripped = params["subdir"][0: params["subdir"].find('{')]
             params['subdir'] = stripped + sample_model.get_name()
@@ -207,7 +217,8 @@ def lims_login(loginID, password):
     try:
         blcontrol.rest_lims.authenticate(loginID, password)
     except:
-        logging.getLogger('MX3.HWR').error('[LIMS-REST] Could not authenticate')
+        logging.getLogger('MX3.HWR').error(
+            '[LIMS-REST] Could not authenticate')
         return ERROR_CODE
 
     if blcontrol.db_connection.loginType.lower() == 'user':
@@ -251,7 +262,8 @@ def lims_login(loginID, password):
                              login_res['Proposal']['number'])
 
         except:
-            logging.getLogger('MX3.HWR').error('[LIMS] Could not login to LIMS')
+            logging.getLogger('MX3.HWR').error(
+                '[LIMS] Could not login to LIMS')
             return ERROR_CODE
 
         session['proposal_list'] = [proposal]
@@ -285,8 +297,10 @@ def get_proposal_info(proposal):
 def select_proposal(proposal):
     proposal_info = get_proposal_info(proposal)
 
-    logging.getLogger('MX3.HWR').info("[LIMS] Selecting proposal: %s" % proposal)
-    logging.getLogger('MX3.HWR').info("[LIMS] Proposal info: %s" % proposal_info)
+    logging.getLogger('MX3.HWR').info(
+        "[LIMS] Selecting proposal: %s" % proposal)
+    logging.getLogger('MX3.HWR').info(
+        "[LIMS] Proposal info: %s" % proposal_info)
     if blcontrol.db_connection.loginType.lower() == 'user' and 'Commissioning' in proposal_info['Proposal']['title']:
         if hasattr(blcontrol.session, 'set_in_commissioning'):
             blcontrol.session.set_in_commissioning(proposal_info)
@@ -304,11 +318,11 @@ def select_proposal(proposal):
         if hasattr(blcontrol.session, 'prepare_directories'):
             try:
                 logging.getLogger('MX3.HWR').info('[LIMS] Creating data directories for proposal %s'
-                                              % proposal)
+                                                  % proposal)
                 blcontrol.session.prepare_directories(proposal_info)
             except:
                 logging.getLogger('MX3.HWR').info('[LIMS] Error creating data directories, %s'
-                                              % sys.exc_info()[1])
+                                                  % sys.exc_info()[1])
 
         # Get all the files in the root data dir for this user
         root_path = blcontrol.session.get_base_image_directory()

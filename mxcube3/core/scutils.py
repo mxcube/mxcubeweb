@@ -34,6 +34,7 @@ def get_sample_list():
     samples = {}
     samplesByCoords = {}
     order = []
+    current_sample = {}
 
     for s in samples_list:
         if not s.isPresent():
@@ -66,14 +67,15 @@ def get_sample_list():
         sc_contents_add(sample_data)
 
         if sample_data["state"] == qutils.SAMPLE_MOUNTED:
-            set_current_sample(sample_data)
-            qutils.queue_add_item([mxcube.CURRENTLY_MOUNTED_SAMPLE])
+            current_sample = sample_data
+            qutils.queue_add_item([current_sample])
 
     # sort by location, using coords tuple
     order.sort()
     sample_list = {'sampleList': samples,
                    'sampleOrder': [samplesByCoords[coords] for coords in order]}
 
+    set_current_sample(current_sample["sampleID"])
     limsutils.sample_list_set(sample_list)
 
 
@@ -141,24 +143,21 @@ def sc_contents_from_location_get(loc):
     return mxcube.SC_CONTENTS["FROM_LOCATION"].get(loc, {})
 
 
-def set_current_sample(sample):
-    try:
-        sample = mxcube.SC_CONTENTS.get("FROM_LOCATION")[sample]
-        mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
-    except:
-        mxcube.CURRENTLY_MOUNTED_SAMPLE = sample
-
-    logging.getLogger('MX3.HWR').info(
-        '[SC] Setting currenly mounted sample to %s' % sample)
+def set_current_sample(sample_id):   
+    mxcube.CURRENTLY_MOUNTED_SAMPLE = sample_id
+    msg = '[SC] Setting currenly mounted sample to %s' % sample_id
+    logging.getLogger('MX3.HWR').info(msg)
 
     from mxcube3.routes.signals import set_current_sample
-    set_current_sample(sample)
+    set_current_sample(sample_id)
 
 
 def get_current_sample():
-    sample = mxcube.CURRENTLY_MOUNTED_SAMPLE or {}
-    logging.getLogger('MX3.HWR').info(
-        '[SC] Getting currently mounted sample %s' % sample)
+    sample_id = mxcube.CURRENTLY_MOUNTED_SAMPLE
+    sample = mxcube.SAMPLE_LIST["sampleList"].get(sample_id, {})
+    msg = '[SC] Getting currently mounted sample %s' % sample
+
+    logging.getLogger('MX3.HWR').info(msg)
 
     return sample
 
@@ -301,12 +300,13 @@ def mount_sample_clean_up(sample):
             elif not sc.getLoadedSample():
                 set_current_sample(None)
         else:
-            set_current_sample(sample)
+            set_current_sample(sample["sampleID"])
             res = True
 
     except Exception as ex:
         logging.getLogger('MX3.HWR').exception(
             '[SC] sample could not be mounted')
+
         raise RuntimeError(str(ex))
     else:
         # Clean up if the new sample was mounted or the current sample was
