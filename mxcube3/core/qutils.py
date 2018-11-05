@@ -276,6 +276,7 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     parameters = node.as_dict()
     parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
+    parameters["mesh"] = node.experiment_type == qme.EXPERIMENT_TYPE.MESH
 
     parameters.pop('sample')
     parameters.pop('acquisitions')

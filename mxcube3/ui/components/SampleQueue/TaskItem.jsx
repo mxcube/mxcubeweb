@@ -80,6 +80,8 @@ export default class TaskItem extends Component {
     const { type, parameters } = data;
     if (parameters.helical) {
       this.props.showForm('Helical', sampleId, data, parameters.shape);
+    } else if (parameters.mesh) {
+      this.props.showForm('Mesh', sampleId, data, parameters.shape);
     } else {
       this.props.showForm(type, sampleId, data, parameters.shape);
     }
