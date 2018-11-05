@@ -99,7 +99,7 @@
     <helical>True</helical>
     <xrf_scan>True</xrf_scan>
     <energy_scan>True</energy_scan>
-    <mesh_scan>False</mesh_scan>
+    <mesh_scan>True</mesh_scan>
   </available_methods>
 
  </object>
