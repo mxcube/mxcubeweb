@@ -111,8 +111,11 @@ def get_results():
                 r = apply_template("data-collection-results.html", data)
 
         elif isinstance(model, qmo.Characterisation) or isinstance(model, qmo.Workflow):
-            if result_file_test("characterisation-results.js"):
-                url_list = data["limsResultData"]["workflow_result_url_list"]
+            if result_file_test('characterisation-results.js'):
+                try:
+                    url_list =  data["limsResultData"]["workflow_result_url_list"]
+                except:
+                    url_list = None
 
                 if url_list:
                     r = jsonify(
