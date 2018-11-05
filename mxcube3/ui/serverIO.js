@@ -214,6 +214,9 @@ class ServerIO {
       } else if (record.signal === 'loadReady') {
         this.dispatch(setLoading(false, 'SC Ready',
                                  record.message, true, () => (this.dispatch(sendStopQueue()))));
+      } else if (record.signal === 'inSafeArea') {
+        this.dispatch(setLoading(false, 'SC Safe',
+                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
       }
     });
 
