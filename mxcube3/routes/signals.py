@@ -122,7 +122,7 @@ def sc_unload(location):
     socketio.emit('sc', msg, namespace='/hwr')
 
 def path_safe_changed(*args):
-    # responds to the 'pathSafeChanged' signal in cats like SC
+    # responds to the 'pathSafeChanged' signal from the Sample Changer
     new_state = args[0]
     #we are only interested when it becames true
     if new_state:

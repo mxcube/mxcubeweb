@@ -1854,8 +1854,6 @@ def queue_stop():
             print str(ex)
         
         try:
-            logging.getLogger('user_level_log').info(
-                'Queue execution was aborted, ' + str(qe.get_data_model()))
             blcontrol.queue.queue_hwobj.set_pause(False)
             # the next two is to avoid repeating the task
             # TODO: if you now run the queue it will be enabled and run
