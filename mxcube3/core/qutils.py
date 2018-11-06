@@ -1847,25 +1847,22 @@ def queue_stop():
         blcontrol.queue.queue_hwobj.stop()
     else:
         qe = blcontrol.queue.queue_hwobj.get_current_entry()
-        # check if a node/tas is executing and stop that one
-        try:
-            qe.stop()
-        except Exception as ex:
-            print str(ex)
-        
-        try:
+        # check if a node/task is executing and stop that one
+        if qe:
+            try:
+                qe.stop()
+            except Exception as ex:
+                print str(ex)
             blcontrol.queue.queue_hwobj.set_pause(False)
             # the next two is to avoid repeating the task
             # TODO: if you now run the queue it will be enabled and run
             qe.get_data_model().set_executed(True)
             qe.get_data_model().set_enabled(False)
             qe._execution_failed = True
-         except Exception as ex:
-            print str(ex)
 
-        blcontrol.queue.queue_hwobj._is_stopped = True
-        signals.queue_execution_stopped()
-        signals.collect_oscillation_failed()
+            blcontrol.queue.queue_hwobj._is_stopped = True
+            signals.queue_execution_stopped()
+            signals.collect_oscillation_failed()
 
 
 def queue_pause():
