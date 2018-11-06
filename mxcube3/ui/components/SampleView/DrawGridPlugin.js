@@ -568,6 +568,8 @@ export default class DrawGridPlugin {
 
     gd.screenCoord[0] = gd.screenCoord[0] / this.scale;
     gd.screenCoord[1] = gd.screenCoord[1] / this.scale;
+    gd.width = gd.width / this.scale;
+    gd.height = gd.height / this.scale;
 
     return gd;
   }
