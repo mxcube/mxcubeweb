@@ -75,9 +75,10 @@ def get_sample_list():
     sample_list = {'sampleList': samples,
                    'sampleOrder': [samplesByCoords[coords] for coords in order]}
 
-    set_current_sample(current_sample["sampleID"])
     limsutils.sample_list_set(sample_list)
 
+    if current_sample:
+        set_current_sample(current_sample["sampleID"])
 
 def get_sc_contents():
     def _getElementStatus(e):
@@ -275,8 +276,7 @@ def mount_sample_clean_up(sample):
     res = None
 
     try:
-        msg = '[SC] mounting %s (%r)'
-        msg = msg % (sample['location'], sample['sampleID'])
+        msg = '[SC] mounting %s' % sample['location']
         logging.getLogger('MX3.HWR').info(msg)
 
         signals.sc_load(sample['location'])
@@ -336,8 +336,7 @@ def unmount_sample_clean_up(sample):
         else:
             set_current_sample(None)
 
-        msg = '[SC] unmounted %s (%s)'
-        msg = msg % (sample['location'], sample['sampleID'])
+        msg = '[SC] unmounted %s' % sample['location']
         logging.getLogger('MX3.HWR').info(msg)
     except Exception:
         msg = '[SC] sample could not be mounted'
