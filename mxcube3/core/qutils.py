@@ -276,6 +276,7 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     parameters = node.as_dict()
     parameters["shape"] = getattr(node, 'shape', '')
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
+    parameters["mesh"] = node.experiment_type == qme.EXPERIMENT_TYPE.MESH
 
     parameters.pop('sample')
     parameters.pop('acquisitions')
@@ -1013,7 +1014,7 @@ def set_dc_params(model, entry, task_data, sample_model):
 
     # Only get a run number for new tasks, keep the already existing
     # run number for existing items.
-    if not params.get("queueID", ""):
+    if not task_data.get("queueID", ""):
         acq.path_template.run_number = get_run_number(acq.path_template)
 
     model.set_enabled(task_data['checked'])
@@ -1846,25 +1847,22 @@ def queue_stop():
         blcontrol.queue.queue_hwobj.stop()
     else:
         qe = blcontrol.queue.queue_hwobj.get_current_entry()
-        # check if a node/tas is executing and stop that one
-        try:
-            qe.stop()
-        except Exception as ex:
-            print str(ex)
+        # check if a node/task is executing and stop that one
+        if qe:
+            try:
+                qe.stop()
+            except Exception as ex:
+                print str(ex)
+            blcontrol.queue.queue_hwobj.set_pause(False)
+            # the next two is to avoid repeating the task
+            # TODO: if you now run the queue it will be enabled and run
+            qe.get_data_model().set_executed(True)
+            qe.get_data_model().set_enabled(False)
+            qe._execution_failed = True
 
-        logging.getLogger('user_level_log').info(
-            'Queue execution was aborted, ' + str(qe.get_data_model()))
-
-        blcontrol.queue.queue_hwobj.set_pause(False)
-        # the next two is to avoid repeating the task
-        # TODO: if you now run the queue it will be enabled and run
-        qe.get_data_model().set_executed(True)
-        qe.get_data_model().set_enabled(False)
-        qe._execution_failed = True
-
-        blcontrol.queue.queue_hwobj._is_stopped = True
-        signals.queue_execution_stopped()
-        signals.collect_oscillation_failed()
+            blcontrol.queue.queue_hwobj._is_stopped = True
+            signals.queue_execution_stopped()
+            signals.collect_oscillation_failed()
 
 
 def queue_pause():

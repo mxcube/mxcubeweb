@@ -121,6 +121,15 @@ def sc_unload(location):
 
     socketio.emit('sc', msg, namespace='/hwr')
 
+def is_collision_safe(*args):
+    # responds to the 'isCollisionSafe' signal from the Sample Changer
+    new_state = args[0]
+    #we are only interested when it becames true
+    if new_state:
+        msg = {'signal': 'isCollisionSafe',
+               'message': 'Sample moved to safe area'
+               }
+        socketio.emit('sc', msg, namespace='/hwr')
 
 def loaded_sample_changed(sample):
     if hasattr(sample, "getAddress"):

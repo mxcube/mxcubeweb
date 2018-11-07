@@ -315,6 +315,8 @@ def select_proposal(proposal):
         blcontrol.session.session_id = proposal_info.get('Session')[
             0].get('sessionId')
 
+        session['proposal'] = proposal_info
+
         if hasattr(blcontrol.session, 'prepare_directories'):
             try:
                 logging.getLogger('MX3.HWR').info('[LIMS] Creating data directories for proposal %s'

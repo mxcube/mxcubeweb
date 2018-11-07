@@ -295,7 +295,15 @@ def login_info(login_info):
     user = get_user_by_sid(session.sid)
 
     if user:
-        res["selectedProposal"] = user["loginID"]
+        if res["loginType"].lower() != 'user':
+            res["selectedProposal"] = user["loginID"]
+        elif proposal_info:
+            code = proposal_info.get('Proposal').get('code')
+            number = proposal_info.get('Proposal').get('number')
+            proposalId = proposal_info.get('Proposal').get('proposalId')
+            res["selectedProposal"] = code + number
+            res["selectedProposalID"] = proposalId
+
     else:
         res["selectedProposal"] = {}
 

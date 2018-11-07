@@ -21,6 +21,8 @@ export default (state = initialState, action) => {
             loginInfo: action.loginInfo,
             selectedProposal: state.selectedProposal ?
               state.selectedProposal : action.loginInfo.selectedProposal,
+            selectedProposalID: state.selectedProposalID ?
+              state.selectedProposalID : action.loginInfo.selectedProposalID,
             loggedIn,
             data
           });

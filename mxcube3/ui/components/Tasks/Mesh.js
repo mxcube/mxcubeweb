@@ -130,13 +130,15 @@ class Mesh extends React.Component {
               <InputField propName="first_image" type="number" label="First image" />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="osc_start" type="number" label="Oscillation start" />
+              <DisplayField label="Oscillation start"
+                value={this.props.initialValues.osc_start}
+              />
               <DisplayField label="Total number of images"
                 value={this.props.taskData.parameters.cell_count}
               />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" type="number" label="Exposure time per image(ms)" />
+              <InputField propName="exp_time" type="number" label="Exposure time per image(s)" />
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
@@ -236,7 +238,8 @@ Mesh = connect(state => {
         state.beamline.attributes.energy.value),
       transmission: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.transmission :
-        state.beamline.attributes.transmission.value)
+        state.beamline.attributes.transmission.value),
+      osc_start: state.beamline.motors.phi.position
     }
   };
 })(Mesh);
