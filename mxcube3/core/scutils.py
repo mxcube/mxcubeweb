@@ -19,7 +19,7 @@ def init_signals():
 
     """Initialize hwobj signals."""
     blcontrol.sample_changer.connect('stateChanged', signals.sc_state_changed)
-    blcontrol.sample_changer.connect('isCollisionSafe', signals.path_safe_changed)
+    blcontrol.sample_changer.connect('isCollisionSafe', signals.is_collision_safe)
     blcontrol.sample_changer.connect(
         'loadedSampleChanged', signals.loaded_sample_changed)
     blcontrol.sample_changer.connect(
@@ -292,7 +292,8 @@ def mount_sample_clean_up(sample):
                 res = sc.load(sample['sampleID'], wait=True)
             elif sc.getLoadedSample().getAddress() != sample['location']:
                 res = sc.load(sample['sampleID'], wait=True)
-
+            if res is None:
+                res = True
             if res and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP:
                 msg = 'Starting autoloop centring ...'
                 logging.getLogger('MX3.HWR').info(msg)
