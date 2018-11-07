@@ -19,7 +19,7 @@ def init_signals():
 
     """Initialize hwobj signals."""
     blcontrol.sample_changer.connect('stateChanged', signals.sc_state_changed)
-    blcontrol.sample_changer.connect('pathSafeChanged', signals.path_safe_changed)
+    blcontrol.sample_changer.connect('isCollisionSafe', signals.path_safe_changed)
     blcontrol.sample_changer.connect(
         'loadedSampleChanged', signals.loaded_sample_changed)
     blcontrol.sample_changer.connect(
