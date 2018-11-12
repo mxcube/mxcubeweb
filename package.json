@@ -24,7 +24,6 @@
     "dygraphs": "^2.0.0",
     "everpolate": "0.0.3",
     "fabric": "2.2.4",
-    "fabricjs": "^1.0.0",
     "font-awesome": "^4.4.0",
     "history": "1.17.x",
     "isomorphic-fetch": "^2.2.0",
