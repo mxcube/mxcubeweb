@@ -1,3 +1,5 @@
+import logging
+
 from flask import session, request, jsonify, make_response, redirect
 
 from mxcube3 import server
@@ -37,6 +39,8 @@ def login():
     try:
         res = jsonify(loginutils.login(login_id, password))
     except Exception as ex:
+        msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
+        logging.getLogger('MX3.HWR').info(msg)
         res = deny_access(str(ex))
 
     return res

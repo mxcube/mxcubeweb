@@ -188,7 +188,7 @@ def strip_prefix(pt, prefix):
 
 
 def lims_existing_session(login_res):
-    return not login_res.get("Session", {}).get("new_session_flag", True)
+    return login_res.get("Session", {}).get("session", {}) and True
 
 
 def lims_is_inhouse(login_res):
@@ -199,7 +199,7 @@ def lims_valid_login(login_res):
     return login_res['status']['code'] == 'ok'
 
 
-def lims_login(loginID, password):
+def lims_login(loginID, password, create_session):
     """
     :param str loginID: Username
     :param str password: Password
@@ -232,7 +232,6 @@ def lims_login(loginID, password):
             return ERROR_CODE
 
         try:
-
             proposals = blcontrol.db_connection.get_proposals_by_user(loginID)
 
             logging.getLogger('MX3.HWR').info(
@@ -256,7 +255,9 @@ def lims_login(loginID, password):
 
     else:
         try:
-            login_res = blcontrol.db_connection.login(loginID, password)
+            login_res = blcontrol.\
+                db_connection.login(loginID, password,
+                                    create_session=create_session)
             proposal = blcontrol.db_connection.\
                 get_proposal(login_res['Proposal']['code'],
                              login_res['Proposal']['number'])
@@ -271,6 +272,16 @@ def lims_login(loginID, password):
 
     logging.getLogger('MX3.HWR').info(
         '[LIMS] Logged in, proposal data: %s' % login_res)
+
+    return login_res
+
+
+def create_lims_session(login_res):
+    for prop in session['proposal_list']:
+        todays_session = blcontrol.db_connection.get_todays_session(prop)
+        prop['Session'] = [todays_session['session']]
+
+    login_res['proposalList'] = session['proposal_list']
 
     return login_res
 
