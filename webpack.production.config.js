@@ -4,6 +4,7 @@ var backend_server = require('./backend_server.js');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 var GitRevisionPlugin = require('git-revision-webpack-plugin');
 var gitRevisionPlugin = new GitRevisionPlugin();
+var CopyWebpackPlugin = require('copy-webpack-plugin')
 
 var VIDEO_STREAM_URL = '"ws://localhost:4042/"';
 
@@ -114,6 +115,9 @@ var config = {
       'VIDEO_STREAM_URL': VIDEO_STREAM_URL,
       'VIDEO_STREAM_ON_LOCAL_HOST': true
     }),
+    new CopyWebpackPlugin([
+      { from: 'mxcube3/ui/img/favicon.ico' },
+    ]),
     new UglifyJSPlugin()
   ],
   externals: {

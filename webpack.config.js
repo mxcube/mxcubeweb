@@ -3,6 +3,7 @@ var path = require('path');
 var backend_server = require('./backend_server.js');
 var GitRevisionPlugin = require('git-revision-webpack-plugin');
 var gitRevisionPlugin = new GitRevisionPlugin();
+var CopyWebpackPlugin = require('copy-webpack-plugin')
 
 var VIDEO_STREAM_URL = '"ws://localhost:4042/"'
 
@@ -85,7 +86,7 @@ var config = {
         loader: 'url-loader?limit=100000'
       },
       {
-        test: /\.(gif|png|jpe?g|svg)$/i,
+        test: /\.(gif|png|jpe?g|svg|ico)$/i,
         loaders: [
           'file-loader', {
             loader: 'image-webpack-loader',
@@ -131,7 +132,10 @@ var config = {
                    'BRANCH': JSON.stringify(gitRevisionPlugin.branch()) },
       'VIDEO_STREAM_URL': VIDEO_STREAM_URL,
       'VIDEO_STREAM_ON_LOCAL_HOST': true
-    })
+    }),
+   new CopyWebpackPlugin([
+       { from: 'mxcube3/ui/img/favicon.ico' },
+   ])
   ],
   externals: {
     'guiConfig': JSON.stringify(require('./config.gui.prod.js')),
