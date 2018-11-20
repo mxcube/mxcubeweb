@@ -198,7 +198,7 @@ def is_local_host():
 
 
 def is_inhouse_user(user_id):
-    user_id_list = ["%s%s" for (code, number)
+    user_id_list = ["%s%s" % (code, number) for (code, number)
                     in blcontrol.session.in_house_users]
 
     return user_id in user_id_list
@@ -259,9 +259,9 @@ def login(login_id, password):
 
         sample = blcontrol.sample_changer.getLoadedSample()
 
-        # If A sample is mounted, get sample changer contents and add mounted
-        # sample to the queue
-        if sample:
+        # If A sample is mounted (and not already marked as such),
+        # get sample changer contents and add mounted sample to the queue
+        if not scutils.get_current_sample() and sample:
             scutils.get_sample_list()
 
         # For the moment not loading queue from persistent storage (redis),
@@ -278,18 +278,25 @@ def login(login_id, password):
 
 
 def signout():
-    qutils.save_queue(session)
-    blcontrol.queue = qutils.new_queue()
-    blcontrol.shapes.clear_all()
+    user = get_user_by_sid(session.sid)
 
-    qutils.init_queue_settings()
+    # If operator logs out clear queue and sample list
+    if is_operator(session.sid):
+        qutils.save_queue(session)
+        blcontrol.queue = qutils.new_queue()
+        blcontrol.shapes.clear_all()
+        limsutils.init_sample_list()
 
-    if hasattr(blcontrol.session, 'clear_session'):
-        blcontrol.session.clear_session()
+        qutils.init_queue_settings()
 
-    if mxcube.CURRENTLY_MOUNTED_SAMPLE:
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
-            mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+        if hasattr(blcontrol.session, 'clear_session'):
+            blcontrol.session.clear_session()
+
+        mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+
+        user = get_user_by_sid(session.sid)
+        msg = "User %s signed out" % user
+        logging.getLogger('MX3.HWR').info(msg)
 
     remove_user(session.sid)
     session.clear()
