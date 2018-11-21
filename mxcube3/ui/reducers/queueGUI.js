@@ -102,6 +102,31 @@ export default (state = initialState, action) => {
 
       return { ...state, displayData };
     }
+    case 'SET_INITIAL_STATE': {
+      const sampleList = { ...action.data.queue.sampleList.sampleList };
+      const sampleOrder = [...action.data.queue.sampleList.sampleOrder];
+      const displayData = { ...state.displayData };
+
+      const existingNodes = Object.keys(state.displayData);
+      const sourceNodes = [];
+      const newNodes = [];
+
+      sampleOrder.forEach((sampleID) => {
+        if (sampleList.hasOwnProperty(sampleID)) {
+          sampleList[sampleID].tasks.forEach((task) => {
+            if (existingNodes.indexOf(task.queueID.toString()) === -1) {
+              newNodes.push(task.queueID.toString());
+              displayData[task.queueID] = { collapsed: false,
+                                            selected: false,
+                                            progress: 0 };
+            }
+            sourceNodes.push(task.queueID.toString());
+          });
+        }
+      });
+
+      return { ...state, displayData };
+    }
     case 'CLEAR_ALL':
       {
         return initialState;

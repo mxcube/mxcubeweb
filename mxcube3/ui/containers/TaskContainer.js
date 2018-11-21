@@ -62,8 +62,15 @@ class TaskContainer extends React.Component {
       if (taskData.queueID === null) {
         this.props.addTask([this.props.sampleIds], parameters, runNow);
       } else {
-        // const taskIndex = this.props.sampleList[sampleIds].tasks.indexOf(taskData);
-        const taskIndex = taskData.taskIndex;
+        let taskIndex = -1;
+
+        for (const task of this.props.sampleList[sampleIds].tasks) {
+          if (task.queueID === taskData.queueID) {
+            taskIndex = this.props.sampleList[sampleIds].tasks.indexOf(task);
+            break;
+          }
+        }
+
         this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
       }
     }
@@ -240,7 +247,7 @@ function mapDispatchToProps(dispatch) {
     addTask: bindActionCreators(addTask, dispatch),
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
     addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
-    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
+    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch)
   };
 }
 

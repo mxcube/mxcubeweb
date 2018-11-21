@@ -81,6 +81,7 @@ def get_sample_list():
     if current_sample:
         set_current_sample(current_sample["sampleID"])
 
+
 def get_sc_contents():
     def _getElementStatus(e):
         if e.isLeaf():
@@ -145,7 +146,7 @@ def sc_contents_from_location_get(loc):
     return mxcube.SC_CONTENTS["FROM_LOCATION"].get(loc, {})
 
 
-def set_current_sample(sample_id):   
+def set_current_sample(sample_id):
     mxcube.CURRENTLY_MOUNTED_SAMPLE = sample_id
     msg = '[SC] Setting currenly mounted sample to %s' % sample_id
     logging.getLogger('MX3.HWR').info(msg)
@@ -208,10 +209,12 @@ def queue_mount_sample(beamline_setup_hwobj,
             sample = {"location": element, "sampleID": element}
             mount_sample_clean_up(sample)
         elif sample_mount_device.__TYPE__ == "PlateManipulator":
-            sample = {"location": loc, "sampleID": loc}
+            sample = {"location": data_model.loc_str,
+                      "sampleID": data_model.loc_str}
             mount_sample_clean_up(sample)
         else:
-            sample = {"location": loc, "sampleID": loc}
+            sample = {"location": data_model.loc_str,
+                      "sampleID": data_model.loc_str}
 
             if mount_sample_clean_up(sample) is False:
                 # WARNING: explicit test of False return value.
@@ -239,11 +242,12 @@ def queue_mount_sample(beamline_setup_hwobj,
                     dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
                 elif centring_method in [CENTRING_METHOD.LOOP,
                                          CENTRING_METHOD.FULLY_AUTOMATIC]:
-                    dm.startCentringMethod(dm.C3D_MODE)
+
+                    if not dm.currentCentringMethod:
+                        dm.startCentringMethod(dm.C3D_MODE)
 
                     if mxcube.AUTO_MOUNT_SAMPLE:
-                        dm.acceptCentring()
-                        msg = "Centring saved automatically"
+                        msg = "Going to save centring automatically, please wait"
                     else:
                         msg = "Centring in progress. Please save" +\
                               " the suggested centring or re-center"

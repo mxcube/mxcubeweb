@@ -180,7 +180,11 @@ def is_local_network(ip):
 
 
 def is_local_host():
-    localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
+    try:
+        localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
+    except Exception:
+        localhost_list = []
+
     localhost_list.append("127.0.0.1")
 
     remote_address = remote_addr()
@@ -193,10 +197,18 @@ def is_local_host():
     return remote_address in localhost_list or is_local_network(remote_address)
 
 
+def is_inhouse_user(user_id):
+    user_id_list = ["%s%s" % (code, number) for (code, number)
+                    in blcontrol.session.in_house_users]
+
+    return user_id in user_id_list
+
+
 def login(login_id, password):
     try:
-        login_res = limsutils.lims_login(login_id, password)
-        inhouse = limsutils.lims_is_inhouse(login_res)
+        login_res = limsutils.\
+            lims_login(login_id, password, create_session=False)
+        inhouse = is_inhouse_user(login_id)
 
         info = {"valid": limsutils.lims_valid_login(login_res),
                 "local": is_local_host(),
@@ -219,6 +231,9 @@ def login(login_id, password):
 
         # Only allow remote logins with existing sessions
         if limsutils.lims_valid_login(login_res) and is_local_host():
+            if not limsutils.lims_existing_session(login_res):
+                login_res = limsutils.create_lims_session(login_res)
+
             msg = "[LOGIN] Valid login from local host (%s)" % str(info)
             logging.getLogger("MX3.HWR").info(msg)
         elif limsutils.lims_valid_login(login_res) and \
@@ -230,7 +245,7 @@ def login(login_id, password):
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
             raise Exception(str(info))
     except:
-        raise Exception("")
+        raise
     else:
         add_user(create_user(login_id, remote_addr(), session.sid, login_res))
 
@@ -244,9 +259,9 @@ def login(login_id, password):
 
         sample = blcontrol.sample_changer.getLoadedSample()
 
-        # If A sample is mounted, get sample changer contents and add mounted
-        # sample to the queue
-        if sample:
+        # If A sample is mounted (and not already marked as such),
+        # get sample changer contents and add mounted sample to the queue
+        if not scutils.get_current_sample() and sample:
             scutils.get_sample_list()
 
         # For the moment not loading queue from persistent storage (redis),
@@ -263,18 +278,25 @@ def login(login_id, password):
 
 
 def signout():
-    qutils.save_queue(session)
-    blcontrol.queue = qutils.new_queue()
-    blcontrol.shapes.clear_all()
+    user = get_user_by_sid(session.sid)
 
-    qutils.init_queue_settings()
+    # If operator logs out clear queue and sample list
+    if is_operator(session.sid):
+        qutils.save_queue(session)
+        blcontrol.queue = qutils.new_queue()
+        blcontrol.shapes.clear_all()
+        limsutils.init_sample_list()
 
-    if hasattr(blcontrol.session, 'clear_session'):
-        blcontrol.session.clear_session()
+        qutils.init_queue_settings()
 
-    if mxcube.CURRENTLY_MOUNTED_SAMPLE:
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
-            mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+        if hasattr(blcontrol.session, 'clear_session'):
+            blcontrol.session.clear_session()
+
+        mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+
+        user = get_user_by_sid(session.sid)
+        msg = "User %s signed out" % user
+        logging.getLogger('MX3.HWR').info(msg)
 
     remove_user(session.sid)
     session.clear()

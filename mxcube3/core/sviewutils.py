@@ -124,6 +124,9 @@ def wait_for_centring_finishes(*args, **kwargs):
         centring_update_current_point(motor_positions, x, y)
         blcontrol.diffractometer.emit('stateChanged', (True,))
 
+        if mxcube.AUTO_MOUNT_SAMPLE:
+            blcontrol.diffractometer.acceptCentring()
+
 
 def init_signals():
     """

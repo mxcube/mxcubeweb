@@ -1037,6 +1037,14 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.precision = '0' + str(blcontrol.session["file_info"].
                                               getProperty("precision", 4))
 
+    limsutils.apply_template(params, sample_model, model.path_template)
+
+    if params["prefix"]:
+        model.path_template.base_prefix = params['prefix']
+    else:
+        model.path_template.base_prefix = blcontrol.session.\
+            get_default_prefix(sample_model, False)
+
     full_path = os.path.join(blcontrol.session.get_base_image_directory(),
                              params.get('subdir', ''))
 
