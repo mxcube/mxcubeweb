@@ -15,7 +15,7 @@ def client():
 
     client = server.test_client()
 
-    data = json.dumps({'proposal': 'idtest000',
+    data = json.dumps({'proposal': 'idtest0',
                        'password': 'sUpErSaFe'})
 
     client.post("/mxcube/api/v0.1/login", data=data,

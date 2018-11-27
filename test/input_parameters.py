@@ -100,7 +100,7 @@ test_edit_task = {
             "osc_start": 0,
             "overlap": 0,
             "path": None,
-            "prefix": "idtest000",
+            "prefix": "idtest0",
             "resolution": 3,
             "run_number": 1,
             "shape": -1,
