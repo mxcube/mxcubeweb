@@ -11,13 +11,13 @@ from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 
 
-@server.route("/mxcube/api/v0.1/beamline", methods=['GET'])
+@server.route("/mxcube/api/v0.1/beamline", methods=["GET"])
 @server.restrict
 def beamline_get_all_attributes():
     return jsonify(beamlineutils.beamline_get_all_attributes())
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=['GET'])
+@server.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=["GET"])
 @server.restrict
 def beamline_abort_action(name):
     """
@@ -33,11 +33,11 @@ def beamline_abort_action(name):
         err = str(sys.exc_info()[1])
         return make_response(err, 520)
     else:
-        logging.getLogger('user_level_log').error('Aborting set on %s.' % name)
+        logging.getLogger("user_level_log").error("Aborting set on %s." % name)
         return make_response("", 200)
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>/run", methods=['POST'])
+@server.route("/mxcube/api/v0.1/beamline/<name>/run", methods=["POST"])
 @server.restrict
 def beamline_run_action(name):
     """
@@ -61,7 +61,7 @@ def beamline_run_action(name):
         return make_response("{}", 200)
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>", methods=['PUT'])
+@server.route("/mxcube/api/v0.1/beamline/<name>", methods=["PUT"])
 @server.restrict
 def beamline_set_attribute(name):
     """
@@ -87,7 +87,7 @@ def beamline_set_attribute(name):
     return response
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>", methods=['GET'])
+@server.route("/mxcube/api/v0.1/beamline/<name>", methods=["GET"])
 @server.restrict
 def beamline_get_attribute(name):
     """
@@ -107,7 +107,7 @@ def beamline_get_attribute(name):
     return response
 
 
-@server.route("/mxcube/api/v0.1/beam/info", methods=['GET'])
+@server.route("/mxcube/api/v0.1/beam/info", methods=["GET"])
 @server.restrict
 def get_beam_info():
     """
@@ -117,7 +117,7 @@ def get_beam_info():
     return jsonify(beamlineutils.get_beam_info())
 
 
-@server.route("/mxcube/api/v0.1/beamline/datapath", methods=['GET'])
+@server.route("/mxcube/api/v0.1/beamline/datapath", methods=["GET"])
 @server.restrict
 def beamline_get_data_path():
     """
@@ -128,7 +128,7 @@ def beamline_get_data_path():
     return jsonify({"path": data})
 
 
-@server.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=['PUT'])
+@server.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=["PUT"])
 @server.restrict
 def prepare_beamline_for_sample():
     """
@@ -137,7 +137,7 @@ def prepare_beamline_for_sample():
     try:
         beamlineutils.prepare_beamline_for_sample()
     except Exception:
-        msg = 'Cannot prepare the Beamline for a new sample'
-        logging.getLogger('HWR').error(msg)
+        msg = "Cannot prepare the Beamline for a new sample"
+        logging.getLogger("HWR").error(msg)
         return Response(status=200)
     return Response(status=200)

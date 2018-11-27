@@ -22,65 +22,68 @@ def init_signals():
             for sig in signals.beam_signals:
                 beamInfo.connect(beamInfo, sig, signals.beam_changed)
         else:
-            logging.getLogger('MX3.HWR').error("beam_info is not defined")
+            logging.getLogger("MX3.HWR").error("beam_info is not defined")
     except Exception as ex:
         msg = "error connecting to beamline_setup/beam_info hardware object "
         msg += "signals"
-        logging.getLogger('MX3.HWR').exception(msg)
+        logging.getLogger("MX3.HWR").exception(msg)
     try:
         actions = blcontrol.actions
         if actions is not None:
             cmds = actions.getCommands()
             for cmd in cmds:
-                cmd.connectSignal("commandBeginWaitReply",
-                                  signals.beamline_action_start)
-                cmd.connectSignal("commandReplyArrived",
-                                  signals.beamline_action_done)
-                cmd.connectSignal("commandFailed",
-                                  signals.beamline_action_failed)
+                cmd.connectSignal(
+                    "commandBeginWaitReply", signals.beamline_action_start
+                )
+                cmd.connectSignal("commandReplyArrived", signals.beamline_action_done)
+                cmd.connectSignal("commandFailed", signals.beamline_action_failed)
         else:
-            logging.getLogger('MX3.HWR').error(
-                "beamline_actions hardware object is not defined")
+            logging.getLogger("MX3.HWR").error(
+                "beamline_actions hardware object is not defined"
+            )
     except Exception as ex:
         msg = "error connecting to beamline actions hardware object signals"
-        logging.getLogger('MX3.HWR').exception(msg)
+        logging.getLogger("MX3.HWR").exception(msg)
 
     try:
         safety_shutter = blcontrol.beamline.getObjectByRole("safety_shutter")
         if safety_shutter is not None:
-            safety_shutter.connect(safety_shutter, 'shutterStateChanged',
-                                   signals.safety_shutter_state_changed)
+            safety_shutter.connect(
+                safety_shutter,
+                "shutterStateChanged",
+                signals.safety_shutter_state_changed,
+            )
         else:
-            logging.getLogger('MX3.HWR').error("safety_shutter is not defined")
+            logging.getLogger("MX3.HWR").error("safety_shutter is not defined")
     except Exception as ex:
-        logging.getLogger('MX3.HWR').error(
-            "error loading safety_shutter hwo: %s" % str(ex))
+        logging.getLogger("MX3.HWR").error(
+            "error loading safety_shutter hwo: %s" % str(ex)
+        )
 
     try:
-        blcontrol.plotting.connect(
-            blcontrol.plotting, 'new_plot', signals.new_plot)
-        blcontrol.plotting.connect(
-            blcontrol.plotting, 'plot_data', signals.plot_data)
-        blcontrol.plotting.connect(
-            blcontrol.plotting, 'plot_end', signals.plot_end)
+        blcontrol.plotting.connect(blcontrol.plotting, "new_plot", signals.new_plot)
+        blcontrol.plotting.connect(blcontrol.plotting, "plot_data", signals.plot_data)
+        blcontrol.plotting.connect(blcontrol.plotting, "plot_end", signals.plot_end)
     except Exception as ex:
-        logging.getLogger('MX3.HWR').error(
-            "error loading plotting hwo: %s" % str(ex))
+        logging.getLogger("MX3.HWR").error("error loading plotting hwo: %s" % str(ex))
 
     try:
         blcontrol.beamline.xrf_spectrum_hwobj.connect(
-            blcontrol.beamline.xrf_spectrum_hwobj, 'new_plot', signals.new_plot)
+            blcontrol.beamline.xrf_spectrum_hwobj, "new_plot", signals.new_plot
+        )
         blcontrol.beamline.xrf_spectrum_hwobj.connect(
-            blcontrol.beamline.xrf_spectrum_hwobj, 'plot_data',
-            signals.plot_data)
+            blcontrol.beamline.xrf_spectrum_hwobj, "plot_data", signals.plot_data
+        )
         blcontrol.beamline.xrf_spectrum_hwobj.connect(
-            blcontrol.beamline.xrf_spectrum_hwobj, 'plot_end', signals.plot_end)
+            blcontrol.beamline.xrf_spectrum_hwobj, "plot_end", signals.plot_end
+        )
         blcontrol.beamline.xrf_spectrum_hwobj.connect(
-            blcontrol.beamline.xrf_spectrum_hwobj, 'xrf_task_progress',
-            signals.xrf_task_progress)
+            blcontrol.beamline.xrf_spectrum_hwobj,
+            "xrf_task_progress",
+            signals.xrf_task_progress,
+        )
     except Exception as ex:
-        logging.getLogger('MX3.HWR').error(
-            "error loading plotting hwo: %s" % str(ex))
+        logging.getLogger("MX3.HWR").error("error loading plotting hwo: %s" % str(ex))
 
 
 def diffractometer_init_signals():
@@ -91,8 +94,7 @@ def diffractometer_init_signals():
     from mxcube3.routes import signals
 
     diffractometer = blcontrol.diffractometer
-    diffractometer.connect(
-        "phaseChanged", signals.diffractometer_phase_changed)
+    diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
 
 
 def get_aperture():
@@ -115,8 +117,7 @@ def get_aperture():
 def get_beam_definer():
     beam_info = blcontrol.beamline.getObjectByRole("beam_info")
 
-    if hasattr(beam_info, "beam_definer_hwobj") and \
-       beam_info.beam_definer_hwobj:
+    if hasattr(beam_info, "beam_definer_hwobj") and beam_info.beam_definer_hwobj:
         bd = beam_info.beam_definer_hwobj
     else:
         bd = beam_info.aperture_hwobj
@@ -148,20 +149,21 @@ def get_viewport_info():
     if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
         fmt, source_is_scalable = "MPEG1", True
 
-    video_sizes = streaming.get_available_sizes(
-        blcontrol.diffractometer.camera)
+    video_sizes = streaming.get_available_sizes(blcontrol.diffractometer.camera)
     width, height, scale = streaming.video_size()
     pixelsPerMm = blcontrol.diffractometer.get_pixels_per_mm()
 
     beam_info_dict = get_beam_info()
 
-    data = {"pixelsPerMm": pixelsPerMm,
-            "imageWidth": width,
-            "imageHeight": height,
-            "format": fmt,
-            "sourceIsScalable": source_is_scalable,
-            "scale": scale,
-            "videoSizes": video_sizes}
+    data = {
+        "pixelsPerMm": pixelsPerMm,
+        "imageWidth": width,
+        "imageHeight": height,
+        "format": fmt,
+        "sourceIsScalable": source_is_scalable,
+        "scale": scale,
+        "videoSizes": video_sizes,
+    }
 
     data.update(beam_info_dict)
     return data
@@ -181,18 +183,26 @@ def beamline_get_all_attributes():
             argname = arg[0]
             argtype = arg[1]
             args.append({"name": argname, "type": argtype})
-            if argtype == 'combo':
+            if argtype == "combo":
                 args[-1]["items"] = cmd.getComboArgumentItems(argname)
 
-        actions.append({"name": cmd.name(), "username": cmd.userName(),
-                        "state": READY, "arguments": args, "messages": [],
-                        "type": cmd.type, "data": cmd.value()})
+        actions.append(
+            {
+                "name": cmd.name(),
+                "username": cmd.userName(),
+                "state": READY,
+                "arguments": args,
+                "messages": [],
+                "type": cmd.type,
+                "data": cmd.value(),
+            }
+        )
 
-    data.update({'availableMethods': ho.get_available_methods()})
-    data.update({'path': blcontrol.session.get_base_image_directory(),
-                 'actionsList': actions})
-    data.update({'energyScanElements':
-                 ho.get_available_elements().get("elements", [])})
+    data.update({"availableMethods": ho.get_available_methods()})
+    data.update(
+        {"path": blcontrol.session.get_base_image_directory(), "actionsList": actions}
+    )
+    data.update({"energyScanElements": ho.get_available_elements().get("elements", [])})
 
     return data
 
@@ -218,8 +228,7 @@ def beamline_abort_action(name):
     if name.lower() == "detdist":
         ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole("dtox")
     else:
-        ho = BeamlineSetupMediator(
-            blcontrol.beamline).getObjectByRole(name.lower())
+        ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole(name.lower())
 
     ho.stop()
 
@@ -238,10 +247,10 @@ def beamline_run_action(name, params):
     for cmd in cmds:
         if cmd.name() == name:
             try:
-                cmd.emit('commandBeginWaitReply', name)
-                logging.getLogger('user_level_log').info(
-                    'Starting %s(%s)', cmd.userName(),
-                    ", ".join(map(str, params)))
+                cmd.emit("commandBeginWaitReply", name)
+                logging.getLogger("user_level_log").info(
+                    "Starting %s(%s)", cmd.userName(), ", ".join(map(str, params))
+                )
                 cmd(*params)
             except Exception:
                 err = str(sys.exc_info()[1])
@@ -258,8 +267,7 @@ def beamline_set_attribute(name, data):
     if name.lower() == "detdist":
         ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole("dtox")
     else:
-        ho = BeamlineSetupMediator(
-            blcontrol.beamline).getObjectByRole(name.lower())
+        ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole(name.lower())
 
     try:
         ho.set(data["value"])
@@ -271,8 +279,7 @@ def beamline_set_attribute(name, data):
         data["state"] = "UNUSABLE"
         data["msg"] = "submitted value out of limits"
         res = False
-        logging.getLogger('MX3.HWR').error(
-            "Error setting bl attribute: " + str(ex))
+        logging.getLogger("MX3.HWR").error("Error setting bl attribute: " + str(ex))
 
     return res, data
 
@@ -280,8 +287,7 @@ def beamline_set_attribute(name, data):
 def beamline_get_attribute(name):
     """
     """
-    ho = BeamlineSetupMediator(
-        blcontrol.beamline).getObjectByRole(name.lower())
+    ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole(name.lower())
     data = {"name": name, "value": ""}
 
     try:
@@ -317,14 +323,15 @@ def get_beam_info():
 
     aperture_list, current_aperture = get_aperture()
 
-    beam_info_dict.update({'apertureList': aperture_list,
-                           'currentAperture': current_aperture})
+    beam_info_dict.update(
+        {"apertureList": aperture_list, "currentAperture": current_aperture}
+    )
 
     return beam_info_dict
 
 
 def prepare_beamline_for_sample():
-    if hasattr(blcontrol.collect, 'prepare_for_new_sample'):
+    if hasattr(blcontrol.collect, "prepare_for_new_sample"):
         blcontrol.collect.prepare_for_new_sample()
 
 
@@ -332,7 +339,7 @@ def diffractometer_set_phase(phase):
     try:
         blcontrol.diffractometer.wait_device_ready(30)
     except Exception:
-        logging.getLogger('MX3.HWR').warning('Diffractometer not ready')
+        logging.getLogger("MX3.HWR").warning("Diffractometer not ready")
 
     blcontrol.diffractometer.set_phase(phase)
 
@@ -340,7 +347,7 @@ def diffractometer_set_phase(phase):
 def set_aperture(pos):
     beam_definer = get_beam_definer()
     msg = "Changing aperture diameter to: %s" % pos
-    logging.getLogger('MX3.HWR').info(msg)
+    logging.getLogger("MX3.HWR").info(msg)
     beam_definer.moveToPosition(pos)
 
 
@@ -348,29 +355,30 @@ def diffractometer_get_info():
     ret = {}
 
     try:
-        ret['useSC'] = blcontrol.diffractometer.use_sc
+        ret["useSC"] = blcontrol.diffractometer.use_sc
     except AttributeError:
-        ret['useSC'] = False
+        ret["useSC"] = False
 
     try:
-        ret['currentPhase'] = blcontrol.diffractometer.current_phase
+        ret["currentPhase"] = blcontrol.diffractometer.current_phase
     except AttributeError:
-        ret['currentPhase'] = 'None'
+        ret["currentPhase"] = "None"
 
     try:
-        ret['phaseList'] = blcontrol.diffractometer.get_phase_list()
+        ret["phaseList"] = blcontrol.diffractometer.get_phase_list()
     except AttributeError:
-        ret['phaseList'] = []
+        ret["phaseList"] = []
 
     return ret
 
 
 def get_detector_info():
-    filetype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
+    filetype = blcontrol.beamline.detector_hwobj.getProperty("file_suffix")
 
     if filetype is None:
-        filetype = 'cbf'
-        logging.getLogger('MX3.HWR').warning(
-            'Detector file format not specified. Setting as cbf.')
+        filetype = "cbf"
+        logging.getLogger("MX3.HWR").warning(
+            "Detector file format not specified. Setting as cbf."
+        )
 
     return filetype

@@ -26,25 +26,21 @@ def submit_parameters(params):
 def test_workflow_dialog(wf):
     dialog = {
         "properties": {
-            "name": {
-                "title": "Task name",
-                "type": "string",
-                "minLength": 2
-            },
+            "name": {"title": "Task name", "type": "string", "minLength": 2},
             "description": {
                 "title": "Description",
                 "type": "string",
-                "widget": "textarea"
+                "widget": "textarea",
             },
             "dueTo": {
                 "title": "Due to",
                 "type": "string",
                 "widget": "compatible-datetime",
-                "format": "date-time"
-            }
+                "format": "date-time",
+            },
         },
         "required": ["name"],
-        "dialogName": "Trouble shooting !"
+        "dialogName": "Trouble shooting !",
     }
 
     return dialog
