@@ -25,9 +25,17 @@ MESSAGES = []
 
 
 def create_user(loginID, host, sid, lims_data=None):
-    return {"loginID": loginID, "host": host, "sid": sid, "name": "",
-            "operator": False, "requestsControl": False, "message": "",
-            "socketio_sid": None, "limsData": lims_data}
+    return {
+        "loginID": loginID,
+        "host": host,
+        "sid": sid,
+        "name": "",
+        "operator": False,
+        "requestsControl": False,
+        "message": "",
+        "socketio_sid": None,
+        "limsData": lims_data,
+    }
 
 
 def add_user(user):
@@ -41,8 +49,8 @@ def remove_user(sid):
         state_storage.flush()
         flush()
     else:
-        socketio.emit("observerLogout", user, namespace='/hwr')
-        socketio.emit("observersChanged", get_observers(), namespace='/hwr')
+        socketio.emit("observerLogout", user, namespace="/hwr")
+        socketio.emit("observersChanged", get_observers(), namespace="/hwr")
 
 
 def get_user_by_sid(sid):
@@ -64,8 +72,7 @@ def get_observer_name():
 
 
 def get_operator():
-    return next(iter([user for user in users().itervalues()
-                      if user["operator"]]), None)
+    return next(iter([user for user in users().itervalues() if user["operator"]]), None)
 
 
 def is_operator(sid):
@@ -77,9 +84,8 @@ def logged_in_users(exclude_inhouse=False):
     users = [user["loginID"] for user in mxcube.USERS.itervalues()]
 
     if exclude_inhouse:
-        if type(blcontrol.session.in_house_users[0]) == tuple:
-            ih_users = ["%s%s" % (p, c)
-                        for (p, c) in blcontrol.session.in_house_users]
+        if isinstance(blcontrol.session.in_house_users[0], tuple):
+            ih_users = ["%s%s" % (p, c) for (p, c) in blcontrol.session.in_house_users]
         else:
             ih_users = blcontrol.session.in_house_users
         users = [user for user in users if user not in ih_users]
@@ -96,7 +102,7 @@ def set_operator(sid):
     user = get_user_by_sid(sid)
     user["operator"] = True
 
-    if blcontrol.db_connection.loginType.lower() != 'user':
+    if blcontrol.db_connection.loginType.lower() != "user":
         limsutils.select_proposal(user["loginID"])
 
 
@@ -121,12 +127,16 @@ def append_message(message, sid):
     if not user:
         user = "*" + session["loginInfo"]["loginID"]
 
-    data = {"message": message, "sid": sid,
-            "user": user, "host": remote_addr(),
-            "date": datetime.datetime.now().strftime("%H:%M")}
+    data = {
+        "message": message,
+        "sid": sid,
+        "user": user,
+        "host": remote_addr(),
+        "date": datetime.datetime.now().strftime("%H:%M"),
+    }
 
     MESSAGES.append(data)
-    socketio.emit('ra_chat_message', data, namespace='/hwr')
+    socketio.emit("ra_chat_message", data, namespace="/hwr")
 
 
 def get_all_messages():
@@ -154,8 +164,8 @@ def emit_pending_events():
 
 def _emit(event, json_dict, **kwargs):
     kw = dict(kwargs)
-    kw['callback'] = _event_callback
-    kw['room'] = get_operator()["socketio_sid"]
+    kw["callback"] = _event_callback
+    kw["room"] = get_operator()["socketio_sid"]
     socketio.emit(event, json_dict, **kw)
 
 
@@ -166,15 +176,15 @@ def safe_emit(event, json_dict, **kwargs):
 
 
 def remote_addr():
-    hdr = request.headers.get('x-forwarded-for', request.remote_addr)
+    hdr = request.headers.get("x-forwarded-for", request.remote_addr)
 
-    return str(hdr).split(',')[-1]
+    return str(hdr).split(",")[-1]
 
 
 def is_local_network(ip):
     localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
-    localhost_range = '.'.join(localhost.split('.')[0:2])
-    private_address = '.'.join(ip.split('.')[0:2])
+    localhost_range = ".".join(localhost.split(".")[0:2])
+    private_address = ".".join(ip.split(".")[0:2])
 
     return private_address == localhost_range
 
@@ -191,29 +201,31 @@ def is_local_host():
 
     # Remote address is sometimes None for instance when using the test
     # client, no real connection is made, assume that we are local host
-    if remote_address in [None, 'None', '']:
+    if remote_address in [None, "None", ""]:
         remote_address = "127.0.0.1"
 
     return remote_address in localhost_list or is_local_network(remote_address)
 
 
 def is_inhouse_user(user_id):
-    user_id_list = ["%s%s" % (code, number) for (code, number)
-                    in blcontrol.session.in_house_users]
+    user_id_list = [
+        "%s%s" % (code, number) for (code, number) in blcontrol.session.in_house_users
+    ]
 
     return user_id in user_id_list
 
 
 def login(login_id, password):
     try:
-        login_res = limsutils.\
-            lims_login(login_id, password, create_session=False)
+        login_res = limsutils.lims_login(login_id, password, create_session=False)
         inhouse = is_inhouse_user(login_id)
 
-        info = {"valid": limsutils.lims_valid_login(login_res),
-                "local": is_local_host(),
-                "existing_session": limsutils.lims_existing_session(login_res),
-                "inhouse": inhouse}
+        info = {
+            "valid": limsutils.lims_valid_login(login_res),
+            "local": is_local_host(),
+            "existing_session": limsutils.lims_existing_session(login_res),
+            "inhouse": inhouse,
+        }
 
         _users = logged_in_users(exclude_inhouse=True)
 
@@ -236,22 +248,25 @@ def login(login_id, password):
 
             msg = "[LOGIN] Valid login from local host (%s)" % str(info)
             logging.getLogger("MX3.HWR").info(msg)
-        elif limsutils.lims_valid_login(login_res) and \
-                limsutils.lims_existing_session(login_res):
+        elif limsutils.lims_valid_login(login_res) and limsutils.lims_existing_session(
+            login_res
+        ):
             msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
             msg += msg % (remote_addr(), str(info))
             logging.getLogger("MX3.HWR").info(msg)
         else:
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
             raise Exception(str(info))
-    except:
+    except BaseException:
         raise
     else:
         add_user(create_user(login_id, remote_addr(), session.sid, login_res))
 
-        session['loginInfo'] = {'loginID': login_id,
-                                'password': password,
-                                'loginRes': login_res}
+        session["loginInfo"] = {
+            "loginID": login_id,
+            "password": password,
+            "loginRes": login_res,
+        }
 
         # Create a new queue just in case any previous queue was not cleared
         # properly
@@ -268,13 +283,12 @@ def login(login_id, password):
         # uncomment to enable loading.
         # qutils.load_queue(session)
         # logging.getLogger('MX3.HWR').info('Loaded queue')
-        logging.getLogger('MX3.HWR').info(
-            '[QUEUE] %s ' % qutils.queue_to_json())
+        logging.getLogger("MX3.HWR").info("[QUEUE] %s " % qutils.queue_to_json())
 
         if not get_operator():
             set_operator(session.sid)
 
-        return login_res['status']
+        return login_res["status"]
 
 
 def signout():
@@ -289,14 +303,14 @@ def signout():
 
         qutils.init_queue_settings()
 
-        if hasattr(blcontrol.session, 'clear_session'):
+        if hasattr(blcontrol.session, "clear_session"):
             blcontrol.session.clear_session()
 
-        mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+        mxcube.CURRENTLY_MOUNTED_SAMPLE = ""
 
         user = get_user_by_sid(session.sid)
         msg = "User %s signed out" % user
-        logging.getLogger('MX3.HWR').info(msg)
+        logging.getLogger("MX3.HWR").info(msg)
 
     remove_user(session.sid)
     session.clear()
@@ -306,23 +320,24 @@ def login_info(login_info):
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
 
-    res = {"synchrotron_name": blcontrol.session.synchrotron_name,
-           "beamline_name": blcontrol.session.beamline_name,
-           "loginType": blcontrol.db_connection.loginType.title(),
-           "loginRes": login_info,
-           "master": is_operator(session.sid),
-           "observerName": get_observer_name()
-           }
+    res = {
+        "synchrotron_name": blcontrol.session.synchrotron_name,
+        "beamline_name": blcontrol.session.beamline_name,
+        "loginType": blcontrol.db_connection.loginType.title(),
+        "loginRes": login_info,
+        "master": is_operator(session.sid),
+        "observerName": get_observer_name(),
+    }
 
     user = get_user_by_sid(session.sid)
 
     if user:
-        if res["loginType"].lower() != 'user':
+        if res["loginType"].lower() != "user":
             res["selectedProposal"] = user["loginID"]
         elif proposal_info:
-            code = proposal_info.get('Proposal').get('code')
-            number = proposal_info.get('Proposal').get('number')
-            proposalId = proposal_info.get('Proposal').get('proposalId')
+            code = proposal_info.get("Proposal").get("code")
+            number = proposal_info.get("Proposal").get("number")
+            proposalId = proposal_info.get("Proposal").get("proposalId")
             res["selectedProposal"] = code + number
             res["selectedProposalID"] = proposalId
 

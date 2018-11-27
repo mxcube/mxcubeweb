@@ -37,7 +37,9 @@ def RateLimited(maxPerSecond):
             ret = func(*args, **kargs)
             lastTimeCalled[0] = time.time()
             return ret
+
         return rateLimitedFunction
+
     return decorate
 
 
@@ -63,18 +65,25 @@ def get_light_state_and_intensity():
         if hasattr(hwobj, "getActuatorState"):
             switch_state = 1 if hwobj.getActuatorState() == "in" else 0
         else:
-            hwobj_switch = blcontrol.diffractometer.getObjectByRole(
-                light + "Switch")
+            hwobj_switch = blcontrol.diffractometer.getObjectByRole(light + "Switch")
             switch_state = 1 if hwobj_switch.getActuatorState() == "in" else 0
 
-        ret.update({light: {"name": light,
-                            "state": hwobj.getState(),
-                            "position": hwobj.getPosition(),
-                            "limits": hwobj.getLimits()},
-                    light + "Switch": {"name": light + "Switch",
-                                       "state": 2,
-                                       "position": switch_state}
-                    })
+        ret.update(
+            {
+                light: {
+                    "name": light,
+                    "state": hwobj.getState(),
+                    "position": hwobj.getPosition(),
+                    "limits": hwobj.getLimits(),
+                },
+                light
+                + "Switch": {
+                    "name": light + "Switch",
+                    "state": 2,
+                    "position": switch_state,
+                },
+            }
+        )
 
     return ret
 
@@ -105,7 +114,10 @@ def get_movable_state_and_position(item_name):
         hwobj = blcontrol.diffractometer.getObjectByRole(item_name)
 
         if hwobj is None:
-            msg = "[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role '%s'" % item_name
+            msg = (
+                "[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role '%s'"
+                % item_name
+            )
             logging.getLogger("MX3.HWR").error(msg)
             return {item_name: {"name": item_name, "state": None, "position": None}}
         else:
@@ -119,12 +131,17 @@ def get_movable_state_and_position(item_name):
             else:
                 pos = hwobj.getPosition()
 
-            return {item_name: {"name": item_name,
-                                "state": hwobj.getState(),
-                                "position": pos}}
+            return {
+                item_name: {
+                    "name": item_name,
+                    "state": hwobj.getState(),
+                    "position": pos,
+                }
+            }
     except Exception:
         logging.getLogger("MX3.HWR").exception(
-            "[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item '%s'" % item_name)
+            "[UTILS.GET_MOVABLE_STATE_AND_POSITION] could not get item '%s'" % item_name
+        )
 
 
 def get_movable_limits(item_name):
@@ -142,7 +159,8 @@ def get_movable_limits(item_name):
 
         if hwobj is None:
             logging.getLogger("MX3.HWR").error(
-                "[UTILS.GET_MOVABLE_LIMIT] No movable with role '%s'" % item_role)
+                "[UTILS.GET_MOVABLE_LIMIT] No movable with role '%s'" % item_role
+            )
             limits = ()
         else:
             limits = hwobj.getLimits()
@@ -150,7 +168,8 @@ def get_movable_limits(item_name):
             return {item_name: {"limits": limits}}
     except Exception:
         logging.getLogger("MX3.HWR").exception(
-            "[UTILS.GET_MOVABLE_LIMIT] could not get item '%s'" % item_name)
+            "[UTILS.GET_MOVABLE_LIMIT] could not get item '%s'" % item_name
+        )
 
 
 _centring_motors_memo = None
@@ -164,9 +183,11 @@ def get_centring_motors():
 
         # Adding the two pseudo motors for sample alignment in the microscope
         # view
-        _centring_motors_memo += ["sample_vertical",
-                                  "sample_horizontal",
-                                  "beamstop_distance"]
+        _centring_motors_memo += [
+            "sample_vertical",
+            "sample_horizontal",
+            "beamstop_distance",
+        ]
 
     return _centring_motors_memo
 
@@ -204,8 +225,9 @@ def _do_take_snapshot(filename):
     SNAPSHOT_RECEIVED.clear()
     rid = loginutils.get_operator()["socketio_sid"]
 
-    socketio.emit("take_xtal_snapshot", namespace="/hwr",
-                  room=rid, callback=_snapshot_received)
+    socketio.emit(
+        "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
+    )
 
     SNAPSHOT_RECEIVED.wait(timeout=30)
 
@@ -236,9 +258,13 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
         number_of_snapshots = 0
 
     if number_of_snapshots > 0:
-        if hasattr(diffractometer, "set_phase") and diffractometer.get_current_phase() != "Centring":
+        if (
+            hasattr(diffractometer, "set_phase")
+            and diffractometer.get_current_phase() != "Centring"
+        ):
             logging.getLogger("user_level_log").info(
-                "Moving Diffractometer to CentringPhase")
+                "Moving Diffractometer to CentringPhase"
+            )
             diffractometer.set_phase("Centring", wait=True, timeout=200)
             self.move_to_centered_position()
 
@@ -248,29 +274,35 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 self.create_directories(snapshot_directory)
             except Exception:
                 logging.getLogger("MX3.HWR").exception(
-                    "Collection: Error creating snapshot directory")
+                    "Collection: Error creating snapshot directory"
+                )
 
         logging.getLogger("user_level_log").info(
-            "[COLLECT]: Taking %d sample snapshot(s)" % number_of_snapshots)
+            "[COLLECT]: Taking %d sample snapshot(s)" % number_of_snapshots
+        )
 
         for snapshot_index in range(number_of_snapshots):
             snapshot_filename = os.path.join(
                 snapshot_directory,
-                "%s_%s_%s.snapshot.jpeg" % (
+                "%s_%s_%s.snapshot.jpeg"
+                % (
                     dc_params["fileinfo"]["prefix"],
                     dc_params["fileinfo"]["run_number"],
-                    (snapshot_index + 1)))
-            dc_params["xtalSnapshotFullPath%i" %
-                      (snapshot_index + 1)] = snapshot_filename
+                    (snapshot_index + 1),
+                ),
+            )
+            dc_params[
+                "xtalSnapshotFullPath%i" % (snapshot_index + 1)
+            ] = snapshot_filename
 
             try:
                 logging.getLogger("MX3.HWR").info(
-                    "Taking snapshot number: %d" % (snapshot_index + 1))
+                    "Taking snapshot number: %d" % (snapshot_index + 1)
+                )
                 _do_take_snapshot(snapshot_filename)
             except Exception:
                 sys.excepthook(*sys.exc_info())
-                raise RuntimeError(
-                    "Could not take snapshot '%s'", snapshot_filename)
+                raise RuntimeError("Could not take snapshot '%s'", snapshot_filename)
 
             if number_of_snapshots > 1:
                 move_omega_relative(90)
@@ -278,26 +310,28 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
 
 def enable_snapshots(collect_object, diffractometer_object):
     collect_object.take_crystal_snapshots = types.MethodType(
-        take_snapshots, collect_object)
+        take_snapshots, collect_object
+    )
     diffractometer_object.save_snapshot = types.MethodType(
-        save_snapshot, diffractometer_object)
+        save_snapshot, diffractometer_object
+    )
 
 
 def send_mail(_from, to, subject, content):
-    smtp = smtplib.SMTP('smtp', smtplib.SMTP_PORT)
+    smtp = smtplib.SMTP("smtp", smtplib.SMTP_PORT)
     date = email.Utils.formatdate(localtime=True)
 
     msg = MIMEText(content)
-    msg['Subject'] = subject
-    msg['From'] = _from
-    msg['To'] = to
-    msg['Date'] = date
-    msg['Message-ID'] = make_msgid()
+    msg["Subject"] = subject
+    msg["From"] = _from
+    msg["To"] = to
+    msg["Date"] = date
+    msg["Message-ID"] = make_msgid()
 
     email_msg = msg.as_string()
 
     try:
-        error_dict = smtp.sendmail(_from, to.split(','), email_msg)
+        error_dict = smtp.sendmail(_from, to.split(","), email_msg)
 
         if error_dict:
             msg = "Could not send mail to %s, content %s, error was: %s"
@@ -307,7 +341,7 @@ def send_mail(_from, to, subject, content):
             msg = "Feedback sent to %s, msg: \n %s" % (to, content)
             logging.getLogger("MX3.HWR").info(msg)
 
-    except smtplib.SMTPException, e:
+    except smtplib.SMTPException as e:
         msg = "Could not send mail to %s, content %s, error was: %s"
         logging.getLogger().error(msg % (to, content, str(e)))
     finally:
@@ -333,12 +367,14 @@ def send_feedback(sender_data):
     _from = blcontrol.session.getProperty("from_email", "")
 
     if not _from:
-        _from = "%s@%s" % (local_user,
-                           blcontrol.session.getProperty("email_extension", ""))
+        _from = "%s@%s" % (
+            local_user,
+            blcontrol.session.getProperty("email_extension", ""),
+        )
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
-    to = blcontrol.session.getProperty("feedback_email", "") + ',%s' % _sender
+    to = blcontrol.session.getProperty("feedback_email", "") + ",%s" % _sender
     subject = "[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)
     content = sender_data.get("content", "")
 
@@ -347,7 +383,7 @@ def send_feedback(sender_data):
 
 def str_to_camel(name):
     if isinstance(name, str):
-        components = name.split('_')
+        components = name.split("_")
         # We capitalize the first letter of each component except the first one
         # with the 'title' method and join them together.
         name = components[0] + "".join(x.title() for x in components[1:])
@@ -356,8 +392,8 @@ def str_to_camel(name):
 
 
 def str_to_snake(name):
-    s = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s).lower()
+    s = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s).lower()
 
 
 def convert_dict(fun, d, recurse=True):

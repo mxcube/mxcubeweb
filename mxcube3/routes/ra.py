@@ -1,8 +1,14 @@
 # -*- coding: utf-8 -*-
 import gevent
 import logging
-from flask import (session, jsonify, Response, request, make_response,
-                   copy_current_request_context)
+from flask import (
+    session,
+    jsonify,
+    Response,
+    request,
+    make_response,
+    copy_current_request_context,
+)
 
 
 from mxcube3 import socketio
@@ -18,6 +24,7 @@ from mxcube3.core import loginutils
 def request_control():
     """
     """
+
     @copy_current_request_context
     def handle_timeout_gives_control(sid, timeout=30):
         gevent.sleep(timeout)
@@ -47,7 +54,7 @@ def request_control():
     observers = loginutils.get_observers()
     gevent.spawn(handle_timeout_gives_control, session.sid, timeout=10)
 
-    socketio.emit("observersChanged", observers, namespace='/hwr')
+    socketio.emit("observersChanged", observers, namespace="/hwr")
 
     return make_response("", 200)
 
@@ -63,7 +70,7 @@ def take_control():
 
     # Not inhouse user so not allowed to take control by force,
     # return error code
-    if not session['loginInfo']['loginRes']['Session']['is_inhouse']:
+    if not session["loginInfo"]["loginRes"]["Session"]["is_inhouse"]:
         return make_response("", 409)
 
     toggle_operator(session.sid, "You were given control")
@@ -98,20 +105,21 @@ def toggle_operator(new_op_sid, message):
     if current_op:
         current_op["rootPath"] = blcontrol.session.get_base_image_directory()
         current_op["message"] = message
-        socketio.emit("setObserver", current_op,
-                      room=current_op["socketio_sid"], namespace='/hwr')
+        socketio.emit(
+            "setObserver", current_op, room=current_op["socketio_sid"], namespace="/hwr"
+        )
 
-    socketio.emit("observersChanged", observers, namespace='/hwr')
-    socketio.emit("setMaster", new_op,
-                  room=new_op["socketio_sid"], namespace='/hwr')
+    socketio.emit("observersChanged", observers, namespace="/hwr")
+    socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace="/hwr")
 
 
 def remain_observer(observer_sid, message):
     observer = loginutils.get_user_by_sid(observer_sid)
     observer["message"] = message
 
-    socketio.emit("setObserver", observer,
-                  room=observer["socketio_sid"], namespace='/hwr')
+    socketio.emit(
+        "setObserver", observer, room=observer["socketio_sid"], namespace="/hwr"
+    )
 
 
 @server.route("/mxcube/api/v0.1/ra", methods=["GET"])
@@ -119,13 +127,14 @@ def remain_observer(observer_sid, message):
 def observers():
     """
     """
-    data = {'observers': loginutils.get_observers(),
-            'sid': session.sid,
-            'master': loginutils.is_operator(session.sid),
-            'observerName': loginutils.get_observer_name(),
-            'allowRemote': mxcube.ALLOW_REMOTE,
-            'timeoutGivesControl': mxcube.TIMEOUT_GIVES_CONTROL
-            }
+    data = {
+        "observers": loginutils.get_observers(),
+        "sid": session.sid,
+        "master": loginutils.is_operator(session.sid),
+        "observerName": loginutils.get_observer_name(),
+        "allowRemote": mxcube.ALLOW_REMOTE,
+        "timeoutGivesControl": mxcube.TIMEOUT_GIVES_CONTROL,
+    }
 
     return jsonify(data=data)
 
@@ -138,7 +147,7 @@ def allow_remote():
     allow = request.get_json().get("allow")
 
     if mxcube.ALLOW_REMOTE and allow == False:
-        socketio.emit("forceSignoutObservers", {}, namespace='/hwr')
+        socketio.emit("forceSignoutObservers", {}, namespace="/hwr")
 
     mxcube.ALLOW_REMOTE = allow
 
@@ -176,7 +185,7 @@ def request_control_response():
     current_op = loginutils.get_operator()
 
     # Request was denied
-    if not data['giveControl']:
+    if not data["giveControl"]:
         remain_observer(new_op["sid"], data["message"])
     else:
         toggle_operator(new_op["sid"], data["message"])
@@ -204,7 +213,7 @@ def get_all_mesages():
     return jsonify({"messages": loginutils.get_all_messages()})
 
 
-@socketio.on('connect', namespace='/hwr')
+@socketio.on("connect", namespace="/hwr")
 def connect():
     user = loginutils.get_user_by_sid(session.sid)
 
@@ -216,33 +225,37 @@ def connect():
     if loginutils.is_operator(session.sid):
         loginutils.emit_pending_events()
 
-        if not blcontrol.queue.queue_hwobj.is_executing() and \
-           not loginutils.DISCONNECT_HANDLED:
+        if (
+            not blcontrol.queue.queue_hwobj.is_executing()
+            and not loginutils.DISCONNECT_HANDLED
+        ):
             loginutils.DISCONNECT_HANDLED = True
-            socketio.emit("resumeQueueDialog", namespace='/hwr')
-            msg = 'Client reconnected, Queue was previously stopped, asking '
-            msg += 'client for action'
-            logging.getLogger('HWR').info(msg)
+            socketio.emit("resumeQueueDialog", namespace="/hwr")
+            msg = "Client reconnected, Queue was previously stopped, asking "
+            msg += "client for action"
+            logging.getLogger("HWR").info(msg)
 
 
-@socketio.on('disconnect', namespace='/hwr')
+@socketio.on("disconnect", namespace="/hwr")
 def disconnect():
-    if loginutils.is_operator(session.sid) and \
-       blcontrol.queue.queue_hwobj.is_executing():
+    if (
+        loginutils.is_operator(session.sid)
+        and blcontrol.queue.queue_hwobj.is_executing()
+    ):
 
         loginutils.DISCONNECT_HANDLED = False
         blcontrol.queue.queue_hwobj.pause(True)
-        logging.getLogger('HWR').info('Client disconnected, pausing queue')
+        logging.getLogger("HWR").info("Client disconnected, pausing queue")
 
 
-@socketio.on('setRaMaster', namespace='/hwr')
+@socketio.on("setRaMaster", namespace="/hwr")
 def set_master(data):
     loginutils.emit_pending_events()
 
     return session.sid
 
 
-@socketio.on('setRaObserver', namespace='/hwr')
+@socketio.on("setRaObserver", namespace="/hwr")
 def set_observer(data):
     name = data.get("name", "")
     observers = loginutils.get_observers()
@@ -250,9 +263,8 @@ def set_observer(data):
 
     if observer and name:
         observer["name"] = name
-        socketio.emit("observerLogin", observer,
-                      include_self=False, namespace='/hwr')
+        socketio.emit("observerLogin", observer, include_self=False, namespace="/hwr")
 
-    socketio.emit("observersChanged", observers, namespace='/hwr')
+    socketio.emit("observersChanged", observers, namespace="/hwr")
 
     return session.sid

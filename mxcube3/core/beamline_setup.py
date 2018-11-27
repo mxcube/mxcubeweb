@@ -13,8 +13,13 @@ from mxcube3 import socketio
 
 import utils
 
-from .statedefs import (MOTOR_STATE, INOUT_STATE, TANGO_SHUTTER_STATE,
-                        MICRODIFF_INOUT_STATE, BEAMSTOP_STATE)
+from .statedefs import (
+    MOTOR_STATE,
+    INOUT_STATE,
+    TANGO_SHUTTER_STATE,
+    MICRODIFF_INOUT_STATE,
+    BEAMSTOP_STATE,
+)
 
 BEAMLINE_SETUP = None
 
@@ -70,21 +75,33 @@ class _BeamlineSetupMediator(object):
         if name == "energy":
             return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
         elif name == "wavelength":
-            return self._ho_dict.setdefault(name, WavelengthHOMediator(ho, "wavelength"))
+            return self._ho_dict.setdefault(
+                name, WavelengthHOMediator(ho, "wavelength")
+            )
         elif name == "resolution":
-            return self._ho_dict.setdefault(name, ResolutionHOMediator(ho, "resolution"))
+            return self._ho_dict.setdefault(
+                name, ResolutionHOMediator(ho, "resolution")
+            )
         elif name == "transmission":
-            return self._ho_dict.setdefault(name, TransmissionHOMediator(ho, "transmission"))
+            return self._ho_dict.setdefault(
+                name, TransmissionHOMediator(ho, "transmission")
+            )
         elif name == "fast_shutter":
-            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "fast_shutter"))
+            return self._ho_dict.setdefault(
+                name, DuoStateHOMediator(ho, "fast_shutter")
+            )
         elif name == "safety_shutter":
-            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "safety_shutter"))
+            return self._ho_dict.setdefault(
+                name, DuoStateHOMediator(ho, "safety_shutter")
+            )
         elif name == "beamstop":
             return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "beamstop"))
         elif name == "capillary":
             return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "capillary"))
         elif name == "dtox":
-            return self._ho_dict.setdefault(name, DetectorDistanceHOMediator(ho, "detdist"))
+            return self._ho_dict.setdefault(
+                name, DetectorDistanceHOMediator(ho, "detdist")
+            )
         elif name == "mach_info":
             return self._ho_dict.setdefault(name, MachineInfoHOMediator(ho, "machinfo"))
         elif name == "flux":
@@ -192,13 +209,13 @@ class _BeamlineSetupMediator(object):
         limits = {}
 
         for key, value in _limits.iteritems():
-            if isinstance(value, str) and ',' in value:
+            if isinstance(value, str) and "," in value:
                 try:
-                    limits[key] = map(float, _limits[key].split(','))
-                except:
-                    msg = '[BEAMLINE_SETUP] Could not get limits for %s,' % key
-                    msg += ' using -10000, 10000'
-                    logging.getLogger('MX3.HWR').info(msg)
+                    limits[key] = map(float, _limits[key].split(","))
+                except BaseException:
+                    msg = "[BEAMLINE_SETUP] Could not get limits for %s," % key
+                    msg += " using -10000, 10000"
+                    logging.getLogger("MX3.HWR").info(msg)
                     limits[key] = [-10000, 10000]
             else:
                 limits[key] = value
@@ -305,17 +322,18 @@ class HOMediatorBase(object):
         """
         :returns: The dictionary representation of the hardware object.
         """
-        data = {"name": self._name,
-                "label": self._name.replace('_', ' ').title(),
-                "value": self.get(),
-                "limits": self.limits(),
-                "state": self.state(),
-                "msg": self.msg(),
-                "type": "FLOAT",
-                "precision": self.precision(),
-                "step": self.step_size(),
-                "readonly": self.read_only()
-                }
+        data = {
+            "name": self._name,
+            "label": self._name.replace("_", " ").title(),
+            "value": self.get(),
+            "limits": self.limits(),
+            "state": self.state(),
+            "msg": self.msg(),
+            "type": "FLOAT",
+            "precision": self.precision(),
+            "step": self.step_size(),
+            "readonly": self.read_only(),
+        }
 
         return data
 
@@ -335,8 +353,7 @@ class HOMediatorBase(object):
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        socketio.emit("beamline_value_change",
-                      self.dict_repr(), namespace="/hwr")
+        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
 
 class EnergyHOMediator(HOMediatorBase):
@@ -345,13 +362,13 @@ class EnergyHOMediator(HOMediatorBase):
     information on longer running processes.
     """
 
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(EnergyHOMediator, self).__init__(ho, name)
         if ho.tunable:
             try:
                 ho.connect("energyChanged", self._value_change)
                 ho.energy_motor.connect("stateChanged", self.state_change)
-            except:
+            except BaseException:
                 pass
 
         self._precision = 4
@@ -374,7 +391,7 @@ class EnergyHOMediator(HOMediatorBase):
         try:
             self._ho.startMoveEnergy(float(value))
             res = self.get()
-        except:
+        except BaseException:
             raise
 
         return res
@@ -399,7 +416,7 @@ class EnergyHOMediator(HOMediatorBase):
 
         try:
             state = self._ho.energy_motor.getState()
-        except:
+        except BaseException:
             pass
 
         return state
@@ -429,14 +446,14 @@ class WavelengthHOMediator(HOMediatorBase):
     information on longer running processes.
     """
 
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(WavelengthHOMediator, self).__init__(ho, name)
 
         if ho.tunable:
             try:
                 ho.connect("energyChanged", self._value_change)
                 ho.energy_motor.connect("stateChanged", self.state_change)
-            except:
+            except BaseException:
                 pass
 
         self._precision = 4
@@ -459,7 +476,7 @@ class WavelengthHOMediator(HOMediatorBase):
         try:
             self._ho.startMoveEnergy(12.3984 / float(value))
             res = self.get()
-        except:
+        except BaseException:
             raise
 
         return res
@@ -484,7 +501,7 @@ class WavelengthHOMediator(HOMediatorBase):
 
         try:
             state = self._ho.getState()
-        except:
+        except BaseException:
             pass
 
         return state
@@ -508,7 +525,7 @@ class WavelengthHOMediator(HOMediatorBase):
 
 
 class DuoStateHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(DuoStateHOMediator, self).__init__(ho, name)
         self._connect_signals(ho)
 
@@ -516,8 +533,9 @@ class DuoStateHOMediator(HOMediatorBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self.STATES = MICRODIFF_INOUT_STATE
             ho.connect("actuatorStateChanged", self.state_change)
-        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-                isinstance(self._ho, ShutterMockup.ShutterMockup):
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
+            self._ho, ShutterMockup.ShutterMockup
+        ):
             self.STATES = TANGO_SHUTTER_STATE
             ho.connect("shutterStateChanged", self.state_change)
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
@@ -531,8 +549,9 @@ class DuoStateHOMediator(HOMediatorBase):
     def _get_state(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             state = self._ho.getActuatorState()
-        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-                isinstance(self._ho, ShutterMockup.ShutterMockup):
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
+            self._ho, ShutterMockup.ShutterMockup
+        ):
             state = self._ho.state_value_str
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
             state = self._ho.getPosition()
@@ -546,8 +565,9 @@ class DuoStateHOMediator(HOMediatorBase):
     def _close(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorOut()
-        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-                isinstance(self._ho, ShutterMockup.ShutterMockup):
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
+            self._ho, ShutterMockup.ShutterMockup
+        ):
             self._ho.closeShutter()
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
             self._ho.moveToPosition("out")
@@ -557,8 +577,9 @@ class DuoStateHOMediator(HOMediatorBase):
     def _open(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorIn()
-        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-                isinstance(self._ho, ShutterMockup.ShutterMockup):
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
+            self._ho, ShutterMockup.ShutterMockup
+        ):
             self._ho.openShutter()
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
             self._ho.moveToPosition("in")
@@ -570,8 +591,9 @@ class DuoStateHOMediator(HOMediatorBase):
 
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             cmds = ["Open", "Close"]
-        elif isinstance(self._ho, TangoShutter.TangoShutter) or \
-                isinstance(self._ho, ShutterMockup.ShutterMockup):
+        elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
+            self._ho, ShutterMockup.ShutterMockup
+        ):
             cmds = ["Open", "Close"]
 
         return cmds
@@ -595,10 +617,11 @@ class DuoStateHOMediator(HOMediatorBase):
         state = self._get_state()
         try:
             msg = self.STATES.STATE_TO_MSG_STR.get(state, "---")
-        except:
-            msg = ''
+        except BaseException:
+            msg = ""
             logging.getLogger("MX3.HWR").error(
-                "Failed to get beamline attribute message")
+                "Failed to get beamline attribute message"
+            )
 
         return msg
 
@@ -606,22 +629,23 @@ class DuoStateHOMediator(HOMediatorBase):
         """
         :returns: The dictionary representation of the hardware object.
         """
-        data = {"name": self._name,
-                "label": self._name.replace('_', ' ').title(),
-                "value": self.get(),
-                "limits": self.limits(),
-                "state": self.state(),
-                "msg": self.msg(),
-                "commands": self.commands(),
-                "type": "DUOSTATE",
-                "readonly": self.read_only()
-                }
+        data = {
+            "name": self._name,
+            "label": self._name.replace("_", " ").title(),
+            "value": self.get(),
+            "limits": self.limits(),
+            "state": self.state(),
+            "msg": self.msg(),
+            "commands": self.commands(),
+            "type": "DUOSTATE",
+            "readonly": self.read_only(),
+        }
 
         return data
 
 
 class TransmissionHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(TransmissionHOMediator, self).__init__(ho, name)
         ho.connect("attFactorChanged", self.state_change)
         ho.connect("valueChanged", self._value_change)
@@ -680,7 +704,7 @@ class TransmissionHOMediator(HOMediatorBase):
 
 
 class ResolutionHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(ResolutionHOMediator, self).__init__(ho, name)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
@@ -749,8 +773,10 @@ class ResolutionHOMediator(HOMediatorBase):
             pos_min, pos_max = det_dist.getLimits()
 
             for energy in x:
-                res_min, res_max = self._calc_res(radius, energy, pos_min),\
-                    self._calc_res(radius, energy, pos_max)
+                res_min, res_max = (
+                    self._calc_res(radius, energy, pos_min),
+                    self._calc_res(radius, energy, pos_max),
+                )
                 limits.append((energy, res_min, res_max))
         else:
             limits = self.limits()
@@ -761,22 +787,23 @@ class ResolutionHOMediator(HOMediatorBase):
         """
         :returns: The dictionary representation of the hardware object.
         """
-        data = {"name": self._name,
-                "label": self._name.replace('_', ' ').title(),
-                "value": self.get(),
-                "limits": self.get_lookup_limits(),
-                "state": self.state(),
-                "msg": self.msg(),
-                "precision": self.precision(),
-                "step": self.step_size(),
-                "readonly": self.read_only()
-                }
+        data = {
+            "name": self._name,
+            "label": self._name.replace("_", " ").title(),
+            "value": self.get(),
+            "limits": self.get_lookup_limits(),
+            "state": self.state(),
+            "msg": self.msg(),
+            "precision": self.precision(),
+            "step": self.step_size(),
+            "readonly": self.read_only(),
+        }
 
         return data
 
 
 class DetectorDistanceHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
 
         ho.dtox.connect("positionChanged", self._value_change)
@@ -821,7 +848,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
 
 class MachineInfoHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(MachineInfoHOMediator, self).__init__(ho, name)
         ho.connect("valueChanged", self._value_change)
         self._precision = 1
@@ -834,9 +861,11 @@ class MachineInfoHOMediator(HOMediatorBase):
         self.value_change(self.get(), **kwargs)
 
     def get(self):
-        return {"current": self.get_current(),
-                "message": self.get_message(),
-                "fillmode": self.get_fill_mode()}
+        return {
+            "current": self.get_current(),
+            "message": self.get_message(),
+            "fillmode": self.get_fill_mode(),
+        }
 
     def get_message(self):
         try:
@@ -849,8 +878,11 @@ class MachineInfoHOMediator(HOMediatorBase):
     def get_current(self):
         try:
             current = self._ho.getCurrent()
-            current = current if isinstance(current, str) else \
-                "{:.1f} mA".format(round(float(self._ho.getCurrent()), 1))
+            current = (
+                current
+                if isinstance(current, str)
+                else "{:.1f} mA".format(round(float(self._ho.getCurrent()), 1))
+            )
         except (TypeError, AttributeError):
             current = -1
 
@@ -878,12 +910,12 @@ class MachineInfoHOMediator(HOMediatorBase):
 
 
 class PhotonFluxHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(PhotonFluxHOMediator, self).__init__(ho, name)
 
         try:
             ho.connect("valueChanged", self._value_change)
-        except:
+        except BaseException:
             pass
 
         self._precision = 1
@@ -898,8 +930,8 @@ class PhotonFluxHOMediator(HOMediatorBase):
     def get(self):
         try:
             value = self._ho.current_flux
-        except:
-            value = '0'
+        except BaseException:
+            value = "0"
 
         return value
 
@@ -919,30 +951,32 @@ class PhotonFluxHOMediator(HOMediatorBase):
         """
         :returns: The dictionary representation of the hardware object.
         """
-        data = {"name": self._name,
-                "label": self._name.replace('_', ' ').title(),
-                "value": self.get(),
-                "limits": self.limits(),
-                "state":  self.state(),
-                "msg": self.message(),
-                "precision": self.precision(),
-                "readonly": self.read_only()}
+        data = {
+            "name": self._name,
+            "label": self._name.replace("_", " ").title(),
+            "value": self.get(),
+            "limits": self.limits(),
+            "state": self.state(),
+            "msg": self.message(),
+            "precision": self.precision(),
+            "readonly": self.read_only(),
+        }
 
         return data
 
 
 class CryoHOMediator(HOMediatorBase):
-    def __init__(self, ho, name=''):
+    def __init__(self, ho, name=""):
         super(CryoHOMediator, self).__init__(ho, name)
 
         try:
             ho.connect("valueChanged", self._value_change)
-        except:
+        except BaseException:
             pass
 
         try:
             ho.connect("stateChanged", self._state_change)
-        except:
+        except BaseException:
             pass
 
         self._precision = 1
@@ -962,7 +996,7 @@ class CryoHOMediator(HOMediatorBase):
         try:
             value = self._ho.get_value()
         except Exception as ex:
-            value = '0'
+            value = "0"
 
         return value
 
@@ -982,13 +1016,15 @@ class CryoHOMediator(HOMediatorBase):
         """
         :returns: The dictionary representation of the hardware object.
         """
-        data = {"name": self._name,
-                "label": self._name.replace('_', ' ').title(),
-                "value": self.get(),
-                "limits": self.limits(),
-                "state":  self.state(),
-                "msg": self.message(),
-                "precision": self.precision(),
-                "readonly": self.read_only()}
+        data = {
+            "name": self._name,
+            "label": self._name.replace("_", " ").title(),
+            "value": self.get(),
+            "limits": self.limits(),
+            "state": self.state(),
+            "msg": self.message(),
+            "precision": self.precision(),
+            "readonly": self.read_only(),
+        }
 
         return data

@@ -24,6 +24,7 @@ import utils
 import scutils
 
 from beamline_setup import BeamlineSetupMediator
+from functools import reduce
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = 'QueuePaused'
@@ -124,7 +125,8 @@ def node_index(node):
         except Exception:
             pass
 
-    return {'sample': sample, 'idx': index, 'queue_id': node._node_id, 'sample_node': sample_model}
+    return {'sample': sample, 'idx': index,
+            'queue_id': node._node_id, 'sample_node': sample_model}
 
 
 def load_queue_from_dict(queue_dict):
@@ -223,7 +225,7 @@ def get_node_state(node_id):
     """
     try:
         node, entry = get_entry(node_id)
-    except:
+    except BaseException:
         return (True, UNCOLLECTED)
 
     executed = node.is_executed()
@@ -490,7 +492,7 @@ def _handle_diffraction_plan(node, sample_node):
 
         for col in collections:
             t = _handle_dc(sample_node, col)
-            if t == None:
+            if t is None:
                 tasks.append({})
                 continue
 
@@ -811,8 +813,7 @@ def queue_add_item(item_list):
             sid = task["sampleID"]
             interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
 
-            tindex_list = task["parameters"]["taskIndexList"]
-            tindex_list.sort()
+            tindex_list = sorted(task["parameters"]["taskIndexList"])
 
             # Swap first "wedge task" and the actual interleaved collection
             # so that the interleaved task is the first task
@@ -1648,7 +1649,7 @@ def execute_entry_with_id(sid, tindex=None):
 
             try:
                 scutils.mount_sample_clean_up(current_queue[sid])
-            except:
+            except BaseException:
                 blcontrol.queue.queue_hwobj.emit(
                     'queue_execution_failed', (None,))
             else:
@@ -1681,7 +1682,7 @@ def execute_entry_with_id(sid, tindex=None):
         blcontrol.queue.queue_hwobj._set_in_queue_flag()
         try:
             blcontrol.queue.queue_hwobj.execute_entry(entry)
-        except:
+        except BaseException:
             blcontrol.queue.queue_hwobj.emit('queue_execution_failed', (None,))
         finally:
             blcontrol.queue.queue_hwobj._running = False
