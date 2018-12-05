@@ -46,8 +46,8 @@ class WorkflowParametersDialog extends React.Component {
     }
 
     return (
-      <Modal show={this.props.show} onHide={this.props.hide}>
-        <Modal.Header closeButton>
+      <Modal show={this.props.show} onHide={this.props.hide} backdrop="static">
+        <Modal.Header>
           <Modal.Title>{formName}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
