@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
           {
             loginInfo: action.loginInfo,
             selectedProposal: action.loginInfo.selectedProposal,
-	    selectedProposalID: action.loginInfo.selectedProposalID,
+            selectedProposalID: action.loginInfo.selectedProposalID,
             loggedIn,
             data
           });
