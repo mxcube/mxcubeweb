@@ -330,10 +330,11 @@ def login_info(login_info):
     }
 
     user = get_user_by_sid(session.sid)
+    proposal = session['proposal']['Proposal'] if 'proposal' in session else None
 
-    if user:
-        res["selectedProposal"] = user["loginID"]
-        res["selectedProposalID"] = res['loginRes']['Session']['session']['proposalId']
+    if proposal:
+        res["selectedProposal"] = "%s%s" % (proposal['code'], proposal['number'])
+        res["selectedProposalID"] = proposal['proposalId']
     else:
         res["selectedProposal"] = ""
         res["selectedProposalID"] = ""
