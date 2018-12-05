@@ -19,10 +19,8 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
           {
             loginInfo: action.loginInfo,
-            selectedProposal: state.selectedProposal ?
-              state.selectedProposal : action.loginInfo.selectedProposal,
-            selectedProposalID: state.selectedProposalID ?
-              state.selectedProposalID : action.loginInfo.selectedProposalID,
+            selectedProposal: action.loginInfo.selectedProposal,
+	    selectedProposalID: action.loginInfo.selectedProposalID,
             loggedIn,
             data
           });
