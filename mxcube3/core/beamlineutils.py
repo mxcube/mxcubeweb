@@ -315,9 +315,6 @@ def get_beam_info():
 
     if beam_info is not None:
         beam_info_dict.update(beam_info.get_beam_info())
-        # Get the scale of the video stream, so that we can calculate
-        # the correct beam posiition
-        width, height, scale = streaming.video_size()
         position = beam_info.get_beam_position()
         beam_info_dict["position"] = position
 
