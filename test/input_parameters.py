@@ -1,4 +1,15 @@
-test_sample = {
+test_sample_1 = {
+    "code": "matr1_1",
+    "checked": True,
+    "sampleName": "Sample-101",
+    "sampleID": "1:01",
+    "tasks": [],
+    "location": "1:1",
+    "defaultPrefix": "local-user",
+    "type": "Sample",
+}
+
+test_sample_5 = {
     "code": "matr1_5",
     "checked": True,
     "sampleName": "Sample-105",
@@ -9,7 +20,7 @@ test_sample = {
     "type": "Sample",
 }
 
-test_sample_2 = {
+test_sample_6 = {
     "code": "matr1_6",
     "checked": True,
     "sampleName": "Sample-106",

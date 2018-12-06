@@ -6,8 +6,9 @@ import json
 
 from mxcube3 import server
 from input_parameters import (
-    test_sample,
-    test_sample_2,
+    test_sample_1,
+    test_sample_5,
+    test_sample_6,
     test_task,
     test_edit_task,
     default_dc_params,
@@ -35,19 +36,31 @@ def client():
 @pytest.fixture
 def add_sample(client):
     """Fixture to add a sample to the queue, since it is required for alot of test cases."""
+
     rv = client.post(
         "/mxcube/api/v0.1/queue",
-        data=json.dumps([test_sample]),
+        data=json.dumps([test_sample_1]),
         content_type="application/json",
     )
+
     assert rv.status_code == 200
-    yield add_sample
+
+    rv = client.post(
+        "/mxcube/api/v0.1/queue",
+        data=json.dumps([test_sample_5]),
+        content_type="application/json",
+    )
+
+    assert rv.status_code == 200
+
+    yield client
 
 
 @pytest.fixture
 def add_task(client):
     """Fixture to add a task to the sample in the queue queue, since it is required for alot of test cases."""
     rv = client.get("/mxcube/api/v0.1/queue")
+
     assert rv.status_code == 200 and json.loads(rv.data).get("1:05")
 
     queue_id = json.loads(rv.data).get("1:05")["queueID"]
@@ -60,7 +73,7 @@ def add_task(client):
         content_type="application/json",
     )
     assert rv.status_code == 200
-    yield add_task
+    yield client
 
 
 def test_get_main(client):
@@ -74,9 +87,13 @@ def test_queue_get(client):
     assert rv.status_code == 200
 
 
-def test_queue_get_item(client):
+def test_queue_get_item(client, add_sample):
     """Test if we the queue has the intial sample, only mockups hwobj."""
     rv = client.get("/mxcube/api/v0.1/queue")
+
+    import pdb
+    pdb.set_trace()
+
     assert rv.status_code == 200 and json.loads(rv.data).get("1:01")
 
 
@@ -84,7 +101,7 @@ def test_queue_add_item(client):
     """Test if we can add a sample."""
     rv = client.post(
         "/mxcube/api/v0.1/queue",
-        data=json.dumps([test_sample]),
+        data=json.dumps([test_sample_5]),
         content_type="application/json",
     )
     assert rv.status_code == 200
@@ -393,7 +410,7 @@ def test_queue_move_task_item_fail(client, add_sample, add_task):
 
 def test_queue_set_sample_order(client, add_sample):
     """Test if we can set the sample order in the queue."""
-    sample_to_add = test_sample_2
+    sample_to_add = test_sample_6
     rv = client.post(
         "/mxcube/api/v0.1/queue",
         data=json.dumps([sample_to_add]),
@@ -475,7 +492,7 @@ def test_set_group_folder(client):
     assert rv.status_code == 200 and json.loads(rv.data).get("path") == "tmp/"
 
 
-def test_set_autoadd(client):
+def test_set_autoadd(client, add_sample):
 
     rv = client.post(
         "/mxcube/api/v0.1/queue/auto_add_diffplan",
