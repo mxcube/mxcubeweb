@@ -90,10 +90,6 @@ def test_queue_get(client):
 def test_queue_get_item(client, add_sample):
     """Test if we the queue has the intial sample, only mockups hwobj."""
     rv = client.get("/mxcube/api/v0.1/queue")
-
-    import pdb
-    pdb.set_trace()
-
     assert rv.status_code == 200 and json.loads(rv.data).get("1:01")
 
 
