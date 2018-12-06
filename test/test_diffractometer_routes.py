@@ -6,20 +6,18 @@ import random
 from mxcube3 import server
 
 
-sys.path.append('./')
+sys.path.append("./")
 
 
 @pytest.fixture
 def client():
-    server.config['TESTING'] = True
+    server.config["TESTING"] = True
 
     client = server.test_client()
 
-    data = json.dumps({'proposal': 'idtest0',
-                       'password': 'sUpErSaFe'})
+    data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
 
-    client.post("/mxcube/api/v0.1/login", data=data,
-                content_type='application/json')
+    client.post("/mxcube/api/v0.1/login", data=data, content_type="application/json")
 
     yield client
 
@@ -71,23 +69,27 @@ def test_set_phase(client):
     new_phase = phase_list[random.randint(0, len(phase_list) - 1)]
 
     # Set a phase (any in the phase list)
-    resp = client.put("/mxcube/api/v0.1/diffractometer/phase",
-                      data=json.dumps({"phase": new_phase}),
-                      content_type='application/json')
+    resp = client.put(
+        "/mxcube/api/v0.1/diffractometer/phase",
+        data=json.dumps({"phase": new_phase}),
+        content_type="application/json",
+    )
 
     # Retrieve current phase
     resp = client.get("/mxcube/api/v0.1/diffractometer/phase")
     actual_phase = json.loads(resp.data)["current_phase"]
 
     # Move phase back to its original value
-    resp = client.put("/mxcube/api/v0.1/diffractometer/phase",
-                      data=json.dumps({"phase": original_phase}),
-                      content_type='application/json')
+    resp = client.put(
+        "/mxcube/api/v0.1/diffractometer/phase",
+        data=json.dumps({"phase": original_phase}),
+        content_type="application/json",
+    )
 
-    #actual_original_phase = json.loads(resp.data)["current_phase"]
+    # actual_original_phase = json.loads(resp.data)["current_phase"]
 
     assert new_phase == actual_phase
-    #assert original_phase == actual_original_phase
+    # assert original_phase == actual_original_phase
 
 
 def test_get_movables_state(client):
@@ -101,8 +103,7 @@ def test_get_movables_state(client):
     resp = client.get("/mxcube/api/v0.1/diffractometer/movables/state")
     data = json.loads(resp.data)
 
-    keys = ['sampx', 'sampy', 'phi', 'focus',
-            'zoom', 'phiy', 'phiz', 'BackLight']
+    keys = ["sampx", "sampy", "phi", "focus", "zoom", "phiy", "phiz", "BackLight"]
 
     for key in keys:
         assert key in data
@@ -135,16 +136,20 @@ def test_set_aperture(client):
 
     ap = data["apertureList"][random.randint(0, len(data["apertureList"]) - 1)]
 
-    resp = client.put("/mxcube/api/v0.1/diffractometer/aperture",
-                      data=json.dumps({"diameter": ap}),
-                      content_type='application/json')
+    resp = client.put(
+        "/mxcube/api/v0.1/diffractometer/aperture",
+        data=json.dumps({"diameter": ap}),
+        content_type="application/json",
+    )
 
     resp = client.get("/mxcube/api/v0.1/diffractometer/aperture")
     actual_aperture = json.loads(resp.data)["currentAperture"]
 
-    resp = client.put("/mxcube/api/v0.1/diffractometer/aperture",
-                      data=json.dumps({"diameter": original_aperture}),
-                      content_type='application/json')
+    resp = client.put(
+        "/mxcube/api/v0.1/diffractometer/aperture",
+        data=json.dumps({"diameter": original_aperture}),
+        content_type="application/json",
+    )
 
     resp = client.get("/mxcube/api/v0.1/diffractometer/aperture")
     actual_original_aperture = json.loads(resp.data)["currentAperture"]
