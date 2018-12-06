@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/marcus-oscarsson/mxcube3.svg?branch=master)](https://travis-ci.org/marcus-oscarsson/mxcube3)
+
+
 <p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
 # MXCuBE 3
