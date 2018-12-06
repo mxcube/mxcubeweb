@@ -6,10 +6,16 @@ python:
   - "3.5"
   - "3.6"
 
+language: node_js
+node_js:
+  - "10"
+
 services:
   - redis-server
 
 install:
+  - npm install
+  - npm run build
   - pip install -r requirements.txt
 
 script:
