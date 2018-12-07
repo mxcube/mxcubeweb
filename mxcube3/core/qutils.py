@@ -1618,7 +1618,10 @@ def set_auto_add_diffplan(autoadd, current_sample=None):
     """
     mxcube.AUTO_ADD_DIFFPLAN = autoadd
     current_queue = queue_to_dict()
-    current_queue.pop('sample_order')
+
+    if 'sample_order' in current_queue:
+        current_queue.pop('sample_order')
+
     sampleIDs = current_queue.keys()
     for sample in sampleIDs:
         # this would be a sample
