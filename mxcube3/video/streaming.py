@@ -19,7 +19,7 @@ VIDEO_STREAM_PROCESS = None
 VIDEO_INITIALIZED = False
 VIDEO_SIZE = "-1,-1"
 VIDEO_RESTART = False
-VIDEO_ORIGINAL_SIZE = 0,0
+VIDEO_ORIGINAL_SIZE = -1, -1
 
 
 def open_video_device(path="/dev/video0"):
@@ -113,8 +113,10 @@ def new_frame_received(img, width, height, *args, **kwargs):
         # start the streaming process if not started or restart if terminated
         if not VIDEO_STREAM_PROCESS or VIDEO_STREAM_PROCESS.poll() is not None:
             sfpath = os.path.join(os.path.dirname(__file__), "streaming_processes.py")
-            python_executable = os.sep.join(os.path.dirname(os.__file__).split(os.sep)[:-2]+["bin", "python"])
-            VIDEO_STREAM_PROCESS = subprocess.Popen([python_executable, sfpath, VIDEO_DEVICE.name, VIDEO_SIZE], close_fds=True)
+            python_executable = os.sep.join(os.path.dirname(
+                os.__file__).split(os.sep)[:-2]+["bin", "python"])
+            VIDEO_STREAM_PROCESS = subprocess.Popen(
+                [python_executable, sfpath, VIDEO_DEVICE.name, VIDEO_SIZE], close_fds=True)
 
 
 def get_available_sizes(camera):
@@ -189,7 +191,7 @@ def tango_lima_video_plugin(camera, video_device):
                 width, height, raw_data = \
                     self.parse_image_data(self.device.video_last_image)
                 img = Image.frombytes("RGB", (width, height), raw_data)
-                
+
                 if bw:
                     img.convert("1")
 
@@ -198,6 +200,7 @@ def tango_lima_video_plugin(camera, video_device):
             camera._do_polling = types.MethodType(do_polling, camera)
             camera.takeSnapshot = types.MethodType(take_snapshot, camera)
             camera.parse_image_data = types.MethodType(parse_image_data, camera)
+
 
 def init(camera, video_device_path):
     """
