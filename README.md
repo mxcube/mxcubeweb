@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/marcus-oscarsson/mxcube3.svg?branch=master)](https://travis-ci.org/marcus-oscarsson/mxcube3)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/bbd01f8f93ac4f6f9d4243142d35a7f8)](https://www.codacy.com/app/oscarsso/mxcube3_2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mxcube/mxcube3&amp;utm_campaign=Badge_Grade)
 
 <p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
