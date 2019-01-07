@@ -14,7 +14,7 @@ from mxcube3.core import limsutils
 
 from mxcube3.core.loginutils import safe_emit
 
-from sample_changer.GenericSampleChanger import SampleChangerState
+from abstract.AbstractSampleChanger import SampleChangerState
 
 from mxcube3.core.beamline_setup import BeamlineSetupMediator
 from mxcube3.core.qutils import (
@@ -699,7 +699,7 @@ def plot_data(data, last_index=[0], **kwargs):
     if last_index[0] > len(data_data):
         last_index = [0]
 
-    data["data"] = data_data[last_index[0] :]
+    data["data"] = data_data[last_index[0]:]
 
     try:
         socketio.emit("plot_data", data, namespace="/hwr")
