@@ -127,7 +127,7 @@ def init(hwr, hwdir):
     global HWR
 
     try:
-        _hwr = hwr.HardwareRepository(path.abspath(path.expanduser(hwdir)))
+        _hwr = hwr.getHardwareRepository(path.abspath(path.expanduser(hwdir)))
         _hwr.connect()
         HWR = _hwr
     except Exception:
