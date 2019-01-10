@@ -1,5 +1,5 @@
 import { STATE } from '../actions/beamline';
-import { RUNNING } from '../constants';
+import { RUNNING, MOTOR_STATE } from '../constants';
 
 /**
  *  Initial redux state for beamline attributes, object containing each beamline
@@ -220,7 +220,7 @@ export default (state = INITIAL_STATE, action) => {
              };
     case 'UPDATE_MOTOR_STATE':
       return { ...state,
-               motorInputDisable: action.value !== 2,
+               motorInputDisable: action.value !== MOTOR_STATE.READY,
                motors: { ...state.motors, [action.name]:
                          { ...state.motors[action.name],
                            position: state.motors[action.name].position,

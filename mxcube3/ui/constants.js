@@ -64,4 +64,43 @@ export const SPACE_GROUPS =
      'F4132', 'I23', 'I213', 'I432', 'I4132'];
 
 
+export const MOTOR_STATE = { INITIALIZING: 0,
+                             ON: 1,
+                             OFF: 2,
+                             READY: 3,
+                             BUSY: 4,
+                             MOVING: 5,
+                             STANDBY: 6,
+                             DISABLED: 7,
+                             UNKNOWN: 8,
+                             ALARM: 9,
+                             FAULT: 10,
+                             INVALID: 11,
+                             OFFLINE: 12,
+                             LOWLIMIT: 13,
+                             HIGHLIMIT: 14,
+                             NOTINITIALIZED: 15,
+                             MOVESTARTED: 16 };
+
+export const MOTOR_STATE_DESC = {};
+
+MOTOR_STATE_DESC[MOTOR_STATE.INITIALIZING] = 'Initializing';
+MOTOR_STATE_DESC[MOTOR_STATE.ON] = 'On';
+MOTOR_STATE_DESC[MOTOR_STATE.OFF] = 'Off';
+MOTOR_STATE_DESC[MOTOR_STATE.READY] = 'Ready';
+MOTOR_STATE_DESC[MOTOR_STATE.BUSY] = 'Busy';
+MOTOR_STATE_DESC[MOTOR_STATE.MOVING] = 'Moving';
+MOTOR_STATE_DESC[MOTOR_STATE.STANDBY] = 'Standby';
+MOTOR_STATE_DESC[MOTOR_STATE.DISABLED] = 'Disabled';
+MOTOR_STATE_DESC[MOTOR_STATE.UNKNOWN] = 'Unknown';
+MOTOR_STATE_DESC[MOTOR_STATE.ALARM] = 'Alarm';
+MOTOR_STATE_DESC[MOTOR_STATE.FAULT] = 'Fault';
+MOTOR_STATE_DESC[MOTOR_STATE.INVALID] = 'Invalid';
+MOTOR_STATE_DESC[MOTOR_STATE.OFFLINE] = 'Offline';
+MOTOR_STATE_DESC[MOTOR_STATE.LOWLIMIT] = 'LowLimit';
+MOTOR_STATE_DESC[MOTOR_STATE.HIGHLIMIT] = 'HighLimit';
+MOTOR_STATE_DESC[MOTOR_STATE.NOTINITIALIZED] = 'NotInitialized';
+MOTOR_STATE_DESC[MOTOR_STATE.MOVESTARTED] = 'MoveStarted';
+
+
 /* eslint-enable no-unused-vars */

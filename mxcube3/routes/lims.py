@@ -7,7 +7,7 @@ from mxcube3 import mxcube
 from mxcube3 import server
 from mxcube3 import blcontrol
 
-import queue_model_objects_v1 as qmo
+import queue_model_objects as qmo
 
 from mxcube3.core import limsutils
 from mxcube3.core import qutils

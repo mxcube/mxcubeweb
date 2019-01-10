@@ -17,6 +17,7 @@ from mxcube3.video import streaming
 
 
 from queue_entry import CENTRING_METHOD
+from abstract.AbstractMotor import MotorStates
 
 
 SAMPLE_IMAGE = None
@@ -134,7 +135,7 @@ def wait_for_centring_finishes(*args, **kwargs):
         blcontrol.diffractometer.emit("stateChanged", (True,))
 
         if mxcube.AUTO_MOUNT_SAMPLE:
-            blcontrol.diffractometer.acceptCentring()
+            blcontrol.diffractometer.accept_centring()
 
 
 def init_signals():
@@ -226,8 +227,8 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
 
     SAMPLE_IMAGE = img
 
-    blcontrol.diffractometer.camera.new_frame.set()
-    blcontrol.diffractometer.camera.new_frame.clear()
+    blcontrol.diffractometer.camera_hwobj.new_frame.set()
+    blcontrol.diffractometer.camera_hwobj.new_frame.clear()
 
 
 def stream_video(camera_hwobj):
@@ -236,16 +237,16 @@ def stream_video(camera_hwobj):
     """
     global SAMPLE_IMAGE
 
-    blcontrol.diffractometer.camera.new_frame = gevent.event.Event()
+    blcontrol.diffractometer.camera_hwobj.new_frame = gevent.event.Event()
 
     try:
-        blcontrol.diffractometer.camera.disconnect(
+        blcontrol.diffractometer.camera_hwobj.disconnect(
             "imageReceived", new_sample_video_frame_received
         )
     except KeyError:
         pass
 
-    blcontrol.diffractometer.camera.connect(
+    blcontrol.diffractometer.camera_hwobj.connect(
         "imageReceived", new_sample_video_frame_received
     )
 
@@ -440,7 +441,7 @@ def move_motor(motid, newpos):
         motor_hwobj.stop()
         return True
     else:
-        if motor_hwobj.getState() != 2:
+        if motor_hwobj.getState() != MotorStates.READY:
             raise Exception(motid + " already moving")
 
         limits = motor_hwobj.getLimits()
@@ -482,7 +483,7 @@ def start_auto_centring():
     """
     msg = "[Centring] Auto centring method requested"
     logging.getLogger("MX3.HWR").info(msg)
-    blcontrol.diffractometer.startAutoCentring()
+    blcontrol.diffractometer.start_automatic_centring()
 
 
 def start_manual_centring():
@@ -493,36 +494,36 @@ def start_manual_centring():
     """
     logging.getLogger("MX3.HWR").info("[Centring] 3click method requested")
 
-    if blcontrol.diffractometer.currentCentringProcedure:
-        blcontrol.diffractometer.cancelCentringMethod()
+    if blcontrol.diffractometer.current_centring_procedure:
+        blcontrol.diffractometer.cancel_centring_method()
 
-    blcontrol.diffractometer.start3ClickCentring()
+    blcontrol.diffractometer.start_manual_centring()
     centring_reset_click_count()
     return {"clicksLeft": centring_clicks_left()}
 
 
 def abort_centring():
     logging.getLogger("MX3.HWR").info("[Centring] Abort method requested")
-    blcontrol.diffractometer.cancelCentringMethod()
+    blcontrol.diffractometer.cancel_centring_method()
     centring_remove_current_point()
 
 
 def centring_handle_click(x, y):
-    if blcontrol.diffractometer.currentCentringProcedure:
+    if blcontrol.diffractometer.current_centring_procedure:
         logging.getLogger("MX3.HWR").info("A click requested, x: %s, y: %s" % (x, y))
         blcontrol.diffractometer.imageClicked(x, y, x, y)
         centring_click()
     else:
         if not centring_clicks_left():
             centring_reset_click_count()
-            blcontrol.diffractometer.cancelCentringMethod()
-            blcontrol.diffractometer.start3ClickCentring()
+            blcontrol.diffractometer.cancel_centring_method()
+            blcontrol.diffractometer.start_manual_centring()
 
     return {"clicksLeft": centring_clicks_left()}
 
 
 def reject_centring():
-    blcontrol.diffractometer.rejectCentring()
+    blcontrol.diffractometer.reject_centring()
     centring_remove_current_point()
 
 

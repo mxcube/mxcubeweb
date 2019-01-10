@@ -1,6 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 import { Button, Popover } from 'react-bootstrap';
+import { MOTOR_STATE } from '../../constants';
 import MotorInput from './MotorInput';
 import './motor.css';
 
@@ -28,11 +29,11 @@ export default class OneAxisTranslationControl extends React.Component {
 
     this.setState({ edited: true });
 
-    if ([13, 38, 40].includes(e.keyCode) && this.props.state === 2) {
+    if ([13, 38, 40].includes(e.keyCode) && this.props.state === MOTOR_STATE.READY) {
       this.setState({ edited: false });
       this.props.save(e.target.name, e.target.valueAsNumber);
       this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
-    } else if (this.props.state === 4) {
+    } else if (this.props.state === MOTOR_STATE.BUSY || this.props.state === MOTOR_STATE.MOVING) {
       this.setState({ edited: false });
       this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
@@ -86,10 +87,16 @@ export default class OneAxisTranslationControl extends React.Component {
 
     let inputCSS = cx('form-control rw-input', {
       'input-bg-edited': this.state.edited,
-      'input-bg-moving': this.props.state === 4 || this.props.state === 3,
-      'input-bg-ready': this.props.state === 2,
-      'input-bg-fault': this.props.state <= 1,
-      'input-bg-onlimit': this.props.state === 5
+      'input-bg-moving': this.props.state === MOTOR_STATE.BUSY ||
+                         this.props.state === MOTOR_STATE.MOVING,
+      'input-bg-ready': this.props.state === MOTOR_STATE.READY,
+      'input-bg-fault': this.props.state === MOTOR_STATE.FAULT ||
+                        this.props.state === MOTOR_STATE.OFF ||
+                        this.props.state === MOTOR_STATE.ALARM ||
+                        this.props.state === MOTOR_STATE.OFFLINE ||
+                        this.props.state === MOTOR_STATE.INVALID,
+      'input-bg-onlimit': this.props.state === MOTOR_STATE.LOWLIMIT ||
+        this.props.state === MOTOR_STATE.HIGHLIMIT
     });
 
     return (
@@ -97,14 +104,14 @@ export default class OneAxisTranslationControl extends React.Component {
         <Button
           style={{ marginRight: '2px' }}
           className="arrow-small arrow-left"
-          disabled={this.props.state !== 2 || this.props.disabled}
+          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, 10 * step, -1)}
         >
           <i className="fa fa-angle-double-left" />
         </Button>
         <Button
           className="arrow-small arrow-left"
-          disabled={this.props.state !== 2 || this.props.disabled}
+          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, step, -1)}
         >
           <i className="fa fa-angle-left" />
@@ -124,11 +131,11 @@ export default class OneAxisTranslationControl extends React.Component {
           step={step}
           defaultValue={valueCropped}
           name={motorName}
-          disabled={this.props.state !== 2 || this.props.disabled}
+          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
         />
         <Button
           className="arrow-small arrow-right"
-          disabled={this.props.state !== 2 || this.props.disabled}
+          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, step, 1)}
         >
           <i className="fa fa-angle-right" />
@@ -136,7 +143,7 @@ export default class OneAxisTranslationControl extends React.Component {
         <Button
           style={{ marginLeft: '2px' }}
           className="arrow-small arrow-right"
-          disabled={this.props.state !== 2 || this.props.disabled}
+          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, 10 * step, 1)}
         >
           <i className="fa fa-angle-double-right" />
