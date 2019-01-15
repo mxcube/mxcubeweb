@@ -1,0 +1,22 @@
+gevent
+flask
+flask-socketio
+gevent-websocket
+Flask-Session
+python-socketio
+louie-latest
+redis
+scipy
+mock
+pbr       # Depdency of mock, needs to be installed manualy (problem with mock package)
+funcsigs  # Depdency of mock, needs to be installed manualy (problem with mock package)
+jsonpickle
+pillow
+suds-py3
+python-ldap
+lxml
+numpy
+requests
+v4l2
+scandir
+matplotlib # Dependency of energyscan mockup object
