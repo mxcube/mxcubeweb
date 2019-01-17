@@ -1864,7 +1864,7 @@ def queue_stop():
             try:
                 qe.stop()
             except Exception as ex:
-                print str(ex)
+                logging.getLogger('MX3.HWR').exception('[QUEUE] Could not stop queue')
             blcontrol.queue.queue_hwobj.set_pause(False)
             # the next two is to avoid repeating the task
             # TODO: if you now run the queue it will be enabled and run

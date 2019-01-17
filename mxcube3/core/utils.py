@@ -9,7 +9,7 @@ import inspect
 import base64
 import os
 import sys
-import email.Utils
+import email.utils
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import make_msgid

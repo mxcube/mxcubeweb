@@ -9,7 +9,7 @@ if __name__ == '__main__':
     try:
         db.ping()
     except redis.RedisError:
-        print "No Redis server is running, exiting"
+        print("No Redis server is running, exiting")
         sys.exit(1)
 
     from mxcube3 import server, socketio
