@@ -79,6 +79,12 @@ export function stopClickCentring() {
   };
 }
 
+export function clearSelectedShapes() {
+  return {
+    type: 'CLEAR_SELECTED_SHAPES'
+  };
+}
+
 export function addCentringPoint(x, y) {
   return {
     type: 'ADD_CENTRING_POINT', x, y
@@ -514,6 +520,7 @@ export function sendAbortCentring() {
         dispatch(videoMessageOverlay(false, ''));
       }
     });
+    dispatch(clearSelectedShapes());
   };
 }
 

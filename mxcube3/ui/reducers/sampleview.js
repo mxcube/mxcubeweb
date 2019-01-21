@@ -61,6 +61,10 @@ export default (state = initialState, action) => {
     {
       return { ...state, clickCentring: false, clickCentringPoints: [] };
     }
+    case 'CLEAR_SELECTED_SHAPES':
+    {
+      return { ...state, selectedShapes: [] };
+    }
     case 'ADD_CENTRING_POINT':
     {
       return (
