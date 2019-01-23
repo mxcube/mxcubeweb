@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import re
 import logging
 import time
@@ -179,7 +180,7 @@ def get_centring_motors():
     global _centring_motors_memo
 
     if not _centring_motors_memo:
-        _centring_motors_memo = blcontrol.diffractometer.getPositions().keys()
+        _centring_motors_memo = list(blcontrol.diffractometer.getPositions().keys())
 
         # Adding the two pseudo motors for sample alignment in the microscope
         # view
@@ -220,7 +221,7 @@ def _snapshot_received(data):
 
 
 def _do_take_snapshot(filename):
-    import loginutils
+    from . import loginutils
 
     SNAPSHOT_RECEIVED.clear()
     rid = loginutils.get_operator()["socketio_sid"]
@@ -399,7 +400,7 @@ def str_to_snake(name):
 def convert_dict(fun, d, recurse=True):
     converted = {}
 
-    for key, value in d.iteritems():
+    for key, value in d.items():
         if isinstance(value, dict) and recurse:
             value = convert_dict(fun, value)
 

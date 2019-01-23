@@ -1,7 +1,4 @@
 import logging
-
-import queue_model_objects as qmo
-import queue_entry as qe
 import json
 
 from mxcube3 import socketio
@@ -25,6 +22,11 @@ from mxcube3.core.qutils import (
     WARNING,
     queue_to_dict,
 )
+
+
+import queue_model_objects as qmo
+import queue_entry as qe
+
 from queue_entry import CENTRING_METHOD
 from mxcube3.core.utils import to_camel
 

@@ -1,4 +1,5 @@
-import signals
+from __future__ import absolute_import
+from . import signals
 
 from flask import Response, jsonify, request
 from mxcube3 import server

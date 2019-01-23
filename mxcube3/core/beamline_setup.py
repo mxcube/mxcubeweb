@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import logging
 import math
 
@@ -11,7 +12,7 @@ import ShutterMockup
 from numpy import arange
 from mxcube3 import socketio
 
-import utils
+from . import utils
 
 from .statedefs import (
     MOTOR_STATE,
@@ -208,10 +209,10 @@ class _BeamlineSetupMediator(object):
         _limits = self._bl.get_acquisition_limit_values()
         limits = {}
 
-        for key, value in _limits.iteritems():
+        for key, value in _limits.items():
             if isinstance(value, str) and "," in value:
                 try:
-                    limits[key] = map(float, _limits[key].split(","))
+                    limits[key] = list(map(float, _limits[key].split(",")))
                 except BaseException:
                     msg = "[BEAMLINE_SETUP] Could not get limits for %s," % key
                     msg += " using -10000, 10000"
@@ -751,7 +752,7 @@ class ResolutionHOMediator(HOMediatorBase):
         try:
             ttheta = math.atan(radius / float(dist))
             if ttheta != 0:
-                return current_wavelength / (2 * math.sin(ttheta / 2))
+                return (current_wavelength / (2 * math.sin(ttheta / 2)))
             else:
                 return 0
         except Exception:

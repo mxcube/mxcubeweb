@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 from flask import Response, jsonify, request
 
 import os

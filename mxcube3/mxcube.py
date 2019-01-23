@@ -2,7 +2,6 @@
 Module that contains application wide settings and state as well as functions
 for accessing and manipulating those.
 """
-from __future__ import absolute_import
 
 import os
 import sys
@@ -13,7 +12,7 @@ import json
 from logging import StreamHandler, NullHandler
 from logging.handlers import TimedRotatingFileHandler
 
-from mxcube3.HardwareRepository import removeLoggingHandlers
+from .HardwareRepository import removeLoggingHandlers
 import queue_entry
 
 from mxcube3 import blcontrol
@@ -21,34 +20,25 @@ from mxcube3 import blcontrol
 # Below variables used for internal application state
 
 # SampleID and sample data of currently mounted sample
-CURRENTLY_MOUNTED_SAMPLE = ''
-
+CURRENTLY_MOUNTED_SAMPLE = {}
 # Sample location of sample that are in process of being mounted
 SAMPLE_TO_BE_MOUNTED = ''
-
 # Method used for sample centring
 CENTRING_METHOD = queue_entry.CENTRING_METHOD.LOOP
-
 # Look up table for finding the limsID for a corresponding queueID (QueueNode)
 NODE_ID_TO_LIMS_ID = {}
-
 # Initial file list for user, initialized at login, for creating automatic
 # run numbers
 INITIAL_FILE_LIST = []
-
 # Lookup table for sample changer location to data matrix or
 # data matrix to location
 SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
-
 # Current sample list, with tasks
 SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
-
 # Users currently logged in
 USERS = {}
-
 # Path to video device (i.e. /dev/videoX)
 VIDEO_DEVICE = None
-
 # Contains the complete client side ui state, managed up state_storage.py
 UI_STATE = dict()
 TEMP_DISABLED = []
@@ -83,6 +73,7 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     :return None:
     """
     from mxcube3.core import utils
+    from mxcube3.core import *
 
     global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
     ALLOW_REMOTE = allow_remote
@@ -92,7 +83,7 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
 
     blcontrol.init(hwr, hwr_xml_dir)
 
-    if video_device:
+    if os.path.exists(video_device):
         init_sample_video(video_device)
 
     utils.enable_snapshots(blcontrol.collect, blcontrol.diffractometer)
@@ -169,7 +160,7 @@ def init_logging(log_file):
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(NullHandler())
 
-    from mxcube3 import logging_handler
+    from . import logging_handler
     custom_log_handler = logging_handler.MX3LoggingHandler()
     custom_log_handler.setLevel(logging.DEBUG)
     custom_log_handler.setFormatter(log_formatter)
@@ -196,7 +187,7 @@ def init_state_storage():
     Set up of server side state storage, the UI state of the client is
     stored on the server
     """
-    from mxcube3 import state_storage
+    from . import state_storage
     state_storage.init()
 
 
