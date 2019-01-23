@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import datetime
 import socket
 import functools
@@ -13,10 +14,10 @@ from mxcube3 import blcontrol
 from mxcube3 import state_storage
 from mxcube3 import socketio
 
-import limsutils
-import utils
-import qutils
-import scutils
+from . import limsutils
+from . import utils
+from . import qutils
+from . import scutils
 
 
 PENDING_EVENTS = deque()
@@ -58,7 +59,7 @@ def get_user_by_sid(sid):
 
 
 def get_observers():
-    return [user for user in users().itervalues() if not user["operator"]]
+    return [user for user in users().values() if not user["operator"]]
 
 
 def get_observer_name():
@@ -72,7 +73,7 @@ def get_observer_name():
 
 
 def get_operator():
-    return next(iter([user for user in users().itervalues() if user["operator"]]), None)
+    return next(iter([user for user in users().values() if user["operator"]]), None)
 
 
 def is_operator(sid):
@@ -81,7 +82,7 @@ def is_operator(sid):
 
 
 def logged_in_users(exclude_inhouse=False):
-    users = [user["loginID"] for user in mxcube.USERS.itervalues()]
+    users = [user["loginID"] for user in mxcube.USERS.values()]
 
     if exclude_inhouse:
         if isinstance(blcontrol.session.in_house_users[0], tuple):
@@ -95,7 +96,7 @@ def logged_in_users(exclude_inhouse=False):
 
 def set_operator(sid):
     # Clear previous operator
-    for user in users().itervalues():
+    for user in users().values():
         user["operator"] = False
         user["requestsControl"] = False
 

@@ -46,4 +46,4 @@ def init():
     def ui_state_getkeys(*args):
         join_room("raSlaves")
 
-        return ['reduxPersist:'+k for k in mxcube.UI_STATE.iterkeys()]
+        return ['reduxPersist:'+k for k in mxcube.UI_STATE.keys()]

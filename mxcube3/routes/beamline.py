@@ -1,7 +1,8 @@
+from __future__ import absolute_import
 import sys
 import json
 import logging
-import signals
+from . import signals
 
 from flask import Response, jsonify, request, make_response
 

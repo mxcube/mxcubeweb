@@ -1,8 +1,9 @@
+from __future__ import absolute_import
 import json
 
 from flask import Response, jsonify, request
 
-import signals
+from . import signals
 from mxcube3 import blcontrol
 from mxcube3 import server
 from mxcube3.core import beamlineutils, utils

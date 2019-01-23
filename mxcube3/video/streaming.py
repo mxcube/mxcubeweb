@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 """Functions for video streaming."""
-import cStringIO
 import fcntl
 import os
-import signal
 import struct
 import subprocess
-import sys
 import time
 import types
-import json
+
+from io import StringIO
 
 from PIL import Image
 import v4l2
@@ -94,7 +92,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
         # already RGB and do nothing with the data
         if img.startswith('\xff\xd8\xff\xe0\x00\x10JFIF'):
             # jpeg image
-            strbuf = cStringIO.StringIO(img)
+            strbuf = StringIO(img)
             img = Image.open(strbuf)
             img = img.tobytes()
 
