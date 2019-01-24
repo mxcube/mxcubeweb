@@ -10,7 +10,7 @@ MXCUBE_ROOT = os.path.abspath(os.path.join(
 sys.path.insert(0, MXCUBE_ROOT)
 
 os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"] = os.path.join(
-    MXCUBE_ROOT, "HardwareReposiotry/HardwareObjects")
+    MXCUBE_ROOT, "HardwareRepository/HardwareObjects")
 
 sys.path.insert(0, os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"])
 
