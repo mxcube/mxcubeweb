@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-import cStringIO
 
 import PIL
 import gevent.event
 
+from io import StringIO
 
 from mxcube3 import blcontrol
 from mxcube3 import mxcube
@@ -216,9 +216,14 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
 
     # Assume that we are gettign a qimage if we are not getting a str,
     # to be able to handle data sent by hardware objects used in MxCuBE 2.x
-    if not isinstance(img, str):
+    # Passed as str in Python 2.7 and bytes in Python 3
+    if isinstance(img, str):
+        img = img
+    elif isinstance(img, bytes):
+        img = img
+    else:
         rawdata = img.bits().asstring(img.numBytes())
-        strbuf = cStringIO.StringIO()
+        strbuf = StringIO()
         image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
         (r, g, b, a) = image.split()
         image = PIL.Image.merge("RGB", (b, g, r))

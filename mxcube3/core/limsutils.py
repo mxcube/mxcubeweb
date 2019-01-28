@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import types
 import sys
 import logging
 import copy
 import os
-import StringIO
+import io
 from scandir import scandir
 
 import queue_model_objects as qmo
@@ -64,7 +65,7 @@ def sample_list_get(loc=None, current_queue=None):
 
 
 def sample_list_sync_sample(lims_sample):
-    import scutils
+    from . import scutils
 
     lims_code = lims_sample.get("code", None)
     lims_location = lims_sample.get("lims_location")
@@ -90,7 +91,7 @@ def synch_sample_list_with_queue(current_queue=None):
 
     sample_order = current_queue.get("sample_order", [])
 
-    for loc, data in mxcube.SAMPLE_LIST["sampleList"].iteritems():
+    for loc, data in mxcube.SAMPLE_LIST["sampleList"].items():
         if loc in current_queue:
             sample = current_queue[loc]
 
@@ -143,7 +144,7 @@ def apply_template(params, sample_model, path_template):
                 ACRONYM=sample_model.crystals[0].protein_acronym,
             )
         else:
-            stripped = params["subdir"][0 : params["subdir"].find("{")]
+            stripped = params["subdir"][0: params["subdir"].find("{")]
             params["subdir"] = stripped + sample_model.get_name()
 
         # The template was only applied partially if subdir ends with '-'
@@ -176,14 +177,14 @@ def strip_prefix(pt, prefix):
     """
     if (
         pt.reference_image_prefix
-        and pt.reference_image_prefix == prefix[0 : len(pt.reference_image_prefix)]
+        and pt.reference_image_prefix == prefix[0: len(pt.reference_image_prefix)]
     ):
-        prefix = prefix[len(pt.reference_image_prefix) + 1 :]
+        prefix = prefix[len(pt.reference_image_prefix) + 1:]
 
-    if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix) :]:
+    if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix):]:
         prefix = prefix[: -(len(pt.wedge_prefix) + 1)]
 
-    if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix) :]:
+    if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix):]:
         prefix = prefix[: -(len(pt.mad_prefix) + 1)]
 
     return prefix
@@ -294,9 +295,9 @@ def get_proposal_info(proposal):
     """
     Search for the given proposal in the proposal list.
     """
-    from loginutils import users
+    from .loginutils import users
 
-    for user in users().itervalues():
+    for user in users().values():
         logging.getLogger("MX3.HWR").info("[LIMS] Serching for proposal: %s" % proposal)
         for prop in user["limsData"].get("proposalList", []):
             _p = "%s%s" % (
@@ -400,7 +401,7 @@ def get_dc_link(col_id):
 
 def get_dc_thumbnail(image_id):
     fname, data = blcontrol.rest_lims.get_dc_thumbnail(image_id)
-    data = StringIO.StringIO(data)
+    data = io.StringIO(data)
     data.seek(0)
 
     return fname, data
@@ -408,7 +409,7 @@ def get_dc_thumbnail(image_id):
 
 def get_dc_image(image_id):
     fname, data = blcontrol.rest_lims.get_dc_image(image_id)
-    data = StringIO.StringIO(data)
+    data = io.StringIO(data)
     data.seek(0)
 
     return fname, data
@@ -416,7 +417,7 @@ def get_dc_image(image_id):
 
 def get_quality_indicator_plot(dc_id):
     data = blcontrol.rest_lims.get_quality_indicator_plot(dc_id)
-    data = StringIO.StringIO(data)
+    data = io.StringIO(data)
     data.seek(0)
 
     return "qind", data
@@ -468,19 +469,19 @@ def synch_with_lims(proposal_id):
 def convert_to_dict(ispyb_object):
     d = {}
 
-    if isinstance(ispyb_object, types.DictType):
+    if isinstance(ispyb_object, dict):
         d.update(ispyb_object)
     else:
         for key in ispyb_object.__keylist__:
             val = getattr(ispyb_object, key)
             if isinstance(val, types.InstanceType):
                 val = convert_to_dict(val)
-            elif isinstance(val, types.ListType):
+            elif isinstance(val, list):
                 val = [
                     convert_to_dict(x) if isinstance(x, types.InstanceType) else x
                     for x in val
                 ]
-            elif isinstance(val, types.DictType):
+            elif isinstance(val, dict):
                 val = dict(
                     [
                         (
@@ -489,7 +490,7 @@ def convert_to_dict(ispyb_object):
                             if isinstance(x, types.InstanceType)
                             else x,
                         )
-                        for k, x in val.iteritems()
+                        for k, x in val.items()
                     ]
                 )
 

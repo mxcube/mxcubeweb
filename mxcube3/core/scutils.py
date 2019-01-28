@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import logging
 
 # We are patching queue_entry.mount_sample at the end of this file.
@@ -7,11 +8,11 @@ import queue_entry
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
 
-import limsutils
-import qutils
+from . import limsutils
+from . import qutils
 
 
-from queue_entry import QueueSkippEntryException, CENTRING_METHOD
+from queue_entry import (QueueSkippEntryException, CENTRING_METHOD)
 
 
 def init_signals():

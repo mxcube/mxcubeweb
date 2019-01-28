@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import os
 import json
-import cPickle as pickle
+import pickle as pickle
 import redis
 import itertools
 import logging
@@ -9,21 +11,18 @@ import re
 
 from mock import Mock
 
-
 import queue_model_objects as qmo
 import queue_entry as qe
 import queue_model_enumerables as qme
-
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
 from mxcube3 import socketio
 
-import limsutils
-import utils
-import scutils
+from . import limsutils
+from . import utils
 
-from beamline_setup import BeamlineSetupMediator
+from .beamline_setup import BeamlineSetupMediator
 from functools import reduce
 
 # Important: same constants as in constants.js
@@ -258,6 +257,8 @@ def get_queue_state():
                 queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
               }
     """
+    from . import scutils
+
     queue = queue_to_dict(include_lims_data=True)
     sample_order = queue.get("sample_order", [])
 
@@ -765,7 +766,7 @@ def set_sample_order(order):
     :param list sample_order: List of sample ids
     """
     current_queue = queue_to_dict()
-    sid_list = list(filter(lambda sid: current_queue.get(sid, False), order))
+    sid_list = list([sid for sid in order if current_queue.get(sid, False)])
 
     if sid_list:
         queue_id_list = [current_queue[sid]["queueID"] for sid in sid_list]
@@ -1067,7 +1068,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params['sample_lims_id'] = sample_model.lims_id
     beamline_params['beamline'] = blcontrol.beamline.session_hwobj.endstation_name
 
-    params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
+    params_list = list(map(str, list(itertools.chain(*iter(beamline_params.items())))))
     params_list.insert(0, params["wfpath"])
     params_list.insert(0, 'modelpath')
 
@@ -1622,7 +1623,7 @@ def set_auto_add_diffplan(autoadd, current_sample=None):
     if 'sample_order' in current_queue:
         current_queue.pop('sample_order')
 
-    sampleIDs = current_queue.keys()
+    sampleIDs = list(current_queue.keys())
     for sample in sampleIDs:
         # this would be a sample
         tasks = current_queue[sample]['tasks']
@@ -1639,6 +1640,8 @@ def execute_entry_with_id(sid, tindex=None):
     :param str sid: sampleID
     :param int tindex: task index of task within sample with id sampleID
     """
+    from . import scutils
+
     current_queue = queue_to_dict()
     blcontrol.queue.queue_hwobj.set_pause(False)
 
@@ -1804,6 +1807,8 @@ def init_queue_settings():
 
 
 def add_default_sample():
+    from . import scutils
+
     sample = {"sampleID": "1",
               "sampleName": "noname",
               "proteinAcronym": "noacronym",

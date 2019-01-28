@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import os
 import logging
 import sys
@@ -7,7 +8,7 @@ from mxcube3 import blcontrol
 from mxcube3.video import streaming
 from mxcube3 import mxcube
 
-from qutils import READY
+from .qutils import READY
 
 
 from mxcube3.core.beamline_setup import BeamlineSetupMediator
