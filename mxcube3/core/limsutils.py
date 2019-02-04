@@ -89,7 +89,7 @@ def synch_sample_list_with_queue(current_queue=None):
     if not current_queue:
         current_queue = qutils.queue_to_dict(include_lims_data=True)
 
-    sample_order = current_queue.get("sample_order", [])
+    current_queue.get("sample_order", [])
 
     for loc, data in mxcube.SAMPLE_LIST["sampleList"].items():
         if loc in current_queue:

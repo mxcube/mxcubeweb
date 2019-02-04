@@ -3,7 +3,6 @@ from subprocess import check_output
 from os.path import isfile, join
 
 from flask import jsonify, Response, send_file, request, render_template
-from mxcube3 import mxcube
 from mxcube3 import server
 from mxcube3 import blcontrol
 

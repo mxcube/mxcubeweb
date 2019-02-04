@@ -163,7 +163,7 @@ def loaded_sample_changed(sample):
 
     try:
         # recreate the dict with the sample info
-        q = queue_to_dict()
+        queue_to_dict()
         sampleID = address
 
         if blcontrol.sample_changer.hasLoadedSample():
@@ -384,9 +384,9 @@ def collect_oscillation_failed(
 
     if not qutils.is_interleaved(node["node"]):
         try:
-            limsres = blcontrol.rest_lims.get_dc(lims_id)
+            blcontrol.rest_lims.get_dc(lims_id)
         except BaseException:
-            limsres = {}
+            pass
 
         msg = {
             "Signal": "collectOscillationFailed",
@@ -611,7 +611,7 @@ def motor_state_callback(movable, sender=None, **kw):
 def beam_changed(*args, **kwargs):
 
     ret = {}
-    signal = kwargs["signal"]
+    kwargs["signal"]
     beam_info = blcontrol.beamline.getObjectByRole("beam_info")
 
     if beam_info is None:
