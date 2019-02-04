@@ -1,6 +1,6 @@
 import logging
 
-from flask import session, redirect, url_for, render_template, request, Response
+from flask import Response
 
 from mxcube3 import server
 from mxcube3 import blcontrol
@@ -29,12 +29,11 @@ def mockup_newres(newres):
 def create_diff_plan(sid):
     """Juts for creating a diff plan as if it were created by edna and so on.
     """
-    from mock import Mock
 
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
     ftype = blcontrol.beamline.detector_hwobj.getProperty("file_suffix")
     ftype = ftype if ftype else ".?"
-    n = int(blcontrol.session["file_info"].getProperty("precision", 4))
+    int(blcontrol.session["file_info"].getProperty("precision", 4))
 
     task = {
         "parameters": {

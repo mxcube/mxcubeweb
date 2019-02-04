@@ -3,9 +3,7 @@
 import fcntl
 import io
 import os
-import PIL
 import v4l2
-import numpy
 
 
 def open_video_device(path="/dev/video0"):

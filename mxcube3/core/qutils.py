@@ -109,7 +109,7 @@ def node_index(node):
 
         sample = sample_model.loc_str
         task_groups = sample_model.get_children()
-        group_list = [group.get_children() for group in task_groups]
+        [group.get_children() for group in task_groups]
 
         tlist = []
 
@@ -919,7 +919,7 @@ def add_sample(sample_id, item):
     # Manually added sample, make sure that i'ts on the server side sample list
     if item['location'] == "Manual":
         item["defaultSubDir"] = limsutils.get_default_subdir(item)
-        sample = limsutils.sample_list_update_sample(sample_id, item)
+        limsutils.sample_list_update_sample(sample_id, item)
 
     sample_entry = qe.SampleQueueEntry(view=Mock(), data_model=sample_model)
     enable_entry(sample_entry, True)
@@ -1330,7 +1330,7 @@ def add_data_collection(node_id, task):
     dc_model, dc_entry = _create_dc(task)
     set_dc_params(dc_model, dc_entry, task, sample_model)
 
-    pt = dc_model.acquisitions[0].path_template
+    dc_model.acquisitions[0].path_template
 
 #    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
@@ -1365,7 +1365,7 @@ def add_workflow(node_id, task):
     wf_model, dc_entry = _create_wf(task)
     set_wf_params(wf_model, dc_entry, task, sample_model)
 
-    pt = wf_model.path_template
+    wf_model.path_template
 
 #    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
@@ -1441,7 +1441,7 @@ def add_xrf_scan(node_id, task):
     xrf_model, xrf_entry = _create_xrf(task)
     set_xrf_params(xrf_model, xrf_entry, task, sample_model)
 
-    pt = xrf_model.path_template
+    xrf_model.path_template
 
 #    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
@@ -1476,7 +1476,7 @@ def add_energy_scan(node_id, task):
     escan_model, escan_entry = _create_energy_scan(task, sample_model)
     set_energy_scan_params(escan_model, escan_entry, task, sample_model)
 
-    pt = escan_model.path_template
+    escan_model.path_template
 
 #    if blcontrol.queue.check_for_path_collisions(pt):
 #        msg = "[QUEUE] data collection could not be added to sample: "
@@ -2070,7 +2070,7 @@ def get_default_dc_params():
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
     ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
-    n = int(blcontrol.session["file_info"].getProperty("precision", 4))
+    int(blcontrol.session["file_info"].getProperty("precision", 4))
 
     bl = BeamlineSetupMediator(blcontrol.beamline)
 
@@ -2111,7 +2111,7 @@ def get_default_char_acq_params():
     acq_parameters = blcontrol.beamline.get_default_char_acq_parameters()
     ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
-    n = int(blcontrol.session["file_info"].getProperty("precision", 4))
+    int(blcontrol.session["file_info"].getProperty("precision", 4))
 
     char_defaults = blcontrol.beamline.\
         get_default_characterisation_parameters().as_dict()

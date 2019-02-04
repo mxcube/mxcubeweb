@@ -7,8 +7,6 @@ from mxcube3 import blcontrol
 from mxcube3.core import limsutils
 from mxcube3.core import scutils
 
-from mxcube3.core.qutils import UNCOLLECTED, SAMPLE_MOUNTED, COLLECTED
-from mxcube3.core.scutils import set_current_sample
 
 
 @server.route("/mxcube/api/v0.1/sample_changer/samples_list", methods=["GET"])
@@ -103,7 +101,7 @@ def unmount_sample():
 def get_maintenance_cmds():
     try:
         ret = scutils.get_maintenance_cmds()
-    except Exception as ex:
+    except Exception:
         return Response(status=409)
     else:
         return jsonify(cmds=ret)
@@ -120,7 +118,7 @@ def get_global_state():
         else:
             return jsonify(ret)
 
-    except Exception as ex:
+    except Exception:
         return Response(status=409)
     else:
         return jsonify(state=state, commands_state=cmdstate, message=msg)

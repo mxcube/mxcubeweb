@@ -261,7 +261,6 @@ class HOMediatorBase(object):
                   (not necessarily the one passed)
         :rtype: float
         """
-        pass
 
     # Abstract method
     def get(self):
@@ -272,7 +271,6 @@ class HOMediatorBase(object):
         :rtype: float
         :raises ValueError: When value for any reason can't be retrieved
         """
-        pass
 
     # Abstract method
     def state(self):
@@ -292,7 +290,6 @@ class HOMediatorBase(object):
         :returns: None
         :rtype: None
         """
-        pass
 
     # Abstract method
     def limits(self):
@@ -835,7 +832,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         """
         try:
             detdist_limits = self._ho.dtox.getLimits()
-        except (AttributeError, TypeError) as ex:
+        except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
         return detdist_limits
@@ -995,7 +992,7 @@ class CryoHOMediator(HOMediatorBase):
     def get(self):
         try:
             value = self._ho.get_value()
-        except Exception as ex:
+        except Exception:
             value = "0"
 
         return value

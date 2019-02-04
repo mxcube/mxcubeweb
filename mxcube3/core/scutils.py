@@ -193,7 +193,7 @@ def queue_mount_sample(
     log = logging.getLogger("user_level_log")
 
     loc = data_model.location
-    holder_length = data_model.holder_length
+    data_model.holder_length
 
     # This is a possible solution how to deal with two devices that
     # can move sample on beam (sample changer, plate holder, in future
@@ -283,7 +283,6 @@ def queue_mount_sample(
                 import traceback
 
                 log.info("centring did not pass %s" % traceback.format_exc())
-                pass
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
 

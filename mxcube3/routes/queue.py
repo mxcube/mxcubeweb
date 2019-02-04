@@ -1,5 +1,4 @@
 import json
-import logging
 
 from flask import Response, jsonify, request, session
 from mxcube3 import mxcube
