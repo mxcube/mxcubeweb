@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 """Utility functions for video streaming."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import fcntl
 import io
 import os
