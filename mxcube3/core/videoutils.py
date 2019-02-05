@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Utility functions for video streaming."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import fcntl
 import io
 import os
-import PIL
 import v4l2
-import numpy
 
 
 def open_video_device(path="/dev/video0"):

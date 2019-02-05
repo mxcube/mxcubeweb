@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 import traceback
 from mxcube3 import socketio
@@ -24,14 +28,14 @@ class MX3LoggingHandler(logging.Handler):
         except AttributeError:
             record.asctime = logging._defaultFormatter.formatTime(record)
 
-        return  {"message": record.getMessage(),
-                 "severity": record.levelname,
-                 "timestamp": record.asctime,
-                 "logger": record.name,
-                 "stack_trace": stack_trace
-                 }
+        return {"message": record.getMessage(),
+                "severity": record.levelname,
+                "timestamp": record.asctime,
+                "logger": record.name,
+                "stack_trace": stack_trace
+                }
 
     def emit(self, record):
         if record.name != "geventwebsocket.handler":
-            record_dict = self._record_to_json(record)        
+            record_dict = self._record_to_json(record)
             socketio.emit('log_record', record_dict, namespace='/logging')

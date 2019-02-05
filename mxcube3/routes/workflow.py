@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from flask import Response, jsonify, request
 
 from mxcube3 import socketio
 from mxcube3 import server
-
 
 from mxcube3.core import wfutils
 

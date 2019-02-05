@@ -1,13 +1,17 @@
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import json
 import logging
 from . import signals
 
+from . import signals
+
 from flask import Response, jsonify, request, make_response
 
 from mxcube3 import server
-
 from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 

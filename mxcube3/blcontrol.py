@@ -4,6 +4,9 @@ HardwareRepository. The HardwareRepository consists of several HardwareObjects
 that can be directly accessed through this module. See the list of
 HardwareObjects that are "exported" below.
 """
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import sys
 import logging

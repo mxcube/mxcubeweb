@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import re
 import logging
 import time
@@ -103,8 +106,6 @@ def get_light_limits():
 
 
 def get_movable_state_and_position(item_name):
-    ret = dict()
-
     try:
         if "light" in item_name.lower():
             # handle all *light* items in the same way;
@@ -147,7 +148,6 @@ def get_movable_state_and_position(item_name):
 
 def get_movable_limits(item_name):
     item_role = item_name.lower()
-    ret = dict()
 
     try:
         if "light" in item_role:
