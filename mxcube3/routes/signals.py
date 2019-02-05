@@ -166,8 +166,6 @@ def loaded_sample_changed(sample):
     logging.getLogger("HWR").info("Loaded sample changed now is: " + address)
 
     try:
-        # recreate the dict with the sample info
-        queue_to_dict()
         sampleID = address
 
         if blcontrol.sample_changer.hasLoadedSample():
@@ -615,7 +613,6 @@ def motor_state_callback(movable, sender=None, **kw):
 def beam_changed(*args, **kwargs):
 
     ret = {}
-    kwargs["signal"]
     beam_info = blcontrol.beamline.getObjectByRole("beam_info")
 
     if beam_info is None:

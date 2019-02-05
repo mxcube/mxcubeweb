@@ -182,7 +182,6 @@ def request_control_response():
     """
     data = request.get_json()
     new_op = observer_requesting_control()
-    loginutils.get_operator()
 
     # Request was denied
     if not data["giveControl"]:

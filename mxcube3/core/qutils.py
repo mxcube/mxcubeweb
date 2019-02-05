@@ -111,8 +111,6 @@ def node_index(node):
 
         sample = sample_model.loc_str
         task_groups = sample_model.get_children()
-        [group.get_children() for group in task_groups]
-
         tlist = []
 
         for group in task_groups:
@@ -1332,13 +1330,6 @@ def add_data_collection(node_id, task):
     dc_model, dc_entry = _create_dc(task)
     set_dc_params(dc_model, dc_entry, task, sample_model)
 
-    dc_model.acquisitions[0].path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
-
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
@@ -1366,13 +1357,6 @@ def add_workflow(node_id, task):
     sample_model, sample_entry = get_entry(node_id)
     wf_model, dc_entry = _create_wf(task)
     set_wf_params(wf_model, dc_entry, task, sample_model)
-
-    wf_model.path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
@@ -1443,13 +1427,6 @@ def add_xrf_scan(node_id, task):
     xrf_model, xrf_entry = _create_xrf(task)
     set_xrf_params(xrf_model, xrf_entry, task, sample_model)
 
-    xrf_model.path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
-
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
@@ -1477,13 +1454,6 @@ def add_energy_scan(node_id, task):
     sample_model, sample_entry = get_entry(node_id)
     escan_model, escan_entry = _create_energy_scan(task, sample_model)
     set_energy_scan_params(escan_model, escan_entry, task, sample_model)
-
-    escan_model.path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
@@ -2072,8 +2042,6 @@ def get_default_dc_params():
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
     ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
-    int(blcontrol.session["file_info"].getProperty("precision", 4))
-
     bl = BeamlineSetupMediator(blcontrol.beamline)
 
     return {
@@ -2113,8 +2081,6 @@ def get_default_char_acq_params():
     acq_parameters = blcontrol.beamline.get_default_char_acq_parameters()
     ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
-    int(blcontrol.session["file_info"].getProperty("precision", 4))
-
     char_defaults = blcontrol.beamline.\
         get_default_characterisation_parameters().as_dict()
 
