@@ -106,8 +106,6 @@ def get_light_limits():
 
 
 def get_movable_state_and_position(item_name):
-    pass
-
     try:
         if "light" in item_name.lower():
             # handle all *light* items in the same way;

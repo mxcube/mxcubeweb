@@ -196,7 +196,6 @@ def queue_mount_sample(
     log = logging.getLogger("user_level_log")
 
     loc = data_model.location
-    data_model.holder_length
 
     # This is a possible solution how to deal with two devices that
     # can move sample on beam (sample changer, plate holder, in future
