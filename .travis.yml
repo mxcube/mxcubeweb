@@ -1,8 +1,6 @@
 language: python
 python:
   - "2.7"
-  - "3.6"
-  - "3.7"
 
 node_js:
   - "10"
@@ -18,9 +16,12 @@ before_install:
 install:
   - npm install
   - npm run build
-
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then travis_retry pip install -r requirements.txt; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3'* ]]; then travis_retry pip install -r requirements-py3.txt; fi
+  - pip install codecov
+  - pip install pytest-cov
+  - pip install -r requirements.txt
 
 script:
   - python -m pytest
+
+after_success:
+  - codecov
