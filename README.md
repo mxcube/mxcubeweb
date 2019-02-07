@@ -3,7 +3,6 @@
 [![dependencies Status](https://david-dm.org/mxcube/mxcube3/status.svg)](https://david-dm.org/mxcube/mxcube3)
 [![codecov](https://codecov.io/gh/bsxcube/bsx3/branch/master/graph/badge.svg)](https://codecov.io/gh/bsxcube/bsx3)
 
-
 <p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
 # MXCuBE 3
