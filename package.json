@@ -7,8 +7,8 @@
     "lint": "eslint . --ext .js --ext .jsx"
   },
   "name": "mxcube3",
-  "description": "The next version of MxCUBE",
-  "version": "0.1.0",
+  "description": "MxCUBE3",
+  "version": "3.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/mxcube/mxcube3"
