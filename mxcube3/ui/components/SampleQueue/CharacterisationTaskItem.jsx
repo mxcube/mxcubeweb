@@ -262,72 +262,79 @@ export default class TaskItem extends Component {
 
     return (
       <div className="node node-sample">
-      <ContextMenuTrigger id="currentSampleQueueContextMenu">
-        <div
-          className={taskCSS}
-          style={{ display: 'flex' }}
-          onClick={this.taskHeaderOnClick}
-          onContextMenu={this.taskHeaderOnContextMenu}
-        >
-          <b>
-            <span className="node-name" style={{ display: 'flex' }} >
-              {this.pointIDString(wedges)} {data.label}
-              { state === TASK_RUNNING ? this.progressBar() : null }
-            </span>
-          </b>
-            { state === TASK_UNCOLLECTED ?
-              <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
-            }
-        </div>
-        <Collapse in={Boolean(show)}>
-          <div className="task-body">
-            { wedges.map((wedge, i) => {
-              const padding = i > 0 ? '1em' : '0em';
-              return (
-              <div key={`wedge-${i}`}>
-              <div style={ { borderLeft: '1px solid #DDD',
-                borderRight: '1px solid #DDD',
-                paddingTop: padding } }
-              >
-                <div style={ { borderTop: '1px solid #DDD',
-                  padding: '0.5em' } }
-                >
-                  <b>Path:</b> { this.wedgePath(wedge) }
-                </div>
-              </div>
-              <Table
-                striped
-                condensed
-                bordered
-                hover
-                onClick={this.showForm}
-                style={{ fontSize: 'smaller', marginBottom: '0px' }}
-                className="task-parameters-table"
-              >
-                <thead>
-                  <tr>
-                    <th>Start &deg; </th>
-                    <th>Osc. &deg; </th>
-                    <th>t (ms)</th>
-                    <th># Img</th>
-                    <th>T (%)</th>
-                    <th>Res. (&Aring;)</th>
-                    <th>E (KeV)</th>
-                    <th>&phi; &deg;</th>
-                    <th>&kappa; &deg;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.wedgeParameters(wedge)}
-                </tbody>
-              </Table>
-              {this.getResult(state, data)}
-              </div>);
-            })}
+        <ContextMenuTrigger id="currentSampleQueueContextMenu">
+          <div
+            onClick={this.taskHeaderOnClick}
+            onContextMenu={this.taskHeaderOnContextMenu}
+          >
+            <div
+              className={taskCSS}
+              style={{ display: 'flex' }}
+            >
+              <b>
+                <span className="node-name" style={{ display: 'flex' }} >
+                  {this.pointIDString(wedges)} {data.label}
+                  {state === TASK_RUNNING ? this.progressBar() : null}
+                </span>
+              </b>
+              {state === TASK_UNCOLLECTED ?
+                <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
+              }
+            </div>
+            <Collapse in={Boolean(show)}>
+              <div className="task-body">
+                {wedges.map((wedge, i) => {
+                  const padding = i > 0 ? '1em' : '0em';
+                  return (
+                    <div key={`wedge-${i}`}>
+                      <div style={{
+                        borderLeft: '1px solid #DDD',
+                        borderRight: '1px solid #DDD',
+                        paddingTop: padding
+                      }}
+                      >
+                        <div style={{
+                          borderTop: '1px solid #DDD',
+                          padding: '0.5em'
+                        }}
+                        >
+                          <b>Path:</b> {this.wedgePath(wedge)}
+                        </div>
+                      </div>
+                      <Table
+                        striped
+                        condensed
+                        bordered
+                        hover
+                        onClick={this.showForm}
+                        style={{ fontSize: 'smaller', marginBottom: '0px' }}
+                        className="task-parameters-table"
+                      >
+                        <thead>
+                          <tr>
+                            <th>Start &deg; </th>
+                            <th>Osc. &deg; </th>
+                            <th>t (ms)</th>
+                            <th># Img</th>
+                            <th>T (%)</th>
+                            <th>Res. (&Aring;)</th>
+                            <th>E (KeV)</th>
+                            <th>&phi; &deg;</th>
+                            <th>&kappa; &deg;</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {this.wedgeParameters(wedge)}
+                        </tbody>
+                      </Table>
+                      {this.getResult(state, data)}
+                    </div>);
+                })}
 
+              </div>
+            </Collapse>
           </div>
-        </Collapse>
-      </ContextMenuTrigger>
+        </ContextMenuTrigger>
       </div>);
   }
 }

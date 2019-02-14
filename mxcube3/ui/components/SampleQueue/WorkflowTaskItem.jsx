@@ -174,39 +174,42 @@ export default class WorkflowTaskItem extends Component {
 
     return (
       <div className="node node-sample">
-      <ContextMenuTrigger id="currentSampleQueueContextMenu">
-        <div
-          className={taskCSS}
-          style={{ display: 'flex' }}
-          onClick={this.taskHeaderOnClick}
-          onContextMenu={this.taskHeaderOnContextMenu}
-        >
-          <b>
-            <span className="node-name" style={{ display: 'flex' }} >
-              {this.pointIDString(parameters)} {data.label}
-              { state === TASK_RUNNING ? this.progressBar() : null }
-            </span>
-          </b>
-            { state === TASK_UNCOLLECTED ?
-              <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
-            }
-        </div>
-        <Collapse in={Boolean(show)}>
-          <div className="task-body">
-            <div>
-              <div style={ { border: '1px solid #DDD' } }>
-                <div
-                  style={ { padding: '0.5em' } }
-                  onClick={this.showForm}
-                >
-                  <b>Workflow path:</b> { this.path(parameters) }
+        <ContextMenuTrigger id="currentSampleQueueContextMenu">
+          <div
+            onClick={this.taskHeaderOnClick}
+            onContextMenu={this.taskHeaderOnContextMenu}
+          >
+            <div
+              className={taskCSS}
+              style={{ display: 'flex' }}
+            >
+              <b>
+                <span className="node-name" style={{ display: 'flex' }} >
+                  {this.pointIDString(parameters)} {data.label}
+                  {state === TASK_RUNNING ? this.progressBar() : null}
+                </span>
+              </b>
+              {state === TASK_UNCOLLECTED ?
+                <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
+              }
+            </div>
+            <Collapse in={Boolean(show)}>
+              <div className="task-body">
+                <div>
+                  <div style={{ border: '1px solid #DDD' }}>
+                    <div
+                      style={{ padding: '0.5em' }}
+                      onClick={this.showForm}
+                    >
+                      <b>Workflow path:</b> {this.path(parameters)}
+                    </div>
+                  </div>
+                  {this.getResult(state)}
                 </div>
               </div>
-              {this.getResult(state)}
-            </div>
+            </Collapse>
           </div>
-        </Collapse>
-      </ContextMenuTrigger>
+        </ContextMenuTrigger>
       </div>);
   }
 }
