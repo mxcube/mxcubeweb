@@ -158,7 +158,7 @@ def test_queue_start(client, add_sample, add_task):
     rv = client.put("/mxcube/api/v0.1/queue/unpause")
     assert rv.status_code == 200
 
-    time.sleep(5)
+    time.sleep(1)
     rv = client.get("/mxcube/api/v0.1/queue_state")
     assert (
         rv.status_code == 200
@@ -430,26 +430,30 @@ def test_queue_set_sample_order(client, add_sample):
 
 def test_get_default_dc_params(client):
     """Test if we get the right default data collection params."""
-    rv = client.get("/mxcube/api/v0.1/queue/dc")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_dc_params
+    resp = client.get("/mxcube/api/v0.1/queue/dc")
+    actual = json.loads(resp.data)
+
+    # osc_start is taken from current omega which is random, so ignore it
+    actual['acq_parameters'].pop('osc_start')
+    assert resp.status_code == 200 and actual == default_dc_params
 
 
 def test_get_default_char_acq_params(client):
     """Test if we get the right default characterisation acq params."""
-    rv = client.get("/mxcube/api/v0.1/queue/char_acq")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_char_acq_params
+    resp = client.get("/mxcube/api/v0.1/queue/char_acq")
+    assert resp.status_code == 200 and json.loads(resp.data) == default_char_acq_params
 
 
 def test_get_default_char_params(client):
     """Test if we get the right default characterisation params."""
-    rv = client.get("/mxcube/api/v0.1/queue/char")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_char_params
+    resp = client.get("/mxcube/api/v0.1/queue/char")
+    assert resp.status_code == 200 and json.loads(resp.data) == default_char_params
 
 
 def test_get_default_mesh_params(client):
     """Test if we get the right default mesh params."""
-    rv = client.get("/mxcube/api/v0.1/queue/mesh")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_mesh_params
+    resp = client.get("/mxcube/api/v0.1/queue/mesh")
+    assert resp.status_code == 200 and json.loads(resp.data) == default_mesh_params
 
 
 def test_get_default_xrf_parameters(client):
