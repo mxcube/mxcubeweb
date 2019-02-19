@@ -6,6 +6,12 @@ import random
 from mxcube3 import server
 
 
+# Python 2 and 3 compatibility
+try:
+    unicode
+except:
+    unicode = str
+
 sys.path.append("./")
 
 
@@ -116,7 +122,7 @@ def test_get_aperture(client):
     resp = client.get("/mxcube/api/v0.1/diffractometer/aperture")
     data = json.loads(resp.data)
 
-    assert isinstance(data["currentAperture"], unicode)
+    assert isinstance(data["currentAperture"], int)
     assert isinstance(data["apertureList"], list)
 
 

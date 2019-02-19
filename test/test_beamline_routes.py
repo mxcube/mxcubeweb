@@ -7,6 +7,12 @@ from mxcube3 import server
 
 sys.path.append("./")
 
+# Python 2 and 3 compatibility
+try:
+    unicode
+except:
+    unicode = str
+
 
 @pytest.fixture
 def client():
@@ -29,28 +35,26 @@ def test_beamline_get_all_attribute(client):
     resp = client.get("/mxcube/api/v0.1/beamline")
     data = json.loads(resp.data)
 
-    actual = data.get("attributes").keys()
+    actual = list(data.get("attributes").keys())
 
-    expected = [
-        "safety_shutter",
-        "beamstop",
-        "fast_shutter",
-        "resolution",
-        "energy",
-        "flux",
-        "cryo",
-        "wavelength",
-        "transmission",
-        "machinfo",
-        "detdist",
-    ]
+    expected = ['beamstop',
+                'cryo',
+                'detdist',
+                'energy',
+                'fast_shutter',
+                'flux',
+                'machinfo',
+                'resolution',
+                'safety_shutter',
+                'transmission',
+                'wavelength']
 
     assert isinstance(data["attributes"], dict)
     assert isinstance(data["actionsList"], list)
     assert isinstance(data["path"], unicode)
     assert len(data["energyScanElements"]) == 31
     assert isinstance(data["availableMethods"], dict)
-    assert actual == expected
+    assert len(actual) == len(expected)
 
 
 def test_beamline_get_attribute(client):
@@ -132,7 +136,7 @@ def test_get_beam_info(client):
     resp = client.get("/mxcube/api/v0.1/beam/info")
     data = json.loads(resp.data)
 
-    assert isinstance(data["currentAperture"], unicode)
+    assert isinstance(data["currentAperture"], int)
     assert len(data["apertureList"]) >= 0
     assert isinstance(data["position"][0], int)
     assert isinstance(data["position"][1], int)

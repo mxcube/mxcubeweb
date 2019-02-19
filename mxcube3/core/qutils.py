@@ -1814,8 +1814,9 @@ def queue_start(sid):
     try:
         # If auto mount sample is false, just run the sample
         # supplied in the call
+
         if not get_auto_mount_sample():
-            if sid > 0:
+            if sid:
                 execute_entry_with_id(sid)
         else:
             # Making sure all sample entries are enabled before running the

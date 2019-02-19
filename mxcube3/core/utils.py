@@ -123,20 +123,20 @@ def get_movable_state_and_position(item_name):
             logging.getLogger("MX3.HWR").error(msg)
             return {item_name: {"name": item_name, "state": None, "position": None}}
         else:
-            if hasattr(hwobj, "getCurrentPositionName"):
+            if hasattr(hwobj, "get_current_position_name"):
                 # a motor similar to zoom
-                pos_name = hwobj.getCurrentPositionName()
+                pos_name = hwobj.get_current_position_name()
                 if pos_name:
-                    pos = hwobj.predefinedPositions[pos_name]
+                    pos = hwobj.predefined_positions[pos_name]
                 else:
                     pos = None
             else:
-                pos = hwobj.getPosition()
+                pos = hwobj.get_position()
 
             return {
                 item_name: {
                     "name": item_name,
-                    "state": hwobj.getState(),
+                    "state": hwobj.get_state(),
                     "position": pos,
                 }
             }
