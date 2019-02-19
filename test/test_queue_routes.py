@@ -441,19 +441,30 @@ def test_get_default_dc_params(client):
 def test_get_default_char_acq_params(client):
     """Test if we get the right default characterisation acq params."""
     resp = client.get("/mxcube/api/v0.1/queue/char_acq")
-    assert resp.status_code == 200 and json.loads(resp.data) == default_char_acq_params
+    actual = json.loads(resp.data)
+
+    # osc_start is taken from current omega which is random, so ignore it
+    actual['acq_parameters'].pop('osc_start')
+
+    assert resp.status_code == 200 and actual == default_char_acq_params
 
 
 def test_get_default_char_params(client):
     """Test if we get the right default characterisation params."""
     resp = client.get("/mxcube/api/v0.1/queue/char")
-    assert resp.status_code == 200 and json.loads(resp.data) == default_char_params
+    actual = json.loads(resp.data)
+    assert resp.status_code == 200 and actual == default_char_params
 
 
 def test_get_default_mesh_params(client):
     """Test if we get the right default mesh params."""
     resp = client.get("/mxcube/api/v0.1/queue/mesh")
-    assert resp.status_code == 200 and json.loads(resp.data) == default_mesh_params
+    actual = json.loads(resp.data)
+
+    # osc_start is taken from current omega which is random, so ignore it
+    actual['acq_parameters'].pop('osc_start')
+
+    assert resp.status_code == 200 and actual == default_mesh_params
 
 
 def test_get_default_xrf_parameters(client):
