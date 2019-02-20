@@ -1,12 +1,8 @@
-import copy
 import time
-import sys
-import pytest
 import json
+import copy
 
-from mxcube3 import server
 from input_parameters import (
-    test_sample_1,
     test_sample_5,
     test_sample_6,
     test_task,
@@ -18,62 +14,8 @@ from input_parameters import (
     default_xrf_parameters,
 )
 
-sys.path.append("./")
 
-
-@pytest.fixture
-def client():
-    """Fixture to create a client, that will be used in each test."""
-    server.config["TESTING"] = True
-    client = server.test_client()
-
-    data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
-    client.post("/mxcube/api/v0.1/login", data=data, content_type="application/json")
-
-    yield client
-
-
-@pytest.fixture
-def add_sample(client):
-    """Fixture to add a sample to the queue, since it is required for alot of test cases."""
-
-    rv = client.post(
-        "/mxcube/api/v0.1/queue",
-        data=json.dumps([test_sample_1]),
-        content_type="application/json",
-    )
-
-    assert rv.status_code == 200
-
-    rv = client.post(
-        "/mxcube/api/v0.1/queue",
-        data=json.dumps([test_sample_5]),
-        content_type="application/json",
-    )
-
-    assert rv.status_code == 200
-
-    yield client
-
-
-@pytest.fixture
-def add_task(client):
-    """Fixture to add a task to the sample in the queue queue, since it is required for alot of test cases."""
-    rv = client.get("/mxcube/api/v0.1/queue")
-
-    assert rv.status_code == 200 and json.loads(rv.data).get("1:05")
-
-    queue_id = json.loads(rv.data).get("1:05")["queueID"]
-    task_to_add = copy.deepcopy(test_task)
-    task_to_add["queueID"] = queue_id
-    task_to_add["tasks"][0]["sampleQueueID"] = queue_id
-    rv = client.post(
-        "/mxcube/api/v0.1/queue",
-        data=json.dumps([task_to_add]),
-        content_type="application/json",
-    )
-    assert rv.status_code == 200
-    yield client
+from fixture import client, add_sample, add_task
 
 
 def test_get_main(client):
