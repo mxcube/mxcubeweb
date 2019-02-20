@@ -1,11 +1,4 @@
-import sys
-import pytest
 import json
-
-from mxcube3 import server
-
-
-sys.path.append("./")
 
 # Python 2 and 3 compatibility
 try:
@@ -13,18 +6,7 @@ try:
 except:
     unicode = str
 
-
-@pytest.fixture
-def client():
-    server.config["TESTING"] = True
-
-    client = server.test_client()
-
-    data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
-
-    client.post("/mxcube/api/v0.1/login", data=data, content_type="application/json")
-
-    yield client
+from fixture import client
 
 
 def test_beamline_get_all_attribute(client):
