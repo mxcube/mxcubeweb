@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from subprocess import check_output
 from os.path import isfile, join
 
 from flask import jsonify, Response, send_file, request, render_template
-from mxcube3 import mxcube
 from mxcube3 import server
 from mxcube3 import blcontrol
 
-import queue_model_objects_v1 as qmo
+import queue_model_objects as qmo
 
 from mxcube3.core import limsutils
 from mxcube3.core import qutils

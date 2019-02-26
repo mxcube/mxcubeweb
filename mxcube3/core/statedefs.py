@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-class MOTOR_STATE:
+class MOTOR_STATE(object):
     """
     Motor states, to be added to AbstractMotor definition when the web-
     application is in a more mature state.
@@ -22,7 +22,7 @@ class MOTOR_STATE:
     }
 
 
-class INOUT_STATE:
+class INOUT_STATE(object):
     """
     States for inout devices, mapped to the client (UI) representation of
     in out devices. IN state to be interpreted as positive
@@ -40,7 +40,7 @@ class INOUT_STATE:
     STATE_TO_MSG_STR = {OUT: "OUT", IN: "IN"}
 
 
-class TANGO_SHUTTER_STATE:
+class TANGO_SHUTTER_STATE(object):
     """
     State mapping for TangoShuter.TangoShutter
     """
@@ -50,7 +50,7 @@ class TANGO_SHUTTER_STATE:
     STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OPEN", INOUT_STATE.IN: "CLOSED"}
 
 
-class MICRODIFF_INOUT_STATE:
+class MICRODIFF_INOUT_STATE(object):
     """
     State mapping for MicrodiffInOut
     """
@@ -60,11 +60,11 @@ class MICRODIFF_INOUT_STATE:
     STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OPEN", INOUT_STATE.IN: "CLOSED"}
 
 
-class BEAMSTOP_STATE:
+class BEAMSTOP_STATE(object):
     """
     State mapping for Beamstop
     """
 
-    TO_INOUT_STATE = {"in": INOUT_STATE.OUT, "out": INOUT_STATE.IN}
+    TO_INOUT_STATE = {"in": INOUT_STATE.IN, "out": INOUT_STATE.OUT}
 
-    STATE_TO_MSG_STR = {INOUT_STATE.OUT: "IN", INOUT_STATE.IN: "OUT"}
+    STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OUT", INOUT_STATE.IN: "IN"}

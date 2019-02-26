@@ -1,3 +1,7 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 from flask_socketio import emit, join_room, leave_room
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
@@ -46,4 +50,4 @@ def init():
     def ui_state_getkeys(*args):
         join_room("raSlaves")
 
-        return ['reduxPersist:'+k for k in mxcube.UI_STATE.iterkeys()]
+        return ['reduxPersist:'+k for k in mxcube.UI_STATE.keys()]

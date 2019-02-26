@@ -1,4 +1,6 @@
 from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from gevent import monkey
 monkey.patch_all(thread=False)
@@ -93,6 +95,7 @@ socketio.init_app(server)
 
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
+
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     mxcube.init(hwr, cmdline_options.hwr_directory,
                 cmdline_options.allow_remote,

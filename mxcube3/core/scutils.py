@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 
 # We are patching queue_entry.mount_sample at the end of this file.
@@ -7,11 +11,11 @@ import queue_entry
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
 
-import limsutils
-import qutils
+from . import limsutils
+from . import qutils
 
 
-from queue_entry import QueueSkippEntryException, CENTRING_METHOD
+from queue_entry import (QueueSkippEntryException, CENTRING_METHOD)
 
 
 def init_signals():
@@ -192,7 +196,6 @@ def queue_mount_sample(
     log = logging.getLogger("user_level_log")
 
     loc = data_model.location
-    holder_length = data_model.holder_length
 
     # This is a possible solution how to deal with two devices that
     # can move sample on beam (sample changer, plate holder, in future
@@ -282,7 +285,6 @@ def queue_mount_sample(
                 import traceback
 
                 log.info("centring did not pass %s" % traceback.format_exc())
-                pass
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
 

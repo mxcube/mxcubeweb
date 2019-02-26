@@ -1,5 +1,8 @@
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import json
-import logging
 
 from flask import Response, jsonify, request, session
 from mxcube3 import mxcube
@@ -21,7 +24,7 @@ def queue_start():
               200: On success
               409: Queue could not be started
     """
-    sid = request.get_json().get("sid", -1)
+    sid = request.get_json().get("sid", None)
     qutils.queue_start(sid)
 
     return Response(status=200)

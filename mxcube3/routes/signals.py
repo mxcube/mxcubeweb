@@ -1,7 +1,8 @@
-import logging
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-import queue_model_objects_v1 as qmo
-import queue_entry as qe
+import logging
 import json
 
 from mxcube3 import socketio
@@ -14,7 +15,7 @@ from mxcube3.core import limsutils
 
 from mxcube3.core.loginutils import safe_emit
 
-from sample_changer.GenericSampleChanger import SampleChangerState
+from abstract.AbstractSampleChanger import SampleChangerState
 
 from mxcube3.core.beamline_setup import BeamlineSetupMediator
 from mxcube3.core.qutils import (
@@ -25,6 +26,11 @@ from mxcube3.core.qutils import (
     WARNING,
     queue_to_dict,
 )
+
+
+import queue_model_objects as qmo
+import queue_entry as qe
+
 from queue_entry import CENTRING_METHOD
 from mxcube3.core.utils import to_camel
 
@@ -160,8 +166,6 @@ def loaded_sample_changed(sample):
     logging.getLogger("HWR").info("Loaded sample changed now is: " + address)
 
     try:
-        # recreate the dict with the sample info
-        q = queue_to_dict()
         sampleID = address
 
         if blcontrol.sample_changer.hasLoadedSample():
@@ -382,9 +386,9 @@ def collect_oscillation_failed(
 
     if not qutils.is_interleaved(node["node"]):
         try:
-            limsres = blcontrol.rest_lims.get_dc(lims_id)
+            blcontrol.rest_lims.get_dc(lims_id)
         except BaseException:
-            limsres = {}
+            pass
 
         msg = {
             "Signal": "collectOscillationFailed",
@@ -609,7 +613,6 @@ def motor_state_callback(movable, sender=None, **kw):
 def beam_changed(*args, **kwargs):
 
     ret = {}
-    signal = kwargs["signal"]
     beam_info = blcontrol.beamline.getObjectByRole("beam_info")
 
     if beam_info is None:
@@ -699,7 +702,7 @@ def plot_data(data, last_index=[0], **kwargs):
     if last_index[0] > len(data_data):
         last_index = [0]
 
-    data["data"] = data_data[last_index[0] :]
+    data["data"] = data_data[last_index[0]:]
 
     try:
         socketio.emit("plot_data", data, namespace="/hwr")

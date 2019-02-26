@@ -1,5 +1,6 @@
 import './SampleView.css';
 import React from 'react';
+import { MOTOR_STATE } from '../../constants';
 import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
@@ -465,7 +466,7 @@ export default class SampleImage extends React.Component {
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     const keyPressed = this._keyPressed;
 
-    if (keyPressed === 'r' && motors.phi.state === 2) {
+    if (keyPressed === 'r' && motors.phi.state === MOTOR_STATE.READY) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -474,7 +475,7 @@ export default class SampleImage extends React.Component {
         // zoom out
         sendMotorPosition('Phi', motors.phi.position - parseInt(motorSteps.phiStep, 10));
       }
-    } else if (keyPressed === 'f' && motors.focus.state === 2) {
+    } else if (keyPressed === 'f' && motors.focus.state === MOTOR_STATE.READY) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition('Focus', motors.focus.position + parseFloat(motorSteps.focusStep, 10));
@@ -482,7 +483,7 @@ export default class SampleImage extends React.Component {
         // Focus out
         sendMotorPosition('Focus', motors.focus.position - parseFloat(motorSteps.focusStep, 10));
       }
-    } else if (keyPressed === 'z' && motors.zoom.state === 2) {
+    } else if (keyPressed === 'z' && motors.zoom.state === MOTOR_STATE.READY) {
       // in this case zooming
       if (e.deltaY > 0 && motors.zoom.position < 10) {
         // zoom in

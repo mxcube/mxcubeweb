@@ -1,12 +1,8 @@
-import copy
 import time
-import sys
-import pytest
 import json
+import copy
 
-from mxcube3 import server
 from input_parameters import (
-    test_sample_1,
     test_sample_5,
     test_sample_6,
     test_task,
@@ -18,62 +14,8 @@ from input_parameters import (
     default_xrf_parameters,
 )
 
-sys.path.append("./")
 
-
-@pytest.fixture
-def client():
-    """Fixture to create a client, that will be used in each test."""
-    server.config["TESTING"] = True
-    client = server.test_client()
-
-    data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
-    client.post("/mxcube/api/v0.1/login", data=data, content_type="application/json")
-
-    yield client
-
-
-@pytest.fixture
-def add_sample(client):
-    """Fixture to add a sample to the queue, since it is required for alot of test cases."""
-
-    rv = client.post(
-        "/mxcube/api/v0.1/queue",
-        data=json.dumps([test_sample_1]),
-        content_type="application/json",
-    )
-
-    assert rv.status_code == 200
-
-    rv = client.post(
-        "/mxcube/api/v0.1/queue",
-        data=json.dumps([test_sample_5]),
-        content_type="application/json",
-    )
-
-    assert rv.status_code == 200
-
-    yield client
-
-
-@pytest.fixture
-def add_task(client):
-    """Fixture to add a task to the sample in the queue queue, since it is required for alot of test cases."""
-    rv = client.get("/mxcube/api/v0.1/queue")
-
-    assert rv.status_code == 200 and json.loads(rv.data).get("1:05")
-
-    queue_id = json.loads(rv.data).get("1:05")["queueID"]
-    task_to_add = copy.deepcopy(test_task)
-    task_to_add["queueID"] = queue_id
-    task_to_add["tasks"][0]["sampleQueueID"] = queue_id
-    rv = client.post(
-        "/mxcube/api/v0.1/queue",
-        data=json.dumps([task_to_add]),
-        content_type="application/json",
-    )
-    assert rv.status_code == 200
-    yield client
+from fixture import client, add_sample, add_task
 
 
 def test_get_main(client):
@@ -158,7 +100,7 @@ def test_queue_start(client, add_sample, add_task):
     rv = client.put("/mxcube/api/v0.1/queue/unpause")
     assert rv.status_code == 200
 
-    time.sleep(5)
+    time.sleep(1)
     rv = client.get("/mxcube/api/v0.1/queue_state")
     assert (
         rv.status_code == 200
@@ -430,26 +372,41 @@ def test_queue_set_sample_order(client, add_sample):
 
 def test_get_default_dc_params(client):
     """Test if we get the right default data collection params."""
-    rv = client.get("/mxcube/api/v0.1/queue/dc")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_dc_params
+    resp = client.get("/mxcube/api/v0.1/queue/dc")
+    actual = json.loads(resp.data)
+
+    # osc_start is taken from current omega which is random, so ignore it
+    actual['acq_parameters'].pop('osc_start')
+    assert resp.status_code == 200 and actual == default_dc_params
 
 
 def test_get_default_char_acq_params(client):
     """Test if we get the right default characterisation acq params."""
-    rv = client.get("/mxcube/api/v0.1/queue/char_acq")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_char_acq_params
+    resp = client.get("/mxcube/api/v0.1/queue/char_acq")
+    actual = json.loads(resp.data)
+
+    # osc_start is taken from current omega which is random, so ignore it
+    actual['acq_parameters'].pop('osc_start')
+
+    assert resp.status_code == 200 and actual == default_char_acq_params
 
 
 def test_get_default_char_params(client):
     """Test if we get the right default characterisation params."""
-    rv = client.get("/mxcube/api/v0.1/queue/char")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_char_params
+    resp = client.get("/mxcube/api/v0.1/queue/char")
+    actual = json.loads(resp.data)
+    assert resp.status_code == 200 and actual == default_char_params
 
 
 def test_get_default_mesh_params(client):
     """Test if we get the right default mesh params."""
-    rv = client.get("/mxcube/api/v0.1/queue/mesh")
-    assert rv.status_code == 200 and json.loads(rv.data) == default_mesh_params
+    resp = client.get("/mxcube/api/v0.1/queue/mesh")
+    actual = json.loads(resp.data)
+
+    # osc_start is taken from current omega which is random, so ignore it
+    actual['acq_parameters'].pop('osc_start')
+
+    assert resp.status_code == 200 and actual == default_mesh_params
 
 
 def test_get_default_xrf_parameters(client):

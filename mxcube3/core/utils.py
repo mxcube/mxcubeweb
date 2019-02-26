@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import re
 import logging
 import time
@@ -9,7 +13,7 @@ import inspect
 import base64
 import os
 import sys
-import email.Utils
+import email.utils
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import make_msgid
@@ -102,8 +106,6 @@ def get_light_limits():
 
 
 def get_movable_state_and_position(item_name):
-    ret = dict()
-
     try:
         if "light" in item_name.lower():
             # handle all *light* items in the same way;
@@ -121,20 +123,20 @@ def get_movable_state_and_position(item_name):
             logging.getLogger("MX3.HWR").error(msg)
             return {item_name: {"name": item_name, "state": None, "position": None}}
         else:
-            if hasattr(hwobj, "getCurrentPositionName"):
+            if hasattr(hwobj, "get_current_position_name"):
                 # a motor similar to zoom
-                pos_name = hwobj.getCurrentPositionName()
+                pos_name = hwobj.get_current_position_name()
                 if pos_name:
-                    pos = hwobj.predefinedPositions[pos_name]
+                    pos = hwobj.predefined_positions[pos_name]
                 else:
                     pos = None
             else:
-                pos = hwobj.getPosition()
+                pos = hwobj.get_position()
 
             return {
                 item_name: {
                     "name": item_name,
-                    "state": hwobj.getState(),
+                    "state": hwobj.get_state(),
                     "position": pos,
                 }
             }
@@ -146,7 +148,6 @@ def get_movable_state_and_position(item_name):
 
 def get_movable_limits(item_name):
     item_role = item_name.lower()
-    ret = dict()
 
     try:
         if "light" in item_role:
@@ -179,7 +180,7 @@ def get_centring_motors():
     global _centring_motors_memo
 
     if not _centring_motors_memo:
-        _centring_motors_memo = blcontrol.diffractometer.getPositions().keys()
+        _centring_motors_memo = list(blcontrol.diffractometer.getPositions().keys())
 
         # Adding the two pseudo motors for sample alignment in the microscope
         # view
@@ -220,7 +221,7 @@ def _snapshot_received(data):
 
 
 def _do_take_snapshot(filename):
-    import loginutils
+    from . import loginutils
 
     SNAPSHOT_RECEIVED.clear()
     rid = loginutils.get_operator()["socketio_sid"]
@@ -399,7 +400,7 @@ def str_to_snake(name):
 def convert_dict(fun, d, recurse=True):
     converted = {}
 
-    for key, value in d.iteritems():
+    for key, value in d.items():
         if isinstance(value, dict) and recurse:
             value = convert_dict(fun, value)
 

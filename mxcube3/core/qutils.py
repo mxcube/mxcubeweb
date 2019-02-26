@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import json
-import cPickle as pickle
+import pickle as pickle
 import redis
 import itertools
 import logging
@@ -9,21 +13,18 @@ import re
 
 from mock import Mock
 
-
-import queue_model_objects_v1 as qmo
+import queue_model_objects as qmo
 import queue_entry as qe
-import queue_model_enumerables_v1 as qme
-
+import queue_model_enumerables as qme
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
 from mxcube3 import socketio
 
-import limsutils
-import utils
-import scutils
+from . import limsutils
+from . import utils
 
-from beamline_setup import BeamlineSetupMediator
+from .beamline_setup import BeamlineSetupMediator
 from functools import reduce
 
 # Important: same constants as in constants.js
@@ -110,8 +111,6 @@ def node_index(node):
 
         sample = sample_model.loc_str
         task_groups = sample_model.get_children()
-        group_list = [group.get_children() for group in task_groups]
-
         tlist = []
 
         for group in task_groups:
@@ -258,6 +257,8 @@ def get_queue_state():
                 queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
               }
     """
+    from . import scutils
+
     queue = queue_to_dict(include_lims_data=True)
     sample_order = queue.get("sample_order", [])
 
@@ -765,7 +766,7 @@ def set_sample_order(order):
     :param list sample_order: List of sample ids
     """
     current_queue = queue_to_dict()
-    sid_list = list(filter(lambda sid: current_queue.get(sid, False), order))
+    sid_list = list([sid for sid in order if current_queue.get(sid, False)])
 
     if sid_list:
         queue_id_list = [current_queue[sid]["queueID"] for sid in sid_list]
@@ -918,7 +919,7 @@ def add_sample(sample_id, item):
     # Manually added sample, make sure that i'ts on the server side sample list
     if item['location'] == "Manual":
         item["defaultSubDir"] = limsutils.get_default_subdir(item)
-        sample = limsutils.sample_list_update_sample(sample_id, item)
+        limsutils.sample_list_update_sample(sample_id, item)
 
     sample_entry = qe.SampleQueueEntry(view=Mock(), data_model=sample_model)
     enable_entry(sample_entry, True)
@@ -1067,7 +1068,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params['sample_lims_id'] = sample_model.lims_id
     beamline_params['beamline'] = blcontrol.beamline.session_hwobj.endstation_name
 
-    params_list = map(str, list(itertools.chain(*beamline_params.iteritems())))
+    params_list = list(map(str, list(itertools.chain(*iter(beamline_params.items())))))
     params_list.insert(0, params["wfpath"])
     params_list.insert(0, 'modelpath')
 
@@ -1329,13 +1330,6 @@ def add_data_collection(node_id, task):
     dc_model, dc_entry = _create_dc(task)
     set_dc_params(dc_model, dc_entry, task, sample_model)
 
-    pt = dc_model.acquisitions[0].path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
-
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
@@ -1363,13 +1357,6 @@ def add_workflow(node_id, task):
     sample_model, sample_entry = get_entry(node_id)
     wf_model, dc_entry = _create_wf(task)
     set_wf_params(wf_model, dc_entry, task, sample_model)
-
-    pt = wf_model.path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
@@ -1440,13 +1427,6 @@ def add_xrf_scan(node_id, task):
     xrf_model, xrf_entry = _create_xrf(task)
     set_xrf_params(xrf_model, xrf_entry, task, sample_model)
 
-    pt = xrf_model.path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
-
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
@@ -1474,13 +1454,6 @@ def add_energy_scan(node_id, task):
     sample_model, sample_entry = get_entry(node_id)
     escan_model, escan_entry = _create_energy_scan(task, sample_model)
     set_energy_scan_params(escan_model, escan_entry, task, sample_model)
-
-    pt = escan_model.path_template
-
-#    if blcontrol.queue.check_for_path_collisions(pt):
-#        msg = "[QUEUE] data collection could not be added to sample: "
-#        msg += "path collision"
-#        raise Exception(msg)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
@@ -1622,7 +1595,7 @@ def set_auto_add_diffplan(autoadd, current_sample=None):
     if 'sample_order' in current_queue:
         current_queue.pop('sample_order')
 
-    sampleIDs = current_queue.keys()
+    sampleIDs = list(current_queue.keys())
     for sample in sampleIDs:
         # this would be a sample
         tasks = current_queue[sample]['tasks']
@@ -1639,6 +1612,8 @@ def execute_entry_with_id(sid, tindex=None):
     :param str sid: sampleID
     :param int tindex: task index of task within sample with id sampleID
     """
+    from . import scutils
+
     current_queue = queue_to_dict()
     blcontrol.queue.queue_hwobj.set_pause(False)
 
@@ -1804,6 +1779,8 @@ def init_queue_settings():
 
 
 def add_default_sample():
+    from . import scutils
+
     sample = {"sampleID": "1",
               "sampleName": "noname",
               "proteinAcronym": "noacronym",
@@ -1837,8 +1814,9 @@ def queue_start(sid):
     try:
         # If auto mount sample is false, just run the sample
         # supplied in the call
+
         if not get_auto_mount_sample():
-            if sid > 0:
+            if sid:
                 execute_entry_with_id(sid)
         else:
             # Making sure all sample entries are enabled before running the
@@ -1864,7 +1842,7 @@ def queue_stop():
             try:
                 qe.stop()
             except Exception as ex:
-                print str(ex)
+                logging.getLogger('MX3.HWR').exception('[QUEUE] Could not stop queue')
             blcontrol.queue.queue_hwobj.set_pause(False)
             # the next two is to avoid repeating the task
             # TODO: if you now run the queue it will be enabled and run
@@ -2065,8 +2043,6 @@ def get_default_dc_params():
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
     ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
-    n = int(blcontrol.session["file_info"].getProperty("precision", 4))
-
     bl = BeamlineSetupMediator(blcontrol.beamline)
 
     return {
@@ -2106,8 +2082,6 @@ def get_default_char_acq_params():
     acq_parameters = blcontrol.beamline.get_default_char_acq_parameters()
     ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
     ftype = ftype if ftype else '.?'
-    n = int(blcontrol.session["file_info"].getProperty("precision", 4))
-
     char_defaults = blcontrol.beamline.\
         get_default_characterisation_parameters().as_dict()
 

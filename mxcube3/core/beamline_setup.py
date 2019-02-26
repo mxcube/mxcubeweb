@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 import math
 
@@ -11,7 +15,7 @@ import ShutterMockup
 from numpy import arange
 from mxcube3 import socketio
 
-import utils
+from . import utils
 
 from .statedefs import (
     MOTOR_STATE,
@@ -208,10 +212,10 @@ class _BeamlineSetupMediator(object):
         _limits = self._bl.get_acquisition_limit_values()
         limits = {}
 
-        for key, value in _limits.iteritems():
+        for key, value in _limits.items():
             if isinstance(value, str) and "," in value:
                 try:
-                    limits[key] = map(float, _limits[key].split(","))
+                    limits[key] = list(map(float, _limits[key].split(",")))
                 except BaseException:
                     msg = "[BEAMLINE_SETUP] Could not get limits for %s," % key
                     msg += " using -10000, 10000"
@@ -260,7 +264,6 @@ class HOMediatorBase(object):
                   (not necessarily the one passed)
         :rtype: float
         """
-        pass
 
     # Abstract method
     def get(self):
@@ -271,7 +274,6 @@ class HOMediatorBase(object):
         :rtype: float
         :raises ValueError: When value for any reason can't be retrieved
         """
-        pass
 
     # Abstract method
     def state(self):
@@ -291,7 +293,6 @@ class HOMediatorBase(object):
         :returns: None
         :rtype: None
         """
-        pass
 
     # Abstract method
     def limits(self):
@@ -364,10 +365,10 @@ class EnergyHOMediator(HOMediatorBase):
 
     def __init__(self, ho, name=""):
         super(EnergyHOMediator, self).__init__(ho, name)
-        if ho.tunable:
+        if ho.can_move_energy():
             try:
                 ho.connect("energyChanged", self._value_change)
-                ho.energy_motor.connect("stateChanged", self.state_change)
+                ho.connect("stateChanged", self.state_change)
             except BaseException:
                 pass
 
@@ -389,7 +390,7 @@ class EnergyHOMediator(HOMediatorBase):
         :rtype: float
         """
         try:
-            self._ho.startMoveEnergy(float(value))
+            self._ho.move_energy(float(value))
             res = self.get()
         except BaseException:
             raise
@@ -403,7 +404,7 @@ class EnergyHOMediator(HOMediatorBase):
         :raises ValueError: When value for any reason can't be retrieved
         """
         try:
-            energy = self._ho.getCurrentEnergy()
+            energy = self._ho.get_current_energy()
             energy = round(float(energy), self._precision)
             energy = ("{:3.%sf}" % self._precision).format(energy)
         except (AttributeError, TypeError):
@@ -415,7 +416,7 @@ class EnergyHOMediator(HOMediatorBase):
         state = MOTOR_STATE.READY
 
         try:
-            state = self._ho.energy_motor.getState()
+            state = MOTOR_STATE.READY if self._ho.is_ready() else MOTOR_STATE.MOVING
         except BaseException:
             pass
 
@@ -429,7 +430,7 @@ class EnergyHOMediator(HOMediatorBase):
         :returns: The energy limits.
         """
         try:
-            energy_limits = self._ho.getEnergyLimits()
+            energy_limits = self._ho.get_energy_limits()
         except (AttributeError, TypeError):
             energy_limits = (0, 0)
             raise ValueError("Could not get limits")
@@ -437,7 +438,7 @@ class EnergyHOMediator(HOMediatorBase):
         return energy_limits
 
     def read_only(self):
-        return not self._ho.tunable
+        return not self._ho.can_move_energy()
 
 
 class WavelengthHOMediator(HOMediatorBase):
@@ -449,10 +450,10 @@ class WavelengthHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
         super(WavelengthHOMediator, self).__init__(ho, name)
 
-        if ho.tunable:
+        if ho.can_move_energy():
             try:
                 ho.connect("energyChanged", self._value_change)
-                ho.energy_motor.connect("stateChanged", self.state_change)
+                ho.connect("stateChanged", self.state_change)
             except BaseException:
                 pass
 
@@ -474,7 +475,7 @@ class WavelengthHOMediator(HOMediatorBase):
         :rtype: float
         """
         try:
-            self._ho.startMoveEnergy(12.3984 / float(value))
+            self._ho.move_wavelength(float(value))
             res = self.get()
         except BaseException:
             raise
@@ -488,7 +489,7 @@ class WavelengthHOMediator(HOMediatorBase):
         :raises ValueError: When value for any reason can't be retrieved
         """
         try:
-            wavelength = self._ho.getCurrentWavelength()
+            wavelength = self._ho.get_current_wavelength()
             wavelength = round(float(wavelength), self._precision)
             wavelength = ("{:2.%sf}" % self._precision).format(wavelength)
         except (AttributeError, TypeError):
@@ -500,7 +501,7 @@ class WavelengthHOMediator(HOMediatorBase):
         state = MOTOR_STATE.READY
 
         try:
-            state = self._ho.getState()
+            state = MOTOR_STATE.READY if self._ho.is_ready() else MOTOR_STATE.MOVING
         except BaseException:
             pass
 
@@ -514,14 +515,14 @@ class WavelengthHOMediator(HOMediatorBase):
         :returns: The limits.
         """
         try:
-            energy_limits = self._ho.getWavelengthLimits()
+            energy_limits = self._ho.get_wavelength_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
         return energy_limits
 
     def read_only(self):
-        return not self._ho.tunable
+        return not self._ho.can_move_energy()
 
 
 class DuoStateHOMediator(HOMediatorBase):
@@ -587,7 +588,7 @@ class DuoStateHOMediator(HOMediatorBase):
             self._ho.actuatorOut()
 
     def commands(self):
-        cmds = ["In", "Out"]
+        cmds = ["Out", "In"]
 
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             cmds = ["Open", "Close"]
@@ -732,7 +733,6 @@ class ResolutionHOMediator(HOMediatorBase):
         """
         :returns: The resolution limits.
         """
-
         try:
             resolution_limits = self._ho.getLimits()
         except (AttributeError, TypeError):
@@ -752,7 +752,7 @@ class ResolutionHOMediator(HOMediatorBase):
         try:
             ttheta = math.atan(radius / float(dist))
             if ttheta != 0:
-                return current_wavelength / (2 * math.sin(ttheta / 2))
+                return (current_wavelength / (2 * math.sin(ttheta / 2)))
             else:
                 return 0
         except Exception:
@@ -762,7 +762,7 @@ class ResolutionHOMediator(HOMediatorBase):
     def get_lookup_limits(self):
         limits = []
 
-        if self._ho.energy.tunable:
+        if self._ho.energy.can_move_energy():
             e_min, e_max = self._ho.energy.getEnergyLimits()
 
             x = arange(float(e_min), float(e_max), 0.5)
@@ -835,7 +835,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         """
         try:
             detdist_limits = self._ho.dtox.getLimits()
-        except (AttributeError, TypeError) as ex:
+        except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
         return detdist_limits
@@ -995,7 +995,7 @@ class CryoHOMediator(HOMediatorBase):
     def get(self):
         try:
             value = self._ho.get_value()
-        except Exception as ex:
+        except Exception:
             value = "0"
 
         return value

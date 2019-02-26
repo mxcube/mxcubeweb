@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """Utility functions for video streaming."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import fcntl
-import StringIO
+import io
 import os
-import PIL
 import v4l2
-import numpy
 
 
 def open_video_device(path="/dev/video0"):
@@ -16,9 +18,9 @@ def open_video_device(path="/dev/video0"):
         device = open(path, "wb", 0)
         capability = v4l2.v4l2_capability()
         fcntl.ioctl(device, v4l2.VIDIOC_QUERYCAP, capability)
-        print "Opened %s with %s: " % (path, capability.driver)
+        print("Opened %s with %s: " % (path, capability.driver))
     else:
-        print "Could not open %s" % path
+        print("Could not open %s" % path)
 
     return device
 
@@ -45,4 +47,4 @@ def write_to_video_device(device, image_data, pixel_format, width, height):
         if res == 0:
             device.write(image_data)
         else:
-            print "Could not write frame to v4l2 loopback device"
+            print("Could not write frame to v4l2 loopback device")

@@ -1,4 +1,8 @@
-import signals
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+from . import signals
 
 from flask import Response, jsonify, request
 from mxcube3 import server
@@ -102,7 +106,7 @@ def unmount_sample():
 def get_maintenance_cmds():
     try:
         ret = scutils.get_maintenance_cmds()
-    except Exception as ex:
+    except Exception:
         return Response(status=409)
     else:
         return jsonify(cmds=ret)
@@ -119,7 +123,7 @@ def get_global_state():
         else:
             return jsonify(ret)
 
-    except Exception as ex:
+    except Exception:
         return Response(status=409)
     else:
         return jsonify(state=state, commands_state=cmdstate, message=msg)
