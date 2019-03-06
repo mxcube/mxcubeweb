@@ -22,6 +22,12 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_SC_STATE': {
       return { ...state, state: action.state };
     }
+    case 'SET_SC_GLOBAL_STATE': {
+      return {
+        ...state,
+        state: JSON.parse(action.data.state).state
+      };
+    }
     default: {
       return state;
     }
