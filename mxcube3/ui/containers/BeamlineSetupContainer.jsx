@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import { Row, Col, Table, Popover } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
-import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
+import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
+import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
 import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
@@ -14,6 +15,7 @@ import { sendGetAllAttributes,
   sendSetAttribute,
   sendAbortCurrentAction } from '../actions/beamline';
 
+import { sendCommand } from '../actions/sampleChanger';
 
 class BeamlineSetupContainer extends React.Component {
   constructor(props) {
@@ -269,12 +271,10 @@ class BeamlineSetupContainer extends React.Component {
               </Col>
               {this.createActuatorComponent()}
               <Col sm={2} className="pull-right">
-                <LabeledValue
-                  suffix=""
-                  name="Sample changer"
-                  value={this.props.sampleChanger.state}
-                  level={this.props.sampleChanger.state === 'READY' ? 'info' : 'warning'}
-                  look={'vertical'}
+                <SampleChangerSwitch
+                  labelText={ "Sample Changer" }
+                  data = { this.props.sampleChanger.state }
+                  onSave={ this.props.sendCommand }
                 />
               </Col>
             </Col>
@@ -300,6 +300,7 @@ function mapDispatchToProps(dispatch) {
     getAllAttributes: bindActionCreators(sendGetAllAttributes, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
+    sendCommand: bindActionCreators(sendCommand, dispatch),
     abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch)
   };
 }
