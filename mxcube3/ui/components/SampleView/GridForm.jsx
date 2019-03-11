@@ -1,7 +1,7 @@
 import './SampleView.css';
 import React from 'react';
 import { Form, FormGroup, FormControl, ControlLabel,
-         Button, Table, Radio } from 'react-bootstrap';
+  Button, Table, Radio } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 
@@ -127,7 +127,7 @@ export default class GridForm extends React.Component {
 
   render() {
     const gridForm = (
-      <Draggable defaultPosition={{ x: 20, y: 50 }} cancel={"form"}>
+      <Draggable defaultPosition={{ x: 20, y: 50 }} cancel={'form'}>
         <div className="gridform">
           <div className="col-xs-8">
             <Table

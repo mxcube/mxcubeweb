@@ -90,7 +90,7 @@ export default class InOutSwitch extends React.Component {
     }
 
     const msgLabelStyle = { display: 'block', fontSize: '100%',
-                            borderRadius: '0px', color: '#000' };
+      borderRadius: '0px', color: '#000' };
 
     return (
       <div>

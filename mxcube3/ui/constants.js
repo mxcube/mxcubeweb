@@ -42,8 +42,8 @@ export function hasLimsData(sample) {
 }
 
 export function taskHasLimsData(task) {
-  return task.limsResultData &&
-    (task.limsResultData.dataCollectionId || task.limsResultData.dataCollectionGroupId);
+  return task.limsResultData
+    && (task.limsResultData.dataCollectionId || task.limsResultData.dataCollectionGroupId);
 }
 
 export function twoStateActuatorIsActive(state) {
@@ -51,36 +51,37 @@ export function twoStateActuatorIsActive(state) {
 }
 
 
-export const SPACE_GROUPS =
-    ['', 'P1', 'P2', 'P21', 'C2', 'P222', 'P2221', 'P21212',
-     'P212121', 'C222 ', 'C2221', 'F222', 'I222', 'I212121',
-     'P4', 'P41', 'P42', 'P43', 'P422', 'P4212', 'P4122',
-     'P41212', 'P4222', 'P42212', 'P4322', 'P43212', 'I4',
-     'I41', 'I422', 'I4122', 'P3', 'P31', 'P32', 'P312',
-     'P321', 'P3112', 'P3121', 'P3212', 'P3221', 'P6', 'P61',
-     'P65', 'P62', 'P64', 'P63', 'P622', 'P6122', 'P6522',
-     'P6222', 'P6422', 'P6322', 'R3', 'R32', 'P23', 'P213',
-     'P432', 'P4232', 'P4332', 'P4132', 'F23', 'F432',
-     'F4132', 'I23', 'I213', 'I432', 'I4132'];
+export const SPACE_GROUPS = ['', 'P1', 'P2', 'P21', 'C2', 'P222', 'P2221', 'P21212',
+  'P212121', 'C222 ', 'C2221', 'F222', 'I222', 'I212121',
+  'P4', 'P41', 'P42', 'P43', 'P422', 'P4212', 'P4122',
+  'P41212', 'P4222', 'P42212', 'P4322', 'P43212', 'I4',
+  'I41', 'I422', 'I4122', 'P3', 'P31', 'P32', 'P312',
+  'P321', 'P3112', 'P3121', 'P3212', 'P3221', 'P6', 'P61',
+  'P65', 'P62', 'P64', 'P63', 'P622', 'P6122', 'P6522',
+  'P6222', 'P6422', 'P6322', 'R3', 'R32', 'P23', 'P213',
+  'P432', 'P4232', 'P4332', 'P4132', 'F23', 'F432',
+  'F4132', 'I23', 'I213', 'I432', 'I4132'];
 
 
-export const MOTOR_STATE = { INITIALIZING: 0,
-                             ON: 1,
-                             OFF: 2,
-                             READY: 3,
-                             BUSY: 4,
-                             MOVING: 5,
-                             STANDBY: 6,
-                             DISABLED: 7,
-                             UNKNOWN: 8,
-                             ALARM: 9,
-                             FAULT: 10,
-                             INVALID: 11,
-                             OFFLINE: 12,
-                             LOWLIMIT: 13,
-                             HIGHLIMIT: 14,
-                             NOTINITIALIZED: 15,
-                             MOVESTARTED: 16 };
+export const MOTOR_STATE = {
+  INITIALIZING: 0,
+  ON: 1,
+  OFF: 2,
+  READY: 3,
+  BUSY: 4,
+  MOVING: 5,
+  STANDBY: 6,
+  DISABLED: 7,
+  UNKNOWN: 8,
+  ALARM: 9,
+  FAULT: 10,
+  INVALID: 11,
+  OFFLINE: 12,
+  LOWLIMIT: 13,
+  HIGHLIMIT: 14,
+  NOTINITIALIZED: 15,
+  MOVESTARTED: 16
+};
 
 export const MOTOR_STATE_DESC = {};
 

@@ -55,15 +55,15 @@ class Plot1D extends React.Component {
         this.dygraph.updateOptions({ file: plotData });
       } else if (nextProps.saved) {
         this.dygraph = new Dygraph(this.dygraph_div, nextProps.data, { title: 'XRF Scan',
-                                                               labels: ['energy', 'diode value'],
-                                                                xlabel: 'Energy (keV)',
-                                                                ylabel: 'Counts' });
+          labels: ['energy', 'diode value'],
+          xlabel: 'Energy (keV)',
+          ylabel: 'Counts' });
       } else {
         this.dygraph = new Dygraph(this.dygraph_div, plotData, { title: plotInfo.title,
-                                                               labels: plotInfo.labels,
-                                                               connectSeparatedPoints: true,
-                                                                xlabel: 'Energy (keV)',
-                                                                ylabel: 'Counts' });
+          labels: plotInfo.labels,
+          connectSeparatedPoints: true,
+          xlabel: 'Energy (keV)',
+          ylabel: 'Counts' });
       }
     }
   }
@@ -97,10 +97,10 @@ class Plot1D extends React.Component {
 }
 
 Plot1D.defaultProps = { autoNext: true,
-                        plotId: null,
-                        displayedPlotCallback: null,
-                        saved: false,
-                        data: null };
+  plotId: null,
+  displayedPlotCallback: null,
+  saved: false,
+  data: null };
 
 function mapStateToProps(state) {
   return {
@@ -111,7 +111,7 @@ function mapStateToProps(state) {
 }
 
 export default connect(
-    mapStateToProps,
-    null
+  mapStateToProps,
+  null
 )(Plot1D);
 

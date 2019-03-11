@@ -35,7 +35,7 @@ class SelectProposal extends React.Component {
       clickToSelectAndEditCell: false,
       hideSelectColumn: true,
     };
-    const proposals = this.props.data.proposalList.map((prop) => ({
+    const proposals = this.props.data.proposalList.map(prop => ({
       Number: prop.Proposal.code + prop.Proposal.number,
       Person: prop.Person.familyName,
       Session: prop.Session[0].startDate.split(' ')[0]
@@ -47,23 +47,27 @@ class SelectProposal extends React.Component {
           <Modal.Title>Select a proposal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        <div>
-        <BootstrapTable data={ proposals } bordered={ false } selectRow={ selectRowProp }>
-          <TableHeaderColumn dataField="Number" isKey editable={ false }>Proposal Number
-          </TableHeaderColumn>
-          <TableHeaderColumn dataField="Person" editable={ false }>Person</TableHeaderColumn>
-          <TableHeaderColumn dataField="Session" editable={ false }>Session</TableHeaderColumn>
-        </BootstrapTable>
-        </div>
+          <div>
+            <BootstrapTable data={proposals} bordered={false} selectRow={selectRowProp}>
+              <TableHeaderColumn dataField="Number" isKey editable={false}>
+Proposal Number
+              </TableHeaderColumn>
+              <TableHeaderColumn dataField="Person" editable={false}>Person</TableHeaderColumn>
+              <TableHeaderColumn dataField="Session" editable={false}>Session</TableHeaderColumn>
+            </BootstrapTable>
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>
-            <Button bsStyle="default"
+            <Button
+              bsStyle="default"
               onClick={this.handleCancel}
             >
               Sign Out
             </Button>
-            <Button bsStyle="primary" className="pull-right"
+            <Button
+              bsStyle="primary"
+              className="pull-right"
               disabled={typeof this.props.selectedProposal === 'undefined'}
               onClick={this.sendProposal}
             >
@@ -80,8 +84,6 @@ SelectProposal = reduxForm({
   form: 'proposals'
 })(SelectProposal);
 
-SelectProposal = connect(state =>
-  ({ initialValues: { ...state.login.data } })
-)(SelectProposal);
+SelectProposal = connect(state => ({ initialValues: { ...state.login.data } }))(SelectProposal);
 
 export default SelectProposal;

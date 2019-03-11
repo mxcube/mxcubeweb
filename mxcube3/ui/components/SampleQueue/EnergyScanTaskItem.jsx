@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,
-         TASK_COLLECTED,
-         TASK_COLLECT_FAILED,
-         TASK_RUNNING } from '../../constants';
+  TASK_COLLECTED,
+  TASK_COLLECT_FAILED,
+  TASK_RUNNING } from '../../constants';
 
 export default class EnergyScanTaskItem extends Component {
   static propTypes = {
@@ -36,9 +36,9 @@ export default class EnergyScanTaskItem extends Component {
 
     return (
       <div style={ { borderLeft: '1px solid #DDD',
-                     borderRight: '1px solid #DDD',
-                     borderBottom: '1px solid #DDD',
-                     padding: '0.5em' } }
+        borderRight: '1px solid #DDD',
+        borderBottom: '1px solid #DDD',
+        padding: '0.5em' } }
       >
         <a href={link} target="_blank"> View Results in ISPyB</a>
       </div>
@@ -119,13 +119,13 @@ export default class EnergyScanTaskItem extends Component {
 
   render() {
     const { state,
-            data,
-            show } = this.props;
+      data,
+      show } = this.props;
 
     const parameters = data.parameters;
 
 
-    let delTaskCSS = {
+    const delTaskCSS = {
       display: 'flex',
       marginLeft: 'auto',
       alignItems: 'center',

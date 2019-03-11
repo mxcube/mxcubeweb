@@ -25,7 +25,7 @@ export default class DefaultBusy extends React.Component {
           </Button>
         </ButtonToolbar>
       </div>
-     );
+    );
   }
 }
 

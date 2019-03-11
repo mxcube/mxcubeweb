@@ -53,10 +53,12 @@ var config = {
           {
 	    loader: "style-loader"
           },
-          { loader: "css-loader", 
-            options: { 
-              importLoaders: "1" 
-            } 
+          { loader: "css-loader",
+            options: {
+              importLoaders: 2,
+              modules: true,
+              camelCase: true
+            },
           },
           {
             loader: "less-loader"

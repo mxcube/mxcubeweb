@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { reducer as formReducer } from 'redux-form';
 import login from './login';
 import queue from './queue';
 import queueGUI from './queueGUI';
@@ -16,7 +17,6 @@ import shapes from './shapes';
 import workflow from './workflow';
 import taskResult from './taskResult';
 
-import { reducer as formReducer } from 'redux-form';
 
 const mxcubeReducer = combineReducers({
   login,

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { select, loadSample, unloadSample, scan, abort, sendCommand,
-refresh } from '../actions/sampleChanger';
+  refresh } from '../actions/sampleChanger';
 
 import SampleChanger from '../components/SampleChanger/SampleChanger';
 import SampleChangerState from '../components/SampleChanger/SampleChangerState';

@@ -1,5 +1,6 @@
 import 'fabric';
-const fabric = window.fabric;
+
+const { fabric } = window;
 
 /**
  * Fabric Shape for drawing grid (defined by GridData)
@@ -20,15 +21,25 @@ const GridGroup = fabric.util.createClass(fabric.Group, {
  * @return {GridData} GridData object
  */
 function _GridData() {
-  return { screenCoord: [0, 0],
-           top: 0, left: 0,
-           width: 0, height: 0,
-           cellWidth: 0, cellHeight: 0,
-           cellVSpace: 0, cellHSpace: 0,
-           numCols: 0, numRows: 0,
-           cellCountFun: null, selected: false,
-           id: null, result: null,
-           pixelsPerMMX: 1, pixelsPerMMY: 1 };
+  return {
+    screenCoord: [0, 0],
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0,
+    cellWidth: 0,
+    cellHeight: 0,
+    cellVSpace: 0,
+    cellHSpace: 0,
+    numCols: 0,
+    numRows: 0,
+    cellCountFun: null,
+    selected: false,
+    id: null,
+    result: null,
+    pixelsPerMMX: 1,
+    pixelsPerMMY: 1
+  };
 }
 
 
@@ -116,7 +127,7 @@ export default class DrawGridPlugin {
     if (gd === null) {
       gridData = this.gridData;
     } else {
-      gridData = { ... gd };
+      gridData = { ...gd };
     }
 
     gridData.pixelsPerMMX = pixelsPerMM[0];
@@ -290,7 +301,7 @@ export default class DrawGridPlugin {
 
     // Asume flat result object to remain compatible with old format only
     // suporting one type of results
-    let result = gd.result;
+    let { result } = gd;
 
     // Use selected result type if it exists
     if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
@@ -321,8 +332,8 @@ export default class DrawGridPlugin {
     // Only apply scale to grids that have been "normalized"
     // (stored server side, id == null)
     if (gridData.id !== null) {
-      left = left * this.scale;
-      top = top * this.scale;
+      left *= this.scale;
+      top *= this.scale;
     }
 
     const shapes = [];
@@ -346,30 +357,32 @@ export default class DrawGridPlugin {
       for (let nw = 1; nw < gridData.numCols; nw++) {
         shapes.push(new fabric.Line(
           [left + cellTW * nw, top,
-           left + cellTW * nw, top + height],
+            left + cellTW * nw, top + height],
           {
             stroke: color,
             hasControls: false,
             selectable: false
-          }));
+          }
+        ));
       }
 
       for (let nh = 1; nh < gridData.numRows; nh++) {
         shapes.push(new fabric.Line(
           [left, top + (cellTH) * nh,
-           left + width, top + cellTH * nh],
+            left + width, top + cellTH * nh],
           {
             stroke: color,
             hasControls: false,
             selectable: false
-          }));
+          }
+        ));
       }
 
       if (!this.drawing) {
         for (let nw = 0; nw < gridData.numCols; nw++) {
           for (let nh = 0; nh < gridData.numRows; nh++) {
             const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
-                                              gridData.numRows, gridData.numCols);
+              gridData.numRows, gridData.numCols);
 
             shapes.push(new fabric.Ellipse({
               left: left + cellHSpace / 2 + cellTW * nw,
@@ -508,7 +521,8 @@ export default class DrawGridPlugin {
                 lockScalingX: true,
                 lockScalingY: true,
                 lockRotation: true
-              }));
+              })
+            );
 
             this.mouseOverGridLabel = new GridGroup(this.mouseOverGridLabel, {
               hasBorders: false,
@@ -525,7 +539,8 @@ export default class DrawGridPlugin {
             canvas.add(this.mouseOverGridLabel);
             canvas.requestRenderAll();
           }
-        }});
+        }
+      });
     }
   }
 
@@ -568,8 +583,8 @@ export default class DrawGridPlugin {
 
     gd.screenCoord[0] = gd.screenCoord[0] / this.scale;
     gd.screenCoord[1] = gd.screenCoord[1] / this.scale;
-    gd.width = gd.width / this.scale;
-    gd.height = gd.height / this.scale;
+    gd.width /= this.scale;
+    gd.height /= this.scale;
 
     return gd;
   }
@@ -671,7 +686,7 @@ export default class DrawGridPlugin {
   }
 
 
- /**
+  /**
    * top down indexing of cells (see countCells for doc)
    * 1 6 7
    * 2 5 8

@@ -3,7 +3,9 @@ import { RUNNING } from '../constants';
 import { checkStatus, parseJSON } from '../requests';
 
 export function setActionState(cmdName, state, data) {
-  return { type: 'ACTION_SET_STATE', cmdName, state, data };
+  return {
+    type: 'ACTION_SET_STATE', cmdName, state, data
+  };
 }
 
 export function showActionOutput(cmdName) {
@@ -15,7 +17,9 @@ export function hideActionOutput(cmdName) {
 }
 
 export function setArgumentValue(cmdName, argIndex, value) {
-  return { type: 'ACTION_SET_ARGUMENT', cmdName, argIndex, value };
+  return {
+    type: 'ACTION_SET_ARGUMENT', cmdName, argIndex, value
+  };
 }
 
 export function startAction(cmdName, parameters, showOutput = true) {
@@ -64,9 +68,13 @@ export function newPlot(plotInfo) {
 }
 
 export function plotData(plotId, data, fullDataSet) {
-  return { type: 'PLOT_DATA', id: plotId, data, fullDataSet };
+  return {
+    type: 'PLOT_DATA', id: plotId, data, fullDataSet
+  };
 }
 
 export function plotEnd(data) {
-  return { type: 'PLOT_END', id: data.id, data: data.data, dataType: data.type };
+  return {
+    type: 'PLOT_END', id: data.id, data: data.data, dataType: data.type
+  };
 }

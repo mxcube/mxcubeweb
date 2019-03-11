@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,
-         TASK_COLLECTED,
-         TASK_COLLECT_FAILED,
-         TASK_RUNNING } from '../../constants';
+  TASK_COLLECTED,
+  TASK_COLLECT_FAILED,
+  TASK_RUNNING } from '../../constants';
 
 export default class TaskItem extends Component {
   static propTypes = {
@@ -35,9 +35,9 @@ export default class TaskItem extends Component {
     }
     return (
       <div style={ { borderLeft: '1px solid #DDD',
-                     borderRight: '1px solid #DDD',
-                     borderBottom: '1px solid #DDD',
-                     padding: '0.5em' } }
+        borderRight: '1px solid #DDD',
+        borderBottom: '1px solid #DDD',
+        padding: '0.5em' } }
       >
         <a href="#" onClick={() =>
           this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', this.props.data) }
@@ -184,8 +184,8 @@ export default class TaskItem extends Component {
 
   render() {
     const { state,
-            data,
-            show } = this.props;
+      data,
+      show } = this.props;
     let wedges = [];
 
     if (data.type === 'Interleaved') {
@@ -195,7 +195,7 @@ export default class TaskItem extends Component {
     }
 
 
-    let delTaskCSS = {
+    const delTaskCSS = {
       display: 'flex',
       marginLeft: 'auto',
       alignItems: 'center',
@@ -241,11 +241,11 @@ export default class TaskItem extends Component {
               return (
               <div key={`wedge-${i}`}>
               <div style={ { borderLeft: '1px solid #DDD',
-                             borderRight: '1px solid #DDD',
-                             paddingTop: padding } }
+                borderRight: '1px solid #DDD',
+                paddingTop: padding } }
               >
                 <div style={ { borderTop: '1px solid #DDD',
-                               padding: '0.5em' } }
+                  padding: '0.5em' } }
                 >
                   <b>Path:</b> { this.wedgePath(wedge) }
                 </div>

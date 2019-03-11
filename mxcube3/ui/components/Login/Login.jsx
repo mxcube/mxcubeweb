@@ -1,12 +1,12 @@
 import React from 'react';
 import { Grid,
-         Row,
-         Col,
-         FormGroup,
-         InputGroup,
-         FormControl,
-         Alert,
-         Button } from 'react-bootstrap';
+  Row,
+  Col,
+  FormGroup,
+  InputGroup,
+  FormControl,
+  Alert,
+  Button } from 'react-bootstrap';
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
@@ -48,7 +48,6 @@ export default class LoginComponent extends React.Component {
             selectProposal={this.props.selectProposal}
             sendSelectProposal={this.props.sendSelectProposal}
             singOut={this.props.doSignOut}
-            hide={this.props.hideProposalsForm}
 
           />
           : null

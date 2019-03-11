@@ -11,8 +11,8 @@ import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslati
 import * as SampleViewActions from '../actions/sampleview';
 
 import { sendGetAllAttributes,
-         sendSetAttribute,
-         sendAbortCurrentAction } from '../actions/beamline';
+  sendSetAttribute,
+  sendAbortCurrentAction } from '../actions/beamline';
 
 
 class BeamlineSetupContainer extends React.Component {
@@ -82,7 +82,7 @@ class BeamlineSetupContainer extends React.Component {
 
   createActuatorComponent() {
     const acts = [];
-    for (let key in this.props.beamline.attributes) {
+    for (const key in this.props.beamline.attributes) {
       if (this.props.beamline.attributes[key].type === 'DUOSTATE') {
         if (this.props.beamline.attributes[key].label === 'Beamstop') {
           acts.push(<Col key={key} sm={2} className="pull-right">
@@ -96,7 +96,7 @@ class BeamlineSetupContainer extends React.Component {
                       optionsOverlay={ this.beamstopAlignmentOverlay() }
                     />
                     </Col>
-                   );
+          );
         } else {
           acts.push(<Col key={key} sm={2} className="pull-right">
                     <InOutSwitch
@@ -108,7 +108,7 @@ class BeamlineSetupContainer extends React.Component {
                       onSave={ this.setAttribute }
                     />
                     </Col>
-                   );
+          );
         }
       }
     }
@@ -120,7 +120,7 @@ class BeamlineSetupContainer extends React.Component {
     let state = 'READY';
 
     const notReady = Object.values(this.props.beamline.motors).
-            filter((motor) => motor.state !== 2);
+      filter((motor) => motor.state !== 2);
 
     if (notReady.length !== 0) {
       state = 'BUSY';
@@ -146,7 +146,7 @@ class BeamlineSetupContainer extends React.Component {
               <Table
                 condensed
                 style={{ margin: '0px', fontWeight: 'bold',
-                         paddingLeft: '7em', paddingRight: '7em' }}
+                  paddingLeft: '7em', paddingRight: '7em' }}
               >
                <tr>
                  <td>
@@ -160,14 +160,14 @@ class BeamlineSetupContainer extends React.Component {
                       value={this.props.beamline.attributes.energy.value}
                     />)
                     :
-                  (<PopInput
-                    name=""
-                    pkey="energy"
-                    suffix="keV"
-                    data={ this.props.beamline.attributes.energy }
-                    onSave= { this.setAttribute }
-                    onCancel= { this.onCancelHandler }
-                  />)
+                    (<PopInput
+                      name=""
+                      pkey="energy"
+                      suffix="keV"
+                      data={ this.props.beamline.attributes.energy }
+                      onSave= { this.setAttribute }
+                      onCancel= { this.onCancelHandler }
+                    />)
                   }
 
                 </td>
@@ -220,15 +220,15 @@ class BeamlineSetupContainer extends React.Component {
                       value={this.props.beamline.attributes.wavelength.value}
                     />)
                     :
-                  (<PopInput
-                    name=""
-                    pkey="wavelength"
-                    placement="left"
-                    suffix="&Aring;"
-                    data={this.props.beamline.attributes.wavelength}
-                    onSave={this.setAttribute}
-                    onCancel={this.onCancelHandler}
-                  />)
+                    (<PopInput
+                      name=""
+                      pkey="wavelength"
+                      placement="left"
+                      suffix="&Aring;"
+                      data={this.props.beamline.attributes.wavelength}
+                      onSave={this.setAttribute}
+                      onCancel={this.onCancelHandler}
+                    />)
                   }
                 </td>
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
@@ -274,7 +274,7 @@ class BeamlineSetupContainer extends React.Component {
                   name="Sample changer"
                   value={this.props.sampleChanger.state}
                   level={this.props.sampleChanger.state === 'READY' ? 'info' : 'warning'}
-                  look={"vertical"}
+                  look={'vertical'}
                 />
               </Col>
             </Col>
@@ -306,6 +306,6 @@ function mapDispatchToProps(dispatch) {
 
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(BeamlineSetupContainer);

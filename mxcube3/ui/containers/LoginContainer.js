@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { signIn,
-         doSignOut,
-         selectProposal,
-         sendSelectProposal,
-         hideProposalsForm } from '../actions/login';
+import {
+  signIn,
+  doSignOut,
+  selectProposal,
+  sendSelectProposal,
+  hideProposalsForm
+} from '../actions/login';
 import { setLoading } from '../actions/general';
 import Login from '../components/Login/Login';
 
@@ -42,6 +44,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(LoginContainer);

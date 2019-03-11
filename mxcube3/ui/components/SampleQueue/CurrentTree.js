@@ -1,15 +1,14 @@
 import React from 'react';
 import './app.less';
+import { ContextMenu, MenuItem } from 'react-contextmenu';
 import TaskItem from './TaskItem';
 import XRFTaskItem from './XRFTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
 import WorkflowTaskItem from './WorkflowTaskItem';
 import CharacterisationTaskItem from './CharacterisationTaskItem';
-import { ContextMenu, MenuItem } from 'react-contextmenu';
 import '../context-menu-style.css';
 
 export default class CurrentTree extends React.Component {
-
   constructor(props) {
     super(props);
     this.moveCard = this.moveCard.bind(this);
@@ -60,9 +59,11 @@ export default class CurrentTree extends React.Component {
     const task = this.props.sampleList[this.props.mounted].tasks[this.state.taskIndex];
 
     if (task) {
-      const tpars = { type: task.type,
-                      label: task.label,
-                      ...task.parameters };
+      const tpars = {
+        type: task.type,
+        label: task.label,
+        ...task.parameters
+      };
       this.props.addTask([task.sampleID], tpars, false);
     }
   }
@@ -96,9 +97,9 @@ export default class CurrentTree extends React.Component {
     });
 
     this.props.showForm('Interleaved',
-                        [this.props.mounted],
-                        { parameters: { taskIndexList, wedges } },
-                        -1);
+      [this.props.mounted],
+      { parameters: { taskIndexList, wedges } },
+      -1);
   }
 
   render() {
@@ -111,17 +112,17 @@ export default class CurrentTree extends React.Component {
       sampleTasks = sampleData ? this.props.sampleList[sampleId].tasks : [];
     }
 
-    if (! this.props.show) { return <div />; }
+    if (!this.props.show) { return <div />; }
 
     return (
       <div>
-        <div style={{ top: 'initial' }} className="list-body" >
+        <div style={{ top: 'initial' }} className="list-body">
           {sampleTasks.map((taskData, i) => {
             let task = null;
 
             if (taskData.type === 'Workflow') {
-              task =
-                (<WorkflowTaskItem
+              task = (
+                <WorkflowTaskItem
                   key={taskData.queueID}
                   index={i}
                   id={`${taskData.queueID}`}
@@ -141,10 +142,11 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
-                />);
+                />
+              );
             } else if (taskData.type === 'XRFScan') {
-              task =
-                (<XRFTaskItem
+              task = (
+                <XRFTaskItem
                   key={taskData.queueID}
                   index={i}
                   id={`${taskData.queueID}`}
@@ -165,10 +167,11 @@ export default class CurrentTree extends React.Component {
                   plotsData={this.props.plotsData}
                   plotsInfo={this.props.plotsInfo}
                   showDialog={this.props.showDialog}
-                />);
+                />
+              );
             } else if (taskData.type === 'EnergyScan') {
-              task =
-                (<EnergyScanTaskItem
+              task = (
+                <EnergyScanTaskItem
                   key={taskData.queueID}
                   index={i}
                   id={`${taskData.queueID}`}
@@ -188,10 +191,11 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
-                />);
+                />
+              );
             } else if (taskData.type === 'Characterisation') {
-              task =
-                (<CharacterisationTaskItem
+              task = (
+                <CharacterisationTaskItem
                   key={taskData.queueID}
                   index={i}
                   id={`${taskData.queueID}`}
@@ -212,10 +216,11 @@ export default class CurrentTree extends React.Component {
                   addTask={this.props.addTask}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
-                />);
+                />
+              );
             } else {
-              task =
-                (<TaskItem
+              task = (
+                <TaskItem
                   key={taskData.queueID}
                   index={i}
                   id={`${taskData.queueID}`}
@@ -235,7 +240,8 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
-                />);
+                />
+              );
             }
 
             return task;

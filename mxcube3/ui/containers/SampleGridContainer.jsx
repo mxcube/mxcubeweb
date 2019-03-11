@@ -14,8 +14,8 @@ import {
 import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
 
 import { toggleMovableAction,
-         selectSamplesAction,
-         sendSetSampleOrderAction } from '../actions/sampleGrid';
+  selectSamplesAction,
+  sendSetSampleOrderAction } from '../actions/sampleGrid';
 
 import { deleteTask, addSampleAndMount } from '../actions/queue';
 
@@ -27,9 +27,9 @@ import { showDialog } from '../actions/general';
 
 
 import { SampleGridItem,
-         SAMPLE_ITEM_WIDTH,
-         SAMPLE_ITEM_HEIGHT,
-         SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
+  SAMPLE_ITEM_WIDTH,
+  SAMPLE_ITEM_HEIGHT,
+  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 
@@ -302,8 +302,8 @@ class SampleGridContainer extends React.Component {
     // mechanism as for mutiple selection
     const syntheticElement = { getBoundingClientRect: () => {
       const bbox = { top: e.clientY, left: e.clientX,
-                     bottom: e.clientY + 1, right: e.clientX + 1,
-                     width: 1, height: 1 };
+        bottom: e.clientY + 1, right: e.clientX + 1,
+        width: 1, height: 1 };
       return bbox;
     } };
 
@@ -665,24 +665,24 @@ class SampleGridContainer extends React.Component {
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires.includes('point')) {
         workflowTasks.point.push({ text: wf.wfname,
-                                   action: () => this.props.showWorkflowForm(wf),
-                                   key: `wf-${wf.wfname}` });
+          action: () => this.props.showWorkflowForm(wf),
+          key: `wf-${wf.wfname}` });
       } else if (wf.requires.includes('line')) {
         workflowTasks.line.push({ text: wf.wfname,
-                                  action: () => this.props.showWorkflowForm(wf),
-                                  key: `wf-${wf.wfname}` });
+          action: () => this.props.showWorkflowForm(wf),
+          key: `wf-${wf.wfname}` });
       } else if (wf.requires.includes('grid')) {
         workflowTasks.grid.push({ text: wf.wfname,
-                                  action: () => this.props.showWorkflowForm(wf),
-                                  key: `wf-${wf.wfname}` });
+          action: () => this.props.showWorkflowForm(wf),
+          key: `wf-${wf.wfname}` });
       } else if (wf.requires.includes('samplegrid')) {
         workflowTasks.samplegrid.push({ text: wf.wfname,
-                                        action: () => this.props.showWorkflowForm(wf),
-                                        key: `wf-${wf.wfname}` });
+          action: () => this.props.showWorkflowForm(wf),
+          key: `wf-${wf.wfname}` });
       } else {
         workflowTasks.none.push({ text: wf.wfname,
-                                  action: () => this.props.showWorkflowForm(wf),
-                                  key: `wf-${wf.wfname}` });
+          action: () => this.props.showWorkflowForm(wf),
+          key: `wf-${wf.wfname}` });
       }
     });
 

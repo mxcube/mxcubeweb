@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { Modal, ButtonToolbar, Button, Form } from 'react-bootstrap';
+import {
+  Modal, ButtonToolbar, Button, Form
+} from 'react-bootstrap';
 import { InputField, FieldsRow } from './fields';
 import validate from './validate_add_sample';
 
@@ -25,12 +27,14 @@ class AddSample extends React.Component {
       prefix += `-${params.proteinAcronym}`;
     }
 
-    return { ...params,
-             type: 'Sample',
-             defaultPrefix: prefix,
-             location: 'Manual',
-             loadable: true,
-             tasks: [] };
+    return {
+      ...params,
+      type: 'Sample',
+      defaultPrefix: prefix,
+      location: 'Manual',
+      loadable: true,
+      tasks: []
+    };
   }
 
   handleCancel() {
@@ -72,16 +76,20 @@ class AddSample extends React.Component {
         <Modal.Body>
           <Form horizontal>
             <FieldsRow>
-              <InputField propName="sampleName"
+              <InputField
+                propName="sampleName"
                 autoFocus
                 label="Sample Name"
-                inputRef={(input) => {this.sampleName = input;}}
-                col1="4" col2="7"
+                inputRef={(input) => { this.sampleName = input; }}
+                col1="4"
+                col2="7"
               />
-              <InputField propName="proteinAcronym"
+              <InputField
+                propName="proteinAcronym"
                 label="Protein Acronym"
-                inputRef={(input) => {this.proteinAcronym = input;}}
-                col1="4" col2="7"
+                inputRef={(input) => { this.proteinAcronym = input; }}
+                col1="4"
+                col2="7"
                 onKeyPress={this.handleKeyPress}
               />
             </FieldsRow>
@@ -108,7 +116,6 @@ AddSample = reduxForm({
 })(AddSample);
 
 AddSample = connect(state =>
-  ({ initialValues: { ...state.taskForm.taskData.parameters } })
-)(AddSample);
+  ({ initialValues: { ...state.taskForm.taskData.parameters } }))(AddSample);
 
 export default AddSample;

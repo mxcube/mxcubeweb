@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+// config exported by webpack at buildtime
+// eslint-disable-next-line import/no-unresolved
+import config from 'guiConfig';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import PhaseInput from '../components/SampleView/PhaseInput';
@@ -12,15 +15,13 @@ import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
 import { QUEUE_RUNNING } from '../constants';
-import config from 'guiConfig';
 
 
 class SampleViewContainer extends Component {
-
   render() {
     const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
     const { sendMotorPosition, setStepSize, sendStopMotor } = this.props.sampleViewActions;
-    const sampleID = this.props.current.sampleID;
+    const { sampleID } = this.props.current;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
 
@@ -42,89 +43,92 @@ class SampleViewContainer extends Component {
     });
     const phaseControl = (
       <div>
-      <p className="motor-name">Phase Control:</p>
-      <PhaseInput
-        phase={this.props.sampleViewState.currentPhase}
-        phaseList={this.props.sampleViewState.phaseList}
-        sendPhase={this.props.sampleViewActions.sendCurrentPhase}
-      />
-      </div>);
+        <p className="motor-name">Phase Control:</p>
+        <PhaseInput
+          phase={this.props.sampleViewState.currentPhase}
+          phaseList={this.props.sampleViewState.phaseList}
+          sendPhase={this.props.sampleViewActions.sendCurrentPhase}
+        />
+      </div>
+    );
 
     const apertureControl = (
       <div>
-      <p className="motor-name">Beam size:</p>
-      <ApertureInput
-        aperture={this.props.sampleViewState.currentAperture}
-        apertureList={this.props.sampleViewState.apertureList}
-        sendAperture={this.props.sampleViewActions.sendChangeAperture}
-      />
-      </div>);
+        <p className="motor-name">Beam size:</p>
+        <ApertureInput
+          aperture={this.props.sampleViewState.currentAperture}
+          apertureList={this.props.sampleViewState.apertureList}
+          sendAperture={this.props.sampleViewActions.sendChangeAperture}
+        />
+      </div>
+    );
 
     return (
-        <div className="row">
+      <div className="row">
         <div className="col-xs-12">
-            <div className="row">
-              <div className="col-xs-12" style={{ marginTop: '-10px' }}>
-                <BeamlineSetupContainer />
-              </div>
+          <div className="row">
+            <div className="col-xs-12" style={{ marginTop: '-10px' }}>
+              <BeamlineSetupContainer />
             </div>
-            <div className="row" style={ { display: 'flex', marginTop: '1em' } }>
-              <div className="col-xs-1"
-                style={ { paddingRight: '5px', paddingLeft: '1.5em' } }
-              >
-                {config.phaseControl ? phaseControl : null }
-                {apertureControl}
-                <MotorControl
-                  save={sendMotorPosition}
-                  saveStep={setStepSize}
-                  motors={this.props.motors}
-                  motorsDisabled={ this.props.motorInputDisable ||
-                                   this.props.queueState === QUEUE_RUNNING }
-                  steps={motorSteps}
-                  stop={sendStopMotor}
-                />
-              </div>
-              <div className="col-xs-7">
-                <ContextMenu
-                  {...this.props.contextMenu}
-                  sampleActions={this.props.sampleViewActions}
-                  updateTask={this.props.updateTask}
-                  availableMethods={this.props.availableMethods}
-                  showForm={this.props.showForm}
-                  sampleID={sampleID}
-                  sampleData={this.props.sampleList[sampleID]}
-                  defaultParameters={this.props.defaultParameters}
-                  imageRatio={imageRatio * sourceScale}
-                  workflows={this.props.workflows}
-                  savedPointId={this.props.sampleViewState.savedPointId}
-                  groupFolder={this.props.groupFolder}
-                  clickCentring={this.props.sampleViewState.clickCentring}
-                />
-                <SampleImage
-                  sampleActions={this.props.sampleViewActions}
-                  {...this.props.sampleViewState}
-                  motors={this.props.motors}
-                  steps={motorSteps}
-                  imageRatio={imageRatio * sourceScale}
-                  contextMenuVisible={this.props.contextMenu.show}
-                  shapes={this.props.shapes}
-                  points={points}
-                  twoDPoints={twoDPoints}
-                  lines={lines}
-                  grids={grids}
-                  selectedGrids={selectedGrids}
-                  cellCounting={this.props.cellCounting}
-                  cellSpacing={this.props.cellSpacing}
-                  current={this.props.current}
-                  sampleList={this.props.sampleList}
-                  proposal={this.props.proposal}
-                  busy={this.props.queueState === QUEUE_RUNNING}
-                />
-              </div>
-              <div className="col-xs-4" style={ { display: 'flex' } }>
-                <SampleQueueContainer />
+          </div>
+          <div className="row" style={{ display: 'flex', marginTop: '1em' }}>
+            <div
+              className="col-xs-1"
+              style={{ paddingRight: '5px', paddingLeft: '1.5em' }}
+            >
+              {config.phaseControl ? phaseControl : null }
+              {apertureControl}
+              <MotorControl
+                save={sendMotorPosition}
+                saveStep={setStepSize}
+                motors={this.props.motors}
+                motorsDisabled={this.props.motorInputDisable
+                                   || this.props.queueState === QUEUE_RUNNING}
+                steps={motorSteps}
+                stop={sendStopMotor}
+              />
             </div>
+            <div className="col-xs-7">
+              <ContextMenu
+                {...this.props.contextMenu}
+                sampleActions={this.props.sampleViewActions}
+                updateTask={this.props.updateTask}
+                availableMethods={this.props.availableMethods}
+                showForm={this.props.showForm}
+                sampleID={sampleID}
+                sampleData={this.props.sampleList[sampleID]}
+                defaultParameters={this.props.defaultParameters}
+                imageRatio={imageRatio * sourceScale}
+                workflows={this.props.workflows}
+                savedPointId={this.props.sampleViewState.savedPointId}
+                groupFolder={this.props.groupFolder}
+                clickCentring={this.props.sampleViewState.clickCentring}
+              />
+              <SampleImage
+                sampleActions={this.props.sampleViewActions}
+                {...this.props.sampleViewState}
+                motors={this.props.motors}
+                steps={motorSteps}
+                imageRatio={imageRatio * sourceScale}
+                contextMenuVisible={this.props.contextMenu.show}
+                shapes={this.props.shapes}
+                points={points}
+                twoDPoints={twoDPoints}
+                lines={lines}
+                grids={grids}
+                selectedGrids={selectedGrids}
+                cellCounting={this.props.cellCounting}
+                cellSpacing={this.props.cellSpacing}
+                current={this.props.current}
+                sampleList={this.props.sampleList}
+                proposal={this.props.proposal}
+                busy={this.props.queueState === QUEUE_RUNNING}
+              />
             </div>
+            <div className="col-xs-4" style={{ display: 'flex' }}>
+              <SampleQueueContainer />
+            </div>
+          </div>
         </div>
       </div>
     );

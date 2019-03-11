@@ -31,4 +31,3 @@ export function updateDefaultParameters(taskData) {
     type: 'UPDATE_DEFAULT_PARAMETERS', data: taskData
   };
 }
-

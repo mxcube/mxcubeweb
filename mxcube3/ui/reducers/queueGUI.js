@@ -30,9 +30,11 @@ export default (state = initialState, action) => {
           action.sampleList[sampleID].tasks.forEach((task) => {
             if (existingNodes.indexOf(task.queueID.toString()) === -1) {
               newNodes.push(task.queueID.toString());
-              displayData[task.queueID] = { collapsed: false,
-                                            selected: false,
-                                            progress: 0 };
+              displayData[task.queueID] = {
+                collapsed: false,
+                selected: false,
+                progress: 0
+              };
             }
             sourceNodes.push(task.queueID.toString());
           });
@@ -45,9 +47,11 @@ export default (state = initialState, action) => {
       const displayData = { ...state.displayData };
 
       action.tasks.forEach((task) => {
-        displayData[task.queueID] = { collapsed: false,
-                                      selected: false,
-                                      progress: 0 };
+        displayData[task.queueID] = {
+          collapsed: false,
+          selected: false,
+          progress: 0
+        };
       });
 
       return Object.assign({}, state, { displayData });
@@ -55,8 +59,7 @@ export default (state = initialState, action) => {
     case 'ADD_TASK_RESULT': {
       const displayData = {
         ...state.displayData,
-        [action.queueID]: {
-          ...state.displayData[action.queueID], progress: action.progress }
+        [action.queueID]: { ...state.displayData[action.queueID], progress: action.progress }
       };
 
       return Object.assign({}, state, { displayData });
@@ -65,9 +68,11 @@ export default (state = initialState, action) => {
     case 'ADD_SAMPLES_TO_QUEUE': {
       const displayData = { ...state.displayData };
       action.samplesData.forEach((sample) => {
-        displayData[sample.queueID] = { collpased: false,
-                                        selected: false,
-                                        progress: 0 };
+        displayData[sample.queueID] = {
+          collpased: false,
+          selected: false,
+          progress: 0
+        };
       });
 
       return Object.assign({}, state, { displayData });
@@ -116,9 +121,11 @@ export default (state = initialState, action) => {
           sampleList[sampleID].tasks.forEach((task) => {
             if (existingNodes.indexOf(task.queueID.toString()) === -1) {
               newNodes.push(task.queueID.toString());
-              displayData[task.queueID] = { collapsed: false,
-                                            selected: false,
-                                            progress: 0 };
+              displayData[task.queueID] = {
+                collapsed: false,
+                selected: false,
+                progress: 0
+              };
             }
             sourceNodes.push(task.queueID.toString());
           });
@@ -128,9 +135,9 @@ export default (state = initialState, action) => {
       return { ...state, displayData };
     }
     case 'CLEAR_ALL':
-      {
-        return initialState;
-      }
+    {
+      return initialState;
+    }
     default:
       return state;
   }

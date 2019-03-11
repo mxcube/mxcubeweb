@@ -2,18 +2,18 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { startAction,
-         stopAction,
-         showActionOutput,
-         hideActionOutput,
-         setArgumentValue } from '../actions/beamlineActions';
+  stopAction,
+  showActionOutput,
+  hideActionOutput,
+  setArgumentValue } from '../actions/beamlineActions';
 import { Row,
-         Col,
-         Modal,
-         MenuItem,
-         DropdownButton,
-         Button,
-         Well,
-         FormControl } from 'react-bootstrap';
+  Col,
+  Modal,
+  MenuItem,
+  DropdownButton,
+  Button,
+  Well,
+  FormControl } from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
 import Plot1D from '../components/Plot1D';
 import { RUNNING } from '../constants';
@@ -122,8 +122,8 @@ class BeamlineActionsContainer extends React.Component {
                       disabled={currentActionRunning}
                       onChange={(e) => {
                         this.props.setArgumentValue(currentActionName,
-                                                    i,
-                                                    e.target.value);
+                          i,
+                          e.target.value);
                       }}
                     />
                   </Col>
@@ -153,7 +153,7 @@ class BeamlineActionsContainer extends React.Component {
           </Modal.Footer>
         </Modal>
       </Row>
-     );
+    );
   }
 }
 
@@ -174,7 +174,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(BeamlineActionsContainer);
 

@@ -5,12 +5,17 @@ import { Modal, Alert } from 'react-bootstrap';
 import { showErrorPanel } from '../actions/general';
 
 export class ErrorNotificationPanel extends React.Component {
-
   render() {
-    return (<Modal show={this.props.show} bsStyle="danger" onHide={this.props.hideErrorPanel}>
-            <div style={{ marginBottom: '-20px' }}><Alert bsStyle="danger">
-                <strong>Error:&nbsp;</strong>{this.props.message}
-            </Alert></div></Modal>);
+    return (
+      <Modal show={this.props.show} bsStyle="danger" onHide={this.props.hideErrorPanel}>
+        <div style={{ marginBottom: '-20px' }}>
+          <Alert bsStyle="danger">
+            <strong>Error:&nbsp;</strong>
+            {this.props.message}
+          </Alert>
+        </div>
+      </Modal>
+    );
   }
 }
 
@@ -28,6 +33,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(ErrorNotificationPanel);

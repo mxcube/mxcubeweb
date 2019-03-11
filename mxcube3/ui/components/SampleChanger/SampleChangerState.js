@@ -6,10 +6,8 @@ import '../context-menu-style.css';
 /* eslint-disable react/no-multi-comp */
 
 export default class SampleChangerState extends React.Component {
-
   render() {
     let titleBackground;
-    let title;
 
     if (this.props.state === 'READY') {
       titleBackground = 'success';
@@ -23,11 +21,10 @@ export default class SampleChangerState extends React.Component {
       titleBackground = 'danger';
     }
 
-    title = `Sample changer (${this.props.state})`;
+    const title = `Sample changer (${this.props.state})`;
 
     return (
       <Panel style={{ marginTop: '0.5em' }} header={title} bsStyle={titleBackground} />
     );
   }
 }
-

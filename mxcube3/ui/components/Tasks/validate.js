@@ -39,14 +39,14 @@ const validate = (values, props) => {
     resMax = props.attributes.resolution.limits[1];
   }
 
-  if (values.num_images === '' ||
-      parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images ||
-      parseInt(values.num_images, 10) < 1) {
+  if (values.num_images === ''
+      || parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images
+      || parseInt(values.num_images, 10) < 1) {
     errors.num_images = 'Number of images out of allowed range';
   }
-  if (values.osc_range === '' ||
-    parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range ||
-    parseFloat(values.osc_range, 10) < 0) {
+  if (values.osc_range === ''
+    || parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range
+    || parseFloat(values.osc_range, 10) < 0) {
     errors.osc_range = 'wrong value';
   }
   if (values.osc_start === '') {
@@ -55,8 +55,8 @@ const validate = (values, props) => {
 
   const exptimemin = props.acqParametersLimits.exposure_time[0];
   const exptimemax = props.acqParametersLimits.exposure_time[1];
-  if (values.exp_time === '' || parseFloat(values.exp_time, 10) > exptimemax ||
-      parseFloat(values.exp_time, 10) < exptimemin) {
+  if (values.exp_time === '' || parseFloat(values.exp_time, 10) > exptimemax
+      || parseFloat(values.exp_time, 10) < exptimemin) {
     errors.exp_time = 'Exposure time out of allowed limit';
   }
 
@@ -65,8 +65,8 @@ const validate = (values, props) => {
   }
 
   if (energies.length > 2) {
-    if (!(currEnergy > props.attributes.energy.limits[0] &&
-          currEnergy < props.attributes.energy.limits[1])) {
+    if (!(currEnergy > props.attributes.energy.limits[0]
+          && currEnergy < props.attributes.energy.limits[1])) {
       errors.energy = 'Energy outside working range';
     }
   }
@@ -75,8 +75,8 @@ const validate = (values, props) => {
     errors.transmission = 'Transmission outside working range';
   }
 
-  if (props.pointID !== -1 && props.pointID.includes('2D') && props.form === 'characterisation' &&
-      parseFloat(values.num_images) !== 1) {
+  if (props.pointID !== -1 && props.pointID.includes('2D') && props.form === 'characterisation'
+      && parseFloat(values.num_images) !== 1) {
     errors.num_images = 'Only 1 image allowed when characterizing from a 2D-point';
   }
 

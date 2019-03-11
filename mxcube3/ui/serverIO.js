@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { addResponseMessage } from 'react-chat-widget';
 import { addLogRecord } from './actions/logger';
 import {
   setShapes,
@@ -11,46 +12,58 @@ import {
   videoMessageOverlay,
   setCurrentPhase
 } from './actions/sampleview';
-import { setBeamlineAttrAction,
-         setMachInfo } from './actions/beamline';
-import { setActionState,
-         newPlot,
-         plotData,
-         plotEnd } from './actions/beamlineActions';
-import { setStatus,
-         addTaskResultAction,
-         updateTaskLimsData,
-         addTaskAction,
-         sendStopQueue,
-         setCurrentSample,
-         addDiffractionPlanAction,
-         setSampleAttribute,
-         setRootPath } from './actions/queue';
-import { collapseItem,
-         showResumeQueueDialog } from './actions/queueGUI';
-import { setLoading,
-         addUserMessage,
-         showConnectionLostDialog } from './actions/general';
+import {
+  setBeamlineAttrAction,
+  setMachInfo
+} from './actions/beamline';
+import {
+  setActionState,
+  newPlot,
+  plotData,
+  plotEnd
+} from './actions/beamlineActions';
+import {
+  setStatus,
+  addTaskResultAction,
+  updateTaskLimsData,
+  addTaskAction,
+  sendStopQueue,
+  setCurrentSample,
+  addDiffractionPlanAction,
+  setSampleAttribute,
+  setRootPath
+} from './actions/queue';
+import {
+  collapseItem,
+  showResumeQueueDialog
+} from './actions/queueGUI';
+import {
+  setLoading,
+  addUserMessage,
+  showConnectionLostDialog
+} from './actions/general';
 
 import { showWorkflowParametersDialog } from './actions/workflow';
 
-import { setObservers, setMaster, requestControlAction,
-         incChatMessageCount } from './actions/remoteAccess';
+import {
+  setObservers, setMaster, requestControlAction,
+  incChatMessageCount
+} from './actions/remoteAccess';
 import { doSignOut } from './actions/login';
 
-import { addResponseMessage } from 'react-chat-widget';
 
-import { setSCState,
-         setLoadedSample,
-         setSCGlobalState,
-         updateSCContents } from './actions/sampleChanger';
+import {
+  setSCState,
+  setLoadedSample,
+  setSCGlobalState,
+  updateSCContents
+} from './actions/sampleChanger';
 
 import { setEnergyScanResult } from './actions/taskResults';
 
 import { CLICK_CENTRING } from './constants';
 
 class ServerIO {
-
   constructor() {
     this.hwrSocket = null;
     this.loggingSocket = null;
@@ -107,7 +120,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('ra_chat_message', (record) => {
-      const sid = store.getState().remoteAccess.sid;
+      const { sid } = store.getState().remoteAccess;
       if (record.sid !== sid) {
         addResponseMessage(`${record.date} **${record.user}:** \n\n ${record.message}`);
         this.dispatch(incChatMessageCount());
@@ -170,7 +183,7 @@ class ServerIO {
         }
 
         this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state,
-                                          record.progress, record.limsResultData, record.queueID));
+          record.progress, record.limsResultData, record.queueID));
       }
     });
 
@@ -204,19 +217,19 @@ class ServerIO {
     this.hwrSocket.on('sc', (record) => {
       if (record.signal === 'operatingSampleChanger') {
         this.dispatch(setLoading(true, 'Sample changer in operation',
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+          record.message, true, () => (this.dispatch(sendStopQueue()))));
       } else if ((record.signal === 'loadingSample' || record.signal === 'loadedSample')) {
         this.dispatch(setLoading(true, `Loading sample ${record.location}`,
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+          record.message, true, () => (this.dispatch(sendStopQueue()))));
       } else if (record.signal === 'unLoadingSample' || record.signal === 'unLoadedSample') {
         this.dispatch(setLoading(true, `Unloading sample ${record.location}`,
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+          record.message, true, () => (this.dispatch(sendStopQueue()))));
       } else if (record.signal === 'loadReady') {
         this.dispatch(setLoading(false, 'SC Ready',
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+          record.message, true, () => (this.dispatch(sendStopQueue()))));
       } else if (record.signal === 'inSafeArea') {
         this.dispatch(setLoading(false, 'SC Safe',
-                                 record.message, true, () => (this.dispatch(sendStopQueue()))));
+          record.message, true, () => (this.dispatch(sendStopQueue()))));
       }
     });
 

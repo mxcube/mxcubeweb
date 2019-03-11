@@ -1,5 +1,6 @@
 import 'fabric';
-const fabric = window.fabric;
+
+const { fabric } = window;
 
 export function makeRectangle(posX, posY, sizeX, sizeY, color) {
   return new fabric.Rect({
@@ -168,9 +169,9 @@ export function makeBeam(posX, posY, sizeX, sizeY, shape) {
   return [
     makeLine(posX - 20, posY, posX + 20, posY, 'red', 1, false),
     makeLine(posX, posY - 20, posX, posY + 20, 'red', 1, false),
-    (shape === 'ellipse' ?
-      makeElipse(posX, posY, sizeX, sizeY, 'blue') :
-      makeRectangle(posX, posY, sizeX, sizeY, 'blue'))
+    (shape === 'ellipse'
+      ? makeElipse(posX, posY, sizeX, sizeY, 'blue')
+      : makeRectangle(posX, posY, sizeX, sizeY, 'blue'))
   ];
 }
 
@@ -320,8 +321,8 @@ export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
       bSi.x * ppMm[0] * iR,
       bSi.y * ppMm[1] * iR,
       bSh
-      )
-    );
+    )
+  );
   imageOverlay.push(...makeScale(canvas.height, scaleLengthX, scaleLengthY, 'green', '50 µm'));
   if (cCP.length) {
     const point = cCP[cCP.length - 1];

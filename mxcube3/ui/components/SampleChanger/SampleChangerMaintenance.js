@@ -25,11 +25,13 @@ export class SampleChangerActionButton extends React.Component {
     }
 
     return (
-        <Button bsStyle="default" disabled={disabled}
-          onClick={() => this.props.send_command(this.props.cmd)}
-        >
-          {this.props.label}
-        </Button>
+      <Button
+        bsStyle="default"
+        disabled={disabled}
+        onClick={() => this.props.send_command(this.props.cmd)}
+      >
+        {this.props.label}
+      </Button>
     );
   }
 }
@@ -38,7 +40,7 @@ export class SampleChangerActionGroup extends React.Component {
   render() {
     return (
       <Panel header={this.props.name}>
-         <ButtonGroup>{this.props.buttons}</ButtonGroup>
+        <ButtonGroup>{this.props.buttons}</ButtonGroup>
       </Panel>
     );
   }
@@ -47,12 +49,12 @@ export class SampleChangerActionGroup extends React.Component {
 export default class SampleChangerMaintenance extends React.Component {
   buildActionButton(cmdinfo) {
     return React.createElement(SampleChangerActionButton,
-                               { label: cmdinfo[1],
-                                 cmd: cmdinfo[0],
-                                 enabled: this.props.commands_state[cmdinfo[0]],
-                                 send_command: this.props.send_command,
-                               }
-                              );
+      {
+        label: cmdinfo[1],
+        cmd: cmdinfo[0],
+        enabled: this.props.commands_state[cmdinfo[0]],
+        send_command: this.props.send_command,
+      });
   }
 
   buildActionGroup(grpinfo) {
@@ -63,25 +65,25 @@ export default class SampleChangerMaintenance extends React.Component {
     }
 
     return React.createElement(SampleChangerActionGroup,
-                               { name: grpinfo[0],
-                                 buttons: butgrp }
-                              );
+      {
+        name: grpinfo[0],
+        buttons: butgrp
+      });
   }
 
   render() {
     const groups = [];
     let msg = '';
 
-    if (Object.keys(this.props.commands).length !== 0 &&
-        this.props.commands.cmds !== 'SC maintenance controller not defined') {
+    if (Object.keys(this.props.commands).length !== 0
+        && this.props.commands.cmds !== 'SC maintenance controller not defined') {
       for (const cmdgrp of this.props.commands.cmds) {
         groups.push(this.buildActionGroup(cmdgrp));
       }
     } else {
       return (
-        <div>
-        </div>
-        );
+        <div />
+      );
     }
 
 
@@ -90,15 +92,15 @@ export default class SampleChangerMaintenance extends React.Component {
     }
 
     return (
-       <div>
-         { groups }
-         { msg ? (
-           <Panel header="Status message">
-             <span className="scMessage">{ msg }</span>
-           </Panel>) : null
+      <div>
+        { groups }
+        { msg ? (
+          <Panel header="Status message">
+            <span className="scMessage">{ msg }</span>
+          </Panel>
+        ) : null
          }
-       </div>
+      </div>
     );
   }
 }
-

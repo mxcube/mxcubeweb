@@ -40,7 +40,7 @@ export class LimsResultSummary extends React.Component {
 
   taskSummary() {
     const task = this.props.taskData;
-    let filePath = this.props.taskData.parameters.fullPath;
+    const filePath = this.props.taskData.parameters.fullPath;
     return (
       <div>
         <div className="row">
@@ -68,12 +68,12 @@ export class LimsResultSummary extends React.Component {
           <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
         </div>
       </div>
-   );
+    );
   }
 
   render() {
     const task = this.props.taskData;
-    let style = {};// resize: 'both', overflow: 'auto' };
+    const style = {};// resize: 'both', overflow: 'auto' };
 
     return (
       <div ref="limsResultSummary" className="lims-result-summary" style={ style }>

@@ -4,10 +4,10 @@ import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGrid.css';
 import { TASK_COLLECTED,
-         TASK_COLLECT_FAILED,
-         TASK_COLLECT_WARNING,
-         TASK_RUNNING,
-         isUnCollected } from '../../constants';
+  TASK_COLLECT_FAILED,
+  TASK_COLLECT_WARNING,
+  TASK_RUNNING,
+  isUnCollected } from '../../constants';
 
 import loader from '../../img/busy-indicator.gif';
 
@@ -46,7 +46,7 @@ export class TaskItem extends React.Component {
 
   summary() {
     const task = this.props.taskData;
-    let filePath = this.props.taskData.parameters.fullPath;
+    const filePath = this.props.taskData.parameters.fullPath;
     return (
       <div>
         <div className="row">
@@ -74,7 +74,7 @@ export class TaskItem extends React.Component {
           <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
         </div>
       </div>
-   );
+    );
   }
 
   result() {
@@ -256,8 +256,8 @@ export class TaskItem extends React.Component {
             {this.tagName()}
             {
              task.state !== TASK_COLLECTED ?
-             (<i className="fa fa-times" onClick={this.deleteButtonOnClick} />) :
-             (<span />)
+               (<i className="fa fa-times" onClick={this.deleteButtonOnClick} />) :
+               (<span />)
             }
           </span>
         </OverlayTrigger>

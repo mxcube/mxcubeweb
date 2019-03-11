@@ -1,8 +1,8 @@
 import fetch from 'isomorphic-fetch';
+import { browserHistory } from 'react-router';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { sendClearQueue, clearAll } from './queue';
 import { setMaster } from './remoteAccess';
-import { browserHistory } from 'react-router';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -70,7 +70,7 @@ export function sendSelectProposal(number) {
 
 export function startSession() {
   return function (dispatch, getState) {
-    const loginInfo = getState().login.loginInfo;
+    const { loginInfo } = getState().login;
     dispatch(setMaster(loginInfo.master, loginInfo.observerName));
     dispatch(getInitialState());
     dispatch(setLoading(false));
@@ -87,13 +87,13 @@ export function getLoginInfo() {
       },
       credentials: 'include'
     }).then(response => response.json())
-          .then(loginInfo => {
-            dispatch(setLoginInfo(loginInfo));
-            return loginInfo;
-          }, () => {
-            dispatch(showErrorPanel(true));
-            dispatch(setLoading(false));
-          });
+      .then((loginInfo) => {
+        dispatch(setLoginInfo(loginInfo));
+        return loginInfo;
+      }, () => {
+        dispatch(showErrorPanel(true));
+        dispatch(setLoading(false));
+      });
   };
 }
 
@@ -147,4 +147,3 @@ export function doSignOut() {
     });
   };
 }
-

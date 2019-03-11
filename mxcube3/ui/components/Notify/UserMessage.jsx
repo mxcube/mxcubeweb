@@ -74,7 +74,6 @@ export default class UserMessage extends React.Component {
 
   render() {
     const messages = [];
-    let divId = 0;
 
     for (const message of this.props.messages) {
       const messageClass = `message message${message.level}`;
@@ -100,9 +99,7 @@ export default class UserMessage extends React.Component {
             (<span className="closebtn" onClick={clickHandler}>&times;</span>) : null
           }
         </div>
-        ));
-
-      divId++;
+      ));
     }
 
     let show = messages.length > 0;

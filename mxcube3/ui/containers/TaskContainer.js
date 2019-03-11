@@ -10,10 +10,12 @@ import Workflow from '../components/Tasks/Workflow';
 import Interleaved from '../components/Tasks/Interleaved';
 import XRFScan from '../components/Tasks/XRFScan';
 import EnergyScan from '../components/Tasks/EnergyScan';
-import { hideTaskParametersForm,
-         showTaskForm,
-         resetTaskParameters,
-         updateDefaultParameters } from '../actions/taskForm';
+import {
+  hideTaskParametersForm,
+  showTaskForm,
+  resetTaskParameters,
+  updateDefaultParameters
+} from '../actions/taskForm';
 
 
 import {
@@ -93,124 +95,142 @@ class TaskContainer extends React.Component {
     });
 
     if (this.props.showForm === 'Characterisation') {
-      return (<Characterisation
-        show
-        addTask={this.addTask}
-        pointID={this.props.pointID}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        rootPath={this.props.path}
-        attributes={this.props.attributes}
-        initialParameters={this.props.initialParameters}
-        resetTaskParameters={this.props.resetTaskParameters}
-      />);
+      return (
+        <Characterisation
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+          attributes={this.props.attributes}
+          initialParameters={this.props.initialParameters}
+          resetTaskParameters={this.props.resetTaskParameters}
+        />
+      );
     }
 
     if (this.props.showForm === 'DataCollection') {
-      return (<DataCollection
-        show
-        addTask={this.addTask}
-        pointID={this.props.pointID}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        rootPath={this.props.path}
-        attributes={this.props.attributes}
-        initialParameters={this.props.initialParameters}
-        resetTaskParameters={this.props.resetTaskParameters}
-        taskResult={this.props.taskResult}
-      />);
+      return (
+        <DataCollection
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+          attributes={this.props.attributes}
+          initialParameters={this.props.initialParameters}
+          resetTaskParameters={this.props.resetTaskParameters}
+          taskResult={this.props.taskResult}
+        />
+      );
     }
 
     if (this.props.showForm === 'Helical') {
-      return (<Helical
-        show
-        addTask={this.addTask}
-        pointID={this.props.pointID}
-        sampleIds={this.props.sampleIds}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        rootPath={this.props.path}
-        lines={lines}
-        attributes={this.props.attributes}
-        initialParameters={this.props.initialParameters}
-        resetTaskParameters={this.props.resetTaskParameters}
-      />);
+      return (
+        <Helical
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          sampleIds={this.props.sampleIds}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+          lines={lines}
+          attributes={this.props.attributes}
+          initialParameters={this.props.initialParameters}
+          resetTaskParameters={this.props.resetTaskParameters}
+        />
+      );
     }
 
     if (this.props.showForm === 'Mesh') {
-      return (<Mesh
-        show
-        addTask={this.addTask}
-        pointID={this.props.pointID}
-        sampleIds={this.props.sampleIds}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        rootPath={this.props.path}
-        cellCount={this.props.cellCount}
-        initialParameters={this.props.initialParameters}
-        resetTaskParameters={this.props.resetTaskParameters}
-      />);
+      return (
+        <Mesh
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          sampleIds={this.props.sampleIds}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+          cellCount={this.props.cellCount}
+          initialParameters={this.props.initialParameters}
+          resetTaskParameters={this.props.resetTaskParameters}
+        />
+      );
     }
 
     if (this.props.showForm === 'AddSample') {
-      return (<AddSample
-        show
-        hide={this.props.hideTaskParametersForm}
-        addToQueue={this.addSampleToQueue}
-        addAndMount={this.addSampleAndMount}
-      />);
+      return (
+        <AddSample
+          show
+          hide={this.props.hideTaskParametersForm}
+          addToQueue={this.addSampleToQueue}
+          addAndMount={this.addSampleAndMount}
+        />
+      );
     }
 
     if (this.props.showForm === 'Workflow') {
-      return (<Workflow
-        show
-        addTask={this.addTask}
-        pointID={this.props.pointID}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        rootPath={this.props.path}
-      />);
+      return (
+        <Workflow
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+        />
+      );
     }
 
     if (this.props.showForm === 'Interleaved') {
-      return (<Interleaved
-        show
-        addTask={this.addTask}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        rootPath={this.props.path}
-      />);
+      return (
+        <Interleaved
+          show
+          addTask={this.addTask}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+        />
+      );
     }
 
     if (this.props.showForm === 'XRFScan') {
-      return (<XRFScan
-        show
-        addTask={this.addTask}
-        pointID={this.props.pointID}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        rootPath={this.props.path}
-      />);
+      return (
+        <XRFScan
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+        />
+      );
     }
 
     if (this.props.showForm === 'EnergyScan') {
-      return (<EnergyScan
-        show
-        addTask={this.addTask}
-        pointID={this.props.pointID}
-        taskData={this.props.taskData}
-        hide={this.props.hideTaskParametersForm}
-        apertureList={this.props.apertureList}
-        availableElements={this.props.beamline.energyScanElements}
-        rootPath={this.props.path}
-      />);
+      return (
+        <EnergyScan
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          availableElements={this.props.beamline.energyScanElements}
+          rootPath={this.props.path}
+        />
+      );
     }
 
     return null;

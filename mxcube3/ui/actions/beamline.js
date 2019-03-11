@@ -48,11 +48,11 @@ export function sendGetAllAttributes() {
       },
       credentials: 'include'
     }).then(response => response.json())
-          .then(data => {
-            dispatch(getBeamlineAttrsAction(data));
-          }, () => {
-            throw new Error(`GET ${url} failed`);
-          });
+      .then((data) => {
+        dispatch(getBeamlineAttrsAction(data));
+      }, () => {
+        throw new Error(`GET ${url} failed`);
+      });
   };
 }
 
@@ -72,11 +72,11 @@ export function sendSetAttribute(name, value) {
       credentials: 'include',
       body: JSON.stringify({ name, value })
     }).then(response => response.json())
-          .then(data => {
-            dispatch(setBeamlineAttrAction(data));
-          }, () => {
-            throw new Error(`PUT ${url} failed`);
-          });
+      .then((data) => {
+        dispatch(setBeamlineAttrAction(data));
+      }, () => {
+        throw new Error(`PUT ${url} failed`);
+      });
   };
 }
 
