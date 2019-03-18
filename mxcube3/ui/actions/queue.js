@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { loadSample } from './sampleChanger';
 import { sendAbortCentring, sendUpdateShapes } from './sampleview';
-import { selectSamplesAction, clearSampleGrid } from '../actions/sampleGrid';
+import { selectSamplesAction, clearSampleGrid } from './sampleGrid';
 import { TASK_UNCOLLECTED } from '../constants';
 
 export function queueLoading(loading) {
@@ -34,8 +34,8 @@ export function setQueue(queue) {
 
     // Check if sample is loaded by sample changer in that case set it as current sample
     queue.sampleOrder.forEach((sid) => {
-      if (state.sampleChanger.loadedSample.address === sid &&
-          state.queue.current.sampleID !== sid) {
+      if (state.sampleChanger.loadedSample.address === sid
+          && state.queue.current.sampleID !== sid) {
         dispatch(setCurrentSample(sid));
       }
     });
@@ -74,7 +74,9 @@ export function removeSamplesFromQueueAction(sampleIDList) {
 
 
 export function setSampleAttribute(sampleID, attr, value) {
-  return { type: 'SET_SAMPLE_ATTRIBUTE', sampleID, attr, value };
+  return {
+    type: 'SET_SAMPLE_ATTRIBUTE', sampleID, attr, value
+  };
 }
 
 
@@ -103,7 +105,8 @@ export function addSamplesToQueue(sampleDataList) {
       return response.json();
     }).then((data) => {
       dispatch(setQueue(data));
-    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+    }).catch(() => (queueLoading(false)))
+      .then(() => (dispatch(queueLoading(false))));
   };
 }
 
@@ -120,7 +123,8 @@ export function addSampleAndMount(sampleData) {
       }).then((data) => {
         dispatch(setQueue(data));
         dispatch(selectSamplesAction([sampleData.sampleID]));
-      }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+      }).catch(() => (queueLoading(false)))
+        .then(() => (dispatch(queueLoading(false))));
     }));
   };
 }
@@ -143,13 +147,11 @@ export function sendClearQueue(clearQueueOnly = false) {
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to clear queue');
+      } else if (clearQueueOnly) {
+        dispatch(clearQueue());
       } else {
-        if (clearQueueOnly) {
-          dispatch(clearQueue());
-        } else {
-          dispatch(clearQueue());
-          dispatch(clearSampleGrid());
-        }
+        dispatch(clearQueue());
+        dispatch(clearSampleGrid());
       }
     });
   };
@@ -370,7 +372,9 @@ export function sendRunSample(sampleID, taskIndex) {
 
 
 export function removeTaskAction(sampleID, taskIndex, queueID = null) {
-  return { type: 'REMOVE_TASK', sampleID, taskIndex, queueID };
+  return {
+    type: 'REMOVE_TASK', sampleID, taskIndex, queueID
+  };
 }
 
 
@@ -387,7 +391,7 @@ export function setEnabledSample(sampleIDList, value) {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to set item enabled flag'));
       } else {
-        sampleIDList.forEach(sid => {
+        sampleIDList.forEach((sid) => {
           dispatch(setSampleAttribute(sid, 'checked', value));
 
           // If sample is loaded by SC, set as current
@@ -436,7 +440,9 @@ export function addTaskAction(tasks) {
 }
 
 export function updateTaskAction(sampleID, taskIndex, taskData) {
-  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
+  return {
+    type: 'UPDATE_TASK', sampleID, taskIndex, taskData
+  };
 }
 
 
@@ -447,8 +453,8 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
     const taskData = { ...sampleGrid.sampleList[sampleID].tasks[taskIndex], parameters: params };
     dispatch(queueLoading(true));
 
-    sendUpdateQueueItem(sampleGrid.sampleList[sampleID].queueID, taskData.queueID, taskData).
-      then((response) => {
+    sendUpdateQueueItem(sampleGrid.sampleList[sampleID].queueID, taskData.queueID, taskData)
+      .then((response) => {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, 'The task could not be modified on the server'));
         }
@@ -459,7 +465,8 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
         if (runNow) {
           dispatch(sendRunSample(sampleID, taskIndex));
         }
-      }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+      }).catch(() => (queueLoading(false)))
+      .then(() => (dispatch(queueLoading(false))));
   };
 }
 
@@ -483,13 +490,15 @@ export function addTask(sampleIDs, parameters, runNow) {
       shapes.forEach((sh) => {
         const pars = { ...parameters, shape: sh };
 
-        const task = { type: pars.type,
-                       label: pars.label,
-                       state: TASK_UNCOLLECTED,
-                       sampleID,
-                       sampleQueueID: state.sampleGrid.sampleList[sampleID].queueID,
-                       parameters: { ...pars },
-                       checked: true };
+        const task = {
+          type: pars.type,
+          label: pars.label,
+          state: TASK_UNCOLLECTED,
+          sampleID,
+          sampleQueueID: state.sampleGrid.sampleList[sampleID].queueID,
+          parameters: { ...pars },
+          checked: true
+        };
 
         // If a task is created on a shape, save shape if not already saved before
         if (parameters.shape !== -1 && parameters.shape !== undefined) {
@@ -497,10 +506,14 @@ export function addTask(sampleIDs, parameters, runNow) {
             dispatch(sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }]));
           }
           if (state.shapes.shapes[task.parameters.shape].t === 'L') {
-            dispatch(sendUpdateShapes([{ id: state.shapes.shapes[task.parameters.shape].refs[0],
-                                         state: 'SAVED' }]));
-            dispatch(sendUpdateShapes([{ id: state.shapes.shapes[task.parameters.shape].refs[1],
-                                         state: 'SAVED' }]));
+            dispatch(sendUpdateShapes([{
+              id: state.shapes.shapes[task.parameters.shape].refs[0],
+              state: 'SAVED'
+            }]));
+            dispatch(sendUpdateShapes([{
+              id: state.shapes.shapes[task.parameters.shape].refs[1],
+              state: 'SAVED'
+            }]));
           }
         }
 
@@ -521,20 +534,25 @@ export function addTask(sampleIDs, parameters, runNow) {
       dispatch(setQueue(data));
       if (runNow) {
         const sl = data.sampleList;
-        const taskIndex = sl[sampleIDs[0]].tasks[sl[sampleIDs[0]].tasks.length - 1].taskIndex;
+        const { taskIndex } = sl[sampleIDs[0]].tasks[sl[sampleIDs[0]].tasks.length - 1];
         dispatch(sendRunSample(sampleIDs[0], taskIndex));
       }
-    }).catch(() => (queueLoading(false))).then(() => (dispatch(queueLoading(false))));
+    }).catch(() => (queueLoading(false)))
+      .then(() => (dispatch(queueLoading(false))));
   };
 }
 
 
 export function addTaskResultAction(sampleID, taskIndex, state, progress, limsResultData, queueID) {
-  return { type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress, limsResultData, queueID };
+  return {
+    type: 'ADD_TASK_RESULT', sampleID, taskIndex, state, progress, limsResultData, queueID
+  };
 }
 
 export function updateTaskLimsData(sampleID, taskIndex, limsResultData) {
-  return { type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex, limsResultData };
+  return {
+    type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex, limsResultData
+  };
 }
 
 
@@ -562,7 +580,7 @@ export function deleteSamplesFromQueue(sampleIDList) {
   return function (dispatch) {
     dispatch(queueLoading(true));
 
-    const itemPostList = sampleIDList.map(sampleID => {
+    const itemPostList = sampleIDList.map((sampleID) => {
       const itemPos = [sampleID, undefined];
       return itemPos;
     });
@@ -593,12 +611,12 @@ export function setAutoMountSample(automount) {
         'Content-type': 'application/json'
       },
       body: JSON.stringify(automount)
-    }).then(response => {
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Could not set/unset automount'));
       }
       return response.json();
-    }).then(response => {
+    }).then((response) => {
       let a = response.automount;
       a = a === undefined ? false : a;
       dispatch(setAutoMountAction(a));
@@ -620,12 +638,12 @@ export function setAutoAddDiffPlan(autoadddiffplan) {
         'Content-type': 'application/json'
       },
       body: JSON.stringify(autoadddiffplan)
-    }).then(response => {
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Could not set/unset automount'));
       }
       return response.json();
-    }).then(response => {
+    }).then((response) => {
       const a = response.auto_add_diffplan;
       dispatch(setAutoAddDiffPlanAction(a));
     });

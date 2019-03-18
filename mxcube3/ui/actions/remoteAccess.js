@@ -8,7 +8,9 @@ export function setMaster(master, name) {
   return function (dispatch) {
     if (master) {
       serverIO.setRemoteAccessMaster(name, (sid) => {
-        dispatch({ type: 'SET_MASTER', master, sid, name });
+        dispatch({
+          type: 'SET_MASTER', master, sid, name
+        });
       });
     } else {
       if (!master && !name) {
@@ -16,7 +18,9 @@ export function setMaster(master, name) {
       }
 
       serverIO.setRemoteAccessObserver(name, (sid) => {
-        dispatch({ type: 'SET_MASTER', master, sid, name });
+        dispatch({
+          type: 'SET_MASTER', master, sid, name
+        });
       });
     }
   };
@@ -35,7 +39,9 @@ export function requestControl(control = true, message = '', name = '', userInfo
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ control, message, name, userInfo })
+      body: JSON.stringify({
+        control, message, name, userInfo
+      })
     });
 
     dispatch(requestControlAction(control));
@@ -150,7 +156,7 @@ export function getAllChatMessages() {
       Accept: 'application/json',
       'Content-type': 'application/json'
     }
-  }).then((response) => response.json());
+  }).then(response => response.json());
 }
 
 

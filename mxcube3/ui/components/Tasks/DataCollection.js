@@ -1,17 +1,21 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import {
+  Modal, Button, Form, Row, Col, ButtonToolbar
+} from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
 
-import { FieldsHeader,
-         StaticField,
-         InputField,
-         SelectField,
-         FieldsRow,
-         CollapsableRows } from './fields';
+import {
+  FieldsHeader,
+  StaticField,
+  InputField,
+  SelectField,
+  FieldsRow,
+  CollapsableRows
+} from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
 
@@ -71,7 +75,7 @@ class DataCollection extends React.Component {
 
   defaultParameters() {
     this.props.resetTaskParameters();
-    const type = this.props.taskData.parameters.type;
+    const { type } = this.props.taskData.parameters;
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
       this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
@@ -80,55 +84,63 @@ class DataCollection extends React.Component {
 
   showDCFooter() {
     return (
-       <Modal.Footer>
-       <div className="input-group-btn">
+      <Modal.Footer>
+        <div className="input-group-btn">
           <ButtonToolbar className="pull-left">
-           <Button bsSize="xsmall" bsStyle="default"
-             onClick={this.defaultParameters}
-           >
+            <Button
+              bsSize="xsmall"
+              bsStyle="default"
+              onClick={this.defaultParameters}
+            >
              Default Parameters
-           </Button>
+            </Button>
           </ButtonToolbar>
-         <ButtonToolbar className="pull-right">
-           <Button bsStyle="success"
-             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
-             onClick={this.submitRunNow}
-           >
+          <ButtonToolbar className="pull-right">
+            <Button
+              bsStyle="success"
+              disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+              onClick={this.submitRunNow}
+            >
              Run Now
-           </Button>
-           <Button bsStyle="primary" disabled={this.props.invalid}
-             onClick={this.submitAddToQueue}
-           >
-             {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-           </Button>
-         </ButtonToolbar>
+            </Button>
+            <Button
+              bsStyle="primary"
+              disabled={this.props.invalid}
+              onClick={this.submitAddToQueue}
+            >
+              {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+            </Button>
+          </ButtonToolbar>
         </div>
-       </Modal.Footer>
-      );
+      </Modal.Footer>
+    );
   }
 
   showDPFooter() {
     return (
-       <Modal.Footer>
-         <ButtonToolbar className="pull-right">
-           <Button bsStyle="success"
-             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
-             onClick={this.submitRunNow}
-           >
+      <Modal.Footer>
+        <ButtonToolbar className="pull-right">
+          <Button
+            bsStyle="success"
+            disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+            onClick={this.submitRunNow}
+          >
              Run Now
-           </Button>
-           <Button bsStyle="primary" disabled={this.props.invalid}
-             onClick={this.submitAddToQueue}
-           >
-             { 'Add Diffraction Plan to Queue' }
-           </Button>
-         </ButtonToolbar>
-       </Modal.Footer>
+          </Button>
+          <Button
+            bsStyle="primary"
+            disabled={this.props.invalid}
+            onClick={this.submitAddToQueue}
+          >
+            { 'Add Diffraction Plan to Queue' }
+          </Button>
+        </ButtonToolbar>
+      </Modal.Footer>
     );
   }
 
   showFooter() {
-    const isDiffractionPlan = this.props.taskData.isDiffractionPlan;
+    const { isDiffractionPlan } = this.props.taskData;
     let foot = '';
 
     if (isDiffractionPlan) {
@@ -140,8 +152,8 @@ class DataCollection extends React.Component {
   }
 
   render() {
-    const energyScanResult = this.props.taskResult.energyScan.length > 0 ?
-            this.props.taskResult.energyScan[this.props.taskResult.energyScan.length - 1] : [];
+    const energyScanResult = this.props.taskResult.energyScan.length > 0
+      ? this.props.taskResult.energyScan[this.props.taskResult.energyScan.length - 1] : [];
 
     const energyList = [];
 
@@ -149,7 +161,8 @@ class DataCollection extends React.Component {
       energyList.push(result);
     });
 
-    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
+    return (
+      <DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Standard Data Collection</Modal.Title>
         </Modal.Header>
@@ -166,17 +179,19 @@ class DataCollection extends React.Component {
               <Col xs={12}>
                 <InputField propName="prefix" label="Prefix" col1="2" col2="6" />
               </Col>
-              {this.props.taskData.sampleID ?
-                (<Col xs={8}>
-                   <InputField
-                     propName="run_number"
-                     disabled
-                     label="Run number"
-                     col1="4"
-                     col2="3"
-                   />
-                 </Col>)
-               : null}
+              {this.props.taskData.sampleID
+                ? (
+                  <Col xs={8}>
+                    <InputField
+                      propName="run_number"
+                      disabled
+                      label="Run number"
+                      col1="4"
+                      col2="3"
+                    />
+                  </Col>
+                )
+                : null}
             </Row>
           </Form>
 
@@ -195,26 +210,27 @@ class DataCollection extends React.Component {
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
-            <InputField
-              disabled={this.props.beamline.attributes.energy.readonly}
-              propName="energy"
-              type="number"
-              label="Energy"
-            />
+              <InputField
+                disabled={this.props.beamline.attributes.energy.readonly}
+                propName="energy"
+                type="number"
+                label="Energy"
+              />
               <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
-            { this.props.taskResult.energyScan.length > 0 ?
-              (<FieldsRow>
-                 <SelectField
-                   col1="7"
-                   col2="5"
-                   propName="energy"
-                   label="Energy scan result"
-                   list={energyList}
-                 />
-               </FieldsRow>)
-              :
-              null
+            { this.props.taskResult.energyScan.length > 0
+              ? (
+                <FieldsRow>
+                  <SelectField
+                    col1="7"
+                    col2="5"
+                    propName="energy"
+                    label="Energy scan result"
+                    list={energyList}
+                  />
+                </FieldsRow>
+              )
+              : null
             }
             <CollapsableRows>
               <FieldsRow>
@@ -232,32 +248,35 @@ class DataCollection extends React.Component {
           </Form>
 
           <FieldsHeader title="Processing" />
-            <CollapsableRows>
-              <Form horizontal>
-                <SelectField col1="3" col2="3"
-                  propName="space_group"
-                  label="Space group"
-                  list={SPACE_GROUPS}
-                />
-                <b> Unit Cell: </b>
-                <FieldsRow>
-                  <InputField col1="1" col2="5" propName="cellA" label="a" />
-                  <InputField col1="1" col2="5" propName="cellB" label="b" />
-                  <InputField col1="1" col2="5" propName="cellC" label="c" />
-                </FieldsRow>
-                <FieldsRow>
-                  <InputField col1="1" col2="5" propName="cellAlpha" label="&alpha;" />
-                  <InputField col1="1" col2="5" propName="cellBeta" label="&beta;" />
-                  <InputField col1="1" col2="5" propName="cellGamma" label="&gamma;" />
-                </FieldsRow>
-              </Form>
-            </CollapsableRows>
+          <CollapsableRows>
+            <Form horizontal>
+              <SelectField
+                col1="3"
+                col2="3"
+                propName="space_group"
+                label="Space group"
+                list={SPACE_GROUPS}
+              />
+              <b> Unit Cell: </b>
+              <FieldsRow>
+                <InputField col1="1" col2="5" propName="cellA" label="a" />
+                <InputField col1="1" col2="5" propName="cellB" label="b" />
+                <InputField col1="1" col2="5" propName="cellC" label="c" />
+              </FieldsRow>
+              <FieldsRow>
+                <InputField col1="1" col2="5" propName="cellAlpha" label="&alpha;" />
+                <InputField col1="1" col2="5" propName="cellBeta" label="&beta;" />
+                <InputField col1="1" col2="5" propName="cellGamma" label="&gamma;" />
+              </FieldsRow>
+            </Form>
+          </CollapsableRows>
 
-       </Modal.Body>
+        </Modal.Body>
 
-       { this.props.taskData.state ? '' : this.showFooter() }
+        { this.props.taskData.state ? '' : this.showFooter() }
 
-      </DraggableModal>);
+      </DraggableModal>
+    );
   }
 }
 
@@ -269,7 +288,7 @@ DataCollection = reduxForm({
 
 const selector = formValueSelector('datacollection');
 
-DataCollection = connect(state => {
+DataCollection = connect((state) => {
   const subdir = selector(state, 'subdir');
 
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
@@ -295,18 +314,18 @@ DataCollection = connect(state => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds.constructor !== Array ?
-        state.taskForm.taskData.parameters.resolution :
-        state.beamline.attributes.resolution.value),
-      energy: (state.taskForm.sampleIds.constructor !== Array ?
-        state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value),
-      transmission: (state.taskForm.sampleIds.constructor !== Array ?
-        state.taskForm.taskData.parameters.transmission :
-        state.beamline.attributes.transmission.value),
-      osc_start: (state.taskForm.sampleIds.constructor !== Array ?
-        state.taskForm.taskData.parameters.osc_start :
-        state.beamline.motors.phi.position)
+      resolution: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.resolution
+        : state.beamline.attributes.resolution.value),
+      energy: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.energy
+        : state.beamline.attributes.energy.value),
+      transmission: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.transmission
+        : state.beamline.attributes.transmission.value),
+      osc_start: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.osc_start
+        : state.beamline.motors.phi.position)
     }
   };
 })(DataCollection);

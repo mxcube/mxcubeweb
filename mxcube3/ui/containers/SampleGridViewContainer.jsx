@@ -49,7 +49,7 @@ import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog
 import QueueSettings from './QueueSettings.jsx';
 
 import { SAMPLE_ITEM_WIDTH,
-         SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
+  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 
 import '../components/SampleGrid/SampleGrid.css';
 
@@ -284,11 +284,11 @@ class SampleGridViewContainer extends React.Component {
    */
   sampleGridClearFilter() {
     this.props.filter({ inQueue: false,
-                        notInQueue: false,
-                        collected: false,
-                        notCollected: false,
-                        limsFilter: false,
-                        filterText: '' });
+      notInQueue: false,
+      collected: false,
+      notCollected: false,
+      limsFilter: false,
+      filterText: '' });
   }
 
 
@@ -598,14 +598,14 @@ class SampleGridViewContainer extends React.Component {
           <Sticky
             style={{ zIndex: 1000, transform: '' }}
             stickyStyle={{ zIndex: 1000,
-                           paddingTop: '65px',
-                           paddingBottom: '0.5em',
-                           paddingLeft: '1em',
-                           paddingRight: '1em',
-                           borderBottom: '1px solid #CCC',
-                           backgroundColor: '#FAFAFA',
-                           width: '100%',
-                           left: '0px' }}
+              paddingTop: '65px',
+              paddingBottom: '0.5em',
+              paddingLeft: '1em',
+              paddingRight: '1em',
+              borderBottom: '1px solid #CCC',
+              backgroundColor: '#FAFAFA',
+              width: '100%',
+              left: '0px' }}
           >
             <Row>
               <Col xs={4}>

@@ -19,13 +19,13 @@ export default class BeamlineActionControl extends React.Component {
             bsStyle = {bsStyle}
             disabled = {this.props.disabled}
             onClick = { this.props.state !== RUNNING ?
-                        () => this.props.start(this.props.cmdName, showOutput) :
-                        () => this.props.stop(this.props.cmdName) }
+              () => this.props.start(this.props.cmdName, showOutput) :
+              () => this.props.stop(this.props.cmdName) }
           >
           <b>{label}</b>
           </Button> : ''
         }
-	{ showOutput ?
+        { showOutput ?
           <Button
             disabled = {this.props.disabled}
             bsSize = "small"
@@ -33,7 +33,7 @@ export default class BeamlineActionControl extends React.Component {
           >
             <Glyphicon glyph="new-window" />
           </Button> : ''
-	}
+        }
       </ButtonToolbar>);
   }
 }

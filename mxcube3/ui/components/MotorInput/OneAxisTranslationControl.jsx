@@ -85,7 +85,7 @@ export default class OneAxisTranslationControl extends React.Component {
     const { value, motorName, step, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
 
-    let inputCSS = cx('form-control rw-input', {
+    const inputCSS = cx('form-control rw-input', {
       'input-bg-edited': this.state.edited,
       'input-bg-moving': this.props.state === MOTOR_STATE.BUSY ||
                          this.props.state === MOTOR_STATE.MOVING,
@@ -118,10 +118,10 @@ export default class OneAxisTranslationControl extends React.Component {
         </Button>
         <input
           style={{ width: `${parseFloat(decimalPoints) + 2}em`,
-                   height: '2.1em',
-                   display: 'inline-block',
-                   marginLeft: '5px',
-                   marginRight: '5px' }}
+            height: '2.1em',
+            display: 'inline-block',
+            marginLeft: '5px',
+            marginRight: '5px' }}
           ref="motorValue"
           className={inputCSS}
           onKeyUp={this.handleKey}

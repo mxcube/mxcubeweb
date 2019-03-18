@@ -98,7 +98,7 @@ class EnergyScan extends React.Component {
                     col2="8"
                   />
                 </Col>)
-              : null}
+                : null}
             </Row>
             <FieldsHeader title="Element" />
             <PeriodicTable

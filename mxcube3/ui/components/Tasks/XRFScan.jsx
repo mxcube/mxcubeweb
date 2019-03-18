@@ -77,7 +77,7 @@ class XRFScan extends React.Component {
                     col2="8"
                   />
                 </Col>)
-              : null}
+                : null}
             </Row>
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>

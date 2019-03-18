@@ -1,9 +1,9 @@
 import fetch from 'isomorphic-fetch';
 
 export function addUserMessage(record, target) {
-  let duration = undefined;
+  let duration;
   let level = 'INFO';
-  const message = record.message;
+  const { message } = record;
   const details = record.stack_trace;
   const meta = record.logger;
 
@@ -20,8 +20,12 @@ export function addUserMessage(record, target) {
   let exp = new Date().getTime();
   exp += duration;
 
-  return { type: 'ADD_USER_MESSAGE',
-           message: { message, details, level, duration, exp, meta, target } };
+  return {
+    type: 'ADD_USER_MESSAGE',
+    message: {
+      message, details, level, duration, exp, meta, target
+    }
+  };
 }
 
 
@@ -40,7 +44,7 @@ export function setInitialState(data) {
 }
 
 export function setLoading(loading, title = '', message = '', blocking = false,
-                           abortFun = undefined) {
+  abortFun = undefined) {
   return {
     type: 'SET_LOADING', loading, title, message, blocking, abortFun
   };
@@ -198,33 +202,48 @@ export function getInitialState() {
     });
 
     const pchains = [
-      queue.then(parse).then(json => { state.queue = json; }).catch(notify),
-      motors.then(parse).then(json => { state.Motors = json; }).catch(notify),
-      beamInfo.then(parse).then(json => { state.beamInfo = json; }).catch(notify),
+      queue.then(parse).then((json) => { state.queue = json; }).catch(notify),
+      motors.then(parse).then((json) => { state.Motors = json; }).catch(notify),
+      beamInfo.then(parse).then((json) => { state.beamInfo = json; }).catch(notify),
       beamlineSetup.then(parse).then(
-        json => { state.beamlineSetup = json; return json; }).then(
-        json => { state.datapath = json.path; return json; }).catch(notify),
-      sampleVideoInfo.then(parse).then(json => { state.Camera = json; }).catch(notify),
-      diffractometerInfo.then(parse).then(json => { Object.assign(state, json); }).catch(notify),
-      detectorInfo.then(parse).then(json => { state.detector = json; }).catch(notify),
+        (json) => { state.beamlineSetup = json; return json; }
+      ).then(
+        (json) => { state.datapath = json.path; return json; }
+      ).catch(notify),
+      sampleVideoInfo.then(parse).then((json) => { state.Camera = json; }).catch(notify),
+      diffractometerInfo.then(parse).then((json) => { Object.assign(state, json); }).catch(notify),
+      detectorInfo.then(parse).then((json) => { state.detector = json; }).catch(notify),
       dcParameters.then(parse).then(
-        json => { state.dcParameters = json.acq_parameters; return json; }).then(
-        json => { state.acqParametersLimits = json.limits; }).catch(notify),
+        (json) => { state.dcParameters = json.acq_parameters; return json; }
+      ).then(
+        (json) => { state.acqParametersLimits = json.limits; }
+      ).catch(notify),
       charParameters.then(parse).then(
-        json => { state.charParameters = json.acq_parameters; }).catch(notify),
+        (json) => { state.charParameters = json.acq_parameters; }
+      ).catch(notify),
       meshParameters.then(parse).then(
-        json => { state.meshParameters = json.acq_parameters; }).catch(notify),
+        (json) => { state.meshParameters = json.acq_parameters; }
+      ).catch(notify),
       xrfParameters.then(parse).then(
-        json => { state.xrfParameters = json; }).catch(notify),
-      savedShapes.then(parse).then(json => {state.shapes = json.shapes;}).catch(notify),
+        (json) => { state.xrfParameters = json; }
+      ).catch(notify),
+      savedShapes.then(parse).then((json) => { state.shapes = json.shapes; }).catch(notify),
       sampleChangerInitialState.then(parse).then(
-        json => { state.sampleChangerState = { state: json.state }; return json; }).then(
-        json => { state.sampleChangerContents = json.contents; return json; }).then(
-        json => { state.loadedSample = json.loaded_sample; return json; }).then(
-        json => { state.sampleChangerCommands = json.cmds; return json; }).then(
-        json => { state.sampleChangerGlobalState = json.global_state; return json; }).catch(notify),
-      remoteAccess.then(parse).then(json => { state.remoteAccess = json.data; }).catch(notify),
-      workflow.then(parse).then(json => { state.workflow = json; }).catch(notify)
+        (json) => { state.sampleChangerState = { state: json.state }; return json; }
+      ).then(
+        (json) => { state.sampleChangerContents = json.contents; return json; }
+      ).then(
+        (json) => { state.loadedSample = json.loaded_sample; return json; }
+      )
+        .then(
+          (json) => { state.sampleChangerCommands = json.cmds; return json; }
+        )
+        .then(
+          (json) => { state.sampleChangerGlobalState = json.global_state; return json; }
+        )
+        .catch(notify),
+      remoteAccess.then(parse).then((json) => { state.remoteAccess = json.data; }).catch(notify),
+      workflow.then(parse).then((json) => { state.workflow = json; }).catch(notify)
     ];
 
     Promise.all(pchains).then(() => {

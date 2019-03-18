@@ -104,7 +104,9 @@ export function deleteShape(id) {
 }
 
 export function saveImageSize(width, height, pixelsPerMm) {
-  return { type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm };
+  return {
+    type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm
+  };
 }
 
 export function toggleAutoScale(width = 1) {
@@ -239,7 +241,7 @@ export function sendStartClickCentring() {
 
         return response.json();
       }).then((json) => {
-        const clicksLeft = json.clicksLeft;
+        const { clicksLeft } = json;
         dispatch(centringClicksLeft(clicksLeft));
 
         let msg = '3-Click Centring: <br />';
@@ -254,7 +256,8 @@ export function sendStartClickCentring() {
       });
     } else {
       dispatch(showErrorPanel(true, 'There is not a sample mounted! Cannot center.'));
-    }};
+    }
+  };
 }
 
 export function sendCentringPoint(x, y) {
@@ -267,9 +270,8 @@ export function sendCentringPoint(x, y) {
         'Content-type': 'application/json'
       },
       body: JSON.stringify({ clickPos: { x, y } })
-    }).then((response) => (response.json())
-    ).then((json) => {
-      const clicksLeft = json.clicksLeft;
+    }).then(response => (response.json())).then((json) => {
+      const { clicksLeft } = json;
       let msg = '3-Click Centring: <br />';
 
       dispatch(centringClicksLeft(clicksLeft));

@@ -6,15 +6,18 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, contents: action.data.sampleChangerContents };
     }
     case 'SET_INITIAL_STATE': {
-      return { ...state,
-         state: action.data.sampleChangerState.state,
-         contents: action.data.sampleChangerContents,
-         loadedSample: action.data.loadedSample,
+      return {
+        ...state,
+        state: action.data.sampleChangerState.state,
+        contents: action.data.sampleChangerContents,
+        loadedSample: action.data.loadedSample,
       };
     }
     case 'SET_LOADED_SAMPLE': {
-      return { ...state,
-               loadedSample: action.data };
+      return {
+        ...state,
+        loadedSample: action.data
+      };
     }
     case 'SET_SC_STATE': {
       return { ...state, state: action.state };

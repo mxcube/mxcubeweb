@@ -1,5 +1,7 @@
 import React from 'react';
-import { Panel, Button, DropdownButton, Glyphicon, } from 'react-bootstrap';
+import {
+  Panel, Button, DropdownButton, Glyphicon,
+} from 'react-bootstrap';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 
 import './SampleChanger.css';
@@ -73,17 +75,19 @@ export class SampleChangerTreeNode extends React.Component {
     return (
       <div>
         <li className="treeLi">
-          <input type="checkbox"
+          <input
+            type="checkbox"
             className="treeNode"
             id={inputId}
             onClick={this.treeNodeCbxClick}
           />
-            <ContextMenuTrigger id={`${this.props.label}`}>
-              <label htmlFor={inputId} className="treeNodeLabel">
-                <i id={`${inputId}icon`} className="fa fa-plus-square-o" />
-                &nbsp;{this.props.label}
-              </label>
-            </ContextMenuTrigger>
+          <ContextMenuTrigger id={`${this.props.label}`}>
+            <label htmlFor={inputId} className="treeNodeLabel">
+              <i id={`${inputId}icon`} className="fa fa-plus-square-o" />
+                &nbsp;
+              {this.props.label}
+            </label>
+          </ContextMenuTrigger>
           <ul className="treeUl">
             {this.props.children}
           </ul>
@@ -91,7 +95,10 @@ export class SampleChangerTreeNode extends React.Component {
 
         <ContextMenu id={`${this.props.label}`}>
           <li role="heading" className="dropdown-header">
-            <b>Container {this.props.label}</b>
+            <b>
+Container
+              {this.props.label}
+            </b>
           </li>
           <MenuItem divider />
           <MenuItem onClick={this.scanClicked}>
@@ -124,8 +131,10 @@ export class SampleChangerTreeItem extends React.Component {
 
   loadSample() {
     this.toggleDropdown();
-    this.props.load({ sampleID: this.props.label,
-                      location: this.props.label });
+    this.props.load({
+      sampleID: this.props.label,
+      location: this.props.label
+    });
   }
 
   unloadSample() {
@@ -157,7 +166,10 @@ export class SampleChangerTreeItem extends React.Component {
               open={this.state.dropdownIsOpen}
             >
               <li role="heading" className="dropdown-header">
-                <b>Position {this.props.label}</b>
+                <b>
+Position
+                  {this.props.label}
+                </b>
               </li>
               <MenuItem divider />
               <MenuItem onClick={this.loadSample}>
@@ -167,13 +179,15 @@ export class SampleChangerTreeItem extends React.Component {
                 Umount to this position
               </MenuItem>
             </DropdownButton>
-              <span style={{ verticalAlign: 'middle' }}>
+            <span style={{ verticalAlign: 'middle' }}>
                 &nbsp;
-                <Glyphicon style={ls} glyph="arrow-left" /> <b style={ls}>(Mounted)</b>
-              </span>
+              <Glyphicon style={ls} glyph="arrow-left" />
+              {' '}
+              <b style={ls}>(Mounted)</b>
+            </span>
           </div>
         </li>
-       </div>
+      </div>
     );
   }
 }
@@ -208,23 +222,27 @@ export default class SampleChanger extends React.Component {
       }
 
       return React.createElement(SampleChangerTreeNode,
-                                 { label: node.name,
-                                   selected: node.selected,
-                                   root,
-                                   dm: node.id,
-                                   select: this.props.select,
-                                   status: node.status,
-                                   scan: this.props.scan,
-                                   refresh: this.props.refresh },
-                                 childNodes);
+        {
+          label: node.name,
+          selected: node.selected,
+          root,
+          dm: node.id,
+          select: this.props.select,
+          status: node.status,
+          scan: this.props.scan,
+          refresh: this.props.refresh
+        },
+        childNodes);
     }
 
     return React.createElement(SampleChangerTreeItem,
-                               { label: node.name,
-                                 dm: node.id,
-                                 load: this.props.load,
-                                 status: node.status,
-                                 unload: this.props.unload });
+      {
+        label: node.name,
+        dm: node.id,
+        load: this.props.load,
+        status: node.status,
+        unload: this.props.unload
+      });
   }
 
   // display some buttons depending on available features
@@ -234,46 +252,61 @@ export default class SampleChanger extends React.Component {
     let abortButton = '';
 
     if (this.props.loadedSample.address) {
-      current = (<div style={{ marginTop: '1em' }}>
-                        Currently loaded: {this.props.loadedSample.address}
-                        <span style={{ marginRight: '1em' }} />
-                         ( {this.props.loadedSample.barcode} )
-                        <span style={{ marginRight: '1em' }} />
-                        <Button bsStyle="default" onClick={this.unload}>
-                         <Glyphicon glyph="save" /> Unload
-                        </Button>
-                      </div>
-                     );
+      current = (
+        <div style={{ marginTop: '1em' }}>
+                        Currently loaded:
+          {' '}
+          {this.props.loadedSample.address}
+          <span style={{ marginRight: '1em' }} />
+                         (
+          {' '}
+          {this.props.loadedSample.barcode}
+          {' '}
+)
+          <span style={{ marginRight: '1em' }} />
+          <Button bsStyle="default" onClick={this.unload}>
+            <Glyphicon glyph="save" />
+            {' '}
+Unload
+          </Button>
+        </div>
+      );
     } else {
       current = (<div style={{ marginTop: '1em', marginBottom: '1em' }} />);
     }
 
     if (this.props.state === 'MOVING') {
-      abortButton = (<Button bsStyle="default" className="abortButton" onClick={this.abort}>
-                 <Glyphicon glyph="stop" /> Abort
-               </Button>
-              );
+      abortButton = (
+        <Button bsStyle="default" className="abortButton" onClick={this.abort}>
+          <Glyphicon glyph="stop" />
+          {' '}
+Abort
+        </Button>
+      );
     } else {
       abortButton = '';
     }
 
     return (
-       <Panel header="Contents">
-         <Button bsStyle="default" onClick={this.props.refresh}>
-            <Glyphicon glyph="refresh" /> Refresh
-         </Button>
-         <span style={{ marginLeft: '1em' }} />
-         <Button bsStyle="default" onClick={this.scan}>
-            <Glyphicon glyph="qrcode" /> Scan all containers
-         </Button>
-         <span style={{ marginLeft: '1em' }}>{abortButton}</span>
-         {current}
-         <div style={{ marginBottom: '1em' }} />
-         <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-         {nodes}
-         </div>
-       </Panel>
+      <Panel header="Contents">
+        <Button bsStyle="default" onClick={this.props.refresh}>
+          <Glyphicon glyph="refresh" />
+          {' '}
+Refresh
+        </Button>
+        <span style={{ marginLeft: '1em' }} />
+        <Button bsStyle="default" onClick={this.scan}>
+          <Glyphicon glyph="qrcode" />
+          {' '}
+Scan all containers
+        </Button>
+        <span style={{ marginLeft: '1em' }}>{abortButton}</span>
+        {current}
+        <div style={{ marginBottom: '1em' }} />
+        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          {nodes}
+        </div>
+      </Panel>
     );
   }
 }
-

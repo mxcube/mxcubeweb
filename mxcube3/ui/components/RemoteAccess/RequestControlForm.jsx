@@ -14,7 +14,7 @@ class RequestControlForm extends React.Component {
     this.takeControlOnClick = this.takeControlOnClick.bind(this);
   }
 
-  componentDidUpdate()	{
+  componentDidUpdate() {
     this.name.value = this.props.remoteAccess.observerName;
   }
 
@@ -50,8 +50,8 @@ class RequestControlForm extends React.Component {
 
   askForControl() {
     this.props.askForControlDialog(true, 'Asking for control',
-                                   'Please wait while asking for control',
-                                   true, this.cancelControlRequest);
+      'Please wait while asking for control',
+      true, this.cancelControlRequest);
     const message = this.message.value;
     const name = this.name.value;
 

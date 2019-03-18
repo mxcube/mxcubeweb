@@ -61,7 +61,7 @@ export default class MotorInput extends React.Component {
   render() {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
-    let inputCSS = cx('form-control rw-input', {
+    const inputCSS = cx('form-control rw-input', {
       'input-bg-edited': this.state.edited,
       'input-bg-moving': this.props.state === MOTOR_STATE.BUSY ||
                          this.props.state === MOTOR_STATE.MOVING,
@@ -75,7 +75,7 @@ export default class MotorInput extends React.Component {
                           this.props.state === MOTOR_STATE.HIGHLIMIT
     });
 
-    let data = { state: 'IMMEDIATE', value: step, step: 0.1 };
+    const data = { state: 'IMMEDIATE', value: step, step: 0.1 };
 
     return (
         <div className="motor-input-container">
@@ -138,7 +138,7 @@ export default class MotorInput extends React.Component {
                  inputSize="75px"
                  style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
                />
-                 : null
+                : null
               }
               {this.props.state !== MOTOR_STATE.READY ?
                 <Button
@@ -170,9 +170,9 @@ export default class MotorInput extends React.Component {
                 style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
               />
            </span>
-             : null
+            : null
             }
         </div>
-      );
+    );
   }
 }

@@ -108,7 +108,7 @@ export class SampleGridItem extends React.Component {
           <i className="glyphicon glyphicon-move" />
         </button>
       </OverlayTrigger>
-     );
+    );
 
     let content = (
       <div className="samples-item-controls-container">
@@ -304,13 +304,13 @@ export class SampleGridItem extends React.Component {
 
 
   render() {
-    let classes = classNames('samples-grid-item',
+    const classes = classNames('samples-grid-item',
       { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
         'samples-grid-item-moving': this.props.moving,
         'samples-grid-item-to-be-collected': this.props.picked,
         'samples-grid-item-collected': isCollected(this.props.sampleData) });
 
-    let scLocationClasses = classNames('sc_location', 'label', 'label-default',
+    const scLocationClasses = classNames('sc_location', 'label', 'label-default',
       { 'label-custom-success': this.props.sampleData.loadable === true });
 
     const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';

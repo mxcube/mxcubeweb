@@ -24,7 +24,7 @@ export class LimsResultDialog extends React.Component {
     }
 
     const link = this.props.taskData.limsResultData ?
-            this.props.taskData.limsResultData.limsTaskLink : '';
+      this.props.taskData.limsResultData.limsTaskLink : '';
 
     return (
       <div style={{ margin: '1em' }}>

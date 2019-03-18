@@ -5,7 +5,6 @@ import { Modal, ProgressBar, Button } from 'react-bootstrap';
 import { setLoading } from '../actions/general';
 
 export class PleaseWaitDialog extends React.Component {
-
   constructor(props) {
     super(props);
     this.getHideFun = this.getHideFun.bind(this);
@@ -80,7 +79,8 @@ export class PleaseWaitDialog extends React.Component {
         <p>
           {this.getMessage()}
         </p>
-      </div>);
+      </div>
+    );
 
     if (this.props.blocking) {
       content = (
@@ -89,7 +89,8 @@ export class PleaseWaitDialog extends React.Component {
             {this.getMessage()}
           </p>
           <ProgressBar active now={100} />
-        </div>);
+        </div>
+      );
     }
 
     return content;
@@ -127,6 +128,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(PleaseWaitDialog);

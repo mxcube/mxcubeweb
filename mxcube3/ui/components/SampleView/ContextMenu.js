@@ -1,8 +1,10 @@
 import React from 'react';
+
+// config exported by webpack at buildtime
+// eslint-disable-next-line import/no-unresolved
 import config from 'guiConfig';
 
 export default class ContextMenu extends React.Component {
-
   constructor(props) {
     super(props);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
@@ -18,43 +20,58 @@ export default class ContextMenu extends React.Component {
   }
 
   menuOptions() {
-    const workflowTasks = { point: [], line: [], grid: [], none: [] };
+    const workflowTasks = {
+      point: [], line: [], grid: [], none: []
+    };
     let twoDPoints = [];
 
     if (config.use2dCenteredPoints) {
       twoDPoints = [{ text: 'divider', key: 4 },
-                    { text: 'Data Collection (Limited OSC)',
-                      action: () => this.createPointAndShowModal('DataCollection'),
-                      key: 5 },
-                    { text: 'Characterisation (1 Image)',
-                      action: () => this.createPointAndShowModal('Characterisation',
-                      { num_imags: 1 }),
-                      key: 6 }];
+        {
+          text: 'Data Collection (Limited OSC)',
+          action: () => this.createPointAndShowModal('DataCollection'),
+          key: 5
+        },
+        {
+          text: 'Characterisation (1 Image)',
+          action: () => this.createPointAndShowModal('Characterisation',
+            { num_imags: 1 }),
+          key: 6
+        }];
     }
 
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires.includes('point')) {
-        workflowTasks.point.push({ text: wf.wfname,
-                                   action: () => this.showModal('Workflow', wf),
-                                   key: `wf-${wf.wfname}` });
+        workflowTasks.point.push({
+          text: wf.wfname,
+          action: () => this.showModal('Workflow', wf),
+          key: `wf-${wf.wfname}`
+        });
       } else if (wf.requires.includes('line')) {
-        workflowTasks.line.push({ text: wf.wfname,
-                                  action: () => this.createLine('Workflow', wf),
-                                  key: `wf-${wf.wfname}` });
+        workflowTasks.line.push({
+          text: wf.wfname,
+          action: () => this.createLine('Workflow', wf),
+          key: `wf-${wf.wfname}`
+        });
       } else if (wf.requires.includes('grid')) {
-        workflowTasks.grid.push({ text: wf.wfname,
-                                  action: () => this.showModal('Workflow', wf),
-                                  key: `wf-${wf.wfname}` });
+        workflowTasks.grid.push({
+          text: wf.wfname,
+          action: () => this.showModal('Workflow', wf),
+          key: `wf-${wf.wfname}`
+        });
       } else {
-        workflowTasks.none.push({ text: wf.wfname,
-                                  action: () => this.showModal('Workflow', wf),
-                                  key: `wf-${wf.wfname}` });
+        workflowTasks.none.push({
+          text: wf.wfname,
+          action: () => this.showModal('Workflow', wf),
+          key: `wf-${wf.wfname}`
+        });
       }
     });
 
     const options = {
       SAVED: [
-        { text: 'Add Datacollection',
+        {
+          text: 'Add Datacollection',
           action: () => this.showModal('DataCollection'),
           key: 'datacollection'
         },
@@ -80,7 +97,8 @@ export default class ContextMenu extends React.Component {
         },
         {
           text: 'divider',
-          key: 6 },
+          key: 6
+        },
         ...workflowTasks.point,
         workflowTasks.point.length > 0 ? { text: 'divider', key: 7 } : {},
         { text: 'Delete Point', action: () => this.removeShape(), key: 8 },
@@ -181,7 +199,7 @@ export default class ContextMenu extends React.Component {
 
     Object.keys(this.props.availableMethods).forEach((key) => {
       if (!this.props.availableMethods[key]) {
-        Object.keys(options).forEach((k) => (
+        Object.keys(options).forEach(k => (
           options[k] = options[k].filter((e) => {
             let res = true;
             if (Object.keys(this.props.availableMethods).includes(e.key)) {
@@ -197,7 +215,9 @@ export default class ContextMenu extends React.Component {
   }
 
   showModal(modalName, wf = {}, _shape = null, extraParams = {}) {
-    const { sampleID, shape, sampleData, defaultParameters } = this.props;
+    const {
+      sampleID, shape, sampleData, defaultParameters
+    } = this.props;
 
     Object.assign(defaultParameters, extraParams);
 
@@ -226,8 +246,10 @@ export default class ContextMenu extends React.Component {
     this.props.showForm(
       modalName,
       [sampleID],
-      { parameters:
-        { ...defaultParameters[modalName.toLowerCase()],
+      {
+        parameters:
+        {
+          ...defaultParameters[modalName.toLowerCase()],
           ...wf,
           prefix: sampleData.defaultPrefix,
           subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
@@ -243,7 +265,7 @@ export default class ContextMenu extends React.Component {
   }
 
   createCollectionOnCell() {
-    const cellCenter = this.props.shape.cellCenter;
+    const { cellCenter } = this.props.shape;
     this.createPoint(cellCenter[0], cellCenter[1]);
     this.props.sampleActions.showContextMenu(false);
   }
@@ -269,10 +291,10 @@ export default class ContextMenu extends React.Component {
     this.props.sampleActions.sendAcceptCentring();
     // associate the newly saved shape to an existing task with -1 shape.
     // Fixes issues when the task is added before a shape
-    const tasks = this.props.sampleData.tasks;
+    const { tasks } = this.props.sampleData;
     if (tasks.length > 0) {
       tasks.forEach((task) => {
-        const parameters = task.parameters;
+        const { parameters } = task;
         if (parameters.shape === -1) {
           parameters.shape = this.props.shape.id;
           this.props.updateTask(this.props.sampleData.sampleID, task.taskIndex, parameters, false);
@@ -326,7 +348,7 @@ export default class ContextMenu extends React.Component {
     const { x, y, imageRatio } = this.props;
     this.props.sampleActions.showContextMenu(false);
     this.createPoint(x / imageRatio, y / imageRatio,
-                     (shape) => this.showModal(name, {}, shape, extraParams));
+      shape => this.showModal(name, {}, shape, extraParams));
   }
 
   createLine(modal, wf = {}) {
@@ -343,7 +365,7 @@ export default class ContextMenu extends React.Component {
 
     this.props.sampleActions.showContextMenu(false);
     this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id },
-      (s) => {this.showModal(modal, wf, s);});
+      (s) => { this.showModal(modal, wf, s); });
   }
 
   hideContextMenu() {

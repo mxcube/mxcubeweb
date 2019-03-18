@@ -8,14 +8,14 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SHOW_CONTEXT_MENU':
-      {
-        return {
-          show: action.show,
-          shape: action.shape,
-          x: action.x,
-          y: action.y
-        };
-      }
+    {
+      return {
+        show: action.show,
+        shape: action.shape,
+        x: action.x,
+        y: action.y
+      };
+    }
     default:
       return state;
   }

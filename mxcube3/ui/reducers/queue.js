@@ -19,11 +19,13 @@ export default (state = initialState, action) => {
       return Object.assign({}, { ...state, queue: action.sampleOrder });
     }
     case 'CLEAR_QUEUE': {
-      return Object.assign({}, state, { queue: initialState.queue,
-                                        current: initialState.current });
+      return Object.assign({}, state, {
+        queue: initialState.queue,
+        current: initialState.current
+      });
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
-      const sampleIDList = action.samplesData.map((s) => s.sampleID);
+      const sampleIDList = action.samplesData.map(s => s.sampleID);
       return Object.assign({}, state, { queue: state.queue.concat(sampleIDList) });
     }
     case 'SET_QUEUE_STATUS':
@@ -32,7 +34,7 @@ export default (state = initialState, action) => {
         queueStatus: action.queueState
       };
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
-      const queue = state.queue.filter((value) => !action.sampleIDList.includes(value));
+      const queue = state.queue.filter(value => !action.sampleIDList.includes(value));
 
       return Object.assign({}, state, { queue });
     }
@@ -40,25 +42,26 @@ export default (state = initialState, action) => {
       return Object.assign({}, state,
         {
           current: { ...state.current, sampleID: action.sampleID, running: false },
-        }
-      );
+        });
     case 'CLEAR_CURRENT_SAMPLE':
       return Object.assign({}, state,
         {
           current: { sampleID: null, collapsed: false, running: false },
-        }
-      );
+        });
     case 'RUN_SAMPLE':
       return Object.assign({}, state, { current: { ...state.current, running: true } });
     case 'CHANGE_SAMPLE_ORDER':
       return {
         ...state,
-        [action.listName]: { ...state[action.listName],
-                    sampleIDs: update(state[action.listName].sampleIDs, {
-                      $splice: [
-                            [action.oldIndex, 1],
-                            [action.newIndex, 0, state[action.listName].sampleIDs[action.oldIndex]]
-                      ] }) }
+        [action.listName]: {
+          ...state[action.listName],
+          sampleIDs: update(state[action.listName].sampleIDs, {
+            $splice: [
+              [action.oldIndex, 1],
+              [action.newIndex, 0, state[action.listName].sampleIDs[action.oldIndex]]
+            ]
+          })
+        }
       };
     case 'SET_AUTO_MOUNT_SAMPLE': {
       return { ...state, autoMountNext: action.automount };
@@ -79,28 +82,30 @@ export default (state = initialState, action) => {
       return { ...state, rootPath: action.path };
     }
     case 'CLEAR_ALL':
-      {
-        return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
-      }
+    {
+      return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
+    }
     case 'QUEUE_STATE':
-      {
-        return Object.assign({}, state, ...action.queueState);
-      }
+    {
+      return Object.assign({}, state, ...action.queueState);
+    }
     case 'SET_INITIAL_STATE':
-      {
-        return {
-          ...state,
-          rootPath: action.data.beamlineSetup.path,
-          queue: action.data.queue.queue,
-          groupFolder: action.data.queue.groupFolder,
-          autoMountNext: action.data.queue.autoMountNext,
-          autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
-          numSnapshots: action.data.queue.numSnapshots,
-          centringMethod: action.data.queue.centringMethod,
-          current: { sampleID: action.data.queue.current,
-                     running: action.data.queue.queueStatus }
-        };
-      }
+    {
+      return {
+        ...state,
+        rootPath: action.data.beamlineSetup.path,
+        queue: action.data.queue.queue,
+        groupFolder: action.data.queue.groupFolder,
+        autoMountNext: action.data.queue.autoMountNext,
+        autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
+        numSnapshots: action.data.queue.numSnapshots,
+        centringMethod: action.data.queue.centringMethod,
+        current: {
+          sampleID: action.data.queue.current,
+          running: action.data.queue.queueStatus
+        }
+      };
+    }
     default:
       return state;
   }

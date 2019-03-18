@@ -3,17 +3,17 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { Modal,
-         Button,
-         Table,
-         OverlayTrigger,
-         Popover,
-         Checkbox } from 'react-bootstrap';
+  Button,
+  Table,
+  OverlayTrigger,
+  Popover,
+  Checkbox } from 'react-bootstrap';
 
 import { sendRunQueue,
-         sendRunSample,
-         setAutoMountSample,
-         sendSetCentringMethod,
-         sendSetNumSnapshots } from '../actions/queue';
+  sendRunSample,
+  setAutoMountSample,
+  sendSetCentringMethod,
+  sendSetNumSnapshots } from '../actions/queue';
 
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
@@ -132,7 +132,7 @@ export class ConfirmCollectDialog extends React.Component {
     // sample to be colleted when autoMountNtext is false
     if (!this.props.queue.autoMountNext) {
       const sampleID = this.props.queue.current.sampleID ?
-              this.props.queue.current.sampleID : this.props.queue.queue[0];
+        this.props.queue.current.sampleID : this.props.queue.queue[0];
 
       if (sampleID) {
         queue = [sampleID];
@@ -262,9 +262,9 @@ export class ConfirmCollectDialog extends React.Component {
     const summary = this.collectionSummary();
     let table = (
       <div style={{ marginBottom: '1em', borderRadius: '5px',
-                    backgroundColor: 'rgba(247, 211, 35, 0.27)',
-                    padding: '1em', width: '50em'
-           }}
+        backgroundColor: 'rgba(247, 211, 35, 0.27)',
+        padding: '1em', width: '50em'
+      }}
       >
         No tasks added to any of the samples, you have the
         possibility to add tasks while the queue is running. <br />
@@ -313,7 +313,7 @@ export class ConfirmCollectDialog extends React.Component {
                     <td>{parameters.num_images || '-'}</td>
                   </tr>
                 </OverlayTrigger>
-             );})}
+              );})}
           </tbody>
         </Table>
         </div>

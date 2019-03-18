@@ -16,14 +16,12 @@ export function clearSampleGrid() {
 export function addSamplesToList(samplesData) {
   return function (dispatch, getState) {
     // find last manually mounted sample id
-    const sampleList = getState().sampleGrid.sampleList;
+    const { sampleList } = getState().sampleGrid;
 
-    let lastSampleID = Math.max(...Object.values(sampleList).map((sampleData) =>
-      (sampleData.location === 'Manual' ? sampleData.sampleID : 0)
-    ), 0);
+    let lastSampleID = Math.max(...Object.values(sampleList).map(sampleData => (sampleData.location === 'Manual' ? sampleData.sampleID : 0)), 0);
 
     for (const sampleData of samplesData) {
-      if (! sampleData.sampleID) {
+      if (!sampleData.sampleID) {
         lastSampleID++;
         sampleData.sampleID = lastSampleID.toString();
       }
@@ -83,18 +81,18 @@ export function sendGetSampleList() {
   return function (dispatch) {
     dispatch(setLoading(true, 'Please wait', 'Retrieving sample changer contents', true));
     return fetch('mxcube/api/v0.1/sample_changer/samples_list', { credentials: 'include' })
-                        .then(response => response.json())
-                        .then(res => {
-                          const sampleList = res.sampleList;
-                          const sampleOrder = res.sampleOrder;
+      .then(response => response.json())
+      .then((res) => {
+        const { sampleList } = res;
+        const { sampleOrder } = res;
 
-                          dispatch(updateSampleList(sampleList, sampleOrder));
-                          dispatch(setQueue(res));
-                          dispatch(setLoading(false));
-                        }, () => {
-                          dispatch(setLoading(false));
-                          dispatch(showErrorPanel(true, 'Could not get samples list'));
-                        });
+        dispatch(updateSampleList(sampleList, sampleOrder));
+        dispatch(setQueue(res));
+        dispatch(setLoading(false));
+      }, () => {
+        dispatch(setLoading(false));
+        dispatch(showErrorPanel(true, 'Could not get samples list'));
+      });
   };
 }
 
@@ -103,18 +101,18 @@ export function sendSyncSamples(proposalId) {
   return function (dispatch) {
     dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
     fetch(`mxcube/api/v0.1/lims/samples/${proposalId}`, { credentials: 'include' })
-            .then(response => response.json())
-            .then(json => {
-              const sampleList = json.sampleList;
-              const sampleOrder = json.sampleOrder;
+      .then(response => response.json())
+      .then((json) => {
+        const { sampleList } = json;
+        const { sampleOrder } = json;
 
-              dispatch(updateSampleList(sampleList, sampleOrder));
-              dispatch(setQueue(json));
-              dispatch(setLoading(false));
-            }, () => {
-              dispatch(setLoading(false));
-              dispatch(showErrorPanel(true, 'Synchronization with ISPyB failed'));
-            });
+        dispatch(updateSampleList(sampleList, sampleOrder));
+        dispatch(setQueue(json));
+        dispatch(setLoading(false));
+      }, () => {
+        dispatch(setLoading(false));
+        dispatch(showErrorPanel(true, 'Synchronization with ISPyB failed'));
+      });
   };
 }
 

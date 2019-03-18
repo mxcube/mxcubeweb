@@ -12,20 +12,20 @@ class SampleQueueSearch extends Component {
     );
 
     return (
-         <div id="search-queue">
-            <Input
-              type="text"
-              placeholder="Search Sample"
-              buttonAfter={innerSearchIcon}
-              {...sampleName}
-            />
-         </div>
+      <div id="search-queue">
+        <Input
+          type="text"
+          placeholder="Search Sample"
+          buttonAfter={innerSearchIcon}
+          {...sampleName}
+        />
+      </div>
     );
   }
 }
 
 SampleQueueSearch = reduxForm({ // <----- THIS IS THE IMPORTANT PART!
-  form: 'search-sample',                           // a unique name for this form
+  form: 'search-sample', // a unique name for this form
   fields: ['sampleName'] // all the fields in your form
 })(SampleQueueSearch);
 

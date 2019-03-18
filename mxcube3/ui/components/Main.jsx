@@ -14,7 +14,7 @@ import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
 import { sendChatMessage, getAllChatMessages,
-         resetChatMessageCount } from '../actions/remoteAccess';
+  resetChatMessageCount } from '../actions/remoteAccess';
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
@@ -100,12 +100,12 @@ class Main extends React.Component {
         </Grid>
         <span onClick={this.onChatContainerClick}>
           { this.props.remoteAccess.observers.length > 0 ?
-             (<Widget
-               title="Chat"
-               subtitle=""
-               badge={this.props.remoteAccess.chatMessageCount}
-               handleNewUserMessage={this.handleNewUserMessage}
-             />) : null
+            (<Widget
+              title="Chat"
+              subtitle=""
+              badge={this.props.remoteAccess.chatMessageCount}
+              handleNewUserMessage={this.handleNewUserMessage}
+            />) : null
           }
         </span>
       </div>

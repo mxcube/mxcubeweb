@@ -35,12 +35,12 @@ export function refresh() {
         'Content-type': 'application/json'
       },
       credentials: 'include'
-    }).then(response => {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Error refreshing sample changer contents');
       }
 
-      response.json().then(contents => { dispatch(setContents(contents)); });
+      response.json().then((contents) => { dispatch(setContents(contents)); });
     });
 
     fetch('mxcube/api/v0.1/sample_changer/loaded_sample', {
@@ -50,12 +50,12 @@ export function refresh() {
         'Content-type': 'application/json'
       },
       credentials: 'include'
-    }).then(response => {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Error refreshing sample changer contents');
       }
 
-      response.json().then(loadedSample => { dispatch(setLoadedSample(loadedSample)); });
+      response.json().then((loadedSample) => { dispatch(setLoadedSample(loadedSample)); });
     });
   };
 }
@@ -69,12 +69,12 @@ export function select(address) {
         'Content-type': 'application/json'
       },
       credentials: 'include'
-    }).then(response => {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error(`Error while selecting sample changer container @ ${address}`);
       }
 
-      response.json().then(contents => { dispatch(setContents(contents)); });
+      response.json().then((contents) => { dispatch(setContents(contents)); });
     });
   };
 }
@@ -88,12 +88,12 @@ export function scan(address) {
         'Content-type': 'application/json'
       },
       credentials: 'include'
-    }).then(response => {
+    }).then((response) => {
       if (response.status >= 400) {
         throw new Error(`Error while scanning sample changer @ ${address}`);
       }
 
-      response.json().then(contents => { dispatch(setContents(contents)); });
+      response.json().then((contents) => { dispatch(setContents(contents)); });
     });
   };
 }
@@ -118,8 +118,9 @@ export function loadSample(sampleData, successCb = null) {
         } else {
           setCurrentSample(sampleData.sampleID);
 
-          response.json().then(contents => { dispatch(setContents(contents)); }
-                              ).then(dispatch(refresh()));
+          response.json().then((contents) => {
+            dispatch(setContents(contents));
+          }).then(dispatch(refresh()));
 
           if (successCb) {
             successCb();
@@ -169,7 +170,7 @@ export function abort() {
         'Content-type': 'application/json'
       },
       credentials: 'include'
-    }).then(response => {
+    }).then((response) => {
       if (response.status < 400) {
         dispatch(showErrorPanel(true, 'action aborted'));
       }
@@ -186,12 +187,12 @@ export function sendCommand(cmdparts) {
         'Content-type': 'application/json'
       },
       credentials: 'include'
-    }).then(response => {
+    }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error(`Error while  sending command @ ${cmdparts}`);
       }
-      response.json().then(answer => { dispatch(setSCCommandResponse(answer)); });
+      response.json().then((answer) => { dispatch(setSCCommandResponse(answer)); });
     });
   };
 }

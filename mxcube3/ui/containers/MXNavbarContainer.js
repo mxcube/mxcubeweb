@@ -4,18 +4,17 @@ import MXNavbar from '../components/MXNavbar/MXNavbar';
 import { doSignOut } from '../actions/login';
 
 class MXNavbarContainer extends React.Component {
-
   render() {
     return (
-        <MXNavbar
-          userInfo={this.props.userInfo}
-          selectedProposal={this.props.selectedProposal}
-          signOut={this.props.signOut}
-          loggedIn={this.props.loggedIn}
-          location={this.props.location}
-          setAutomatic={this.props.setAutomatic}
-          remoteAccess={this.props.remoteAccess}
-        />
+      <MXNavbar
+        userInfo={this.props.userInfo}
+        selectedProposal={this.props.selectedProposal}
+        signOut={this.props.signOut}
+        loggedIn={this.props.loggedIn}
+        location={this.props.location}
+        setAutomatic={this.props.setAutomatic}
+        remoteAccess={this.props.remoteAccess}
+      />
     );
   }
 }
@@ -37,6 +36,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(MXNavbarContainer);

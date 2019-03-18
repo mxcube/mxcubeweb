@@ -8,6 +8,8 @@ import characterisation from '../help_videos/mx3-characterisation.ogv';
 import interleaved from '../help_videos/mx3-interleaved.ogv';
 import mesh from '../help_videos/mx3-mesh.ogv';
 
+// config exported by webpack at buildtime
+// eslint-disable-next-line import/no-unresolved
 import config from 'guiConfig';
 
 export class HelpContainer extends React.Component {

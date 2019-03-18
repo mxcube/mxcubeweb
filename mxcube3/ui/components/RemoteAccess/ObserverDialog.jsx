@@ -94,11 +94,11 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(showObserverDialog.bind(this, false), dispatch),
-    setMaster: bindActionCreators(setMaster, dispatch),
+    setMaster: bindActionCreators(setMaster, dispatch)
   };
 }
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(ObserverDialog);

@@ -14,18 +14,22 @@
 */
 import { SAMPLE_MOUNTED, TASK_UNCOLLECTED } from '../constants';
 
-const INITIAL_STATE = { selected: {},
-                        sampleList: {},
-                        order: [],
-                        moving: {},
-                        filterOptions: { text: '',
-                                         inQueue: false,
-                                         notInQueue: false,
-                                         collected: false,
-                                         notCollected: false,
-                                         puckFilter: '',
-                                         limsFilter: false,
-                                         useFilter: false } };
+const INITIAL_STATE = {
+  selected: {},
+  sampleList: {},
+  order: [],
+  moving: {},
+  filterOptions: {
+    text: '',
+    inQueue: false,
+    notInQueue: false,
+    collected: false,
+    notCollected: false,
+    puckFilter: '',
+    limsFilter: false,
+    useFilter: false
+  }
+};
 
 
 export default (state = INITIAL_STATE, action) => {
@@ -41,16 +45,18 @@ export default (state = INITIAL_STATE, action) => {
 
       for (const sampleID of action.order) {
         const sampleData = action.sampleList[sampleID];
-        if (! sampleList[sampleID]) {
+        if (!sampleList[sampleID]) {
           // new sample
           order.push(sampleID);
         }
         sampleList[sampleID] = sampleData;
       }
 
-      return Object.assign({}, state, { sampleList,
-					order,
-					selected: {} });
+      return Object.assign({}, state, {
+        sampleList,
+        order,
+        selected: {}
+      });
     }
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
       // When removing samples from queue, remove uncollected tasks from that sample in
@@ -65,7 +71,7 @@ export default (state = INITIAL_STATE, action) => {
       const order = [...state.order];
 
       for (const sampleData of action.samplesData) {
-        const sampleID = sampleData.sampleID;
+        const { sampleID } = sampleData;
         sampleList[sampleID] = Object.assign({}, sampleData);
         order.push(sampleID);
       }
@@ -77,7 +83,7 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'SET_SAMPLES_INFO': {
       const sampleList = {};
-      Object.keys(state.sampleList).forEach(key => {
+      Object.keys(state.sampleList).forEach((key) => {
         const sample = state.sampleList[key];
         let sampleInfo;
         for (sampleInfo of action.sampleInfoList) {
@@ -90,7 +96,7 @@ export default (state = INITIAL_STATE, action) => {
           } else {
             // check with sample changer location
             const containerLocation = sampleInfo.containerSampleChangerLocation;
-            const sampleLocation = sampleInfo.sampleLocation;
+            const { sampleLocation } = sampleInfo;
             const limsLocation = `${containerLocation}:${sampleLocation}`;
 
             if (sample.location === limsLocation) {
@@ -106,12 +112,13 @@ export default (state = INITIAL_STATE, action) => {
       return Object.assign({}, state, { sampleList });
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
-      const sampleIDList = action.samplesData.map((s) => s.sampleID);
+      const sampleIDList = action.samplesData.map(s => s.sampleID);
       const sampleList = { ...state.sampleList };
       sampleIDList.forEach((sampleID, i) => {
-        sampleList[sampleID].tasks.length > 0 ?
-          sampleList[sampleID].tasks.concat(action.samplesData[i].tasks) :
-          sampleList[sampleID].tasks = action.samplesData[i].tasks; });
+        sampleList[sampleID].tasks.length > 0
+          ? sampleList[sampleID].tasks.concat(action.samplesData[i].tasks)
+          : sampleList[sampleID].tasks = action.samplesData[i].tasks;
+      });
 
       return Object.assign({}, state, { sampleList });
     }
@@ -177,7 +184,7 @@ export default (state = INITIAL_STATE, action) => {
         [action.sampleID]: {
           ...state.sampleList[action.sampleID],
           tasks: [...state.sampleList[action.sampleID].tasks.slice(0, action.taskIndex),
-                  ...state.sampleList[action.sampleID].tasks.slice(action.taskIndex + 1)]
+            ...state.sampleList[action.sampleID].tasks.slice(action.taskIndex + 1)]
         }
       };
 
@@ -205,7 +212,7 @@ export default (state = INITIAL_STATE, action) => {
       const sampleList = { ...state.sampleList };
       action.tasks.forEach((t) => {
         const task = { ...t, state: 0 };
-        const originID = task.originID;
+        const { originID } = task;
         // first we find which char task is the origin
         /* eslint-disable no-param-reassign */
         sampleList[task.sampleID].tasks.forEach((tt) => {

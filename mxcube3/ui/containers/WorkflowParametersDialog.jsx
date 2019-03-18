@@ -5,7 +5,7 @@ import { reducer as formReducer } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 import Liform from 'liform-react';
 import { showWorkflowParametersDialog,
-         workflowSubmitParameters } from '../actions/workflow';
+  workflowSubmitParameters } from '../actions/workflow';
 
 class WorkflowParametersDialog extends React.Component {
   constructor(props) {
@@ -13,8 +13,8 @@ class WorkflowParametersDialog extends React.Component {
     this.submitData = this.submitData.bind(this);
     const reducer = combineReducers({ form: formReducer });
     this.store = (window.devToolsExtension ?
-                  window.devToolsExtension()(createStore) :
-                  createStore)(reducer);
+      window.devToolsExtension()(createStore) :
+      createStore)(reducer);
   }
 
   submitData(values) {

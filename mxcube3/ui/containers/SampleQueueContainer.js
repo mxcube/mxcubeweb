@@ -54,8 +54,9 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
+export default
 @connect(mapStateToProps, mapDispatchToProps)
-export default class SampleQueueContainer extends React.Component {
+class SampleQueueContainer extends React.Component {
 
   constructor(props) {
     super(props);
@@ -160,7 +161,6 @@ export default class SampleQueueContainer extends React.Component {
           sendSetCentringMethod={sendSetCentringMethod}
           centringMethod={centringMethod}
           todoList={todo}
-          queue={queue}
           sampleList={sampleList}
           sendUnmountSample={sendUnmountSample}
         />
@@ -182,7 +182,7 @@ export default class SampleQueueContainer extends React.Component {
             <div className="center-in-box" style={{ zIndex: '1000' }}>
               <img src={loader} className="img-responsive" alt="" />
             </div>
-              : null
+            : null
           }
             <CurrentTree
               changeOrder={changeTaskOrderAction}

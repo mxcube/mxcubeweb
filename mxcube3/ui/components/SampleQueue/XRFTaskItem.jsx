@@ -4,9 +4,9 @@ import { ContextMenuTrigger } from 'react-contextmenu';
 import Plot1D from '../Plot1D';
 
 import { TASK_UNCOLLECTED,
-         TASK_COLLECTED,
-         TASK_COLLECT_FAILED,
-         TASK_RUNNING } from '../../constants';
+  TASK_COLLECTED,
+  TASK_COLLECT_FAILED,
+  TASK_RUNNING } from '../../constants';
 
 export default class XRFTaskItem extends Component {
   static propTypes = {
@@ -44,9 +44,9 @@ export default class XRFTaskItem extends Component {
 
     return (
       <div style={ { borderLeft: '1px solid #DDD',
-                     borderRight: '1px solid #DDD',
-                     borderBottom: '1px solid #DDD',
-                     padding: '0.5em' } }
+        borderRight: '1px solid #DDD',
+        borderBottom: '1px solid #DDD',
+        padding: '0.5em' } }
       >
         <a href={link} target="_blank"> View Results in ISPyB</a>
       </div>
@@ -95,7 +95,7 @@ export default class XRFTaskItem extends Component {
         </Modal.Footer>
       </Modal>
       </div>
-      );
+    );
   }
 
   close() {
@@ -184,15 +184,15 @@ export default class XRFTaskItem extends Component {
 
   render() {
     const { state,
-            data,
-            show } = this.props;
+      data,
+      show } = this.props;
     const plotId = this.props.id;
     const parameters = data.parameters;
 
     const result = this.props.data.result;
     const plotAlreadyStored = result !== null;
 
-    let delTaskCSS = {
+    const delTaskCSS = {
       display: 'flex',
       marginLeft: 'auto',
       alignItems: 'center',

@@ -4,7 +4,15 @@ import './main.css';
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import {
+  Router, Route, browserHistory, IndexRoute
+} from 'react-router';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import createLogger from 'redux-logger';
+import thunk from 'redux-thunk';
+import { persistStore, autoRehydrate } from 'redux-persist';
+import crosstabSync from 'redux-persist-crosstab';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -13,17 +21,11 @@ import LoggerContainer from './containers/LoggerContainer';
 import RemoteAccessContainer from './containers/RemoteAccessContainer';
 import HelpContainer from './containers/HelpContainer';
 import Main from './components/Main';
-import { createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
-import createLogger from 'redux-logger';
-import thunk from 'redux-thunk';
-import { persistStore, autoRehydrate } from 'redux-persist';
-import crosstabSync from 'redux-persist-crosstab';
 import rootReducer from './reducers';
 import { serverIO } from './serverIO';
 import { getLoginInfo, startSession } from './actions/login';
 
-import 'font-awesome-webpack2';
+import 'font-awesome-webpack-4';
 
 const store = createStore(rootReducer, applyMiddleware(thunk, createLogger()), autoRehydrate());
 
@@ -80,16 +82,17 @@ export default class App extends React.Component {
 
   componentWillMount() {
     const persistor = persistStore(store,
-           { blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-                         'form', 'login', 'general', 'logger', 'shapes',
-                         'sampleView', 'taskResult', 'sampleChangerMaintenance'],
-             storage: new ServerStorage() },
-             () => {
-               /* eslint-disable react/no-set-state */
-               this.setState({ initialized: true });
-               /* eslint-enable react/no-set-state */
-             }
-    );
+      {
+        blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+          'form', 'login', 'general', 'logger', 'shapes',
+          'sampleView', 'taskResult', 'sampleChangerMaintenance'],
+        storage: new ServerStorage()
+      },
+      () => {
+        /* eslint-disable react/no-set-state */
+        this.setState({ initialized: true });
+        /* eslint-enable react/no-set-state */
+      });
 
     serverIO.connectStateSocket(persistor);
 
@@ -97,22 +100,24 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (! this.state.initialized) return <span>Loading...</span>;
+    if (!this.state.initialized) return <span>Loading...</span>;
 
-    return (<Provider store={store}>
-            <Router history={browserHistory}>
-              <Route path="/login" component={LoginContainer} />
-              <Route path="/" component={Main} onEnter={requireAuth} >
-                <IndexRoute component={SampleViewContainer} />
-                <Route path="samplegrid" component={SampleGridViewContainer} />
-                <Route path="datacollection" component={SampleViewContainer} />
-                <Route path="samplechanger" component={SampleChangerContainer} />
-                <Route path="logging" component={LoggerContainer} />
-                <Route path="remoteaccess" component={RemoteAccessContainer} />
-                <Route path="help" component={HelpContainer} />
-              </Route>
-            </Router>
-          </Provider>);
+    return (
+      <Provider store={store}>
+        <Router history={browserHistory}>
+          <Route path="/login" component={LoginContainer} />
+          <Route path="/" component={Main} onEnter={requireAuth}>
+            <IndexRoute component={SampleViewContainer} />
+            <Route path="samplegrid" component={SampleGridViewContainer} />
+            <Route path="datacollection" component={SampleViewContainer} />
+            <Route path="samplechanger" component={SampleChangerContainer} />
+            <Route path="logging" component={LoggerContainer} />
+            <Route path="remoteaccess" component={RemoteAccessContainer} />
+            <Route path="help" component={HelpContainer} />
+          </Route>
+        </Router>
+      </Provider>
+    );
   }
 }
 

@@ -9,6 +9,7 @@ import GridForm from './GridForm';
 const jsmpeg = require('./jsmpeg.min.js');
 
 import 'fabric';
+
 const fabric = window.fabric;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
@@ -146,9 +147,9 @@ export default class SampleImage extends React.Component {
       }
 
       this.centringCross = makeCross((options.e.layerX + 1.5) / this.props.imageRatio,
-                                     (options.e.layerY + 1) / this.props.imageRatio,
-                                     this.props.imageRatio,
-                                     this.canvas.width, this.canvas.height);
+        (options.e.layerY + 1) / this.props.imageRatio,
+        this.props.imageRatio,
+        this.canvas.width, this.canvas.height);
 
       this.canvas.add(...this.centringCross);
     }
@@ -236,7 +237,7 @@ export default class SampleImage extends React.Component {
 
     if (cell) {
       cellCenter = [(cell.aCoords.tl.x + cell.width / 2) / this.props.imageRatio,
-                    (cell.aCoords.tl.y + cell.height / 2) / this.props.imageRatio];
+        (cell.aCoords.tl.y + cell.height / 2) / this.props.imageRatio];
     }
 
     return cellCenter;
@@ -630,14 +631,14 @@ export default class SampleImage extends React.Component {
 
     if (this.props.videoMessageOverlay.show) {
       result =
-	(
+        (
           <div
             dangerouslySetInnerHTML={{ __html: this.props.videoMessageOverlay.msg }}
             key={this.props.clickCentringClicksLeft}
             id="video-message-overlay"
           >
          </div>
-	);
+        );
     }
 
     return result;
