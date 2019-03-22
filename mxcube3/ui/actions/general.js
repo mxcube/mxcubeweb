@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { unselectShapes } from './sampleview';
 
 export function addUserMessage(record, target) {
   let duration;
@@ -248,6 +249,8 @@ export function getInitialState() {
 
     Promise.all(pchains).then(() => {
       dispatch(setInitialState(state));
+    }).then(() => {
+      dispatch(unselectShapes({ shapes: state.shapes }));
     });
   };
 }
