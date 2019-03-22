@@ -226,46 +226,6 @@ export function sendRotateToShape(sid) {
   };
 }
 
-
-export function sendStartClickCentring() {
-  return function (dispatch, getState) {
-    const { queue } = getState();
-    if (queue.current.sampleID) {
-      fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json'
-        }
-      }).then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to start 3click');
-        } else {
-          dispatch(startClickCentring());
-        }
-
-        return response.json();
-      }).then((json) => {
-        const { clicksLeft } = json;
-        dispatch(centringClicksLeft(clicksLeft));
-
-        let msg = '3-Click Centring: <br />';
-
-        if (clicksLeft === 0) {
-          msg += 'Save centring or clicking on screen to restart';
-        } else {
-          msg += `Clicks left: ${clicksLeft}`;
-        }
-
-        dispatch(videoMessageOverlay(true, msg));
-      });
-    } else {
-      dispatch(showErrorPanel(true, 'There is not a sample mounted! Cannot center.'));
-    }
-  };
-}
-
 export function sendCentringPoint(x, y) {
   return function (dispatch) {
     fetch('/mxcube/api/v0.1/sampleview/centring/click', {
@@ -411,6 +371,63 @@ export function sendDeleteShape(id) {
     });
   };
 }
+
+export function unselectShapes(shapes) {
+  return function (dispatch) {
+    const _shapes = [];
+    const keys = Object.keys(shapes.shapes);
+    keys.forEach(k => {
+      const aux = shapes.shapes[k];
+      aux.selected = false;
+      _shapes.push(aux);
+    });
+    dispatch(sendUpdateShapes(_shapes));
+  };
+}
+
+export function sendStartClickCentring() {
+  return function (dispatch, getState) {
+    dispatch(clearSelectedShapes());
+
+    const { queue } = getState();
+    const { shapes } = getState();
+    dispatch(unselectShapes(shapes));
+
+    if (queue.current.sampleID) {
+      fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json'
+        }
+      }).then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to start 3click');
+        } else {
+          dispatch(startClickCentring());
+        }
+
+        return response.json();
+      }).then((json) => {
+        const clicksLeft = json.clicksLeft;
+        dispatch(centringClicksLeft(clicksLeft));
+
+        let msg = '3-Click Centring: <br />';
+
+        if (clicksLeft === 0) {
+          msg += 'Save centring or clicking on screen to restart';
+        } else {
+          msg += `Clicks left: ${clicksLeft}`;
+        }
+
+        dispatch(videoMessageOverlay(true, msg));
+      });
+    } else {
+      dispatch(showErrorPanel(true, 'There is not a sample mounted! Cannot center.'));
+    }};
+}
+
 
 export function sendZoomPos(level) {
   return function (dispatch) {
