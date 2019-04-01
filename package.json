@@ -32,7 +32,7 @@
     "react": "15.6.1",
     "react-bootstrap": "^0.30.7",
     "react-bootstrap-table": "^3.1.1",
-    "react-chat-widget": "^2.1.2",
+    "react-chat-widget": "^2.1.4",
     "react-clipboard.js": "^1.1.1",
     "react-contextmenu": "^2.3.0",
     "react-dnd": "^2.1.2",
