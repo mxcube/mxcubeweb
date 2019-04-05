@@ -226,6 +226,9 @@ def lims_login(loginID, password):
         for prop in session['proposal_list']:
             todays_session = mxcube.db_connection.get_todays_session(prop)
             prop['Session'] = [todays_session['session']]
+            # TODO: fix in a more elegant way
+            prop['Session'][0]['is_inhouse'] = todays_session['is_inhouse']
+            prop['Session'][0]['new_session_flag'] = todays_session['new_session_flag']
 
         if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None):
             dummy = mxcube.session.commissioning_fake_proposal
