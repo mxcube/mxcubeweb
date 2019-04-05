@@ -11,14 +11,17 @@ class UserList extends React.Component {
     for (const observer of this.props.remoteAccess.observers) {
       observers.push((
         <div key={observer.host}>
-          <div className="col-xs-4">
+          <div className="col-xs-3">
             <span style={{ lineHeight: '24px' }}>{observer.name}</span>
           </div>
-          <div className="col-xs-4">
+          <div className="col-xs-3">
             <span style={{ lineHeight: '24px' }}>{observer.host}</span>
           </div>
+          <div className="col-xs-3">
+            <span style={{ lineHeight: '24px' }}>{observer.type}</span>
+          </div>
           { this.props.remoteAccess.master ?
-            (<div className="col-xs-4">
+            (<div className="col-xs-3">
               <Button className="btn-sm" onClick={() => this.props.sendGiveControl(observer.sid)}>
                  Give control
                </Button>
@@ -37,9 +40,10 @@ class UserList extends React.Component {
     return (
       <Panel header="Users">
         <div className="col-xs-12">
-          <div className="col-xs-4"><b>Name</b></div>
-          <div className="col-xs-4"><b>Host</b></div>
-          <div className="col-xs-4"><span>&nbsp;</span></div>
+          <div className="col-xs-3"><b>Name</b></div>
+          <div className="col-xs-3"><b>Host</b></div>
+          <div className="col-xs-3"><b>Type</b></div>
+          <div className="col-xs-3"><span>&nbsp;</span></div>
           {this.getObservers()}
         </div>
       </Panel>

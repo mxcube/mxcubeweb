@@ -57,6 +57,7 @@ export default (state = initialState, action) => {
                  observers: action.data.remoteAccess.observers,
                  master: action.data.remoteAccess.master,
                  observerName: action.data.remoteAccess.observerName,
+                 type: action.data.remoteAccess.type,
                  sid: action.data.remoteAccess.sid,
                  allowRemote: action.data.remoteAccess.allowRemote,
                  timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl };

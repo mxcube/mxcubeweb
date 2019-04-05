@@ -17,6 +17,7 @@ export class RemoteAccessContainer extends React.Component {
                          onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
                          defaultChecked={this.props.remoteAccess.allowRemote}
                          checked={this.props.remoteAccess.allowRemote}
+                         disabled={this.props.remoteAccess.type !== 'local'}
                        >
                          Enable remote access
                        </Checkbox>
@@ -24,6 +25,7 @@ export class RemoteAccessContainer extends React.Component {
                          onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
                          defaultChecked={this.props.remoteAccess.timeoutGivesControl}
                          checked={this.props.remoteAccess.timeoutGivesControl}
+                         disabled={this.props.remoteAccess.type !== 'local'}
                        >
                          Timeout gives control
                        </Checkbox>
