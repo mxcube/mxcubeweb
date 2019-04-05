@@ -169,11 +169,15 @@ def remote_addr():
 
 
 def is_local_network(ip):
-    localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
-    localhost_range = '.'.join(localhost.split('.')[0:2])
-    private_address = '.'.join(ip.split('.')[0:2])
+    try:
+        _address = mxcube.session.remote_address
+    except:
+        _address = None
+    if ip == _address:
+        return False
+    _ip = ipaddress.ip_address(unicode(ip))
+    return _ip.is_private
 
-    return private_address == localhost_range
 
 def is_local_host():
     localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
