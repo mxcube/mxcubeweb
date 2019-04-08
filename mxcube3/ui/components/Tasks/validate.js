@@ -80,7 +80,7 @@ const validate = (values, props) => {
     errors.num_images = 'Only 1 image allowed when characterizing from a 2D-point';
   }
 
-  if (values.osc_range * values.num_images >  props.acqParametersLimits.osc_max) {
+  if (values.osc_range * values.num_images > props.acqParametersLimits.osc_max) {
     errors.osc_range = 'Omega out of limits';
     errors.num_images = 'Omega out of limits';
   }
