@@ -5,6 +5,7 @@ from __future__ import print_function
 
 from subprocess import check_output
 from os.path import isfile, join
+import logging
 
 from flask import jsonify, Response, send_file, request, render_template
 from mxcube3 import server
@@ -114,7 +115,8 @@ def get_results():
             if result_file_test('characterisation-results.js'):
                 try:
                     url_list =  data["limsResultData"]["workflow_result_url_list"]
-                except:
+                except Exception as ex:
+                    logging.getLogger('MX3.HWR').warning("Error retrieving wf url list, {0}".format(ex.message))
                     url_list = None
 
                 if url_list:

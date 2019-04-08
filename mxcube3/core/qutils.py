@@ -263,7 +263,8 @@ def get_queue_state():
     sample_order = queue.get("sample_order", [])
     try:
         current =  scutils.get_current_sample().get('sampleID', '')
-    except:
+    except Exception as ex:
+        logging.getLogger('MX3.HWR').warning("Error retrieving current sample, {0}".format(ex.message))
         current = ''
 
     res = {"current": current,
