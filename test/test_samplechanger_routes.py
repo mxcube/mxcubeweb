@@ -45,9 +45,9 @@ def test_get_sc_contents_view(client):
     """
     resp = client.get("/mxcube/api/v0.1/sample_changer/contents")
     data = json.loads(resp.data)
-
+    print(data)
     assert isinstance(data["children"], list)
-    assert len(data["children"]) == 5  # pucks
+    assert len(data["children"]) == 17  # pucks
     assert len(data["children"][0]["children"]) == 10  # samples
     
 def test_get_maintenance_cmds(client):
