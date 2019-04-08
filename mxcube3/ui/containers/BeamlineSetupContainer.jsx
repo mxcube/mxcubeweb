@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Table, Popover } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
-import InOutSwitch2 from '../components/InOutSwitch2/InOutSwitch2';
+import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
 import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
@@ -272,7 +272,7 @@ class BeamlineSetupContainer extends React.Component {
               {this.createActuatorComponent()}
               <Col sm={2} className="pull-right">
                 <SampleChangerSwitch
-                  labelText={ "Sample Changer" }
+                  labelText={ 'Sample Changer' }
                   data = { this.props.sampleChanger.state }
                   onSave={ this.props.sendCommand }
                 />
