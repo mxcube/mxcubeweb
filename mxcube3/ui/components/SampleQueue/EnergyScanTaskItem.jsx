@@ -149,54 +149,57 @@ export default class EnergyScanTaskItem extends Component {
 
     return (
       <div className="node node-sample">
-      <ContextMenuTrigger id="currentSampleQueueContextMenu">
-        <div
-          className={taskCSS}
-          style={{ display: 'flex' }}
-          onClick={this.taskHeaderOnClick}
-          onContextMenu={this.taskHeaderOnContextMenu}
-        >
-          <b>
-            <span className="node-name" style={{ display: 'flex' }} >
-              {this.pointIDString(parameters)} {data.label}
-              <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
-                <ProgressBar
-                  bsStyle={pbarBsStyle}
-                  striped
-                  style={{ marginBottom: '0px', height: '18px' }}
-                  min={0}
-                  max={1}
-                  active={ this.props.progress < 1 }
-                  label={ `${(this.props.progress * 100).toPrecision(3)} %` }
-                  now={this.props.progress}
-                />
-              </span>
-            </span>
-          </b>
-            { state === TASK_UNCOLLECTED ?
-              <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
-            }
-        </div>
-        <Collapse in={Boolean(show)}>
-          <div className="task-body">
-            <div>
-              <div style={ { border: '1px solid #DDD' } }>
-                <div
-                  style={ { padding: '0.5em' } }
-                  onClick={this.showForm}
-                >
-                  <b>Path:</b> { this.path(parameters) }
-                  <br />
-                  <b>Element:</b> {parameters.element}
-                  <br />
-                  <b>Edge:</b> {parameters.edge}
+        <ContextMenuTrigger id="currentSampleQueueContextMenu">
+          <div
+            onClick={this.taskHeaderOnClick}
+            onContextMenu={this.taskHeaderOnContextMenu}
+          >
+            <div
+              className={taskCSS}
+              style={{ display: 'flex' }}
+            >
+              <b>
+                <span className="node-name" style={{ display: 'flex' }} >
+                  {this.pointIDString(parameters)} {data.label}
+                  <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
+                    <ProgressBar
+                      bsStyle={pbarBsStyle}
+                      striped
+                      style={{ marginBottom: '0px', height: '18px' }}
+                      min={0}
+                      max={1}
+                      active={this.props.progress < 1}
+                      label={`${(this.props.progress * 100).toPrecision(3)} %`}
+                      now={this.props.progress}
+                    />
+                  </span>
+                </span>
+              </b>
+              {state === TASK_UNCOLLECTED ?
+                <i className="fa fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
+              }
+            </div>
+            <Collapse in={Boolean(show)}>
+              <div className="task-body">
+                <div>
+                  <div style={{ border: '1px solid #DDD' }}>
+                    <div
+                      style={{ padding: '0.5em' }}
+                      onClick={this.showForm}
+                    >
+                      <b>Path:</b> {this.path(parameters)}
+                      <br />
+                      <b>Element:</b> {parameters.element}
+                      <br />
+                      <b>Edge:</b> {parameters.edge}
+                    </div>
+                  </div>
+                  {this.getResult(state)}
                 </div>
               </div>
-              {this.getResult(state)}
-            </div>
+            </Collapse>
           </div>
-        </Collapse>
-      </ContextMenuTrigger>
+        </ContextMenuTrigger>
       </div>);
   }
 }

@@ -407,6 +407,15 @@ def get_loaded_sample():
 
     return address, barcode
 
+def get_capacity():
+    baskets = blcontrol.sample_changer.getBasketList()
+    num_samples = 0
+    for basket in baskets:
+        num_samples += basket.getNumberSamples()
+    res = {'num_baskets': len(baskets),
+           'num_samples': num_samples
+        }
+    return res
 
 def get_maintenance_cmds():
     if blcontrol.sc_maintenance is not None:

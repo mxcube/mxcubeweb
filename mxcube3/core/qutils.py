@@ -261,8 +261,13 @@ def get_queue_state():
 
     queue = queue_to_dict(include_lims_data=True)
     sample_order = queue.get("sample_order", [])
+    try:
+        current =  scutils.get_current_sample().get('sampleID', '')
+    except Exception as ex:
+        logging.getLogger('MX3.HWR').warning("Error retrieving current sample, {0}".format(ex.message))
+        current = ''
 
-    res = {"current": scutils.get_current_sample().get('sampleID', ''),
+    res = {"current": current,
            "centringMethod": mxcube.CENTRING_METHOD,
            "autoMountNext": get_auto_mount_sample(),
            "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,

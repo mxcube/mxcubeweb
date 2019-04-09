@@ -88,6 +88,7 @@
   <acquisition_limit_values>
     <exposure_time>500</exposure_time>
     <osc_range>720</osc_range>
+    <osc_max>1440</osc_max>
     <number_of_images>10000</number_of_images>
   </acquisition_limit_values>
 

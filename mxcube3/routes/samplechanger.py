@@ -100,6 +100,15 @@ def unmount_sample():
         )
     return resp
 
+@server.route("/mxcube/api/v0.1/sample_changer/capacity", methods=["GET"])
+@server.restrict
+def get_sc_capacity():
+    try:
+        ret = scutils.get_capacity()
+    except Exception:
+        return Response(status=409)
+    else:
+        return jsonify(capacity=ret)
 
 @server.route("/mxcube/api/v0.1/sample_changer/get_maintenance_cmds", methods=["GET"])
 @server.restrict
