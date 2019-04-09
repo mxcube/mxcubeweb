@@ -45,10 +45,17 @@ def test_get_sc_contents_view(client):
     """
     resp = client.get("/mxcube/api/v0.1/sample_changer/contents")
     data = json.loads(resp.data)
-    print(data)
+    resp = client.get("/mxcube/api/v0.1/sample_changer/capacity")
+    capacity = json.loads(resp.data)["capacity"]
+
     assert isinstance(data["children"], list)
-    assert len(data["children"]) == 17  # pucks
-    assert len(data["children"][0]["children"]) == 10  # samples
+    assert len(data["children"]) == capacity['num_baskets']  # pucks
+
+    num_samples = 0
+    for basket in data["children"]:
+        num_samples += len(basket["children"])
+
+    assert num_samples == capacity['num_samples']  # samples
     
 def test_get_maintenance_cmds(client):
     """
