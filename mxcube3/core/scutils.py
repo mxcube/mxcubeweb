@@ -412,7 +412,6 @@ def get_capacity():
     num_samples = 0
     for basket in baskets:
         num_samples += basket.getNumberSamples()
- 
     res = {'num_baskets': len(baskets),
            'num_samples': num_samples
         }
