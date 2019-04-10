@@ -129,8 +129,8 @@ export function signIn(proposal, password) {
           }
         });
       } else {
-        // const msg = res.msg;
-        dispatch(showErrorPanel(true));
+        const msg = res.msg;
+        dispatch(showErrorPanel(true, msg));
         dispatch(setLoading(false));
       }
     }, () => {

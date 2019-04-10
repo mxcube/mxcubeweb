@@ -24,6 +24,7 @@ function mapStateToProps(state) {
   return {
     loading: state.general.loading,
     showError: state.general.showErrorPanel,
+    errorMessage: state.general.errorMessage,
     showProposalsForm: state.login.showProposalsForm,
     data: state.login.data,
     selectedProposal: state.login.selectedProposal

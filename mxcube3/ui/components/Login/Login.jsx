@@ -98,7 +98,9 @@ export default class LoginComponent extends React.Component {
                 <Button block bsStyle="primary" onClick={this.signIn}>Sign in</Button>
               </Col>
             </Row>
-              {(this.props.showError ? <Alert bsStyle="danger"><h4>Login failed</h4></Alert> : '')}
+              {(this.props.showError ?
+                <Alert bsStyle="danger"><h4>{this.props.errorMessage}</h4></Alert> :
+                 '')}
           </div>
           </Col>
         </Row>
