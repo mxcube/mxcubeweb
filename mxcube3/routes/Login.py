@@ -182,13 +182,14 @@ def loginInfo():
     """
     login_info = session.get("loginInfo")
     proposal_info = session.get("proposal")
-
+    loginID = login_info["loginID"] if login_info is not None else None
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
 
     res = {"synchrotron_name": mxcube.session.synchrotron_name,
            "beamline_name": mxcube.session.beamline_name,
            "loginType": mxcube.db_connection.loginType.title(),
+           "loginID": loginID,
            "loginRes": login_info,
            "master": is_operator(session.sid),
            "observerName": get_observer_name()

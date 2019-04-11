@@ -120,6 +120,7 @@ def observers():
             'sid': session.sid,
             'master': loginutils.is_operator(session.sid),
             'observerName': loginutils.get_observer_name(),
+            'type': loginutils.user_type(session.sid),
             'allowRemote': mxcube.ALLOW_REMOTE,
             'timeoutGivesControl': mxcube.TIMEOUT_GIVES_CONTROL
     }
