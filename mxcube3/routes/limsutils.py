@@ -230,7 +230,7 @@ def lims_login(loginID, password):
             prop['Session'][0]['is_inhouse'] = todays_session['is_inhouse']
             prop['Session'][0]['new_session_flag'] = todays_session['new_session_flag']
 
-        if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None):
+        if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None) and not mxcube.SELECTED_PROPOSAL:
             dummy = mxcube.session.commissioning_fake_proposal
             session['proposal_list'].append(dummy)
 
@@ -287,6 +287,8 @@ def select_proposal(proposal):
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
         mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
+        mxcube.SELECTED_PROPOSAL = mxcube.session.proposal_code + mxcube.session.proposal_number
+        mxcube.SELECTED_PROPOSAL_ID = proposal_info.get('Proposal').get('proposalId', '')
         mxcube.session.session_id = proposal_info.get('Session')[0].get('sessionId')
 
         if hasattr(mxcube.session, 'prepare_directories'):

@@ -156,6 +156,8 @@ def init_app_state(app):
 
     # SampleID of currently mounted sample
     app.CURRENTLY_MOUNTED_SAMPLE = {}
+    app.SELECTED_PROPOSAL = None
+    app.SELECTED_PROPOSAL_ID = None
     app.SAMPLE_TO_BE_MOUNTED = ''
     app.CENTRING_METHOD = CENTRING_METHOD.LOOP
     app.NODE_ID_TO_LIMS_ID = {}

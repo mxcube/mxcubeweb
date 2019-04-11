@@ -49,14 +49,24 @@ def login():
                 "existing_session": limsutils.lims_existing_session(login_res),
                 "inhouse": inhouse}
 
-        _users = logged_in_users(exclude_inhouse=True)
+        _users = logged_in_users(exclude_inhouse=False)
+
+        common_proposal = False
+        if mxcube.SELECTED_PROPOSAL is not None:
+            for prop in login_res['proposalList']:
+                _p = prop['Proposal']['code'] + prop['Proposal']['number']
+                if _p == mxcube.SELECTED_PROPOSAL:
+                    common_proposal = True
+
+        if (loginID in _users):
+            return deny_access("Login rejected, you are already logged in")
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
             return deny_access("In-house only allowed from localhost")
 
         # Only allow other users to log-in if they are from the same proposal
-        if (not inhouse) and _users and (loginID not in _users):
+        if (not common_proposal) and _users and (loginID not in _users):
             return deny_access("Another user is already logged in")
 
         # Only allow local login when remote is disabled
@@ -75,10 +85,11 @@ def login():
         else:
             logging.getLogger("HWR").info("Invalid login %s" % info)
             return deny_access(str(info))
-    except:
-        return deny_access("")
+    except Exception as ex:
+        logging.getLogger("HWR").error('Login error %s' %ex)
+        return deny_access("Could not authenticate")
     else:
-        add_user(create_user(loginID, remote_addr(), session.sid, login_res))
+        add_user(create_user(loginID, remote_addr(), session.sid, info['local'], login_res))
 
         session['loginInfo'] = {'loginID': loginID,
                                 'password': password,
@@ -129,6 +140,11 @@ def signout():
             mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
     user = remove_user(session.sid)
+
+    if not logged_in_users():
+        mxcube.SELECTED_PROPOSAL = None
+        mxcube.SELECTED_PROPOSAL_ID = None
+
     session.clear()
 
     return make_response("", 200)
@@ -154,6 +170,9 @@ def forcesignout():
     if remote_access.is_master(session.sid):
         state_storage.flush()
         remote_access.flush()
+
+    mxcube.SELECTED_PROPOSAL = None
+    mxcube.SELECTED_PROPOSAL_ID = None
 
     session.clear()
     socketio.emit("signout", {}, namespace='/hwr')
@@ -202,6 +221,9 @@ def loginInfo():
         limsutils.select_proposal(LOGGED_IN_USER)
         res["selectedProposal"] = LOGGED_IN_USER
         logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
+    if mxcube.SELECTED_PROPOSAL is not None:
+        res["selectedProposal"] = mxcube.SELECTED_PROPOSAL
+        res["selectedProposalID"] = mxcube.SELECTED_PROPOSAL_ID
 
     # Get all the files in the root data dir for this user
     root_path = mxcube.session.get_base_image_directory()
@@ -214,7 +236,8 @@ def loginInfo():
     if user:
         res["selectedProposal"] = user["loginID"]
     else:
-        res["selectedProposal"] = {}
+        res["selectedProposal"] = None
+        res["selectedProposal"] = None
 
 
     # Redirect the user to login page if for some reason logged out
