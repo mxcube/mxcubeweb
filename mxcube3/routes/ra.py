@@ -59,16 +59,13 @@ def take_control():
         return make_response("", 200)
     
     login_id = session['loginInfo'].get('loginID')
-    # Not inhouse user so not allowed to take control by force,
-    # return error code
-    is_in_house_user = login_id in mxcube.session.in_house_users
-    is_in_house_session = session['loginInfo']['loginRes']['Session']['is_inhouse']
 
-    if is_in_house_session or is_in_house_user:
-        toggle_operator(session.sid, "You were given control")
-        return make_response("", 200)
-    else:
+    if login_id not in mxcube.session.in_house_users:
         return make_response("", 409)
+
+    toggle_operator(session.sid, "You were given control")
+
+    return make_response("", 200)
 
 
 @mxcube.route("/mxcube/api/v0.1/ra/give_control", methods=["POST"])
