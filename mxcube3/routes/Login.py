@@ -1,6 +1,7 @@
 import logging
 import os
 import Utils
+import socket
 
 from flask import session, request, jsonify, make_response, Response, redirect
 from mxcube3 import app as mxcube
@@ -42,8 +43,11 @@ def login():
 
     try:
         login_res = limsutils.lims_login(loginID, password)
-        inhouse = limsutils.lims_is_inhouse(login_res)
 
+        if login_res['status']["code"] is not "ok":
+            return deny_access("Could not authenticate")
+
+        inhouse = limsutils.lims_is_inhouse(login_res)
         info = {"valid": limsutils.lims_valid_login(login_res),
                 "local": is_local_host(),
                 "existing_session": limsutils.lims_existing_session(login_res),
@@ -141,7 +145,7 @@ def signout():
 
     user = remove_user(session.sid)
 
-    if not logged_in_users():
+    if not logged_in_users(exclude_inhouse=False):
         mxcube.SELECTED_PROPOSAL = None
         mxcube.SELECTED_PROPOSAL_ID = None
 
@@ -209,6 +213,7 @@ def loginInfo():
            "beamline_name": mxcube.session.beamline_name,
            "loginType": mxcube.db_connection.loginType.title(),
            "loginID": loginID,
+           "host": socket.gethostbyaddr(remote_addr())[0],
            "loginRes": login_info,
            "master": is_operator(session.sid),
            "observerName": get_observer_name()

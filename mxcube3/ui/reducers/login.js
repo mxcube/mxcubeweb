@@ -1,6 +1,7 @@
 const initialState = {
   loginInfo: {},
   loginID: '',
+  host: '',
   loggedIn: false,
   data: {},
   showProposalsForm: false,
@@ -22,6 +23,7 @@ export default (state = initialState, action) => {
           {
             loginInfo: action.loginInfo,
             loginID: action.loginInfo.loginID,
+            host: action.loginInfo.host,
             selectedProposal: state.selectedProposal ?
               state.selectedProposal : action.loginInfo.selectedProposal,
             loggedIn,
