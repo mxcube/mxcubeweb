@@ -57,7 +57,7 @@ def take_control():
     # Already master do nothing
     if loginutils.is_operator(session.sid):
         return make_response("", 200)
-    
+
     login_id = session['loginInfo'].get('loginID')
 
     if login_id not in mxcube.session.in_house_users:
@@ -114,6 +114,7 @@ def observers():
     """
     """
     data = {'observers': loginutils.get_observers(),
+            'users': loginutils.get_users(),
             'sid': session.sid,
             'master': loginutils.is_operator(session.sid),
             'observerName': loginutils.get_observer_name(),

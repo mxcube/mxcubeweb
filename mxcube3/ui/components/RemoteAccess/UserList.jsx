@@ -9,50 +9,57 @@ class UserList extends React.Component {
     const isMaster = this.props.remoteAccess.master;
     return (
       <div>
-        <div className="col-xs-3">
-          <span style={{ lineHeight: '24px' }}>{this.props.login.loginID}</span>
-        </div>
-        <div className="col-xs-3">
-          <span style={{ lineHeight: '24px' }}>{this.props.login.host}</span>
-        </div>
         <div className="col-xs-2">
-          <span style={{ lineHeight: '24px' }}>{this.props.remoteAccess.type}</span>
+          <span style={{ lineHeight: '36px' }}>{this.props.login.loginID} (you)</span>
         </div>
         <div className="col-xs-4">
-          <span style={{ lineHeight: '24px' }}>{isMaster ? 'You are in control' :
-            'You are not in control'}</span>
+          <span style={{ lineHeight: '36px' }}>{this.props.login.host}</span>
+        </div>
+        <div className="col-xs-2">
+          <span style={{ lineHeight: '36px' }}>{this.props.remoteAccess.type}</span>
+        </div>
+        <div className="col-xs-2">
+          <span style={{ lineHeight: '36px' }}>{isMaster ? 'Master' : 'Observer'}</span>
+        </div>
+        <div className="col-xs-2">
+          <span style={{ lineHeight: '36px' }}>{isMaster ? 'In control' : 'No control'}</span>
         </div>
       </div>
     );
   }
 
-  getObservers() {
-    const observers = [];
-    for (const observer of this.props.remoteAccess.observers) {
-      observers.push((
-        <div>
-          <div className="col-xs-3">
-            <span style={{ lineHeight: '24px' }}>{observer.name}</span>
-          </div>
-          <div className="col-xs-3">
-            <span style={{ lineHeight: '24px' }}>{observer.host}</span>
-          </div>
-          <div className="col-xs-2">
-            <span style={{ lineHeight: '24px' }}>{observer.type}</span>
-          </div>
-          <div className="col-xs-4">
-            <Button className="btn-sm"
-              disabled={!this.props.remoteAccess.master}
-              onClick={() => this.props.sendGiveControl(observer.sid)}
-            >
-            Give control
-            </Button>
-          </div>
-        </div>
-      ));
+  getUsers() {
+    const users = [];
+    if (this.props.remoteAccess.users) {
+      for (const user of this.props.remoteAccess.users) {
+        user.loginID !== this.props.login.loginID ?
+          users.push((
+            <div>
+              <div className="col-xs-2">
+                <span style={{ lineHeight: '24px' }}>{user.loginID}</span>
+              </div>
+              <div className="col-xs-4">
+                <span style={{ lineHeight: '24px' }}>{user.host}</span>
+              </div>
+              <div className="col-xs-2">
+                <span style={{ lineHeight: '24px' }}>{user.type}</span>
+              </div>
+              <div className="col-xs-2">
+                <span style={{ lineHeight: '24px' }}>{user.operator ? 'Master' : 'Observer'}</span>
+              </div>
+              <div className="col-xs-2">
+                <Button className="btn-sm"
+                  disabled={!this.props.remoteAccess.master}
+                  onClick={() => this.props.sendGiveControl(user.sid)}
+                >
+                  Give control
+                </Button>
+              </div>
+            </div>
+          )) : null;
+      }
     }
-
-    return observers;
+    return users;
   }
 
   render() {
@@ -60,24 +67,15 @@ class UserList extends React.Component {
       <div>
       <Panel header="User Info">
         <div className="col-xs-12">
-          <div className="col-xs-3"><b>Name</b></div>
-          <div className="col-xs-3"><b>Host</b></div>
+          <div className="col-xs-2"><b>Name</b></div>
+          <div className="col-xs-4"><b>Host</b></div>
           <div className="col-xs-2"><b>Type</b></div>
-          <div className="col-xs-4"><span>&nbsp;</span></div>
+          <div className="col-xs-2"><b>Role</b></div>
+          <div className="col-xs-2"><b>Control</b></div>
           {this.getUserInfo()}
+          {this.getUsers()}
         </div>
       </Panel>
-      { this.props.remoteAccess.observers.length > 0 ?
-        (<Panel header="Observers">
-        <div className="col-xs-12">
-          <div className="col-xs-3"><b>Name</b></div>
-          <div className="col-xs-3"><b>Host</b></div>
-          <div className="col-xs-2"><b>Type</b></div>
-          <div className="col-xs-4"><span>&nbsp;</span></div>
-          {this.getObservers()}
-        </div>
-      </Panel>) : null
-      }
       </div>
     );
   }

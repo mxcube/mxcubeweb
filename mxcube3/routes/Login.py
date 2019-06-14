@@ -15,7 +15,7 @@ from mxcube3 import socketio
 from loginutils import (create_user, add_user, remove_user, get_user_by_sid,
                         logged_in_users, deny_access, users, set_operator,
                         get_operator, is_operator, get_observer_name,
-                        is_local_host, remote_addr, get_observers)
+                        is_local_host, remote_addr, get_observers, get_users)
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -94,6 +94,7 @@ def login():
         return deny_access("Could not authenticate")
     else:
         add_user(create_user(loginID, remote_addr(), session.sid, info['local'], login_res))
+        socketio.emit("usersChanged", get_users(), namespace='/hwr')
 
         session['loginInfo'] = {'loginID': loginID,
                                 'password': password,
@@ -264,3 +265,4 @@ def send_feedback():
     Utils.send_feedback(sender_data)
 
     return make_response("", 200)
+

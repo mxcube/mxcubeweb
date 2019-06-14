@@ -4,8 +4,9 @@ const initialState = {
   sid: null,
   observerName: null,
   requestingControl: false,
-  observers: [],
   allowRemote: false,
+  observers: [],
+  users: [],
   timeoutGivesControl: false,
   showObserverDialog: false,
   chatMessageCount: 0
@@ -26,6 +27,10 @@ export default (state = initialState, action) => {
     case 'SET_OBSERVERS':
       {
         return Object.assign({}, state, { observers: action.observers });
+      }
+    case 'SET_USERS':
+      {
+        return Object.assign({}, state, { users: action.users });
       }
     case 'SHOW_OBSERVER_DIALOG':
       {
@@ -55,6 +60,7 @@ export default (state = initialState, action) => {
       {
         return { ...state,
                  observers: action.data.remoteAccess.observers,
+                 users: action.data.remoteAccess.users,
                  master: action.data.remoteAccess.master,
                  observerName: action.data.remoteAccess.observerName,
                  type: action.data.remoteAccess.type,

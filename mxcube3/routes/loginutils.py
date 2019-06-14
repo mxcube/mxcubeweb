@@ -54,6 +54,10 @@ def deny_access(msg):
     return resp
 
 
+def get_users():
+    return [user for user in users().itervalues()]
+
+
 def get_observers():
     return [user for user in users().itervalues() if not user["operator"]]
 
@@ -61,10 +65,10 @@ def get_observers():
 def get_observer_name():
     name = None
     user = get_user_by_sid(session.sid)
-    
+
     if user:
         name = user["name"]
-    
+
     return name
 
 
@@ -74,7 +78,7 @@ def get_operator():
 
 
 def is_operator(sid):
-    user = get_operator()    
+    user = get_operator()
     return user and user["sid"] == sid
 
 

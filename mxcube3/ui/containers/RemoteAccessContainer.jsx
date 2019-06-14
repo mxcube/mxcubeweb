@@ -11,7 +11,7 @@ import { sendAllowRemote, sendTimeoutGivesControl } from '../actions/remoteAcces
 
 export class RemoteAccessContainer extends React.Component {
   getRAOptions() {
-    let content = (<div className="col-xs-4">
+    let content = (<div className="col-xs-2">
                      <Panel header="RA Options">
                        <Checkbox
                          onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
@@ -46,11 +46,11 @@ export class RemoteAccessContainer extends React.Component {
     return (
       <div className="col-xs-12">
         { !this.props.remoteAccess.master ?
-          (<div className="col-xs-4">
+          (<div className="col-xs-3">
             <RequestControlForm />
            </div>) : null
         }
-        <div className="col-xs-4">
+        <div className="col-xs-7">
           <UserList />
         </div>
         {this.getRAOptions()}

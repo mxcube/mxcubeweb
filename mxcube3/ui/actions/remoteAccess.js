@@ -130,6 +130,10 @@ export function setObservers(observers) {
   return { type: 'SET_OBSERVERS', observers };
 }
 
+export function setUsers(users) {
+  return { type: 'SET_USERS', users };
+}
+
 export function sendChatMessage(message, sid) {
   return fetch('mxcube/api/v0.1/ra/chat', {
     method: 'POST',

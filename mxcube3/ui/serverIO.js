@@ -34,7 +34,7 @@ import { setLoading,
 
 import { showWorkflowParametersDialog } from './actions/workflow';
 
-import { setObservers, setMaster, requestControlAction,
+import { setUsers, setObservers, setMaster, requestControlAction,
          incChatMessageCount } from './actions/remoteAccess';
 import { doSignOut } from './actions/login';
 
@@ -251,6 +251,10 @@ class ServerIO {
 
     this.hwrSocket.on('observersChanged', (data) => {
       this.dispatch(setObservers(data));
+    });
+
+    this.hwrSocket.on('usersChanged', (data) => {
+      this.dispatch(setUsers(data));
     });
 
     this.hwrSocket.on('observerLogout', (observer) => {
