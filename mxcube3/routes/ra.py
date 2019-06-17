@@ -87,7 +87,7 @@ def toggle_operator(new_op_sid, message):
     new_op["message"] = message
 
     observers = loginutils.get_observers()
-
+    users = loginutils.get_users()
     # Append the new data path so that it can be updated on the client
     new_op["rootPath"] = mxcube.session.get_base_image_directory()
 
@@ -98,6 +98,8 @@ def toggle_operator(new_op_sid, message):
         socketio.emit("setObserver", current_op, room=current_op["socketio_sid"], namespace='/hwr')
 
     socketio.emit("observersChanged", observers, namespace='/hwr')
+    socketio.emit("usersChanged", users, namespace='/hwr')
+
     socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace='/hwr')
 
 
