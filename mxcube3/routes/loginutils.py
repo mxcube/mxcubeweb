@@ -14,13 +14,12 @@ from mxcube3 import socketio
 PENDING_EVENTS = deque()
 DISCONNECT_HANDLED = True
 MESSAGES = []
-USER_TYPES = {True: 'local', False: 'remote'}
 
-def create_user(loginID, host, sid, local, lims_data=None):
+def create_user(loginID, host, sid, user_type, lims_data=None):
     return {"loginID": loginID,
             "host": socket.gethostbyaddr(host)[0],
             "sid": sid,
-            "type": USER_TYPES[local],
+            "type": user_type,
             "name": "",
             "operator": False,
             "requestsControl": False,
@@ -86,6 +85,19 @@ def user_type(sid):
     user = get_user_by_sid(sid)
     return user.get('type')
 
+def define_user_type(local, is_staff, common_proposal):
+    """
+    User type can be: local, remote, staff
+    """
+    if is_staff:
+        if common_proposal:
+            user_type = 'local' if local  else 'remote'
+        else:
+            user_type = 'staff'
+    else:
+        user_type = 'local' if local  else 'remote'
+
+    return user_type
 
 def logged_in_users(exclude_inhouse=False):
     users = [user["loginID"] for user in mxcube.USERS.itervalues()]

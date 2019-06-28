@@ -15,7 +15,8 @@ from mxcube3 import socketio
 from loginutils import (create_user, add_user, remove_user, get_user_by_sid,
                         logged_in_users, deny_access, users, set_operator,
                         get_operator, is_operator, get_observer_name,
-                        is_local_host, remote_addr, get_observers, get_users)
+                        is_local_host, remote_addr, get_observers, get_users, 
+                        define_user_type)
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -69,8 +70,10 @@ def login():
         if inhouse and not (inhouse and is_local_host()):
             return deny_access("In-house only allowed from localhost")
 
+        is_staff = limsutils.lims_is_staff(loginID)
         # Only allow other users to log-in if they are from the same proposal
-        if (not common_proposal) and _users and (loginID not in _users):
+        # or if they are staff
+        if not is_staff and not common_proposal and _users and (loginID not in _users):
             return deny_access("Another user is already logged in")
 
         # Only allow local login when remote is disabled
@@ -93,7 +96,8 @@ def login():
         logging.getLogger("HWR").error('Login error %s' %ex)
         return deny_access("Could not authenticate")
     else:
-        add_user(create_user(loginID, remote_addr(), session.sid, info['local'], login_res))
+        user_type = define_user_type(info['local'], is_staff, common_proposal)
+        add_user(create_user(loginID, remote_addr(), session.sid, user_type, login_res))
         socketio.emit("usersChanged", get_users(), namespace='/hwr')
 
         session['loginInfo'] = {'loginID': loginID,
