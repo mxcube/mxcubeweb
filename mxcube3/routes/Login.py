@@ -168,7 +168,6 @@ def forcesignout():
     qutils.save_queue(session)
     mxcube.queue = qutils.new_queue()
     mxcube.shapes.clear_all()
-    qutils.reset_queue_settings()
     mxcube.session.clear_session()
 
     if mxcube.CURRENTLY_MOUNTED_SAMPLE:
@@ -176,15 +175,47 @@ def forcesignout():
             mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
     LOGGED_IN_USER = None
-    if remote_access.is_master(session.sid):
-        state_storage.flush()
-        remote_access.flush()
+    state_storage.flush()
 
     mxcube.SELECTED_PROPOSAL = None
     mxcube.SELECTED_PROPOSAL_ID = None
 
     session.clear()
     socketio.emit("signout", {}, namespace='/hwr')
+    return make_response("", 200)
+
+@mxcube.route("/mxcube/api/v0.1/forceusersignout", methods=["POST"])
+def forceusersignout():
+    """
+    Force signout of a given user from Mxcube3
+    """
+    logging.getLogger("HWR").info('Forcing signout of user')
+    user_id = request.get_json()['sid']
+    user = get_user_by_sid(user_id)
+    remove_user(user_id)
+    socketio.emit("signout", user, room=user["socketio_sid"], namespace='/hwr')
+
+    # if the only remaining user is staff clean all
+    users = get_users()
+    if len(users) == 1:
+        if users[0]['type'] == 'staff':
+            staff_id = users[0]['sid']
+            remove_user(staff_id)
+            mxcube.queue = qutils.new_queue()
+            mxcube.shapes.clear_all()
+            mxcube.session.clear_session()
+
+            if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+                if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
+                    mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+
+            LOGGED_IN_USER = None
+            mxcube.SELECTED_PROPOSAL = None
+            mxcube.SELECTED_PROPOSAL_ID = None
+            state_storage.flush()
+
+            session.clear()
+            socketio.emit("signout", {}, namespace='/hwr')
     return make_response("", 200)
 
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])

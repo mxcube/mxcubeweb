@@ -156,9 +156,26 @@ export function doSignOut() {
   };
 }
 
+
+export function sendForceUserSignOut(sid) {
+  return function () {
+    fetch('mxcube/api/v0.1/forceusersignout', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ sid })
+    });
+  };
+}
+
+
 export function forceSignOut() {
   return function (dispatch) {
-    dispatch(showForceLogoutDialog(true));
+    dispatch(signOut());
+    browserHistory.push('/login');
   };
 }
 

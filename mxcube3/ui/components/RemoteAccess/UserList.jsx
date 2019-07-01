@@ -1,8 +1,9 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Panel } from 'react-bootstrap';
+import { Button, Panel, ButtonToolbar, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { sendGiveControl } from '../../actions/remoteAccess';
+import { sendForceUserSignOut } from '../../actions/login';
 
 class UserList extends React.Component {
   getUserInfo() {
@@ -48,12 +49,46 @@ class UserList extends React.Component {
                 <span style={{ lineHeight: '24px' }}>{user.operator ? 'Master' : 'Observer'}</span>
               </div>
               <div className="col-xs-2">
-                <Button className="btn-sm"
-                  disabled={!this.props.remoteAccess.master}
-                  onClick={() => this.props.sendGiveControl(user.sid)}
-                >
-                  Give control
-                </Button>
+                <ButtonToolbar>
+                    <OverlayTrigger
+                      placement="top"
+                      trigger="hover"
+                      overlay={
+                        <Tooltip>
+                          Give control to user
+                        </Tooltip>
+                      }
+                    >
+                    <Button
+                      className="btn-sm"
+                      data-toggle="tooltip"
+                      data-placement="top" title="Give control"
+                      disabled={!this.props.remoteAccess.master}
+                      onClick={() => this.props.sendGiveControl(user.sid)}
+                    >
+                    <span className="fa fa-lg fa-gamepad" />
+                    </Button>
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                      placement="top"
+                      trigger="hover"
+                      overlay={
+                        <Tooltip>
+                          Force signout
+                        </Tooltip>
+                      }
+                    >
+                    <Button
+                      className="btn-sm"
+                      data-toggle="tooltip"
+                      data-placement="top" title="Tooltip on top"
+                      disabled={this.props.remoteAccess.type !== 'staff'}
+                      onClick={() => this.props.sendForceUserSignOut(user.sid)}
+                    >
+                    <span className="fa fa-lg fa-sign-out" />
+                    </Button>
+                    </OverlayTrigger>
+                </ButtonToolbar>
               </div>
             </div>
           )) : null;
@@ -90,7 +125,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendGiveControl: bindActionCreators(sendGiveControl, dispatch)
+    sendGiveControl: bindActionCreators(sendGiveControl, dispatch),
+    sendForceUserSignOut: bindActionCreators(sendForceUserSignOut, dispatch)
   };
 }
 

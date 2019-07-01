@@ -41,6 +41,7 @@ def remove_user(sid):
     else:
         socketio.emit("observerLogout", user, namespace='/hwr')
         socketio.emit("observersChanged", get_observers(), namespace='/hwr')
+    socketio.emit("usersChanged", get_users(), namespace='/hwr')
 
 
 def get_user_by_sid(sid):
@@ -89,7 +90,7 @@ def define_user_type(local, is_staff, common_proposal):
     """
     User type can be: local, remote, staff
     """
-    if is_staff:
+    if is_staff and mxcube.USERS:
         if common_proposal:
             user_type = 'local' if local  else 'remote'
         else:

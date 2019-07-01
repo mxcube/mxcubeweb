@@ -36,7 +36,7 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { setUsers, setObservers, setMaster, requestControlAction,
          incChatMessageCount } from './actions/remoteAccess';
-import { doSignOut } from './actions/login';
+import { doSignOut, forceSignOut } from './actions/login';
 
 import { addResponseMessage } from 'react-chat-widget';
 
@@ -260,6 +260,11 @@ class ServerIO {
     this.hwrSocket.on('observerLogout', (observer) => {
       addResponseMessage(`**${observer.name}** (${observer.host}) disconnected.`);
     });
+
+    this.hwrSocket.on('signout', () => {
+      this.dispatch(forceSignOut());
+    });
+
 
     this.hwrSocket.on('observerLogin', (observer) => {
       if (observer.name && observer.host) {
