@@ -42,7 +42,7 @@ def remove_user(sid):
         socketio.emit("observerLogout", user, namespace='/hwr')
         socketio.emit("observersChanged", get_observers(), namespace='/hwr')
     socketio.emit("usersChanged", get_users(), namespace='/hwr')
-
+    return user
 
 def get_user_by_sid(sid):
     return mxcube.USERS.get(sid, None)

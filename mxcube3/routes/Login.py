@@ -137,8 +137,7 @@ def signout():
     mxcube.queue = qutils.new_queue()
     mxcube.shapes.clear_all()
     qutils.init_queue_settings()
-    if hasattr(mxcube.session, 'clear_session'):
-        mxcube.session.clear_session()
+
 
     qutils.reset_queue_settings()
     if hasattr(mxcube.session, 'clear_session'):
@@ -153,8 +152,12 @@ def signout():
     if not logged_in_users(exclude_inhouse=False):
         mxcube.SELECTED_PROPOSAL = None
         mxcube.SELECTED_PROPOSAL_ID = None
-
+        # ony clear hwobj if this was the last user
+        if hasattr(mxcube.session, 'clear_session'):
+            mxcube.session.clear_session()
     session.clear()
+
+    logging.getLogger('HWR').info('[Login] %s user signout' % user['loginID'])
 
     return make_response("", 200)
 
@@ -194,6 +197,7 @@ def forceusersignout():
     user = get_user_by_sid(user_id)
     remove_user(user_id)
     socketio.emit("signout", user, room=user["socketio_sid"], namespace='/hwr')
+    logging.getLogger('HWR').info('[Login] %s user forced signout' % user['loginID'])
 
     # if the only remaining user is staff clean all
     users = get_users()
@@ -216,6 +220,7 @@ def forceusersignout():
 
             session.clear()
             socketio.emit("signout", {}, namespace='/hwr')
+
     return make_response("", 200)
 
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
