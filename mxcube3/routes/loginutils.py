@@ -13,7 +13,6 @@ from mxcube3 import socketio
 
 PENDING_EVENTS = deque()
 DISCONNECT_HANDLED = True
-MESSAGES = []
 
 def create_user(loginID, host, sid, user_type, lims_data=None):
     return {"loginID": loginID,
@@ -152,12 +151,15 @@ def append_message(message, sid):
             "user": user, "host":remote_addr(),
             "date": datetime.datetime.now().strftime("%H:%M")}
 
-    MESSAGES.append(data)
+    mxcube.MESSAGES.append(data)
     socketio.emit('ra_chat_message', data, namespace='/hwr')
 
 
 def get_all_messages():
-    return MESSAGES
+    return mxcube.MESSAGES
+
+def clear_messages():
+    mxcube.MESSAGES[:] = []
 
 
 def flush():

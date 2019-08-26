@@ -16,7 +16,7 @@ from loginutils import (create_user, add_user, remove_user, get_user_by_sid,
                         logged_in_users, deny_access, users, set_operator,
                         get_operator, is_operator, get_observer_name,
                         is_local_host, remote_addr, get_observers, get_users, 
-                        define_user_type)
+                        define_user_type, clear_messages)
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -152,6 +152,7 @@ def signout():
     if not logged_in_users(exclude_inhouse=False):
         mxcube.SELECTED_PROPOSAL = None
         mxcube.SELECTED_PROPOSAL_ID = None
+        clear_messages()
         # ony clear hwobj if this was the last user
         if hasattr(mxcube.session, 'clear_session'):
             mxcube.session.clear_session()

@@ -17,7 +17,7 @@ import ForceLogoutDialog from '../containers/ForceLogoutDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
 import { sendChatMessage, getAllChatMessages,
          resetChatMessageCount } from '../actions/remoteAccess';
-import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
+import { Widget, addResponseMessage, addUserMessage, dropMessages } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
 
@@ -42,6 +42,12 @@ class Main extends React.Component {
         }
       });
     });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.remoteAccess.users.length > 0 && nextProps.remoteAccess.users.length === 0) {
+      dropMessages();
+    }
   }
 
   onChatContainerClick() {

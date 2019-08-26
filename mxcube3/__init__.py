@@ -166,6 +166,7 @@ def init_app_state(app):
     app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
     app.TEMP_DISABLED = []
     app.USERS = {}
+    app.MESSAGES = []
     qutils.init_queue_settings()
     app.ALLOW_REMOTE = cmdline_options.allow_remote
     app.TIMEOUT_GIVES_CONTROL = cmdline_options.ra_timeout
