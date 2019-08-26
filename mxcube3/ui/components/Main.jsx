@@ -35,7 +35,8 @@ class Main extends React.Component {
   componentDidMount() {
     getAllChatMessages().then((json) => {
       json.messages.forEach((entry) => {
-        if (entry.sid === this.props.remoteAccess.sid) {
+        // to get rid of asterisk (*) in the beginning
+        if (entry.user.endsWith(this.props.loginID)) {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
         } else {
           addResponseMessage(`${entry.date} **${entry.user}:** \n\n ${entry.message}`);
@@ -123,6 +124,7 @@ class Main extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    loginID: state.login.loginID,
     remoteAccess: state.remoteAccess,
     general: state.general
   };
