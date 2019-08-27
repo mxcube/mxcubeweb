@@ -90,10 +90,7 @@ def define_user_type(local, is_staff, common_proposal):
     User type can be: local, remote, staff
     """
     if is_staff and mxcube.USERS:
-        if common_proposal:
-            user_type = 'local' if local  else 'remote'
-        else:
-            user_type = 'staff'
+        user_type = 'staff'
     else:
         user_type = 'local' if local  else 'remote'
 

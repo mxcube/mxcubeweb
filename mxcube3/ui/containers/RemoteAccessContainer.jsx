@@ -11,13 +11,14 @@ import { sendAllowRemote, sendTimeoutGivesControl } from '../actions/remoteAcces
 
 export class RemoteAccessContainer extends React.Component {
   getRAOptions() {
+    const userType = this.props.remoteAccess.type;
     let content = (<div className="col-xs-2">
                      <Panel header="RA Options">
                        <Checkbox
                          onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
                          defaultChecked={this.props.remoteAccess.allowRemote}
                          checked={this.props.remoteAccess.allowRemote}
-                         disabled={this.props.remoteAccess.type !== 'local'}
+                         disabled={userType !== 'local' && userType !== 'staff'}
                        >
                          Enable remote access
                        </Checkbox>
@@ -25,7 +26,7 @@ export class RemoteAccessContainer extends React.Component {
                          onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
                          defaultChecked={this.props.remoteAccess.timeoutGivesControl}
                          checked={this.props.remoteAccess.timeoutGivesControl}
-                         disabled={this.props.remoteAccess.type !== 'local'}
+                         disabled={userType !== 'local' && userType !== 'staff'}
                        >
                          Timeout gives control
                        </Checkbox>
