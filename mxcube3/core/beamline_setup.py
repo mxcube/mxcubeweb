@@ -763,7 +763,7 @@ class ResolutionHOMediator(HOMediatorBase):
         limits = []
 
         if self._ho.energy.can_move_energy():
-            e_min, e_max = self._ho.energy.getEnergyLimits()
+            e_min, e_max = self._ho.energy.get_energy_limits()
 
             x = arange(float(e_min), float(e_max), 0.5)
 

@@ -11,6 +11,7 @@ from io import StringIO
 
 from PIL import Image
 import v4l2
+import gipc
 
 VIDEO_DEVICE = None
 VIDEO_STREAM_PROCESS = None
@@ -81,20 +82,26 @@ def new_frame_received(img, width, height, *args, **kwargs):
 
     # Assume that we are getting a qimage if we are not getting a str,
     # to be able to handle data sent by hardware objects used in MxCuBE 2.x
-    if not isinstance(img, str):
+    if not isinstance(img, bytes):
         # 4 Channels with alpha
         channels = 4
         pixel_format = v4l2.V4L2_PIX_FMT_RGB32
         rawdata = img.bits().asstring(img.numBytes())
         img = rawdata
     else:
+        try:
+            str_img = img.decode()
+        except UnicodeDecodeError:
+            str_img = ""
+
         # Is the image on JPEG format get the RGB data otherwise assume its
         # already RGB and do nothing with the data
-        if img.startswith('\xff\xd8\xff\xe0\x00\x10JFIF'):
+        if str_img.startswith('\xff\xd8\xff\xe0\x00\x10JFIF'):
             # jpeg image
             strbuf = StringIO(img)
-            img = Image.open(strbuf)
+            str_img  = Image.open(strbuf)
             img = img.tobytes()
+
 
     if VIDEO_DEVICE:
         if not VIDEO_INITIALIZED:
@@ -177,13 +184,7 @@ def tango_lima_video_plugin(camera, video_device):
                 return width, height, raw_data
 
             def do_polling(self, sleep_time):
-                hfmt = ">IHHqiiHHHH"
-                hsize = struct.calcsize(hfmt)
-                while True:
-                    width, height, raw_data = \
-                        self.parse_image_data(self.device.video_last_image)
-                    self.emit("imageReceived", raw_data, width, height, False)
-                    time.sleep(sleep_time)
+                pass
 
             def take_snapshot(self, path, bw=False):
                 width, height, raw_data = \
@@ -200,6 +201,28 @@ def tango_lima_video_plugin(camera, video_device):
             camera.parse_image_data = types.MethodType(parse_image_data, camera)
 
 
+def poll_camera(tango_uri):
+    import PyTango
+    import time
+
+    camera = PyTango.DeviceProxy(tango_uri)
+    camera.video_mode = "RGB24"
+    time.sleep(0.1)
+    
+    while True:
+        img_data = camera.video_last_image
+
+        hfmt = ">IHHqiiHHHH"
+        hsize = struct.calcsize(hfmt)
+        _, _, img_mode, frame_number, width, height, _, _, _, _ = \
+            struct.unpack(hfmt, img_data[1][:hsize])
+        raw_data = img_data[1][hsize:]
+
+        time.sleep(camera.video_exposure)
+
+        new_frame_received(raw_data, width, height)
+
+
 def init(camera, video_device_path):
     """
     Initialize video loopback device.
@@ -210,5 +233,12 @@ def init(camera, video_device_path):
     set_initial_stream_size(camera, video_device_path)
     tango_lima_video_plugin(camera, video_device_path)
     video_device = open_video_device(video_device_path)
-    camera.connect("imageReceived", new_frame_received)
+
+    # Poll camera and write images directly to loopback video device
+    # in a subprocess
+    p = gipc.start_process(
+        target=poll_camera,
+        args=(camera.getProperty("tangoname"),)
+    )
+
     return video_device

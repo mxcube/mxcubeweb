@@ -153,7 +153,7 @@ def init_signals():
 
     for motor in utils.get_centring_motors():
 
-        @utils.RateLimited(3)
+        @utils.RateLimited(10)
         def pos_cb(pos, motor=motor, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
@@ -190,7 +190,7 @@ def init_signals():
 
         try:
             motor_hwobj = dm.getObjectByRole(motor)
-            motor_hwobj.connect(motor_hwobj, "positionChanged", state_cb)
+            motor_hwobj.connect(motor_hwobj, "positionChanged", pos_cb)
 
             if hasattr(motor_hwobj, "actuatorIn"):
                 motor_hwobj = dm.getObjectByRole(motor)
@@ -540,12 +540,12 @@ def move_to_beam(x, y):
     msg = "Moving to beam, A point submitted, x: %s, y: %s" % (x, y)
     logging.getLogger("MX3.HWR").info(msg)
 
-    if getattr(blcontrol.diffractometer, "moveToBeam") is None:
+    if getattr(blcontrol.diffractometer, "move_to_beam") is None:
         # v > 2.2, or perhaps start_move_to_beam?
         blcontrol.diffractometer.move_to_beam(x, y)
     else:
         # v <= 2.1
-        blcontrol.diffractometer.moveToBeam(x, y)
+        blcontrol.diffractometer.move_to_beam(x, y)
 
 
 def set_centring_method(method):
