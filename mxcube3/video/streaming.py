@@ -230,8 +230,6 @@ def init(camera, video_device_path):
     :param HardwareObject camera:  Object providing frames to encode and stream
     :param str video_device_path: Video loopback path
     """
-    from multiprocessing import Process
-
     set_initial_stream_size(camera, video_device_path)
     tango_lima_video_plugin(camera, video_device_path)
     video_device = open_video_device(video_device_path)
