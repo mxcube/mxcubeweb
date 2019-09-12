@@ -115,6 +115,6 @@
       "react/no-unescaped-entities": 0,
       "no-continue": 0,
       "no-undef-init": 0,
-
+      "import/no-cycle": 1,
   }
 }
