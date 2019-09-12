@@ -9,6 +9,7 @@ import 'fabric';
 // eslint-disable-next-line import/no-unresolved
 import config from 'guiConfig';
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
+import { MOTOR_STATE } from '../../constants';
 
 const { fabric } = window;
 
@@ -29,7 +30,6 @@ export default class SampleControls extends React.Component {
   componentDidMount() {
     window.takeSnapshot = this.doTakeSnapshot;
   }
-
 
   setZoom(option) {
     const newZoom = parseInt(option.target.value, 10);
@@ -238,7 +238,7 @@ Reset
                     max="10"
                     step="1"
                     defaultValue={motors.zoom.position}
-                    disabled={motors.zoom.state !== 2}
+                    disabled={motors.zoom.state !== MOTOR_STATE.READY}
                     onMouseUp={this.setZoom}
                     list="volsettings"
                     name="zoomSlider"
@@ -295,7 +295,7 @@ Reset
                       min="0"
                       max="1"
                       defaultValue={motors.BackLight.position}
-                      disabled={motors.BackLight.state !== 2}
+                      disabled={motors.BackLight.state !== MOTOR_STATE.READY}
                       onMouseUp={e => this.props.sampleActions.sendMotorPosition('BackLight', e.target.value)}
                       name="backlightSlider"
                     />
@@ -333,7 +333,7 @@ Reset
                       min="0"
                       max="1"
                       defaultValue={motors.FrontLight.position}
-                      disabled={motors.FrontLight.state !== 2}
+                      disabled={motors.FrontLight.state !== MOTOR_STATE.READY}
                       onMouseUp={e => this.props.sampleActions.sendMotorPosition('FrontLight', e.target.value)}
                       name="frontLightSlider"
                     />
