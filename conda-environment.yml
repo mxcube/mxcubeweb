@@ -1,12 +1,10 @@
 name: mxcube3
 dependencies:
-  - python=2
-  - gevent==1.2.2
-  - flask==0.12.2
-  - flask-socketio==2.9.2
-  - gevent-websocket==0.10.1
-  - python-socketio==1.8.0
-  - louie
+  - python=3.7
+  - gevent
+  - flask
+  - flask-socketio
+  - gevent-websocket
   - redis-py
   - scipy
   - mock
@@ -17,13 +15,15 @@ dependencies:
   - lxml
   - numpy
   - requests
-  - v4l2
   - scandir
-  - pip:
-      - Flask-Session==0.3.1
   - redis
   - nodejs
   - ffmpeg
   - pytango
   - opencv
-  
+
+  - pip:
+      - Flask-Session
+      - git+https://github.com/marcus-oscarsson/python-v4l2.git
+      - Louie-latest
+      - gipc
