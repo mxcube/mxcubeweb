@@ -249,14 +249,14 @@ def queue_mount_sample(
                 if centring_method == CENTRING_METHOD.MANUAL:
                     msg = "Manual centring used, waiting for" + " user to center sample"
                     log.warning(msg)
-                    dm.startCentringMethod(dm.MANUAL3CLICK_MODE)
+                    dm.start_centring_method(dm.MANUAL3CLICK_MODE)
                 elif centring_method in [
                     CENTRING_METHOD.LOOP,
                     CENTRING_METHOD.FULLY_AUTOMATIC,
                 ]:
 
                     if not dm.currentCentringMethod:
-                        dm.startCentringMethod(dm.C3D_MODE)
+                        dm.start_centring_method(dm.C3D_MODE)
 
                     if mxcube.AUTO_MOUNT_SAMPLE:
                         msg = "Going to save centring automatically, please wait"
@@ -318,7 +318,7 @@ def mount_sample_clean_up(sample):
                 msg = "Starting autoloop centring ..."
                 logging.getLogger("MX3.HWR").info(msg)
                 C3D_MODE = blcontrol.diffractometer.C3D_MODE
-                blcontrol.diffractometer.startCentringMethod(C3D_MODE)
+                blcontrol.diffractometer.start_centring_method(C3D_MODE)
             elif not sc.getLoadedSample():
                 set_current_sample(None)
         else:

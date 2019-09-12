@@ -112,7 +112,8 @@ def get_aperture():
     aperture = get_beam_definer()
 
     if aperture is not None:
-        aperture_list = aperture.get_diameter_list()
+
+        aperture_list = aperture.get_diameter_size_list()
         current_aperture = aperture.get_diameter_size()
 
     return aperture_list, current_aperture

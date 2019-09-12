@@ -1895,7 +1895,6 @@ def queue_unpause():
 
 
 def queue_clear():
-    blcontrol.diffractometer.savedCentredPos = []
     limsutils.init_sample_list()
     blcontrol.queue = new_queue()
     msg = '[QUEUE] Cleared  ' + str(blcontrol.queue.get_model_root()._name)
@@ -1904,7 +1903,6 @@ def queue_clear():
 
 def set_queue(json_queue, session):
     # Clear queue
-    blcontrol.diffractometer.savedCentredPos = []
     blcontrol.queue = new_queue()
 
     # Set new queue
