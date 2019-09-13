@@ -96,6 +96,16 @@ def login():
         logging.getLogger("HWR").error('Login error %s' %ex)
         return deny_access("Could not authenticate")
     else:
+        if not logged_in_users(exclude_inhouse=False):
+            # Create a new queue just in case any previous queue was not cleared
+            # properly but only if there is not any user logged in
+            mxcube.queue = qutils.new_queue()
+            sample = mxcube.sample_changer.getLoadedSample()
+            # If A sample is mounted, get sample changer contents and add mounted
+            # sample to the queue
+            if sample:
+                scutils.get_sample_list()
+
         user_type = define_user_type(info['local'], is_staff, common_proposal)
         add_user(create_user(loginID, remote_addr(), session.sid, user_type, login_res))
         socketio.emit("usersChanged", get_users(), namespace='/hwr')
@@ -103,17 +113,6 @@ def login():
         session['loginInfo'] = {'loginID': loginID,
                                 'password': password,
                                 'loginRes': login_res}
-
-        # Create a new queue just in case any previous queue was not cleared
-        # properly
-        mxcube.queue = qutils.new_queue()
-
-        sample = mxcube.sample_changer.getLoadedSample()
-
-        # If A sample is mounted, get sample changer contents and add mounted
-        # sample to the queue
-        if sample:
-            scutils.get_sample_list()
 
         # For the moment not loading queue from persistent storage (redis),
         # uncomment to enable loading.
@@ -150,6 +149,10 @@ def signout():
     user = remove_user(session.sid)
 
     if not logged_in_users(exclude_inhouse=False):
+        qutils.save_queue(session)
+        mxcube.queue = qutils.new_queue()
+        mxcube.shapes.clear_all()
+        qutils.init_queue_settings()
         mxcube.SELECTED_PROPOSAL = None
         mxcube.SELECTED_PROPOSAL_ID = None
         clear_messages()
