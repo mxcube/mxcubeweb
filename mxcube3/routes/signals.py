@@ -27,9 +27,8 @@ from mxcube3.core.qutils import (
     queue_to_dict,
 )
 
-
-import queue_model_objects as qmo
-import queue_entry as qe
+from HardwareRepository.HardwareObjects import queue_model_objects as qmo
+from HardwareRepository.HardwareObjects import queue_entry as qe
 
 from queue_entry import CENTRING_METHOD
 from mxcube3.core.utils import to_camel

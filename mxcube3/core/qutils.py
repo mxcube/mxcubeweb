@@ -13,9 +13,9 @@ import re
 
 from mock import Mock
 
-import queue_model_objects as qmo
-import queue_entry as qe
-import queue_model_enumerables as qme
+from HardwareRepository.HardwareObjects import queue_model_objects as qmo
+from HardwareRepository.HardwareObjects import queue_entry as qe
+from HardwareRepository.HardwareObjects import queue_model_enumerables as qme
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol

@@ -11,7 +11,7 @@ import os
 import io
 from scandir import scandir
 
-import queue_model_objects as qmo
+from HardwareRepository.HardwareObjects import queue_model_objects as qmo
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol

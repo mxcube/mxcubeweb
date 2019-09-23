@@ -11,7 +11,7 @@ from flask import jsonify, Response, send_file, request, render_template
 from mxcube3 import server
 from mxcube3 import blcontrol
 
-import queue_model_objects as qmo
+from HardwareRepository.HardwareObjects import queue_model_objects as qmo
 
 from mxcube3.core import limsutils
 from mxcube3.core import qutils
