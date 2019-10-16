@@ -17,7 +17,7 @@ python-ldap
 lxml
 numpy
 requests
-v4l2
+git+https://github.com/marcus-oscarsson/python-v4l2.git
 scandir
 matplotlib # Dependency of energyscan mockup object
 gipc
