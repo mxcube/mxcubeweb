@@ -92,11 +92,13 @@ class _BeamlineSetupMediator(object):
                 )
             elif name == "beamstop":
                 return self._ho_dict.setdefault(
-                    name, DuoStateHOMediator(self._bl.diffractometer.beamstop, "beamstop")
+                    name,
+                    DuoStateHOMediator(self._bl.diffractometer.beamstop, "beamstop"),
                 )
             elif name == "capillary":
                 return self._ho_dict.setdefault(
-                    name, DuoStateHOMediator(self._bl.diffractometer.capillary, "capillary")
+                    name,
+                    DuoStateHOMediator(self._bl.diffractometer.capillary, "capillary"),
                 )
             elif name == "detector_distance":
                 d = self._bl.detector.distance
@@ -183,7 +185,7 @@ class _BeamlineSetupMediator(object):
             logging.getLogger("MX3.HWR").error("Failed to get detector_distance info")
 
         try:
-            machinfo =self.get_object("machine_info")
+            machinfo = self.get_object("machine_info")
             attributes.update({"machine_info": machinfo.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get machine_info info")
@@ -760,7 +762,7 @@ class ResolutionHOMediator(HOMediatorBase):
         try:
             ttheta = math.atan(radius / float(dist))
             if ttheta != 0:
-                return (current_wavelength / (2 * math.sin(ttheta / 2)))
+                return current_wavelength / (2 * math.sin(ttheta / 2))
             else:
                 return 0
         except Exception:

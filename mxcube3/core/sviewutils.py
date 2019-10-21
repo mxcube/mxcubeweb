@@ -102,7 +102,9 @@ def centring_update_current_point(motor_positions, x, y):
     if point:
         point.move_to_mpos([motor_positions], [x, y])
     else:
-        point = blcontrol.beamline.microscope.shapes.add_shape_from_mpos([motor_positions], (x, y), "P")
+        point = blcontrol.beamline.microscope.shapes.add_shape_from_mpos(
+            [motor_positions], (x, y), "P"
+        )
         point.state = "TMP"
         point.selected = True
         CENTRING_POINT_ID = point.id
@@ -133,7 +135,9 @@ def wait_for_centring_finishes(*args, **kwargs):
         motor_positions.pop("beam_y", None)
         motor_positions.pop("beam_x", None)
 
-        x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motor_positions)
+        x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(
+            motor_positions
+        )
 
         centring_update_current_point(motor_positions, x, y)
         blcontrol.beamline.diffractometer.emit("stateChanged", (True,))
@@ -180,6 +184,7 @@ def init_signals():
         dm.connect(dm.getObjectByRole(motor), "stateChanged", state_cb)
 
     for motor_name in ["FrontLight", "BackLight"]:
+
         def state_cb(state, motor=motor, **kw):
             movable = utils.get_movable_state_and_position(motor_name)
             signals.motor_state_callback(movable[motor_name], **kw)
@@ -328,7 +333,9 @@ def update_shapes(shapes):
 
             beam_info_dict = beam_info_dict = beamlineutils.get_beam_info()
 
-            shape_data["pixels_per_mm"] = blcontrol.beamline.diffractometer.get_pixels_per_mm()
+            shape_data[
+                "pixels_per_mm"
+            ] = blcontrol.beamline.diffractometer.get_pixels_per_mm()
             shape_data["beam_pos"] = (
                 beam_info_dict.get("position")[0],
                 beam_info_dict.get("position")[1],
@@ -354,10 +361,14 @@ def update_shapes(shapes):
                     )
                     pos.append(center_positions)
 
-                shape = blcontrol.beamline.microscope.shapes.add_shape_from_mpos(pos, (x, y), t)
+                shape = blcontrol.beamline.microscope.shapes.add_shape_from_mpos(
+                    pos, (x, y), t
+                )
 
             else:
-                shape = blcontrol.beamline.microscope.shapes.add_shape_from_refs(refs, t)
+                shape = blcontrol.beamline.microscope.shapes.add_shape_from_refs(
+                    refs, t
+                )
 
         # shape will be none if creation failed, so we check if shape exists
         # before setting additional parameters

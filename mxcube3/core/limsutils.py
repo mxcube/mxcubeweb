@@ -147,7 +147,7 @@ def apply_template(params, sample_model, path_template):
                 ACRONYM=sample_model.crystals[0].protein_acronym,
             )
         else:
-            stripped = params["subdir"][0: params["subdir"].find("{")]
+            stripped = params["subdir"][0 : params["subdir"].find("{")]
             params["subdir"] = stripped + sample_model.get_name()
 
         # The template was only applied partially if subdir ends with '-'
@@ -180,14 +180,14 @@ def strip_prefix(pt, prefix):
     """
     if (
         pt.reference_image_prefix
-        and pt.reference_image_prefix == prefix[0: len(pt.reference_image_prefix)]
+        and pt.reference_image_prefix == prefix[0 : len(pt.reference_image_prefix)]
     ):
-        prefix = prefix[len(pt.reference_image_prefix) + 1:]
+        prefix = prefix[len(pt.reference_image_prefix) + 1 :]
 
-    if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix):]:
+    if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix) :]:
         prefix = prefix[: -(len(pt.wedge_prefix) + 1)]
 
-    if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix):]:
+    if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix) :]:
         prefix = prefix[: -(len(pt.mad_prefix) + 1)]
 
     return prefix
@@ -328,11 +328,15 @@ def select_proposal(proposal):
             logging.getLogger("MX3.HWR").info("[LIMS] Commissioning proposal flag set.")
 
     if proposal_info:
-        blcontrol.beamline.session.proposal_code = proposal_info.get("Proposal").get("code", "")
+        blcontrol.beamline.session.proposal_code = proposal_info.get("Proposal").get(
+            "code", ""
+        )
         blcontrol.beamline.session.proposal_number = proposal_info.get("Proposal").get(
             "number", ""
         )
-        blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get("sessionId")
+        blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get(
+            "sessionId"
+        )
 
         session["proposal"] = proposal_info
 

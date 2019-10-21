@@ -30,7 +30,7 @@ def write_to_video_device(device, image_data, pixel_format, width, height):
         channels = 3
         f = v4l2.v4l2_format()
         f.type = v4l2.V4L2_BUF_TYPE_VIDEO_OUTPUT
-        if pixel_format == 'RGB24':
+        if pixel_format == "RGB24":
             f.fmt.pix.pixelformat = v4l2.V4L2_PIX_FMT_RGB24
         else:
             f.fmt.pix.pixelformat = v4l2.V4L2_PIX_FMT_RGB32

@@ -69,7 +69,9 @@ def get_light_state_and_intensity():
         if hasattr(hwobj, "getActuatorState"):
             switch_state = 1 if hwobj.getActuatorState() == "in" else 0
         else:
-            hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(light + "Switch")
+            hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(
+                light + "Switch"
+            )
             switch_state = 1 if hwobj_switch.getActuatorState() == "in" else 0
 
         ret.update(
@@ -180,7 +182,9 @@ def get_centring_motors():
     global _centring_motors_memo
 
     if not _centring_motors_memo:
-        _centring_motors_memo = list(blcontrol.beamline.diffractometer.get_positions().keys())
+        _centring_motors_memo = list(
+            blcontrol.beamline.diffractometer.get_positions().keys()
+        )
 
         # Adding the two pseudo motors for sample alignment in the microscope
         # view

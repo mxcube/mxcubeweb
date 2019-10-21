@@ -108,7 +108,7 @@ def get_aperture():
     :return: Tuple, (list of apertures, current aperture)
     :rtype: tuple
     """
-    
+
     aperture_list, current_aperture = [], None
     aperture = get_beam_definer()
 
@@ -179,7 +179,7 @@ def beamline_get_all_attributes():
     ho = BeamlineSetupMediator(blcontrol.beamline)
     data = ho.dict_repr()
     actions = list()
-    
+
     try:
         cmds = blcontrol.actions.getCommands()
     except Exception:
@@ -207,7 +207,10 @@ def beamline_get_all_attributes():
 
     data.update({"availableMethods": ho.get_available_methods()})
     data.update(
-        {"path": blcontrol.beamline.session.get_base_image_directory(), "actionsList": actions}
+        {
+            "path": blcontrol.beamline.session.get_base_image_directory(),
+            "actionsList": actions,
+        }
     )
     data.update({"energyScanElements": ho.get_available_elements().get("elements", [])})
 

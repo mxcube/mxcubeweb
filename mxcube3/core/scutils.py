@@ -15,7 +15,7 @@ from . import limsutils
 from . import qutils
 
 
-from queue_entry import (QueueSkippEntryException, CENTRING_METHOD)
+from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 
 
 def init_signals():
@@ -23,11 +23,15 @@ def init_signals():
 
     """Initialize hwobj signals."""
     blcontrol.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
-    blcontrol.beamline.sample_changer.connect("isCollisionSafe", signals.is_collision_safe)
+    blcontrol.beamline.sample_changer.connect(
+        "isCollisionSafe", signals.is_collision_safe
+    )
     blcontrol.beamline.sample_changer.connect(
         "loadedSampleChanged", signals.loaded_sample_changed
     )
-    blcontrol.beamline.sample_changer.connect("contentsUpdated", signals.sc_contents_update)
+    blcontrol.beamline.sample_changer.connect(
+        "contentsUpdated", signals.sc_contents_update
+    )
 
     if blcontrol.beamline.sample_changer_maintenance is not None:
         blcontrol.beamline.sample_changer_maintenance.connect(
@@ -125,7 +129,7 @@ def get_sc_contents():
 
     root_name = blcontrol.beamline.sample_changer.getAddress()
 
-    contents = {"name": root_name }
+    contents = {"name": root_name}
 
     for element in blcontrol.beamline.sample_changer.getComponents():
         if element.isPresent():
@@ -187,9 +191,7 @@ def get_sample_to_be_mounted():
     return mxcube.SAMPLE_TO_BE_MOUNTED
 
 
-def queue_mount_sample(
-    beamline, view, data_model, centring_done_cb, async_result
-):
+def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
 
     logging.getLogger("user_level_log").info("Loading sample ...")
@@ -316,8 +318,11 @@ def mount_sample_clean_up(sample):
             if res is None:
                 res = True
 
-            if res and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP \
-                and blcontrol.beamline.diffractometer.in_kappa_mode():
+            if (
+                res
+                and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP
+                and blcontrol.beamline.diffractometer.in_kappa_mode()
+            ):
                 msg = "Starting autoloop centring ..."
                 logging.getLogger("MX3.HWR").info(msg)
                 C3D_MODE = blcontrol.beamline.diffractometer.C3D_MODE
@@ -410,15 +415,15 @@ def get_loaded_sample():
 
     return address, barcode
 
+
 def get_capacity():
     baskets = blcontrol.beamline.sample_changer.getBasketList()
     num_samples = 0
     for basket in baskets:
         num_samples += basket.getNumberSamples()
-    res = {'num_baskets': len(baskets),
-           'num_samples': num_samples
-        }
+    res = {"num_baskets": len(baskets), "num_samples": num_samples}
     return res
+
 
 def get_maintenance_cmds():
     if blcontrol.beamline.sample_changer_maintenance is not None:
@@ -469,7 +474,7 @@ def get_initial_state():
         "global_state": {"global_state": global_state, "commands_state": cmdstate},
         "cmds": {"cmds": cmds},
         "msg": msg,
-        "plate_mode": blcontrol.beamline.diffractometer.in_plate_mode()
+        "plate_mode": blcontrol.beamline.diffractometer.in_plate_mode(),
     }
 
     return initial_state

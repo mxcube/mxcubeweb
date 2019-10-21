@@ -89,7 +89,9 @@ def logged_in_users(exclude_inhouse=False):
 
     if exclude_inhouse:
         if isinstance(blcontrol.beamline.session.in_house_users[0], tuple):
-            ih_users = ["%s%s" % (p, c) for (p, c) in blcontrol.beamline.session.in_house_users]
+            ih_users = [
+                "%s%s" % (p, c) for (p, c) in blcontrol.beamline.session.in_house_users
+            ]
         else:
             ih_users = blcontrol.beamline.session.in_house_users
         users = [user for user in users if user not in ih_users]
@@ -213,7 +215,8 @@ def is_local_host():
 
 def is_inhouse_user(user_id):
     user_id_list = [
-        "%s%s" % (code, number) for (code, number) in blcontrol.beamline.session.in_house_users
+        "%s%s" % (code, number)
+        for (code, number) in blcontrol.beamline.session.in_house_users
     ]
 
     return user_id in user_id_list
