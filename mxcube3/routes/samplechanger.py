@@ -24,7 +24,7 @@ def get_sample_list():
 @server.route("/mxcube/api/v0.1/sample_changer/state", methods=["GET"])
 @server.restrict
 def get_sc_state():
-    state = blcontrol.sample_changer.getStatus().upper()
+    state = blcontrol.beamline.sample_changer.getStatus().upper()
     return jsonify({"state": state})
 
 
@@ -44,7 +44,7 @@ def get_sc_contents_view():
 @server.route("/mxcube/api/v0.1/sample_changer/select/<loc>", methods=["GET"])
 @server.restrict
 def select_location(loc):
-    blcontrol.sample_changer.select(loc)
+    blcontrol.beamline.sample_changer.select(loc)
     return scutils.get_sc_contents()
 
 
@@ -52,7 +52,7 @@ def select_location(loc):
 @server.restrict
 def scan_location(loc):
     # do a recursive scan
-    blcontrol.sample_changer.scan(loc, True)
+    blcontrol.beamline.sample_changer.scan(loc, True)
     return scutils.get_sc_contents()
 
 
@@ -150,7 +150,7 @@ def get_initial_state():
 @server.restrict
 def send_command(cmdparts):
     try:
-        ret = blcontrol.sc_maintenance.send_command(cmdparts)
+        ret = blcontrol.beamline.sample_changer_maintenance.send_command(cmdparts)
     except Exception as ex:
         msg = str(ex)
         msg = msg.replace("\n", " - ")

@@ -98,7 +98,7 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     if video_device:
         init_sample_video(video_device)
 
-    utils.enable_snapshots(blcontrol.collect, blcontrol.diffractometer)
+    utils.enable_snapshots(blcontrol.beamline.collect, blcontrol.beamline.diffractometer)
     init_signal_handlers()
 
     atexit.register(app_atexit)
@@ -122,7 +122,7 @@ def init_sample_video(video_device):
     from mxcube3.video import streaming
 
     try:
-        streaming.init(blcontrol.diffractometer.camera, video_device)
+        streaming.init(blcontrol.beamline.microscope.camera, video_device)
     except Exception as ex:
         msg = "Could not initialize video from %s, error was: " % video_device
         msg += str(ex)
@@ -209,7 +209,7 @@ def save_settings():
     """
 
     from mxcube3.core import qutils
-    queue = qutils.queue_to_dict(blcontrol.queue.get_model_root())
+    queue = qutils.queue_to_dict(blcontrol.beamline.queue_model.get_model_root())
 
     # For the moment not storing USERS
 

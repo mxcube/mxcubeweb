@@ -24,7 +24,7 @@ def subscribe_to_camera():
     if streaming.VIDEO_DEVICE:
         result = Response(status=200)
     else:
-        frame = sviewutils.stream_video(blcontrol.diffractometer.camera)
+        frame = sviewutils.stream_video(blcontrol.beamline.microscope.camera)
         result = Response(frame, mimetype='multipart/x-mixed-replace; boundary="!>"')
 
     return result
@@ -38,7 +38,7 @@ def unsubscribe_to_camera():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.diffractometer.camera.streaming_greenlet.kill()
+    blcontrol.beamline.microscope.camera.streaming_greenlet.kill()
     return Response(status=200)
 
 
@@ -52,7 +52,7 @@ def snapshot():
     Return: 'True' if command issued succesfully, otherwise 'False'.
     """
     try:
-        blcontrol.diffractometer.camera.takeSnapshot(
+        blcontrol.beamline.microscope.camera.takeSnapshot(
             os.path.join(os.path.dirname(__file__), "snapshots/")
         )
         return "True"
@@ -191,7 +191,7 @@ def delete_shape(sid):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.shapes.delete_shape(sid)
+    blcontrol.beamline.microscope.camera.delete_shape(sid)
     return Response(status=200)
 
 
@@ -404,7 +404,7 @@ def accept_centring():
     """
     Accept the centring position.
     """
-    blcontrol.diffractometer.acceptCentring()
+    blcontrol.beamline.diffractometer.acceptCentring()
     return Response(status=200)
 
 

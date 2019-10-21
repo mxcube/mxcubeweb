@@ -239,9 +239,9 @@ class BeamlineSetupContainer extends React.Component {
                 <td>
                   <PopInput
                     name=""
-                    pkey="detdist"
+                    pkey="detector_distance"
                     suffix="mm"
-                    data={this.props.beamline.attributes.detdist}
+                    data={this.props.beamline.attributes.detector_distance}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />

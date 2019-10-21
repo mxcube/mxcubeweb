@@ -35,7 +35,7 @@ from mxcube3.core.utils import to_camel
 
 
 def last_queue_node():
-    node = blcontrol.queue.queue_hwobj._current_queue_entries[-1].get_data_model()
+    node = blcontrol.beamline.queue_manager._current_queue_entries[-1].get_data_model()
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
@@ -167,7 +167,7 @@ def loaded_sample_changed(sample):
     try:
         sampleID = address
 
-        if blcontrol.sample_changer.hasLoadedSample():
+        if blcontrol.beamline.sample_changer.hasLoadedSample():
             scutils.set_current_sample(sampleID)
         else:
             scutils.set_current_sample(None)
@@ -227,7 +227,7 @@ def get_task_state(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
-        limsres = blcontrol.rest_lims.get_dc(lims_id)
+        limsres = blcontrol.beamline.lims_rest.get_dc(lims_id)
     except BaseException:
         limsres = {}
 
@@ -258,7 +258,7 @@ def update_task_result(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
-        limsres = blcontrol.rest_lims.get_dc(lims_id)
+        limsres = blcontrol.beamline.lims_rest.get_dc(lims_id)
     except BaseException:
         limsres = {}
 
@@ -385,7 +385,7 @@ def collect_oscillation_failed(
 
     if not qutils.is_interleaved(node["node"]):
         try:
-            blcontrol.rest_lims.get_dc(lims_id)
+            blcontrol.beamline.lims_rest.get_dc(lims_id)
         except BaseException:
             pass
 
@@ -575,9 +575,9 @@ def xrf_task_progress(taskId, progress):
 def send_shapes(update_positions=False, movable={}):
 
     shape_dict = {}
-    for shape in blcontrol.shapes.get_shapes():
+    for shape in blcontrol.beamline.microscope.shapes.get_shapes():
         if update_positions:
-            shape.update_position(blcontrol.diffractometer.motor_positions_to_screen)
+            shape.update_position(blcontrol.beamline.diffractometer.motor_positions_to_screen)
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})
@@ -601,7 +601,7 @@ def motor_state_callback(movable, sender=None, **kw):
 
         # Update the pixels per mm if it was the zoom motor that moved
         if movable["name"] == "zoom":
-            ppm = blcontrol.diffractometer.get_pixels_per_mm()
+            ppm = blcontrol.beamline.diffractometer.get_pixels_per_mm()
             socketio.emit(
                 "update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr"
             )
@@ -612,7 +612,7 @@ def motor_state_callback(movable, sender=None, **kw):
 def beam_changed(*args, **kwargs):
 
     ret = {}
-    beam_info = blcontrol.beamline.getObjectByRole("beam_info")
+    beam_info = blcontrol.beamline.beam
 
     if beam_info is None:
         logging.getLogger("HWR").error("beamInfo is not defined")

@@ -221,23 +221,23 @@ def lims_login(loginID, password, create_session):
     ERROR_CODE = dict({"status": {"code": "0"}})
 
     try:
-        blcontrol.rest_lims.authenticate(loginID, password)
+        blcontrol.beamline.lims.lims_rest.authenticate(loginID, password)
     except BaseException:
         logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
         return ERROR_CODE
 
-    if blcontrol.db_connection.loginType.lower() == "user":
+    if blcontrol.beamline.lims.loginType.lower() == "user":
         try:
-            connection_ok = blcontrol.db_connection.echo()
+            connection_ok = blcontrol.beamline.lims.echo()
             if not connection_ok:
-                blcontrol.db_connection.init()
+                blcontrol.beamline.lims.init()
         except BaseException:
             msg = "[LIMS] Connection Error!"
             logging.getLogger("MX3.HWR").error(msg)
             return ERROR_CODE
 
         try:
-            proposals = blcontrol.db_connection.get_proposals_by_user(loginID)
+            proposals = blcontrol.beamline.lims.get_proposals_by_user(loginID)
 
             logging.getLogger("MX3.HWR").info(
                 "[LIMS] Retrieving proposal list for user: %s, proposals: %s"
@@ -251,13 +251,13 @@ def lims_login(loginID, password, create_session):
             return ERROR_CODE
 
         for prop in session["proposal_list"]:
-            todays_session = blcontrol.db_connection.get_todays_session(prop)
+            todays_session = blcontrol.beamline.lims.get_todays_session(prop)
             prop["Session"] = [todays_session["session"]]
 
         if hasattr(
-            blcontrol.session, "commissioning_fake_proposal"
-        ) and blcontrol.session.is_inhouse(loginID, None):
-            dummy = blcontrol.session.commissioning_fake_proposal
+            blcontrol.beamline.session, "commissioning_fake_proposal"
+        ) and blcontrol.beamline.session.is_inhouse(loginID, None):
+            dummy = blcontrol.beamline.session.commissioning_fake_proposal
             session["proposal_list"].append(dummy)
 
         login_res["proposalList"] = session["proposal_list"]
@@ -265,10 +265,10 @@ def lims_login(loginID, password, create_session):
 
     else:
         try:
-            login_res = blcontrol.db_connection.login(
+            login_res = blcontrol.beamline.lims.login(
                 loginID, password, create_session=create_session
             )
-            proposal = blcontrol.db_connection.get_proposal(
+            proposal = blcontrol.beamline.lims.get_proposal(
                 login_res["Proposal"]["code"], login_res["Proposal"]["number"]
             )
 
@@ -286,7 +286,7 @@ def lims_login(loginID, password, create_session):
 
 def create_lims_session(login_res):
     for prop in session["proposal_list"]:
-        todays_session = blcontrol.db_connection.get_todays_session(prop)
+        todays_session = blcontrol.beamline.lims.get_todays_session(prop)
         prop["Session"] = [todays_session["session"]]
 
     login_res["proposalList"] = session["proposal_list"]
@@ -320,38 +320,38 @@ def select_proposal(proposal):
     logging.getLogger("MX3.HWR").info("[LIMS] Selecting proposal: %s" % proposal)
     logging.getLogger("MX3.HWR").info("[LIMS] Proposal info: %s" % proposal_info)
     if (
-        blcontrol.db_connection.loginType.lower() == "user"
+        blcontrol.beamline.lims.loginType.lower() == "user"
         and "Commissioning" in proposal_info["Proposal"]["title"]
     ):
-        if hasattr(blcontrol.session, "set_in_commissioning"):
-            blcontrol.session.set_in_commissioning(proposal_info)
+        if hasattr(blcontrol.beamline.session, "set_in_commissioning"):
+            blcontrol.beamline.session.set_in_commissioning(proposal_info)
             logging.getLogger("MX3.HWR").info("[LIMS] Commissioning proposal flag set.")
 
     if proposal_info:
-        blcontrol.session.proposal_code = proposal_info.get("Proposal").get("code", "")
-        blcontrol.session.proposal_number = proposal_info.get("Proposal").get(
+        blcontrol.beamline.session.proposal_code = proposal_info.get("Proposal").get("code", "")
+        blcontrol.beamline.session.proposal_number = proposal_info.get("Proposal").get(
             "number", ""
         )
-        blcontrol.session.session_id = proposal_info.get("Session")[0].get("sessionId")
+        blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get("sessionId")
 
         session["proposal"] = proposal_info
 
-        if hasattr(blcontrol.session, "prepare_directories"):
+        if hasattr(blcontrol.beamline.session, "prepare_directories"):
             try:
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Creating data directories for proposal %s" % proposal
                 )
-                blcontrol.session.prepare_directories(proposal_info)
+                blcontrol.beamline.session.prepare_directories(proposal_info)
             except BaseException:
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]
                 )
 
         # Get all the files in the root data dir for this user
-        root_path = blcontrol.session.get_base_image_directory()
+        root_path = blcontrol.beamline.session.get_base_image_directory()
 
         if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
-            ftype = blcontrol.beamline.detector_hwobj.getProperty("file_suffix")
+            ftype = blcontrol.beamline.detector.getProperty("file_suffix")
             mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
 
         logging.getLogger("user_log").info("[LIMS] Proposal selected.")
@@ -372,7 +372,7 @@ def get_default_prefix(sample_data, generic_name):
     else:
         sample = sample_data
 
-    return blcontrol.session.get_default_prefix(sample, generic_name)
+    return blcontrol.beamline.session.get_default_prefix(sample, generic_name)
 
 
 def get_default_subdir(sample_data):
@@ -394,16 +394,16 @@ def get_default_subdir(sample_data):
 
 
 def get_dc_link(col_id):
-    link = blcontrol.rest_lims.dc_link(col_id)
+    link = blcontrol.beamline.lims.lims_rest.dc_link(col_id)
 
     if not link:
-        link = blcontrol.db_connection.dc_link(col_id)
+        link = blcontrol.beamline.lims.dc_link(col_id)
 
     return link
 
 
 def get_dc_thumbnail(image_id):
-    fname, data = blcontrol.rest_lims.get_dc_thumbnail(image_id)
+    fname, data = blcontrol.beamline.lims.lims_rest.get_dc_thumbnail(image_id)
     data = io.StringIO(data)
     data.seek(0)
 
@@ -411,7 +411,7 @@ def get_dc_thumbnail(image_id):
 
 
 def get_dc_image(image_id):
-    fname, data = blcontrol.rest_lims.get_dc_image(image_id)
+    fname, data = blcontrol.beamline.lims.lims_rest.get_dc_image(image_id)
     data = io.StringIO(data)
     data.seek(0)
 
@@ -419,7 +419,7 @@ def get_dc_image(image_id):
 
 
 def get_quality_indicator_plot(dc_id):
-    data = blcontrol.rest_lims.get_quality_indicator_plot(dc_id)
+    data = blcontrol.beamline.lims.lims_rest.get_quality_indicator_plot(dc_id)
     data = io.StringIO(data)
     data.seek(0)
 
@@ -429,14 +429,14 @@ def get_quality_indicator_plot(dc_id):
 def synch_with_lims(proposal_id):
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
-    lims_samples = blcontrol.db_connection.get_samples(proposal_id, None)
+    lims_samples = blcontrol.beamline.lims.get_samples(proposal_id, None)
 
     samples_info_list = lims_samples
     mxcube.LIMS_SAMPLE_DATA = {}
 
     for sample_info in samples_info_list:
         sample_info["limsID"] = sample_info.pop("sampleId")
-        sample_info["limsLink"] = blcontrol.rest_lims.sample_link()
+        sample_info["limsLink"] = blcontrol.beamline.lims.lims_rest.sample_link()
         sample_info["defaultPrefix"] = get_default_prefix(sample_info, False)
         sample_info["defaultSubDir"] = get_default_subdir(sample_info)
 
@@ -445,7 +445,7 @@ def synch_with_lims(proposal_id):
         except (TypeError, ValueError, KeyError):
             continue
         else:
-            if blcontrol.sample_changer.__class__.__TYPE__ in [
+            if blcontrol.beamline.sample_changer.__class__.__TYPE__ in [
                 "HCD",
                 "FlexHCD",
                 "RoboDiff",

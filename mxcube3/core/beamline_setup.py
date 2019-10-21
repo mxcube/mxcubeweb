@@ -25,6 +25,8 @@ from .statedefs import (
     BEAMSTOP_STATE,
 )
 
+from HardwareRepository import HardwareRepository as HWR
+
 BEAMLINE_SETUP = None
 
 # Singleton like interface is needed to keep the same referance to the
@@ -54,7 +56,7 @@ class _BeamlineSetupMediator(object):
         self._bl = beamline_setup
         self._ho_dict = {}
 
-        workflow = self.getObjectByRole("workflow")
+        workflow = self._bl.workflow
 
         if workflow:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
@@ -62,58 +64,63 @@ class _BeamlineSetupMediator(object):
     def wf_parameters_needed(self, params):
         socketio.emit("workflowParametersDialog", params, namespace="/hwr")
 
-    def getObjectByRole(self, name):
+    def get_object(self, name):
         try:
-            if name == "dtox":
-                # Detector distance retrieved through resolution
-                ho = self._bl.getObjectByRole("resolution")
+            if name == "energy":
+                return self._ho_dict.setdefault(
+                    name, EnergyHOMediator(self._bl.energy, "energy")
+                )
             elif name == "wavelength":
-                # Wavelength rerieved trhough energy
-                ho = self._bl.getObjectByRole("energy")
+                return self._ho_dict.setdefault(
+                    name, WavelengthHOMediator(self._bl.energy, "wavelength")
+                )
+            elif name == "resolution":
+                return self._ho_dict.setdefault(
+                    name, ResolutionHOMediator(self._bl.resolution, "resolution")
+                )
+            elif name == "transmission":
+                return self._ho_dict.setdefault(
+                    name, TransmissionHOMediator(self._bl.transmission, "transmission")
+                )
+            elif name == "fast_shutter":
+                return self._ho_dict.setdefault(
+                    name, DuoStateHOMediator(self._bl.fast_shutter, "fast_shutter")
+                )
+            elif name == "safety_shutter":
+                return self._ho_dict.setdefault(
+                    name, DuoStateHOMediator(self._bl.safety_shutter, "safety_shutter")
+                )
+            elif name == "beamstop":
+                return self._ho_dict.setdefault(
+                    name, DuoStateHOMediator(self._bl.diffractometer.beamstop, "beamstop")
+                )
+            elif name == "capillary":
+                return self._ho_dict.setdefault(
+                    name, DuoStateHOMediator(self._bl.diffractometer.capillary, "capillary")
+                )
+            elif name == "detector_distance":
+                d = self._bl.detector.distance
+                return self._ho_dict.setdefault(
+                    name, DetectorDistanceHOMediator(d, "detector_distance")
+                )
+            elif name == "machine_info":
+                return self._ho_dict.setdefault(
+                    name, MachineInfoHOMediator(self._bl.machine_info, "machine_info")
+                )
+            elif name == "flux":
+                return self._ho_dict.setdefault(
+                    name, PhotonFluxHOMediator(self._bl.flux, "flux")
+                )
+            elif name == "cryo":
+                return self._ho_dict.setdefault(
+                    name, CryoHOMediator(self._bl.diffractometer.cryostream, "cryo")
+                )
             else:
-                ho = self._bl.getObjectByRole(name.lower())
+                msg = "Tried to retreive unhandled role %s" % name.lower()
+                logging.getLogger("MX3.HWR").exception(msg)
         except Exception:
             msg = "Failed to get object with role: %s" % name
             logging.getLogger("MX3.HWR").exception(msg)
-
-        if name == "energy":
-            return self._ho_dict.setdefault(name, EnergyHOMediator(ho, "energy"))
-        elif name == "wavelength":
-            return self._ho_dict.setdefault(
-                name, WavelengthHOMediator(ho, "wavelength")
-            )
-        elif name == "resolution":
-            return self._ho_dict.setdefault(
-                name, ResolutionHOMediator(ho, "resolution")
-            )
-        elif name == "transmission":
-            return self._ho_dict.setdefault(
-                name, TransmissionHOMediator(ho, "transmission")
-            )
-        elif name == "fast_shutter":
-            return self._ho_dict.setdefault(
-                name, DuoStateHOMediator(ho, "fast_shutter")
-            )
-        elif name == "safety_shutter":
-            return self._ho_dict.setdefault(
-                name, DuoStateHOMediator(ho, "safety_shutter")
-            )
-        elif name == "beamstop":
-            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "beamstop"))
-        elif name == "capillary":
-            return self._ho_dict.setdefault(name, DuoStateHOMediator(ho, "capillary"))
-        elif name == "dtox":
-            return self._ho_dict.setdefault(
-                name, DetectorDistanceHOMediator(ho, "detdist")
-            )
-        elif name == "mach_info":
-            return self._ho_dict.setdefault(name, MachineInfoHOMediator(ho, "machinfo"))
-        elif name == "flux":
-            return self._ho_dict.setdefault(name, PhotonFluxHOMediator(ho, "flux"))
-        elif name == "cryo":
-            return self._ho_dict.setdefault(name, CryoHOMediator(ho, "cryo"))
-        else:
-            return ho
 
     def dict_repr(self):
         """
@@ -122,73 +129,74 @@ class _BeamlineSetupMediator(object):
         attributes = {}
 
         try:
-            energy = self.getObjectByRole("energy")
+            energy = self.get_object("energy")
             attributes.update({"energy": energy.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get energy info")
 
         try:
-            wavelength = self.getObjectByRole("wavelength")
+            wavelength = self.get_object("wavelength")
             attributes.update({"wavelength": wavelength.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get energy info")
+
         try:
-            transmission = self.getObjectByRole("transmission")
+            transmission = self.get_object("transmission")
             attributes.update({"transmission": transmission.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get transmission info")
 
         try:
-            resolution = self.getObjectByRole("resolution")
+            resolution = self.get_object("resolution")
             attributes.update({"resolution": resolution.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get resolution info")
 
         try:
-            fast_shutter = self.getObjectByRole("fast_shutter")
+            fast_shutter = self.get_object("fast_shutter")
             attributes.update({"fast_shutter": fast_shutter.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get fast_shutter info")
 
         try:
-            safety_shutter = self.getObjectByRole("safety_shutter")
+            safety_shutter = self.get_object("safety_shutter")
             attributes.update({"safety_shutter": safety_shutter.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get safety_shutter info")
 
         try:
-            beamstop = self.getObjectByRole("beamstop")
+            beamstop = self.get_object("beamstop")
             attributes.update({"beamstop": beamstop.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get beamstop info")
 
         try:
-            capillary = self.getObjectByRole("capillary")
+            capillary = self.get_object("capillary")
             attributes.update({"capillary": capillary.dict_repr()})
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get capillary info")
 
         try:
-            detdist = self.getObjectByRole("dtox")
-            attributes.update({"detdist": detdist.dict_repr()})
+            detdist = self.get_object("detector_distance")
+            attributes.update({"detector_distance": detdist.dict_repr()})
         except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get detdist info")
+            logging.getLogger("MX3.HWR").error("Failed to get detector_distance info")
 
         try:
-            machinfo = self.getObjectByRole("mach_info")
-            attributes.update({"machinfo": machinfo.dict_repr()})
+            machinfo =self.get_object("machine_info")
+            attributes.update({"machine_info": machinfo.dict_repr()})
         except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get mach_info info")
+            logging.getLogger("MX3.HWR").error("Failed to get machine_info info")
 
         try:
-            flux = self.getObjectByRole("flux")
+            flux = self.get_object("flux")
             attributes.update({"flux": flux.dict_repr()})
 
         except Exception:
             logging.getLogger("MX3.HWR").error("Failed to get photon flux")
 
         try:
-            cryo = self.getObjectByRole("cryo")
+            cryo = self.get_object("cryo")
             attributes.update({"cryo": cryo.dict_repr()})
 
         except Exception:
@@ -197,10 +205,10 @@ class _BeamlineSetupMediator(object):
         return {"attributes": attributes}
 
     def get_available_methods(self):
-        return self._bl["available_methods"].getProperties()
+        return self._bl.available_methods
 
     def get_available_elements(self):
-        escan = self.getObjectByRole("energyscan")
+        escan = self._bl.energy_scan
         elements = []
 
         if escan:
@@ -762,22 +770,24 @@ class ResolutionHOMediator(HOMediatorBase):
     def get_lookup_limits(self):
         limits = []
 
-        if self._ho.energy.can_move_energy():
-            e_min, e_max = self._ho.energy.get_energy_limits()
+        energy = HWR.beamline.energy
+
+        if energy.can_move_energy():
+            e_min, e_max = energy.get_energy_limits()
 
             x = arange(float(e_min), float(e_max), 0.5)
 
             radius = self._ho.det_radius
-            det_dist = self.dtox
+            det_dist = HWR.beamline.detector.distance
 
             pos_min, pos_max = det_dist.getLimits()
 
-            for energy in x:
+            for e in x:
                 res_min, res_max = (
-                    self._calc_res(radius, energy, pos_min),
-                    self._calc_res(radius, energy, pos_max),
+                    self._calc_res(radius, e, pos_min),
+                    self._calc_res(radius, e, pos_max),
                 )
-                limits.append((energy, res_min, res_max))
+                limits.append((e, res_min, res_max))
         else:
             limits = self.limits()
 
@@ -805,9 +815,8 @@ class ResolutionHOMediator(HOMediatorBase):
 class DetectorDistanceHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
-
-        ho.dtox.connect("positionChanged", self._value_change)
-        ho.dtox.connect("stateChanged", self.state_change)
+        ho.connect("positionChanged", self._value_change)
+        ho.connect("stateChanged", self.state_change)
 
         self._precision = 3
 
@@ -816,12 +825,12 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
-        self._ho.dtox.move(round(float(value), 3))
+        self._ho.move(round(float(value), 3))
         return self.get()
 
     def get(self):
         try:
-            detdist = self._ho.dtox.getPosition()
+            detdist = self._ho.getPosition()
             detdist = round(float(detdist), self._precision)
             detdist = ("{:4.%sf}" % self._precision).format(detdist)
         except (TypeError, AttributeError):
@@ -834,17 +843,17 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         :returns: The detector distance limits.
         """
         try:
-            detdist_limits = self._ho.dtox.getLimits()
+            detdist_limits = self._ho.getLimits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
         return detdist_limits
 
     def stop(self):
-        self._ho.dtox.stop()
+        self._ho.stop()
 
     def state(self):
-        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.dtox.getState(), "READY")
+        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), "READY")
 
 
 class MachineInfoHOMediator(HOMediatorBase):

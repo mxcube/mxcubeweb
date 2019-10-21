@@ -10,7 +10,7 @@ def get_available_workflows():
     workflows = {}
 
     try:
-        for wf in blcontrol.workflow.get_available_workflows():
+        for wf in blcontrol.beamline.workflow.get_available_workflows():
             # Rename name and path to wfname and wfpath in order to avoid name
             # clashes
             wf["wfname"] = wf.pop("name")
@@ -24,7 +24,7 @@ def get_available_workflows():
 
 
 def submit_parameters(params):
-    blcontrol.workflow.set_values_map(params)
+    blcontrol.beamline.workflow.set_values_map(params)
 
 
 def test_workflow_dialog(wf):

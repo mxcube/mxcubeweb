@@ -54,7 +54,7 @@ def queue_abort():
               200 On success
               409 queue could not be aborted
     """
-    blcontrol.queue.queue_hwobj.stop()
+    blcontrol.beamline.queue_manager.stop()
     return Response(status=200)
 
 
@@ -370,7 +370,7 @@ def set_group_folder():
 @server.route("/mxcube/api/v0.1/queue/group_folder", methods=["GET"])
 @server.restrict
 def get_group_folder():
-    resp = jsonify({"path": blcontrol.session.get_group_name()})
+    resp = jsonify({"path": blcontrol.beamline.session.get_group_name()})
     resp.status_code = 200
 
     return resp

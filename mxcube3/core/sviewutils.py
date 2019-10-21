@@ -65,7 +65,7 @@ def centring_remove_current_point():
     global CENTRING_POINT_ID
 
     if CENTRING_POINT_ID:
-        blcontrol.shapes.delete_shape(CENTRING_POINT_ID)
+        blcontrol.beamline.microscope.shapes.delete_shape(CENTRING_POINT_ID)
         signals.send_shapes(update_positions=False)
         CENTRING_POINT_ID = None
 
@@ -74,16 +74,16 @@ def centring_add_current_point(*args):
     from mxcube3.routes import signals
 
     global CENTRING_POINT_ID
-    shape = blcontrol.shapes.get_shape(CENTRING_POINT_ID)
+    shape = blcontrol.beamline.microscope.shapes.get_shape(CENTRING_POINT_ID)
 
     # There is no current centered point shape when the centring is done
     # by software like Workflows, so we add one.
     if not shape:
         try:
             motors = args[1]["motors"]
-            x, y = blcontrol.diffractometer.motor_positions_to_screen(motors)
+            x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motors)
             centring_update_current_point(motors, x, y)
-            shape = blcontrol.shapes.get_shape(CENTRING_POINT_ID)
+            shape = blcontrol.beamline.microscope.shapes.get_shape(CENTRING_POINT_ID)
         except Exception:
             logging.getLogger("MX3.HWR").exception("Centring failed !")
 
@@ -97,12 +97,12 @@ def centring_update_current_point(motor_positions, x, y):
     from mxcube3.routes import signals
 
     global CENTRING_POINT_ID
-    point = blcontrol.shapes.get_shape(CENTRING_POINT_ID)
+    point = blcontrol.beamline.microscope.shapes.get_shape(CENTRING_POINT_ID)
 
     if point:
         point.move_to_mpos([motor_positions], [x, y])
     else:
-        point = blcontrol.shapes.add_shape_from_mpos([motor_positions], (x, y), "P")
+        point = blcontrol.beamline.microscope.shapes.add_shape_from_mpos([motor_positions], (x, y), "P")
         point.state = "TMP"
         point.selected = True
         CENTRING_POINT_ID = point.id
@@ -133,13 +133,13 @@ def wait_for_centring_finishes(*args, **kwargs):
         motor_positions.pop("beam_y", None)
         motor_positions.pop("beam_x", None)
 
-        x, y = blcontrol.diffractometer.motor_positions_to_screen(motor_positions)
+        x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motor_positions)
 
         centring_update_current_point(motor_positions, x, y)
-        blcontrol.diffractometer.emit("stateChanged", (True,))
+        blcontrol.beamline.diffractometer.emit("stateChanged", (True,))
 
         if mxcube.AUTO_MOUNT_SAMPLE:
-            blcontrol.diffractometer.accept_centring()
+            blcontrol.beamline.diffractometer.accept_centring()
 
 
 def init_signals():
@@ -149,7 +149,7 @@ def init_signals():
     """
     from mxcube3.routes import signals
 
-    dm = blcontrol.diffractometer
+    dm = blcontrol.beamline.diffractometer
 
     for motor in utils.get_centring_motors():
 
@@ -179,25 +179,24 @@ def init_signals():
         dm.connect(dm.getObjectByRole(motor), "positionChanged", pos_cb)
         dm.connect(dm.getObjectByRole(motor), "stateChanged", state_cb)
 
-    for motor in ["FrontLight", "BackLight"]:
-
+    for motor_name in ["FrontLight", "BackLight"]:
         def state_cb(state, motor=motor, **kw):
-            movable = utils.get_movable_state_and_position(motor)
-            signals.motor_state_callback(movable[motor], **kw)
-            signals.motor_state_callback(movable[motor + "Switch"], **kw)
+            movable = utils.get_movable_state_and_position(motor_name)
+            signals.motor_state_callback(movable[motor_name], **kw)
+            signals.motor_state_callback(movable[motor_name + "Switch"], **kw)
 
         setattr(dm, "_%s_state_callback" % motor, state_cb)
 
         try:
-            motor_hwobj = dm.getObjectByRole(motor)
-            motor_hwobj.connect(motor_hwobj, "positionChanged", pos_cb)
+            motor = dm.getObjectByRole(motor_name)
+            motor.connect(motor, "positionChanged", pos_cb)
 
-            if hasattr(motor_hwobj, "actuatorIn"):
-                motor_hwobj = dm.getObjectByRole(motor)
-                motor_hwobj.connect(motor_hwobj, "actuatorStateChanged", state_cb)
+            if hasattr(motor, "actuatorIn"):
+                motor = dm.getObjectByRole(motor_name)
+                motor.connect(motor, "actuatorStateChanged", state_cb)
             else:
-                motor_sw_hwobj = dm.getObjectByRole(motor + "Switch")
-                motor_sw_hwobj.connect(motor_sw_hwobj, "actuatorStateChanged", state_cb)
+                motor_sw = dm.getObjectByRole(motor_name + "Switch")
+                motor_sw.connect(motor_sw, "actuatorStateChanged", state_cb)
 
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception(str(ex))
@@ -208,7 +207,7 @@ def init_signals():
     dm.connect("centringAccepted", centring_add_current_point)
 
     global CLICK_LIMIT
-    CLICK_LIMIT = int(blcontrol.beamline.getProperty("click_centring_num_clicks") or 3)
+    CLICK_LIMIT = int(blcontrol.beamline.click_centring_num_clicks or 3)
 
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
@@ -232,36 +231,36 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
         (r, g, b, a) = image.split()
         image = PIL.Image.merge("RGB", (b, g, r))
         image.save(strbuf, "JPEG")
-        img = strbuf.getvalue()
+        img = strbuf.get_value()
 
     SAMPLE_IMAGE = img
 
-    blcontrol.diffractometer.camera_hwobj.new_frame.set()
-    blcontrol.diffractometer.camera_hwobj.new_frame.clear()
+    blcontrol.beamline.microscope.camera.new_frame.set()
+    blcontrol.beamline.microscope.camera.new_frame.clear()
 
 
-def stream_video(camera_hwobj):
+def stream_video(camera):
     """it just send a message to the client so it knows that there is a new
     image. A HO is supplying that image
     """
     global SAMPLE_IMAGE
 
-    blcontrol.diffractometer.camera_hwobj.new_frame = gevent.event.Event()
+    blcontrol.beamline.microscope.camera.new_frame = gevent.event.Event()
 
     try:
-        blcontrol.diffractometer.camera_hwobj.disconnect(
+        blcontrol.beamline.microscope.camera.disconnect(
             "imageReceived", new_sample_video_frame_received
         )
     except KeyError:
         pass
 
-    blcontrol.diffractometer.camera_hwobj.connect(
+    blcontrol.beamline.microscope.camera.connect(
         "imageReceived", new_sample_video_frame_received
     )
 
     while True:
         try:
-            camera_hwobj.new_frame.wait()
+            camera.new_frame.wait()
             yield "--!>\nContent-type: image/jpeg\n\n" + SAMPLE_IMAGE
         except Exception:
             pass
@@ -273,11 +272,11 @@ def set_image_size(width, height):
 
 
 def move_to_centred_position(point_id):
-    point = blcontrol.shapes.get_shape(point_id)
+    point = blcontrol.beamline.microscope.shapes.get_shape(point_id)
 
     if point:
         motor_positions = point.get_centred_position().as_dict()
-        blcontrol.diffractometer.move_to_motors_positions(motor_positions)
+        blcontrol.beamline.diffractometer.move_to_motors_positions(motor_positions)
 
     return point
 
@@ -285,7 +284,7 @@ def move_to_centred_position(point_id):
 def get_shapes():
     shape_dict = {}
 
-    for shape in blcontrol.shapes.get_shapes():
+    for shape in blcontrol.beamline.microscope.shapes.get_shapes():
         s = shape.as_dict()
         shape_dict.update({shape.id: s})
 
@@ -293,7 +292,7 @@ def get_shapes():
 
 
 def get_shape_width_sid(sid):
-    shape = blcontrol.shapes.get_shape(sid)
+    shape = blcontrol.beamline.microscope.shapes.get_shape(sid)
 
     if shape is not None:
         shape = shape.as_dict()
@@ -305,7 +304,7 @@ def get_shape_width_sid(sid):
 def shape_add_cell_result(sid, cell, result):
     from mxcube3.routes import signals
 
-    shape = blcontrol.shapes.get_shape(sid)
+    shape = blcontrol.beamline.microscope.shapes.get_shape(sid)
     shape.set_cell_result(cell, result)
     signals.grid_result_available(to_camel(shape.as_dict()))
 
@@ -318,7 +317,7 @@ def update_shapes(shapes):
         pos = []
 
         # Get the shape if already exists
-        shape = blcontrol.shapes.get_shape(shape_data.get("id", -1))
+        shape = blcontrol.beamline.microscope.shapes.get_shape(shape_data.get("id", -1))
 
         # If shape does not exist add it
         if not shape:
@@ -329,7 +328,7 @@ def update_shapes(shapes):
 
             beam_info_dict = beam_info_dict = beamlineutils.get_beam_info()
 
-            shape_data["pixels_per_mm"] = blcontrol.diffractometer.get_pixels_per_mm()
+            shape_data["pixels_per_mm"] = blcontrol.beamline.diffractometer.get_pixels_per_mm()
             shape_data["beam_pos"] = (
                 beam_info_dict.get("position")[0],
                 beam_info_dict.get("position")[1],
@@ -340,7 +339,7 @@ def update_shapes(shapes):
             # Shape does not have any refs, create a new Centered position
             if not refs:
                 x, y = shape_data["screen_coord"]
-                mpos = blcontrol.diffractometer.get_centred_point_from_coord(
+                mpos = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
                     x, y, return_by_names=True
                 )
                 pos.append(mpos)
@@ -350,15 +349,15 @@ def update_shapes(shapes):
                     # coords for the center of the grid
                     x_c = x + (shape_data["num_cols"] / 2.0) * shape_data["cell_width"]
                     y_c = y + (shape_data["num_rows"] / 2.0) * shape_data["cell_height"]
-                    center_positions = blcontrol.diffractometer.get_centred_point_from_coord(
+                    center_positions = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
                         x_c, y_c, return_by_names=True
                     )
                     pos.append(center_positions)
 
-                shape = blcontrol.shapes.add_shape_from_mpos(pos, (x, y), t)
+                shape = blcontrol.beamline.microscope.shapes.add_shape_from_mpos(pos, (x, y), t)
 
             else:
-                shape = blcontrol.shapes.add_shape_from_refs(refs, t)
+                shape = blcontrol.beamline.microscope.shapes.add_shape_from_refs(refs, t)
 
         # shape will be none if creation failed, so we check if shape exists
         # before setting additional parameters
@@ -372,19 +371,19 @@ def update_shapes(shapes):
 
 def rotate_to(sid):
     if sid:
-        shape = blcontrol.shapes.get_shape(sid)
+        shape = blcontrol.beamline.microscope.shapes.get_shape(sid)
         cp = shape.get_centred_position()
         phi_value = round(float(cp.as_dict().get("phi", None)), 3)
 
         if phi_value:
             try:
-                blcontrol.diffractometer.centringPhi.move(phi_value)
+                blcontrol.beamline.diffractometer.centringPhi.move(phi_value)
             except Exception:
                 raise
 
 
 def move_zoom_motor(pos):
-    zoom_motor = blcontrol.diffractometer.getObjectByRole("zoom")
+    zoom_motor = blcontrol.beamline.diffractometer.getObjectByRole("zoom")
 
     if zoom_motor.getState() != 2:
         return (
@@ -398,66 +397,66 @@ def move_zoom_motor(pos):
 
     zoom_motor.moveToPosition(zoom_levels[int(pos)])
 
-    scales = blcontrol.diffractometer.get_pixels_per_mm()
+    scales = blcontrol.beamline.diffractometer.get_pixels_per_mm()
 
     return {"pixelsPerMm": [scales[0], scales[1]]}
 
 
 def back_light_on():
-    motor_hwobj = blcontrol.diffractometer.getObjectByRole("BackLight")
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
 
-    if hasattr(motor_hwobj, "actuatorIn"):
-        motor_hwobj.actuatorIn()
+    if hasattr(motor, "actuatorIn"):
+        motor.actuatorIn()
     else:
-        motor_hwobj = blcontrol.diffractometer.getObjectByRole("BackLightSwitch")
-        motor_hwobj.actuatorIn()
+        motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+        motor.actuatorIn()
 
 
 def back_light_off():
-    motor_hwobj = blcontrol.diffractometer.getObjectByRole("BackLight")
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
 
-    if hasattr(motor_hwobj, "actuatorOut"):
-        motor_hwobj.actuatorOut()
+    if hasattr(motor, "actuatorOut"):
+        motor.actuatorOut()
     else:
-        motor_hwobj = blcontrol.diffractometer.getObjectByRole("BackLightSwitch")
-        motor_hwobj.actuatorOut()
+        motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+        motor.actuatorOut()
 
 
 def front_light_on():
-    motor_hwobj = blcontrol.diffractometer.getObjectByRole("FrontLight")
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLight")
 
-    if hasattr(motor_hwobj, "actuatorIn"):
-        motor_hwobj.actuatorIn()
+    if hasattr(motor, "actuatorIn"):
+        motor.actuatorIn()
     else:
-        motor_hwobj = blcontrol.diffractometer.getObjectByRole("FrontLightSwitch")
-        motor_hwobj.actuatorIn()
+        motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+        motor.actuatorIn()
 
 
 def front_light_off():
-    motor_hwobj = blcontrol.diffractometer.getObjectByRole("FrontLight")
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLight")
 
-    if hasattr(motor_hwobj, "actuatorOut"):
-        motor_hwobj.actuatorOut(wait=False)
+    if hasattr(motor, "actuatorOut"):
+        motor.actuatorOut(wait=False)
     else:
-        motor_hwobj = blcontrol.diffractometer.getObjectByRole("FrontLightSwitch")
-        motor_hwobj.actuatorOut(wait=False)
+        motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+        motor.actuatorOut(wait=False)
 
 
 def move_motor(motid, newpos):
-    motor_hwobj = blcontrol.diffractometer.getObjectByRole(motid.lower())
+    motor = blcontrol.beamline.diffractometer.getObjectByRole(motid.lower())
 
     if newpos == "stop":
-        motor_hwobj.stop()
+        motor.stop()
         return True
     else:
-        if motor_hwobj.getState() != MotorStates.READY:
+        if motor.getState() != MotorStates.READY:
             raise Exception(motid + " already moving")
 
-        limits = motor_hwobj.getLimits()
+        limits = motor.getLimits()
         if not limits[0] <= float(newpos) <= limits[1]:
             raise Exception(motid + " position out of range, " + str(limits))
 
-        motor_hwobj.move(float(newpos))
+        motor.move(float(newpos))
 
         return True
 
@@ -492,7 +491,7 @@ def start_auto_centring():
     """
     msg = "[Centring] Auto centring method requested"
     logging.getLogger("MX3.HWR").info(msg)
-    blcontrol.diffractometer.start_automatic_centring()
+    blcontrol.beamline.diffractometer.start_automatic_centring()
 
 
 def start_manual_centring():
@@ -503,36 +502,36 @@ def start_manual_centring():
     """
     logging.getLogger("MX3.HWR").info("[Centring] 3click method requested")
 
-    if blcontrol.diffractometer.current_centring_procedure:
-        blcontrol.diffractometer.cancel_centring_method()
+    if blcontrol.beamline.diffractometer.current_centring_procedure:
+        blcontrol.beamline.diffractometer.cancel_centring_method()
 
-    blcontrol.diffractometer.start_manual_centring()
+    blcontrol.beamline.diffractometer.start_manual_centring()
     centring_reset_click_count()
     return {"clicksLeft": centring_clicks_left()}
 
 
 def abort_centring():
     logging.getLogger("MX3.HWR").info("[Centring] Abort method requested")
-    blcontrol.diffractometer.cancel_centring_method()
+    blcontrol.beamline.diffractometer.cancel_centring_method()
     centring_remove_current_point()
 
 
 def centring_handle_click(x, y):
-    if blcontrol.diffractometer.current_centring_procedure:
+    if blcontrol.beamline.diffractometer.current_centring_procedure:
         logging.getLogger("MX3.HWR").info("A click requested, x: %s, y: %s" % (x, y))
-        blcontrol.diffractometer.imageClicked(x, y, x, y)
+        blcontrol.beamline.diffractometer.imageClicked(x, y, x, y)
         centring_click()
     else:
         if not centring_clicks_left():
             centring_reset_click_count()
-            blcontrol.diffractometer.cancel_centring_method()
-            blcontrol.diffractometer.start_manual_centring()
+            blcontrol.beamline.diffractometer.cancel_centring_method()
+            blcontrol.beamline.diffractometer.start_manual_centring()
 
     return {"clicksLeft": centring_clicks_left()}
 
 
 def reject_centring():
-    blcontrol.diffractometer.reject_centring()
+    blcontrol.beamline.diffractometer.reject_centring()
     centring_remove_current_point()
 
 
@@ -540,12 +539,12 @@ def move_to_beam(x, y):
     msg = "Moving to beam, A point submitted, x: %s, y: %s" % (x, y)
     logging.getLogger("MX3.HWR").info(msg)
 
-    if getattr(blcontrol.diffractometer, "move_to_beam") is None:
+    if getattr(blcontrol.beamline.diffractometer, "move_to_beam") is None:
         # v > 2.2, or perhaps start_move_to_beam?
-        blcontrol.diffractometer.move_to_beam(x, y)
+        blcontrol.beamline.diffractometer.move_to_beam(x, y)
     else:
         # v <= 2.1
-        blcontrol.diffractometer.move_to_beam(x, y)
+        blcontrol.beamline.diffractometer.move_to_beam(x, y)
 
 
 def set_centring_method(method):

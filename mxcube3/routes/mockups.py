@@ -69,7 +69,7 @@ def create_diff_plan(sid):
     qutils.set_dc_params(dc_model, dc_entry, task, sample_model)
     pt = dc_model.acquisitions[0].path_template
 
-    if blcontrol.queue.check_for_path_collisions(pt):
+    if blcontrol.beamline.queue_model.check_for_path_collisions(pt):
         msg = "[QUEUE] data collection could not be added to sample: "
         msg += "path collision"
         raise Exception(msg)
@@ -80,14 +80,14 @@ def create_diff_plan(sid):
     char, char_entry = qutils.get_entry(3)
 
     char.diffraction_plan.append([dc_model])
-    blcontrol.queue.emit("diff_plan_available", (char, [dc_model]))
+    blcontrol.beamline.queue_model.emit("diff_plan_available", (char, [dc_model]))
 
     return Response(status=200)
 
 
 @server.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=["GET"])
 def shape_mock_result(sid):
-    shape = blcontrol.shapes.get_shape(sid)
+    shape = blcontrol.beamline.microscope.camera.get_shape(sid)
     hm = {}
     cm = {}
 
@@ -118,7 +118,7 @@ def shape_mock_result(sid):
 
     res = {"heatmap": hm, "crystalmap": cm}
 
-    blcontrol.shapes.set_grid_data(sid, res)
+    blcontrol.beamline.microscope.camera.set_grid_data(sid, res)
     signals.grid_result_available(to_camel(shape.as_dict()))
 
     return Response(status=200)

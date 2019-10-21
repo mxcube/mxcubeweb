@@ -20,41 +20,15 @@ import QueueManager
 # The HardwareRepository object
 HWR = None
 
-
 # Below, all the HardwareObjects made available through this module,
 # Initialized by the init function
 
 # BeamlineSetup
 beamline = None
 # XMLRPCServer
-xml_rpc_server = None
-# BeamCmds
 actions = None
 # Plotting
 plotting = None
-# Session
-session = None
-# Object derived from AbstractCollect or AbstractMultiCollect
-collect = None
-# Workflow EdnaWorkflow
-workflow = None
-# Shapes
-shapes = None
-# Object derived from GenericDiffractometer or MiniDiff
-diffractometer = None
-# ISPYBClient2
-db_connection = None
-# Object derived from GenericSampleChanger
-sample_changer = None
-# FlexHCDMaintenance or CatsMaint
-sc_maintenance = None
-# ISPYBRestClient
-rest_lims = None
-
-# Contains a pickled version of an empty queue, used for re-initialization
-empty_queue = None
-# Current QueueManager object
-qm = None
 
 
 def get_hwo(obj, name):
@@ -130,39 +104,20 @@ def init(hwr, hwdir):
     global HWR
 
     try:
-        _hwr = hwr.getHardwareRepository(path.abspath(path.expanduser(hwdir)))
+        hwr.init_hardware_repository(path.abspath(path.expanduser(hwdir)))
+        _hwr = hwr.getHardwareRepository()
         _hwr.connect()
         HWR = _hwr
     except Exception:
-        pass
-
+        logging.getLogger("HWR").exception("")
     try:
-        global beamline, xml_rpc_server, actions, plotting, session
-        global collect, workflow, shapes, diffractometer, db_connection
-        global sample_changer, sc_maintenance, rest_lims, empty_queue
-        global qm, empty_queue
-
-        bl = get_hwo(_hwr, '/beamline-setup')
-        xml_rpc_server = get_hwo(_hwr, 'xml-rpc-server')
-        actions = get_hwo(_hwr, '/beamcmds')
-        plotting = get_hwo(_hwr, '/plotting')
-        empty_queue = pickle.dumps(get_hwo(_hwr, '/queue-model'))
-
-        session = get_hwo(bl, "session")
-        collect = get_hwo(bl, "collect")
-        workflow = get_hwo(bl, "workflow")
-        shapes = get_hwo(bl, "shape_history")
-        diffractometer = get_hwo(bl, "diffractometer")
-        db_connection = get_hwo(bl, "lims_client")
-        sample_changer = get_hwo(bl, "sample_changer")
-        sc_maintenance = get_hwo(bl, "sample_changer_maintenance")
-        rest_lims = get_hwo(bl, "lims_rest_client")
-        beamline = bl
+        global beamline, actions, plotting
+        beamline = hwr.beamline
 
         qm = QueueManager.QueueManager('MXCuBE3')
 
         from mxcube3.core import qutils
-        qutils.new_queue()
+        qutils.init_signals(hwr.beamline.queue_model)
 
     except Exception:
         msg = "Could not initialize one or several hardware objects, "

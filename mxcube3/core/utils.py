@@ -64,12 +64,12 @@ def get_light_state_and_intensity():
     ret = dict()
 
     for light in ("BackLight", "FrontLight"):
-        hwobj = blcontrol.diffractometer.getObjectByRole(light)
+        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(light)
 
         if hasattr(hwobj, "getActuatorState"):
             switch_state = 1 if hwobj.getActuatorState() == "in" else 0
         else:
-            hwobj_switch = blcontrol.diffractometer.getObjectByRole(light + "Switch")
+            hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(light + "Switch")
             switch_state = 1 if hwobj_switch.getActuatorState() == "in" else 0
 
         ret.update(
@@ -98,7 +98,7 @@ def get_light_limits():
     for light in ("BackLight", "FrontLight"):
         item_role = light.lower()
 
-        hwobj = blcontrol.diffractometer.getObjectByRole(item_role)
+        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_role)
 
         ret.update({light: {"limits": hwobj.getLimits()}})
 
@@ -113,7 +113,7 @@ def get_movable_state_and_position(item_name):
             # matter
             return get_light_state_and_intensity()
 
-        hwobj = blcontrol.diffractometer.getObjectByRole(item_name)
+        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_name)
 
         if hwobj is None:
             msg = (
@@ -156,7 +156,7 @@ def get_movable_limits(item_name):
             # matter
             return get_light_limits()
 
-        hwobj = blcontrol.diffractometer.getObjectByRole(item_role)
+        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_role)
 
         if hwobj is None:
             logging.getLogger("MX3.HWR").error(
@@ -180,7 +180,7 @@ def get_centring_motors():
     global _centring_motors_memo
 
     if not _centring_motors_memo:
-        _centring_motors_memo = list(blcontrol.diffractometer.getPositions().keys())
+        _centring_motors_memo = list(blcontrol.beamline.diffractometer.get_positions().keys())
 
         # Adding the two pseudo motors for sample alignment in the microscope
         # view
@@ -244,7 +244,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
     if snapshots is None:
         # called via AbstractCollect
         dc_params = self.current_dc_parameters
-        diffractometer = self.diffractometer_hwobj
+        diffractometer = self.diffractometer
         move_omega_relative = diffractometer.move_omega_relative
     else:
         # called via AbstractMultiCollect
@@ -313,6 +313,7 @@ def enable_snapshots(collect_object, diffractometer_object):
     collect_object.take_crystal_snapshots = types.MethodType(
         take_snapshots, collect_object
     )
+
     diffractometer_object.save_snapshot = types.MethodType(
         save_snapshot, diffractometer_object
     )
@@ -350,7 +351,7 @@ def send_mail(_from, to, subject, content):
 
 
 def send_feedback(sender_data):
-    bl_name = blcontrol.session.beamline_name
+    bl_name = blcontrol.beamline.session.beamline_name
     local_user = sender_data.get("LOGGED_IN_USER", "")
 
     if not bl_name:
@@ -365,17 +366,17 @@ def send_feedback(sender_data):
         except (KeyError):
             local_user = "unknown_user"
 
-    _from = blcontrol.session.getProperty("from_email", "")
+    _from = blcontrol.beamline.session.getProperty("from_email", "")
 
     if not _from:
         _from = "%s@%s" % (
             local_user,
-            blcontrol.session.getProperty("email_extension", ""),
+            blcontrol.beamline.session.getProperty("email_extension", ""),
         )
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
-    to = blcontrol.session.getProperty("feedback_email", "") + ",%s" % _sender
+    to = blcontrol.beamline.session.getProperty("feedback_email", "") + ",%s" % _sender
     subject = "[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)
     content = sender_data.get("content", "")
 

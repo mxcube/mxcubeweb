@@ -99,11 +99,11 @@ def toggle_operator(new_op_sid, message):
     observers = loginutils.get_observers()
 
     # Append the new data path so that it can be updated on the client
-    new_op["rootPath"] = blcontrol.session.get_base_image_directory()
+    new_op["rootPath"] = blcontrol.beamline.session.get_base_image_directory()
 
     # Current op might have logged out, while this is happening
     if current_op:
-        current_op["rootPath"] = blcontrol.session.get_base_image_directory()
+        current_op["rootPath"] = blcontrol.beamline.session.get_base_image_directory()
         current_op["message"] = message
         socketio.emit(
             "setObserver", current_op, room=current_op["socketio_sid"], namespace="/hwr"
@@ -225,7 +225,7 @@ def connect():
         loginutils.emit_pending_events()
 
         if (
-            not blcontrol.queue.queue_hwobj.is_executing()
+            not blcontrol.beamline.queue_manager.is_executing()
             and not loginutils.DISCONNECT_HANDLED
         ):
             loginutils.DISCONNECT_HANDLED = True
@@ -239,11 +239,11 @@ def connect():
 def disconnect():
     if (
         loginutils.is_operator(session.sid)
-        and blcontrol.queue.queue_hwobj.is_executing()
+        and blcontrol.beamline.queue_manager.is_executing()
     ):
 
         loginutils.DISCONNECT_HANDLED = False
-        blcontrol.queue.queue_hwobj.pause(True)
+        blcontrol.beamline.queue_manager.pause(True)
         logging.getLogger("HWR").info("Client disconnected, pausing queue")
 
 

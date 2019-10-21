@@ -129,7 +129,7 @@ def beamline_get_data_path():
     Retrieve data directory from the session hwobj,
     this is specific for each beamline.
     """
-    data = blcontrol.session.get_base_image_directory()
+    data = blcontrol.beamline.session.get_base_image_directory()
     return jsonify({"path": data})
 
 
