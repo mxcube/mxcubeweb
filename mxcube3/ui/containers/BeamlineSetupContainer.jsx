@@ -266,7 +266,7 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={5} smPush={1}>
               <Col sm={2} className="pull-right">
                 <MachInfo
-                  info={this.props.beamline.attributes.machinfo.value}
+                  info={this.props.beamline.attributes.machine_info.value}
                 />
               </Col>
               {this.createActuatorComponent()}

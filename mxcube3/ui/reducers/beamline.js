@@ -133,9 +133,9 @@ export const INITIAL_STATE = {
       msg: 'UNKNOWN',
       readonly: false
     },
-    machinfo: {
+    machine_info: {
       limits: [],
-      name: 'machinfo',
+      name: 'machine_info',
       value: { current: -1, message: '', fillmode: '' },
       state: 'STATE.IDLE',
       msg: 'UNKNOWN',
