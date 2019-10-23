@@ -103,9 +103,11 @@ export default class SampleImage extends React.Component {
       this.initJSMpeg();
     }
 
-    if (this.props.width !== prevProps.width) {
+    if (this.props.width !== prevProps.width ||
+        this.props.videoHash !== prevProps.videoHash) {
       this.initJSMpeg();
     }
+
     this.renderSampleView(this.props);
   }
 
@@ -664,7 +666,7 @@ export default class SampleImage extends React.Component {
   initJSMpeg() {
     const canvas = document.getElementById('sample-img');
     /* eslint-disable no-undef */
-    let source = !VIDEO_STREAM_URL ? `ws://${document.location.hostname}:4042/` : VIDEO_STREAM_URL.slice(1, -1);
+    let source = !VIDEO_STREAM_URL ? `ws://${document.location.hostname}:4042/` : VIDEO_STREAM_URL;
     const streamOnLocalHost = VIDEO_STREAM_ON_LOCAL_HOST;
     /* eslint-enable no-undef */
 
@@ -672,6 +674,8 @@ export default class SampleImage extends React.Component {
     if (document.location.hostname === 'localhost' && streamOnLocalHost) {
       source = `ws://${document.location.hostname}:4042/`;
     }
+
+    source = source + this.props.videoHash;
 
     if (this.player) {
       this.player.destroy();

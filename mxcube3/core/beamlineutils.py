@@ -169,6 +169,7 @@ def get_viewport_info():
         "sourceIsScalable": source_is_scalable,
         "scale": scale,
         "videoSizes": video_sizes,
+        "videoHash": streaming.VIDEO_HASH
     }
 
     data.update(beam_info_dict)

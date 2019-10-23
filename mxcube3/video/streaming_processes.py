@@ -4,7 +4,9 @@ import os
 import subprocess
 import sys
 import time
+import uuid
 
+VIDEO_HASH = str(uuid.uuid1())
 
 def monitor(*processes):
     """
@@ -30,7 +32,7 @@ def start(device, scale):
     """
     fpath = os.path.dirname(__file__)
     websocket_relay_js = os.path.join(fpath, "websocket-relay.js")
-    relay = subprocess.Popen(["node", websocket_relay_js, "video",
+    relay = subprocess.Popen(["node", websocket_relay_js, VIDEO_HASH,
                               "4041", "4042"])
 
     # Make sure that the relay is running (socket is open)
@@ -41,15 +43,15 @@ def start(device, scale):
     FNULL = open(os.devnull, 'w')
     ffmpeg = subprocess.Popen(["ffmpeg",
                                "-f", "v4l2",
-                               "-framerate", "15",
+                               "-framerate", "30",
                                "-i", device,                              
                                "-vf", scale,
                                "-f", "mpegts",
                                "-b:v", "6000k",
-                               "-q:v", "3",
+                               "-q:v", "2",
                                "-an",
                                "-vcodec", "mpeg1video",
-                               "http://localhost:4041/video"],
+                               "http://localhost:4041/" + VIDEO_HASH],
                               stdout=FNULL,
                               stderr=subprocess.STDOUT)
 
