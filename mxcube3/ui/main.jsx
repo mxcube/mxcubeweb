@@ -77,7 +77,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { initialized: false };
+    this.state = { initialized: true };
   }
 
   componentWillMount() {

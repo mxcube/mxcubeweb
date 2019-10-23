@@ -9,6 +9,7 @@ import logging
 
 from collections import deque
 from flask import session, request, Response
+import flask_socketio
 
 from mxcube3 import mxcube
 
@@ -124,6 +125,15 @@ def valid_login_only(f):
         else:
             return f(*args, **kwargs)
 
+    return wrapped
+
+def ws_valid_login_only(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not get_user_by_sid(session.sid):
+            flask_socketio.disconnect()
+        else:
+            return f(*args, **kwargs)
     return wrapped
 
 
@@ -300,7 +310,7 @@ def signout():
     # If operator logs out clear queue and sample list
     if is_operator(session.sid):
         qutils.save_queue(session)
-        blcontrol.beamline.queue_model = qutils.clear_queue()
+        qutils.clear_queue()
         blcontrol.beamline.microscope.shapes.clear_all()
         limsutils.init_sample_list()
 
@@ -317,7 +327,7 @@ def signout():
 
     remove_user(session.sid)
     session.clear()
-
+    
 
 def login_info(login_info):
     login_info = login_info["loginRes"] if login_info is not None else {}

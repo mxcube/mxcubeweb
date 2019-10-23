@@ -213,6 +213,7 @@ def get_all_mesages():
 
 
 @socketio.on("connect", namespace="/hwr")
+@server.ws_restrict
 def connect():
     user = loginutils.get_user_by_sid(session.sid)
 
@@ -236,6 +237,7 @@ def connect():
 
 
 @socketio.on("disconnect", namespace="/hwr")
+@server.ws_restrict
 def disconnect():
     if (
         loginutils.is_operator(session.sid)
@@ -248,6 +250,7 @@ def disconnect():
 
 
 @socketio.on("setRaMaster", namespace="/hwr")
+@server.ws_restrict
 def set_master(data):
     loginutils.emit_pending_events()
 
@@ -255,6 +258,7 @@ def set_master(data):
 
 
 @socketio.on("setRaObserver", namespace="/hwr")
+@server.ws_restrict
 def set_observer(data):
     name = data.get("name", "")
     observers = loginutils.get_observers()
