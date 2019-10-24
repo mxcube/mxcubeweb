@@ -1,10 +1,10 @@
-gevent
-flask
-flask-socketio
-gevent-websocket
-Flask-Session
-python-socketio
-louie-latest
+gevent==1.2.2
+flask==1.0.2
+flask-socketio==3.1.0
+gevent-websocket==0.10.1
+Flask-Session==0.3.1
+python-socketio==2.1.1
+louie
 redis
 scipy
 mock
@@ -12,7 +12,7 @@ pbr       # Depdency of mock, needs to be installed manualy (problem with mock p
 funcsigs  # Depdency of mock, needs to be installed manualy (problem with mock package)
 jsonpickle
 pillow
-suds-py3
+suds
 python-ldap
 lxml
 numpy
