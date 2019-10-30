@@ -1,4 +1,6 @@
 name: mxcube
+channels:
+  - tango-controls
 dependencies:
   - python=3.7
   - gevent
