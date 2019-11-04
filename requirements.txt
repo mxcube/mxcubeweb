@@ -21,4 +21,4 @@ v4l2
 scandir
 matplotlib # Dependency of energyscan mockup object
 gipc
-raumel
+ruamel.yaml
