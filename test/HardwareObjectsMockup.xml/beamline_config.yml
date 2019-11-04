@@ -1,0 +1,137 @@
+# The class to initialise, and init parameters
+_initialise_class:
+    class: HardwareRepository.HardwareObjects.Beamline.Beamline
+    # Further key-value pairs here will be passed to the class init
+#    mode: devel
+
+# objects
+#
+# Eventually all objects should use the yaml config system like Beamline,
+# but for now we can leave them as xml
+#
+# NBNB some objects that do not currently have their own config files
+# would need those added (e.g. the centring methods)
+#
+_objects:
+    # The !!o0map and the lines starting with '- ' give you an *orderd* dictionary
+    # And thus a reproducible loading order
+    !!omap
+    # The values are the file paths to the configuration file for the
+    # object, relative to the configuration file path(s)
+    #
+    # NB - the order is *NOT* arbitrary, as signal connnections are set
+    # on one object that require the other to be already loaded.
+    #
+    # Hardware:
+    - session: session.xml
+    - machine_info: machine_info.xml
+    - detector: detector_mockup.xml
+    - flux: flux.xml
+    - transmission: transmission_mockup.xml
+    - energy: energy_mockup.xml
+    - resolution: resolution_mockup.xml
+    - safety_shutter: safshut.xml
+    - fast_shutter: fast_shutter_mockup.xml
+    - beam: beam_info.xml
+    - hutch_interlock: hutchtrigger.xml
+    - sample_changer: sc_mockup.xml
+    - sample_changer_maintenance: sc_maint_mockup.xml
+    - plate_manipulator: plate_manipulator.xml
+    - diffractometer: minidiff_mockup.xml
+    - lims: lims.xml
+    - microscope: microscope.xml
+    - queue_manager: queue.xml
+    - queue_model: queue_model.xml
+
+    # Procedures:
+    - xml_rpc_server: xml_rpc_server.xml
+    - workflow: ednaparams.xml
+    - collect: mxcollect.xml
+    - xrf_spectrum: xrf.xml
+    - energy_scan: energyscan.xml
+#    - gphl_workflow: gphl-workflow.xml
+#    - gphl_connection: gphl-setup.xml
+#    - centring: centring.xml
+    # Analysis:
+    - offline_processing: auto_processing.xml
+    - online_processing: parallel_processing.xml
+    - data_analysis: data_analysis.xml
+    # - beam_realign: # Skipped - optional
+
+# Non-object attributes:
+advanced_methods:
+  - MeshScan
+  - XrayCentering
+
+tunable_wavelength: true
+disable_num_passes: true
+run_processing_parallel: true
+run_number: 1
+click_centring_num_clicks: 3
+
+default_acquisition_parameters:
+    default:
+        # Default values, also used for standard acquisition.
+        # Values not given in other dictionaries are taken from here
+        exp_time: 0.02        # exposure time
+        osc_start: 0.0  # Only used if no current angle can be found
+        osc_range: 0.1
+        num_passes: 1
+        first_image: 1
+        overlap: 0
+        num_images: 1
+        detector_mode: 1 # Remove as not in practice used ?
+        inverse_beam: false
+        take_dark_current: true
+        skip_existing_images: true
+        take_snapshots: true
+        # NB 'compression' not added as apparently never used
+
+    helical:
+        # Defaults for helical scan. Missing values are taken from default
+        number_of_images: 100
+
+    characterisation:
+        # Defaults for chareacterisation. Missing values are taken from default
+        exp_time: 0.05       # exposure time
+        osc_range: 1
+        overlap: -89
+        num_images: 4
+
+    mesh:
+        # Defaults for 'advanced' acquisition. Missing values are taken from default
+        exp_time: 10       # exposure time
+        range: 10
+        num_images: 100
+        cell_counting: zig-zag
+        cell_spacing: vertical, horizontal
+        mesh_center: top-left
+
+acquisition_limit_values:
+    exposure_time:
+        - 0.02
+        - 1000
+    osc_range:
+        - -10000
+        - 10000
+    number_of_images:
+        - 1
+        - 99999
+    kappa:
+        - -5.0
+        - 240.0
+
+available_methods:
+    datacollection: True
+    characterisation: True
+    helical: True
+    xrf_scan: True
+    energy_scan: True
+    mesh_scan: fals
+
+undelators:
+    - type: PPU35C_GAP
+      device_uri: //orion:10000/id/id/30
+
+    - type: PPU35D_GAP
+      device_uri: //orion:10000/id/id/30

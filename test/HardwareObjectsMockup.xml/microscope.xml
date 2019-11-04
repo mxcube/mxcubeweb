@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<object class="Microscope">
+  <object hwrid="/md_camera" role="camera"/>
+  <object hwrid="/shape_history" role="shapes"/>
+  <object hwrid="/udiff_phix" role="focus"/>
+  <object hwrid="/udiff_zoom" role="zoom"/>
+  <object hwrid="/udiff_flight" role="frontlight"/>
+  <object hwrid="/udiff_light" role="backlight"/>
+</object>

@@ -1,0 +1,4 @@
+<object class="QueueModel" role="QueueModel">
+  <object href="/queue" role="queue"/>    
+</object>
+

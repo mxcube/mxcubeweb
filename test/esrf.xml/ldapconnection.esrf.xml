@@ -1,0 +1,4 @@
+<procedure class="LdapLogin">
+  <ldaphost>ldap.esrf.fr</ldaphost>
+  <ldapport>389</ldapport>
+</procedure>

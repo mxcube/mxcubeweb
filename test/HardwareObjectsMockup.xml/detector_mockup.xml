@@ -1,0 +1,13 @@
+<equipment class = "DetectorMockup">
+  <object hwrid="/dtox" role="detector_distance"/>
+  <tempThreshold>33.5</tempThreshold>
+  <humidityThreshold>20.0</humidityThreshold>
+  <tolerance>0.2</tolerance>
+  <type>pilatus</type>
+  <model>6M_F</model>
+  <manufacturer>DECTRIS</manufacturer>
+  <px>0.172</px>
+  <py>0.172</py>
+  <hasShutterless>True</hasShutterless>
+  <file_suffix>cbf</file_suffix>
+</equipment>

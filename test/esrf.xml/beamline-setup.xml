@@ -86,13 +86,12 @@
 
    <!-- Limit values for an acquisition -->
   <acquisition_limit_values>
-    <exposure_time>500</exposure_time>
+    <exposure_time>0.03, 1000</exposure_time>
     <osc_range>720</osc_range>
-    <osc_max>1440</osc_max>
     <number_of_images>10000</number_of_images>
   </acquisition_limit_values>
 
-  <click_centring_num_clicks>3</click_centring_num_clicks>
+  <click_centring_num_clicks>1</click_centring_num_clicks>
 
   <available_methods>
     <datacollection>True</datacollection>
@@ -100,7 +99,7 @@
     <helical>True</helical>
     <xrf_scan>True</xrf_scan>
     <energy_scan>True</energy_scan>
-    <mesh_scan>True</mesh_scan>
+    <mesh_scan>False</mesh_scan>
   </available_methods>
 
  </object>
