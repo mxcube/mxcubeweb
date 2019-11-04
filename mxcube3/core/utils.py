@@ -117,6 +117,7 @@ def get_movable_state_and_position(item_name):
 
         hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_name)
 
+
         if hwobj is None:
             msg = (
                 "[UTILS.GET_MOVABLE_STATE_AND_POSITION] No movable with role '%s'"
@@ -166,7 +167,7 @@ def get_movable_limits(item_name):
             )
             limits = ()
         else:
-            limits = hwobj.getLimits()
+            limits = hwobj.get_limits()
 
             return {item_name: {"limits": limits}}
     except Exception:
