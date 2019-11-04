@@ -9,6 +9,7 @@ import PIL
 import gevent.event
 
 from io import StringIO
+import base64
 
 from mxcube3 import blcontrol
 from mxcube3 import mxcube
@@ -266,7 +267,8 @@ def stream_video(camera):
     while True:
         try:
             camera.new_frame.wait()
-            yield "--!>\nContent-type: image/jpeg\n\n" + SAMPLE_IMAGE
+            yield (b"--frame\r\n"
+                   b"--!>\nContent-type: image/jpeg\n\n" + SAMPLE_IMAGE + b"\r\n")
         except Exception:
             pass
 
