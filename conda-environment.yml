@@ -1,4 +1,4 @@
-name: mxcube3
+name: mxcube
 dependencies:
   - python=3.7
   - gevent
@@ -21,6 +21,8 @@ dependencies:
   - ffmpeg
   - pytango
   - opencv
+  - ruamel.yaml
+  - matplotlib
 
   - pip:
       - Flask-Session
