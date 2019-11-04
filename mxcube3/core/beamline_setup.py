@@ -121,8 +121,8 @@ class _BeamlineSetupMediator(object):
                 msg = "Tried to retreive unhandled role %s" % name.lower()
                 logging.getLogger("MX3.HWR").exception(msg)
         except Exception:
-            msg = "Failed to get object with role: %s" % name
-            logging.getLogger("MX3.HWR").exception(msg)
+            msg = "Could not get object with role: %s" % name
+            logging.getLogger("MX3.HWR").warning(msg)
 
     def dict_repr(self):
         """
