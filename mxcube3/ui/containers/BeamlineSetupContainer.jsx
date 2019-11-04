@@ -171,7 +171,6 @@ class BeamlineSetupContainer extends React.Component {
                       onCancel= { this.onCancelHandler }
                     />)
                   }
-
                 </td>
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
                   Resolution:
@@ -202,13 +201,17 @@ class BeamlineSetupContainer extends React.Component {
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
                   Cryo:
                 </td>
-                <td>
-                  <LabeledValue
-                    name=""
-                    suffix="K"
-                    value={this.props.beamline.attributes.cryo.value}
-                  />
-                </td>
+                  { this.props.beamline.attributes.cryo ?
+                    <td>
+                      <LabeledValue
+                        name=""
+                        suffix="K"
+                        value={this.props.beamline.attributes.cryo.value}
+                      />
+                    </td>
+                    :
+                    null
+                  }
               </tr>
               <tr>
                 <td>
