@@ -9,6 +9,7 @@ import logging
 
 from collections import deque
 from flask import session, request, Response
+import flask_socketio
 
 from mxcube3 import mxcube
 
@@ -88,10 +89,12 @@ def logged_in_users(exclude_inhouse=False):
     users = [user["loginID"] for user in mxcube.USERS.values()]
 
     if exclude_inhouse:
-        if isinstance(blcontrol.session.in_house_users[0], tuple):
-            ih_users = ["%s%s" % (p, c) for (p, c) in blcontrol.session.in_house_users]
+        if isinstance(blcontrol.beamline.session.in_house_users[0], tuple):
+            ih_users = [
+                "%s%s" % (p, c) for (p, c) in blcontrol.beamline.session.in_house_users
+            ]
         else:
-            ih_users = blcontrol.session.in_house_users
+            ih_users = blcontrol.beamline.session.in_house_users
         users = [user for user in users if user not in ih_users]
 
     return users
@@ -106,7 +109,7 @@ def set_operator(sid):
     user = get_user_by_sid(sid)
     user["operator"] = True
 
-    if blcontrol.db_connection.loginType.lower() != "user":
+    if blcontrol.beamline.lims.loginType.lower() != "user":
         limsutils.select_proposal(user["loginID"])
 
 
@@ -122,6 +125,15 @@ def valid_login_only(f):
         else:
             return f(*args, **kwargs)
 
+    return wrapped
+
+def ws_valid_login_only(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not get_user_by_sid(session.sid):
+            flask_socketio.disconnect()
+        else:
+            return f(*args, **kwargs)
     return wrapped
 
 
@@ -213,7 +225,8 @@ def is_local_host():
 
 def is_inhouse_user(user_id):
     user_id_list = [
-        "%s%s" % (code, number) for (code, number) in blcontrol.session.in_house_users
+        "%s%s" % (code, number)
+        for (code, number) in blcontrol.beamline.session.in_house_users
     ]
 
     return user_id in user_id_list
@@ -272,11 +285,7 @@ def login(login_id, password):
             "loginRes": login_res,
         }
 
-        # Create a new queue just in case any previous queue was not cleared
-        # properly
-        blcontrol.queue = qutils.new_queue()
-
-        sample = blcontrol.sample_changer.getLoadedSample()
+        sample = blcontrol.beamline.sample_changer.getLoadedSample()
 
         # If A sample is mounted (and not already marked as such),
         # get sample changer contents and add mounted sample to the queue
@@ -301,14 +310,14 @@ def signout():
     # If operator logs out clear queue and sample list
     if is_operator(session.sid):
         qutils.save_queue(session)
-        blcontrol.queue = qutils.new_queue()
-        blcontrol.shapes.clear_all()
+        qutils.clear_queue()
+        blcontrol.beamline.microscope.shapes.clear_all()
         limsutils.init_sample_list()
 
         qutils.init_queue_settings()
 
-        if hasattr(blcontrol.session, "clear_session"):
-            blcontrol.session.clear_session()
+        if hasattr(blcontrol.beamline.session, "clear_session"):
+            blcontrol.beamline.session.clear_session()
 
         mxcube.CURRENTLY_MOUNTED_SAMPLE = ""
 
@@ -318,16 +327,16 @@ def signout():
 
     remove_user(session.sid)
     session.clear()
-
+    
 
 def login_info(login_info):
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
 
     res = {
-        "synchrotron_name": blcontrol.session.synchrotron_name,
-        "beamline_name": blcontrol.session.beamline_name,
-        "loginType": blcontrol.db_connection.loginType.title(),
+        "synchrotron_name": blcontrol.beamline.session.synchrotron_name,
+        "beamline_name": blcontrol.beamline.session.beamline_name,
+        "loginType": blcontrol.beamline.lims.loginType.title(),
         "loginRes": login_info,
         "master": is_operator(session.sid),
         "observerName": get_observer_name(),

@@ -13,12 +13,15 @@ from PIL import Image
 import v4l2
 import gipc
 
+from . import streaming_processes
+
 VIDEO_DEVICE = None
 VIDEO_STREAM_PROCESS = None
 VIDEO_INITIALIZED = False
 VIDEO_SIZE = "-1,-1"
 VIDEO_RESTART = False
 VIDEO_ORIGINAL_SIZE = -1, -1
+VIDEO_HASH = streaming_processes.VIDEO_HASH
 
 
 def open_video_device(path="/dev/video0"):

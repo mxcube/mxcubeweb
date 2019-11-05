@@ -11,7 +11,7 @@ from flask import jsonify, Response, send_file, request, render_template
 from mxcube3 import server
 from mxcube3 import blcontrol
 
-import queue_model_objects as qmo
+from HardwareRepository.HardwareObjects import queue_model_objects as qmo
 
 from mxcube3.core import limsutils
 from mxcube3.core import qutils
@@ -48,7 +48,7 @@ def get_quality_indicator_plot(dc_id):
 @server.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=["GET"])
 @server.restrict
 def get_dc(dc_id):
-    data = blcontrol.rest_lims.get_dc(dc_id)
+    data = blcontrol.beamline.lims_rest.get_dc(dc_id)
     return jsonify(data)
 
 
@@ -70,7 +70,7 @@ def get_proposal():
     """
     Return the currently selected proposal. (The proposal list is part of the login_res)
     """
-    proposal_info = limsutils.get_proposal_info(blcontrol.session.proposal_code)
+    proposal_info = limsutils.get_proposal_info(blcontrol.beamline.session.proposal_code)
 
     return jsonify({"Proposal": proposal_info})
 

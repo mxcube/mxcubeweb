@@ -1,0 +1,7 @@
+<device class="MotorMockup">
+  <username>PhiY</username>
+  <exporter_address>130.235.94.124:9001</exporter_address>
+  <motor_name>AlignmentY</motor_name>
+  <unit>1e-5</unit>
+  <direction> -1</direction>
+</device>

@@ -13,9 +13,9 @@ import re
 
 from mock import Mock
 
-import queue_model_objects as qmo
-import queue_entry as qe
-import queue_model_enumerables as qme
+from HardwareRepository.HardwareObjects import queue_model_objects as qmo
+from HardwareRepository.HardwareObjects import queue_entry as qe
+from HardwareRepository.HardwareObjects import queue_model_enumerables as qme
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
@@ -28,10 +28,10 @@ from .beamline_setup import BeamlineSetupMediator
 from functools import reduce
 
 # Important: same constants as in constants.js
-QUEUE_PAUSED = 'QueuePaused'
-QUEUE_RUNNING = 'QueueRunning'
-QUEUE_STOPPED = 'QueueStopped'
-QUEUE_FAILED = 'QueueFailed'
+QUEUE_PAUSED = "QueuePaused"
+QUEUE_RUNNING = "QueueRunning"
+QUEUE_STOPPED = "QueueStopped"
+QUEUE_FAILED = "QueueFailed"
 
 SAMPLE_MOUNTED = 0x8
 COLLECTED = 0x4
@@ -58,11 +58,12 @@ def build_prefix_path_dict(path_list):
 
     for path in path_list:
         try:
-            path, run_number, img_number = qmo.PathTemplate.interpret_path(
-                path)
+            path, run_number, img_number = qmo.PathTemplate.interpret_path(path)
         except ValueError:
-            logging.getLogger('MX3.HWR').info(
-                '[QUEUE] Warning, failed to interpret path: "%s", please check path' % path)
+            logging.getLogger("MX3.HWR").info(
+                '[QUEUE] Warning, failed to interpret path: "%s", please check path'
+                % path
+            )
             path, run_number, image_number = (path, 0, 0)
 
         prefix_path_dict[path] = run_number
@@ -77,7 +78,7 @@ def get_run_number(pt):
     # interested in the prefix path
     fname = pt.get_image_path()
     prefix_path, _, _ = qmo.PathTemplate.interpret_path(fname)
-    run_number = blcontrol.queue.get_next_run_number(pt)
+    run_number = blcontrol.beamline.queue_model.get_next_run_number(pt)
 
     if prefix_path in prefix_path_dict:
         rn = run_number + prefix_path_dict[prefix_path]
@@ -124,13 +125,17 @@ def node_index(node):
         except Exception:
             pass
 
-    return {'sample': sample, 'idx': index,
-            'queue_id': node._node_id, 'sample_node': sample_model}
+    return {
+        "sample": sample,
+        "idx": index,
+        "queue_id": node._node_id,
+        "sample_node": sample_model,
+    }
 
 
 def load_queue_from_dict(queue_dict):
     """
-    Loads the queue in queue_dict in to the current blcontrol.queue (blcontrol.queue)
+    Loads the queue in queue_dict in to the current blcontrol.beamline.queue_model (blcontrol.beamline.queue_model)
 
     :param dict queue_dict: Queue dictionary, on the same format as returned by
                             queue_to_dict
@@ -138,7 +143,7 @@ def load_queue_from_dict(queue_dict):
     if queue_dict:
         item_list = []
 
-        for sid in queue_dict['sample_order']:
+        for sid in queue_dict["sample_order"]:
             item_list.append(queue_dict[sid])
 
         queue_add_item(item_list)
@@ -170,10 +175,11 @@ def queue_to_dict(node=None, include_lims_data=False):
              the corresponding node.
     """
     if not node:
-        node = blcontrol.queue.get_model_root()
+        node = blcontrol.beamline.queue_model.get_model_root()
 
-    res = reduce(lambda x, y: x.update(y) or x,
-                 queue_to_dict_rec(node, include_lims_data), {})
+    res = reduce(
+        lambda x, y: x.update(y) or x, queue_to_dict_rec(node, include_lims_data), {}
+    )
 
     return res
 
@@ -204,10 +210,11 @@ def queue_to_json(node=None, include_lims_data=False):
              the corresponding node.
     """
     if not node:
-        node = blcontrol.queue.get_model_root()
+        node = blcontrol.beamline.queue_model.get_model_root()
 
-    res = reduce(lambda x, y: x.update(y) or x,
-                 queue_to_dict_rec(node, include_lims_data), {})
+    res = reduce(
+        lambda x, y: x.update(y) or x, queue_to_dict_rec(node, include_lims_data), {}
+    )
 
     return json.dumps(res, sort_keys=True, indent=4)
 
@@ -230,9 +237,10 @@ def get_node_state(node_id):
     executed = node.is_executed()
     enabled = node.is_enabled()
     failed = entry.status == FAILED
-    curr_entry = blcontrol.queue.queue_hwobj.get_current_entry()
-    running = blcontrol.queue.queue_hwobj.is_executing and \
-        (curr_entry == entry or curr_entry == entry._parent_container)
+    curr_entry = blcontrol.beamline.queue_manager.get_current_entry()
+    running = blcontrol.beamline.queue_manager.is_executing and (
+        curr_entry == entry or curr_entry == entry._parent_container
+    )
 
     if failed:
         state = FAILED
@@ -262,71 +270,77 @@ def get_queue_state():
     queue = queue_to_dict(include_lims_data=True)
     sample_order = queue.get("sample_order", [])
     try:
-        current =  scutils.get_current_sample().get('sampleID', '')
+        current = scutils.get_current_sample().get("sampleID", "")
     except Exception as ex:
-        logging.getLogger('MX3.HWR').warning("Error retrieving current sample, {0}".format(ex.message))
-        current = ''
+        logging.getLogger("MX3.HWR").warning(
+            "Error retrieving current sample, {0}".format(ex.message)
+        )
+        current = ""
 
-    res = {"current": current,
-           "centringMethod": mxcube.CENTRING_METHOD,
-           "autoMountNext": get_auto_mount_sample(),
-           "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
-           "numSnapshots": mxcube.NUM_SNAPSHOTS,
-           "groupFolder": blcontrol.session.get_group_name(),
-           "queue": sample_order,
-           "sampleList": limsutils.sample_list_get(current_queue=queue),
-           "queueStatus": queue_exec_state()}
+    res = {
+        "current": current,
+        "centringMethod": mxcube.CENTRING_METHOD,
+        "autoMountNext": get_auto_mount_sample(),
+        "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
+        "numSnapshots": mxcube.NUM_SNAPSHOTS,
+        "groupFolder": blcontrol.beamline.session.get_group_name(),
+        "queue": sample_order,
+        "sampleList": limsutils.sample_list_get(current_queue=queue),
+        "queueStatus": queue_exec_state(),
+    }
 
     return res
 
 
 def _handle_dc(sample_node, node, include_lims_data=False):
     parameters = node.as_dict()
-    parameters["shape"] = getattr(node, 'shape', '')
+    parameters["shape"] = getattr(node, "shape", "")
     parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
     parameters["mesh"] = node.experiment_type == qme.EXPERIMENT_TYPE.MESH
 
-    parameters.pop('sample')
-    parameters.pop('acquisitions')
-    parameters.pop('acq_parameters')
-    parameters.pop('centred_position')
+    parameters.pop("sample")
+    parameters.pop("acquisitions")
+    parameters.pop("acq_parameters")
+    parameters.pop("centred_position")
 
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
-    parameters['subdir'] = os.path.join(*parameters["path"].
-                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters["subdir"] = os.path.join(
+        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+    ).lstrip("/")
 
     pt = node.acquisitions[0].path_template
 
-    parameters['fileName'] = pt.get_image_file_name().\
-        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+    parameters["fileName"] = pt.get_image_file_name().replace(
+        "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+    )
 
-    parameters['fullPath'] = os.path.join(parameters['path'],
-                                          parameters['fileName'])
+    parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
 
     limsres = {}
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, 'null')
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and blcontrol.rest_lims:
-        limsres = blcontrol.rest_lims.get_dc(lims_id)
+    if include_lims_data and blcontrol.beamline.lims.lims_rest:
+        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
-    res = {"label": "Data Collection",
-           "type": "DataCollection",
-           "parameters": parameters,
-           "sampleID": sample_node.loc_str,
-           "sampleQueueID": sample_node._node_id,
-           "taskIndex": node_index(node)['idx'],
-           "queueID": queueID,
-           "checked": node.is_enabled(),
-           "state": state,
-           "limsResultData": limsres,
-           }
+    res = {
+        "label": "Data Collection",
+        "type": "DataCollection",
+        "parameters": parameters,
+        "sampleID": sample_node.loc_str,
+        "sampleQueueID": sample_node._node_id,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": queueID,
+        "checked": node.is_enabled(),
+        "state": state,
+        "limsResultData": limsres,
+    }
 
     return res
 
@@ -337,41 +351,43 @@ def _handle_wf(sample_node, node, include_lims_data):
     parameters = node.parameters
     parameters.update(node.path_template.as_dict())
 
-    parameters['path'] = parameters['directory']
+    parameters["path"] = parameters["directory"]
 
-    parameters['subdir'] = os.path.join(*parameters["path"].
-                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters["subdir"] = os.path.join(
+        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+    ).lstrip("/")
 
     pt = node.path_template
 
-    parameters['fileName'] = pt.get_image_file_name().\
-        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+    parameters["fileName"] = pt.get_image_file_name().replace(
+        "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+    )
 
-    parameters['fullPath'] = os.path.join(parameters['path'],
-                                          parameters['fileName'])
+    parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
 
     limsres = {}
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, 'null')
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and blcontrol.rest_lims:
-        limsres = blcontrol.rest_lims.get_dc(lims_id)
+    if include_lims_data and blcontrol.beamline.lims.lims_rest:
+        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
-    res = {"label": parameters['label'],
-           "type": "Workflow",
-           "name": node._type,
-           "parameters": parameters,
-           "sampleID": sample_node.loc_str,
-           "taskIndex": node_index(node)['idx'],
-           "queueID": queueID,
-           "checked": node.is_enabled(),
-           "state": state,
-           "limsResultData": limsres,
-           }
+    res = {
+        "label": parameters["label"],
+        "type": "Workflow",
+        "name": node._type,
+        "parameters": parameters,
+        "sampleID": sample_node.loc_str,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": queueID,
+        "checked": node.is_enabled(),
+        "state": state,
+        "limsResultData": limsres,
+    }
 
     return res
 
@@ -379,33 +395,34 @@ def _handle_wf(sample_node, node, include_lims_data):
 def _handle_xrf(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
-    parameters = {"countTime": node.count_time,
-                  "shape": node.shape}
+    parameters = {"countTime": node.count_time, "shape": node.shape}
     parameters.update(node.path_template.as_dict())
-    parameters['path'] = parameters['directory']
+    parameters["path"] = parameters["directory"]
 
-    parameters['subdir'] = os.path.join(*parameters["path"].
-                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters["subdir"] = os.path.join(
+        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+    ).lstrip("/")
 
     pt = node.path_template
 
-    parameters['fileName'] = pt.get_image_file_name().\
-        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+    parameters["fileName"] = pt.get_image_file_name().replace(
+        "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+    )
 
-    parameters['fullPath'] = os.path.join(parameters['path'],
-                                          parameters['fileName'])
+    parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
     model, entry = get_entry(queueID)
 
-    res = {"label": "XRF Scan",
-           "type": "XRFScan",
-           "parameters": parameters,
-           "sampleID": sample_node.loc_str,
-           "taskIndex": node_index(node)['idx'],
-           "queueID": queueID,
-           "sampleQueueID": sample_node._node_id,
-           "checked": node.is_enabled(),
-           "state": state
-           }
+    res = {
+        "label": "XRF Scan",
+        "type": "XRFScan",
+        "parameters": parameters,
+        "sampleID": sample_node.loc_str,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": queueID,
+        "sampleQueueID": sample_node._node_id,
+        "checked": node.is_enabled(),
+        "state": state,
+    }
 
     return res
 
@@ -413,34 +430,34 @@ def _handle_xrf(sample_node, node):
 def _handle_energy_scan(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
-    parameters = {"element": node.element_symbol,
-                  "edge": node.edge,
-                  "shape": -1}
+    parameters = {"element": node.element_symbol, "edge": node.edge, "shape": -1}
 
     parameters.update(node.path_template.as_dict())
-    parameters['path'] = parameters['directory']
+    parameters["path"] = parameters["directory"]
 
-    parameters['subdir'] = os.path.join(*parameters["path"].
-                                        split(blcontrol.session.raw_data_folder_name)[1:]).lstrip("/")
+    parameters["subdir"] = os.path.join(
+        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+    ).lstrip("/")
 
     pt = node.path_template
 
-    parameters['fileName'] = pt.get_image_file_name().\
-        replace('%' + ('%sd' % str(pt.precision)), int(pt.precision) * '#')
+    parameters["fileName"] = pt.get_image_file_name().replace(
+        "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+    )
 
-    parameters['fullPath'] = os.path.join(parameters['path'],
-                                          parameters['fileName'])
+    parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
 
-    res = {"label": "Energy Scan",
-           "type": "EnergyScan",
-           "parameters": parameters,
-           "sampleID": sample_node.loc_str,
-           "sampleQueueID": sample_node._node_id,
-           "taskIndex": node_index(node)['idx'],
-           "queueID": queueID,
-           "checked": node.is_enabled(),
-           "state": state
-           }
+    res = {
+        "label": "Energy Scan",
+        "type": "EnergyScan",
+        "parameters": parameters,
+        "sampleID": sample_node.loc_str,
+        "sampleQueueID": sample_node._node_id,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": queueID,
+        "checked": node.is_enabled(),
+        "state": state,
+    }
 
     return res
 
@@ -448,8 +465,7 @@ def _handle_energy_scan(sample_node, node):
 def _handle_char(sample_node, node, include_lims_data=False):
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
-    refp = _handle_dc(sample_node, node.reference_image_collection)[
-        'parameters']
+    refp = _handle_dc(sample_node, node.reference_image_collection)["parameters"]
 
     parameters.update(refp)
 
@@ -457,31 +473,32 @@ def _handle_char(sample_node, node, include_lims_data=False):
     enabled, state = get_node_state(queueID)
 
     limsres = {}
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, 'null')
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and blcontrol.rest_lims:
-        limsres = blcontrol.rest_lims.get_dc(lims_id)
+    if include_lims_data and blcontrol.beamline.lims.lims_rest:
+        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
 
     originID, task = _handle_diffraction_plan(node, sample_node)
 
-    res = {"label": "Characterisation",
-           "type": "Characterisation",
-           "parameters": parameters,
-           "checked": node.is_enabled(),
-           "sampleID": sample_node.loc_str,
-           "sampleQueueID": sample_node._node_id,
-           "taskIndex": node_index(node)['idx'],
-           "queueID": node._node_id,
-           "state": state,
-           "limsResultData": limsres,
-           "diffractionPlan": task,
-           "diffractionPlanID": originID
-           }
+    res = {
+        "label": "Characterisation",
+        "type": "Characterisation",
+        "parameters": parameters,
+        "checked": node.is_enabled(),
+        "sampleID": sample_node.loc_str,
+        "sampleQueueID": sample_node._node_id,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": node._node_id,
+        "state": state,
+        "limsResultData": limsres,
+        "diffractionPlan": task,
+        "diffractionPlanID": originID,
+    }
 
     return res
 
@@ -502,7 +519,7 @@ def _handle_diffraction_plan(node, sample_node):
                 tasks.append({})
                 continue
 
-            t['isDiffractionPlan'] = True
+            t["isDiffractionPlan"] = True
             tasks.append(t)
 
         return (originID, tasks)
@@ -519,23 +536,23 @@ def _handle_interleaved(sample_node, node):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
 
-    res = {"label": "Interleaved",
-           "type": "Interleaved",
-           "parameters": {"wedges": wedges,
-                          "swNumImages": node.interleave_num_images},
-           "checked": node.is_enabled(),
-           "sampleID": sample_node.loc_str,
-           "sampleQueueID": sample_node._node_id,
-           "taskIndex": node_index(node)['idx'],
-           "queueID": node._node_id,
-           "state": state
-           }
+    res = {
+        "label": "Interleaved",
+        "type": "Interleaved",
+        "parameters": {"wedges": wedges, "swNumImages": node.interleave_num_images},
+        "checked": node.is_enabled(),
+        "sampleID": sample_node.loc_str,
+        "sampleQueueID": sample_node._node_id,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": node._node_id,
+        "state": state,
+    }
 
     return res
 
 
 def _handle_sample(node, include_lims_data=False):
-    location = 'Manual' if node.free_pin_mode else node.loc_str
+    location = "Manual" if node.free_pin_mode else node.loc_str
     enabled, state = get_node_state(node._node_id)
     children_states = []
 
@@ -553,18 +570,20 @@ def _handle_sample(node, include_lims_data=False):
     else:
         state = UNCOLLECTED
 
-    sample = {'sampleID': node.loc_str,
-              'queueID': node._node_id,
-              'code': node.code,
-              'location': location,
-              'sampleName': node.get_name(),
-              'proteinAcronym': node.crystals[0].protein_acronym,
-              'defaultPrefix': limsutils.get_default_prefix(node, False),
-              'defaultSubDir': limsutils.get_default_subdir(node),
-              'type': 'Sample',
-              'checked': enabled,
-              'state': state,
-              'tasks': queue_to_dict_rec(node, include_lims_data)}
+    sample = {
+        "sampleID": node.loc_str,
+        "queueID": node._node_id,
+        "code": node.code,
+        "location": location,
+        "sampleName": node.get_name(),
+        "proteinAcronym": node.crystals[0].protein_acronym,
+        "defaultPrefix": limsutils.get_default_prefix(node, False),
+        "defaultSubDir": limsutils.get_default_subdir(node),
+        "type": "Sample",
+        "checked": enabled,
+        "state": state,
+        "tasks": queue_to_dict_rec(node, include_lims_data),
+    }
 
     return {node.loc_str: sample}
 
@@ -598,18 +617,18 @@ def queue_to_dict_rec(node, include_lims_data=False):
     for node in node_list:
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
-                result = [{'sample_order': []}]
+                result = [{"sample_order": []}]
 
             result.append(_handle_sample(node, include_lims_data))
 
             if node.is_enabled():
-                result[0]['sample_order'].append(node.loc_str)
+                result[0]["sample_order"].append(node.loc_str)
 
         elif isinstance(node, qmo.Characterisation):
             sample_node = node.get_parent().get_parent()
             result.append(_handle_char(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.DataCollection):
-            sample_node = node_index(node)['sample_node']
+            sample_node = node_index(node)["sample_node"]
             result.append(_handle_dc(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.Workflow):
             sample_node = node.get_parent().get_parent()
@@ -637,9 +656,9 @@ def queue_exec_state():
     """
     state = QUEUE_STOPPED
 
-    if blcontrol.queue.queue_hwobj.is_paused():
+    if blcontrol.beamline.queue_manager.is_paused():
         state = QUEUE_PAUSED
-    elif blcontrol.queue.queue_hwobj.is_executing():
+    elif blcontrol.beamline.queue_manager.is_executing():
         state = QUEUE_RUNNING
 
     return state
@@ -653,8 +672,8 @@ def get_entry(_id):
     :returns: The tuple model, entry
     :rtype: Tuple
     """
-    model = blcontrol.queue.get_node(int(_id))
-    entry = blcontrol.queue.queue_hwobj.get_entry_with_model(model)
+    model = blcontrol.beamline.queue_model.get_node(int(_id))
+    entry = blcontrol.beamline.queue_manager.get_entry_with_model(model)
     return model, entry
 
 
@@ -671,15 +690,15 @@ def delete_entry(entry):
     parent_entry = entry.get_container()
     parent_entry.dequeue(entry)
     model = entry.get_data_model()
-    blcontrol.queue.del_child(model.get_parent(), model)
-    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    blcontrol.beamline.queue_model.del_child(model.get_parent(), model)
+    logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % queue_to_json())
 
 
 def delete_entry_at(item_pos_list):
     current_queue = queue_to_dict()
 
     for (sid, tindex) in item_pos_list:
-        if tindex in ['undefined', None]:
+        if tindex in ["undefined", None]:
             node_id = current_queue[sid]["queueID"]
             model, entry = get_entry(node_id)
         else:
@@ -739,7 +758,7 @@ def swap_task_entry(sid, ti1, ti2):
     sentry._queue_entry_list[ti2] = sentry._queue_entry_list[ti1]
     sentry._queue_entry_list[ti1] = ti2_temp_entry
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % queue_to_json())
 
 
 def move_task_entry(sid, ti1, ti2):
@@ -762,7 +781,7 @@ def move_task_entry(sid, ti1, ti2):
     # Swap queue entry order
     sentry._queue_entry_list.insert(ti2, sentry._queue_entry_list.pop(ti1))
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % queue_to_json())
 
 
 def set_sample_order(order):
@@ -780,13 +799,13 @@ def set_sample_order(order):
         entry_list = [model_entry[1] for model_entry in model_entry_list]
 
         # Set the order in the queue model
-        blcontrol.queue.get_model_root()._children = model_list
+        blcontrol.beamline.queue_model.get_model_root()._children = model_list
         # Set queue entry order
-        blcontrol.queue.queue_hwobj._queue_entry_list = entry_list
+        blcontrol.beamline.queue_manager._queue_entry_list = entry_list
 
     limsutils.sample_list_set_order(order)
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % queue_to_json())
 
 
 def queue_add_item(item_list):
@@ -812,8 +831,9 @@ def queue_add_item(item_list):
     # the first of the data collections that are used as wedges, and then
     # remove all collections that were used as wedges
     for task in item_list[0]["tasks"]:
-        if task["type"] == "Interleaved" and \
-           task["parameters"].get("taskIndexList", False):
+        if task["type"] == "Interleaved" and task["parameters"].get(
+            "taskIndexList", False
+        ):
             current_queue = queue_to_dict()
 
             sid = task["sampleID"]
@@ -912,25 +932,27 @@ def add_sample(sample_id, item):
 
     # Explicitly set parameters that are not sent by the client
     sample_model.loc_str = sample_id
-    sample_model.free_pin_mode = item['location'] == 'Manual'
-    sample_model.set_name(item['sampleName'])
-    sample_model.name = item['sampleName']
+    sample_model.free_pin_mode = item["location"] == "Manual"
+    sample_model.set_name(item["sampleName"])
+    sample_model.name = item["sampleName"]
 
     if sample_model.free_pin_mode:
         sample_model.location = (None, sample_id)
     else:
-        sample_model.location = tuple(map(int, item['location'].split(':')))
+        sample_model.location = tuple(map(int, item["location"].split(":")))
 
     # Manually added sample, make sure that i'ts on the server side sample list
-    if item['location'] == "Manual":
+    if item["location"] == "Manual":
         item["defaultSubDir"] = limsutils.get_default_subdir(item)
         limsutils.sample_list_update_sample(sample_id, item)
 
     sample_entry = qe.SampleQueueEntry(view=Mock(), data_model=sample_model)
     enable_entry(sample_entry, True)
 
-    blcontrol.queue.add_child(blcontrol.queue.get_model_root(), sample_model)
-    blcontrol.queue.queue_hwobj.enqueue(sample_entry)
+    blcontrol.beamline.queue_model.add_child(
+        blcontrol.beamline.queue_model.get_model_root(), sample_model
+    )
+    blcontrol.beamline.queue_manager.enqueue(sample_entry)
 
     return sample_model._node_id
 
@@ -944,11 +966,11 @@ def set_dc_params(model, entry, task_data, sample_model):
     :param dict task_data: Dictionary with new parameters
     """
     acq = model.acquisitions[0]
-    params = task_data['parameters']
+    params = task_data["parameters"]
     acq.acquisition_parameters.set_from_dict(params)
 
-    ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
-    ftype = ftype if ftype else '.?'
+    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = ftype if ftype else ".?"
 
     acq.path_template.set_from_dict(params)
     # certain attributes have to be updated explicitly,
@@ -956,24 +978,29 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.start_num = params["first_image"]
     acq.path_template.num_files = params["num_images"]
     acq.path_template.suffix = ftype
-    acq.path_template.precision = '0' + str(blcontrol.session["file_info"].
-                                            getProperty("precision", 4))
+    acq.path_template.precision = "0" + str(
+        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+    )
 
     limsutils.apply_template(params, sample_model, acq.path_template)
 
     if params["prefix"]:
-        acq.path_template.base_prefix = params['prefix']
+        acq.path_template.base_prefix = params["prefix"]
     else:
-        acq.path_template.base_prefix = blcontrol.session.\
-            get_default_prefix(sample_model, False)
+        acq.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+            sample_model, False
+        )
 
-    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
-                             params.get('subdir', ''))
+    full_path = os.path.join(
+        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+    )
 
     acq.path_template.directory = full_path
 
-    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
-                                params.get('subdir', ''))
+    process_path = os.path.join(
+        blcontrol.beamline.session.get_base_process_directory(),
+        params.get("subdir", ""),
+    )
     acq.path_template.process_directory = process_path
 
     # TODO, Please remove this ad-hoc definition
@@ -988,9 +1015,12 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2 = qmo.Acquisition()
         model.acquisitions.append(acq2)
 
-        line = blcontrol.shapes.get_shape(params["shape"])
+        line = blcontrol.beamline.microscope.shapes.get_shape(params["shape"])
         p1, p2 = line.refs
-        p1, p2 = blcontrol.shapes.get_shape(p1), blcontrol.shapes.get_shape(p2)
+        p1, p2 = (
+            blcontrol.beamline.microscope.shapes.get_shape(p1),
+            blcontrol.beamline.microscope.shapes.get_shape(p2),
+        )
         cpos1 = p1.get_centred_position()
         cpos2 = p2.get_centred_position()
 
@@ -998,24 +1028,27 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2.acquisition_parameters.centred_position = cpos2
 
     elif params.get("mesh", False):
-        grid = blcontrol.shapes.get_shape(params["shape"])
+        grid = blcontrol.beamline.microscope.shapes.get_shape(params["shape"])
         acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-        mesh_center = blcontrol.beamline['default_mesh_values'].getProperty(
-            'mesh_center', 'top-left')
-        if mesh_center == 'top-left':
+        mesh_center = blcontrol.beamline["default_mesh_values"].getProperty(
+            "mesh_center", "top-left"
+        )
+        if mesh_center == "top-left":
             acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
-                0]
+                0
+            ]
         else:
             acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
-                1]
+                1
+            ]
         acq.acquisition_parameters.mesh_steps = grid.get_num_lines()
-        acq.acquisition_parameters.num_images = task_data['parameters']['num_images']
+        acq.acquisition_parameters.num_images = task_data["parameters"]["num_images"]
 
         model.experiment_type = qme.EXPERIMENT_TYPE.MESH
         model.set_requires_centring(False)
 
     elif params["shape"] != -1:
-        point = blcontrol.shapes.get_shape(params["shape"])
+        point = blcontrol.beamline.microscope.shapes.get_shape(params["shape"])
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
@@ -1024,8 +1057,8 @@ def set_dc_params(model, entry, task_data, sample_model):
     if not task_data.get("queueID", ""):
         acq.path_template.run_number = get_run_number(acq.path_template)
 
-    model.set_enabled(task_data['checked'])
-    entry.set_enabled(task_data['checked'])
+    model.set_enabled(task_data["checked"])
+    entry.set_enabled(task_data["checked"])
 
 
 def set_wf_params(model, entry, task_data, sample_model):
@@ -1036,51 +1069,56 @@ def set_wf_params(model, entry, task_data, sample_model):
     :param GenericWorkflowQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
     """
-    params = task_data['parameters']
+    params = task_data["parameters"]
     model.parameters = params
     model.path_template.set_from_dict(params)
-    model.path_template.base_prefix = params['prefix']
+    model.path_template.base_prefix = params["prefix"]
     model.path_template.num_files = 0
-    model.path_template.precision = '0' + str(blcontrol.session["file_info"].
-                                              getProperty("precision", 4))
+    model.path_template.precision = "0" + str(
+        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+    )
 
     limsutils.apply_template(params, sample_model, model.path_template)
 
     if params["prefix"]:
-        model.path_template.base_prefix = params['prefix']
+        model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = blcontrol.session.\
-            get_default_prefix(sample_model, False)
+        model.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+            sample_model, False
+        )
 
-    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
-                             params.get('subdir', ''))
+    full_path = os.path.join(
+        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+    )
 
     model.path_template.directory = full_path
 
-    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
-                                params.get('subdir', ''))
+    process_path = os.path.join(
+        blcontrol.beamline.session.get_base_process_directory(),
+        params.get("subdir", ""),
+    )
     model.path_template.process_directory = process_path
 
     model.set_name("Workflow task")
     model.set_type(params["wfname"])
 
     beamline_params = {}
-    beamline_params['directory'] = model.path_template.directory
-    beamline_params['prefix'] = model.path_template.get_prefix()
-    beamline_params['run_number'] = model.path_template.run_number
-    beamline_params['collection_software'] = 'MXCuBE - 3.0'
-    beamline_params['sample_node_id'] = sample_model._node_id
-    beamline_params['sample_lims_id'] = sample_model.lims_id
-    beamline_params['beamline'] = blcontrol.beamline.session_hwobj.endstation_name
+    beamline_params["directory"] = model.path_template.directory
+    beamline_params["prefix"] = model.path_template.get_prefix()
+    beamline_params["run_number"] = model.path_template.run_number
+    beamline_params["collection_software"] = "MXCuBE - 3.0"
+    beamline_params["sample_node_id"] = sample_model._node_id
+    beamline_params["sample_lims_id"] = sample_model.lims_id
+    beamline_params["beamline"] = blcontrol.beamline.session.endstation_name
 
     params_list = list(map(str, list(itertools.chain(*iter(beamline_params.items())))))
     params_list.insert(0, params["wfpath"])
-    params_list.insert(0, 'modelpath')
+    params_list.insert(0, "modelpath")
 
     model.params_list = params_list
 
-    model.set_enabled(task_data['checked'])
-    entry.set_enabled(task_data['checked'])
+    model.set_enabled(task_data["checked"])
+    entry.set_enabled(task_data["checked"])
 
 
 def set_char_params(model, entry, task_data, sample_model):
@@ -1092,13 +1130,13 @@ def set_char_params(model, entry, task_data, sample_model):
     :param CharacterisationQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
     """
-    params = task_data['parameters']
-    set_dc_params(model.reference_image_collection,
-                  entry, task_data, sample_model)
+    params = task_data["parameters"]
+    set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
 
     try:
-        params["strategy_complexity"] = ["SINGLE", "FEW",
-                                         "MANY"].index(params["strategy_complexity"])
+        params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(
+            params["strategy_complexity"]
+        )
     except ValueError:
         params["strategy_complexity"] = 0
 
@@ -1108,8 +1146,8 @@ def set_char_params(model, entry, task_data, sample_model):
     # TODO: Please consider defining shape attribute properly !
     model.shape = params["shape"]
 
-    model.set_enabled(task_data['checked'])
-    entry.set_enabled(task_data['checked'])
+    model.set_enabled(task_data["checked"])
+    entry.set_enabled(task_data["checked"])
 
 
 def set_xrf_params(model, entry, task_data, sample_model):
@@ -1120,29 +1158,33 @@ def set_xrf_params(model, entry, task_data, sample_model):
     :param XRFSpectrumQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
     """
-    params = task_data['parameters']
+    params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.getObjectByRole('xrf_spectrum').\
-        getProperty('file_suffix', 'dat').strip()
+    ftype = blcontrol.beamline.xrf_spectrum.getProperty("file_suffix", "dat").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
-    model.path_template.precision = '0' + str(blcontrol.session["file_info"].
-                                              getProperty("precision", 4))
+    model.path_template.precision = "0" + str(
+        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+    )
 
-    if params['prefix']:
-        model.path_template.base_prefix = params['prefix']
+    if params["prefix"]:
+        model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = blcontrol.session.\
-            get_default_prefix(sample_model, False)
+        model.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+            sample_model, False
+        )
 
-    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
-                             params.get('subdir', ''))
+    full_path = os.path.join(
+        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+    )
 
     model.path_template.directory = full_path
 
-    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
-                                params.get('subdir', ''))
+    process_path = os.path.join(
+        blcontrol.beamline.session.get_base_process_directory(),
+        params.get("subdir", ""),
+    )
     model.path_template.process_directory = process_path
 
     # Only get a run number for new tasks, keep the already existing
@@ -1156,8 +1198,8 @@ def set_xrf_params(model, entry, task_data, sample_model):
     # MXCuBE3 specific shape attribute
     model.shape = params["shape"]
 
-    model.set_enabled(task_data['checked'])
-    entry.set_enabled(task_data['checked'])
+    model.set_enabled(task_data["checked"])
+    entry.set_enabled(task_data["checked"])
 
 
 def set_energy_scan_params(model, entry, task_data, sample_model):
@@ -1168,29 +1210,33 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     :param EnergyScanQueueEntry: The queue entry of the model
     :param dict task_data: Dictionary with new parameters
     """
-    params = task_data['parameters']
+    params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.getObjectByRole('energyscan').\
-        getProperty('file_suffix', 'raw').strip()
+    ftype = blcontrol.beamline.energyscan.getProperty("file_suffix", "raw").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
-    model.path_template.precision = '0' + str(blcontrol.session["file_info"].
-                                              getProperty("precision", 4))
+    model.path_template.precision = "0" + str(
+        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+    )
 
-    if params['prefix']:
-        model.path_template.base_prefix = params['prefix']
+    if params["prefix"]:
+        model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = blcontrol.session.\
-            get_default_prefix(sample_model, False)
+        model.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+            sample_model, False
+        )
 
-    full_path = os.path.join(blcontrol.session.get_base_image_directory(),
-                             params.get('subdir', ''))
+    full_path = os.path.join(
+        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+    )
 
     model.path_template.directory = full_path
 
-    process_path = os.path.join(blcontrol.session.get_base_process_directory(),
-                                params.get('subdir', ''))
+    process_path = os.path.join(
+        blcontrol.beamline.session.get_base_process_directory(),
+        params.get("subdir", ""),
+    )
     model.path_template.process_directory = process_path
 
     # Only get a run number for new tasks, keep the already existing
@@ -1202,8 +1248,8 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     model.element_symbol = params.get("element", "")
     model.edge = params.get("edge", "")
 
-    model.set_enabled(task_data['checked'])
-    entry.set_enabled(task_data['checked'])
+    model.set_enabled(task_data["checked"])
+    entry.set_enabled(task_data["checked"])
 
 
 def _create_dc(task):
@@ -1282,18 +1328,18 @@ def add_characterisation(node_id, task):
     :rtype: int
     """
     sample_model, sample_entry = get_entry(node_id)
-    params = task['parameters']
+    params = task["parameters"]
 
     refdc_model, refdc_entry = _create_dc(task)
-    refdc_model.acquisitions[0].path_template.reference_image_prefix = 'ref'
-    refdc_model.set_name('refdc')
+    refdc_model.acquisitions[0].path_template.reference_image_prefix = "ref"
+    refdc_model.set_name("refdc")
     char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
     char_model = qmo.Characterisation(refdc_model, char_params)
 
     char_model.set_origin(ORIGIN_MX3)
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
-    char_entry.queue_model_hwobj = blcontrol.queue
+    char_entry.queue_model = blcontrol.beamline.queue_model
     # Set the characterisation and reference collection parameters
     set_char_params(char_model, char_entry, task, sample_model)
 
@@ -1307,16 +1353,16 @@ def add_characterisation(node_id, task):
     refgroup_model = qmo.TaskGroup()
     refgroup_model.set_origin(ORIGIN_MX3)
 
-    blcontrol.queue.add_child(sample_model, refgroup_model)
-    blcontrol.queue.add_child(refgroup_model, char_model)
+    blcontrol.beamline.queue_model.add_child(sample_model, refgroup_model)
+    blcontrol.beamline.queue_model.add_child(refgroup_model, char_model)
     refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
     refgroup_entry.set_enabled(True)
     sample_entry.enqueue(refgroup_entry)
     refgroup_entry.enqueue(char_entry)
 
-    char_model.set_enabled(task['checked'])
-    char_entry.set_enabled(task['checked'])
+    char_model.set_enabled(task["checked"])
+    char_entry.set_enabled(task["checked"])
 
     return char_model._node_id
 
@@ -1338,8 +1384,8 @@ def add_data_collection(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.queue.add_child(sample_model, group_model)
-    blcontrol.queue.add_child(group_model, dc_model)
+    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
+    blcontrol.beamline.queue_model.add_child(group_model, dc_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1366,8 +1412,8 @@ def add_workflow(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.queue.add_child(sample_model, group_model)
-    blcontrol.queue.add_child(group_model, wf_model)
+    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
+    blcontrol.beamline.queue_model.add_child(group_model, wf_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1392,16 +1438,16 @@ def add_interleaved(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    group_model.interleave_num_images = task['parameters']['swNumImages']
+    group_model.interleave_num_images = task["parameters"]["swNumImages"]
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
     sample_entry.enqueue(group_entry)
-    blcontrol.queue.add_child(sample_model, group_model)
+    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
 
     wc = 0
 
-    for wedge in task['parameters']['wedges']:
+    for wedge in task["parameters"]["wedges"]:
         wc = wc + 1
         dc_model, dc_entry = _create_dc(wedge)
         set_dc_params(dc_model, dc_entry, wedge, sample_model)
@@ -1412,7 +1458,7 @@ def add_interleaved(node_id, task):
         # Disable snapshots for sub-wedges
         dc_model.acquisitions[0].acquisition_parameters.take_snapshots = False
 
-        blcontrol.queue.add_child(group_model, dc_model)
+        blcontrol.beamline.queue_model.add_child(group_model, dc_model)
         group_entry.enqueue(dc_entry)
 
     return group_model._node_id
@@ -1435,8 +1481,8 @@ def add_xrf_scan(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.queue.add_child(sample_model, group_model)
-    blcontrol.queue.add_child(group_model, xrf_model)
+    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
+    blcontrol.beamline.queue_model.add_child(group_model, xrf_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1463,8 +1509,8 @@ def add_energy_scan(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.queue.add_child(sample_model, group_model)
-    blcontrol.queue.add_child(group_model, escan_model)
+    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
+    blcontrol.beamline.queue_model.add_child(group_model, escan_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1474,25 +1520,26 @@ def add_energy_scan(node_id, task):
     return escan_model._node_id
 
 
-def new_queue():
+def clear_queue():
     """
     Creates a new queue
     :returns: MxCuBE QueueModel Object
     """
-    queue = pickle.loads(blcontrol.empty_queue)
-    queue.diffraction_plan = {}
+    from HardwareRepository import HardwareRepository as HWR
 
-    init_signals(queue)
-    blcontrol.xml_rpc_server.queue_hwobj = queue.queue_hwobj
-    blcontrol.xml_rpc_server.queue_model_hwobj = queue
-    blcontrol.queue = queue
+    # queue = pickle.loads(blcontrol.empty_queue)
+    # queue.diffraction_plan = {}
+    HWR.beamline.queue_model.diffraction_plan = {}
+    HWR.beamline.queue_model.clear_model()
 
-    return queue
+    # blcontrol.beamline.xml_rpc_server.queue = HWR.beamline.queue_manager
+    # blcontrol.beamline.xml_rpc_server.queue_model = queue
+    # blcontrol.beamline.queue_model = HWR.beamline.queue_model
 
 
 def save_queue(session, redis=redis.Redis()):
     """
-    Saves the current blcontrol.queue (blcontrol.queue) into a redis database.
+    Saves the current blcontrol.beamline.queue_model (blcontrol.beamline.queue_model) into a redis database.
     The queue that is saved is the pickled result returned by queue_to_dict
 
     :param session: Session to save queue for
@@ -1504,7 +1551,7 @@ def save_queue(session, redis=redis.Redis()):
     if proposal_id is not None:
         # List of samples dicts (containing tasks) sample and tasks have same
         # order as the in queue HO
-        queue = queue_to_dict(blcontrol.queue.get_model_root())
+        queue = queue_to_dict(blcontrol.beamline.queue_model.get_model_root())
         redis.set("mxcube.queue:%d" % proposal_id, pickle.dumps(queue))
 
 
@@ -1548,14 +1595,14 @@ def queue_model_child_added(parent, child):
             # so find origin (char generates >task node > collection)
             # add associate shape id
             queue = queue_to_dict()
-            tasks = queue[str(sampleID)]['tasks']
+            tasks = queue[str(sampleID)]["tasks"]
             for t in tasks:
-                if t['queueID'] == parent.get_origin():
-                    shape = t['parameters']['shape']
-                    setattr(child, 'shape', shape)
+                if t["queueID"] == parent.get_origin():
+                    shape = t["parameters"]["shape"]
+                    setattr(child, "shape", shape)
 
             task = _handle_dc(sample, child)
-            socketio.emit('add_task', {"tasks": [task]}, namespace='/hwr')
+            socketio.emit("add_task", {"tasks": [task]}, namespace="/hwr")
 
         elif isinstance(child, qmo.TaskGroup):
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
@@ -1577,14 +1624,13 @@ def queue_model_diff_plan_available(char, collection_list):
             dcg_model = char.get_parent()
             sample = dcg_model.get_parent()
 
-            setattr(collection, 'shape', origin_model.shape)
+            setattr(collection, "shape", origin_model.shape)
 
             task = _handle_dc(sample, collection)
-            task.update({'isDiffractionPlan': True,
-                         'originID': origin_model._node_id})
+            task.update({"isDiffractionPlan": True, "originID": origin_model._node_id})
             cols.append(task)
 
-    socketio.emit('add_diff_plan', {"tasks": cols}, namespace='/hwr')
+    socketio.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
 
 
 def set_auto_add_diffplan(autoadd, current_sample=None):
@@ -1597,16 +1643,16 @@ def set_auto_add_diffplan(autoadd, current_sample=None):
     mxcube.AUTO_ADD_DIFFPLAN = autoadd
     current_queue = queue_to_dict()
 
-    if 'sample_order' in current_queue:
-        current_queue.pop('sample_order')
+    if "sample_order" in current_queue:
+        current_queue.pop("sample_order")
 
     sampleIDs = list(current_queue.keys())
     for sample in sampleIDs:
         # this would be a sample
-        tasks = current_queue[sample]['tasks']
+        tasks = current_queue[sample]["tasks"]
         for t in tasks:
-            if t['type'] == 'Characterisation':
-                model, entry = get_entry(t['queueID'])
+            if t["type"] == "Characterisation":
+                model, entry = get_entry(t["queueID"])
                 entry.auto_add_diff_plan = autoadd
 
 
@@ -1620,23 +1666,23 @@ def execute_entry_with_id(sid, tindex=None):
     from . import scutils
 
     current_queue = queue_to_dict()
-    blcontrol.queue.queue_hwobj.set_pause(False)
+    blcontrol.beamline.queue_manager.set_pause(False)
 
-    if tindex in ['undefined', 'None', 'null', None]:
+    if tindex in ["undefined", "None", "null", None]:
         node_id = current_queue[sid]["queueID"]
 
         # The queue does not run the mount defined by the sample entry if it has no
         # tasks, so in order function as expected; just mount the sample
-        if (not len(current_queue[sid]["tasks"])) and \
-           sid != scutils.get_current_sample().get('sampleID', ''):
+        if (
+            not len(current_queue[sid]["tasks"])
+        ) and sid != scutils.get_current_sample().get("sampleID", ""):
 
             try:
                 scutils.mount_sample_clean_up(current_queue[sid])
             except BaseException:
-                blcontrol.queue.queue_hwobj.emit(
-                    'queue_execution_failed', (None,))
+                blcontrol.beamline.queue_manager.emit("queue_execution_failed", (None,))
             else:
-                blcontrol.queue.queue_hwobj.emit('queue_stopped', (None,))
+                blcontrol.beamline.queue_manager.emit("queue_stopped", (None,))
         else:
             enabled_entries = []
 
@@ -1649,7 +1695,7 @@ def execute_entry_with_id(sid, tindex=None):
             enable_sample_entries(enabled_entries, False)
             enable_sample_entries([sid], True)
 
-            blcontrol.queue.queue_hwobj.execute()
+            blcontrol.beamline.queue_manager.execute()
     else:
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
@@ -1659,17 +1705,17 @@ def execute_entry_with_id(sid, tindex=None):
 
         node, entry = get_entry(parent_id)
 
-        blcontrol.queue.queue_hwobj._running = True
+        blcontrol.beamline.queue_manager._running = True
 
-        blcontrol.queue.queue_hwobj._is_stopped = False
-        blcontrol.queue.queue_hwobj._set_in_queue_flag()
+        blcontrol.beamline.queue_manager._is_stopped = False
+        blcontrol.beamline.queue_manager._set_in_queue_flag()
         try:
-            blcontrol.queue.queue_hwobj.execute_entry(entry)
+            blcontrol.beamline.queue_manager.execute_entry(entry)
         except BaseException:
-            blcontrol.queue.queue_hwobj.emit('queue_execution_failed', (None,))
+            blcontrol.beamline.queue_manager.emit("queue_execution_failed", (None,))
         finally:
-            blcontrol.queue.queue_hwobj._running = False
-            blcontrol.queue.queue_hwobj.emit('queue_stopped', (None,))
+            blcontrol.beamline.queue_manager._running = False
+            blcontrol.beamline.queue_manager.emit("queue_stopped", (None,))
 
 
 def init_signals(queue):
@@ -1678,51 +1724,70 @@ def init_signals(queue):
     """
     from mxcube3.routes import signals
 
-    blcontrol.collect.connect(blcontrol.collect, "collectStarted",
-                              signals.collect_started)
-    blcontrol.collect.connect(blcontrol.collect, 'collectOscillationStarted',
-                              signals.collect_oscillation_started)
-    blcontrol.collect.connect(blcontrol.collect, 'collectOscillationFailed',
-                              signals.collect_oscillation_failed)
-    blcontrol.collect.connect(blcontrol.collect, 'collectImageTaken',
-                              signals.collect_image_taken)
+    blcontrol.beamline.collect.connect(
+        blcontrol.beamline.collect, "collectStarted", signals.collect_started
+    )
+    blcontrol.beamline.collect.connect(
+        blcontrol.beamline.collect,
+        "collectOscillationStarted",
+        signals.collect_oscillation_started,
+    )
+    blcontrol.beamline.collect.connect(
+        blcontrol.beamline.collect,
+        "collectOscillationFailed",
+        signals.collect_oscillation_failed,
+    )
+    blcontrol.beamline.collect.connect(
+        blcontrol.beamline.collect, "collectImageTaken", signals.collect_image_taken
+    )
 
-    blcontrol.collect.connect(blcontrol.collect, 'collectOscillationFinished',
-                              signals.collect_oscillation_finished)
+    blcontrol.beamline.collect.connect(
+        blcontrol.beamline.collect,
+        "collectOscillationFinished",
+        signals.collect_oscillation_finished,
+    )
 
-    queue.connect(queue, 'child_added', queue_model_child_added)
+    queue.connect(queue, "child_added", queue_model_child_added)
 
-    queue.connect(queue, 'diff_plan_available',
-                  queue_model_diff_plan_available)
+    queue.connect(queue, "diff_plan_available", queue_model_diff_plan_available)
 
-    queue.queue_hwobj.connect("queue_execute_started",
-                              signals.queue_execution_started)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_execute_started", signals.queue_execution_started
+    )
 
-    queue.queue_hwobj.connect("queue_execution_finished",
-                              signals.queue_execution_finished)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_execution_finished", signals.queue_execution_finished
+    )
 
-    queue.queue_hwobj.connect("queue_stopped",
-                              signals.queue_execution_finished)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_stopped", signals.queue_execution_finished
+    )
 
-    queue.queue_hwobj.connect("queue_paused",
-                              signals.queue_execution_paused)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_paused", signals.queue_execution_paused
+    )
 
-    queue.queue_hwobj.connect("queue_execute_entry_finished",
-                              signals.queue_execution_entry_finished)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_execute_entry_finished", signals.queue_execution_entry_finished
+    )
 
-    queue.queue_hwobj.connect("collectEnded", signals.collect_ended)
+    blcontrol.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
 
-    queue.queue_hwobj.connect("queue_interleaved_started",
-                              signals.queue_interleaved_started)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_interleaved_started", signals.queue_interleaved_started
+    )
 
-    queue.queue_hwobj.connect("queue_interleaved_finished",
-                              signals.queue_interleaved_finished)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_interleaved_finished", signals.queue_interleaved_finished
+    )
 
-    queue.queue_hwobj.connect('queue_interleaved_sw_done',
-                              signals.queue_interleaved_sw_done)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_interleaved_sw_done", signals.queue_interleaved_sw_done
+    )
 
-    queue.queue_hwobj.connect('energy_scan_finished',
-                              signals.energy_scan_finished)
+    blcontrol.beamline.queue_manager.connect(
+        "energy_scan_finished", signals.energy_scan_finished
+    )
 
 
 def enable_sample_entries(sample_id_list, flag):
@@ -1757,8 +1822,11 @@ def get_task_progress(node, pdata):
     if node.is_executed():
         progress = 1
     elif is_interleaved(node):
-        progress = (pdata["current_idx"] + 1) * pdata["sw_size"] / \
-            float(pdata["nitems"] * pdata["sw_size"])
+        progress = (
+            (pdata["current_idx"] + 1)
+            * pdata["sw_size"]
+            / float(pdata["nitems"] * pdata["sw_size"])
+        )
     elif isinstance(node, qmo.Characterisation):
         dc = node.reference_image_collection
         total = float(dc.acquisitions[0].acquisition_parameters.num_images) * 2
@@ -1771,36 +1839,38 @@ def get_task_progress(node, pdata):
 
 
 def is_interleaved(node):
-    return hasattr(node, "interleave_num_images") and \
-        node.interleave_num_images > 0
+    return hasattr(node, "interleave_num_images") and node.interleave_num_images > 0
 
 
 def init_queue_settings():
-    mxcube.NUM_SNAPSHOTS = blcontrol.collect.getProperty('num_snapshots', 4)
-    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.collect.getProperty(
-        'auto_mount_sample', False)
-    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.collect.getProperty(
-        'auto_add_diff_plan', False)
+    mxcube.NUM_SNAPSHOTS = blcontrol.beamline.collect.getProperty("num_snapshots", 4)
+    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.beamline.collect.getProperty(
+        "auto_mount_sample", False
+    )
+    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.beamline.collect.getProperty(
+        "auto_add_diff_plan", False
+    )
 
 
 def add_default_sample():
     from . import scutils
 
-    sample = {"sampleID": "1",
-              "sampleName": "noname",
-              "proteinAcronym": "noacronym",
-              "type": "Sample",
-              "defaultPrefix": "noname",
-              "location": 'Manual',
-              "loadable": True,
-              "tasks": []}
+    sample = {
+        "sampleID": "1",
+        "sampleName": "noname",
+        "proteinAcronym": "noacronym",
+        "type": "Sample",
+        "defaultPrefix": "noname",
+        "location": "Manual",
+        "loadable": True,
+        "tasks": [],
+    }
 
     try:
         scutils.mount_sample_clean_up(sample)
     except Exception as ex:
-        logging.getLogger('MX3.HWR').exception(
-            '[SC] sample could not be mounted')
-        logging.getLogger('MX3.HWR').exception(str(ex))
+        logging.getLogger("MX3.HWR").exception("[SC] sample could not be mounted")
+        logging.getLogger("MX3.HWR").exception(str(ex))
     else:
         queue_add_item([sample])
 
@@ -1813,7 +1883,7 @@ def queue_start(sid):
               200: On success
               409: Queue could not be started
     """
-    logging.getLogger('MX3.HWR').info('[QUEUE] Queue going to start')
+    logging.getLogger("MX3.HWR").info("[QUEUE] Queue going to start")
     from mxcube3.routes import signals
 
     try:
@@ -1826,36 +1896,36 @@ def queue_start(sid):
         else:
             # Making sure all sample entries are enabled before running the
             # queue qutils.enable_sample_entries(queue["sample_order"], True)
-            blcontrol.queue.queue_hwobj.set_pause(False)
-            blcontrol.queue.queue_hwobj.execute()
+            blcontrol.beamline.queue_manager.set_pause(False)
+            blcontrol.beamline.queue_manager.execute()
 
     except Exception as ex:
         signals.queue_execution_failed(ex)
     else:
-        logging.getLogger('MX3.HWR').info('[QUEUE] Queue started')
+        logging.getLogger("MX3.HWR").info("[QUEUE] Queue started")
 
 
 def queue_stop():
     from mxcube3.routes import signals
 
-    if blcontrol.queue.queue_hwobj._root_task is not None:
-        blcontrol.queue.queue_hwobj.stop()
+    if blcontrol.beamline.queue_manager._root_task is not None:
+        blcontrol.beamline.queue_manager.stop()
     else:
-        qe = blcontrol.queue.queue_hwobj.get_current_entry()
+        qe = blcontrol.beamline.queue_manager.get_current_entry()
         # check if a node/task is executing and stop that one
         if qe:
             try:
                 qe.stop()
             except Exception as ex:
-                logging.getLogger('MX3.HWR').exception('[QUEUE] Could not stop queue')
-            blcontrol.queue.queue_hwobj.set_pause(False)
+                logging.getLogger("MX3.HWR").exception("[QUEUE] Could not stop queue")
+            blcontrol.beamline.queue_manager.set_pause(False)
             # the next two is to avoid repeating the task
             # TODO: if you now run the queue it will be enabled and run
             qe.get_data_model().set_executed(True)
             qe.get_data_model().set_enabled(False)
             qe._execution_failed = True
 
-            blcontrol.queue.queue_hwobj._is_stopped = True
+            blcontrol.beamline.queue_manager._is_stopped = True
             signals.queue_execution_stopped()
             signals.collect_oscillation_failed()
 
@@ -1864,13 +1934,15 @@ def queue_pause():
     """
     Pause the execution of the queue
     """
-    blcontrol.queue.queue_hwobj.pause(True)
+    blcontrol.beamline.queue_manager.pause(True)
 
-    msg = {'Signal': queue_exec_state(),
-           'Message': 'Queue execution paused',
-           'State': 1}
+    msg = {
+        "Signal": queue_exec_state(),
+        "Message": "Queue execution paused",
+        "State": 1,
+    }
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] Paused')
+    logging.getLogger("MX3.HWR").info("[QUEUE] Paused")
 
     return msg
 
@@ -1883,27 +1955,31 @@ def queue_unpause():
               200: On success
               409: Queue could not be unpause
     """
-    blcontrol.queue.queue_hwobj.pause(False)
+    blcontrol.beamline.queue_manager.pause(False)
 
-    msg = {'Signal': queue_exec_state(),
-           'Message': 'Queue execution started',
-           'State': 1}
+    msg = {
+        "Signal": queue_exec_state(),
+        "Message": "Queue execution started",
+        "State": 1,
+    }
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] Resumed')
+    logging.getLogger("MX3.HWR").info("[QUEUE] Resumed")
 
     return msg
 
 
 def queue_clear():
     limsutils.init_sample_list()
-    blcontrol.queue = new_queue()
-    msg = '[QUEUE] Cleared  ' + str(blcontrol.queue.get_model_root()._name)
-    logging.getLogger('MX3.HWR').info(msg)
+    # blcontrol.beamline.queue_model = clear_queue()
+    msg = "[QUEUE] Cleared  " + str(
+        blcontrol.beamline.queue_model.get_model_root()._name
+    )
+    logging.getLogger("MX3.HWR").info(msg)
 
 
 def set_queue(json_queue, session):
     # Clear queue
-    blcontrol.queue = new_queue()
+    # blcontrol.beamline.queue_model = clear_queue()
 
     # Set new queue
     queue_add_item(json_queue)
@@ -1919,7 +1995,7 @@ def queue_update_item(sqid, tqid, data):
     elif data["type"] == "Characterisation":
         set_char_params(model, entry, data, sample_model)
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % queue_to_json())
 
     return model
 
@@ -1929,29 +2005,30 @@ def queue_enable_item(qid_list, enabled):
     for qid in qid_list:
         set_enabled_entry(qid, enabled)
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] is:\n%s ' % queue_to_json())
+    logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % queue_to_json())
 
 
 def update_sample(sid, params):
 
-    sample_node = blcontrol.queue.get_node(sid)
+    sample_node = blcontrol.beamline.queue_model.get_node(sid)
 
     if sample_node:
-        sample_entry = blcontrol.queue.queue_hwobj.get_entry_with_model(
-            sample_node)
+        sample_entry = blcontrol.beamline.queue_manager.get_entry_with_model(
+            sample_node
+        )
         # TODO: update here the model with the new 'params'
         # missing lines...
         sample_entry.set_data_model(sample_node)
-        logging.getLogger('MX3.HWR').info('[QUEUE] sample updated')
+        logging.getLogger("MX3.HWR").info("[QUEUE] sample updated")
     else:
         msg = "[QUEUE] Sample with id %s not in queue, can't update" % sid
-        logging.getLogger('MX3.HWR').error(msg)
+        logging.getLogger("MX3.HWR").error(msg)
         raise Exception(msg)
 
 
 def toggle_node(node_id):
-    node = blcontrol.queue.get_node(node_id)
-    entry = blcontrol.queue.queue_hwobj.get_entry_with_model(node)
+    node = blcontrol.beamline.queue_model.get_node(node_id)
+    entry = blcontrol.beamline.queue_manager.get_entry_with_model(node)
     queue = queue_to_dict()
 
     if isinstance(entry, qe.SampleQueueEntry):
@@ -1966,9 +2043,10 @@ def toggle_node(node_id):
 
         new_state = entry.is_enabled()
         for elem in queue[node_id]:
-            child_node = blcontrol.queue.get_node(elem['queueID'])
-            child_entry = blcontrol.queue.queue_hwobj.get_entry_with_model(
-                child_node)
+            child_node = blcontrol.beamline.queue_model.get_node(elem["queueID"])
+            child_entry = blcontrol.beamline.queue_manager.get_entry_with_model(
+                child_node
+            )
             if new_state:
                 child_entry.set_enabled(True)
                 child_node.set_enabled(True)
@@ -1978,8 +2056,9 @@ def toggle_node(node_id):
 
     else:
         # not a sample so find the parent and toggle directly
-        logging.getLogger('MX3.HWR').info(
-            '[QUEUE] toggling entry with id: %s' % node_id)
+        logging.getLogger("MX3.HWR").info(
+            "[QUEUE] toggling entry with id: %s" % node_id
+        )
         # this is a TaskGroup, so it is not in the parsed queue
         parent_node = node.get_parent()
         # go a level up,
@@ -1988,8 +2067,9 @@ def toggle_node(node_id):
         if isinstance(parent_node, qmo.TaskGroup):
             parent_node = parent_node.get_parent()
         parent = parent_node._node_id
-        parent_entry = blcontrol.queue.queue_hwobj.get_entry_with_model(
-            parent_node)
+        parent_entry = blcontrol.beamline.queue_manager.get_entry_with_model(
+            parent_node
+        )
         # now that we know the sample parent no matter what is the entry
         # (char, dc) check if the brother&sisters are enabled (and enable the
         # parent)
@@ -1997,7 +2077,7 @@ def toggle_node(node_id):
 
         for i in queue[parent]:
             # at least one brother is enabled, no need to change parent
-            if i['queueID'] != node_id and i['checked'] == 1:
+            if i["queueID"] != node_id and i["checked"] == 1:
                 checked = 1
                 break
         if entry.is_enabled():
@@ -2010,7 +2090,7 @@ def toggle_node(node_id):
 
         new_state = entry.is_enabled()
         for met in queue[parent]:
-            if int(met.get('queueID')) == node_id:
+            if int(met.get("queueID")) == node_id:
                 if new_state == 0 and checked == 0:
                     parent_entry.set_enabled(False)
                     parent_node.set_enabled(False)
@@ -2020,23 +2100,23 @@ def toggle_node(node_id):
 
 
 def add_centring(_id, params):
-    msg = '[QUEUE] centring add requested with data: ' + str(params)
-    logging.getLogger('MX3.HWR').info(msg)
+    msg = "[QUEUE] centring add requested with data: " + str(params)
+    logging.getLogger("MX3.HWR").info(msg)
 
     cent_node = qmo.SampleCentring()
     cent_entry = qe.SampleCentringQueueEntry()
     cent_entry.set_data_model(cent_node)
     cent_entry.set_queue_controller(blcontrol.qm)
-    node = blcontrol.queue.get_node(int(id))
-    entry = blcontrol.queue.queue_hwobj.get_entry_with_model(node)
+    node = blcontrol.beamline.queue_model.get_node(int(id))
+    entry = blcontrol.beamline.queue_manager.get_entry_with_model(node)
     entry._set_background_color = Mock()
 
-    new_node = blcontrol.queue.add_child_at_id(int(id), cent_node)
+    new_node = blcontrol.beamline.queue_model.add_child_at_id(int(id), cent_node)
     entry.enqueue(cent_entry)
 
-    logging.getLogger('MX3.HWR').info('[QUEUE] centring added to sample')
+    logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
 
-    return {'QueueId': new_node, 'Type': 'Centring', 'Params': params}
+    return {"QueueId": new_node, "Type": "Centring", "Params": params}
 
 
 def get_default_dc_params():
@@ -2044,36 +2124,35 @@ def get_default_dc_params():
     returns the default values for an acquisition (data collection).
     """
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
-    ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
-    ftype = ftype if ftype else '.?'
-    bl = BeamlineSetupMediator(blcontrol.beamline)
+    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = ftype if ftype else ".?"
 
     return {
-        'acq_parameters': {
-            'first_image': acq_parameters.first_image,
-            'num_images': acq_parameters.num_images,
-            'osc_start': acq_parameters.osc_start,
-            'osc_range': acq_parameters.osc_range,
-            'kappa': acq_parameters.kappa,
-            'kappa_phi': acq_parameters.kappa_phi,
-            'overlap': acq_parameters.overlap,
-            'exp_time': acq_parameters.exp_time,
-            'num_passes': acq_parameters.num_passes,
-            'resolution': acq_parameters.resolution,
-            'energy': acq_parameters.energy,
-            'transmission': acq_parameters.transmission,
-            'shutterless': acq_parameters.shutterless,
-            'detector_mode': acq_parameters.detector_mode,
-            'inverse_beam': False,
-            'take_dark_current': True,
-            'skip_existing_images': False,
-            'take_snapshots': True,
-            'helical': False,
-            'mesh': False,
-            'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
+        "acq_parameters": {
+            "first_image": acq_parameters.first_image,
+            "num_images": acq_parameters.num_images,
+            "osc_start": acq_parameters.osc_start,
+            "osc_range": acq_parameters.osc_range,
+            "kappa": acq_parameters.kappa,
+            "kappa_phi": acq_parameters.kappa_phi,
+            "overlap": acq_parameters.overlap,
+            "exp_time": acq_parameters.exp_time,
+            "num_passes": acq_parameters.num_passes,
+            "resolution": acq_parameters.resolution,
+            "energy": acq_parameters.energy,
+            "transmission": acq_parameters.transmission,
+            "shutterless": acq_parameters.shutterless,
+            "detector_mode": acq_parameters.detector_mode,
+            "inverse_beam": False,
+            "take_dark_current": True,
+            "skip_existing_images": False,
+            "take_snapshots": True,
+            "helical": False,
+            "mesh": False,
+            "prefixTemplate": "{PREFIX}_{POSITION}",
+            "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
         },
-        'limits': bl.get_acquisition_limit_values()
+        "limits": blcontrol.beamline.acquisition_limit_values,
     }
 
 
@@ -2082,73 +2161,74 @@ def get_default_char_acq_params():
     returns the default values for a characterisation acquisition.
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
-    acq_parameters = blcontrol.beamline.get_default_char_acq_parameters()
-    ftype = blcontrol.beamline.detector_hwobj.getProperty('file_suffix')
-    ftype = ftype if ftype else '.?'
-    char_defaults = blcontrol.beamline.\
-        get_default_characterisation_parameters().as_dict()
+    acq_parameters = blcontrol.beamline.get_default_acquisition_parameters(
+        "characterisation"
+    )
+    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = ftype if ftype else ".?"
+    char_defaults = (
+        blcontrol.beamline.data_analysis.get_default_characterisation_parameters().as_dict()
+    )
 
     acq_defaults = {
-        'first_image': acq_parameters.first_image,
-        'num_images': acq_parameters.num_images,
-        'osc_start': acq_parameters.osc_start,
-        'osc_range': acq_parameters.osc_range,
-        'kappa': acq_parameters.kappa,
-        'kappa_phi': acq_parameters.kappa_phi,
-        'overlap': acq_parameters.overlap,
-        'exp_time': acq_parameters.exp_time,
-        'num_passes': acq_parameters.num_passes,
-        'resolution': acq_parameters.resolution,
-        'energy': acq_parameters.energy,
-        'transmission': acq_parameters.transmission,
-        'shutterless': False,
-        'detector_mode': acq_parameters.detector_mode,
-        'inverse_beam': False,
-        'take_dark_current': True,
-        'skip_existing_images': False,
-        'take_snapshots': True,
-        'prefixTemplate': '{PREFIX}_{POSITION}',
-        'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}', }
+        "first_image": acq_parameters.first_image,
+        "num_images": acq_parameters.num_images,
+        "osc_start": acq_parameters.osc_start,
+        "osc_range": acq_parameters.osc_range,
+        "kappa": acq_parameters.kappa,
+        "kappa_phi": acq_parameters.kappa_phi,
+        "overlap": acq_parameters.overlap,
+        "exp_time": acq_parameters.exp_time,
+        "num_passes": acq_parameters.num_passes,
+        "resolution": acq_parameters.resolution,
+        "energy": acq_parameters.energy,
+        "transmission": acq_parameters.transmission,
+        "shutterless": False,
+        "detector_mode": acq_parameters.detector_mode,
+        "inverse_beam": False,
+        "take_dark_current": True,
+        "skip_existing_images": False,
+        "take_snapshots": True,
+        "prefixTemplate": "{PREFIX}_{POSITION}",
+        "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
+    }
 
     char_defaults.update(acq_defaults)
 
-    return {'acq_parameters': char_defaults}
+    return {"acq_parameters": char_defaults}
 
 
 def get_default_mesh_params():
     """
     returns the default values for a mesh.
     """
-    acq_parameters = blcontrol.beamline.\
-        get_default_acquisition_parameters('default_mesh_values')
+    acq_parameters = blcontrol.beamline.get_default_acquisition_parameters("mesh")
 
     return {
-        'acq_parameters': {
-            'first_image': acq_parameters.first_image,
-            'num_images': acq_parameters.num_images,
-            'osc_start': acq_parameters.osc_start,
-            'osc_range': acq_parameters.osc_range,
-            'kappa': acq_parameters.kappa,
-            'kappa_phi': acq_parameters.kappa_phi,
-            'overlap': acq_parameters.overlap,
-            'exp_time': acq_parameters.exp_time,
-            'num_passes': acq_parameters.num_passes,
-            'resolution': acq_parameters.resolution,
-            'energy': acq_parameters.energy,
-            'transmission': acq_parameters.transmission,
-            'shutterless': acq_parameters.shutterless,
-            'detector_mode': acq_parameters.detector_mode,
-            'inverse_beam': False,
-            'take_dark_current': True,
-            'skip_existing_images': False,
-            'take_snapshots': True,
-            'cell_counting': blcontrol.beamline['default_mesh_values'].
-            getProperty('cell_counting', 'zig-zag'),
-            'cell_spacing': blcontrol.beamline['default_mesh_values'].
-            getProperty('cell_spacing', 'None'),
-            'prefixTemplate': '{PREFIX}_{POSITION}',
-            'subDirTemplate': '{ACRONYM}/{ACRONYM}-{NAME}',
-        },
+        "acq_parameters": {
+            "first_image": acq_parameters.first_image,
+            "num_images": acq_parameters.num_images,
+            "osc_start": acq_parameters.osc_start,
+            "osc_range": acq_parameters.osc_range,
+            "kappa": acq_parameters.kappa,
+            "kappa_phi": acq_parameters.kappa_phi,
+            "overlap": acq_parameters.overlap,
+            "exp_time": acq_parameters.exp_time,
+            "num_passes": acq_parameters.num_passes,
+            "resolution": acq_parameters.resolution,
+            "energy": acq_parameters.energy,
+            "transmission": acq_parameters.transmission,
+            "shutterless": acq_parameters.shutterless,
+            "detector_mode": acq_parameters.detector_mode,
+            "inverse_beam": False,
+            "take_dark_current": True,
+            "skip_existing_images": False,
+            "take_snapshots": True,
+            "cell_counting": acq_parameters.cell_counting,
+            "cell_spacing": acq_parameters.cell_spacing,
+            "prefixTemplate": "{PREFIX}_{POSITION}",
+            "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
+        }
     }
 
 
@@ -2156,8 +2236,9 @@ def get_default_xrf_parameters():
     int_time = 5
 
     try:
-        int_time = blcontrol.beamline.getObjectByRole('xrf_spectrum').\
-            getProperty('default_integration_time', '5').strip()
+        int_time = blcontrol.beamline.xrf_spectrum.getProperty(
+            "default_integration_time", "5"
+        ).strip()
         try:
             int(int_time)
         except ValueError:
@@ -2175,8 +2256,8 @@ def get_sample(_id):
     sample = queue_to_dict().get(_id, None)
 
     if not sample:
-        msg = '[QUEUE] sample info could not be retrieved'
-        logging.getLogger('MX3.HWR').error(msg)
+        msg = "[QUEUE] sample info could not be retrieved"
+        logging.getLogger("MX3.HWR").error(msg)
 
     return sample
 
@@ -2186,17 +2267,17 @@ def get_method(sample_id, method_id):
 
     if not sample:
         msg = "[QUEUE] sample info could not be retrieved"
-        logging.getLogger('MX3.HWR').error(msg)
+        logging.getLogger("MX3.HWR").error(msg)
         raise Exception(msg)
     else:
         # Find task with queue id method_id
         for task in sample.tasks:
-            if task['queueID'] == int(method_id):
+            if task["queueID"] == int(method_id):
                 return task
 
     msg = "[QUEUE] method info could not be retrieved, it does not exits for"
     msg += " the given sample"
-    logging.getLogger('MX3.HWR').exception(msg)
+    logging.getLogger("MX3.HWR").exception(msg)
 
     raise Exception(msg)
 
@@ -2210,6 +2291,6 @@ def set_group_folder(path):
 
     path = "".join([c for c in path if re.match(r"^[a-zA-Z0-9_/-]*$", c)])
 
-    blcontrol.session.set_user_group(path)
-    root_path = blcontrol.session.get_base_image_directory()
-    return {'path': path, 'rootPath': root_path}
+    blcontrol.beamline.session.set_user_group(path)
+    root_path = blcontrol.beamline.session.get_base_image_directory()
+    return {"path": path, "rootPath": root_path}

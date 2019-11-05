@@ -1,4 +1,5 @@
 <object class="ISPyBClientMockup">
+  <object hwrid="/lims_rest" role="lims_rest"/>
   <ws_root>
     https://your.lims.org
   </ws_root>

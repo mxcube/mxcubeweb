@@ -1,0 +1,6 @@
+<device class="MicrodiffZoomMockup">
+  <username>zoom</username>
+  <motor_name>zoom</motor_name>
+  <exporter_address>130.235.94.124:9001</exporter_address>
+  <position>5</position>
+</device>

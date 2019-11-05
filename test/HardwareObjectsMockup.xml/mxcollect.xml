@@ -1,11 +1,11 @@
 <object class="MultiCollectMockup">
-  <object href="/minidiff-mockup" role="diffractometer"/>
+  <object href="/minidiff_mockup" role="diffractometer"/>
   <object href="/mxlocal" role="beamline_configuration"/>
-  <object href="/sc-mockup" role="sample_changer"/>
-  <object href="/energy-mockup" role="energy"/>
-  <object href="/attenuators-mockup" role="transmission"/>
-  <object href="/detector-mockup" role="detector"/>
-  <object href="/resolution-mockup" role="resolution"/>
+  <object href="/sc_mockup" role="sample_changer"/>
+  <object href="/energy_mockup" role="energy"/>
+  <object href="/attenuators_mockup" role="transmission"/>
+  <object href="/detector_mockup" role="detector"/>
+  <object href="/resolution_mockup" role="resolution"/>
   <object href="/lims" role="dbserver"/> 
   <num_snapshots>0</num_snapshots>
 

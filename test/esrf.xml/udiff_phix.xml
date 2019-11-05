@@ -1,0 +1,7 @@
+<device class="MotorMockup">
+  <username>PhiX</username>
+  <exporter_address>130.235.94.124:9001</exporter_address>
+  <motor_name>AlignmentX</motor_name>
+  <GUIstep>0.1</GUIstep>
+  <unit>1e-3</unit>
+</device>

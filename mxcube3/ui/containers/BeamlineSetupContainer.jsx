@@ -171,7 +171,6 @@ class BeamlineSetupContainer extends React.Component {
                       onCancel= { this.onCancelHandler }
                     />)
                   }
-
                 </td>
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
                   Resolution:
@@ -202,13 +201,17 @@ class BeamlineSetupContainer extends React.Component {
                 <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
                   Cryo:
                 </td>
-                <td>
-                  <LabeledValue
-                    name=""
-                    suffix="K"
-                    value={this.props.beamline.attributes.cryo.value}
-                  />
-                </td>
+                  { this.props.beamline.attributes.cryo ?
+                    <td>
+                      <LabeledValue
+                        name=""
+                        suffix="K"
+                        value={this.props.beamline.attributes.cryo.value}
+                      />
+                    </td>
+                    :
+                    null
+                  }
               </tr>
               <tr>
                 <td>
@@ -239,9 +242,9 @@ class BeamlineSetupContainer extends React.Component {
                 <td>
                   <PopInput
                     name=""
-                    pkey="detdist"
+                    pkey="detector_distance"
                     suffix="mm"
-                    data={this.props.beamline.attributes.detdist}
+                    data={this.props.beamline.attributes.detector_distance}
                     onSave={this.setAttribute}
                     onCancel={this.onCancelHandler}
                   />
@@ -266,7 +269,7 @@ class BeamlineSetupContainer extends React.Component {
             <Col sm={5} smPush={1}>
               <Col sm={2} className="pull-right">
                 <MachInfo
-                  info={this.props.beamline.attributes.machinfo.value}
+                  info={this.props.beamline.attributes.machine_info.value}
                 />
               </Col>
               {this.createActuatorComponent()}

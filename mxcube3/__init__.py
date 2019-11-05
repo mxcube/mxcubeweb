@@ -97,16 +97,17 @@ socketio.init_app(server)
 # (because of the Reloader)
 
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    from core import loginutils
+
+    # Make the valid_login_only decorator available on server object
+    server.restrict = loginutils.valid_login_only
+    server.ws_restrict = loginutils.ws_valid_login_only
+
     mxcube.init(hwr, cmdline_options.hwr_directory,
                 cmdline_options.allow_remote,
                 cmdline_options.ra_timeout,
                 cmdline_options.video_device,
                 cmdline_options.log_file)
-
-    from core import loginutils
-
-    # Make the valid_login_only decorator available on server object
-    server.restrict = loginutils.valid_login_only
 
     # Install server-side UI state storage
     mxcube.init_state_storage()

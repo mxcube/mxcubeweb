@@ -1,9 +1,5 @@
-<device class="InOut">
+<device class="MotorMockup">
   <username>Microdiff light</username>
-  <motor_name>backlight</motor_name>
-  <specversion>bli9113-spec:kappa</specversion>
-   <offset>0</offset>
-  <command type="spec" name="set_in">lightin</command>
-  <command type="spec" name="set_out">lightout</command>
-  <channel type="tango" name="state" tangoname="i9113/microdiff/newmd" polling="500">BackLightIsOn</channel>
+  <exporter_address>192.168.96.43:9001</exporter_address>
+  <motor_name>Frontlight</motor_name>
 </device>

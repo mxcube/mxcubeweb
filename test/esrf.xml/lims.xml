@@ -1,0 +1,10 @@
+<object class="ISPyBClient2">
+  <ws_root>
+    <!-- https://ispyb.esrf.fr/ispyb/ispyb-ws/ispybWS/ -->
+    https://ispyb-valid.esrf.fr/ispyb/ispyb-ws/ispybWS/
+  </ws_root>
+  <ws_username>ispybws1</ws_username>
+  <ws_password>I$pybws1</ws_password>
+  <object role="session" href="/session"/>
+  <object role="ldapServer" href="/ldapconnection"/>
+</object>
