@@ -46,6 +46,12 @@ def remove_user(sid):
 def get_user_by_sid(sid):
     return mxcube.USERS.get(sid, None)
 
+def get_user_by_name(username):
+    for sid in mxcube.USERS.keys():
+        a_user = mxcube.USERS.get(sid)
+        if a_user.get('loginID') == username:
+            return a_user
+    return None
 
 def deny_access(msg):
     resp = jsonify({"msg": msg})
