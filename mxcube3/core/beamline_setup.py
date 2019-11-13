@@ -667,7 +667,7 @@ class TransmissionHOMediator(HOMediatorBase):
         :returns: The transmission limits.
         """
         try:
-            trans_limits = self._ho.getLimits()
+            trans_limits = self._ho.get_limits()
         except (AttributeError, TypeError):
             trans_limits = (0, 100)
             raise ValueError("Could not get limits")
@@ -685,17 +685,6 @@ class TransmissionHOMediator(HOMediatorBase):
             raise ValueError("Can't set transmission: %s" % str(ex))
 
         return self.get()
-
-    def limits(self):
-        """
-        :returns: The transmission limits.
-        """
-        try:
-            trans_limits = self._ho.getLimits()
-        except (AttributeError, TypeError):
-            trans_limits = (0, 100)
-
-        return trans_limits
 
     def get(self):
         try:
@@ -731,7 +720,7 @@ class ResolutionHOMediator(HOMediatorBase):
 
     def get(self):
         try:
-            resolution = self._ho.getPosition()
+            resolution = self._ho.get_position()
             resolution = round(float(resolution), self._precision)
             resolution = ("{:2.%sf}" % self._precision).format(resolution)
         except (TypeError, AttributeError):
@@ -744,7 +733,7 @@ class ResolutionHOMediator(HOMediatorBase):
         :returns: The resolution limits.
         """
         try:
-            resolution_limits = self._ho.getLimits()
+            resolution_limits = self._ho.get_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
@@ -754,7 +743,7 @@ class ResolutionHOMediator(HOMediatorBase):
         self._ho.stop()
 
     def state(self):
-        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), 0)
+        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.get_state(), 0)
 
     def _calc_res(self, radius, energy, dist):
         current_wavelength = 12.3984 / energy
@@ -782,7 +771,7 @@ class ResolutionHOMediator(HOMediatorBase):
             radius = self._ho.det_radius
             det_dist = HWR.beamline.detector.distance
 
-            pos_min, pos_max = det_dist.getLimits()
+            pos_min, pos_max = det_dist.get_limits()
 
             for e in x:
                 res_min, res_max = (
@@ -832,7 +821,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
 
     def get(self):
         try:
-            detdist = self._ho.getPosition()
+            detdist = self._ho.get_position()
             detdist = round(float(detdist), self._precision)
             detdist = ("{:4.%sf}" % self._precision).format(detdist)
         except (TypeError, AttributeError):
@@ -845,7 +834,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         :returns: The detector distance limits.
         """
         try:
-            detdist_limits = self._ho.getLimits()
+            detdist_limits = self._ho.get_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
@@ -855,8 +844,7 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         self._ho.stop()
 
     def state(self):
-        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.getState(), "READY")
-
+        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.get_state().value, "READY")
 
 class MachineInfoHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):

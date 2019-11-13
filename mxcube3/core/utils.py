@@ -78,9 +78,9 @@ def get_light_state_and_intensity():
             {
                 light: {
                     "name": light,
-                    "state": hwobj.getState(),
-                    "position": hwobj.getPosition(),
-                    "limits": hwobj.getLimits(),
+                    "state": hwobj.get_state().value,
+                    "position": hwobj.get_position(),
+                    "limits": hwobj.get_limits(),
                 },
                 light
                 + "Switch": {
@@ -102,7 +102,7 @@ def get_light_limits():
 
         hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_role)
 
-        ret.update({light: {"limits": hwobj.getLimits()}})
+        ret.update({light: {"limits": hwobj.get_limits()}})
 
     return ret
 
@@ -139,7 +139,7 @@ def get_movable_state_and_position(item_name):
             return {
                 item_name: {
                     "name": item_name,
-                    "state": hwobj.get_state(),
+                    "state": hwobj.get_state().value,
                     "position": pos,
                 }
             }

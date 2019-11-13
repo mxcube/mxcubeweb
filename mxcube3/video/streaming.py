@@ -129,7 +129,7 @@ def new_frame_received(img, width, height, *args, **kwargs):
 
 def get_available_sizes(camera):
     try:
-        w, h = camera.getWidth(), camera.getHeight()
+        w, h = camera.get_width(), camera.get_height()
 
         # Some video decoders have difficulties to decode videos with odd image dimensions
         # (JSMPEG beeing one of them) so we make sure that the size is even
@@ -153,7 +153,7 @@ def set_initial_stream_size(camera, video_device_path):
     global VIDEO_SIZE
     global VIDEO_ORIGINAL_SIZE
 
-    w, h = camera.getWidth(), camera.getHeight()
+    w, h = camera.get_width(), camera.get_height()
     w = w if w % 2 == 0 else w + 1
     h = h if h % 2 == 0 else h + 1
 
@@ -172,10 +172,10 @@ def tango_lima_video_plugin(camera, video_device):
         # patch hardware object to set acquisition to the right mode
         # and to get the right frames out of the video device
         if camera.isReady():
-            camera.setLive(False)
+            camera.set_live(False)
             camera.device.video_mode = "RGB24"
             time.sleep(0.1)
-            camera.setLive(True)
+            camera.set_live(True)
 
             def parse_image_data(self, img_data):
                 hfmt = ">IHHqiiHHHH"
@@ -200,7 +200,7 @@ def tango_lima_video_plugin(camera, video_device):
                 img.save(path)
 
             camera._do_polling = types.MethodType(do_polling, camera)
-            camera.takeSnapshot = types.MethodType(take_snapshot, camera)
+            camera.take_snapshot = types.MethodType(take_snapshot, camera)
             camera.parse_image_data = types.MethodType(parse_image_data, camera)
 
 
@@ -234,7 +234,7 @@ def init(camera, video_device_path):
     :param str video_device_path: Video loopback path
     """
     set_initial_stream_size(camera, video_device_path)
-    tango_lima_video_plugin(camera, video_device_path)
+    #tango_lima_video_plugin(camera, video_device_path)
     video_device = open_video_device(video_device_path)
 
     # Poll camera and write images directly to loopback video device

@@ -398,7 +398,7 @@ def rotate_to(sid):
 def move_zoom_motor(pos):
     zoom_motor = blcontrol.beamline.diffractometer.getObjectByRole("zoom")
 
-    if zoom_motor.getState() != 2:
+    if zoom_motor.get_state() != MotorStates.READY:
         return (
             "motor is already moving",
             406,
@@ -462,10 +462,11 @@ def move_motor(motid, newpos):
         motor.stop()
         return True
     else:
-        if motor.getState() != MotorStates.READY:
+        if motor.get_state() != MotorStates.READY:
             raise Exception(motid + " already moving")
 
-        limits = motor.getLimits()
+        limits = motor.get_limits()
+
         if not limits[0] <= float(newpos) <= limits[1]:
             raise Exception(motid + " position out of range, " + str(limits))
 
