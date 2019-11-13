@@ -165,7 +165,7 @@ export function doSignOut() {
 
 export function sendForceUserSignOut(sid) {
   return function () {
-    fetch('mxcube/api/v0.1/forceusersignout', {
+    return fetch('mxcube/api/v0.1/forceusersignout', {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -177,6 +177,15 @@ export function sendForceUserSignOut(sid) {
   };
 }
 
+
+export function forceUserSignOut(sid) {
+  return function (dispatch) {
+    dispatch(sendForceUserSignOut(sid)).then(() => {
+      dispatch(signOut());
+      browserHistory.push('/login');
+    });
+  };
+}
 
 export function forceSignOut() {
   return function (dispatch) {

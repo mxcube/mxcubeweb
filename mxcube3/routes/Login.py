@@ -15,8 +15,8 @@ from mxcube3 import socketio
 from loginutils import (create_user, add_user, remove_user, get_user_by_sid,
                         logged_in_users, deny_access, users, set_operator,
                         get_operator, is_operator, get_observer_name,
-                        is_local_host, remote_addr, get_observers, get_users, 
-                        define_user_type, clear_messages)
+                        is_local_host, remote_addr, get_observers, get_users,
+                        get_user_by_name, define_user_type, clear_messages)
 
 
 @mxcube.route("/mxcube/api/v0.1/login", methods=["POST"])
@@ -199,7 +199,10 @@ def forceusersignout():
     logging.getLogger("HWR").info('Forcing signout of user')
     user_id = request.get_json()['sid']
     user = get_user_by_sid(user_id)
-    remove_user(user_id)
+    # try by name
+    if user is None:
+        user = get_user_by_name(user_id)
+    remove_user(user.get('sid'))
     socketio.emit("signout", user, room=user["socketio_sid"], namespace='/hwr')
     logging.getLogger('HWR').info('[Login] %s user forced signout' % user['loginID'])
 
