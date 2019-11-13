@@ -36,6 +36,12 @@ export function selectProposal(prop) {
   };
 }
 
+export function unselectProposal() {
+  return {
+    type: 'UNSELECT_PROPOSAL',
+  };
+}
+
 export function sendMail(sender, content) {
   fetch('mxcube/api/v0.1/send_feedback', {
     method: 'POST',

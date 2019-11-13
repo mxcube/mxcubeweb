@@ -46,6 +46,7 @@ export default class LoginComponent extends React.Component {
             data={this.props.data}
             selectedProposal={this.props.selectedProposal}
             selectProposal={this.props.selectProposal}
+            unselectProposal={this.props.unselectProposal}
             sendSelectProposal={this.props.sendSelectProposal}
             singOut={this.props.doSignOut}
             hide={this.props.hideProposalsForm}

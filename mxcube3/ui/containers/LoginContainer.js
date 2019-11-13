@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { signIn,
          doSignOut,
          selectProposal,
+         unselectProposal,
          sendSelectProposal,
          hideProposalsForm } from '../actions/login';
 import { setLoading } from '../actions/general';
@@ -37,6 +38,7 @@ function mapDispatchToProps(dispatch) {
     doSignOut: bindActionCreators(doSignOut, dispatch),
     setLoading: bindActionCreators(setLoading, dispatch),
     selectProposal: bindActionCreators(selectProposal, dispatch),
+    unselectProposal: bindActionCreators(unselectProposal, dispatch),
     sendSelectProposal: bindActionCreators(sendSelectProposal, dispatch),
     hideProposalsForm: bindActionCreators(hideProposalsForm, dispatch)
   };
