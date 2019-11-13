@@ -129,7 +129,7 @@ available_methods:
     energy_scan: True
     mesh_scan: fals
 
-undelators:
+undulators:
     - type: PPU35C_GAP
       device_uri: //orion:10000/id/id/30
 
