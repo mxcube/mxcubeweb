@@ -42,6 +42,8 @@ def get_sc_contents_view():
 
 
 @server.route("/mxcube/api/v0.1/sample_changer/select/<loc>", methods=["GET"])
+@server.require_control
+@server.require_control
 @server.restrict
 def select_location(loc):
     blcontrol.beamline.sample_changer.select(loc)
@@ -49,6 +51,7 @@ def select_location(loc):
 
 
 @server.route("/mxcube/api/v0.1/sample_changer/scan/<loc>", methods=["GET"])
+@server.require_control
 @server.restrict
 def scan_location(loc):
     # do a recursive scan
@@ -57,6 +60,7 @@ def scan_location(loc):
 
 
 @server.route("/mxcube/api/v0.1/sample_changer/unmount_current", methods=["POST"])
+@server.require_control
 @server.restrict
 def unmount_current():
     try:
@@ -71,6 +75,7 @@ def unmount_current():
 
 
 @server.route("/mxcube/api/v0.1/sample_changer/mount", methods=["POST"])
+@server.require_control
 @server.restrict
 def mount_sample():
     resp = Response(status=200)
@@ -88,6 +93,7 @@ def mount_sample():
 
 
 @server.route("/mxcube/api/v0.1/sample_changer/unmount", methods=["POST"])
+@server.require_control
 @server.restrict
 def unmount_sample():
     try:
@@ -147,6 +153,7 @@ def get_initial_state():
 @server.route(
     "/mxcube/api/v0.1/sample_changer/send_command/<cmdparts>", methods=["GET"]
 )
+@server.require_control
 @server.restrict
 def send_command(cmdparts):
     try:

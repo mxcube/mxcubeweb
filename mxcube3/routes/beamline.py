@@ -23,6 +23,7 @@ def beamline_get_all_attributes():
 
 
 @server.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=["GET"])
+@server.require_control
 @server.restrict
 def beamline_abort_action(name):
     """
@@ -43,6 +44,7 @@ def beamline_abort_action(name):
 
 
 @server.route("/mxcube/api/v0.1/beamline/<name>/run", methods=["POST"])
+@server.require_control
 @server.restrict
 def beamline_run_action(name):
     """
@@ -67,6 +69,7 @@ def beamline_run_action(name):
 
 
 @server.route("/mxcube/api/v0.1/beamline/<name>", methods=["PUT"])
+@server.require_control
 @server.restrict
 def beamline_set_attribute(name):
     """
@@ -134,6 +137,7 @@ def beamline_get_data_path():
 
 
 @server.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=["PUT"])
+@server.require_control
 @server.restrict
 def prepare_beamline_for_sample():
     """

@@ -94,6 +94,7 @@ def set_image_size():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/<point_id>/moveto", methods=["PUT"])
+@server.require_control
 @server.restrict
 def move_to_centred_position(point_id):
     """
@@ -164,6 +165,7 @@ def shape_add_cell_result(sid):
 
 
 @server.route("/mxcube/api/v0.1/sampleview/shapes", methods=["POST"])
+@server.require_control
 @server.restrict
 def update_shapes():
     """
@@ -183,6 +185,7 @@ def update_shapes():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=["DELETE"])
+@server.require_control
 @server.restrict
 def delete_shape(sid):
     """
@@ -196,6 +199,7 @@ def delete_shape(sid):
 
 
 @server.route("/mxcube/api/v0.1/shapes/rotate_to", methods=["POST"])
+@server.require_control
 @server.restrict
 def rotate_to():
     """
@@ -219,6 +223,7 @@ def rotate_to():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/zoom", methods=["PUT"])
+@server.require_control
 @server.restrict
 def move_zoom_motor():
     """
@@ -241,6 +246,7 @@ def move_zoom_motor():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/backlighton", methods=["PUT"])
+@server.require_control
 @server.restrict
 def back_light_on():
     """
@@ -253,6 +259,7 @@ def back_light_on():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/backlightoff", methods=["PUT"])
+@server.require_control
 @server.restrict
 def back_light_off():
     """
@@ -265,6 +272,7 @@ def back_light_off():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/frontlighton", methods=["PUT"])
+@server.require_control
 @server.restrict
 def front_light_on():
     """
@@ -277,6 +285,7 @@ def front_light_on():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/frontlightoff", methods=["PUT"])
+@server.require_control
 @server.restrict
 def front_light_off():
     """
@@ -289,6 +298,7 @@ def front_light_off():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/<motid>/<newpos>", methods=["PUT"])
+@server.require_control
 @server.restrict
 def move_motor(motid, newpos):
     """
@@ -337,6 +347,7 @@ def get_status_of_id(elem_id):
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=["PUT"])
+@server.require_control
 @server.restrict
 def centre_auto():
     """
@@ -349,6 +360,7 @@ def centre_auto():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/start3click", methods=["PUT"])
+@server.require_control
 @server.restrict
 def centre_3_click():
     """
@@ -364,6 +376,7 @@ def centre_3_click():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/abort", methods=["PUT"])
+@server.require_control
 @server.restrict
 def abort_centring():
     """
@@ -376,6 +389,7 @@ def abort_centring():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/click", methods=["PUT"])
+@server.require_control
 @server.restrict
 def click():
     """
@@ -399,6 +413,7 @@ def click():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=["PUT"])
+@server.require_control
 @server.restrict
 def accept_centring():
     """
@@ -409,6 +424,7 @@ def accept_centring():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=["PUT"])
+@server.require_control
 @server.restrict
 def reject_centring():
     """Reject the centring position."""
@@ -417,6 +433,7 @@ def reject_centring():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/movetobeam", methods=["PUT"])
+@server.require_control
 @server.restrict
 def move_to_beam():
     """Go to the beam position from the given (x, y) position."""
@@ -428,6 +445,7 @@ def move_to_beam():
 
 
 @server.route("/mxcube/api/v0.1/sampleview/centring/centring_method", methods=["PUT"])
+@server.require_control
 @server.restrict
 def set_centring_method():
     """

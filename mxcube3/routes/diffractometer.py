@@ -47,6 +47,7 @@ def get_phase_list():
 
 
 @server.route("/mxcube/api/v0.1/diffractometer/phase", methods=["PUT"])
+@server.require_control
 @server.restrict
 def set_phase():
     """
@@ -90,6 +91,7 @@ def get_movables_state():
 
 
 @server.route("/mxcube/api/v0.1/diffractometer/aperture", methods=["PUT"])
+@server.require_control
 @server.restrict
 def set_aperture():
     """
