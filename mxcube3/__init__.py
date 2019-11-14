@@ -101,6 +101,7 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
     # Make the valid_login_only decorator available on server object
     server.restrict = loginutils.valid_login_only
+    server.require_control = loginutils.require_control
     server.ws_restrict = loginutils.ws_valid_login_only
 
     mxcube.init(hwr, cmdline_options.hwr_directory,

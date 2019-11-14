@@ -127,6 +127,16 @@ def valid_login_only(f):
 
     return wrapped
 
+def require_control(f):
+    @functools.wraps(f)
+    def wrapped(*args, **kwargs):
+        if not is_operator(session.sid):
+            return Response(status=401)
+        else:
+            return f(*args, **kwargs)
+
+    return wrapped
+
 def ws_valid_login_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):

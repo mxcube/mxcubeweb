@@ -15,6 +15,7 @@ from mxcube3.core import limsutils
 
 
 @server.route("/mxcube/api/v0.1/queue/start", methods=["PUT"])
+@server.require_control
 @server.restrict
 def queue_start():
     """
@@ -31,6 +32,7 @@ def queue_start():
 
 
 @server.route("/mxcube/api/v0.1/queue/stop", methods=["PUT"])
+@server.require_control
 @server.restrict
 def queue_stop():
     """
@@ -45,6 +47,7 @@ def queue_stop():
 
 
 @server.route("/mxcube/api/v0.1/queue/abort", methods=["PUT"])
+@server.require_control
 @server.restrict
 def queue_abort():
     """
@@ -59,6 +62,7 @@ def queue_abort():
 
 
 @server.route("/mxcube/api/v0.1/queue/pause", methods=["PUT"])
+@server.require_control
 @server.restrict
 def queue_pause():
     """
@@ -74,6 +78,7 @@ def queue_pause():
 
 
 @server.route("/mxcube/api/v0.1/queue/unpause", methods=["PUT"])
+@server.require_control
 @server.restrict
 def queue_unpause():
     """
@@ -89,6 +94,7 @@ def queue_unpause():
 
 
 @server.route("/mxcube/api/v0.1/queue/clear", methods=["PUT", "GET"])
+@server.require_control
 @server.restrict
 def queue_clear():
     """
@@ -137,6 +143,7 @@ def queue_get_state():
 
 
 @server.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=["PUT"])
+@server.require_control
 @server.restrict
 def execute_entry_with_id(sid, tindex):
     """
@@ -156,6 +163,7 @@ def execute_entry_with_id(sid, tindex):
 
 
 @server.route("/mxcube/api/v0.1/queue", methods=["PUT"])
+@server.require_control
 @server.restrict
 def set_queue():
     qutils.set_queue(request.get_json(), session)
@@ -163,6 +171,7 @@ def set_queue():
 
 
 @server.route("/mxcube/api/v0.1/queue", methods=["POST"])
+@server.require_control
 @server.restrict
 def queue_add_item():
     tasks = request.get_json()
@@ -182,6 +191,7 @@ def queue_add_item():
 
 
 @server.route("/mxcube/api/v0.1/queue/<sqid>/<tqid>", methods=["POST"])
+@server.require_control
 @server.restrict
 def queue_update_item(sqid, tqid):
     data = request.get_json()
@@ -195,6 +205,7 @@ def queue_update_item(sqid, tqid):
 
 
 @server.route("/mxcube/api/v0.1/queue/delete", methods=["POST"])
+@server.require_control
 @server.restrict
 def queue_delete_item():
     item_pos_list = request.get_json()
@@ -205,6 +216,7 @@ def queue_delete_item():
 
 
 @server.route("/mxcube/api/v0.1/queue/set_enabled", methods=["POST"])
+@server.require_control
 @server.restrict
 def queue_enable_item():
     params = request.get_json()
@@ -216,6 +228,7 @@ def queue_enable_item():
 
 
 @server.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/swap", methods=["POST"])
+@server.require_control
 @server.restrict
 def queue_swap_task_item(sid, ti1, ti2):
     qutils.swap_task_entry(sid, int(ti1), int(ti2))
@@ -223,12 +236,14 @@ def queue_swap_task_item(sid, ti1, ti2):
 
 
 @server.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/move", methods=["POST"])
+@server.require_control
 def queue_move_task_item(sid, ti1, ti2):
     qutils.move_task_entry(sid, int(ti1), int(ti2))
     return Response(status=200)
 
 
 @server.route("/mxcube/api/v0.1/queue/sample-order", methods=["POST"])
+@server.require_control
 @server.restrict
 def queue_set_sample_order():
     sample_order = request.get_json().get("sampleOrder", [])
@@ -237,6 +252,7 @@ def queue_set_sample_order():
 
 
 @server.route("/mxcube/api/v0.1/queue/<sample_id>", methods=["PUT"])
+@server.require_control
 @server.restrict
 def update_sample(sample_id):
     """
@@ -263,6 +279,7 @@ def update_sample(sample_id):
 
 
 @server.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=["PUT"])
+@server.require_control
 @server.restrict
 def toggle_node(node_id):
     """
@@ -335,6 +352,7 @@ def get_default_xrf_parameters():
 
 
 @server.route("/mxcube/api/v0.1/queue/automount", methods=["POST"])
+@server.require_control
 @server.restrict
 def set_autmount():
     automount = request.get_json()
@@ -346,6 +364,7 @@ def set_autmount():
 
 
 @server.route("/mxcube/api/v0.1/queue/num_snapshots", methods=["PUT"])
+@server.require_control
 @server.restrict
 def set_num_snapshots():
     data = request.get_json()
@@ -357,6 +376,7 @@ def set_num_snapshots():
 
 
 @server.route("/mxcube/api/v0.1/queue/group_folder", methods=["POST"])
+@server.require_control
 @server.restrict
 def set_group_folder():
     path = request.get_json().get("path", "")
@@ -377,6 +397,7 @@ def get_group_folder():
 
 
 @server.route("/mxcube/api/v0.1/queue/auto_add_diffplan", methods=["POST"])
+@server.require_control
 @server.restrict
 def set_autoadd():
     autoadd = request.get_json()
