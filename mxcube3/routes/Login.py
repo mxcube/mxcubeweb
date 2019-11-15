@@ -206,28 +206,47 @@ def forceusersignout():
     socketio.emit("signout", user, room=user["socketio_sid"], namespace='/hwr')
     logging.getLogger('HWR').info('[Login] %s user forced signout' % user['loginID'])
 
-    # if the only remaining user is staff clean all
     users = get_users()
-    if len(users) == 1:
-        if users[0]['type'] == 'staff':
-            staff_id = users[0]['sid']
-            remove_user(staff_id)
-            mxcube.queue = qutils.new_queue()
-            mxcube.shapes.clear_all()
-            mxcube.session.clear_session()
+    
+    if len(users) == 0:
+        # no one else is connected
+        # we are here because the user force logut itself
+        mxcube.queue = qutils.new_queue()
+        mxcube.shapes.clear_all()
+        mxcube.session.clear_session()
 
-            if mxcube.CURRENTLY_MOUNTED_SAMPLE:
-                if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
-                    mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+        if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+            if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
+                mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
-            LOGGED_IN_USER = None
-            mxcube.SELECTED_PROPOSAL = None
-            mxcube.SELECTED_PROPOSAL_ID = None
-            state_storage.flush()
+        LOGGED_IN_USER = None
+        mxcube.SELECTED_PROPOSAL = None
+        mxcube.SELECTED_PROPOSAL_ID = None
+        state_storage.flush()
 
-            session.clear()
-            socketio.emit("signout", {}, namespace='/hwr')
+        session.clear()
 
+    if len(users) == 1 and users[0]['type'] == 'staff':
+        # if the only remaining user is staff clean all
+        # we are here because a staff user kicked out a normal user
+        staff_id = users[0]['sid']
+        remove_user(staff_id)
+        mxcube.queue = qutils.new_queue()
+        mxcube.shapes.clear_all()
+        mxcube.session.clear_session()
+
+        if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+            if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
+                mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+
+        LOGGED_IN_USER = None
+        mxcube.SELECTED_PROPOSAL = None
+        mxcube.SELECTED_PROPOSAL_ID = None
+        state_storage.flush()
+
+        session.clear()
+        socketio.emit("signout", {}, namespace='/hwr')
+    
     return make_response("", 200)
 
 @mxcube.route("/mxcube/api/v0.1/login_info", methods=["GET"])
