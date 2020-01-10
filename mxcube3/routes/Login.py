@@ -132,16 +132,6 @@ def signout():
     """
     Signout from Mxcube3 and reset the session
     """
-    qutils.save_queue(session)
-    mxcube.queue = qutils.new_queue()
-    mxcube.shapes.clear_all()
-    qutils.init_queue_settings()
-
-
-    qutils.reset_queue_settings()
-    if hasattr(mxcube.session, 'clear_session'):
-        mxcube.session.clear_session()
-
     if mxcube.CURRENTLY_MOUNTED_SAMPLE:
         if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
             mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
@@ -287,30 +277,21 @@ def loginInfo():
            }
 
     user = get_user_by_sid(session.sid)
-    if res["loginType"].lower() != 'user' and login_info:
-        # autoselect proposal
 
-        limsutils.select_proposal(LOGGED_IN_USER)
-        res["selectedProposal"] = LOGGED_IN_USER
-        logging.getLogger('user_log').info('[LIMS] Proposal autoselected.')
     if mxcube.SELECTED_PROPOSAL is not None:
         res["selectedProposal"] = mxcube.SELECTED_PROPOSAL
         res["selectedProposalID"] = mxcube.SELECTED_PROPOSAL_ID
-
+    else:
+        res["selectedProposal"] = None
+        res["selectedProposalID"] = None
+    
     # Get all the files in the root data dir for this user
     root_path = mxcube.session.get_base_image_directory()
-
+    
     if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
         ftype = mxcube.beamline.detector_hwobj.getProperty('file_suffix')
 
         mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
-
-    if user:
-        res["selectedProposal"] = user["loginID"]
-    else:
-        res["selectedProposal"] = None
-        res["selectedProposal"] = None
-
 
     # Redirect the user to login page if for some reason logged out
     # i.e. server restart

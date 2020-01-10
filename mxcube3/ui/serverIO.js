@@ -48,7 +48,6 @@ import { setSCState,
 import { setEnergyScanResult } from './actions/taskResults';
 
 import { CLICK_CENTRING } from './constants';
-import { forceSignOut } from './actions/login';
 
 class ServerIO {
 

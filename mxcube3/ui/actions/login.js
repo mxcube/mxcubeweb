@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialState } from './general';
-import { sendClearQueue, clearAll } from './queue';
+import { clearAll } from './queue';
 import { setMaster } from './remoteAccess';
 import { browserHistory } from 'react-router';
 
@@ -155,7 +155,6 @@ export function doSignOut() {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
-      dispatch(sendClearQueue());
       dispatch(clearAll());
       browserHistory.push('/login');
     });

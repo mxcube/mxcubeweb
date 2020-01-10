@@ -6,7 +6,7 @@ const initialState = {
   data: {},
   showProposalsForm: false,
   selectedProposal: '',
-  selectedProposalID: ''
+  selectedProposalID: '',
   showForceLogoutDialog: false
 };
 
