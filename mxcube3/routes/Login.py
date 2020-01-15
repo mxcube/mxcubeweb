@@ -45,7 +45,7 @@ def login():
     try:
         login_res = limsutils.lims_login(loginID, password)
 
-        if login_res['status']["code"] is not "ok":
+        if login_res["status"]["code"] is not "ok":
             return deny_access("Could not authenticate")
 
         inhouse = limsutils.lims_is_inhouse(login_res)
