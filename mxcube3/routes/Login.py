@@ -160,8 +160,6 @@ def forcesignout():
     """
     Force signout from Mxcube3 and reset the session
     """
-    global LOGGED_IN_USER
-
     qutils.save_queue(session)
     mxcube.queue = qutils.new_queue()
     mxcube.shapes.clear_all()
@@ -171,7 +169,6 @@ def forcesignout():
         if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
             mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
-    LOGGED_IN_USER = None
     state_storage.flush()
 
     mxcube.SELECTED_PROPOSAL = None
@@ -209,7 +206,6 @@ def forceusersignout():
             if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
                 mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
-        LOGGED_IN_USER = None
         mxcube.SELECTED_PROPOSAL = None
         mxcube.SELECTED_PROPOSAL_ID = None
         state_storage.flush()
@@ -229,7 +225,6 @@ def forceusersignout():
             if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
                 mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
 
-        LOGGED_IN_USER = None
         mxcube.SELECTED_PROPOSAL = None
         mxcube.SELECTED_PROPOSAL_ID = None
         state_storage.flush()
