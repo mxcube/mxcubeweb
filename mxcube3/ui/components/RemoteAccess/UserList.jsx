@@ -6,8 +6,12 @@ import { sendGiveControl } from '../../actions/remoteAccess';
 import { sendForceUserSignOut } from '../../actions/login';
 
 class UserList extends React.Component {
+
   getUserInfo() {
     const isMaster = this.props.remoteAccess.master;
+    const userType = this.props.remoteAccess.type;
+    const selectedProposal = userType === 'staff' ? 'none' : this.props.login.selectedProposal;
+
     return (
       <div>
         <div className="col-xs-2">
@@ -17,9 +21,12 @@ class UserList extends React.Component {
           <span style={{ lineHeight: '36px' }}>{this.props.login.host}</span>
         </div>
         <div className="col-xs-2">
-          <span style={{ lineHeight: '36px' }}>{this.props.remoteAccess.type}</span>
+          <span style={{ lineHeight: '36px' }}>{selectedProposal}</span>
         </div>
-        <div className="col-xs-2">
+        <div className="col-xs-1">
+          <span style={{ lineHeight: '36px' }}>{userType}</span>
+        </div>
+        <div className="col-xs-1">
           <span style={{ lineHeight: '36px' }}>{isMaster ? 'Master' : 'Observer'}</span>
         </div>
         <div className="col-xs-2">
@@ -33,6 +40,9 @@ class UserList extends React.Component {
     const users = [];
     if (this.props.remoteAccess.users) {
       for (const user of this.props.remoteAccess.users) {
+        const userType = user.type;
+        const selectedProposal = userType === 'staff' ? 'none' : this.props.login.selectedProposal;
+
         user.loginID !== this.props.login.loginID ?
           users.push((
             <div>
@@ -43,9 +53,12 @@ class UserList extends React.Component {
                 <span style={{ lineHeight: '24px' }}>{user.host}</span>
               </div>
               <div className="col-xs-2">
+                <span style={{ lineHeight: '24px' }}>{selectedProposal}</span>
+              </div>
+              <div className="col-xs-1">
                 <span style={{ lineHeight: '24px' }}>{user.type}</span>
               </div>
-              <div className="col-xs-2">
+              <div className="col-xs-1">
                 <span style={{ lineHeight: '24px' }}>{user.operator ? 'Master' : 'Observer'}</span>
               </div>
               <div className="col-xs-2">
@@ -104,8 +117,9 @@ class UserList extends React.Component {
         <div className="col-xs-12">
           <div className="col-xs-2"><b>Name</b></div>
           <div className="col-xs-4"><b>Host</b></div>
-          <div className="col-xs-2"><b>Type</b></div>
-          <div className="col-xs-2"><b>Role</b></div>
+          <div className="col-xs-2"><b>Proposal</b></div>
+          <div className="col-xs-1"><b>Type</b></div>
+          <div className="col-xs-1"><b>Role</b></div>
           <div className="col-xs-2"><b>Control</b></div>
           {this.getUserInfo()}
           {this.getUsers()}
