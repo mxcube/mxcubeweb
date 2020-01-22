@@ -58,9 +58,8 @@ def take_control():
     if loginutils.is_operator(session.sid):
         return make_response("", 200)
 
-    login_id = session['loginInfo'].get('loginID')
-
-    if login_id not in mxcube.session.in_house_users:
+    user = loginutils.get_user_by_sid(session.sid)
+    if user.get('type') != 'staff':
         return make_response("", 409)
 
     toggle_operator(session.sid, "You were given control")

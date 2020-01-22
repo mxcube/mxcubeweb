@@ -179,7 +179,12 @@ def lims_is_inhouse(login_res):
     return login_res.get("Session", {}).get("is_inhouse", False)
 
 def lims_is_staff(loginID):
-    return loginID in mxcube.session.in_house_users
+    is_staff = False
+    try:
+        is_staff = loginID in mxcube.session.staff_users
+    except: 
+        pass
+    return is_staff
 
 def lims_valid_login(login_res):
     return login_res['status']['code'] == 'ok'

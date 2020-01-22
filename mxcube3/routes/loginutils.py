@@ -14,6 +14,9 @@ from mxcube3 import socketio
 PENDING_EVENTS = deque()
 DISCONNECT_HANDLED = True
 
+def lims_login_type():
+    return mxcube.db_connection.loginType.lower()
+
 def create_user(loginID, host, sid, user_type, lims_data=None):
     return {"loginID": loginID,
             "host": socket.gethostbyaddr(host)[0],
