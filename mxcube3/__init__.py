@@ -152,6 +152,8 @@ def init_app_state(app):
 
     # SampleID of currently mounted sample
     app.CURRENTLY_MOUNTED_SAMPLE = {}
+    app.SELECTED_PROPOSAL = None
+    app.SELECTED_PROPOSAL_ID = None
     app.SAMPLE_TO_BE_MOUNTED = ''
     app.CENTRING_METHOD = CENTRING_METHOD.LOOP
     app.NODE_ID_TO_LIMS_ID = {}
@@ -160,6 +162,7 @@ def init_app_state(app):
     app.SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
     app.TEMP_DISABLED = []
     app.USERS = {}
+    app.MESSAGES = []
     qutils.init_queue_settings()
     app.ALLOW_REMOTE = cmdline_options.allow_remote
     app.TIMEOUT_GIVES_CONTROL = cmdline_options.ra_timeout
@@ -187,7 +190,7 @@ def init_logging():
     log_formatter = logging.Formatter('%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s')
     log_file = cmdline_options.log_file
     if log_file:
-        log_file_handler = TimedRotatingFileHandler(log_file, when='midnight', backupCount=1)
+        log_file_handler = TimedRotatingFileHandler(log_file, when='midnight', backupCount=10)
         os.chmod(log_file, 0o666)
         log_file_handler.setFormatter(log_formatter)
 

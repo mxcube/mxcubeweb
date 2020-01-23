@@ -13,7 +13,17 @@ class SelectProposal extends React.Component {
   }
 
   onClickRow(event) {
-    this.props.selectProposal(event.Number);
+    if (this.props.selectedProposal === null ||
+      this.props.selectedProposal === 'undefined') {
+      // select a proposal
+      this.props.selectProposal(event.Number);
+    } else if (this.props.selectedProposal === event.Number) {
+      // unselect
+      this.props.unselectProposal();
+    } else {
+      // override provious selection
+      this.props.selectProposal(event.Number);
+    }
   }
 
   sendProposal() {
@@ -40,7 +50,7 @@ class SelectProposal extends React.Component {
       Person: prop.Person.familyName,
       Session: prop.Session[0].startDate.split(' ')[0]
     }));
-
+    const selectedProposal = this.props.selectedProposal;
     return (
       <Modal show={this.props.show} backdrop="static" onHide={this.handleCancel}>
         <Modal.Header closeButton>
@@ -48,7 +58,7 @@ class SelectProposal extends React.Component {
         </Modal.Header>
         <Modal.Body>
         <div>
-        <BootstrapTable data={ proposals } bordered={ false } selectRow={ selectRowProp }>
+        <BootstrapTable data={ proposals } bordered selectRow={ selectRowProp }>
           <TableHeaderColumn dataField="Number" isKey editable={ false }>Proposal Number
           </TableHeaderColumn>
           <TableHeaderColumn dataField="Person" editable={ false }>Person</TableHeaderColumn>
@@ -64,7 +74,8 @@ class SelectProposal extends React.Component {
               Sign Out
             </Button>
             <Button bsStyle="primary" className="pull-right"
-              disabled={typeof this.props.selectedProposal === 'undefined'}
+              disabled={selectedProposal === 'undefined' || selectedProposal === null ||
+                selectedProposal === ''}
               onClick={this.sendProposal}
             >
               Select Proposal

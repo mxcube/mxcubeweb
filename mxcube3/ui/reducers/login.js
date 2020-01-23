@@ -1,10 +1,13 @@
 const initialState = {
   loginInfo: {},
+  loginID: '',
+  host: '',
   loggedIn: false,
   data: {},
   showProposalsForm: false,
   selectedProposal: '',
-  selectedProposalID: ''
+  selectedProposalID: '',
+  showForceLogoutDialog: false
 };
 
 export default (state = initialState, action) => {
@@ -19,6 +22,8 @@ export default (state = initialState, action) => {
         return Object.assign({}, state,
           {
             loginInfo: action.loginInfo,
+            loginID: action.loginInfo.loginID,
+            host: action.loginInfo.host,
             selectedProposal: state.selectedProposal ?
               state.selectedProposal : action.loginInfo.selectedProposal,
             loggedIn,
@@ -48,9 +53,21 @@ export default (state = initialState, action) => {
           selectedProposalID: propId
         };
       }
+    case 'UNSELECT_PROPOSAL':
+      {
+        return {
+          ...state,
+          selectedProposal: '',
+          selectedProposalID: ''
+        };
+      }
     case 'HIDE_PROPOSALS_FORM':
       {
         return { ...state, showProposalsForm: false };
+      }
+    case 'SHOW_FORCE_LOGOUT_DIALOG':
+      {
+        return { ...state, showForceLogoutDialog: action.show };
       }
     default:
       return state;

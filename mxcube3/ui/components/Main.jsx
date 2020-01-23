@@ -12,16 +12,17 @@ import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
+import ForceLogoutDialog from '../containers/ForceLogoutDialog';
+
 import diagonalNoise from '../img/diagonal-noise.png';
 import { sendChatMessage, getAllChatMessages,
          resetChatMessageCount } from '../actions/remoteAccess';
-import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
+import { Widget, addResponseMessage, addUserMessage, dropMessages } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
-
 
 class Main extends React.Component {
   constructor(props) {
@@ -34,13 +35,20 @@ class Main extends React.Component {
   componentDidMount() {
     getAllChatMessages().then((json) => {
       json.messages.forEach((entry) => {
-        if (entry.sid === this.props.remoteAccess.sid) {
+        // to get rid of asterisk (*) in the beginning
+        if (entry.user.endsWith(this.props.loginID)) {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
         } else {
           addResponseMessage(`${entry.date} **${entry.user}:** \n\n ${entry.message}`);
         }
       });
     });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.remoteAccess.users.length > 0 && nextProps.remoteAccess.users.length === 0) {
+      dropMessages();
+    }
   }
 
   onChatContainerClick() {
@@ -85,6 +93,7 @@ class Main extends React.Component {
         <ErrorNotificationPanel />
         <ResumeQueueDialog />
         <ConnectionLostDialog />
+        <ForceLogoutDialog />
         <ObserverDialog />
         <PassControlDialog />
         <ConfirmCollectDialog />
@@ -115,6 +124,7 @@ class Main extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    loginID: state.login.loginID,
     remoteAccess: state.remoteAccess,
     general: state.general
   };

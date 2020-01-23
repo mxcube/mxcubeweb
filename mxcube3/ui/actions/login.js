@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialState } from './general';
-import { sendClearQueue, clearAll } from './queue';
+import { clearAll } from './queue';
 import { setMaster } from './remoteAccess';
 import { browserHistory } from 'react-router';
 
@@ -23,10 +23,22 @@ export function hideProposalsForm() {
   };
 }
 
+export function showForceLogoutDialog(show = true) {
+  return {
+    type: 'SHOW_FORCE_LOGOUT_DIALOG', show
+  };
+}
+
 export function selectProposal(prop) {
   return {
     type: 'SELECT_PROPOSAL',
     proposal: prop,
+  };
+}
+
+export function unselectProposal() {
+  return {
+    type: 'UNSELECT_PROPOSAL',
   };
 }
 
@@ -101,7 +113,6 @@ export function signOut() {
   return { type: 'SIGNOUT' };
 }
 
-
 export function signIn(proposal, password) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/login', {
@@ -116,7 +127,10 @@ export function signIn(proposal, password) {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
         dispatch(getLoginInfo()).then(response => response).then((resp) => {
-          if (resp.loginType === 'User') {
+          const selectedProposal = resp.selectedProposal;
+          if (selectedProposal) {
+            browserHistory.push('/');
+          } else if (resp.loginType === 'User') {
             dispatch(showProposalsForm());
           } else {
             dispatch(selectProposal(proposal));
@@ -124,8 +138,8 @@ export function signIn(proposal, password) {
           }
         });
       } else {
-        // const msg = res.msg;
-        dispatch(showErrorPanel(true));
+        const msg = res.msg;
+        dispatch(showErrorPanel(true, msg));
         dispatch(setLoading(false));
       }
     }, () => {
@@ -141,10 +155,41 @@ export function doSignOut() {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
-      dispatch(sendClearQueue());
       dispatch(clearAll());
       browserHistory.push('/login');
     });
+  };
+}
+
+
+export function sendForceUserSignOut(sid) {
+  return function () {
+    return fetch('mxcube/api/v0.1/forceusersignout', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ sid })
+    });
+  };
+}
+
+
+export function forceUserSignOut(sid) {
+  return function (dispatch) {
+    dispatch(sendForceUserSignOut(sid)).then(() => {
+      dispatch(signOut());
+      browserHistory.push('/login');
+    });
+  };
+}
+
+export function forceSignOut() {
+  return function (dispatch) {
+    dispatch(signOut());
+    browserHistory.push('/login');
   };
 }
 

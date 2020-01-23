@@ -1,6 +1,7 @@
 import datetime
 import socket
 import functools
+import ipaddress
 
 from collections import deque
 from flask import session, request, Response, jsonify
@@ -12,13 +13,21 @@ from mxcube3 import socketio
 
 PENDING_EVENTS = deque()
 DISCONNECT_HANDLED = True
-MESSAGES = []
 
+def lims_login_type():
+    return mxcube.db_connection.loginType.lower()
 
-def create_user(loginID, host, sid, lims_data=None):
-    return {"loginID": loginID, "host": host, "sid": sid, "name": "",
-            "operator": False, "requestsControl": False, "message": "",
-            "socketio_sid": None, "limsData": lims_data}
+def create_user(loginID, host, sid, user_type, lims_data=None):
+    return {"loginID": loginID,
+            "host": socket.gethostbyaddr(host)[0],
+            "sid": sid,
+            "type": user_type,
+            "name": "",
+            "operator": False,
+            "requestsControl": False,
+            "message": "",
+            "socketio_sid": None,
+            "limsData": lims_data}
 
 
 def add_user(user):
@@ -34,16 +43,27 @@ def remove_user(sid):
     else:
         socketio.emit("observerLogout", user, namespace='/hwr')
         socketio.emit("observersChanged", get_observers(), namespace='/hwr')
-
+    socketio.emit("usersChanged", get_users(), namespace='/hwr')
+    return user
 
 def get_user_by_sid(sid):
     return mxcube.USERS.get(sid, None)
 
+def get_user_by_name(username):
+    for sid in mxcube.USERS.keys():
+        a_user = mxcube.USERS.get(sid)
+        if a_user.get('loginID') == username:
+            return a_user
+    return None
 
 def deny_access(msg):
     resp = jsonify({"msg": msg})
     resp.code = 409
     return resp
+
+
+def get_users():
+    return [user for user in users().itervalues()]
 
 
 def get_observers():
@@ -53,10 +73,10 @@ def get_observers():
 def get_observer_name():
     name = None
     user = get_user_by_sid(session.sid)
-    
+
     if user:
         name = user["name"]
-    
+
     return name
 
 
@@ -66,9 +86,24 @@ def get_operator():
 
 
 def is_operator(sid):
-    user = get_operator()    
+    user = get_operator()
     return user and user["sid"] == sid
 
+
+def user_type(sid):
+    user = get_user_by_sid(sid)
+    return user.get('type')
+
+def define_user_type(local, is_staff, common_proposal):
+    """
+    User type can be: local, remote, staff
+    """
+    if is_staff and mxcube.USERS:
+        user_type = 'staff'
+    else:
+        user_type = 'local' if local  else 'remote'
+
+    return user_type
 
 def logged_in_users(exclude_inhouse=False):
     users = [user["loginID"] for user in mxcube.USERS.itervalues()]
@@ -122,12 +157,15 @@ def append_message(message, sid):
             "user": user, "host":remote_addr(),
             "date": datetime.datetime.now().strftime("%H:%M")}
 
-    MESSAGES.append(data)
+    mxcube.MESSAGES.append(data)
     socketio.emit('ra_chat_message', data, namespace='/hwr')
 
 
 def get_all_messages():
-    return MESSAGES
+    return mxcube.MESSAGES
+
+def clear_messages():
+    mxcube.MESSAGES[:] = []
 
 
 def flush():
@@ -169,11 +207,15 @@ def remote_addr():
 
 
 def is_local_network(ip):
-    localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
-    localhost_range = '.'.join(localhost.split('.')[0:2])
-    private_address = '.'.join(ip.split('.')[0:2])
+    try:
+        _address = mxcube.session.remote_address
+    except:
+        _address = None
+    if ip == _address:
+        return False
+    _ip = ipaddress.ip_address(unicode(ip))
+    return _ip.is_private
 
-    return private_address == localhost_range
 
 def is_local_host():
     localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]

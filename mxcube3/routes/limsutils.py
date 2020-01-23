@@ -178,6 +178,14 @@ def lims_existing_session(login_res):
 def lims_is_inhouse(login_res):
     return login_res.get("Session", {}).get("is_inhouse", False)
 
+def lims_is_staff(loginID):
+    is_staff = False
+    try:
+        is_staff = loginID in mxcube.session.staff_users
+    except: 
+        pass
+    return is_staff
+
 def lims_valid_login(login_res):
     return login_res['status']['code'] == 'ok'
 
@@ -226,8 +234,11 @@ def lims_login(loginID, password):
         for prop in session['proposal_list']:
             todays_session = mxcube.db_connection.get_todays_session(prop)
             prop['Session'] = [todays_session['session']]
+            # TODO: fix in a more elegant way
+            prop['Session'][0]['is_inhouse'] = todays_session['is_inhouse']
+            prop['Session'][0]['new_session_flag'] = todays_session['new_session_flag']
 
-        if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None):
+        if hasattr(mxcube.session, 'commissioning_fake_proposal') and mxcube.session.is_inhouse(loginID, None) and not mxcube.SELECTED_PROPOSAL:
             dummy = mxcube.session.commissioning_fake_proposal
             session['proposal_list'].append(dummy)
 
@@ -284,6 +295,8 @@ def select_proposal(proposal):
     if proposal_info:
         mxcube.session.proposal_code = proposal_info.get('Proposal').get('code', '')
         mxcube.session.proposal_number = proposal_info.get('Proposal').get('number', '')
+        mxcube.SELECTED_PROPOSAL = mxcube.session.proposal_code + mxcube.session.proposal_number
+        mxcube.SELECTED_PROPOSAL_ID = proposal_info.get('Proposal').get('proposalId', '')
         mxcube.session.session_id = proposal_info.get('Session')[0].get('sessionId')
 
         if hasattr(mxcube.session, 'prepare_directories'):

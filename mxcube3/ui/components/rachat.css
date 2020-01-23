@@ -1,22 +1,22 @@
-.widget-container { 
+.rcw-widget-container { 
   z-index: 10001;
 }
 
-.conversation-container .header {
+.rcw-conversation-container .rcw-header {
   background-color: #f4f7f9;
   padding: 0px 0px;
   border-bottom: 1px solid #ddd;
 }
 
-.conversation-container > .sender {
+.rcw-conversation-container > .rcw-sender {
   border-top: 1px solid #ddd;
 }
 
-.messages-container {
+.rcw-messages-container {
   background-color: #f9f9f9;
 }
 
-.messages-container > .message > .client {
+.rcw-messages-container > .rcw-message > .rcw-client {
   margin-left: unset;
   border: 1px solid #999;
   border-radius: 4px;
@@ -26,7 +26,7 @@
   width: 100%;
 }    
 
-.messages-container > .message > .response {
+.rcw-messages-container > .rcw-message > .rcw-response {
   margin-left: auto;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -36,7 +36,7 @@
   width: 100%;
 }
 
-.messages-container > .message > .response {
+.rcw-messages-container > .rcw-message > .rcw-response {
   margin-left: auto;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -46,12 +46,12 @@
   width: 100%;
 }
 
-.widget-container .launcher {
+.rcw-widget-container .rcw-launcher {
   background-color: #3766ad;
   border: 1px solid #000;
 }
 
-.launcher .badge {
+.rcw-launcher .rcw-badge {
   width: 22px;
   height: 22px;
   line-height: 14px;

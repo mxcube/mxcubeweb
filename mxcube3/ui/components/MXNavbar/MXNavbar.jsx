@@ -19,8 +19,9 @@ export default class MXNavbar extends React.Component {
     const raStyle = (this.props.remoteAccess.master ? { color: 'white' } : {});
     const proposal = this.props.userInfo.proposalList ?
         this.props.userInfo.proposalList.find(this.findProposal) : '';
-    const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
-          `Proposal: ${proposal.Proposal.code.toUpperCase()}${proposal.Proposal.number}` : '');
+    const propInfo = (this.props.loggedIn && this.props.selectedProposal && proposal ?
+          `Proposal: ${proposal.Proposal.code.toUpperCase()}${proposal.Proposal.number}` :
+          `Proposal: ${this.props.selectedProposal}`);
 
     const numObservers = this.props.remoteAccess.observers.length;
 
