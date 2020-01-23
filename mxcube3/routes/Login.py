@@ -162,28 +162,6 @@ def signout():
 
     return make_response("", 200)
 
-@mxcube.route("/mxcube/api/v0.1/forcesignout")
-def forcesignout():
-    """
-    Force signout from Mxcube3 and reset the session
-    """
-    qutils.save_queue(session)
-    mxcube.queue = qutils.new_queue()
-    mxcube.shapes.clear_all()
-    mxcube.session.clear_session()
-
-    if mxcube.CURRENTLY_MOUNTED_SAMPLE:
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
-            mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
-
-    state_storage.flush()
-
-    mxcube.SELECTED_PROPOSAL = None
-    mxcube.SELECTED_PROPOSAL_ID = None
-
-    session.clear()
-    socketio.emit("signout", {}, namespace='/hwr')
-    return make_response("", 200)
 
 @mxcube.route("/mxcube/api/v0.1/forceusersignout", methods=["POST"])
 def forceusersignout():

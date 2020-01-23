@@ -260,11 +260,6 @@ class ServerIO {
       addResponseMessage(`**${observer.name}** (${observer.host}) disconnected.`);
     });
 
-    this.hwrSocket.on('signout', () => {
-      this.dispatch(forceSignOut());
-    });
-
-
     this.hwrSocket.on('observerLogin', (observer) => {
       if (observer.name && observer.host) {
         addResponseMessage(`**${observer.name}** (${observer.host}) connected.`);
