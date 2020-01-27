@@ -18,7 +18,6 @@ from mxcube3 import socketio
 from . import utils
 
 from .statedefs import (
-    MOTOR_STATE,
     INOUT_STATE,
     TANGO_SHUTTER_STATE,
     MICRODIFF_INOUT_STATE,
@@ -26,6 +25,7 @@ from .statedefs import (
 )
 
 from HardwareRepository import HardwareRepository as HWR
+from abstract.AbstractMotor import MotorStates
 
 BEAMLINE_SETUP = None
 
@@ -129,7 +129,6 @@ class _BeamlineSetupMediator(object):
         :returns: Dictionary value-representation for each beamline attribute
         """
         attributes = {}
-
         try:
             energy = self.get_object("energy")
             attributes.update({"energy": energy.dict_repr()})
@@ -140,7 +139,7 @@ class _BeamlineSetupMediator(object):
             wavelength = self.get_object("wavelength")
             attributes.update({"wavelength": wavelength.dict_repr()})
         except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get energy info")
+            logging.getLogger("MX3.HWR").error("Failed to get wavelength info")
 
         try:
             transmission = self.get_object("transmission")
@@ -375,7 +374,8 @@ class EnergyHOMediator(HOMediatorBase):
 
     def __init__(self, ho, name=""):
         super(EnergyHOMediator, self).__init__(ho, name)
-        if ho.can_move_energy():
+        # if ho.can_move_energy():
+        if ho.tunable:
             try:
                 ho.connect("energyChanged", self._value_change)
                 ho.connect("stateChanged", self.state_change)
@@ -414,7 +414,7 @@ class EnergyHOMediator(HOMediatorBase):
         :raises ValueError: When value for any reason can't be retrieved
         """
         try:
-            energy = self._ho.get_current_energy()
+            energy = self._ho.get_energy()
             energy = round(float(energy), self._precision)
             energy = ("{:3.%sf}" % self._precision).format(energy)
         except (AttributeError, TypeError):
@@ -423,13 +423,16 @@ class EnergyHOMediator(HOMediatorBase):
         return energy
 
     def state(self):
+        """
         state = MOTOR_STATE.READY
 
         try:
             state = MOTOR_STATE.READY if self._ho.is_ready() else MOTOR_STATE.MOVING
         except BaseException:
             pass
-
+        """
+        state = self._ho.get_state()
+        print(f"state-------------------->{state}")
         return state
 
     def stop(self):
@@ -440,7 +443,7 @@ class EnergyHOMediator(HOMediatorBase):
         :returns: The energy limits.
         """
         try:
-            energy_limits = self._ho.get_energy_limits()
+            energy_limits = self._ho.get_limits()
         except (AttributeError, TypeError):
             energy_limits = (0, 0)
             raise ValueError("Could not get limits")
@@ -448,7 +451,7 @@ class EnergyHOMediator(HOMediatorBase):
         return energy_limits
 
     def read_only(self):
-        return not self._ho.can_move_energy()
+        return not self._ho.tunable
 
 
 class WavelengthHOMediator(HOMediatorBase):
@@ -460,7 +463,7 @@ class WavelengthHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
         super(WavelengthHOMediator, self).__init__(ho, name)
 
-        if ho.can_move_energy():
+        if ho.tunable:
             try:
                 ho.connect("energyChanged", self._value_change)
                 ho.connect("stateChanged", self.state_change)
@@ -499,7 +502,7 @@ class WavelengthHOMediator(HOMediatorBase):
         :raises ValueError: When value for any reason can't be retrieved
         """
         try:
-            wavelength = self._ho.get_current_wavelength()
+            wavelength = self._ho.get_wavelength()
             wavelength = round(float(wavelength), self._precision)
             wavelength = ("{:2.%sf}" % self._precision).format(wavelength)
         except (AttributeError, TypeError):
@@ -508,13 +511,15 @@ class WavelengthHOMediator(HOMediatorBase):
         return wavelength
 
     def state(self):
+        """
         state = MOTOR_STATE.READY
 
         try:
             state = MOTOR_STATE.READY if self._ho.is_ready() else MOTOR_STATE.MOVING
         except BaseException:
             pass
-
+        """
+        state = self._ho.get_state()
         return state
 
     def stop(self):
@@ -532,7 +537,7 @@ class WavelengthHOMediator(HOMediatorBase):
         return energy_limits
 
     def read_only(self):
-        return not self._ho.can_move_energy()
+        return not self._ho.tunable
 
 
 class DuoStateHOMediator(HOMediatorBase):
@@ -700,13 +705,14 @@ class TransmissionHOMediator(HOMediatorBase):
         self._ho.stop()
 
     def state(self):
-        return MOTOR_STATE.READY if self._ho.isReady() else MOTOR_STATE.MOVING
+        return MotorStates.READY if self._ho.isReady() else MotorStates.BUSY
 
 
 class ResolutionHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
         super(ResolutionHOMediator, self).__init__(ho, name)
         ho.connect("valueChanged", self._value_change)
+        ho.connect("positionChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
         self._precision = 3
 
@@ -743,46 +749,13 @@ class ResolutionHOMediator(HOMediatorBase):
         self._ho.stop()
 
     def state(self):
-        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.get_state(), 0)
-
-    def _calc_res(self, radius, energy, dist):
-        current_wavelength = 12.3984 / energy
-
-        try:
-            ttheta = math.atan(radius / float(dist))
-            if ttheta != 0:
-                return current_wavelength / (2 * math.sin(ttheta / 2))
-            else:
-                return 0
-        except Exception:
-            logging.getLogger().exception("error while calculating resolution")
-            return 0
+        state = self._ho.get_state()
+        if isinstance(state, list):
+            return state[0].name
+        return state.name
 
     def get_lookup_limits(self):
-        limits = []
-
-        energy = HWR.beamline.energy
-
-        if energy.can_move_energy():
-            e_min, e_max = energy.get_energy_limits()
-
-            x = arange(float(e_min), float(e_max), 0.5)
-
-            radius = self._ho.det_radius
-            det_dist = HWR.beamline.detector.distance
-
-            pos_min, pos_max = det_dist.get_limits()
-
-            for e in x:
-                res_min, res_max = (
-                    self._calc_res(radius, e, pos_min),
-                    self._calc_res(radius, e, pos_max),
-                )
-                limits.append((e, res_min, res_max))
-        else:
-            limits = self.limits()
-
-        return limits
+        return self.limits()
 
     def dict_repr(self):
         """
@@ -799,7 +772,6 @@ class ResolutionHOMediator(HOMediatorBase):
             "step": self.step_size(),
             "readonly": self.read_only(),
         }
-
         return data
 
 
@@ -844,7 +816,10 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         self._ho.stop()
 
     def state(self):
-        return MOTOR_STATE.VALUE_TO_STR.get(self._ho.get_state().value, "READY")
+        state = self._ho.get_state()
+        if isinstance(state, list):
+            return state[0].name
+        return state.name
 
 class MachineInfoHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
