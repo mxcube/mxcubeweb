@@ -22,3 +22,4 @@ scandir
 matplotlib # Dependency of energyscan mockup object
 gipc
 ruamel.yaml
+ipaddress

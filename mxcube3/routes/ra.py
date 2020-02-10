@@ -73,6 +73,10 @@ def take_control():
     if not session["loginInfo"]["loginRes"]["Session"]["is_inhouse"]:
         return make_response("", 409)
 
+    user = loginutils.get_user_by_sid(session.sid)
+    if user.get('type') != 'staff':
+        return make_response("", 409)
+
     toggle_operator(session.sid, "You were given control")
 
     return make_response("", 200)
@@ -97,7 +101,7 @@ def toggle_operator(new_op_sid, message):
     new_op["message"] = message
 
     observers = loginutils.get_observers()
-
+    users = loginutils.get_users()
     # Append the new data path so that it can be updated on the client
     new_op["rootPath"] = blcontrol.beamline.session.get_base_image_directory()
 
@@ -109,8 +113,9 @@ def toggle_operator(new_op_sid, message):
             "setObserver", current_op, room=current_op["socketio_sid"], namespace="/hwr"
         )
 
-    socketio.emit("observersChanged", observers, namespace="/hwr")
-    socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace="/hwr")
+    socketio.emit("observersChanged", observers, namespace='/hwr')
+    socketio.emit("usersChanged", users, namespace='/hwr')
+    socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace='/hwr')
 
 
 def remain_observer(observer_sid, message):
@@ -128,12 +133,14 @@ def observers():
     """
     """
     data = {
-        "observers": loginutils.get_observers(),
-        "sid": session.sid,
-        "master": loginutils.is_operator(session.sid),
-        "observerName": loginutils.get_observer_name(),
-        "allowRemote": mxcube.ALLOW_REMOTE,
-        "timeoutGivesControl": mxcube.TIMEOUT_GIVES_CONTROL,
+        'observers': loginutils.get_observers(),
+        'users': loginutils.get_users(),
+        'sid': session.sid,
+        'master': loginutils.is_operator(session.sid),
+        'observerName': loginutils.get_observer_name(),
+        'type': loginutils.user_type(session.sid),
+        'allowRemote': mxcube.ALLOW_REMOTE,
+        'timeoutGivesControl': mxcube.TIMEOUT_GIVES_CONTROL
     }
 
     return jsonify(data=data)

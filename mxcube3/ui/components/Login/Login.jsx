@@ -18,13 +18,20 @@ export default class LoginComponent extends React.Component {
 
     this.signIn = this.signIn.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.errorPanel = this.errorPanel.bind(this);
+    this.signOutMyself = this.signOutMyself.bind(this);
   }
 
   signIn() {
     const username = this.loginID.value;
     const password = this.password.value;
+    this.setState({ username });
     this.props.setLoading(true);
     this.props.signIn(username.toLowerCase(), password);
+  }
+
+  signOutMyself() {
+    this.props.forceUserSignOut(this.state.username);
   }
 
   handleKeyPress(target) {
@@ -33,6 +40,19 @@ export default class LoginComponent extends React.Component {
     }
   }
 
+  errorPanel() {
+    const res = [];
+
+    if (this.props.showError) {
+      res.push(<Alert bsStyle="danger"><h4>{this.props.errorMessage}</h4></Alert>);
+    }
+
+    if (this.props.showError &&
+      this.props.errorMessage === 'Login rejected, you are already logged in') {
+      res.push(<Button block bsStyle="danger" onClick={this.signOutMyself}>Force Sign Out</Button>);
+    }
+    return res;
+  }
   render() {
     if (this.props.loading && !this.props.showProposalsForm) {
       return <img src={loader} className="centered" role="presentation" />;
@@ -46,6 +66,7 @@ export default class LoginComponent extends React.Component {
             data={this.props.data}
             selectedProposal={this.props.selectedProposal}
             selectProposal={this.props.selectProposal}
+            unselectProposal={this.props.unselectProposal}
             sendSelectProposal={this.props.sendSelectProposal}
             singOut={this.props.doSignOut}
 
@@ -97,7 +118,9 @@ export default class LoginComponent extends React.Component {
                 <Button block bsStyle="primary" onClick={this.signIn}>Sign in</Button>
               </Col>
             </Row>
-              {(this.props.showError ? <Alert bsStyle="danger"><h4>Login failed</h4></Alert> : '')}
+            <Row style={{ marginTop: '20px' }}>
+              {this.errorPanel()}
+            </Row>
           </div>
           </Col>
         </Row>

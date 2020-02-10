@@ -49,8 +49,7 @@ import {
   setObservers, setMaster, requestControlAction,
   incChatMessageCount
 } from './actions/remoteAccess';
-import { doSignOut } from './actions/login';
-
+import { doSignOut, forceSignOut } from './actions/login';
 
 import {
   setSCState,
@@ -256,12 +255,20 @@ class ServerIO {
       this.dispatch(showConnectionLostDialog(false));
     });
 
+    this.hwrSocket.on('signout', () => {
+      this.dispatch(forceSignOut());
+    });
+
     this.hwrSocket.on('resumeQueueDialog', () => {
       this.dispatch(showResumeQueueDialog(true));
     });
 
     this.hwrSocket.on('observersChanged', (data) => {
       this.dispatch(setObservers(data));
+    });
+
+    this.hwrSocket.on('usersChanged', (data) => {
+      this.dispatch(setUsers(data));
     });
 
     this.hwrSocket.on('observerLogout', (observer) => {

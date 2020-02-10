@@ -25,7 +25,7 @@ export class ObserverDialog extends React.Component {
       try {
         this.name.value = this.props.loginInfo.loginRes.Person.familyName.toUpperCase();
       } catch (err) {
-        this.name.value = this.props.loginInfo.loginRes.status.msg;
+        this.name.value = this.props.loginInfo.loginID;
       }
     }
   }
@@ -37,7 +37,7 @@ export class ObserverDialog extends React.Component {
   }
 
   accept() {
-    const name = this.name.value;
+    const name = this.name ? this.name.value : this.props.loginInfo.loginID;
 
     if (name) {
       this.props.setMaster(false, name);
@@ -54,6 +54,42 @@ export class ObserverDialog extends React.Component {
     return 'Observer mode';
   }
 
+  observerName() {
+    const userLogin = (
+                      <div>
+                      <Modal.Body>
+                        Someone else is currently using the beamline, you are going to be
+                        logged in as an observer.
+                      </Modal.Body>
+                      <Modal.Footer>
+                      <Button onClick={this.accept}> OK </Button>
+                      </Modal.Footer>
+                      </div>);
+    const proposalLogin = (
+                      <div>
+                      <Modal.Body>
+                        Someone else is currently using the beamline, you are going to be
+                        logged in as an observer. You have to enter your name to be able to
+                        continue.
+                      </Modal.Body>
+                      <Modal.Footer>
+                      <FormControl
+                        inputRef={(ref) => { this.name = ref; }}
+                        type="text"
+                        defaultValue={this.props.loginInfo.loginID}
+                      />
+                      <Button onClick={this.accept}> OK </Button>
+                    </Modal.Footer>
+                    </div>);
+    let data;
+    if (this.props.loginInfo.loginType === 'User') {
+      data = userLogin;
+    } else {
+      data = proposalLogin;
+    }
+    return data;
+  }
+
   render() {
     return (
       <Modal
@@ -67,19 +103,7 @@ export class ObserverDialog extends React.Component {
             {this.title()}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Someone else is currently using the beamline, you are going to be
-          logged in as an observer. You have to enter your name to be able to
-          continue.
-        </Modal.Body>
-        <Modal.Footer>
-          <FormControl
-            inputRef={(ref) => { this.name = ref; }}
-            type="text"
-            default={this.props.loginInfo.selectedProposal}
-          />
-          <Button onClick={this.accept}> OK </Button>
-        </Modal.Footer>
+        {this.observerName()}
       </Modal>);
   }
 }

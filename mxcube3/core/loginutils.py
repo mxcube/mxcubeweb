@@ -5,6 +5,7 @@ from __future__ import print_function
 import datetime
 import socket
 import functools
+import ipaddress
 import logging
 
 from collections import deque
@@ -28,19 +29,20 @@ PENDING_EVENTS = deque()
 DISCONNECT_HANDLED = True
 MESSAGES = []
 
+def lims_login_type():
+    return mxcube.db_connection.loginType.lower()
 
-def create_user(loginID, host, sid, lims_data=None):
-    return {
-        "loginID": loginID,
-        "host": host,
-        "sid": sid,
-        "name": "",
-        "operator": False,
-        "requestsControl": False,
-        "message": "",
-        "socketio_sid": None,
-        "limsData": lims_data,
-    }
+def create_user(loginID, host, sid, user_type, lims_data=None):
+    return {"loginID": loginID,
+            "host": socket.gethostbyaddr(host)[0],
+            "sid": sid,
+            "type": user_type,
+            "name": "",
+            "operator": False,
+            "requestsControl": False,
+            "message": "",
+            "socketio_sid": None,
+            "limsData": lims_data}
 
 
 def add_user(user):
@@ -56,10 +58,24 @@ def remove_user(sid):
     else:
         socketio.emit("observerLogout", user, namespace="/hwr")
         socketio.emit("observersChanged", get_observers(), namespace="/hwr")
+    socketio.emit("usersChanged", get_users(), namespace='/hwr')
+    return user
 
 
 def get_user_by_sid(sid):
     return mxcube.USERS.get(sid, None)
+
+
+def get_user_by_name(username):
+    for sid in mxcube.USERS.keys():
+        a_user = mxcube.USERS.get(sid)
+        if a_user.get('loginID') == username:
+            return a_user
+    return None
+
+
+def get_users():
+    return [user for user in users().itervalues()]
 
 
 def get_observers():
@@ -83,6 +99,23 @@ def get_operator():
 def is_operator(sid):
     user = get_operator()
     return user and user["sid"] == sid
+
+
+def user_type(sid):
+    user = get_user_by_sid(sid)
+    return user.get('type')
+
+
+def define_user_type(local, is_staff, common_proposal):
+    """
+    User type can be: local, remote, staff
+    """
+    if is_staff and mxcube.USERS:
+        user_type = 'staff'
+    else:
+        user_type = 'local' if local  else 'remote'
+
+    return user_type
 
 
 def logged_in_users(exclude_inhouse=False):
@@ -161,12 +194,16 @@ def append_message(message, sid):
         "date": datetime.datetime.now().strftime("%H:%M"),
     }
 
-    MESSAGES.append(data)
+    mxcube.MESSAGES.append(data)
     socketio.emit("ra_chat_message", data, namespace="/hwr")
 
 
 def get_all_messages():
-    return MESSAGES
+    return mxcube.MESSAGES
+
+
+def clear_messages():
+    mxcube.MESSAGES[:] = []
 
 
 def flush():
@@ -208,11 +245,14 @@ def remote_addr():
 
 
 def is_local_network(ip):
-    localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
-    localhost_range = ".".join(localhost.split(".")[0:2])
-    private_address = ".".join(ip.split(".")[0:2])
-
-    return private_address == localhost_range
+    try:
+        _address = mxcube.session.remote_address
+    except:
+        _address = None
+    if ip == _address:
+        return False
+    _ip = ipaddress.ip_address(unicode(ip))
+    return _ip.is_private
 
 
 def is_local_host():
@@ -245,6 +285,9 @@ def is_inhouse_user(user_id):
 def login(login_id, password):
     try:
         login_res = limsutils.lims_login(login_id, password, create_session=False)
+        if login_res["status"]["code"] != "ok":
+            return deny_access("Could not authenticate")
+
         inhouse = is_inhouse_user(login_id)
 
         info = {
@@ -255,13 +298,31 @@ def login(login_id, password):
         }
 
         _users = logged_in_users(exclude_inhouse=True)
+        
+        common_proposal = False
+        if mxcube.SELECTED_PROPOSAL is not None:
+            for prop in login_res['proposalList']:
+                _p = prop['Proposal']['code'] + prop['Proposal']['number']
+                if _p == mxcube.SELECTED_PROPOSAL:
+                    common_proposal = True
+
+        if (loginID in _users):
+            return deny_access("Login rejected, you are already logged in")
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
+        
+        # staff consideration only makes sense for users login
+        if lims_login_type() == 'user':
+            privileged = limsutils.lims_is_staff(loginID)
+        else:
+            # for proposal login, this corresponds to the proposal being inhouse
+            privileged = inhouse
 
         # Only allow other users to log-in if they are from the same proposal
-        if (not inhouse) and _users and (login_id not in _users):
+        # or if they are staff
+        if not privileged and not common_proposal and _users and (loginID not in _users):
             raise Exception("Another user is already logged in")
 
         # Only allow local login when remote is disabled
@@ -283,11 +344,24 @@ def login(login_id, password):
             logging.getLogger("MX3.HWR").info(msg)
         else:
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
-            raise Exception(str(info))
-    except BaseException:
-        raise
+            return deny_access(str(info))
+    except BaseException as ex:
+        logging.getLogger("HWR").error('Login error %s' %ex)
+        return deny_access("Could not authenticate")
     else:
-        add_user(create_user(login_id, remote_addr(), session.sid, login_res))
+        if not logged_in_users(exclude_inhouse=False):
+            # Create a new queue just in case any previous queue was not cleared
+            # properly but only if there is not any user logged in
+            mxcube.queue = qutils.new_queue()
+            sample = mxcube.sample_changer.getLoadedSample()
+            # If A sample is mounted, get sample changer contents and add mounted
+            # sample to the queue
+            if sample:
+                scutils.get_sample_list()
+
+        user_type = define_user_type(info['local'], privileged, common_proposal)
+        add_user(create_user(loginID, remote_addr(), session.sid, user_type, login_res))
+        socketio.emit("usersChanged", get_users(), namespace='/hwr')
 
         session["loginInfo"] = {
             "loginID": login_id,
@@ -316,37 +390,95 @@ def login(login_id, password):
 
 def signout():
     user = get_user_by_sid(session.sid)
-
-    # If operator logs out clear queue and sample list
-    if is_operator(session.sid):
+    if not logged_in_users(exclude_inhouse=False):
+    # If last user logs out clear queue and sample list
         qutils.save_queue(session)
         qutils.clear_queue()
         blcontrol.beamline.microscope.shapes.clear_all()
         limsutils.init_sample_list()
 
         qutils.init_queue_settings()
+        mxcube.SELECTED_PROPOSAL = None
+        mxcube.SELECTED_PROPOSAL_ID = None
 
+        clear_messages()
         if hasattr(blcontrol.beamline.session, "clear_session"):
             blcontrol.beamline.session.clear_session()
 
         mxcube.CURRENTLY_MOUNTED_SAMPLE = ""
 
-        user = get_user_by_sid(session.sid)
         msg = "User %s signed out" % user
         logging.getLogger("MX3.HWR").info(msg)
 
     remove_user(session.sid)
     session.clear()
     
+def forceusersignout():
+    logging.getLogger("HWR").info('Forcing signout of user')
+    user_id = request.get_json()['sid']
+    user = get_user_by_sid(user_id)
+    # try by name
+    if user is None:
+        user = get_user_by_name(user_id)
+    remove_user(user.get('sid'))
+    socketio.emit("signout", user, room=user["socketio_sid"], namespace='/hwr')
+    logging.getLogger('HWR').info('[Login] %s user forced signout' % user['loginID'])
+
+    users = get_users()
+
+    if len(users) == 0:
+        # no one else is connected
+        # we are here because the user force logut itself
+        qutils.clear_queue()
+        blcontrol.beamline.microscope.shapes.clear_all()
+
+        if hasattr(blcontrol.beamline.session, "clear_session"):
+            blcontrol.beamline.session.clear_session()
+
+        if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+            if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
+                mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+
+        mxcube.SELECTED_PROPOSAL = None
+        mxcube.SELECTED_PROPOSAL_ID = None
+        state_storage.flush()
+
+        session.clear()
+
+    if len(users) == 1 and users[0]['type'] == 'staff':
+        # if the only remaining user is staff clean all
+        # we are here because a staff user kicked out a normal user
+        staff_id = users[0]['sid']
+        remove_user(staff_id)
+        qutils.clear_queue()
+        blcontrol.beamline.microscope.shapes.clear_all()
+
+        if hasattr(blcontrol.beamline.session, "clear_session"):
+            blcontrol.beamline.session.clear_session()
+
+        if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+            if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
+                mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+
+        mxcube.SELECTED_PROPOSAL = None
+        mxcube.SELECTED_PROPOSAL_ID = None
+        state_storage.flush()
+
+        session.clear()
+        socketio.emit("signout", {}, namespace='/hwr')
 
 def login_info(login_info):
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
+    loginID = login_info["loginID"] if login_info is not None else None
+
 
     res = {
         "synchrotron_name": blcontrol.beamline.session.synchrotron_name,
         "beamline_name": blcontrol.beamline.session.beamline_name,
         "loginType": blcontrol.beamline.lims.loginType.title(),
+        "loginID": loginID,
+        "host": socket.gethostbyaddr(remote_addr())[0],
         "loginRes": login_info,
         "master": is_operator(session.sid),
         "observerName": get_observer_name(),
@@ -355,12 +487,12 @@ def login_info(login_info):
     user = get_user_by_sid(session.sid)
     proposal = session["proposal"]["Proposal"] if "proposal" in session else None
 
-    if proposal:
-        res["selectedProposal"] = "%s%s" % (proposal["code"], proposal["number"])
-        res["selectedProposalID"] = proposal["proposalId"]
+    if mxcube.SELECTED_PROPOSAL is not None:
+        res["selectedProposal"] = mxcube.SELECTED_PROPOSAL
+        res["selectedProposalID"] = mxcube.SELECTED_PROPOSAL_ID
     else:
-        res["selectedProposal"] = ""
-        res["selectedProposalID"] = ""
+        res["selectedProposal"] = None
+        res["selectedProposalID"] = None
 
     return user, res
 

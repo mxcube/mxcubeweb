@@ -201,6 +201,15 @@ def lims_is_inhouse(login_res):
     return login_res.get("Session", {}).get("is_inhouse", False)
 
 
+def lims_is_staff(loginID):
+    is_staff = False
+    try:
+        is_staff = loginID in blcontrol.beamline.lims.staff_users
+    except: 
+        pass
+    return is_staff
+
+
 def lims_valid_login(login_res):
     return login_res["status"]["code"] == "ok"
 
@@ -253,10 +262,13 @@ def lims_login(loginID, password, create_session):
         for prop in session["proposal_list"]:
             todays_session = blcontrol.beamline.lims.get_todays_session(prop)
             prop["Session"] = [todays_session["session"]]
+            prop['Session'][0]['is_inhouse'] = todays_session['is_inhouse']
+            prop['Session'][0]['new_session_flag'] = todays_session['new_session_flag']
 
         if hasattr(
             blcontrol.beamline.session, "commissioning_fake_proposal"
-        ) and blcontrol.beamline.session.is_inhouse(loginID, None):
+        ) and blcontrol.beamline.session.is_inhouse(loginID, None)
+         and not mxcube.SELECTED_PROPOSAL:
             dummy = blcontrol.beamline.session.commissioning_fake_proposal
             session["proposal_list"].append(dummy)
 
@@ -337,6 +349,8 @@ def select_proposal(proposal):
         blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get(
             "sessionId"
         )
+        mxcube.SELECTED_PROPOSAL = mxcube.session.proposal_code + mxcube.session.proposal_number
+        mxcube.SELECTED_PROPOSAL_ID = proposal_info.get('Proposal').get('proposalId', '')
 
         session["proposal"] = proposal_info
 

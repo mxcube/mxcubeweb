@@ -1874,7 +1874,6 @@ def add_default_sample():
     else:
         queue_add_item([sample])
 
-
 def queue_start(sid):
     """
     Start execution of the queue.
@@ -2294,3 +2293,8 @@ def set_group_folder(path):
     blcontrol.beamline.session.set_user_group(path)
     root_path = blcontrol.beamline.session.get_base_image_directory()
     return {"path": path, "rootPath": root_path}
+
+
+def reset_queue_settings():
+    mxcube.AUTO_MOUNT_SAMPLE = mxcube.collect.getProperty('auto_mount_sample', False)
+    mxcube.AUTO_ADD_DIFFPLAN = mxcube.collect.getProperty('auto_add_diff_plan', False)

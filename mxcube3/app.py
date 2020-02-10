@@ -29,6 +29,10 @@ CURRENTLY_MOUNTED_SAMPLE = ''
 # Sample location of sample that are in process of being mounted
 SAMPLE_TO_BE_MOUNTED = ''
 
+# Selected proposal
+SELECTED_PROPOSAL = None
+SELECTED_PROPOSAL_ID = None
+
 # Method used for sample centring
 CENTRING_METHOD = queue_entry.CENTRING_METHOD.LOOP
 
@@ -48,6 +52,9 @@ SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
 
 # Users currently logged in
 USERS = {}
+
+# Chat messages
+MESSAGES = []
 
 # Path to video device (i.e. /dev/videoX)
 VIDEO_DEVICE = None

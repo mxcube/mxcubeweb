@@ -1,48 +1,131 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Panel } from 'react-bootstrap';
+import { Button, Panel, ButtonToolbar, Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { sendGiveControl } from '../../actions/remoteAccess';
+import { sendForceUserSignOut } from '../../actions/login';
 
 class UserList extends React.Component {
-  getObservers() {
-    const observers = [];
 
-    for (const observer of this.props.remoteAccess.observers) {
-      observers.push((
-        <div key={observer.host}>
-          <div className="col-xs-4">
-            <span style={{ lineHeight: '24px' }}>{observer.name}</span>
-          </div>
-          <div className="col-xs-4">
-            <span style={{ lineHeight: '24px' }}>{observer.host}</span>
-          </div>
-          { this.props.remoteAccess.master ?
-            (<div className="col-xs-4">
-              <Button className="btn-sm" onClick={() => this.props.sendGiveControl(observer.sid)}>
-                 Give control
-               </Button>
-             </div>)
-            :
-            (<div className="col-xs-4"><span>&nbsp;</span></div>)
-          }
+  getUserInfo() {
+    const isMaster = this.props.remoteAccess.master;
+    const userType = this.props.remoteAccess.type;
+    const selectedProposal = userType === 'staff' ? 'none' : this.props.login.selectedProposal;
+
+    return (
+      <div>
+        <div className="col-xs-2">
+          <span style={{ lineHeight: '36px' }}>{this.props.login.loginID} (you)</span>
         </div>
-      ));
-    }
+        <div className="col-xs-4">
+          <span style={{ lineHeight: '36px' }}>{this.props.login.host}</span>
+        </div>
+        <div className="col-xs-2">
+          <span style={{ lineHeight: '36px' }}>{selectedProposal}</span>
+        </div>
+        <div className="col-xs-1">
+          <span style={{ lineHeight: '36px' }}>{userType}</span>
+        </div>
+        <div className="col-xs-1">
+          <span style={{ lineHeight: '36px' }}>{isMaster ? 'Master' : 'Observer'}</span>
+        </div>
+        <div className="col-xs-2">
+          <span style={{ lineHeight: '36px' }}>{isMaster ? 'In control' : 'No control'}</span>
+        </div>
+      </div>
+    );
+  }
 
-    return observers;
+  getUsers() {
+    const users = [];
+    if (this.props.remoteAccess.users) {
+      for (const user of this.props.remoteAccess.users) {
+        const userType = user.type;
+        const selectedProposal = userType === 'staff' ? 'none' : this.props.login.selectedProposal;
+
+        user.loginID !== this.props.login.loginID ?
+          users.push((
+            <div>
+              <div className="col-xs-2">
+                <span style={{ lineHeight: '24px' }}>{user.loginID}</span>
+              </div>
+              <div className="col-xs-4">
+                <span style={{ lineHeight: '24px' }}>{user.host}</span>
+              </div>
+              <div className="col-xs-2">
+                <span style={{ lineHeight: '24px' }}>{selectedProposal}</span>
+              </div>
+              <div className="col-xs-1">
+                <span style={{ lineHeight: '24px' }}>{user.type}</span>
+              </div>
+              <div className="col-xs-1">
+                <span style={{ lineHeight: '24px' }}>{user.operator ? 'Master' : 'Observer'}</span>
+              </div>
+              <div className="col-xs-2">
+                <ButtonToolbar>
+                    <OverlayTrigger
+                      placement="top"
+                      trigger="hover"
+                      overlay={
+                        <Tooltip>
+                          Give control to user
+                        </Tooltip>
+                      }
+                    >
+                    <Button
+                      className="btn-sm"
+                      data-toggle="tooltip"
+                      data-placement="top" title="Give control"
+                      disabled={!this.props.remoteAccess.master}
+                      onClick={() => this.props.sendGiveControl(user.sid)}
+                    >
+                    <span className="fa fa-lg fa-gamepad" />
+                    </Button>
+                    </OverlayTrigger>
+                    <OverlayTrigger
+                      placement="top"
+                      trigger="hover"
+                      overlay={
+                        <Tooltip>
+                          Force signout
+                        </Tooltip>
+                      }
+                    >
+                    <Button
+                      className="btn-sm"
+                      data-toggle="tooltip"
+                      data-placement="top" title="Tooltip on top"
+                      disabled={this.props.remoteAccess.type !== 'staff'}
+                      onClick={() => this.props.sendForceUserSignOut(user.sid)}
+                    >
+                    <span className="fa fa-lg fa-sign-out" />
+                    </Button>
+                    </OverlayTrigger>
+                </ButtonToolbar>
+              </div>
+            </div>
+          )) : null;
+      }
+    }
+    return users;
   }
 
   render() {
     return (
-      <Panel header="Users">
+      <div>
+      <Panel header="User Info">
         <div className="col-xs-12">
-          <div className="col-xs-4"><b>Name</b></div>
+          <div className="col-xs-2"><b>Name</b></div>
           <div className="col-xs-4"><b>Host</b></div>
-          <div className="col-xs-4"><span>&nbsp;</span></div>
-          {this.getObservers()}
+          <div className="col-xs-2"><b>Proposal</b></div>
+          <div className="col-xs-1"><b>Type</b></div>
+          <div className="col-xs-1"><b>Role</b></div>
+          <div className="col-xs-2"><b>Control</b></div>
+          {this.getUserInfo()}
+          {this.getUsers()}
         </div>
       </Panel>
+      </div>
     );
   }
 }
@@ -56,7 +139,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendGiveControl: bindActionCreators(sendGiveControl, dispatch)
+    sendGiveControl: bindActionCreators(sendGiveControl, dispatch),
+    sendForceUserSignOut: bindActionCreators(sendForceUserSignOut, dispatch)
   };
 }
 
