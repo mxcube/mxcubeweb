@@ -57,6 +57,17 @@ def signout():
     return make_response("", 200)
 
 
+@mxcube.route("/mxcube/api/v0.1/forceusersignout", methods=["POST"])
+@server.restrict
+def forceusersignout():
+    """
+    Force signout of a given user from Mxcube3
+    """
+    loginutils.forceusersignout()
+
+    return make_response("", 200)
+
+
 @server.route("/mxcube/api/v0.1/login_info", methods=["GET"])
 def loginInfo():
     """
