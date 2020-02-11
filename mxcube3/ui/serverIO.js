@@ -46,7 +46,10 @@ import {
 import { showWorkflowParametersDialog } from './actions/workflow';
 
 import {
-  setObservers, setMaster, requestControlAction,
+  setObservers,
+  setUsers,
+  setMaster,
+  requestControlAction,
   incChatMessageCount
 } from './actions/remoteAccess';
 import { doSignOut, forceSignOut } from './actions/login';

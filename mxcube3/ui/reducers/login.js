@@ -52,7 +52,7 @@ export default (state = initialState, action) => {
         selectedProposal: action.proposal,
         selectedProposalID: propId
       };
-      }
+    }
     case 'UNSELECT_PROPOSAL':
     {
       return {

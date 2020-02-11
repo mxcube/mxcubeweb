@@ -53,6 +53,7 @@ export default class LoginComponent extends React.Component {
     }
     return res;
   }
+
   render() {
     if (this.props.loading && !this.props.showProposalsForm) {
       return <img src={loader} className="centered" role="presentation" />;
