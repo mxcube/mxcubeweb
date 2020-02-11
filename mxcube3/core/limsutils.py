@@ -267,8 +267,7 @@ def lims_login(loginID, password, create_session):
 
         if hasattr(
             blcontrol.beamline.session, "commissioning_fake_proposal"
-        ) and blcontrol.beamline.session.is_inhouse(loginID, None)
-         and not mxcube.SELECTED_PROPOSAL:
+        ) and blcontrol.beamline.session.is_inhouse(loginID, None) and not mxcube.SELECTED_PROPOSAL:
             dummy = blcontrol.beamline.session.commissioning_fake_proposal
             session["proposal_list"].append(dummy)
 
@@ -349,7 +348,7 @@ def select_proposal(proposal):
         blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get(
             "sessionId"
         )
-        mxcube.SELECTED_PROPOSAL = mxcube.session.proposal_code + mxcube.session.proposal_number
+        mxcube.SELECTED_PROPOSAL = blcontrol.beamline.session.proposal_code + blcontrol.beamline.session.proposal_number
         mxcube.SELECTED_PROPOSAL_ID = proposal_info.get('Proposal').get('proposalId', '')
 
         session["proposal"] = proposal_info

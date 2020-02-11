@@ -30,7 +30,7 @@ DISCONNECT_HANDLED = True
 MESSAGES = []
 
 def lims_login_type():
-    return mxcube.db_connection.loginType.lower()
+    return blcontrol.beamline.lims.loginType.lower()
 
 def create_user(loginID, host, sid, user_type, lims_data=None):
     return {"loginID": loginID,
@@ -75,7 +75,7 @@ def get_user_by_name(username):
 
 
 def get_users():
-    return [user for user in users().itervalues()]
+    return [user for user in users().values()]
 
 
 def get_observers():
@@ -306,8 +306,8 @@ def login(login_id, password):
                 if _p == mxcube.SELECTED_PROPOSAL:
                     common_proposal = True
 
-        if (loginID in _users):
-            return deny_access("Login rejected, you are already logged in")
+        if (login_id in _users):
+            raise Exception("Login rejected, you are already logged in")
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
@@ -315,14 +315,14 @@ def login(login_id, password):
         
         # staff consideration only makes sense for users login
         if lims_login_type() == 'user':
-            privileged = limsutils.lims_is_staff(loginID)
+            privileged = limsutils.lims_is_staff(login_id)
         else:
             # for proposal login, this corresponds to the proposal being inhouse
             privileged = inhouse
 
         # Only allow other users to log-in if they are from the same proposal
         # or if they are staff
-        if not privileged and not common_proposal and _users and (loginID not in _users):
+        if not privileged and not common_proposal and _users and (login_id not in _users):
             raise Exception("Another user is already logged in")
 
         # Only allow local login when remote is disabled
@@ -344,23 +344,17 @@ def login(login_id, password):
             logging.getLogger("MX3.HWR").info(msg)
         else:
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
-            return deny_access(str(info))
+            raise Exception(str(info))
     except BaseException as ex:
         logging.getLogger("HWR").error('Login error %s' %ex)
-        return deny_access("Could not authenticate")
+        raise Exception("Could not authenticate")
     else:
         if not logged_in_users(exclude_inhouse=False):
             # Create a new queue just in case any previous queue was not cleared
             # properly but only if there is not any user logged in
-            mxcube.queue = qutils.new_queue()
-            sample = mxcube.sample_changer.getLoadedSample()
-            # If A sample is mounted, get sample changer contents and add mounted
-            # sample to the queue
-            if sample:
-                scutils.get_sample_list()
-
+            qutils.clear_queue()
         user_type = define_user_type(info['local'], privileged, common_proposal)
-        add_user(create_user(loginID, remote_addr(), session.sid, user_type, login_res))
+        add_user(create_user(login_id, remote_addr(), session.sid, user_type, login_res))
         socketio.emit("usersChanged", get_users(), namespace='/hwr')
 
         session["loginInfo"] = {
@@ -370,7 +364,6 @@ def login(login_id, password):
         }
 
         sample = blcontrol.beamline.sample_changer.getLoadedSample()
-
         # If A sample is mounted (and not already marked as such),
         # get sample changer contents and add mounted sample to the queue
         if not scutils.get_current_sample() and sample:
@@ -468,10 +461,9 @@ def forceusersignout():
         socketio.emit("signout", {}, namespace='/hwr')
 
 def login_info(login_info):
+    loginID = login_info["loginID"] if login_info is not None else None
     login_info = login_info["loginRes"] if login_info is not None else {}
     login_info = limsutils.convert_to_dict(login_info)
-    loginID = login_info["loginID"] if login_info is not None else None
-
 
     res = {
         "synchrotron_name": blcontrol.beamline.session.synchrotron_name,
