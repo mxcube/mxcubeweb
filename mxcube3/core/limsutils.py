@@ -205,8 +205,8 @@ def lims_is_staff(loginID):
     is_staff = False
     try:
         is_staff = loginID in blcontrol.beamline.lims.staff_users
-    except: 
-        pass
+    except Exception:
+        logging.getLogger("MX3.HWR").warning("[LIMS] Could not determine if user is staff")
     return is_staff
 
 
