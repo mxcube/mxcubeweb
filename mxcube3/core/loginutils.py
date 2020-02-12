@@ -347,7 +347,7 @@ def login(login_id, password):
             raise Exception(str(info))
     except BaseException as ex:
         logging.getLogger("HWR").error('Login error %s' %ex)
-        raise Exception("Could not authenticate")
+        raise Exception(str(ex))
     else:
         if not logged_in_users(exclude_inhouse=False):
             # Create a new queue just in case any previous queue was not cleared
@@ -381,31 +381,39 @@ def login(login_id, password):
         return login_res["status"]
 
 
+def clear_all():
+    qutils.save_queue(session)
+    qutils.clear_queue()
+    blcontrol.beamline.microscope.shapes.clear_all()
+    limsutils.init_sample_list()
+
+    qutils.init_queue_settings()
+    if hasattr(blcontrol.beamline.session, "clear_session"):
+        blcontrol.beamline.session.clear_session()
+
+    if mxcube.CURRENTLY_MOUNTED_SAMPLE:
+        if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
+            mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
+
+    mxcube.SELECTED_PROPOSAL = None
+    mxcube.SELECTED_PROPOSAL_ID = None
+    state_storage.flush()
+
+    session.clear()
+
+
 def signout():
     user = get_user_by_sid(session.sid)
     if not logged_in_users(exclude_inhouse=False):
     # If last user logs out clear queue and sample list
-        qutils.save_queue(session)
-        qutils.clear_queue()
-        blcontrol.beamline.microscope.shapes.clear_all()
-        limsutils.init_sample_list()
+        clear_all()
 
-        qutils.init_queue_settings()
-        mxcube.SELECTED_PROPOSAL = None
-        mxcube.SELECTED_PROPOSAL_ID = None
-
-        clear_messages()
-        if hasattr(blcontrol.beamline.session, "clear_session"):
-            blcontrol.beamline.session.clear_session()
-
-        mxcube.CURRENTLY_MOUNTED_SAMPLE = ""
-
-        msg = "User %s signed out" % user
-        logging.getLogger("MX3.HWR").info(msg)
+    msg = "User %s signed out" % user
+    logging.getLogger("MX3.HWR").info(msg)
 
     remove_user(session.sid)
-    session.clear()
-    
+
+
 def forceusersignout():
     logging.getLogger("HWR").info('Forcing signout of user')
     user_id = request.get_json()['sid']
@@ -422,42 +430,14 @@ def forceusersignout():
     if len(users) == 0:
         # no one else is connected
         # we are here because the user force logut itself
-        qutils.clear_queue()
-        blcontrol.beamline.microscope.shapes.clear_all()
-
-        if hasattr(blcontrol.beamline.session, "clear_session"):
-            blcontrol.beamline.session.clear_session()
-
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE:
-            if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
-                mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
-
-        mxcube.SELECTED_PROPOSAL = None
-        mxcube.SELECTED_PROPOSAL_ID = None
-        state_storage.flush()
-
-        session.clear()
+        clear_all()
 
     if len(users) == 1 and users[0]['type'] == 'staff':
         # if the only remaining user is staff clean all
         # we are here because a staff user kicked out a normal user
         staff_id = users[0]['sid']
         remove_user(staff_id)
-        qutils.clear_queue()
-        blcontrol.beamline.microscope.shapes.clear_all()
-
-        if hasattr(blcontrol.beamline.session, "clear_session"):
-            blcontrol.beamline.session.clear_session()
-
-        if mxcube.CURRENTLY_MOUNTED_SAMPLE:
-            if mxcube.CURRENTLY_MOUNTED_SAMPLE.get('location', '') == 'Manual':
-                mxcube.CURRENTLY_MOUNTED_SAMPLE = ''
-
-        mxcube.SELECTED_PROPOSAL = None
-        mxcube.SELECTED_PROPOSAL_ID = None
-        state_storage.flush()
-
-        session.clear()
+        clear_all()
         socketio.emit("signout", {}, namespace='/hwr')
 
 def login_info(login_info):
