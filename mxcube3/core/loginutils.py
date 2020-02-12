@@ -286,7 +286,7 @@ def login(login_id, password):
     try:
         login_res = limsutils.lims_login(login_id, password, create_session=False)
         if login_res["status"]["code"] != "ok":
-            return deny_access("Could not authenticate")
+            raise Exception("Could not authenticate")
 
         inhouse = is_inhouse_user(login_id)
 
