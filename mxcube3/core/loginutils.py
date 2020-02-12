@@ -247,7 +247,7 @@ def remote_addr():
 def is_local_network(ip):
     try:
         _address = mxcube.session.remote_address
-    except:
+    except AttributeError:
         _address = None
     if ip == _address:
         return False
