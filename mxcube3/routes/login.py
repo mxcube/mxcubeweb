@@ -58,7 +58,6 @@ def signout():
 
 
 @server.route("/mxcube/api/v0.1/forceusersignout", methods=["POST"])
-@server.restrict
 def forceusersignout():
     """
     Force signout of a given user from Mxcube3
