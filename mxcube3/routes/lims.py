@@ -70,7 +70,9 @@ def get_proposal():
     """
     Return the currently selected proposal. (The proposal list is part of the login_res)
     """
-    proposal_info = limsutils.get_proposal_info(blcontrol.beamline.session.proposal_code)
+    proposal_info = limsutils.get_proposal_info(
+        blcontrol.beamline.session.proposal_code
+    )
 
     return jsonify({"Proposal": proposal_info})
 
@@ -112,11 +114,13 @@ def get_results():
                 r = apply_template("data-collection-results.html", data)
 
         elif isinstance(model, qmo.Characterisation) or isinstance(model, qmo.Workflow):
-            if result_file_test('characterisation-results.js'):
+            if result_file_test("characterisation-results.js"):
                 try:
-                    url_list =  data["limsResultData"]["workflow_result_url_list"]
+                    url_list = data["limsResultData"]["workflow_result_url_list"]
                 except Exception as ex:
-                    logging.getLogger('MX3.HWR').warning("Error retrieving wf url list, {0}".format(ex.message))
+                    logging.getLogger("MX3.HWR").warning(
+                        "Error retrieving wf url list, {0}".format(ex.message)
+                    )
                     url_list = None
 
                 if url_list:

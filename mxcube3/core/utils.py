@@ -22,6 +22,8 @@ from mxcube3 import mxcube
 from mxcube3 import blcontrol
 from mxcube3 import socketio
 
+from HardwareRepository.BaseHardwareObjects import HardwareObjectState
+
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
 
@@ -65,7 +67,6 @@ def get_light_state_and_intensity():
 
     for light in ("BackLight", "FrontLight"):
         hwobj = blcontrol.beamline.diffractometer.getObjectByRole(light)
-
         if hasattr(hwobj, "getActuatorState"):
             switch_state = 1 if hwobj.getActuatorState() == "in" else 0
         else:
@@ -73,24 +74,22 @@ def get_light_state_and_intensity():
                 light + "Switch"
             )
             switch_state = 1 if hwobj_switch.getActuatorState() == "in" else 0
-
         ret.update(
             {
                 light: {
                     "name": light,
                     "state": hwobj.get_state().value,
-                    "position": hwobj.get_position(),
+                    "position": hwobj.get_value(),
                     "limits": hwobj.get_limits(),
                 },
                 light
                 + "Switch": {
                     "name": light + "Switch",
-                    "state": 2,
+                    "state": HardwareObjectState.READY.name,
                     "position": switch_state,
                 },
             }
         )
-
     return ret
 
 
@@ -114,9 +113,7 @@ def get_movable_state_and_position(item_name):
             # this returns more than needed, but it doesn't
             # matter
             return get_light_state_and_intensity()
-
         hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_name)
-
 
         if hwobj is None:
             msg = (
@@ -134,8 +131,7 @@ def get_movable_state_and_position(item_name):
                 else:
                     pos = None
             else:
-                pos = hwobj.get_position()
-
+                pos = hwobj.get_value()
             return {
                 item_name: {
                     "name": item_name,
@@ -237,7 +233,7 @@ def _do_take_snapshot(filename):
 
     SNAPSHOT_RECEIVED.wait(timeout=30)
 
-    with file(filename, "wb") as snapshot_file:
+    with open(filename, "wb") as snapshot_file:
         snapshot_file.write(SNAPSHOT)
 
 
@@ -253,10 +249,12 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
         move_omega_relative = diffractometer.move_omega_relative
     else:
         # called via AbstractMultiCollect
-        calling_frame = inspect.currentframe(2)
+        # calling_frame = inspect.currentframe()
+        calling_frame = inspect.currentframe().f_back.f_back
+
         dc_params = calling_frame.f_locals["data_collect_parameters"]
         diffractometer = self.diffractometer()
-        move_omega_relative = diffractometer.phiMotor.syncMoveRelative
+        move_omega_relative = diffractometer.phiMotor.set_value_relative
 
     if dc_params["take_snapshots"]:
         number_of_snapshots = mxcube.NUM_SNAPSHOTS

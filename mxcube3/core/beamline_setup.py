@@ -12,8 +12,8 @@ import MicrodiffBeamstop
 import MicrodiffInOutMockup
 import ShutterMockup
 
-from numpy import arange
 from mxcube3 import socketio
+from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 
 from . import utils
 
@@ -24,8 +24,6 @@ from .statedefs import (
     BEAMSTOP_STATE,
 )
 
-from HardwareRepository import HardwareRepository as HWR
-from abstract.AbstractMotor import MotorStates
 
 BEAMLINE_SETUP = None
 
@@ -337,7 +335,7 @@ class HOMediatorBase(object):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.limits(),
-            "state": self.state(),
+            "state": self.state().name,
             "msg": self.msg(),
             "type": "FLOAT",
             "precision": self.precision(),
@@ -432,7 +430,6 @@ class EnergyHOMediator(HOMediatorBase):
             pass
         """
         state = self._ho.get_state()
-        print(f"state-------------------->{state}")
         return state
 
     def stop(self):
@@ -575,7 +572,6 @@ class DuoStateHOMediator(HOMediatorBase):
             state = self._ho.getActuatorState()
 
         state = self.STATES.TO_INOUT_STATE.get(state, INOUT_STATE.UNDEFINED)
-
         return state
 
     def _close(self):
@@ -693,7 +689,7 @@ class TransmissionHOMediator(HOMediatorBase):
 
     def get(self):
         try:
-            transmission = self._ho.getAttFactor()
+            transmission = self._ho.get_value()
             transmission = round(float(transmission), self._precision)
             transmission = ("{:3.%sf}" % self._precision).format(transmission)
         except (AttributeError, TypeError):
@@ -701,18 +697,14 @@ class TransmissionHOMediator(HOMediatorBase):
 
         return transmission
 
-    def stop(self):
-        self._ho.stop()
-
     def state(self):
-        return MotorStates.READY if self._ho.isReady() else MotorStates.BUSY
+        return HardwareObjectState.READY if self._ho.is_ready() else HardwareObjectState.BUSY
 
 
 class ResolutionHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
         super(ResolutionHOMediator, self).__init__(ho, name)
         ho.connect("valueChanged", self._value_change)
-        ho.connect("positionChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
         self._precision = 3
 
@@ -721,17 +713,16 @@ class ResolutionHOMediator(HOMediatorBase):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
-        self._ho.move(round(float(value), 3))
+        self._ho.set_value(round(float(value), 3))
         return self.get()
 
     def get(self):
         try:
-            resolution = self._ho.get_position()
+            resolution = self._ho.get_value()
             resolution = round(float(resolution), self._precision)
             resolution = ("{:2.%sf}" % self._precision).format(resolution)
         except (TypeError, AttributeError):
             resolution = 0
-
         return resolution
 
     def limits(self):
@@ -751,8 +742,8 @@ class ResolutionHOMediator(HOMediatorBase):
     def state(self):
         state = self._ho.get_state()
         if isinstance(state, list):
-            return state[0].name
-        return state.name
+            return state[0]
+        return state
 
     def get_lookup_limits(self):
         return self.limits()
@@ -766,7 +757,7 @@ class ResolutionHOMediator(HOMediatorBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.get_lookup_limits(),
-            "state": self.state(),
+            "state": self.state().name,
             "msg": self.msg(),
             "precision": self.precision(),
             "step": self.step_size(),
@@ -778,7 +769,7 @@ class ResolutionHOMediator(HOMediatorBase):
 class DetectorDistanceHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
         super(DetectorDistanceHOMediator, self).__init__(ho, name)
-        ho.connect("positionChanged", self._value_change)
+        ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
 
         self._precision = 3
@@ -788,12 +779,12 @@ class DetectorDistanceHOMediator(HOMediatorBase):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
-        self._ho.move(round(float(value), 3))
+        self._ho.set_value(round(float(value), 3))
         return self.get()
 
     def get(self):
         try:
-            detdist = self._ho.get_position()
+            detdist = self._ho.get_value()
             detdist = round(float(detdist), self._precision)
             detdist = ("{:4.%sf}" % self._precision).format(detdist)
         except (TypeError, AttributeError):
@@ -818,8 +809,9 @@ class DetectorDistanceHOMediator(HOMediatorBase):
     def state(self):
         state = self._ho.get_state()
         if isinstance(state, list):
-            return state[0].name
-        return state.name
+            return state[0]
+        return state
+
 
 class MachineInfoHOMediator(HOMediatorBase):
     def __init__(self, ho, name=""):
@@ -880,7 +872,7 @@ class MachineInfoHOMediator(HOMediatorBase):
         pass
 
     def state(self):
-        pass
+        return HardwareObjectState.UNKNOWN
 
 
 class PhotonFluxHOMediator(HOMediatorBase):
@@ -919,7 +911,7 @@ class PhotonFluxHOMediator(HOMediatorBase):
         return []
 
     def state(self):
-        return "READY"
+        return HardwareObjectState.READY
 
     def dict_repr(self):
         """
@@ -930,7 +922,7 @@ class PhotonFluxHOMediator(HOMediatorBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.limits(),
-            "state": self.state(),
+            "state": self.state().name,
             "msg": self.message(),
             "precision": self.precision(),
             "readonly": self.read_only(),
@@ -984,7 +976,7 @@ class CryoHOMediator(HOMediatorBase):
         return []
 
     def state(self):
-        return "READY"
+        return HardwareObjectState.READY
 
     def dict_repr(self):
         """
@@ -995,7 +987,7 @@ class CryoHOMediator(HOMediatorBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.limits(),
-            "state": self.state(),
+            "state": self.state().name,
             "msg": self.message(),
             "precision": self.precision(),
             "readonly": self.read_only(),

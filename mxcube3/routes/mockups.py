@@ -13,7 +13,7 @@ from mxcube3.core.utils import to_camel
 @server.restrict
 def mockup_ready():
     logging.getLogger("HWR").info("[Routes] Called mockup ready")
-    print((blcontrol.resolution.getPosition()))
+    print((blcontrol.resolution.get_value()))
     return str(mxcube.resolution.isReady())
 
 

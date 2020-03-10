@@ -18,11 +18,9 @@ from mxcube3.core.utils import to_camel, from_camel
 from mxcube3.core import scutils
 from mxcube3.core import beamlineutils
 from mxcube3.core import utils
-from mxcube3.video import streaming
-
 
 from queue_entry import CENTRING_METHOD
-from abstract.AbstractMotor import MotorStates
+from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 
 
 SAMPLE_IMAGE = None
@@ -181,28 +179,42 @@ def init_signals():
 
         setattr(dm, "_%s_pos_callback" % motor, pos_cb)
         setattr(dm, "_%s_state_callback" % motor, state_cb)
-        dm.connect(dm.getObjectByRole(motor), "positionChanged", pos_cb)
+        dm.connect(dm.getObjectByRole(motor), "valueChanged", pos_cb)
         dm.connect(dm.getObjectByRole(motor), "stateChanged", state_cb)
 
-    for motor_name in ["FrontLight", "BackLight"]:
+    for actuator_name in ["FrontLight", "BackLight"]:
 
-        def state_cb(state, motor=motor, **kw):
-            movable = utils.get_movable_state_and_position(motor_name)
-            signals.motor_state_callback(movable[motor_name], **kw)
-            signals.motor_state_callback(movable[motor_name + "Switch"], **kw)
+        @utils.RateLimited(10)
+        def light_pos_cb(pos, actuator_name=actuator_name, **kw):
+            movable = utils.get_movable_state_and_position(motor)
 
-        setattr(dm, "_%s_state_callback" % motor, state_cb)
+            if movable:
+                signals.motor_position_callback(movable[motor])
+            else:
+                logging.getLogger("MX3.HWR").exception(
+                    "Could not call position callback for %s" % motor
+                )
+
+        def light_state_cb(state, actuator_name=actuator_name, **kw):
+            movable = utils.get_movable_state_and_position(actuator_name)
+            signals.motor_state_callback(movable[actuator_name], **kw)
+            print(movable)
+            signals.motor_state_callback(movable[actuator_name + "Switch"], **kw)
+            signals.motor_position_callback(movable[actuator_name + "Switch"])
+
+        setattr(dm, "_%s_light_state_callback" % actuator_name, light_state_cb)
+        setattr(dm, "_%s_light_pos_callback" % actuator_name, light_pos_cb)
 
         try:
-            motor = dm.getObjectByRole(motor_name)
-            motor.connect(motor, "positionChanged", pos_cb)
+            motor = dm.getObjectByRole(actuator_name)
+            motor.connect(motor, "valueChanged", light_pos_cb)
+            motor_sw = dm.getObjectByRole(actuator_name + "Switch")
 
-            if hasattr(motor, "actuatorIn"):
-                motor = dm.getObjectByRole(motor_name)
-                motor.connect(motor, "actuatorStateChanged", state_cb)
+            if hasattr(motor_sw, "actuatorIn"):
+                motor_sw.connect(motor_sw, "actuatorStateChanged", light_state_cb)
             else:
-                motor_sw = dm.getObjectByRole(motor_name + "Switch")
-                motor_sw.connect(motor_sw, "actuatorStateChanged", state_cb)
+                motor_sw = dm.getObjectByRole(actuator_name + "Switch")
+                motor_sw.connect(motor_sw, "actuatorStateChanged", light_state_cb)
 
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception(str(ex))
@@ -267,14 +279,17 @@ def stream_video(camera):
     while True:
         try:
             camera.new_frame.wait()
-            yield (b"--frame\r\n"
-                   b"--!>\nContent-type: image/jpeg\n\n" + SAMPLE_IMAGE + b"\r\n")
+            yield (
+                b"--frame\r\n"
+                b"--!>\nContent-type: image/jpeg\n\n" + SAMPLE_IMAGE + b"\r\n"
+            )
         except Exception:
             pass
 
 
 def set_image_size(width, height):
-    streaming.set_video_size(width, height)
+    blcontrol.beamline.microscope.camera.set_stream_size(width, height)
+    blcontrol.beamline.microscope.camera.restart()
     return beamlineutils.get_viewport_info()
 
 
@@ -387,39 +402,35 @@ def rotate_to(sid):
         shape = blcontrol.beamline.microscope.shapes.get_shape(sid)
         cp = shape.get_centred_position()
         phi_value = round(float(cp.as_dict().get("phi", None)), 3)
-
         if phi_value:
             try:
-                blcontrol.beamline.diffractometer.centringPhi.move(phi_value)
+                blcontrol.beamline.diffractometer.centringPhi.set_value(phi_value)
             except Exception:
                 raise
 
 
 def move_zoom_motor(pos):
     zoom_motor = blcontrol.beamline.diffractometer.getObjectByRole("zoom")
-
-    if zoom_motor.get_state() != MotorStates.READY:
+    if zoom_motor.get_state() != HardwareObjectState.READY:
         return (
             "motor is already moving",
             406,
             {"Content-Type": "application/json", "msg": "zoom already moving"},
         )
 
-    msg = "Changing zoom level to: %s %s" % (pos, zoom_levels[int(pos)])
-    logging.getLogger("MX3.HWR").info(msg)
+    # msg = "Changing zoom level to: %s %s" % (pos, zoom_levels[int(pos)])
+    # logging.getLogger("MX3.HWR").info(msg)
 
-    zoom_motor.moveToPosition(zoom_levels[int(pos)])
-
+    zoom_motor.set_value(int(pos))
     scales = blcontrol.beamline.diffractometer.get_pixels_per_mm()
-
     return {"pixelsPerMm": [scales[0], scales[1]]}
 
 
 def back_light_on():
     motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
 
-    if hasattr(motor, "actuatorIn"):
-        motor.actuatorIn()
+    if hasattr(motor, "move_in"):
+        motor.move_in()
     else:
         motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
         motor.actuatorIn()
@@ -427,9 +438,8 @@ def back_light_on():
 
 def back_light_off():
     motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
-
-    if hasattr(motor, "actuatorOut"):
-        motor.actuatorOut()
+    if hasattr(motor, "move_out"):
+        motor.move_out()
     else:
         motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
         motor.actuatorOut()
@@ -462,7 +472,7 @@ def move_motor(motid, newpos):
         motor.stop()
         return True
     else:
-        if motor.get_state() != MotorStates.READY:
+        if motor.get_state() != HardwareObjectState.READY:
             raise Exception(motid + " already moving")
 
         limits = motor.get_limits()
@@ -470,7 +480,7 @@ def move_motor(motid, newpos):
         if not limits[0] <= float(newpos) <= limits[1]:
             raise Exception(motid + " position out of range, " + str(limits))
 
-        motor.move(float(newpos))
+        motor.set_value(float(newpos))
 
         return True
 

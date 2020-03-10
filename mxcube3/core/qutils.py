@@ -2167,7 +2167,7 @@ def get_default_char_acq_params():
     ftype = blcontrol.beamline.detector.getProperty("file_suffix")
     ftype = ftype if ftype else ".?"
     char_defaults = (
-        blcontrol.beamline.data_analysis.get_default_characterisation_parameters().as_dict()
+        blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
     )
 
     acq_defaults = {

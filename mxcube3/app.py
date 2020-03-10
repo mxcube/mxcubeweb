@@ -6,7 +6,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-
 import os
 import sys
 import logging
@@ -116,13 +115,12 @@ def init_sample_video(video_device):
 
     :return: None
     """
-
     global VIDEO_DEVICE
-
-    from mxcube3.video import streaming
+    from mxcube3.video import streaming_processes
 
     try:
-        streaming.init(blcontrol.beamline.microscope.camera, video_device)
+        sfpath = streaming_processes.__file__
+        blcontrol.beamline.microscope.camera.start(video_device, sfpath)
     except Exception as ex:
         msg = "Could not initialize video from %s, error was: " % video_device
         msg += str(ex)

@@ -11,7 +11,6 @@ from mxcube3 import server
 from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 from mxcube3.core import sviewutils
-from mxcube3.video import streaming
 
 
 @server.route("/mxcube/api/v0.1/sampleview/camera/subscribe", methods=["GET"])
@@ -21,7 +20,7 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    if streaming.VIDEO_DEVICE:
+    if blcontrol.beamline.microscope.camera.video_device:
         result = Response(status=200)
     else:
         frame = sviewutils.stream_video(blcontrol.beamline.microscope.camera)
@@ -419,7 +418,7 @@ def accept_centring():
     """
     Accept the centring position.
     """
-    blcontrol.beamline.diffractometer.acceptCentring()
+    blcontrol.beamline.diffractometer.accept_centring()
     return Response(status=200)
 
 
