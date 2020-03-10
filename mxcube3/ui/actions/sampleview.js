@@ -151,6 +151,7 @@ export function setVideoSize(width, height) {
           beamPosition: json.position,
           sourceScale: json.scale
         });
+	window.initJSMpeg();
       });
     }
   };

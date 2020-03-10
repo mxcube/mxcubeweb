@@ -6,7 +6,6 @@ import sys
 import time
 import uuid
 
-VIDEO_HASH = str(uuid.uuid1())
 
 def monitor(*processes):
     """
@@ -22,7 +21,7 @@ def monitor(*processes):
         p.terminate()
 
 
-def start(device, scale):
+def start(device, scale, _hash):
     """
     Start encoding and streaming from device video_device.
 
@@ -32,37 +31,50 @@ def start(device, scale):
     """
     fpath = os.path.dirname(__file__)
     websocket_relay_js = os.path.join(fpath, "websocket-relay.js")
-    relay = subprocess.Popen(["node", websocket_relay_js, VIDEO_HASH,
-                              "4041", "4042"])
+
+    FNULL = open(os.devnull, "w")
+
+    relay = subprocess.Popen(["node", websocket_relay_js, _hash, "4041", "4042"])
 
     # Make sure that the relay is running (socket is open)
     time.sleep(1)
 
     scale = "scale=w=%s:h=%s:force_original_aspect_ratio=decrease" % scale
 
-    FNULL = open(os.devnull, 'w')
-    ffmpeg = subprocess.Popen(["ffmpeg",
-                               "-f", "v4l2",
-                               "-framerate", "30",
-                               "-i", device,                              
-                               "-vf", scale,
-                               "-f", "mpegts",
-                               "-b:v", "6000k",
-                               "-q:v", "2",
-                               "-an",
-                               "-vcodec", "mpeg1video",
-                               "http://localhost:4041/" + VIDEO_HASH],
-                              stdout=FNULL,
-                              stderr=subprocess.STDOUT)
+    ffmpeg = subprocess.Popen(
+        [
+            "ffmpeg",
+            "-f",
+            "v4l2",
+            "-framerate",
+            "30",
+            "-i",
+            device,
+            "-vf",
+            scale,
+            "-f",
+            "mpegts",
+            "-b:v",
+            "6000k",
+            "-q:v",
+            "2",
+            "-an",
+            "-vcodec",
+            "mpeg1video",
+            "http://localhost:4041/" + _hash,
+        ],
+        stdout=FNULL,
+        stderr=subprocess.STDOUT,
+    )
 
     return relay, ffmpeg
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         video_device = sys.argv[1].strip()
     except IndexError:
-        video_device = '/dev/video0'
+        video_device = "/dev/video0"
 
     try:
         scale = sys.argv[2].strip()
@@ -71,4 +83,9 @@ if __name__ == '__main__':
     finally:
         scale = tuple(scale.split(","))
 
-    monitor(*start(video_device, scale))
+    try:
+        _hash = sys.argv[2].strip()
+    except IndexError:
+        _hash = "-1,-1"
+
+    monitor(*start(video_device, scale, _hash))
