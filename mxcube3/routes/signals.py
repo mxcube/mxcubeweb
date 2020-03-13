@@ -593,8 +593,7 @@ def motor_position_callback(movable):
 
 
 def motor_state_callback(movable, sender=None, **kw):
-
-    if movable["state"] == HardwareObjectState.READY:
+    if movable["state"] == HardwareObjectState.READY.value:
         # Re emit the position when the motor have finished to move
         # so that we are always sure that we have sent the final position
         motor_position_callback(movable)
