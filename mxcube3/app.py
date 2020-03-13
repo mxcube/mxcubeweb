@@ -120,7 +120,7 @@ def init_sample_video(video_device):
 
     try:
         sfpath = streaming_processes.__file__
-        blcontrol.beamline.microscope.camera.start(video_device, sfpath)
+        blcontrol.beamline.sample_view.camera.start(video_device, sfpath)
     except Exception as ex:
         msg = "Could not initialize video from %s, error was: " % video_device
         msg += str(ex)

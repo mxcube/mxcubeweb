@@ -20,10 +20,10 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    if blcontrol.beamline.microscope.camera.video_device:
+    if blcontrol.beamline.sample_view.camera.video_device:
         result = Response(status=200)
     else:
-        frame = sviewutils.stream_video(blcontrol.beamline.microscope.camera)
+        frame = sviewutils.stream_video(blcontrol.beamline.sample_view.camera)
         result = Response(frame, mimetype='multipart/x-mixed-replace; boundary="!>"')
 
     return result
@@ -37,7 +37,7 @@ def unsubscribe_to_camera():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.beamline.microscope.camera.streaming_greenlet.kill()
+    blcontrol.beamline.sample_view.camera.streaming_greenlet.kill()
     return Response(status=200)
 
 
@@ -51,7 +51,7 @@ def snapshot():
     Return: 'True' if command issued succesfully, otherwise 'False'.
     """
     try:
-        blcontrol.beamline.microscope.camera.takeSnapshot(
+        blcontrol.beamline.sample_view.camera.takeSnapshot(
             os.path.join(os.path.dirname(__file__), "snapshots/")
         )
         return "True"
@@ -193,7 +193,7 @@ def delete_shape(sid):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.beamline.microscope.camera.delete_shape(sid)
+    blcontrol.beamline.sample_view.shapes.delete_shape(sid)
     return Response(status=200)
 
 

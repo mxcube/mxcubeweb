@@ -151,8 +151,8 @@ def get_viewport_info():
     if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
         fmt, source_is_scalable = "MPEG1", True
 
-    video_sizes = blcontrol.beamline.microscope.camera.get_available_stream_sizes()
-    width, height, scale = blcontrol.beamline.microscope.camera.get_stream_size()
+    video_sizes = blcontrol.beamline.sample_view.camera.get_available_stream_sizes()
+    width, height, scale = blcontrol.beamline.sample_view.camera.get_stream_size()
     pixelsPerMm = blcontrol.beamline.diffractometer.get_pixels_per_mm()
 
     beam_info_dict = get_beam_info()
@@ -165,7 +165,7 @@ def get_viewport_info():
         "sourceIsScalable": source_is_scalable,
         "scale": scale,
         "videoSizes": video_sizes,
-        "videoHash": blcontrol.beamline.microscope.camera.stream_hash,
+        "videoHash": blcontrol.beamline.sample_view.camera.stream_hash,
     }
 
     data.update(beam_info_dict)
