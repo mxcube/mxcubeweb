@@ -16,6 +16,7 @@ from mxcube3.core import limsutils
 from mxcube3.core.loginutils import safe_emit
 
 from abstract.AbstractSampleChanger import SampleChangerState
+from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.beamline_setup import BeamlineSetupMediator
 from mxcube3.core.qutils import (
@@ -49,7 +50,7 @@ def last_queue_node():
     return res
 
 
-beam_signals = ["beamPosChanged", "beamInfoChanged"]
+beam_signals = ["beamPosChanged", "beamInfoChanged", "valueChanged"]
 
 centringSignals = [
     "centringInvalid",
@@ -575,9 +576,11 @@ def xrf_task_progress(taskId, progress):
 def send_shapes(update_positions=False, movable={}):
 
     shape_dict = {}
-    for shape in blcontrol.beamline.microscope.shapes.get_shapes():
+    for shape in blcontrol.beamline.sample_view.shapes.get_shapes():
         if update_positions:
-            shape.update_position(blcontrol.beamline.diffractometer.motor_positions_to_screen)
+            shape.update_position(
+                blcontrol.beamline.diffractometer.motor_positions_to_screen
+            )
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})
@@ -590,8 +593,7 @@ def motor_position_callback(movable):
 
 
 def motor_state_callback(movable, sender=None, **kw):
-
-    if movable["state"] == 2:
+    if movable["state"] == HardwareObjectState.READY.value:
         # Re emit the position when the motor have finished to move
         # so that we are always sure that we have sent the final position
         motor_position_callback(movable)
@@ -611,29 +613,24 @@ def motor_state_callback(movable, sender=None, **kw):
 
 def beam_changed(*args, **kwargs):
 
-    ret = {}
     beam_info = blcontrol.beamline.beam
 
     if beam_info is None:
         logging.getLogger("HWR").error("beamInfo is not defined")
         return Response(status=409)
 
-    try:
-        beam_info_dict = beam_info.get_beam_info()
-    except Exception:
-        beam_info_dict = dict()
-
-    ret.update(
+    beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
+    _beam = beam_info.get_value()
+    beam_info_dict.update(
         {
             "position": beam_info.get_beam_position(),
-            "shape": beam_info_dict.get("shape"),
-            "size_x": beam_info_dict.get("size_x"),
-            "size_y": beam_info_dict.get("size_y"),
+            "size_x": _beam[0],
+            "size_y": _beam[1],
+            "shape": _beam[2].value,
         }
     )
-
     try:
-        socketio.emit("beam_changed", {"data": ret}, namespace="/hwr")
+        socketio.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").exception("error sending message: %s" + str(msg))
 
@@ -701,7 +698,7 @@ def plot_data(data, last_index=[0], **kwargs):
     if last_index[0] > len(data_data):
         last_index = [0]
 
-    data["data"] = data_data[last_index[0]:]
+    data["data"] = data_data[last_index[0] :]
 
     try:
         socketio.emit("plot_data", data, namespace="/hwr")

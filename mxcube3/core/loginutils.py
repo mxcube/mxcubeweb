@@ -127,6 +127,7 @@ def valid_login_only(f):
 
     return wrapped
 
+
 def require_control(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -137,6 +138,7 @@ def require_control(f):
 
     return wrapped
 
+
 def ws_valid_login_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -144,6 +146,7 @@ def ws_valid_login_only(f):
             flask_socketio.disconnect()
         else:
             return f(*args, **kwargs)
+
     return wrapped
 
 
@@ -321,7 +324,7 @@ def signout():
     if is_operator(session.sid):
         qutils.save_queue(session)
         qutils.clear_queue()
-        blcontrol.beamline.microscope.shapes.clear_all()
+        blcontrol.beamline.sample_view.shapes.clear_all()
         limsutils.init_sample_list()
 
         qutils.init_queue_settings()
@@ -337,7 +340,7 @@ def signout():
 
     remove_user(session.sid)
     session.clear()
-    
+
 
 def login_info(login_info):
     login_info = login_info["loginRes"] if login_info is not None else {}

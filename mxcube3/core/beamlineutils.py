@@ -8,7 +8,6 @@ import logging
 import sys
 
 from mxcube3 import blcontrol
-from mxcube3.video import streaming
 from mxcube3 import mxcube
 
 from .qutils import READY
@@ -108,14 +107,11 @@ def get_aperture():
     :return: Tuple, (list of apertures, current aperture)
     :rtype: tuple
     """
-
     aperture_list, current_aperture = [], None
-    aperture = get_beam_definer()
+    beam = blcontrol.beamline.beam
 
-    if aperture is not None:
-
-        aperture_list = aperture.get_diameter_size_list()
-        current_aperture = aperture.get_diameter_size()
+    aperture_list = beam.get_available_size()["values"]
+    current_aperture = beam.get_value()[-1]
 
     return aperture_list, current_aperture
 
@@ -155,8 +151,8 @@ def get_viewport_info():
     if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
         fmt, source_is_scalable = "MPEG1", True
 
-    video_sizes = streaming.get_available_sizes(blcontrol.beamline.microscope.camera)
-    width, height, scale = streaming.video_size()
+    video_sizes = blcontrol.beamline.sample_view.camera.get_available_stream_sizes()
+    width, height, scale = blcontrol.beamline.sample_view.camera.get_stream_size()
     pixelsPerMm = blcontrol.beamline.diffractometer.get_pixels_per_mm()
 
     beam_info_dict = get_beam_info()
@@ -169,7 +165,7 @@ def get_viewport_info():
         "sourceIsScalable": source_is_scalable,
         "scale": scale,
         "videoSizes": video_sizes,
-        "videoHash": streaming.VIDEO_HASH
+        "videoHash": blcontrol.beamline.sample_view.camera.stream_hash,
     }
 
     data.update(beam_info_dict)
@@ -234,7 +230,7 @@ def beamline_abort_action(name):
         if cmd.name() == name:
             cmd.abort()
 
-    ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole(name.lower())
+    ho = BeamlineSetupMediator(blcontrol.beamline).get_object(name.lower())
     ho.stop()
 
 
@@ -270,9 +266,9 @@ def beamline_set_attribute(name, data):
     """
     """
     if name.lower() == "detdist":
-        ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole("dtox")
+        ho = BeamlineSetupMediator(blcontrol.beamline).get_object("dtox")
     else:
-        ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole(name.lower())
+        ho = BeamlineSetupMediator(blcontrol.beamline).get_object(name.lower())
 
     try:
         ho.set(data["value"])
@@ -317,11 +313,16 @@ def get_beam_info():
     """
     beam_info = blcontrol.beamline.beam
     beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
-
     if beam_info is not None:
-        beam_info_dict.update(beam_info.get_beam_info())
-        position = beam_info.get_beam_position()
-        beam_info_dict["position"] = position
+        _beam = beam_info.get_value()
+        beam_info_dict.update(
+            {
+                "position": beam_info.get_beam_position(),
+                "size_x": _beam[0],
+                "size_y": _beam[1],
+                "shape": _beam[2].value,
+            }
+        )
 
     aperture_list, current_aperture = get_aperture()
 
@@ -347,10 +348,10 @@ def diffractometer_set_phase(phase):
 
 
 def set_aperture(pos):
-    beam_definer = get_beam_definer()
+    beam = blcontrol.beamline.beam
     msg = "Changing aperture diameter to: %s" % pos
     logging.getLogger("MX3.HWR").info(msg)
-    beam_definer.set_diameter_size(float(pos))
+    beam.set_value(pos)
 
 
 def diffractometer_get_info():

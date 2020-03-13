@@ -41,7 +41,9 @@ def get_phase_list():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    resp = jsonify({"current_phase": blcontrol.beamline.diffractometer.get_phase_list()})
+    resp = jsonify(
+        {"current_phase": blcontrol.beamline.diffractometer.get_phase_list()}
+    )
     resp.status_code = 200
     return resp
 

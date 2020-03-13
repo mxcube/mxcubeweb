@@ -13,7 +13,7 @@ from mxcube3.core.utils import to_camel
 @server.restrict
 def mockup_ready():
     logging.getLogger("HWR").info("[Routes] Called mockup ready")
-    print((blcontrol.resolution.getPosition()))
+    print((blcontrol.resolution.get_value()))
     return str(mxcube.resolution.isReady())
 
 
@@ -87,7 +87,7 @@ def create_diff_plan(sid):
 
 @server.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=["GET"])
 def shape_mock_result(sid):
-    shape = blcontrol.beamline.microscope.camera.get_shape(sid)
+    shape = blcontrol.beamline.sample_view.camera.get_shape(sid)
     hm = {}
     cm = {}
 
@@ -118,7 +118,7 @@ def shape_mock_result(sid):
 
     res = {"heatmap": hm, "crystalmap": cm}
 
-    blcontrol.beamline.microscope.camera.set_grid_data(sid, res)
+    blcontrol.beamline.sample_view.camera.set_grid_data(sid, res)
     signals.grid_result_available(to_camel(shape.as_dict()))
 
     return Response(status=200)

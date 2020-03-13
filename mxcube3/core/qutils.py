@@ -1015,11 +1015,11 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2 = qmo.Acquisition()
         model.acquisitions.append(acq2)
 
-        line = blcontrol.beamline.microscope.shapes.get_shape(params["shape"])
+        line = blcontrol.beamline.sample_view.shapes.get_shape(params["shape"])
         p1, p2 = line.refs
         p1, p2 = (
-            blcontrol.beamline.microscope.shapes.get_shape(p1),
-            blcontrol.beamline.microscope.shapes.get_shape(p2),
+            blcontrol.beamline.sample_view.shapes.get_shape(p1),
+            blcontrol.beamline.sample_view.shapes.get_shape(p2),
         )
         cpos1 = p1.get_centred_position()
         cpos2 = p2.get_centred_position()
@@ -1028,7 +1028,7 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2.acquisition_parameters.centred_position = cpos2
 
     elif params.get("mesh", False):
-        grid = blcontrol.beamline.microscope.shapes.get_shape(params["shape"])
+        grid = blcontrol.beamline.sample_view.shapes.get_shape(params["shape"])
         acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
         mesh_center = blcontrol.beamline["default_mesh_values"].getProperty(
             "mesh_center", "top-left"
@@ -1048,7 +1048,7 @@ def set_dc_params(model, entry, task_data, sample_model):
         model.set_requires_centring(False)
 
     elif params["shape"] != -1:
-        point = blcontrol.beamline.microscope.shapes.get_shape(params["shape"])
+        point = blcontrol.beamline.sample_view.shapes.get_shape(params["shape"])
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
@@ -2167,7 +2167,7 @@ def get_default_char_acq_params():
     ftype = blcontrol.beamline.detector.getProperty("file_suffix")
     ftype = ftype if ftype else ".?"
     char_defaults = (
-        blcontrol.beamline.data_analysis.get_default_characterisation_parameters().as_dict()
+        blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
     )
 
     acq_defaults = {
