@@ -23,6 +23,7 @@ from mxcube3 import blcontrol
 from mxcube3 import socketio
 
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
+from HardwareRepository.HardwareObjects.abstract.AbstractNState import AbstractNState
 
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
@@ -130,6 +131,8 @@ def get_movable_state_and_position(item_name):
                     pos = hwobj.predefined_positions[pos_name]
                 else:
                     pos = None
+            elif isinstance(hwobj, AbstractNState):
+                pos = hwobj.get_value().value
             else:
                 pos = hwobj.get_value()
             return {
