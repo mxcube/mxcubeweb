@@ -377,7 +377,7 @@ class EnergyHOMediator(HOMediatorBase):
 
     def __init__(self, ho, name=""):
         super(EnergyHOMediator, self).__init__(ho, name)
-        # if ho.can_move_energy():
+
         if ho.tunable:
             try:
                 ho.connect("energyChanged", self._value_change)
@@ -417,7 +417,7 @@ class EnergyHOMediator(HOMediatorBase):
         :raises ValueError: When value for any reason can't be retrieved
         """
         try:
-            energy = self._ho.get_energy()
+            energy = self._ho.get_value()
             energy = round(float(energy), self._precision)
             energy = ("{:3.%sf}" % self._precision).format(energy)
         except (AttributeError, TypeError):
