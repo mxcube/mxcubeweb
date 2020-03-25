@@ -7,6 +7,7 @@ from flask import Response, jsonify, request
 import os
 import json
 
+from mxcube3 import mxcube
 from mxcube3 import server
 from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
@@ -20,7 +21,7 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    if blcontrol.beamline.sample_view.camera.video_device:
+    if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
         result = Response(status=200)
     else:
         frame = sviewutils.stream_video(blcontrol.beamline.sample_view.camera)

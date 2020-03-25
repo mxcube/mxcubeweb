@@ -1,4 +1,5 @@
 <device class="MotorMockup">
   <motor_name>DtoX</motor_name>
   <username>Detector distance</username>
+  <default_limits>(0, 500)</default_limits>
 </device>

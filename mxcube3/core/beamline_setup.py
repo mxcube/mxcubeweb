@@ -12,6 +12,10 @@ import MicrodiffBeamstop
 import MicrodiffInOutMockup
 import ShutterMockup
 
+from HardwareRepository.HardwareObjects.abstract import (
+    AbstractNState
+)
+
 from mxcube3 import socketio
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 
@@ -243,6 +247,7 @@ class HOMediatorBase(object):
         self._ho = ho
         self._name = name
         self._precision = 1
+        self._STATES = None
 
     def precision(self):
         return self._precision
@@ -372,7 +377,7 @@ class EnergyHOMediator(HOMediatorBase):
 
     def __init__(self, ho, name=""):
         super(EnergyHOMediator, self).__init__(ho, name)
-        # if ho.can_move_energy():
+
         if ho.tunable:
             try:
                 ho.connect("energyChanged", self._value_change)
@@ -412,7 +417,7 @@ class EnergyHOMediator(HOMediatorBase):
         :raises ValueError: When value for any reason can't be retrieved
         """
         try:
-            energy = self._ho.get_energy()
+            energy = self._ho.get_value()
             energy = round(float(energy), self._precision)
             energy = ("{:3.%sf}" % self._precision).format(energy)
         except (AttributeError, TypeError):
@@ -544,24 +549,28 @@ class DuoStateHOMediator(HOMediatorBase):
 
     def _connect_signals(self, ho):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
-            self.STATES = MICRODIFF_INOUT_STATE
+            self._STATES = MICRODIFF_INOUT_STATE
             ho.connect("actuatorStateChanged", self.state_change)
+        elif isinstance(self._ho, AbstractNState.AbstractNState):
+            ho.connect("value_changed", self.state_change)
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
-            self.STATES = TANGO_SHUTTER_STATE
+            self._STATES = TANGO_SHUTTER_STATE
             ho.connect("shutterStateChanged", self.state_change)
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
-            self.STATES = BEAMSTOP_STATE
+            self._STATES = BEAMSTOP_STATE
             ho.connect("positionReached", self.state_change)
             ho.connect("noPosition", self.state_change)
         elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
-            self.STATES = BEAMSTOP_STATE
+            self._STATES = BEAMSTOP_STATE
             ho.connect("actuatorStateChanged", self.state_change)
 
     def _get_state(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             state = self._ho.getActuatorState()
+        elif isinstance(self._ho, AbstractNState.AbstractNState):
+            state = self._ho.get_value()
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -571,12 +580,14 @@ class DuoStateHOMediator(HOMediatorBase):
         elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
             state = self._ho.getActuatorState()
 
-        state = self.STATES.TO_INOUT_STATE.get(state, INOUT_STATE.UNDEFINED)
+        state = self._STATES.TO_INOUT_STATE.get(state, INOUT_STATE.UNDEFINED)
         return state
 
     def _close(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorOut()
+        elif isinstance(self._ho, AbstractNState.AbstractNState):
+            self._ho.set_value(AbstractNState.InOutEnum.IN)
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -589,6 +600,8 @@ class DuoStateHOMediator(HOMediatorBase):
     def _open(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorIn()
+        elif isinstance(self._ho, AbstractNState.AbstractNState):
+            self._ho.set_value(AbstractNState.InOutEnum.OUT)
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -628,7 +641,7 @@ class DuoStateHOMediator(HOMediatorBase):
     def msg(self):
         state = self._get_state()
         try:
-            msg = self.STATES.STATE_TO_MSG_STR.get(state, "---")
+            msg = self._STATES.STATE_TO_MSG_STR.get(state, "---")
         except BaseException:
             msg = ""
             logging.getLogger("MX3.HWR").error(
@@ -640,6 +653,7 @@ class DuoStateHOMediator(HOMediatorBase):
     def dict_repr(self):
         """
         :returns: The dictionary representation of the hardware object.
+        
         """
         data = {
             "name": self._name,

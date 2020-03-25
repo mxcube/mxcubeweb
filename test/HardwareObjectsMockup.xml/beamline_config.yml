@@ -39,7 +39,7 @@ _objects:
     - plate_manipulator: plate_manipulator.xml
     - diffractometer: minidiff_mockup.xml
     - lims: lims.xml
-    - microscope: microscope.xml
+    - sample_view: sample_view.xml
     - queue_manager: queue.xml
     - queue_model: queue_model.xml
 
@@ -55,7 +55,7 @@ _objects:
     # Analysis:
     - offline_processing: auto_processing.xml
     - online_processing: parallel_processing.xml
-    - data_analysis: data_analysis.xml
+    - characterisation: characterisation_mockup.xml
     # - beam_realign: # Skipped - optional
 
 # Non-object attributes:

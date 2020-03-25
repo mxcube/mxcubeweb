@@ -150,9 +150,13 @@ def get_viewport_info():
 
     if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
         fmt, source_is_scalable = "MPEG1", True
-
-    video_sizes = blcontrol.beamline.sample_view.camera.get_available_stream_sizes()
-    width, height, scale = blcontrol.beamline.sample_view.camera.get_stream_size()
+        video_sizes = blcontrol.beamline.sample_view.camera.get_available_stream_sizes()
+        width, height, scale = blcontrol.beamline.sample_view.camera.get_stream_size()
+    else:
+        video_sizes = [blcontrol.beamline.sample_view.camera.getWidth(),
+                       blcontrol.beamline.sample_view.camera.getHeight()]
+        width, height, scale = video_sizes + [1]
+    
     pixelsPerMm = blcontrol.beamline.diffractometer.get_pixels_per_mm()
 
     beam_info_dict = get_beam_info()
@@ -351,7 +355,7 @@ def set_aperture(pos):
     beam = blcontrol.beamline.beam
     msg = "Changing aperture diameter to: %s" % pos
     logging.getLogger("MX3.HWR").info(msg)
-    beam.set_value(pos)
+    beam.set_value(float(pos))
 
 
 def diffractometer_get_info():
