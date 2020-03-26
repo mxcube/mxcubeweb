@@ -30,7 +30,7 @@ _objects:
     - transmission: transmission_mockup.xml
     - energy: energy_mockup.xml
     - resolution: resolution_mockup.xml
-    - safety_shutter: safshut.xml
+    - safety_shutter: safety_shutter.xml
     - fast_shutter: fast_shutter_mockup.xml
     - beam: beam_info.xml
     - hutch_interlock: hutchtrigger.xml
