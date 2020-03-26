@@ -20,6 +20,7 @@ from optparse import OptionParser
 from flask import Flask, request
 from flask_socketio import SocketIO
 from flask_session import Session
+from flask_restx import Api, Resource, fields
 
 # To make "from HardwareRepository import ..." possible
 fname = os.path.dirname(__file__)
@@ -81,6 +82,12 @@ t0 = time.time()
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 server = Flask(__name__,  static_url_path='', template_folder=template_dir)
 
+api = Api(server, version='1.0', title='MXCuBE3 API',
+    description='MXCuBE3 API',
+)
+
+ns = api.namespace('data-publisher', description='MXCuBE3 operations')
+
 server.debug = False
 server.config['SESSION_TYPE'] = "redis"
 server.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
@@ -117,6 +124,10 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     from routes import (main, login, beamline, mockups, samplecentring,
                         samplechanger, diffractometer, queue, lims, workflow,
                         detector, ra)
+    
+    from routes.data_publisher import ns as ns1
+
+    api.add_namespace(ns1)
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
     logging.getLogger("HWR").info(msg)

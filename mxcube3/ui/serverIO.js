@@ -49,8 +49,8 @@ import {
   setObservers, setMaster, requestControlAction,
   incChatMessageCount
 } from './actions/remoteAccess';
-import { doSignOut } from './actions/login';
 
+import { doSignOut } from './actions/login';
 
 import {
   setSCState,
@@ -60,6 +60,11 @@ import {
 } from './actions/sampleChanger';
 
 import { setEnergyScanResult } from './actions/taskResults';
+
+import {
+  newDataPublisherData,
+  updateDataPublisherData
+} from './actions/dataPublisher';
 
 import { CLICK_CENTRING } from './constants';
 
@@ -165,6 +170,14 @@ class ServerIO {
 
     this.hwrSocket.on('update_task_lims_data', (record) => {
       this.dispatch(updateTaskLimsData(record.sample, record.taskIndex, record.limsResultData));
+    });
+
+    this.hwrSocket.on('data_publisher_new_data', (record) => {
+      this.dispatch(newDataPublisherData(record));
+    });
+
+    this.hwrSocket.on('data_publisher_update', (record) => {
+      this.dispatch(updateDataPublisherData(record));
     });
 
     this.hwrSocket.on('task', (record, callback) => {

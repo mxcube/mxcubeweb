@@ -13,7 +13,7 @@ from mxcube3 import mxcube
 from .qutils import READY
 
 
-from mxcube3.core.beamline_setup import BeamlineSetupMediator
+from mxcube3.core.beamline_adapter import BeamlineAdapter
 
 
 def init_signals():
@@ -27,7 +27,7 @@ def init_signals():
         else:
             logging.getLogger("MX3.HWR").error("beam_info is not defined")
     except Exception as ex:
-        msg = "error connecting to beamline_setup/beam_info hardware object "
+        msg = "error connecting to beamline_adapter/beam_info hardware object "
         msg += "signals"
         logging.getLogger("MX3.HWR").exception(msg)
     try:
@@ -177,7 +177,7 @@ def get_viewport_info():
 
 
 def beamline_get_all_attributes():
-    ho = BeamlineSetupMediator(blcontrol.beamline)
+    ho = BeamlineAdapter(blcontrol.beamline)
     data = ho.dict_repr()
     actions = list()
 
@@ -207,12 +207,14 @@ def beamline_get_all_attributes():
         )
 
     data.update({"availableMethods": ho.get_available_methods()})
+
     data.update(
         {
             "path": blcontrol.beamline.session.get_base_image_directory(),
             "actionsList": actions,
         }
     )
+
     data.update({"energyScanElements": ho.get_available_elements().get("elements", [])})
 
     return data
@@ -234,7 +236,7 @@ def beamline_abort_action(name):
         if cmd.name() == name:
             cmd.abort()
 
-    ho = BeamlineSetupMediator(blcontrol.beamline).get_object(name.lower())
+    ho = BeamlineAdapter(blcontrol.beamline).get_object(name.lower())
     ho.stop()
 
 
@@ -270,9 +272,9 @@ def beamline_set_attribute(name, data):
     """
     """
     if name.lower() == "detdist":
-        ho = BeamlineSetupMediator(blcontrol.beamline).get_object("dtox")
+        ho = BeamlineAdapter(blcontrol.beamline).get_object("dtox")
     else:
-        ho = BeamlineSetupMediator(blcontrol.beamline).get_object(name.lower())
+        ho = BeamlineAdapter(blcontrol.beamline).get_object(name.lower())
 
     try:
         ho.set(data["value"])
@@ -292,7 +294,7 @@ def beamline_set_attribute(name, data):
 def beamline_get_attribute(name):
     """
     """
-    ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole(name.lower())
+    ho = BeamlineAdapter(blcontrol.beamline).getObjectByRole(name.lower())
     data = {"name": name, "value": ""}
 
     try:

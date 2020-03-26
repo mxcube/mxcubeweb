@@ -24,7 +24,7 @@ from mxcube3 import socketio
 from . import limsutils
 from . import utils
 
-from .beamline_setup import BeamlineSetupMediator
+from .beamline_adapter import BeamlineAdapter
 from functools import reduce
 
 # Important: same constants as in constants.js

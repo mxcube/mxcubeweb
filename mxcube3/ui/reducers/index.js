@@ -16,6 +16,7 @@ import remoteAccess from './remoteAccess';
 import shapes from './shapes';
 import workflow from './workflow';
 import taskResult from './taskResult';
+import dataPublisher from './dataPublisher';
 
 
 const mxcubeReducer = combineReducers({
@@ -35,6 +36,7 @@ const mxcubeReducer = combineReducers({
   queueGUI,
   workflow,
   taskResult,
+  dataPublisher,
   form: formReducer
 });
 
