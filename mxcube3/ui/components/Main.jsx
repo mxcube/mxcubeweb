@@ -18,7 +18,6 @@ import { sendChatMessage, getAllChatMessages,
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
-import OneDPlotDialog from '../containers/OneDPlotDialog';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
@@ -81,7 +80,6 @@ class Main extends React.Component {
             }}
           />) : null
           }
-        <OneDPlotDialog sourceId="mockupscan"/>
         <TaskContainer />
         <PleaseWaitDialog />
         <ErrorNotificationPanel />

@@ -201,14 +201,6 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const dataPublisher = fetch('/mxcube/api/v0.1/data_publisher/list/', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    });
 
     const pchains = [
       queue.then(parse).then((json) => { state.queue = json; }).catch(notify),
@@ -252,8 +244,7 @@ export function getInitialState() {
         )
         .catch(notify),
       remoteAccess.then(parse).then((json) => { state.remoteAccess = json.data; }).catch(notify),
-      workflow.then(parse).then((json) => { state.workflow = json; }).catch(notify),
-      dataPublisher.then(parse).then((json) => { state.dataPublisher = json; }).catch(notify),
+      workflow.then(parse).then((json) => { state.workflow = json; }).catch(notify)
     ];
 
     Promise.all(pchains).then(() => {

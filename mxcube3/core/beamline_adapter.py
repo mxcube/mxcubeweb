@@ -436,7 +436,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
 
     def _get_state(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
-            state = self._ho.getActuatorState()
+            state = self._ho.get_actuator_state()
         elif isinstance(self._ho, AbstractNState.AbstractNState):
             state = self._ho.get_value()
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
@@ -446,7 +446,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
         elif isinstance(self._ho, MicrodiffBeamstop.MicrodiffBeamstop):
             state = self._ho.getPosition()
         elif isinstance(self._ho, MicrodiffInOutMockup.MicrodiffInOutMockup):
-            state = self._ho.getActuatorState()
+            state = self._ho.get_actuator_state()
 
         state = self._STATES.TO_INOUT_STATE.get(state, INOUT_STATE.UNDEFINED)
         return state
