@@ -56,7 +56,7 @@ _objects:
     - offline_processing: auto_processing.xml
     - online_processing: parallel_processing.xml
     - characterisation: characterisation_mockup.xml
-    - data_publisher_registry: data_publisher_registry.xml
+    - data_publisher: data_publisher.xml
     - scan_mockup: scan_mockup.xml
 
     # - beam_realign: # Skipped - optional
