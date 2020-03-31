@@ -6,6 +6,8 @@ from __future__ import print_function
 import logging
 import math
 
+from functools import reduce
+
 import MicrodiffInOut
 import TangoShutter
 import MicrodiffBeamstop
@@ -45,203 +47,6 @@ def BeamlineAdapter(*args):
 
     return BEAMLINE_ADAPTER
 
-
-class _BeamlineAdapter(object):
-    """
-    Adapter between Beamline route and Beamline hardware object.
-    """
-
-    def __init__(self, beamline_adapter):
-        self._bl = beamline_adapter
-        self._ho_dict = {}
-
-        workflow = self._bl.workflow
-
-        if workflow:
-            workflow.connect("parametersNeeded", self.wf_parameters_needed)
-
-    def wf_parameters_needed(self, params):
-        socketio.emit("workflowParametersDialog", params, namespace="/hwr")
-
-    def get_object(self, name):
-        try:
-            if name == "energy":
-                return self._ho_dict.setdefault(
-                    name, EnergyHOAdapter(self._bl.energy, "energy")
-                )
-            elif name == "wavelength":
-                return self._ho_dict.setdefault(
-                    name, WavelengthHOAdapter(self._bl.energy, "wavelength")
-                )
-            elif name == "resolution":
-                return self._ho_dict.setdefault(
-                    name, ResolutionHOAdapter(self._bl.resolution, "resolution")
-                )
-            elif name == "transmission":
-                return self._ho_dict.setdefault(
-                    name, TransmissionHOAdapter(self._bl.transmission, "transmission")
-                )
-            elif name == "fast_shutter":
-                return self._ho_dict.setdefault(
-                    name, DuoStateHOAdapter(self._bl.fast_shutter, "fast_shutter")
-                )
-            elif name == "safety_shutter":
-                return self._ho_dict.setdefault(
-                    name, DuoStateHOAdapter(self._bl.safety_shutter, "safety_shutter")
-                )
-            elif name == "beamstop":
-                return self._ho_dict.setdefault(
-                    name,
-                    DuoStateHOAdapter(self._bl.diffractometer.beamstop, "beamstop"),
-                )
-            elif name == "capillary":
-                return self._ho_dict.setdefault(
-                    name,
-                    DuoStateHOAdapter(self._bl.diffractometer.capillary, "capillary"),
-                )
-            elif name == "detector_distance":
-                d = self._bl.detector.distance
-                return self._ho_dict.setdefault(
-                    name, DetectorDistanceHOAdapter(d, "detector_distance")
-                )
-            elif name == "machine_info":
-                return self._ho_dict.setdefault(
-                    name, MachineInfoHOAdapter(self._bl.machine_info, "machine_info")
-                )
-            elif name == "flux":
-                return self._ho_dict.setdefault(
-                    name, PhotonFluxHOAdapter(self._bl.flux, "flux")
-                )
-            elif name == "cryo":
-                return self._ho_dict.setdefault(
-                    name, CryoHOAdapter(self._bl.diffractometer.cryostream, "cryo")
-                )
-            elif name == "data_publisher_registry":
-                return self._ho_dict.setdefault(
-                    name, DataPublisherHOAdapter(self._bl.data_publisher_registry, "data_publisher_registry")
-                )
-            else:
-                msg = "Tried to retreive unhandled role %s" % name.lower()
-                logging.getLogger("MX3.HWR").exception(msg)
-        except Exception:
-            msg = "Could not get object with role: %s" % name
-            logging.getLogger("MX3.HWR").warning(msg)
-
-    def dict_repr(self):
-        """
-        :returns: Dictionary value-representation for each beamline attribute
-        """
-        attributes = {}
-        try:
-            energy = self.get_object("energy")
-            attributes.update({"energy": energy.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get energy info")
-
-        try:
-            wavelength = self.get_object("wavelength")
-            attributes.update({"wavelength": wavelength.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get wavelength info")
-
-        try:
-            transmission = self.get_object("transmission")
-            attributes.update({"transmission": transmission.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get transmission info")
-
-        try:
-            resolution = self.get_object("resolution")
-            attributes.update({"resolution": resolution.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get resolution info")
-
-        try:
-            fast_shutter = self.get_object("fast_shutter")
-            attributes.update({"fast_shutter": fast_shutter.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get fast_shutter info")
-
-        try:
-            safety_shutter = self.get_object("safety_shutter")
-            attributes.update({"safety_shutter": safety_shutter.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get safety_shutter info")
-
-        try:
-            beamstop = self.get_object("beamstop")
-            attributes.update({"beamstop": beamstop.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get beamstop info")
-
-        try:
-            capillary = self.get_object("capillary")
-            attributes.update({"capillary": capillary.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get capillary info")
-
-        try:
-            detdist = self.get_object("detector_distance")
-            attributes.update({"detector_distance": detdist.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get detector_distance info")
-
-        try:
-            machinfo = self.get_object("machine_info")
-            attributes.update({"machine_info": machinfo.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get machine_info info")
-
-        try:
-            flux = self.get_object("flux")
-            attributes.update({"flux": flux.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get photon flux")
-
-        try:
-            cryo = self.get_object("cryo")
-            attributes.update({"cryo": cryo.dict_repr()})
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get cryo")
-
-        try:
-            data_publisher_registry = self.get_object("data_publisher_registry")
-            #attributes.update({"data_publisher": data_publisher_registry.dict_repr()})
-            self._bl.scan_mockup.start()
-        except Exception:
-            logging.getLogger("MX3.HWR").error("Failed to get data_publisher_registry")
-
-        return {"attributes": attributes}
-
-    def get_available_methods(self):
-        return self._bl.available_methods
-
-    def get_available_elements(self):
-        escan = self._bl.energy_scan
-        elements = []
-
-        if escan:
-            elements = escan.getElements()
-
-        return {"elements": elements}
-
-    def get_acquisition_limit_values(self):
-        _limits = self._bl.get_acquisition_limit_values()
-        limits = {}
-
-        for key, value in _limits.items():
-            if isinstance(value, str) and "," in value:
-                try:
-                    limits[key] = list(map(float, _limits[key].split(",")))
-                except BaseException:
-                    msg = "[BEAMLINE_ADAPTER] Could not get limits for %s," % key
-                    msg += " using -10000, 10000"
-                    logging.getLogger("MX3.HWR").info(msg)
-                    limits[key] = [-10000, 10000]
-            else:
-                limits[key] = value
-
-        return limits
 
 class HOAdapterBase(object):
     def __init__(self, ho, name=""):
@@ -1094,3 +899,117 @@ class DataPublisherHOAdapter(HOAdapterBase):
 
     def state(self):
         return HardwareObjectState.READY
+
+
+class _BeamlineAdapter(object):
+    """
+    Adapter between Beamline route and Beamline hardware object.
+    """
+
+    _ADAPTER_MAP = {
+        "energy": ("energy", EnergyHOAdapter),
+        "wavelength": ("energy", WavelengthHOAdapter),
+        "resolution": ("resolution", ResolutionHOAdapter),
+        "transmission": ("transmission", TransmissionHOAdapter),
+        "fast_shutter": ("fast_shutter",DuoStateHOAdapter),
+        "safety_shutter": ("safety_shutter", DuoStateHOAdapter),
+        "machine_info": ("machine_info", MachineInfoHOAdapter),
+        "flux": ("flux", PhotonFluxHOAdapter),
+        "data_publisher": ("data_publisher", DataPublisherHOAdapter),
+        "cryo": ("diffractometer.cryo", CryoHOAdapter),
+        "capillary": ("diffractometer.capillary", DuoStateHOAdapter),
+        "beamstop": ("diffractometer.beamstop", DuoStateHOAdapter),
+        "detector_distance": ("detector.detetor_distance", DetectorDistanceHOAdapter)
+    }
+
+    _TO_SERIALIZE = [
+        "energy",
+        "wavelength",
+        "resolution",
+        "transmission",
+        "fast_shutter",
+        "safety_shutter",
+        "machine_info",
+        "flux",
+        "cryo",
+        "capillary",
+        "beamstop",
+        "detector_distance"
+    ]
+
+    def __init__(self, beamline_hwobj):
+        self._bl = beamline_hwobj
+        self._ho_dict = {}
+
+        workflow = self._bl.workflow
+    
+        for role, mapping in self._ADAPTER_MAP.items():
+            attr_path, adapter = mapping
+            attr = None
+
+            try:
+                attr = self._getattr(self._bl, attr_path)
+            except:
+                logging.getLogger("MX3.HWR").info("Could not add adapter for %s" % role)
+            else:
+                if attr:
+                    setattr(self, role, adapter(attr))
+                    logging.getLogger("MX3.HWR").info("Added adapter for %s" % role)
+
+        if workflow:
+            workflow.connect("parametersNeeded", self.wf_parameters_needed)
+
+    def _getattr(self, obj, attr):
+        """Recurses through an attribute chain to get the attribute."""
+        return reduce(getattr, attr.split('.'), obj)
+
+    def wf_parameters_needed(self, params):
+        socketio.emit("workflowParametersDialog", params, namespace="/hwr")
+
+    def get_object(self, name):
+        return getattr(self, name)
+
+    def dict_repr(self):
+        """
+        :returns: Dictionary value-representation for each beamline attribute listed in _TO_SERIALIZE
+        """
+        attributes = {}
+
+        for attr_name in self._TO_SERIALIZE:
+            try:
+                _d = getattr(self, attr_name).dict_repr()
+                attributes.update({attr_name: _d})
+            except Exception:
+                logging.getLogger("MX3.HWR").error("Failed to get dictionary representation of %s" % attr_name)
+      
+        return {"attributes": attributes}
+
+    def get_available_methods(self):
+        return self._bl.available_methods
+
+    def get_available_elements(self):
+        escan = self._bl.energy_scan
+        elements = []
+
+        if escan:
+            elements = escan.getElements()
+
+        return {"elements": elements}
+
+    def get_acquisition_limit_values(self):
+        _limits = self._bl.get_acquisition_limit_values()
+        limits = {}
+
+        for key, value in _limits.items():
+            if isinstance(value, str) and "," in value:
+                try:
+                    limits[key] = list(map(float, _limits[key].split(",")))
+                except BaseException:
+                    msg = "[BEAMLINE_ADAPTER] Could not get limits for %s," % key
+                    msg += " using -10000, 10000"
+                    logging.getLogger("MX3.HWR").info(msg)
+                    limits[key] = [-10000, 10000]
+            else:
+                limits[key] = value
+
+        return limits
