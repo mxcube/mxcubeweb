@@ -119,6 +119,9 @@ class HOAdapterBase(object):
         """
         socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
+    def _dict_repr(self):
+        return {}
+
     def dict_repr(self):
         """
         :returns: The dictionary representation of the hardware object.
@@ -127,10 +130,12 @@ class HOAdapterBase(object):
             data = {
                 "name": self._name,
                 "label": self._name.replace("_", " ").title(),
-                "state": self.state().name,
+                "state": self.state().value,
                 "msg": self.msg(),
                 "avilable": self.avilable()
             }
+
+            data.update(self._dict_repr())
         except Exception as ex:
             data = {
                 "name": self._name,
@@ -455,7 +460,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorOut()
         elif isinstance(self._ho, AbstractNState.AbstractNState):
-            self._ho.set_value(AbstractNState.InOutEnum.IN)
+            self._ho.set_value(AbstractNState.VALUES.CLOSED)
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -469,7 +474,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorIn()
         elif isinstance(self._ho, AbstractNState.AbstractNState):
-            self._ho.set_value(AbstractNState.InOutEnum.OUT)
+            self._ho.set_value(AbstractNState.VALUES.OPEN)
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -629,7 +634,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
     def get_lookup_limits(self):
         return self.limits()
 
-    def dict_repr(self):
+    def _dict_repr(self):
         """
         :returns: The dictionary representation of the hardware object.
         """
@@ -638,7 +643,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.get_lookup_limits(),
-            "state": self.state().name,
+            "state": self.state().value,
             "msg": self.msg(),
             "precision": self.precision(),
             "step": self.step_size(),
@@ -753,7 +758,7 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
         pass
 
     def state(self):
-        return HardwareObjectState.UNKNOWN
+        return HardwareObjectState.READY
 
 
 class PhotonFluxHOAdapter(HOActuatorAdapterBase):
@@ -794,7 +799,7 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
     def state(self):
         return HardwareObjectState.READY
 
-    def dict_repr(self):
+    def _dict_repr(self):
         """
         :returns: The dictionary representation of the hardware object.
         """
@@ -803,7 +808,7 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.limits(),
-            "state": self.state().name,
+            "state": self.state().value,
             "msg": self.message(),
             "precision": self.precision(),
             "readonly": self.read_only(),
@@ -859,7 +864,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
     def state(self):
         return HardwareObjectState.READY
 
-    def dict_repr(self):
+    def _dict_repr(self):
         """
         :returns: The dictionary representation of the hardware object.
         """
@@ -868,7 +873,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.limits(),
-            "state": self.state().name,
+            "state": self.state().value,
             "msg": self.message(),
             "precision": self.precision(),
             "readonly": self.read_only(),
@@ -953,8 +958,10 @@ class _BeamlineAdapter(object):
                 logging.getLogger("MX3.HWR").info("Could not add adapter for %s" % role)
             else:
                 if attr:
-                    setattr(self, role, adapter(attr))
+                    setattr(self, role, adapter(attr, role))
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % role)
+                else:
+                    logging.getLogger("MX3.HWR").info("Could not add adapter for %s" % role)
 
         if workflow:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
