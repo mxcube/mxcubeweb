@@ -49,8 +49,8 @@ import {
   setObservers, setMaster, requestControlAction,
   incChatMessageCount
 } from './actions/remoteAccess';
-import { doSignOut } from './actions/login';
 
+import { doSignOut } from './actions/login';
 
 import {
   setSCState,

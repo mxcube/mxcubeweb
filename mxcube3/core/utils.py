@@ -68,13 +68,13 @@ def get_light_state_and_intensity():
 
     for light in ("BackLight", "FrontLight"):
         hwobj = blcontrol.beamline.diffractometer.getObjectByRole(light)
-        if hasattr(hwobj, "getActuatorState"):
-            switch_state = 1 if hwobj.getActuatorState() == "in" else 0
+        if hasattr(hwobj, "get_actuator_state"):
+            switch_state = 1 if hwobj.get_actuator_state() == "in" else 0
         else:
             hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(
                 light + "Switch"
             )
-            switch_state = 1 if hwobj_switch.getActuatorState() == "in" else 0
+            switch_state = 1 if hwobj_switch.get_actuator_state() == "in" else 0
         ret.update(
             {
                 light: {
@@ -86,7 +86,7 @@ def get_light_state_and_intensity():
                 light
                 + "Switch": {
                     "name": light + "Switch",
-                    "state": HardwareObjectState.READY.name,
+                    "state": HardwareObjectState.READY.value,
                     "position": switch_state,
                 },
             }

@@ -18,7 +18,7 @@ from mxcube3.core.loginutils import safe_emit
 from abstract.AbstractSampleChanger import SampleChangerState
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 
-from mxcube3.core.beamline_setup import BeamlineSetupMediator
+from mxcube3.core.beamline_adapter import BeamlineAdapter
 from mxcube3.core.qutils import (
     READY,
     RUNNING,
@@ -670,7 +670,7 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineSetupMediator(blcontrol.beamline).getObjectByRole("safety_shutter")
+    ho = BeamlineAdapter(blcontrol.beamline).getObjectByRole("safety_shutter")
     data = ho.dict_repr()
     try:
         socketio.emit("beamline_value_change", data, namespace="/hwr")
