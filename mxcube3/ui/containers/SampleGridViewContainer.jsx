@@ -39,7 +39,6 @@ import {
   deleteTask,
 } from '../actions/queue';
 
-import { StickyContainer, Sticky } from 'react-sticky';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import { showConfirmClearQueueDialog } from '../actions/general';
 
@@ -579,130 +578,115 @@ class SampleGridViewContainer extends React.Component {
     );
 
     return (
-      <StickyContainer>
-        <div id="sampleGridContainer" className="samples-grid-container">
-          <ConfirmActionDialog
-            title="Clear sample grid ?"
-            message="This will remove all samples (and collections) from the grid,
+      <div id="sampleGridContainer" className="samples-grid-container">
+        <ConfirmActionDialog
+          title="Clear sample grid ?"
+          message="This will remove all samples (and collections) from the grid,
                      are you sure you would like to continue ?"
-            onOk={this.props.sendClearQueue}
-            show={this.props.general.showConfirmClearQueueDialog}
-            hide={this.props.confirmClearQueueHide}
-          />
-          {this.props.loading ?
-            <div className="center-in-box" style={{ zIndex: 1200 }} >
-                <img src={loader} className="img-responsive" alt="" />
-              </div>
-            : null
-          }
-          <Sticky
-            style={{ zIndex: 1000, transform: '' }}
-            stickyStyle={{ zIndex: 1000,
-              paddingTop: '65px',
-              paddingBottom: '0.5em',
-              paddingLeft: '1em',
-              paddingRight: '1em',
-              borderBottom: '1px solid #CCC',
-              backgroundColor: '#FAFAFA',
-              width: '100%',
-              left: '0px' }}
-          >
-            <Row>
-              <Col xs={4}>
-                <Form inline>
-                  <SplitButton
-                    id="split-button-sample-changer-selection"
-                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    title={'Get samples from SC'}
-                    onClick={this.props.getSamples}
-                  >
-                    <MenuItem eventKey="2" onClick={this.showAddSampleForm}>
-                      Create new sample
+          onOk={this.props.sendClearQueue}
+          show={this.props.general.showConfirmClearQueueDialog}
+          hide={this.props.confirmClearQueueHide}
+        />
+        {this.props.loading ?
+          <div className="center-in-box" style={{ zIndex: 1200 }} >
+            <img src={loader} className="img-responsive" alt="" />
+          </div>
+          : null
+        }
+        <Row>
+          <Col xs={4}>
+            <Form inline>
+              <SplitButton
+                id="split-button-sample-changer-selection"
+                disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                title={'Get samples from SC'}
+                onClick={this.props.getSamples}
+              >
+                <MenuItem eventKey="2" onClick={this.showAddSampleForm}>
+                  Create new sample
                     </MenuItem>
-                  </SplitButton>
-                  <span style={{ marginLeft: '1em' }} />
-                  <OverlayTrigger
-                    placement="bottom"
-                    overlay={(
-                      <Tooltip id="select-samples">
-                        Synchronise sample list with ISPyB
-                      </Tooltip>)}
-                  >
-                    <Button onClick={this.syncSamples}>
-                      <Glyphicon glyph="refresh" /> ISPyB
+              </SplitButton>
+              <span style={{ marginLeft: '1em' }} />
+              <OverlayTrigger
+                placement="bottom"
+                overlay={(
+                  <Tooltip id="select-samples">
+                    Synchronise sample list with ISPyB
+                  </Tooltip>)}
+              >
+                <Button onClick={this.syncSamples}>
+                  <Glyphicon glyph="refresh" /> ISPyB
                     </Button>
-                  </OverlayTrigger>
-                  <span style={{ marginLeft: '1em' }} />
-                  <OverlayTrigger
-                    placement="bottom"
-                    overlay={(
-                      <Tooltip id="select-samples">
-                        Remove all samples from sample list and queue
-                      </Tooltip>)}
-                  >
-                    <Button
-                      onClick={this.props.confirmClearQueueShow}
-                      disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    >
-                      Clear sample list
+              </OverlayTrigger>
+              <span style={{ marginLeft: '1em' }} />
+              <OverlayTrigger
+                placement="bottom"
+                overlay={(
+                  <Tooltip id="select-samples">
+                    Remove all samples from sample list and queue
+                  </Tooltip>)}
+              >
+                <Button
+                  onClick={this.props.confirmClearQueueShow}
+                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                >
+                  Clear sample list
                     </Button>
-                  </OverlayTrigger>
-                </Form>
-              </Col>
-              <Col xs={6}>
-                <Form inline>
-                  <FormGroup>
-                    <ControlLabel>Filter: &nbsp;</ControlLabel>
-                    <InputGroup className={this.filterIsUsed() ? 'filter-input-active' : ''}>
-                      <FormControl
-                        id="filterText"
-                        type="text"
-                        ref={(input) => { this.filterInput = input; }}
-                        defaultValue={this.props.filterOptions.text}
-                        onChange={this.sampleGridFilter}
-                      />
-                      {innerSearchIcon}
-                    </InputGroup>
-                  </FormGroup>
-                </Form>
-                <span style={{ marginLeft: '1em' }} />
-                <Form inline>
-                  <SplitButton
-                    id="pipeline-mode-dropdown"
-                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    onClick={this.addSelectedSamplesToQueue}
-                    title={<span><Glyphicon glyph="plus" /> Add to Queue</span>}
-                  >
-                    <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
-                      Add Data collection
+              </OverlayTrigger>
+            </Form>
+          </Col>
+          <Col xs={6}>
+            <Form inline>
+              <FormGroup>
+                <ControlLabel>Filter: &nbsp;</ControlLabel>
+                <InputGroup className={this.filterIsUsed() ? 'filter-input-active' : ''}>
+                  <FormControl
+                    id="filterText"
+                    type="text"
+                    ref={(input) => { this.filterInput = input; }}
+                    defaultValue={this.props.filterOptions.text}
+                    onChange={this.sampleGridFilter}
+                  />
+                  {innerSearchIcon}
+                </InputGroup>
+              </FormGroup>
+            </Form>
+            <span style={{ marginLeft: '1em' }} />
+            <Form inline>
+              <SplitButton
+                id="pipeline-mode-dropdown"
+                disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                onClick={this.addSelectedSamplesToQueue}
+                title={<span><Glyphicon glyph="plus" /> Add to Queue</span>}
+              >
+                <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
+                  Add Data collection
                     </MenuItem>
-                    <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
-                      Add Characterisation
+                <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
+                  Add Characterisation
                     </MenuItem>
-                  </SplitButton>
-                </Form>
-              </Col>
-              <Col xs={2} className="pull-right">
-                {this.collectButton()}
-                <QueueSettings / >
-              </Col>
-            </Row>
-          </Sticky>
-          <p></p>
-          <SampleGridContainer
-            addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
-            showCharacterisationForm={this.showCharacterisationForm}
-            showDataCollectionForm={this.showDataCollectionForm}
-            showWorkflowForm={this.showWorkflowForm}
-            addSamplesToQueue={this.addSamplesToQueue}
-            inQueue={this.inQueue}
-            inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
-            removeSelectedSamples={this.removeSelectedSamples}
-            removeSelectedTasks={this.removeSelectedTasks}
-            gridWidth={this.calcGridWidth()}
-          />
-        </div>
-      </StickyContainer>
+              </SplitButton>
+            </Form>
+          </Col>
+          <Col xs={2} className="pull-right">
+            {this.collectButton()}
+            <QueueSettings />
+          </Col>
+        </Row>
+        <p></p>
+        <SampleGridContainer
+          addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
+          showCharacterisationForm={this.showCharacterisationForm}
+          showDataCollectionForm={this.showDataCollectionForm}
+          showWorkflowForm={this.showWorkflowForm}
+          addSamplesToQueue={this.addSamplesToQueue}
+          inQueue={this.inQueue}
+          inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+          removeSelectedSamples={this.removeSelectedSamples}
+          removeSelectedTasks={this.removeSelectedTasks}
+          gridWidth={this.calcGridWidth()}
+        />
+      </div>
     );
   }
 }
