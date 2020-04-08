@@ -40,27 +40,27 @@ def init_signals():
 
 
 def get_sample_list():
-    samples_list = blcontrol.beamline.sample_changer.getSampleList()
+    samples_list = blcontrol.beamline.sample_changer.get_sample_list()
     samples = {}
     samplesByCoords = {}
     order = []
     current_sample = {}
 
     for s in samples_list:
-        if not s.isPresent():
+        if not s.is_present():
             continue
-        if s.isLoaded():
+        if s.is_loaded():
             state = qutils.SAMPLE_MOUNTED
-        elif s.hasBeenLoaded():
+        elif s.has_been_loaded():
             state = qutils.COLLECTED
         else:
             state = qutils.UNCOLLECTED
-        sample_dm = s.getID() or ""
-        coords = s.getCoords()
+        sample_dm = s.get_id() or ""
+        coords = s.get_coords()
         sample_data = {
-            "sampleID": s.getAddress(),
-            "location": s.getAddress(),
-            "sampleName": "Sample-%s" % s.getAddress(),
+            "sampleID": s.get_address(),
+            "location": s.get_address(),
+            "sampleName": "Sample-%s" % s.get_address(),
             "code": sample_dm,
             "loadable": True,
             "state": state,
@@ -73,7 +73,7 @@ def get_sample_list():
         sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
         sample_data["defaultSubDir"] = limsutils.get_default_subdir(sample_data)
 
-        samples[s.getAddress()] = sample_data
+        samples[s.get_address()] = sample_data
         sc_contents_add(sample_data)
 
         if sample_data["state"] == qutils.SAMPLE_MOUNTED:
@@ -95,44 +95,44 @@ def get_sample_list():
 
 def get_sc_contents():
     def _getElementStatus(e):
-        if e.isLeaf():
-            if e.isLoaded():
+        if e.is_leaf():
+            if e.is_loaded():
                 return "Loaded"
-            if e.hasBeenLoaded():
+            if e.has_been_loaded():
                 return "Used"
-        if e.isPresent():
+        if e.is_present():
             return "Present"
         return ""
 
     def _getElementID(e):
         if e == blcontrol.beamline.sample_changer:
-            if e.getToken() is not None:
-                return e.getToken()
+            if e.get_token() is not None:
+                return e.get_token()
         else:
-            if e.getID() is not None:
-                return e.getID()
+            if e.get_id() is not None:
+                return e.get_id()
         return ""
 
     def _addElement(parent, element):
         new_element = {
-            "name": element.getAddress(),
+            "name": element.get_address(),
             "status": _getElementStatus(element),
             "id": _getElementID(element),
-            "selected": element.isSelected(),
+            "selected": element.is_selected(),
         }
 
         parent.setdefault("children", []).append(new_element)
 
-        if not element.isLeaf():
-            for e in element.getComponents():
+        if not element.is_leaf():
+            for e in element.get_components():
                 _addElement(new_element, e)
 
-    root_name = blcontrol.beamline.sample_changer.getAddress()
+    root_name = blcontrol.beamline.sample_changer.get_address()
 
     contents = {"name": root_name}
 
-    for element in blcontrol.beamline.sample_changer.getComponents():
-        if element.isPresent():
+    for element in blcontrol.beamline.sample_changer.get_components():
+        if element.is_present():
             _addElement(contents, element)
 
     return contents
@@ -209,8 +209,8 @@ def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_resul
         sample_mount_device = beamline.sample_changer
 
     if (
-        sample_mount_device.getLoadedSample()
-        and sample_mount_device.getLoadedSample().getAddress() == data_model.loc_str
+        sample_mount_device.get_loaded_sample()
+        and sample_mount_device.get_loaded_sample().get_address() == data_model.loc_str
     ):
         return
 
@@ -236,12 +236,12 @@ def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_resul
                     "Sample changer could not load sample", ""
                 )
 
-    if not sample_mount_device.hasLoadedSample():
+    if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
         logging.getLogger("user_level_log").info("Sample not loaded")
         raise QueueSkippEntryException("Sample not loaded", "")
     else:
-        signals.loaded_sample_changed(sample_mount_device.getLoadedSample())
+        signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
         dm = beamline.diffractometer
         if dm is not None:
@@ -310,9 +310,9 @@ def mount_sample_clean_up(sample):
         set_sample_to_be_mounted(sample["sampleID"])
 
         if sample["location"] != "Manual":
-            if not sc.getLoadedSample():
+            if not sc.get_loaded_sample():
                 res = sc.load(sample["sampleID"], wait=True)
-            elif sc.getLoadedSample().getAddress() != sample["location"]:
+            elif sc.get_loaded_sample().get_address() != sample["location"]:
                 res = sc.load(sample["sampleID"], wait=True)
 
             if res is None:
@@ -327,7 +327,7 @@ def mount_sample_clean_up(sample):
                 logging.getLogger("MX3.HWR").info(msg)
                 C3D_MODE = blcontrol.beamline.diffractometer.C3D_MODE
                 blcontrol.beamline.diffractometer.start_centring_method(C3D_MODE)
-            elif not sc.getLoadedSample():
+            elif not sc.get_loaded_sample():
                 set_current_sample(None)
         else:
             set_current_sample(sample["sampleID"])
@@ -340,7 +340,7 @@ def mount_sample_clean_up(sample):
     else:
         # Clean up if the new sample was mounted or the current sample was
         # unmounted and the new one, for some reason, failed to mount
-        if res or (not res and not sc.getLoadedSample()):
+        if res or (not res and not sc.get_loaded_sample()):
             blcontrol.beamline.sample_view.shapes.clear_all()
 
             # We remove the current sample from the queue, if we are moving
@@ -404,11 +404,11 @@ def unmount_current():
 
 
 def get_loaded_sample():
-    sample = blcontrol.beamline.sample_changer.getLoadedSample()
+    sample = blcontrol.beamline.sample_changer.get_loaded_sample()
 
     if sample is not None:
-        address = sample.getAddress()
-        barcode = sample.getID()
+        address = sample.get_address()
+        barcode = sample.get_id()
     else:
         address = ""
         barcode = ""
@@ -417,7 +417,7 @@ def get_loaded_sample():
 
 
 def get_capacity():
-    baskets = blcontrol.beamline.sample_changer.getBasketList()
+    baskets = blcontrol.beamline.sample_changer.get_basket_list()
     num_samples = 0
     for basket in baskets:
         num_samples += basket.getNumberSamples()
@@ -455,17 +455,17 @@ def get_initial_state():
         msg = ""
 
     contents = get_sc_contents()
-    sample = blcontrol.beamline.sample_changer.getLoadedSample()
+    sample = blcontrol.beamline.sample_changer.get_loaded_sample()
 
     if sample is not None:
-        address = sample.getAddress()
-        barcode = sample.getID()
+        address = sample.get_address()
+        barcode = sample.get_id()
     else:
         address = ""
         barcode = ""
 
     loaded_sample = {"address": address, "barcode": barcode}
-    state = blcontrol.beamline.sample_changer.getStatus().upper()
+    state = blcontrol.beamline.sample_changer.get_status().upper()
 
     initial_state = {
         "state": state,

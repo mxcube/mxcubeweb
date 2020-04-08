@@ -298,7 +298,7 @@ def login(login_id, password):
             "loginRes": login_res,
         }
 
-        sample = blcontrol.beamline.sample_changer.getLoadedSample()
+        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
 
         # If A sample is mounted (and not already marked as such),
         # get sample changer contents and add mounted sample to the queue

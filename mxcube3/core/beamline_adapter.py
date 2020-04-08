@@ -130,8 +130,9 @@ class HOAdapterBase(object):
             data = {
                 "name": self._name,
                 "label": self._name.replace("_", " ").title(),
-                "state": self.state().value,
+                "state": self.state(),
                 "msg": self.msg(),
+                "type": "FLOAT",
                 "avilable": self.avilable()
             }
 
@@ -223,7 +224,6 @@ class HOActuatorAdapterBase(HOAdapterBase):
             data.update({
                 "value": self.get(),
                 "limits": self.limits(),
-                "type": "FLOAT",
                 "precision": self.precision(),
                 "step": self.step_size(),
             })
@@ -249,7 +249,7 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
         super(EnergyHOAdapter, self).__init__(ho, name)
 
-        if ho.tunable:
+        if ho.read_only:
             try:
                 ho.connect("energyChanged", self._value_change)
                 ho.connect("stateChanged", self.state_change)
@@ -306,7 +306,7 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
         except BaseException:
             pass
         """
-        state = self._ho.get_state()
+        state = self._ho.get_state().value
         return state
 
     def stop(self):
@@ -325,7 +325,7 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
         return energy_limits
 
     def read_only(self):
-        return not self._ho.tunable
+        return not self._ho.read_only
 
 
 class WavelengthHOAdapter(HOActuatorAdapterBase):
@@ -337,7 +337,7 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
         super(WavelengthHOAdapter, self).__init__(ho, name)
 
-        if ho.tunable:
+        if ho.read_only:
             try:
                 ho.connect("energyChanged", self._value_change)
                 ho.connect("stateChanged", self.state_change)
@@ -393,7 +393,7 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
         except BaseException:
             pass
         """
-        state = self._ho.get_state()
+        state = self._ho.get_state().value
         return state
 
     def stop(self):
@@ -411,7 +411,7 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
         return energy_limits
 
     def read_only(self):
-        return not self._ho.tunable
+        return not self._ho.read_only
 
 
 class DuoStateHOAdapter(HOActuatorAdapterBase):
@@ -425,7 +425,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
             ho.connect("actuatorStateChanged", self.state_change)
         elif isinstance(self._ho, AbstractNState.AbstractNState):
             ho.connect("value_changed", self.state_change)
-            self._STATES = MICRODIFF_INOUT_STATE
+            self._STATES = TANGO_SHUTTER_STATE
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -443,7 +443,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             state = self._ho.get_actuator_state()
         elif isinstance(self._ho, AbstractNState.AbstractNState):
-            state = self._ho.get_value()
+            state = self._ho.get_value().value
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -454,13 +454,14 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
             state = self._ho.get_actuator_state()
 
         state = self._STATES.TO_INOUT_STATE.get(state, INOUT_STATE.UNDEFINED)
+
         return state
 
     def _close(self):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorOut()
         elif isinstance(self._ho, AbstractNState.AbstractNState):
-            self._ho.set_value(AbstractNState.VALUES.CLOSED)
+            self._ho.close()
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -474,7 +475,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
         if isinstance(self._ho, MicrodiffInOut.MicrodiffInOut):
             self._ho.actuatorIn()
         elif isinstance(self._ho, AbstractNState.AbstractNState):
-            self._ho.set_value(AbstractNState.VALUES.OPEN)
+            self._ho.open()
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
@@ -523,7 +524,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
 
         return msg
 
-    def dict_repr(self):
+    def _dict_repr(self):
         """
         :returns: The dictionary representation of the hardware object.
         """
@@ -584,8 +585,8 @@ class TransmissionHOAdapter(HOActuatorAdapterBase):
         return transmission
 
     def state(self):
-        return HardwareObjectState.READY if self._ho.is_ready() else HardwareObjectState.BUSY
-
+        state =  HardwareObjectState.READY if self._ho.is_ready() else HardwareObjectState.BUSY
+        return state.value
 
 class ResolutionHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
@@ -626,9 +627,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
         self._ho.stop()
 
     def state(self):
-        state = self._ho.get_state()
-        if isinstance(state, list):
-            return state[0]
+        state = self._ho.get_state().value
         return state
 
     def get_lookup_limits(self):
@@ -643,7 +642,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.get_lookup_limits(),
-            "state": self.state().value,
+            "state": self.state(),
             "msg": self.msg(),
             "precision": self.precision(),
             "step": self.step_size(),
@@ -693,9 +692,7 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
         self._ho.stop()
 
     def state(self):
-        state = self._ho.get_state()
-        if isinstance(state, list):
-            return state[0]
+        state = self._ho.get_state().value
         return state
 
 
@@ -758,7 +755,7 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
         pass
 
     def state(self):
-        return HardwareObjectState.READY
+        return HardwareObjectState.READY.value
 
 
 class PhotonFluxHOAdapter(HOActuatorAdapterBase):
@@ -797,7 +794,7 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
         return []
 
     def state(self):
-        return HardwareObjectState.READY
+        return HardwareObjectState.READY.value
 
     def _dict_repr(self):
         """
@@ -808,7 +805,7 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.limits(),
-            "state": self.state().value,
+            "state": self.state(),
             "msg": self.message(),
             "precision": self.precision(),
             "readonly": self.read_only(),
@@ -862,7 +859,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
         return []
 
     def state(self):
-        return HardwareObjectState.READY
+        return HardwareObjectState.READY.value
 
     def _dict_repr(self):
         """
@@ -873,7 +870,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
             "label": self._name.replace("_", " ").title(),
             "value": self.get(),
             "limits": self.limits(),
-            "state": self.state().value,
+            "state": self.state(),
             "msg": self.message(),
             "precision": self.precision(),
             "readonly": self.read_only(),
@@ -903,7 +900,7 @@ class DataPublisherHOAdapter(HOAdapterBase):
         socketio.emit("data_publisher_update", data, namespace="/hwr")
 
     def state(self):
-        return HardwareObjectState.READY
+        return HardwareObjectState.READY.value
 
 
 class _BeamlineAdapter(object):

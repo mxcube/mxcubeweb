@@ -45,7 +45,12 @@ class TANGO_SHUTTER_STATE(object):
     State mapping for TangoShuter.TangoShutter
     """
 
-    TO_INOUT_STATE = {"closed": INOUT_STATE.IN, "opened": INOUT_STATE.OUT}
+    TO_INOUT_STATE = {
+        "closed": INOUT_STATE.IN,
+        "opened": INOUT_STATE.OUT,
+        "close": INOUT_STATE.IN,
+        "open": INOUT_STATE.OUT,
+    }
 
     STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OPEN", INOUT_STATE.IN: "CLOSED"}
 
