@@ -5,10 +5,11 @@
 FROM debian:10
 MAINTAINER Marcus Oscarsson <marcus.oscarsson@esrf.fr>
 
+ENV PATH /opt/conda/bin:$PATH
 ENV TERM linux
 ENV USER root
 
-# Install system pacakges
+# Install system paackges
 RUN apt-get update --fix-missing && apt-get -y upgrade && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y mate-desktop-environment-core && \
     apt-get install -y apt-utils curl git sudo build-essential wget \
@@ -31,7 +32,7 @@ RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86
   echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
   echo "conda activate base" >> ~/.bashrc
 
-ENV PATH /opt/conda/bin:$PATH
+RUN conda init bash
 
 WORKDIR /opt
 
@@ -42,5 +43,6 @@ RUN cd /opt && chmod +x conda-install.sh && sleep 1 && ./conda-install.sh
 COPY mxcube /usr/local/bin/
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["/bin/bash"]
 
 EXPOSE 8090 8081 5901
