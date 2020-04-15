@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+conda activate mxcube
 cd /opt/mxcube3
 
 export NVM_DIR="$HOME/.nvm"

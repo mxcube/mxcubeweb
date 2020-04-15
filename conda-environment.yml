@@ -1,8 +1,11 @@
 name: mxcube
 channels:
   - tango-controls
+  - conda-forge
 dependencies:
   - python=3.7
+  - pip
+  - pytest
   - gevent
   - flask
   - flask-socketio
