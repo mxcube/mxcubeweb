@@ -27,10 +27,12 @@ RUN \
 
 RUN wget --quiet https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
   /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-  rm ~/miniconda.sh && \
-  ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-  echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+  rm ~/miniconda.sh
+
+RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
   echo "conda activate base" >> ~/.bashrc
+
+RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
 
 RUN conda init bash
 
@@ -38,7 +40,7 @@ WORKDIR /opt
 
 # Install MXCuBE3
 COPY conda-install.sh /opt/conda-install.sh
-RUN cd /opt && chmod +x conda-install.sh && sleep 1 && ./conda-install.sh
+RUN cd /opt && chmod +x conda-install.sh && sync && ./conda-install.sh
 
 COPY mxcube /usr/local/bin/
 COPY docker-entrypoint.sh /usr/local/bin/
