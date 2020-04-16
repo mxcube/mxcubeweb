@@ -57,7 +57,7 @@ var config = {
             options: {
               importLoaders: 2,
               modules: true,
-              camelCase: true
+              localsConvention: 'camelCase',
             },
           },
           {

@@ -1,4 +1,4 @@
-import update from 'react/lib/update';
+import update from 'immutability-helper';
 import { QUEUE_STOPPED, CLICK_CENTRING } from '../constants';
 
 const initialState = {

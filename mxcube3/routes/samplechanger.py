@@ -24,7 +24,7 @@ def get_sample_list():
 @server.route("/mxcube/api/v0.1/sample_changer/state", methods=["GET"])
 @server.restrict
 def get_sc_state():
-    state = blcontrol.beamline.sample_changer.getStatus().upper()
+    state = blcontrol.beamline.sample_changer.get_status().upper()
     return jsonify({"state": state})
 
 

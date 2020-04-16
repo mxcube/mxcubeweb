@@ -156,9 +156,9 @@ def is_collision_safe(*args):
 
 
 def loaded_sample_changed(sample):
-    if hasattr(sample, "getAddress"):
-        address = sample.getAddress()
-        barcode = sample.getID()
+    if hasattr(sample, "get_address"):
+        address = sample.get_address()
+        barcode = sample.get_id()
     else:
         address = ""
         barcode = ""
@@ -168,7 +168,7 @@ def loaded_sample_changed(sample):
     try:
         sampleID = address
 
-        if blcontrol.beamline.sample_changer.hasLoadedSample():
+        if blcontrol.beamline.sample_changer.has_loaded_sample():
             scutils.set_current_sample(sampleID)
         else:
             scutils.set_current_sample(None)

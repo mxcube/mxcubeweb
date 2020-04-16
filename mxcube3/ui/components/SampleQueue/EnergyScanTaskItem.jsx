@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,

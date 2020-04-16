@@ -457,14 +457,6 @@ def move_motor(motid, newpos):
         motor.stop()
         return True
     else:
-        if motor.get_state() != HardwareObjectState.READY:
-            raise Exception(motid + " already moving")
-
-        limits = motor.get_limits()
-
-        if not limits[0] <= float(newpos) <= limits[1]:
-            raise Exception(motid + " position out of range, " + str(limits))
-
         motor.set_value(float(newpos))
 
         return True
