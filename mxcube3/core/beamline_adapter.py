@@ -580,7 +580,7 @@ class TransmissionHOAdapter(HOActuatorAdapterBase):
             transmission = round(float(transmission), self._precision)
             transmission = ("{:3.%sf}" % self._precision).format(transmission)
         except (AttributeError, TypeError):
-            transmission = 0
+            transmission = "0.000"
 
         return transmission
 
@@ -609,7 +609,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
             resolution = round(float(resolution), self._precision)
             resolution = ("{:2.%sf}" % self._precision).format(resolution)
         except (TypeError, AttributeError):
-            resolution = 0
+            resolution = "0.00"
         return resolution
 
     def limits(self):
@@ -673,7 +673,7 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
             detdist = round(float(detdist), self._precision)
             detdist = ("{:4.%sf}" % self._precision).format(detdist)
         except (TypeError, AttributeError):
-            detdist = 0
+            detdist = "0.0000"
 
         return detdist
 
@@ -733,7 +733,7 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
                 else "{:.1f} mA".format(round(float(self._ho.getCurrent()), 1))
             )
         except (TypeError, AttributeError):
-            current = -1
+            current = "-1"
 
         return current
 
@@ -921,7 +921,7 @@ class _BeamlineAdapter(object):
         "cryo": ("diffractometer.cryo", CryoHOAdapter),
         "capillary": ("diffractometer.capillary", DuoStateHOAdapter),
         "beamstop": ("diffractometer.beamstop", DuoStateHOAdapter),
-        "detector_distance": ("detector.detetor_distance", DetectorDistanceHOAdapter)
+        "detector_distance": ("detector.distance", DetectorDistanceHOAdapter)
     }
 
     _TO_SERIALIZE = [
@@ -950,7 +950,7 @@ class _BeamlineAdapter(object):
             attr = None
 
             try:
-                attr = self._getattr(self._bl, attr_path)
+                attr = self._getattr_from_path(self._bl, attr_path)
             except:
                 logging.getLogger("MX3.HWR").info("Could not add adapter for %s" % role)
             else:
@@ -963,7 +963,7 @@ class _BeamlineAdapter(object):
         if workflow:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
-    def _getattr(self, obj, attr):
+    def _getattr_from_path(self, obj, attr):
         """Recurses through an attribute chain to get the attribute."""
         return reduce(getattr, attr.split('.'), obj)
 
