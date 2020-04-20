@@ -110,8 +110,8 @@ def get_aperture():
     aperture_list, current_aperture = [], None
     beam = blcontrol.beamline.beam
 
-    aperture_list = beam.get_available_size()["values"]
-    current_aperture = beam.get_value()[-1]
+    aperture_list = beam.aperture.get_diameter_size_list()
+    current_aperture = beam.aperture.get_diameter_size()
 
     return aperture_list, current_aperture
 
@@ -294,7 +294,7 @@ def beamline_set_attribute(name, data):
 def beamline_get_attribute(name):
     """
     """
-    ho = BeamlineAdapter(blcontrol.beamline).getObjectByRole(name.lower())
+    ho = BeamlineAdapter(blcontrol.beamline).get_object(name.lower())
     data = {"name": name, "value": ""}
 
     try:
@@ -320,13 +320,12 @@ def get_beam_info():
     beam_info = blcontrol.beamline.beam
     beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
     if beam_info is not None:
-        _beam = beam_info.get_value()
         beam_info_dict.update(
             {
-                "position": beam_info.get_beam_position(),
-                "size_x": _beam[0],
-                "size_y": _beam[1],
-                "shape": _beam[2].value,
+                "position": beam_info.get_beam_position_on_screen(),
+                "size_x": beam_info.get_beam_size()[0],
+                "size_y": beam_info.get_beam_size()[1],
+                "shape": beam_info.get_beam_shape().value,
             }
         )
 
@@ -357,7 +356,7 @@ def set_aperture(pos):
     beam = blcontrol.beamline.beam
     msg = "Changing aperture diameter to: %s" % pos
     logging.getLogger("MX3.HWR").info(msg)
-    beam.set_value(float(pos))
+    beam.aperture.set_diameter_size(float(pos))
 
 
 def diffractometer_get_info():
