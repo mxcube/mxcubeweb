@@ -420,7 +420,7 @@ def get_capacity():
     baskets = blcontrol.beamline.sample_changer.get_basket_list()
     num_samples = 0
     for basket in baskets:
-        num_samples += basket.getNumberSamples()
+        num_samples += basket.get_number_of_samples()
     res = {"num_baskets": len(baskets), "num_samples": num_samples}
     return res
 
