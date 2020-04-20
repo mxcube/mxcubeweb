@@ -7,11 +7,6 @@ node_js:
 
 services:
   - redis-server
-  - docker
-
-before_install:
-  - git clone https://github.com/mxcube/mx3docker.git mx3docker
-  - docker build --no-cache -t mxcube3-backend mx3docker/demo/mxcube3/mxcube3_debian9/
 
 install:
   - npm install
