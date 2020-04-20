@@ -323,7 +323,7 @@ def get_default_char_params():
     """
     returns the default values for a characterisation.
     """
-    p = blcontrol.beamline.get_default_characterisation_parameters().as_dict()
+    p = blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
     resp = jsonify(p)
     resp.status_code = 200
     return resp
