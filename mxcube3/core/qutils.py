@@ -229,6 +229,7 @@ def get_node_state(node_id):
               where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
+
     try:
         node, entry = get_entry(node_id)
     except BaseException:
@@ -1530,12 +1531,10 @@ def clear_queue():
     # queue = pickle.loads(blcontrol.empty_queue)
     # queue.diffraction_plan = {}
     HWR.beamline.queue_model.diffraction_plan = {}
-    HWR.beamline.queue_model.clear_model()
-
-    # blcontrol.beamline.xml_rpc_server.queue = HWR.beamline.queue_manager
-    # blcontrol.beamline.xml_rpc_server.queue_model = queue
-    # blcontrol.beamline.queue_model = HWR.beamline.queue_model
-
+    HWR.beamline.queue_model.clear_model("ispyb")
+    HWR.beamline.queue_model.clear_model("free-pin")
+    HWR.beamline.queue_model.clear_model("plate")
+    HWR.beamline.queue_model.select_model("ispyb")
 
 def save_queue(session, redis=redis.Redis()):
     """
@@ -1889,7 +1888,6 @@ def queue_start(sid):
     try:
         # If auto mount sample is false, just run the sample
         # supplied in the call
-
         if not get_auto_mount_sample():
             if sid:
                 execute_entry_with_id(sid)
@@ -1970,7 +1968,7 @@ def queue_unpause():
 
 def queue_clear():
     limsutils.init_sample_list()
-    # blcontrol.beamline.queue_model = clear_queue()
+    clear_queue()
     msg = "[QUEUE] Cleared  " + str(
         blcontrol.beamline.queue_model.get_model_root()._name
     )
