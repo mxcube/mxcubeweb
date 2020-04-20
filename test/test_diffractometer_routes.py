@@ -74,8 +74,6 @@ def test_set_phase(client):
         content_type="application/json",
     )
 
-    # actual_original_phase = json.loads(resp.data)["current_phase"]
-
     assert new_phase == actual_phase
     # assert original_phase == actual_original_phase
 
