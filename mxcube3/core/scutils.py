@@ -214,7 +214,7 @@ def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_resul
     ):
         return
 
-    beamline.sample_view.shapes.clear_all()
+    beamline.sample_view.clear_all()
 
     if hasattr(sample_mount_device, "__TYPE__"):
         if sample_mount_device.__TYPE__ in ["Marvin", "CATS"]:
@@ -341,7 +341,7 @@ def mount_sample_clean_up(sample):
         # Clean up if the new sample was mounted or the current sample was
         # unmounted and the new one, for some reason, failed to mount
         if res or (not res and not sc.get_loaded_sample()):
-            blcontrol.beamline.sample_view.shapes.clear_all()
+            blcontrol.beamline.sample_view.clear_all()
 
             # We remove the current sample from the queue, if we are moving
             # from one sample to another and the current sample is in the queue
@@ -374,7 +374,7 @@ def unmount_sample_clean_up(sample):
     else:
         blcontrol.beamline.queue_model.mounted_sample = ""
         set_current_sample(None)
-        blcontrol.beamline.sample_view.shapes.clear_all()
+        blcontrol.beamline.sample_view.clear_all()
     finally:
         signals.sc_load_ready(sample["location"])
 

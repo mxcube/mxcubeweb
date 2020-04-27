@@ -324,7 +324,7 @@ def signout():
     if is_operator(session.sid):
         qutils.save_queue(session)
         qutils.clear_queue()
-        blcontrol.beamline.sample_view.shapes.clear_all()
+        blcontrol.beamline.sample_view.clear_all()
         limsutils.init_sample_list()
 
         qutils.init_queue_settings()

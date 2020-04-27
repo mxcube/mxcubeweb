@@ -576,7 +576,7 @@ def xrf_task_progress(taskId, progress):
 def send_shapes(update_positions=False, movable={}):
 
     shape_dict = {}
-    for shape in blcontrol.beamline.sample_view.shapes.get_shapes():
+    for shape in blcontrol.beamline.sample_view.get_shapes():
         if update_positions:
             shape.update_position(
                 blcontrol.beamline.diffractometer.motor_positions_to_screen

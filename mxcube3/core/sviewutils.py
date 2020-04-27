@@ -50,7 +50,7 @@ def centring_remove_current_point():
     global CENTRING_POINT_ID
 
     if CENTRING_POINT_ID:
-        blcontrol.beamline.sample_view.shapes.delete_shape(CENTRING_POINT_ID)
+        blcontrol.beamline.sample_view.delete_shape(CENTRING_POINT_ID)
         signals.send_shapes(update_positions=False)
         CENTRING_POINT_ID = None
 
@@ -59,7 +59,7 @@ def centring_add_current_point(*args):
     from mxcube3.routes import signals
 
     global CENTRING_POINT_ID
-    shape = blcontrol.beamline.sample_view.shapes.get_shape(CENTRING_POINT_ID)
+    shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
 
     # There is no current centered point shape when the centring is done
     # by software like Workflows, so we add one.
@@ -68,7 +68,7 @@ def centring_add_current_point(*args):
             motors = args[1]["motors"]
             x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motors)
             centring_update_current_point(motors, x, y)
-            shape = blcontrol.beamline.sample_view.shapes.get_shape(CENTRING_POINT_ID)
+            shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
         except Exception:
             logging.getLogger("MX3.HWR").exception("Centring failed !")
 
@@ -82,12 +82,12 @@ def centring_update_current_point(motor_positions, x, y):
     from mxcube3.routes import signals
 
     global CENTRING_POINT_ID
-    point = blcontrol.beamline.sample_view.shapes.get_shape(CENTRING_POINT_ID)
+    point = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
 
     if point:
         point.move_to_mpos([motor_positions], [x, y])
     else:
-        point = blcontrol.beamline.sample_view.shapes.add_shape_from_mpos(
+        point = blcontrol.beamline.sample_view.add_shape_from_mpos(
             [motor_positions], (x, y), "P"
         )
         point.state = "TMP"
@@ -278,7 +278,7 @@ def set_image_size(width, height):
 
 
 def move_to_centred_position(point_id):
-    point = blcontrol.beamline.sample_view.shapes.get_shape(point_id)
+    point = blcontrol.beamline.sample_view.get_shape(point_id)
 
     if point:
         motor_positions = point.get_centred_position().as_dict()
@@ -290,7 +290,7 @@ def move_to_centred_position(point_id):
 def get_shapes():
     shape_dict = {}
 
-    for shape in blcontrol.beamline.sample_view.shapes.get_shapes():
+    for shape in blcontrol.beamline.sample_view.get_shapes():
         s = shape.as_dict()
         shape_dict.update({shape.id: s})
 
@@ -298,7 +298,7 @@ def get_shapes():
 
 
 def get_shape_width_sid(sid):
-    shape = blcontrol.beamline.sample_view.shapes.get_shape(sid)
+    shape = blcontrol.beamline.sample_view.get_shape(sid)
 
     if shape is not None:
         shape = shape.as_dict()
@@ -310,7 +310,7 @@ def get_shape_width_sid(sid):
 def shape_add_cell_result(sid, cell, result):
     from mxcube3.routes import signals
 
-    shape = blcontrol.beamline.sample_view.shapes.get_shape(sid)
+    shape = blcontrol.beamline.sample_view.get_shape(sid)
     shape.set_cell_result(cell, result)
     signals.grid_result_available(to_camel(shape.as_dict()))
 
@@ -323,7 +323,7 @@ def update_shapes(shapes):
         pos = []
 
         # Get the shape if already exists
-        shape = blcontrol.beamline.sample_view.shapes.get_shape(shape_data.get("id", -1))
+        shape = blcontrol.beamline.sample_view.get_shape(shape_data.get("id", -1))
 
         # If shape does not exist add it
         if not shape:
@@ -362,12 +362,12 @@ def update_shapes(shapes):
                     )
                     pos.append(center_positions)
 
-                shape = blcontrol.beamline.sample_view.shapes.add_shape_from_mpos(
+                shape = blcontrol.beamline.sample_view.add_shape_from_mpos(
                     pos, (x, y), t
                 )
 
             else:
-                shape = blcontrol.beamline.sample_view.shapes.add_shape_from_refs(
+                shape = blcontrol.beamline.sample_view.add_shape_from_refs(
                     refs, t
                 )
 
@@ -383,7 +383,7 @@ def update_shapes(shapes):
 
 def rotate_to(sid):
     if sid:
-        shape = blcontrol.beamline.sample_view.shapes.get_shape(sid)
+        shape = blcontrol.beamline.sample_view.get_shape(sid)
         cp = shape.get_centred_position()
         phi_value = round(float(cp.as_dict().get("phi", None)), 3)
         if phi_value:
