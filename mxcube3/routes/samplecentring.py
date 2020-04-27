@@ -194,7 +194,7 @@ def delete_shape(sid):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.beamline.sample_view.shapes.delete_shape(sid)
+    blcontrol.beamline.sample_view.delete_shape(sid)
     return Response(status=200)
 
 
