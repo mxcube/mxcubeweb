@@ -1,0 +1,5 @@
+server:
+  SECRET_KEY: "b621d016-8e17-11ea-ac72-b34a951e374b"
+  SESSION_TYPE: "redis"
+  SESSION_KEY_PREFIX: "mxcube:session:"
+  DEBUG: False

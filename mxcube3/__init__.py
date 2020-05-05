@@ -12,7 +12,6 @@ import sys
 import time
 import traceback
 
-
 import gevent
 
 from optparse import OptionParser
@@ -29,6 +28,7 @@ from HardwareRepository import HardwareRepository as hwr
 hwr.addHardwareObjectsDirs([os.path.join(fname, 'HardwareObjects')])
 
 import app as mxcube
+from config import Config
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
@@ -42,6 +42,12 @@ opt_parser.add_option("-r", "--repository",
                       dest="hwr_directory",
                       help="Hardware Repository XML files path",
                       default=XML_DIR)
+
+
+opt_parser.add_option("-c", "--config-file",
+                      dest="config_file",
+                      help="Server configuration file",
+                      default='')
 
 opt_parser.add_option("-l", "--log-file",
                       dest="log_file",
@@ -79,12 +85,13 @@ def exception_handler(e):
 t0 = time.time()
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
-server = Flask(__name__,  static_url_path='', template_folder=template_dir)
+server = Flask(
+    __name__,
+    static_url_path='',
+    template_folder=template_dir
+)
 
-server.debug = False
-server.config['SESSION_TYPE'] = "redis"
-server.config['SESSION_KEY_PREFIX'] = "mxcube:session:"
-server.config['SECRET_KEY'] = "nosecretfornow"
+server.config.from_object(Config(cmdline_options.config_file))
 server.register_error_handler(Exception, exception_handler)
 
 _session = Session()
