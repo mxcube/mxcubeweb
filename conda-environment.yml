@@ -10,6 +10,7 @@ dependencies:
   - gevent
   - flask
   - flask-socketio
+  - flask-restx
   - gevent-websocket
   - redis-py
   - scipy
