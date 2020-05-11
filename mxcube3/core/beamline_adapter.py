@@ -917,8 +917,10 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
 
         return value
 
+    """
     def message(self):
         return ""
+    """
 
     def limits(self):
         """No limits"""
@@ -940,7 +942,7 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
             "value": self.get(),
             "limits": self.limits(),
             "state": self.state(),
-            "msg": self.message(),
+            "msg": self.msg(),
             "precision": self.precision(),
             "readonly": self.read_only(),
         }
@@ -994,8 +996,10 @@ class CryoHOAdapter(HOActuatorAdapterBase):
         value = ("{:3.%sf}" % self._precision).format(value)
         return value
 
+    """
     def message(self):
         return ""
+    """
 
     def limits(self):
         """No limits."""
@@ -1017,7 +1021,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
             "value": self.get(),
             "limits": self.limits(),
             "state": self.state(),
-            "msg": self.message(),
+            "msg": self.msg(),
             "precision": self.precision(),
             "readonly": self.read_only(),
         }
