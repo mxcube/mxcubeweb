@@ -958,14 +958,9 @@ class CryoHOAdapter(HOActuatorAdapterBase):
             (str): The name of the object.
         """
         super(CryoHOAdapter, self).__init__(ho, name)
-
         try:
             ho.connect("valueChanged", self._value_change)
-        except BaseException:
-            pass
-
-        try:
-            ho.connect("stateChanged", self._state_change)
+            # ho.connect("stateChanged", self.state_change)
         except BaseException:
             pass
         self._precision = 1
@@ -974,9 +969,11 @@ class CryoHOAdapter(HOActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
+    """
     @utils.RateLimited(1)
     def _state_change(self, *args, **kwargs):
         self.state_change(*args, **kwargs)
+    """
 
     def set(self, value=None):
         """Read only"""
