@@ -287,12 +287,10 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
             StopItteration: When a value change was interrupted (abort/cancel).
         """
         try:
-            self._ho.move_energy(float(value))
-            res = self.get()
+            self._ho.set_value(float(value))
+            return self.get()
         except BaseException:
             raise
-
-        return res
 
     def get(self):
         """
@@ -303,13 +301,12 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            energy = self._ho.get_value()
-            energy = round(float(energy), self._precision)
-            energy = ("{:3.%sf}" % self._precision).format(energy)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
+            value = ("{:3.%sf}" % self._precision).format(value)
+            return value
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
-
-        return energy
 
     def state(self):
         """
@@ -317,11 +314,14 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
         Returns:
             (str): The state.
         """
-        state = self._ho.get_state().value
-        return state
+        # The state is an enum, return the name only
+        return self._ho.get_state().name
 
     def stop(self):
-        self._ho.stop()
+        """
+        Stop the execution.
+        """
+        self._ho.abort()
 
     def limits(self):
         """
@@ -332,12 +332,9 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
             ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            energy_limits = self._ho.get_limits()
+            return self._ho.get_limits()
         except (AttributeError, TypeError):
-            energy_limits = (0, 0)
             raise ValueError("Could not get limits")
-
-        return energy_limits
 
     def read_only(self):
         """
@@ -387,12 +384,10 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
             StopItteration: When a value change was interrupted (abort/cancel).
         """
         try:
-            self._ho.move_wavelength(float(value))
-            res = self.get()
+            self._ho.set_wavelength(float(value))
+            return self.get()
         except BaseException:
             raise
-
-        return res
 
     def get(self):
         """
@@ -403,13 +398,12 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            wavelength = self._ho.get_wavelength()
-            wavelength = round(float(wavelength), self._precision)
-            wavelength = ("{:2.%sf}" % self._precision).format(wavelength)
+            value = self._ho.get_wavelength()
+            value = round(float(value), self._precision)
+            value = ("{:2.%sf}" % self._precision).format(value)
+            return value
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
-
-        return wavelength
 
     def state(self):
         """
@@ -417,11 +411,14 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
         Returns:
             (str): The state
         """
-        state = self._ho.get_state().value
-        return state
+        # The state is an enum, return the name only
+        return self._ho.get_state().name
 
     def stop(self):
-        self._ho.stop()
+        """
+        Stop the execution.
+       """
+        self._ho.abort()
 
     def limits(self):
         """
@@ -432,11 +429,9 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
             ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            energy_limits = self._ho.get_wavelength_limits()
+            return self._ho.get_wavelength_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
-
-        return energy_limits
 
     def read_only(self):
         """
@@ -591,21 +586,9 @@ class TransmissionHOAdapter(HOActuatorAdapterBase):
             (str): The name of the object.
         """
         super(TransmissionHOAdapter, self).__init__(ho, name)
-        ho.connect("attFactorChanged", self.state_change)
         ho.connect("valueChanged", self._value_change)
-        self._precision = 3
-
-    def limits(self):
-        """
-        :returns: The transmission limits.
-        """
-        try:
-            trans_limits = self._ho.get_limits()
-        except (AttributeError, TypeError):
-            trans_limits = (0, 100)
-            raise ValueError("Could not get limits")
-
-        return trans_limits
+        ho.connect("stateChanged", self.state_change)
+        self._precision = 2
 
     @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
@@ -621,11 +604,10 @@ class TransmissionHOAdapter(HOActuatorAdapterBase):
             ValueError: Cannot set transmission.
         """
         try:
-            self._ho.set_value(round(float(value), 2))
+            self._ho.set_value(round(float(value), self._precision))
+            return self.get()
         except Exception as ex:
-            raise ValueError("Can't set transmission: %s" % str(ex))
-
-        return self.get()
+            raise ValueError("Cannot set transmission: %s" % str(ex))
 
     def get(self):
         """
@@ -634,17 +616,33 @@ class TransmissionHOAdapter(HOActuatorAdapterBase):
             (float as str): Transmission [%].
         """
         try:
-            transmission = self._ho.get_value()
-            transmission = round(float(transmission), self._precision)
-            transmission = ("{:3.%sf}" % self._precision).format(transmission)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
         except (AttributeError, TypeError):
-            transmission = "0.000"
+            value = 0.0
 
-        return transmission
+        value = ("{:3.%sf}" % self._precision).format(value)
+        return value
 
     def state(self):
-        state =  HardwareObjectState.READY if self._ho.is_ready() else HardwareObjectState.BUSY
-        return state.value
+        """
+        Get the state.
+        Returns:
+            (str): The state.
+        """
+        return self._ho.get_state().name
+
+    def limits(self):
+        """
+        Get the transmission limits.
+        Returns:
+            (tuple): Two floats (min, max).
+        """
+        try:
+            return self._ho.get_limits()
+        except (AttributeError, TypeError):
+            raise ValueError("Could not get limits")
+
 
 class ResolutionHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
@@ -663,7 +661,18 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
-        self._ho.set_value(round(float(value), 3))
+        """
+        Set the resolution.
+        Args:
+            value (float): Target resolution [Å].
+        Returns:
+            (str): The actual value set.
+        Raises:
+            ValueError: Value not valid.
+            RuntimeError: Timeout while setting the value.
+            StopItteration: When a value change was interrupted (abort/cancel).
+        """
+        self._ho.set_value(round(float(value), self._precision))
         return self.get()
 
     def get(self):
@@ -675,12 +684,27 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            resolution = self._ho.get_value()
-            resolution = round(float(resolution), self._precision)
-            resolution = ("{:2.%sf}" % self._precision).format(resolution)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
         except (TypeError, AttributeError):
-            resolution = "0.00"
-        return resolution
+            value = 0.0
+
+        value = ("{:2.%sf}" % self._precision).format(value)
+        return value
+
+    def state(self):
+        """
+        Get the state.
+        Returns:
+            (str): The state.
+        """
+        return self._ho.get_state().name
+
+    def stop(self):
+        """
+        Stop the execution.
+        """
+        self._ho.abort()
 
     def limits(self):
         """
@@ -691,18 +715,9 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
             ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            resolution_limits = self._ho.get_limits()
+            return self._ho.get_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
-
-        return resolution_limits
-
-    def stop(self):
-        self._ho.stop()
-
-    def state(self):
-        state = self._ho.get_state().value
-        return state
 
     def get_lookup_limits(self):
         return self.limits()
@@ -744,7 +759,18 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
-        self._ho.set_value(round(float(value), 3))
+        """
+        Set the detector distance.
+        Args:
+            value (float): Target distance [mm].
+        Returns:
+            (str): The actual value set.
+        Raises:
+            ValueError: Value not valid.
+            RuntimeError: Timeout while setting the value.
+            StopItteration: When a value change was interrupted (abort/cancel).
+        """
+        self._ho.set_value(round(float(value), self._precision))
         return self.get()
 
     def get(self):
@@ -756,13 +782,24 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            detdist = self._ho.get_value()
-            detdist = round(float(detdist), self._precision)
-            detdist = ("{:4.%sf}" % self._precision).format(detdist)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
         except (TypeError, AttributeError):
-            detdist = "0.0000"
+            value = 0.0
 
-        return detdist
+        value = ("{:4.%sf}" % self._precision).format(value)
+        return value
+
+    def state(self):
+        """
+        Get the state.
+        Returns:
+            (str): The state.
+        """
+        return self._ho.get_state().name
+
+    def stop(self):
+        self._ho.abort()
 
     def limits(self):
         """
@@ -773,18 +810,9 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
             ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            detdist_limits = self._ho.get_limits()
+            return self._ho.get_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
-
-        return detdist_limits
-
-    def stop(self):
-        self._ho.stop()
-
-    def state(self):
-        state = self._ho.get_state().value
-        return state
 
 
 class MachineInfoHOAdapter(HOActuatorAdapterBase):
@@ -873,8 +901,8 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def set(self, value):
-        pass
+    def set(self, value=None):
+        """Read only"""
 
     def get(self):
         """
@@ -893,13 +921,12 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
         return ""
 
     def limits(self):
-        """
-        :returns: The detector distance limits.
-        """
-        return []
+        """No limits"""
+        return ()
 
     def state(self):
-        return HardwareObjectState.READY.value
+        """Always READY"""
+        return HardwareObjectState.READY.name
 
     def _dict_repr(self):
         """
@@ -949,8 +976,8 @@ class CryoHOAdapter(HOActuatorAdapterBase):
     def _state_change(self, *args, **kwargs):
         self.state_change(*args, **kwargs)
 
-    def set(self, value):
-        pass
+    def set(self, value=None):
+        """Read only"""
 
     def get(self):
         """
@@ -960,22 +987,23 @@ class CryoHOAdapter(HOActuatorAdapterBase):
         """
         try:
             value = self._ho.get_value()
-        except Exception:
-            value = "0"
+            value = round(float(value), self._precision)
+        except (AttributeError, TypeError):
+            value = 0.0
 
+        value = ("{:3.%sf}" % self._precision).format(value)
         return value
 
     def message(self):
         return ""
 
     def limits(self):
-        """
-        :returns: The detector distance limits.
-        """
-        return []
+        """No limits."""
+        return ()
 
     def state(self):
-        return HardwareObjectState.READY.value
+        """Always READY"""
+        return HardwareObjectState.READY.name
 
     def _dict_repr(self):
         """
