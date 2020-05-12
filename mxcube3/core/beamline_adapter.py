@@ -8,18 +8,17 @@ import math
 
 from functools import reduce
 
-import MicrodiffInOut
-import TangoShutter
-import MicrodiffBeamstop
-import MicrodiffInOutMockup
-import ShutterMockup
-
-from HardwareRepository.HardwareObjects.abstract import (
-    AbstractNState
-)
-
 from mxcube3 import socketio
+
+from HardwareRepository.HardwareObjects.abstract import AbstractNState
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
+from HardwareRepository.HardwareObjects import (
+    MicrodiffNState,
+    MicrodiffBeamstop,
+    MicrodiffInOutMockup,
+    ShutterMockup,
+    MicrodiffInOut,
+)
 
 from . import utils
 
