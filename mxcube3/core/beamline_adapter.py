@@ -15,6 +15,7 @@ from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 from HardwareRepository.HardwareObjects import (
     MicrodiffBeamstop,
     MicrodiffInOut,
+    TangoShutter,
 )
 from HardwareRepository.HardwareObjects.mockup import (
     MicrodiffInOutMockup,
