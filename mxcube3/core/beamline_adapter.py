@@ -14,10 +14,13 @@ from HardwareRepository.HardwareObjects.abstract import AbstractNState
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 from HardwareRepository.HardwareObjects import (
     MicrodiffBeamstop,
-    MicrodiffInOutMockup,
-    ShutterMockup,
     MicrodiffInOut,
 )
+from HardwareRepository.HardwareObjects.mockup import (
+    MicrodiffInOutMockup,
+    ShutterMockup,
+)
+
 
 from . import utils
 
