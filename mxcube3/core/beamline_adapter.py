@@ -13,7 +13,6 @@ from mxcube3 import socketio
 from HardwareRepository.HardwareObjects.abstract import AbstractNState
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 from HardwareRepository.HardwareObjects import (
-    MicrodiffNState,
     MicrodiffBeamstop,
     MicrodiffInOutMockup,
     ShutterMockup,
