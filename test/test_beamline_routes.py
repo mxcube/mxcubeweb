@@ -15,7 +15,7 @@ def test_beamline_get_all_attribute(client):
     beamline attributes are at least present
     """
 
-    resp = client.get("/mxcube/api/v0.1/beamline")
+    resp = client.get("/mxcube/api/v0.1/beamline/")
     data = json.loads(resp.data)
 
     actual = list(data.get("attributes").keys())

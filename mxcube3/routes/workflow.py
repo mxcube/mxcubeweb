@@ -11,13 +11,13 @@ from mxcube3 import server
 from mxcube3.core import wfutils
 
 
-@server.route("/mxcube/api/v0.1/workflow", methods=["GET"])
+@server.route("/mxcube/api/v0.1/workflow/", methods=["GET"])
 @server.restrict
 def workflow():
     return jsonify(wfutils.get_available_workflows())
 
 
-@server.route("/mxcube/api/v0.1/workflow", methods=["POST"])
+@server.route("/mxcube/api/v0.1/workflow/", methods=["POST"])
 @server.restrict
 def sumbit_parameters():
     data = request.get_json()

@@ -122,7 +122,7 @@ def remain_observer(observer_sid, message):
     )
 
 
-@server.route("/mxcube/api/v0.1/ra", methods=["GET"])
+@server.route("/mxcube/api/v0.1/ra/", methods=["GET"])
 @server.restrict
 def observers():
     """

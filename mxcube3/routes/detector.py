@@ -4,7 +4,7 @@ from mxcube3 import server
 from mxcube3.core import beamlineutils
 
 
-@server.route("/mxcube/api/v0.1/detector", methods=["GET"])
+@server.route("/mxcube/api/v0.1/detector/", methods=["GET"])
 @server.restrict
 def get_detector_info():
     """

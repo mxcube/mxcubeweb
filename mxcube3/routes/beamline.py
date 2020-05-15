@@ -11,7 +11,7 @@ from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 
 
-@server.route("/mxcube/api/v0.1/beamline", methods=["GET"])
+@server.route("/mxcube/api/v0.1/beamline/", methods=["GET"])
 @server.restrict
 def beamline_get_all_attributes():
     return jsonify(beamlineutils.beamline_get_all_attributes())
