@@ -10,18 +10,23 @@ from functools import reduce
 
 from mxcube3 import socketio
 
+# These imports needs to be "direct" as the more elegant and correct
+# way from HardwareRepository.HardwareObjects ... import ( ...)
+# would break the isinstance check since pythons import mechanism
+# considreds the same module imported from two different paths to
+# be different,
+#
+# These imports will be fixed when HWR is made a python module and
+# not appended to sys.path
+
+import MicrodiffInOut
+import TangoShutter
+import MicrodiffBeamstop
+import MicrodiffInOutMockup
+import ShutterMockup
+
 from HardwareRepository.HardwareObjects.abstract import AbstractNState
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
-from HardwareRepository.HardwareObjects import (
-    MicrodiffBeamstop,
-    MicrodiffInOut,
-    TangoShutter,
-)
-from HardwareRepository.HardwareObjects.mockup import (
-    MicrodiffInOutMockup,
-    ShutterMockup,
-)
-
 
 from . import utils
 
@@ -61,7 +66,7 @@ class HOAdapterBase:
         """
         self._ho = ho
         self._name = name
-        self._avilable = True
+        self._available = True
 
     @property
     def ho_proxy(self):
@@ -79,6 +84,7 @@ class HOAdapterBase:
         Returns:
             (str): The state
         """
+        pass
 
     # Abstract method
     def msg(self):
@@ -88,7 +94,7 @@ class HOAdapterBase:
         Returns:
             (str): The message string.
         """
-        return ""
+        return
 
     def read_only(self):
         """
@@ -98,13 +104,13 @@ class HOAdapterBase:
         """
         return False
 
-    def avilable(self):
+    def available(self):
         """
-        Check if the hardware object is considered to be avilable/online/enbled
+        Check if the hardware object is considered to be available/online/enbled
         Returns:
             (bool): True if available.
         """
-        return self._avilable
+        return self._available
 
     # Dont't limit rate this method with utils.LimitRate, all sub-classes
     # will share this method thus all updates wont be sent if limit rated.
@@ -140,17 +146,19 @@ class HOAdapterBase:
                 "state": self.state(),
                 "msg": self.msg(),
                 "type": "FLOAT",
-                "avilable": self.avilable(),
+                "available": self.available(),
             }
 
             data.update(self._dict_repr())
         except Exception as ex:
+            self._available = False
+
             data = {
                 "name": self._name,
                 "label": self._name.replace("_", " ").title(),
                 "state": "UNKNOWN",
                 "msg": "Exception: %s" % str(ex),
-                "avilable": self.avilable(),
+                "available": self.available(),
             }
 
         return data
@@ -680,6 +688,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
     def get(self):
         """
         Read the resolution.
+
         Returns:
             (float as str): Resolution [Å].
         Raises:
@@ -1043,7 +1052,7 @@ class DataPublisherHOAdapter(HOAdapterBase):
             ho.connect("end", self._update_publisher_handler)
         except BaseException:
             msg = "Could not initialize DataPublisherHOAdapter"
-            logging.getLogger("HWR").exception(msg)
+            logging.getLogger("MX3.HWR").exception(msg)
         else:
             self._available = True
 
