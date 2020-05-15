@@ -272,12 +272,11 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
         """
         super(EnergyHOAdapter, self).__init__(ho, name)
 
-        if ho.read_only:
-            try:
-                ho.connect("energyChanged", self._value_change)
-                ho.connect("stateChanged", self.state_change)
-            except BaseException:
-                pass
+        try:
+            ho.connect("energyChanged", self._value_change)
+            ho.connect("stateChanged", self.state_change)
+        except BaseException:
+            pass
         self._precision = 4
 
     @utils.RateLimited(6)
@@ -369,12 +368,11 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
         """
         super(WavelengthHOAdapter, self).__init__(ho, name)
 
-        if ho.read_only:
-            try:
-                ho.connect("energyChanged", self._value_change)
-                ho.connect("stateChanged", self.state_change)
-            except BaseException:
-                pass
+        try:
+            ho.connect("energyChanged", self._value_change)
+            ho.connect("stateChanged", self.state_change)
+        except BaseException:
+            pass
         self._precision = 4
 
     @utils.RateLimited(6)
