@@ -1,10 +1,11 @@
 import os
 import ruamel.yaml
 
+
 class Config:
-    SECRET_KEY = b'o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c'
-    SESSION_TYPE = 'redis'
-    SESSION_KEY_PREFIX =  "mxcube:session:"
+    SECRET_KEY = b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c"
+    SESSION_TYPE = "redis"
+    SESSION_KEY_PREFIX = "mxcube:session:"
     DEBUG: False
 
     def __init__(self, fpath=None):

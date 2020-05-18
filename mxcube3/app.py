@@ -23,10 +23,10 @@ from mxcube3 import blcontrol
 # Below variables used for internal application state
 
 # SampleID and sample data of currently mounted sample
-CURRENTLY_MOUNTED_SAMPLE = ''
+CURRENTLY_MOUNTED_SAMPLE = ""
 
 # Sample location of sample that are in process of being mounted
-SAMPLE_TO_BE_MOUNTED = ''
+SAMPLE_TO_BE_MOUNTED = ""
 
 # Method used for sample centring
 CENTRING_METHOD = queue_entry.CENTRING_METHOD.LOOP
@@ -43,7 +43,7 @@ INITIAL_FILE_LIST = []
 SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
 
 # Current sample list, with tasks
-SAMPLE_LIST = {"sampleList": {}, 'sampleOrder': []}
+SAMPLE_LIST = {"sampleList": {}, "sampleOrder": []}
 
 # Users currently logged in
 USERS = {}
@@ -97,7 +97,9 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     if video_device:
         init_sample_video(video_device)
 
-    utils.enable_snapshots(blcontrol.beamline.collect, blcontrol.beamline.diffractometer)
+    utils.enable_snapshots(
+        blcontrol.beamline.collect, blcontrol.beamline.diffractometer
+    )
     init_signal_handlers()
 
     atexit.register(app_atexit)
@@ -124,7 +126,7 @@ def init_sample_video(video_device):
     except Exception as ex:
         msg = "Could not initialize video from %s, error was: " % video_device
         msg += str(ex)
-        logging.getLogger('HWR').info(msg)
+        logging.getLogger("HWR").info(msg)
         VIDEO_DEVICE = None
     else:
         VIDEO_DEVICE = video_device
@@ -157,12 +159,13 @@ def init_logging(log_file):
 
     removeLoggingHandlers()
 
-    fmt = '%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s'
+    fmt = "%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s"
     log_formatter = logging.Formatter(fmt)
 
     if log_file:
-        log_file_handler =\
-            TimedRotatingFileHandler(log_file, when='midnight', backupCount=1)
+        log_file_handler = TimedRotatingFileHandler(
+            log_file, when="midnight", backupCount=1
+        )
         os.chmod(log_file, 0o666)
         log_file_handler.setFormatter(log_formatter)
 
@@ -171,6 +174,7 @@ def init_logging(log_file):
     root_logger.addHandler(NullHandler())
 
     from mxcube3 import logging_handler
+
     custom_log_handler = logging_handler.MX3LoggingHandler()
     custom_log_handler.setLevel(logging.DEBUG)
     custom_log_handler.setFormatter(log_formatter)
@@ -183,8 +187,13 @@ def init_logging(log_file):
     stdout_log_handler = StreamHandler(sys.stdout)
     stdout_log_handler.setFormatter(log_formatter)
 
-    for logger in (exception_logger, hwr_logger, user_logger,
-                   mx3_hwr_logger, queue_logger):
+    for logger in (
+        exception_logger,
+        hwr_logger,
+        user_logger,
+        mx3_hwr_logger,
+        queue_logger,
+    ):
         logger.addHandler(custom_log_handler)
         logger.addHandler(stdout_log_handler)
 
@@ -198,6 +207,7 @@ def init_state_storage():
     stored on the server
     """
     from mxcube3 import state_storage
+
     state_storage.init()
 
 
@@ -207,26 +217,29 @@ def save_settings():
     """
 
     from mxcube3.core import qutils
+
     queue = qutils.queue_to_dict(blcontrol.beamline.queue_model.get_model_root())
 
     # For the moment not storing USERS
 
-    data = {"QUEUE": queue,
-            "CURRENTLY_MOUNTED_SAMPLE": CURRENTLY_MOUNTED_SAMPLE,
-            "SAMPLE_TO_BE_MOUNTED": SAMPLE_TO_BE_MOUNTED,
-            "CENTRING_METHOD": CENTRING_METHOD,
-            "NODE_ID_TO_LIMS_ID": NODE_ID_TO_LIMS_ID,
-            "INITIAL_FILE_LIST": INITIAL_FILE_LIST,
-            "SC_CONTENTS": SC_CONTENTS,
-            "SAMPLE_LIST": SAMPLE_LIST,
-            "TEMP_DISABLED": TEMP_DISABLED,
-            "ALLOW_REMOTE": ALLOW_REMOTE,
-            "TIMEOUT_GIVES_CONTROL": TIMEOUT_GIVES_CONTROL,
-            "VIDEO_DEVICE": VIDEO_DEVICE,
-            "AUTO_MOUNT_SAMPLE": AUTO_MOUNT_SAMPLE,
-            "AUTO_ADD_DIFFPLAN": AUTO_ADD_DIFFPLAN,
-            "NUM_SNAPSHOTS": NUM_SNAPSHOTS,
-            "UI_STATE": UI_STATE}
+    data = {
+        "QUEUE": queue,
+        "CURRENTLY_MOUNTED_SAMPLE": CURRENTLY_MOUNTED_SAMPLE,
+        "SAMPLE_TO_BE_MOUNTED": SAMPLE_TO_BE_MOUNTED,
+        "CENTRING_METHOD": CENTRING_METHOD,
+        "NODE_ID_TO_LIMS_ID": NODE_ID_TO_LIMS_ID,
+        "INITIAL_FILE_LIST": INITIAL_FILE_LIST,
+        "SC_CONTENTS": SC_CONTENTS,
+        "SAMPLE_LIST": SAMPLE_LIST,
+        "TEMP_DISABLED": TEMP_DISABLED,
+        "ALLOW_REMOTE": ALLOW_REMOTE,
+        "TIMEOUT_GIVES_CONTROL": TIMEOUT_GIVES_CONTROL,
+        "VIDEO_DEVICE": VIDEO_DEVICE,
+        "AUTO_MOUNT_SAMPLE": AUTO_MOUNT_SAMPLE,
+        "AUTO_ADD_DIFFPLAN": AUTO_ADD_DIFFPLAN,
+        "NUM_SNAPSHOTS": NUM_SNAPSHOTS,
+        "UI_STATE": UI_STATE,
+    }
 
     with open("stored-mxcube-session.json", "w") as fp:
         json.dump(data, fp)
@@ -247,15 +260,13 @@ def load_settings():
         data = json.load(f)
 
     from mxcube3.core import qutils
+
     qutils.load_queue_from_dict(data.get("QUEUE", {}))
 
-    CENTRING_METHOD = data.get(
-        "CENTRING_METHOD", queue_entry.CENTRING_METHOD.LOOP)
+    CENTRING_METHOD = data.get("CENTRING_METHOD", queue_entry.CENTRING_METHOD.LOOP)
     NODE_ID_TO_LIMS_ID = data.get("NODE_ID_TO_LIMS_ID", {})
-    SC_CONTENTS = data.get("SC_CONTENTS",
-                           {"FROM_CODE": {}, "FROM_LOCATION": {}})
-    SAMPLE_LIST = data.get("SAMPLE_LIST",
-                           {"sampleList": {}, 'sampleOrder': []})
+    SC_CONTENTS = data.get("SC_CONTENTS", {"FROM_CODE": {}, "FROM_LOCATION": {}})
+    SAMPLE_LIST = data.get("SAMPLE_LIST", {"sampleList": {}, "sampleOrder": []})
     ALLOW_REMOTE = data.get("ALLOW_REMOTE", False)
     TIMEOUT_GIVES_CONTROL = data.get("TIMEOUT_GIVES_CONTROL", False)
     AUTO_MOUNT_SAMPLE = data.get("AUTO_MOUNT_SAMPLE", False)

@@ -7,7 +7,8 @@ import traceback
 from mxcube3 import socketio
 from mxcube3 import server
 
-@socketio.on('connect', namespace='/logging')
+
+@socketio.on("connect", namespace="/logging")
 @server.ws_restrict
 def connect():
     # this is needed to create the namespace, and the actual connection
@@ -29,14 +30,15 @@ class MX3LoggingHandler(logging.Handler):
         except AttributeError:
             record.asctime = logging._defaultFormatter.formatTime(record)
 
-        return {"message": record.getMessage(),
-                "severity": record.levelname,
-                "timestamp": record.asctime,
-                "logger": record.name,
-                "stack_trace": stack_trace
-                }
+        return {
+            "message": record.getMessage(),
+            "severity": record.levelname,
+            "timestamp": record.asctime,
+            "logger": record.name,
+            "stack_trace": stack_trace,
+        }
 
     def emit(self, record):
         if record.name != "geventwebsocket.handler":
             record_dict = self._record_to_json(record)
-            socketio.emit('log_record', record_dict, namespace='/logging')
+            socketio.emit("log_record", record_dict, namespace="/logging")

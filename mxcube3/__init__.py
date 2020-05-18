@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from gevent import monkey
+
 monkey.patch_all(thread=False)
 
 import mock
@@ -25,7 +26,8 @@ fname = os.path.dirname(__file__)
 sys.path.insert(0, fname)
 
 from HardwareRepository import HardwareRepository as hwr
-hwr.addHardwareObjectsDirs([os.path.join(fname, 'HardwareObjects')])
+
+hwr.addHardwareObjectsDirs([os.path.join(fname, "HardwareObjects")])
 
 import app as mxcube
 from config import Config
@@ -33,43 +35,63 @@ from config import Config
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
 
-XML_DIR = os.path.join(os.path.join(os.path.dirname(__file__), os.pardir),
-                       "test/HardwareObjectsMockup.xml/")
+XML_DIR = os.path.join(
+    os.path.join(os.path.dirname(__file__), os.pardir),
+    "test/HardwareObjectsMockup.xml/",
+)
 
 opt_parser = OptionParser()
 
-opt_parser.add_option("-r", "--repository",
-                      dest="hwr_directory",
-                      help="Hardware Repository XML files path",
-                      default=XML_DIR)
+opt_parser.add_option(
+    "-r",
+    "--repository",
+    dest="hwr_directory",
+    help="Hardware Repository XML files path",
+    default=XML_DIR,
+)
 
 
-opt_parser.add_option("-c", "--config-file",
-                      dest="config_file",
-                      help="Server configuration file",
-                      default='')
+opt_parser.add_option(
+    "-c",
+    "--config-file",
+    dest="config_file",
+    help="Server configuration file",
+    default="",
+)
 
-opt_parser.add_option("-l", "--log-file",
-                      dest="log_file",
-                      help="Hardware Repository log file name",
-                      default='')
+opt_parser.add_option(
+    "-l",
+    "--log-file",
+    dest="log_file",
+    help="Hardware Repository log file name",
+    default="",
+)
 
-opt_parser.add_option("-v", "--video-device",
-                      dest="video_device",
-                      help="Video device, defaults to: No device",
-                      default='')
+opt_parser.add_option(
+    "-v",
+    "--video-device",
+    dest="video_device",
+    help="Video device, defaults to: No device",
+    default="",
+)
 
-opt_parser.add_option("-w", "--ra",
-                      action="store_true",
-                      dest="allow_remote",
-                      help="Enable remote access",
-                      default=False)
+opt_parser.add_option(
+    "-w",
+    "--ra",
+    action="store_true",
+    dest="allow_remote",
+    help="Enable remote access",
+    default=False,
+)
 
-opt_parser.add_option("-t", "--ra-timeout",
-                      action="store_true",
-                      dest="ra_timeout",
-                      help="Timeout gives control",
-                      default=False)
+opt_parser.add_option(
+    "-t",
+    "--ra-timeout",
+    action="store_true",
+    dest="ra_timeout",
+    help="Timeout gives control",
+    default=False,
+)
 
 cmdline_options, args = opt_parser.parse_args()
 
@@ -85,11 +107,7 @@ def exception_handler(e):
 t0 = time.time()
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
-server = Flask(
-    __name__,
-    static_url_path='',
-    template_folder=template_dir
-)
+server = Flask(__name__, static_url_path="", template_folder=template_dir)
 
 server.config.from_object(Config(cmdline_options.config_file))
 server.register_error_handler(Exception, exception_handler)
@@ -111,19 +129,33 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     server.require_control = loginutils.require_control
     server.ws_restrict = loginutils.ws_valid_login_only
 
-    mxcube.init(hwr, cmdline_options.hwr_directory,
-                cmdline_options.allow_remote,
-                cmdline_options.ra_timeout,
-                cmdline_options.video_device,
-                cmdline_options.log_file)
+    mxcube.init(
+        hwr,
+        cmdline_options.hwr_directory,
+        cmdline_options.allow_remote,
+        cmdline_options.ra_timeout,
+        cmdline_options.video_device,
+        cmdline_options.log_file,
+    )
 
     # Install server-side UI state storage
     mxcube.init_state_storage()
 
     # Importing REST-routes
-    from routes import (main, login, beamline, mockups, samplecentring,
-                        samplechanger, diffractometer, queue, lims, workflow,
-                        detector, ra)
+    from routes import (
+        main,
+        login,
+        beamline,
+        mockups,
+        samplecentring,
+        samplechanger,
+        diffractometer,
+        queue,
+        lims,
+        workflow,
+        detector,
+        ra,
+    )
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
     logging.getLogger("HWR").info(msg)

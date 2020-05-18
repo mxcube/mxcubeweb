@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """ Helper functions for pytest """
 from gevent import monkey
+
 monkey.patch_all(thread=False)
 
 import pytest
@@ -18,15 +19,17 @@ from input_parameters import (
 )
 
 
-MXCUBE_ROOT = os.path.abspath(os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "../"))
+MXCUBE_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
+)
 
 sys.path.append(MXCUBE_ROOT)
 sys.path.append("./")
 
-from mxcube3 import (server, socketio)
+from mxcube3 import server, socketio
 
 _SIO_TEST_CLIENT = None
+
 
 @pytest.fixture
 def client():
@@ -37,8 +40,7 @@ def client():
 
     data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
 
-    client.post("/mxcube/api/v0.1/login", data=data,
-                content_type="application/json")
+    client.post("/mxcube/api/v0.1/login", data=data, content_type="application/json")
 
     resp = client.post(
         "/mxcube/api/v0.1/queue",
@@ -89,7 +91,6 @@ def add_sample(client):
         content_type="application/json",
     )
 
-
     assert resp.status_code == 200
 
     resp = client.post(
@@ -100,7 +101,6 @@ def add_sample(client):
 
     assert resp.status_code == 200
     yield client
-
 
 
 @pytest.fixture
@@ -114,13 +114,13 @@ def add_task(client):
     task_to_add = copy.deepcopy(test_task)
     task_to_add["queueID"] = queue_id
     task_to_add["tasks"][0]["sampleQueueID"] = queue_id
-   
+
     resp = client.post(
         "/mxcube/api/v0.1/queue",
         data=json.dumps([task_to_add]),
         content_type="application/json",
     )
-   
+
     assert resp.status_code == 200
-    
+
     yield client

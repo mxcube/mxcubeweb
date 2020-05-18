@@ -114,9 +114,10 @@ def init(hwr, hwdir):
         global beamline, actions, plotting
         beamline = hwr.beamline
 
-        qm = QueueManager.QueueManager('MXCuBE3')
+        qm = QueueManager.QueueManager("MXCuBE3")
 
         from mxcube3.core import qutils
+
         qutils.init_signals(hwr.beamline.queue_model)
 
     except Exception:
