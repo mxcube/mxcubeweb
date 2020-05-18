@@ -49,6 +49,7 @@ def test_beamline_get_attribute(client):
 
     bl_attrs = [
         "safety_shutter",
+        "capillary",
         "beamstop",
         "fast_shutter",
         "resolution",
@@ -71,6 +72,7 @@ def test_beamline_get_attribute(client):
         for key in keys:
             assert key in data
 
+        assert data["available"] == True
         assert resp.status_code == 200
 
 

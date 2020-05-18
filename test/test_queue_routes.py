@@ -359,13 +359,16 @@ def test_queue_set_sample_order(client):
 
 def test_get_default_dc_params(client):
     """Test if we get the right default data collection params."""
+
     resp = client.get("/mxcube/api/v0.1/queue/dc")
     actual = json.loads(resp.data)
 
     # some values are taken from current value/position which is random, so ignore those
     actual['acq_parameters'].pop('osc_start')
+    actual['acq_parameters'].pop('energy')
     actual['acq_parameters'].pop('resolution')
     actual['acq_parameters'].pop('transmission')
+
     assert resp.status_code == 200 and actual == default_dc_params
 
 
@@ -376,6 +379,7 @@ def test_get_default_char_acq_params(client):
 
     # some values are taken from current value/position which is random, so ignore those
     actual['acq_parameters'].pop('osc_start')
+    actual['acq_parameters'].pop('energy')
     actual['acq_parameters'].pop('resolution')
     actual['acq_parameters'].pop('transmission')
     assert resp.status_code == 200 and actual == default_char_acq_params
@@ -383,6 +387,7 @@ def test_get_default_char_acq_params(client):
 
 def test_get_default_char_params(client):
     """Test if we get the right default characterisation params."""
+
     resp = client.get("/mxcube/api/v0.1/queue/char")
     actual = json.loads(resp.data)
     assert resp.status_code == 200 and actual == default_char_params
@@ -396,6 +401,7 @@ def test_get_default_mesh_params(client):
  
     # some values are taken from current value/position which is random, so ignore those
     actual['acq_parameters'].pop('osc_start')
+    actual['acq_parameters'].pop('energy')
     actual['acq_parameters'].pop('resolution')
     actual['acq_parameters'].pop('transmission')
 

@@ -8,17 +8,24 @@ import math
 
 from functools import reduce
 
+from mxcube3 import socketio
+
+# These imports needs to be "direct" as the more elegant and correct
+# way from HardwareRepository.HardwareObjects ... import ( ...)
+# would break the isinstance check since pythons import mechanism
+# considreds the same module imported from two different paths to
+# be different,
+#
+# These imports will be fixed when HWR is made a python module and
+# not appended to sys.path
+
 import MicrodiffInOut
 import TangoShutter
 import MicrodiffBeamstop
 import MicrodiffInOutMockup
 import ShutterMockup
 
-from HardwareRepository.HardwareObjects.abstract import (
-    AbstractNState
-)
-
-from mxcube3 import socketio
+from HardwareRepository.HardwareObjects.abstract import AbstractNState
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 
 from . import utils
@@ -48,22 +55,25 @@ def BeamlineAdapter(*args):
     return BEAMLINE_ADAPTER
 
 
-class HOAdapterBase(object):
+class HOAdapterBase:
+    """Hardware Object Adapter Base class"""
+
     def __init__(self, ho, name=""):
         """
-        :param HardwareObject ho: Hardware object to mediate for.
-        :returns: None
+        Args:
+            (object): Hardware object to mediate for.
+            (str): The name of the object
         """
         self._ho = ho
         self._name = name
-        self._avilable = True
+        self._available = True
 
     @property
     def ho_proxy(self):
         """
         Proxy to underlaying HardwareObject
-
-        :returns: HardwareObject
+        Returns:
+            (object): HardwareObject
         """
         return self._ho
 
@@ -71,35 +81,36 @@ class HOAdapterBase(object):
     def state(self):
         """
         Retrieves the state of the underlying hardware object.
-
-        :returns: The state
-        :rtype: str
+        Returns:
+            (str): The state
         """
+        pass
 
     # Abstract method
     def msg(self):
         """
-        :returns: Returns a message describing the current state, should be
-                  used to communicate details of the state to the user.
-
-        :rtype: str
+        Returns a message describing the current state. should be
+        used to communicate details of the state to the user.
+        Returns:
+            (str): The message string.
         """
-        return ""
+        return
 
     def read_only(self):
         """
-        :returns: Returns true if the attribute is read only, (cant be set)
-        :rtype: Boolean
+        Check if the attibute is read only.
+        Returns:
+            (bool): True if read enly.
         """
         return False
 
-    def avilable(self):
+    def available(self):
         """
-        :returns: True if the hardware objcts is considered to be avilable/online/enbled
-                  False otherwise.
-        :rtype: Boolean
+        Check if the hardware object is considered to be available/online/enbled
+        Returns:
+            (bool): True if available.
         """
-        return self._avilable
+        return self._available
 
     # Dont't limit rate this method with utils.LimitRate, all sub-classes
     # will share this method thus all updates wont be sent if limit rated.
@@ -124,7 +135,9 @@ class HOAdapterBase(object):
 
     def dict_repr(self):
         """
-        :returns: The dictionary representation of the hardware object.
+        Dictionary representation of the hardware object.
+        Returns:
+            (dict): The dictionary.
         """
         try:
             data = {
@@ -133,17 +146,19 @@ class HOAdapterBase(object):
                 "state": self.state(),
                 "msg": self.msg(),
                 "type": "FLOAT",
-                "avilable": self.avilable()
+                "available": self.available(),
             }
 
             data.update(self._dict_repr())
         except Exception as ex:
+            self._available = False
+
             data = {
                 "name": self._name,
                 "label": self._name.replace("_", " ").title(),
                 "state": "UNKNOWN",
                 "msg": "Exception: %s" % str(ex),
-                "avilable": self.avilable()
+                "available": self.available(),
             }
 
         return data
@@ -152,14 +167,19 @@ class HOAdapterBase(object):
 class HOActuatorAdapterBase(HOAdapterBase):
     def __init__(self, ho, name=""):
         """
-        :param HardwareObject ho: Hardware object to mediate for.
-        :returns: None
+        Args:
+            (object): Hardware object to mediate for.
+            (str): The name of the object.
         """
         super(HOActuatorAdapterBase, self).__init__(ho, name)
         self._precision = 1
         self._STATES = None
 
     def precision(self):
+        """Display precision.
+        Returns:
+            (int): Number of digits to be displayed.
+        """
         return self._precision
 
     def step_size(self):
@@ -175,88 +195,88 @@ class HOActuatorAdapterBase(HOAdapterBase):
     def set(self, value):
         """
         Sets a value on underlying hardware object.
-
-        :param value: Value to set (castable to float)
-
-        :raises ValueError: When conversion or treatment of value fails
-        :raises StopItteration: When a value change was interrupted
-        (aborted or canceled)
-
-        :returns: The actual value set on the device
-                  (not necessarily the one passed)
-        :rtype: float
+        Args:
+            value(float): Value to be set.
+        Returns:
+            (str): The actual value, after being set.
+        Raises:
+            ValueError: When conversion or treatment of value fails.
+            StopItteration: When a value change was interrupted (abort/cancel).
         """
 
     # Abstract method
     def get(self):
         """
-        Retrieves value from underlying hardware object.
-
-        :returns: The value
-        :rtype: float
-        :raises ValueError: When value for any reason can't be retrieved
+        Retrieve value from underlying hardware object.
+        Returns:
+            (str): The value.
+        Raises:
+            ValueError: When value for any reason can't be retrieved.
         """
 
     # Abstract method
     def stop(self):
         """
-        Stops a action/movement
-
-        :returns: None
-        :rtype: None
+        Stop an action/movement.
         """
 
     # Abstract method
     def limits(self):
+        """ Get the limits and default stepsize of the device.
+        Returns:
+            (tuple): Three values tuple (min, max, step).
         """
-        :returns: The limits and default stepsize of the device, on the format
-                  (upper, lower, step)
-        """
-        return (0, 1, 1)
+        return 0, 1, 1
 
     def dict_repr(self):
-        """
-        :returns: The dictionary representation of the hardware object.
+        """Dictionary representation of the hardware object.
+        Returns:
+            (dict): The dictionary.
         """
         data = super(HOActuatorAdapterBase, self).dict_repr()
 
         try:
-            data.update({
-                "value": self.get(),
-                "limits": self.limits(),
-                "precision": self.precision(),
-                "step": self.step_size(),
-            })
+            data.update(
+                {
+                    "value": self.get(),
+                    "limits": self.limits(),
+                    "precision": self.precision(),
+                    "step": self.step_size(),
+                }
+            )
         except Exception as ex:
-            data.update({
-                "value": 0,
-                "limits": (0, 0, 0),
-                "type": "FLOAT",
-                "precision": 0,
-                "step": 0,
-                "msg": "Exception %s" % str(ex),
-            })
-
+            data.update(
+                {
+                    "value": 0,
+                    "limits": (0, 0, 0),
+                    "type": "FLOAT",
+                    "precision": 0,
+                    "step": 0,
+                    "msg": "Exception %s" % str(ex),
+                }
+            )
         return data
 
 
 class EnergyHOAdapter(HOActuatorAdapterBase):
     """
-    Adapter for Energy Hardware Object, a web socket is used communicate
+    Adapter for Energy Hardware Object, a web socket is used to communicate
     information on longer running processes.
     """
 
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(EnergyHOAdapter, self).__init__(ho, name)
 
-        if ho.read_only:
-            try:
-                ho.connect("energyChanged", self._value_change)
-                ho.connect("stateChanged", self.state_change)
-            except BaseException:
-                pass
-
-
+        try:
+            ho.connect("energyChanged", self._value_change)
+            ho.connect("stateChanged", self.state_change)
+        except BaseException:
+            pass
         self._precision = 4
 
     @utils.RateLimited(6)
@@ -265,66 +285,72 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
 
     def set(self, value):
         """
-        :param value: Value (castable to float) to set
-
-        :raises ValueError: When value for any reason can't be retrieved
-        :raises StopItteration: When a value change was interrupted
-                                (aborted or canceled)
-
-        :returns: The actual value set
-        :rtype: float
+        Execute the sequence to set the value.
+        Args:
+            value (float): Target energy [keV].
+        Returns:
+            (float as str): The actual value set.
+        Raises:
+            ValueError: Value not valid or attemp to set a non-tunable energy.
+            RuntimeError: Timeout while setting the value.
+            StopItteration: When a value change was interrupted (abort/cancel).
         """
         try:
-            self._ho.move_energy(float(value))
-            res = self.get()
+            self._ho.set_value(float(value))
+            return self.get()
         except BaseException:
             raise
 
-        return res
-
     def get(self):
         """
-        :returns: The value
-        :rtype: float
-        :raises ValueError: When value for any reason can't be retrieved
+        Read the energy.
+        Returns:
+            (float as str): Energy [keV].
+        Raises:
+            ValueError: When value for any reason can't be retrieved.
         """
         try:
-            energy = self._ho.get_value()
-            energy = round(float(energy), self._precision)
-            energy = ("{:3.%sf}" % self._precision).format(energy)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
+            value = ("{:3.%sf}" % self._precision).format(value)
+            return value
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 
-        return energy
-
     def state(self):
         """
-        state = MOTOR_STATE.READY
-
-        try:
-            state = MOTOR_STATE.READY if self._ho.is_ready() else MOTOR_STATE.MOVING
-        except BaseException:
-            pass
+        Get the state.
+        Returns:
+            (str): The state.
         """
-        state = self._ho.get_state().value
-        return state
+        # The state is an enum, return the name only
+        return self._ho.get_state().name
 
     def stop(self):
-        self._ho.stop()
+        """
+        Stop the execution.
+        """
+        self._ho.abort()
 
     def limits(self):
         """
-        :returns: The energy limits.
+        Read the energy limits.
+        Returns:
+            (tuple): Two floats (min, max).
+        Raises:
+            ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            energy_limits = self._ho.get_limits()
+            return self._ho.get_limits()
         except (AttributeError, TypeError):
-            energy_limits = (0, 0)
             raise ValueError("Could not get limits")
 
-        return energy_limits
-
     def read_only(self):
+        """
+        Check if the energy is tunable or not.
+        Retuns:
+            (bool): True if tunable, False if not.
+        """
         return not self._ho.read_only
 
 
@@ -335,15 +361,18 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
     """
 
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(WavelengthHOAdapter, self).__init__(ho, name)
 
-        if ho.read_only:
-            try:
-                ho.connect("energyChanged", self._value_change)
-                ho.connect("stateChanged", self.state_change)
-            except BaseException:
-                pass
-
+        try:
+            ho.connect("energyChanged", self._value_change)
+            ho.connect("stateChanged", self.state_change)
+        except BaseException:
+            pass
         self._precision = 4
 
     @utils.RateLimited(6)
@@ -352,70 +381,82 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
 
     def set(self, value):
         """
-        :param value: Value (castable to float) to set
-
-        :raises ValueError: When value for any reason can't be retrieved
-        :raises StopItteration: When a value change was interrupted
-                                (aborted or canceled)
-
-        :returns: The actual value set
-        :rtype: float
+        Execute the sequence to set the value.
+        Args:
+            value (float): Target wavelength [Å].
+        Returns:
+            (float as str): The actual value set.
+        Raises:
+            ValueError: Value not valid or attemp to set read only value.
+            RuntimeError: Timeout while setting the value.
+            StopItteration: When a value change was interrupted (abort/cancel).
         """
         try:
-            self._ho.move_wavelength(float(value))
-            res = self.get()
+            self._ho.set_wavelength(float(value))
+            return self.get()
         except BaseException:
             raise
 
-        return res
-
     def get(self):
         """
-        :returns: The value
-        :rtype: float
-        :raises ValueError: When value for any reason can't be retrieved
+        Read the wavelength value.
+        Returns:
+            (float as str): Wavelength [Å].
+        Raises:
+            ValueError: When value for any reason can't be retrieved.
         """
         try:
-            wavelength = self._ho.get_wavelength()
-            wavelength = round(float(wavelength), self._precision)
-            wavelength = ("{:2.%sf}" % self._precision).format(wavelength)
+            value = self._ho.get_wavelength()
+            value = round(float(value), self._precision)
+            value = ("{:2.%sf}" % self._precision).format(value)
+            return value
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 
-        return wavelength
-
     def state(self):
         """
-        state = MOTOR_STATE.READY
-
-        try:
-            state = MOTOR_STATE.READY if self._ho.is_ready() else MOTOR_STATE.MOVING
-        except BaseException:
-            pass
+        Get the state.
+        Returns:
+            (str): The state
         """
-        state = self._ho.get_state().value
-        return state
+        # The state is an enum, return the name only
+        return self._ho.get_state().name
 
     def stop(self):
-        self._ho.stop()
+        """
+        Stop the execution.
+       """
+        self._ho.abort()
 
     def limits(self):
         """
-        :returns: The limits.
+        Read the wavelengt limits.
+        Returns:
+            (tuple): Two floats (min, max) limits.
+        Raises:
+            ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            energy_limits = self._ho.get_wavelength_limits()
+            return self._ho.get_wavelength_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
 
-        return energy_limits
-
     def read_only(self):
+        """
+        Check if the wavelength is read only or not.
+        Retuns:
+            (bool): True if read only, False if not.
+        """
         return not self._ho.read_only
 
 
 class DuoStateHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(DuoStateHOAdapter, self).__init__(ho, name)
         self._connect_signals(ho)
 
@@ -526,7 +567,9 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
 
     def _dict_repr(self):
         """
-        :returns: The dictionary representation of the hardware object.
+        Dictionary representation of the hardware object.
+        Returns:
+            (dict): The dictionary.
         """
         data = {
             "name": self._name,
@@ -545,51 +588,77 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
 
 class TransmissionHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(TransmissionHOAdapter, self).__init__(ho, name)
-        ho.connect("attFactorChanged", self.state_change)
         ho.connect("valueChanged", self._value_change)
-        self._precision = 3
-
-    def limits(self):
-        """
-        :returns: The transmission limits.
-        """
-        try:
-            trans_limits = self._ho.get_limits()
-        except (AttributeError, TypeError):
-            trans_limits = (0, 100)
-            raise ValueError("Could not get limits")
-
-        return trans_limits
+        ho.connect("stateChanged", self.state_change)
+        self._precision = 2
 
     @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
+        """Set the transmission.
+        Args:
+            value(float): Transmission [%].
+        Returns:
+            (float as str): The transmission value [%].
+        Raises:
+            ValueError: Cannot set transmission.
+        """
         try:
-            self._ho.set_value(round(float(value), 2))
+            self._ho.set_value(round(float(value), self._precision))
+            return self.get()
         except Exception as ex:
-            raise ValueError("Can't set transmission: %s" % str(ex))
-
-        return self.get()
+            raise ValueError("Cannot set transmission: %s" % str(ex))
 
     def get(self):
+        """
+        Get the transmission value.
+        Returns:
+            (float as str): Transmission [%].
+        """
         try:
-            transmission = self._ho.get_value()
-            transmission = round(float(transmission), self._precision)
-            transmission = ("{:3.%sf}" % self._precision).format(transmission)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
         except (AttributeError, TypeError):
-            transmission = "0.000"
+            value = 0.0
 
-        return transmission
+        value = ("{:3.%sf}" % self._precision).format(value)
+        return value
 
     def state(self):
-        state =  HardwareObjectState.READY if self._ho.is_ready() else HardwareObjectState.BUSY
-        return state.value
+        """
+        Get the state.
+        Returns:
+            (str): The state.
+        """
+        return self._ho.get_state().name
+
+    def limits(self):
+        """
+        Get the transmission limits.
+        Returns:
+            (tuple): Two floats (min, max).
+        """
+        try:
+            return self._ho.get_limits()
+        except (AttributeError, TypeError):
+            raise ValueError("Could not get limits")
+
 
 class ResolutionHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(ResolutionHOAdapter, self).__init__(ho, name)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
@@ -600,42 +669,73 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
-        self._ho.set_value(round(float(value), 3))
+        """
+        Set the resolution.
+        Args:
+            value (float): Target resolution [Å].
+        Returns:
+            (str): The actual value set.
+        Raises:
+            ValueError: Value not valid.
+            RuntimeError: Timeout while setting the value.
+            StopItteration: When a value change was interrupted (abort/cancel).
+        """
+        self._ho.set_value(round(float(value), self._precision))
         return self.get()
 
     def get(self):
+        """
+        Read the resolution.
+
+        Returns:
+            (float as str): Resolution [Å].
+        Raises:
+            ValueError: When value for any reason can't be retrieved.
+        """
         try:
-            resolution = self._ho.get_value()
-            resolution = round(float(resolution), self._precision)
-            resolution = ("{:2.%sf}" % self._precision).format(resolution)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
         except (TypeError, AttributeError):
-            resolution = "0.00"
-        return resolution
+            value = 0.0
+
+        value = ("{:2.%sf}" % self._precision).format(value)
+        return value
+
+    def state(self):
+        """
+        Get the state.
+        Returns:
+            (str): The state.
+        """
+        return self._ho.get_state().name
+
+    def stop(self):
+        """
+        Stop the execution.
+        """
+        self._ho.abort()
 
     def limits(self):
         """
-        :returns: The resolution limits.
+        Read the resolution limits.
+        Returns:
+            (tuple): Two floats (min, max).
+        Raises:
+            ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            resolution_limits = self._ho.get_limits()
+            return self._ho.get_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
-
-        return resolution_limits
-
-    def stop(self):
-        self._ho.stop()
-
-    def state(self):
-        state = self._ho.get_state().value
-        return state
 
     def get_lookup_limits(self):
         return self.limits()
 
     def _dict_repr(self):
         """
-        :returns: The dictionary representation of the hardware object.
+        Dictionary representation of the hardware object.
+        Returns:
+            (dict): The dictionary.
         """
         data = {
             "name": self._name,
@@ -653,10 +753,14 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
 
 class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(DetectorDistanceHOAdapter, self).__init__(ho, name)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
-
         self._precision = 3
 
     @utils.RateLimited(6)
@@ -664,40 +768,69 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
         self.value_change(*args, **kwargs)
 
     def set(self, value):
-        self._ho.set_value(round(float(value), 3))
+        """
+        Set the detector distance.
+        Args:
+            value (float): Target distance [mm].
+        Returns:
+            (str): The actual value set.
+        Raises:
+            ValueError: Value not valid.
+            RuntimeError: Timeout while setting the value.
+            StopItteration: When a value change was interrupted (abort/cancel).
+        """
+        self._ho.set_value(round(float(value), self._precision))
         return self.get()
 
     def get(self):
+        """
+        Read the detector distance.
+        Returns:
+            (float as str): Detector distance [mm].
+        Raises:
+            ValueError: When value for any reason can't be retrieved.
+        """
         try:
-            detdist = self._ho.get_value()
-            detdist = round(float(detdist), self._precision)
-            detdist = ("{:4.%sf}" % self._precision).format(detdist)
+            value = self._ho.get_value()
+            value = round(float(value), self._precision)
         except (TypeError, AttributeError):
-            detdist = "0.0000"
+            value = 0.0
 
-        return detdist
+        value = ("{:4.%sf}" % self._precision).format(value)
+        return value
+
+    def state(self):
+        """
+        Get the state.
+        Returns:
+            (str): The state.
+        """
+        return self._ho.get_state().name
+
+    def stop(self):
+        self._ho.abort()
 
     def limits(self):
         """
-        :returns: The detector distance limits.
+        Read the detector distance limits.
+        Returns:
+            (tuple): Two floats (min, max).
+        Raises:
+            ValueError: When limits for any reason can't be retrieved.
         """
         try:
-            detdist_limits = self._ho.get_limits()
+            return self._ho.get_limits()
         except (AttributeError, TypeError):
             raise ValueError("Could not get limits")
-
-        return detdist_limits
-
-    def stop(self):
-        self._ho.stop()
-
-    def state(self):
-        state = self._ho.get_state().value
-        return state
 
 
 class MachineInfoHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(MachineInfoHOAdapter, self).__init__(ho, name)
         ho.connect("valueChanged", self._value_change)
         self._precision = 1
@@ -747,7 +880,7 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
 
     def limits(self):
         """
-        :returns: The detector distance limits.
+        Returns: The detector distance limits.
         """
         return []
 
@@ -760,23 +893,32 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
 
 class PhotonFluxHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(PhotonFluxHOAdapter, self).__init__(ho, name)
 
         try:
             ho.connect("valueChanged", self._value_change)
         except BaseException:
             pass
-
         self._precision = 1
 
     @utils.RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def set(self, value):
-        pass
+    def set(self, value=None):
+        """Read only"""
 
     def get(self):
+        """
+        Get the photon flux.
+        Returns:
+            (float as str): Flux.
+        """
         try:
             value = self._ho.current_flux
         except BaseException:
@@ -784,21 +926,24 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
 
         return value
 
+    """
     def message(self):
         return ""
+    """
 
     def limits(self):
-        """
-        :returns: The detector distance limits.
-        """
-        return []
+        """No limits"""
+        return ()
 
     def state(self):
-        return HardwareObjectState.READY.value
+        """Always READY"""
+        return HardwareObjectState.READY.name
 
     def _dict_repr(self):
         """
-        :returns: The dictionary representation of the hardware object.
+        Dictionary representation of the hardware object.
+        Returns:
+            (dict): The dictionary.
         """
         data = {
             "name": self._name,
@@ -806,7 +951,7 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
             "value": self.get(),
             "limits": self.limits(),
             "state": self.state(),
-            "msg": self.message(),
+            "msg": self.msg(),
             "precision": self.precision(),
             "readonly": self.read_only(),
         }
@@ -816,54 +961,65 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
 
 class CryoHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(CryoHOAdapter, self).__init__(ho, name)
-
         try:
             ho.connect("valueChanged", self._value_change)
+            # ho.connect("stateChanged", self.state_change)
         except BaseException:
             pass
-
-        try:
-            ho.connect("stateChanged", self._state_change)
-        except BaseException:
-            pass
-
         self._precision = 1
 
     @utils.RateLimited(1)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
+    """
     @utils.RateLimited(1)
     def _state_change(self, *args, **kwargs):
         self.state_change(*args, **kwargs)
+    """
 
-    def set(self, value):
-        pass
+    def set(self, value=None):
+        """Read only"""
 
     def get(self):
+        """
+        Get the cryostream temperature.
+        Returns:
+            (float as str): Temperature [deg K].
+        """
         try:
             value = self._ho.get_value()
-        except Exception:
-            value = "0"
+            value = round(float(value), self._precision)
+        except (AttributeError, TypeError):
+            value = 0.0
 
+        value = ("{:3.%sf}" % self._precision).format(value)
         return value
 
+    """
     def message(self):
         return ""
+    """
 
     def limits(self):
-        """
-        :returns: The detector distance limits.
-        """
-        return []
+        """No limits."""
+        return ()
 
     def state(self):
-        return HardwareObjectState.READY.value
+        """Always READY"""
+        return HardwareObjectState.READY.name
 
     def _dict_repr(self):
         """
-        :returns: The dictionary representation of the hardware object.
+        Dictionary representation of the hardware object.
+        Returns:
+            (dict): The dictionary.
         """
         data = {
             "name": self._name,
@@ -871,7 +1027,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
             "value": self.get(),
             "limits": self.limits(),
             "state": self.state(),
-            "msg": self.message(),
+            "msg": self.msg(),
             "precision": self.precision(),
             "readonly": self.read_only(),
         }
@@ -881,6 +1037,11 @@ class CryoHOAdapter(HOActuatorAdapterBase):
 
 class DataPublisherHOAdapter(HOAdapterBase):
     def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
         super(DataPublisherHOAdapter, self).__init__(ho, name)
 
         try:
@@ -889,7 +1050,7 @@ class DataPublisherHOAdapter(HOAdapterBase):
             ho.connect("end", self._update_publisher_handler)
         except BaseException:
             msg = "Could not initialize DataPublisherHOAdapter"
-            logging.getLogger("HWR").exception(msg)
+            logging.getLogger("MX3.HWR").exception(msg)
         else:
             self._available = True
 
@@ -903,7 +1064,7 @@ class DataPublisherHOAdapter(HOAdapterBase):
         return HardwareObjectState.READY.value
 
 
-class _BeamlineAdapter(object):
+class _BeamlineAdapter:
     """
     Adapter between Beamline route and Beamline hardware object.
     """
@@ -913,7 +1074,7 @@ class _BeamlineAdapter(object):
         "wavelength": ("energy", WavelengthHOAdapter),
         "resolution": ("resolution", ResolutionHOAdapter),
         "transmission": ("transmission", TransmissionHOAdapter),
-        "fast_shutter": ("fast_shutter",DuoStateHOAdapter),
+        "fast_shutter": ("fast_shutter", DuoStateHOAdapter),
         "safety_shutter": ("safety_shutter", DuoStateHOAdapter),
         "machine_info": ("machine_info", MachineInfoHOAdapter),
         "flux": ("flux", PhotonFluxHOAdapter),
@@ -921,7 +1082,7 @@ class _BeamlineAdapter(object):
         "cryo": ("diffractometer.cryo", CryoHOAdapter),
         "capillary": ("diffractometer.capillary", DuoStateHOAdapter),
         "beamstop": ("diffractometer.beamstop", DuoStateHOAdapter),
-        "detector_distance": ("detector.distance", DetectorDistanceHOAdapter)
+        "detector_distance": ("detector.distance", DetectorDistanceHOAdapter),
     }
 
     _TO_SERIALIZE = [
@@ -936,7 +1097,7 @@ class _BeamlineAdapter(object):
         "cryo",
         "capillary",
         "beamstop",
-        "detector_distance"
+        "detector_distance",
     ]
 
     def __init__(self, beamline_hwobj):
@@ -944,7 +1105,7 @@ class _BeamlineAdapter(object):
         self._ho_dict = {}
 
         workflow = self._bl.workflow
-    
+
         for role, mapping in self._ADAPTER_MAP.items():
             attr_path, adapter = mapping
             attr = None
@@ -958,14 +1119,16 @@ class _BeamlineAdapter(object):
                     setattr(self, role, adapter(attr, role))
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % role)
                 else:
-                    logging.getLogger("MX3.HWR").info("Could not add adapter for %s" % role)
+                    logging.getLogger("MX3.HWR").info(
+                        "Could not add adapter for %s" % role
+                    )
 
         if workflow:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
     def _getattr_from_path(self, obj, attr):
         """Recurses through an attribute chain to get the attribute."""
-        return reduce(getattr, attr.split('.'), obj)
+        return reduce(getattr, attr.split("."), obj)
 
     def wf_parameters_needed(self, params):
         socketio.emit("workflowParametersDialog", params, namespace="/hwr")
@@ -975,7 +1138,10 @@ class _BeamlineAdapter(object):
 
     def dict_repr(self):
         """
-        :returns: Dictionary value-representation for each beamline attribute listed in _TO_SERIALIZE
+        Build dictionary value-representation for each beamline attribute
+        listed in _TO_SERIALIZE.
+        Returns:
+           (dict): The dictionary.
         """
         attributes = {}
 
@@ -984,11 +1150,18 @@ class _BeamlineAdapter(object):
                 _d = getattr(self, attr_name).dict_repr()
                 attributes.update({attr_name: _d})
             except Exception:
-                logging.getLogger("MX3.HWR").error("Failed to get dictionary representation of %s" % attr_name)
-      
+                logging.getLogger("MX3.HWR").error(
+                    "Failed to get dictionary representation of %s" % attr_name
+                )
+
         return {"attributes": attributes}
 
     def get_available_methods(self):
+        """
+        Get the available methods.
+        Returns:
+            (list): The methods.
+        """
         return self._bl.available_methods
 
     def get_available_elements(self):
@@ -1001,6 +1174,11 @@ class _BeamlineAdapter(object):
         return {"elements": elements}
 
     def get_acquisition_limit_values(self):
+        """
+        Get the limits for the acquisition parameters.
+        Returns:
+            (dict): The limits.
+        """
         _limits = self._bl.get_acquisition_limit_values()
         limits = {}
 

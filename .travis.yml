@@ -16,7 +16,7 @@ install:
   - pip install -r requirements-pip3.txt
 
 script:
-  - pytest test/
+  - pytest -v test/
 
 after_success:
   - codecov

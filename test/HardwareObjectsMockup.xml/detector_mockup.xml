@@ -12,4 +12,12 @@
   <height>4271</height>
   <hasShutterless>True</hasShutterless>
   <fileSuffix>cbf</fileSuffix>
+
+  <beam>
+    <ax>0.00002</ax>
+    <ay>-0.0036</ay>
+    <bx>215.700</bx>
+    <by>213.169</by>
+  </beam>
+
 </equipment>
