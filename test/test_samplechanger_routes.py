@@ -20,6 +20,7 @@ def test_get_sample_list(client):
     assert isinstance(data["sampleList"], dict)
     assert isinstance(data["sampleOrder"], list)
 
+
 def test_get_sc_state(client):
     """
     Checks retrieval of the sample changer state
@@ -28,6 +29,7 @@ def test_get_sc_state(client):
     data = json.loads(resp.data)
 
     assert isinstance(data["state"], unicode)
+
 
 def test_get_loaded_sample(client):
     """
@@ -39,6 +41,7 @@ def test_get_loaded_sample(client):
     assert isinstance(data["address"], unicode)
     assert isinstance(data["barcode"], unicode)
 
+
 def test_get_sc_contents_view(client):
     """
     Checks retrieval of the sample changer contents
@@ -49,14 +52,15 @@ def test_get_sc_contents_view(client):
     capacity = json.loads(resp.data)["capacity"]
 
     assert isinstance(data["children"], list)
-    assert len(data["children"]) == capacity['num_baskets']  # pucks
+    assert len(data["children"]) == capacity["num_baskets"]  # pucks
 
     num_samples = 0
     for basket in data["children"]:
         num_samples += len(basket["children"])
 
-    assert num_samples == capacity['num_samples']  # samples
-    
+    assert num_samples == capacity["num_samples"]  # samples
+
+
 def test_get_maintenance_cmds(client):
     """
     Checks retrieval of the sample changer manteniance commands
@@ -65,6 +69,7 @@ def test_get_maintenance_cmds(client):
     data = json.loads(resp.data)
 
     assert isinstance(data["cmds"], list)
+
 
 def test_get_global_state(client):
     """
@@ -76,6 +81,7 @@ def test_get_global_state(client):
     assert isinstance(data["commands_state"], dict)
     assert isinstance(data["message"], unicode)
     assert isinstance(data["state"], dict)
+
 
 def test_get_initial_state(client):
     """

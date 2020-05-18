@@ -153,10 +153,12 @@ def get_viewport_info():
         video_sizes = blcontrol.beamline.sample_view.camera.get_available_stream_sizes()
         width, height, scale = blcontrol.beamline.sample_view.camera.get_stream_size()
     else:
-        video_sizes = [blcontrol.beamline.sample_view.camera.getWidth(),
-                       blcontrol.beamline.sample_view.camera.getHeight()]
+        video_sizes = [
+            blcontrol.beamline.sample_view.camera.getWidth(),
+            blcontrol.beamline.sample_view.camera.getHeight(),
+        ]
         width, height, scale = video_sizes + [1]
-    
+
     pixelsPerMm = blcontrol.beamline.diffractometer.get_pixels_per_mm()
 
     beam_info_dict = get_beam_info()

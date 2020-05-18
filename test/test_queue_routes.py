@@ -38,7 +38,9 @@ def test_add_and_get_sample(client):
 def test_add_and_get_task(client):
     """Test if we can add a task to the sample."""
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    )
 
 
 def test_add_and_edit_task(client):
@@ -47,7 +49,9 @@ def test_add_and_edit_task(client):
     queue_id = json.loads(resp.data).get("1:05")["queueID"]
     task_queue_id = json.loads(resp.data).get("1:05")["tasks"][0]["queueID"]
 
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    )
 
     task_to_update = copy.deepcopy(test_edit_task)
     parameter_to_update = "num_images"
@@ -73,7 +77,9 @@ def test_queue_start(client):
     Unpause is called to mimick that.
     """
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    )
 
     resp = client.put(
         "/mxcube/api/v0.1/queue/start",
@@ -170,7 +176,9 @@ def test_queue_get_state(client):
 def test_queue_delete_item(client):
     """Test if we can delete a task from sample in the queue."""
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    )
 
     task_to_delete = ["1:05", 0]
     resp = client.post(
@@ -181,7 +189,9 @@ def test_queue_delete_item(client):
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 0
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 0
+    )
 
 
 def test_queue_enable_item(client):
@@ -199,13 +209,18 @@ def test_queue_enable_item(client):
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and json.loads(resp.data).get("1:05")["checked"] == False
+    assert (
+        resp.status_code == 200
+        and json.loads(resp.data).get("1:05")["checked"] == False
+    )
 
 
 def test_queue_swap_task_item(client):
     """Test if we can swap tasks in a sample in queue. Two tasks are added with a different param and then swaped and tested"""
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    )
 
     queue_id = json.loads(resp.data).get("1:05")["queueID"]
     task_to_add = copy.deepcopy(test_task)
@@ -221,7 +236,9 @@ def test_queue_swap_task_item(client):
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 2
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 2
+    )
 
     resp = client.post(
         ("/mxcube/api/v0.1/queue/{}/{}/{}/swap").format("1:05", 0, 1),
@@ -240,7 +257,9 @@ def test_queue_move_task_item(client):
     """Test if we can move tasks in a sample in queue.
     Three tasks are added with a different param and then moved and tested."""
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    )
 
     queue_id = json.loads(resp.data).get("1:05")["queueID"]
     task_to_add = copy.deepcopy(test_task)
@@ -256,7 +275,9 @@ def test_queue_move_task_item(client):
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 2
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 2
+    )
 
     task_to_add = copy.deepcopy(test_task)
     task_to_add["queueID"] = queue_id
@@ -271,7 +292,9 @@ def test_queue_move_task_item(client):
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 3
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 3
+    )
 
     resp = client.post(
         ("/mxcube/api/v0.1/queue/{}/{}/{}/move").format("1:05", 0, 2),
@@ -290,7 +313,9 @@ def test_queue_move_task_item_fail(client):
     """Test if we can move tasks in a sample in queue with boundry condition.
     Three tasks are added with a different param and then moved and tested."""
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+    )
 
     queue_id = json.loads(resp.data).get("1:05")["queueID"]
     task_to_add = test_task
@@ -305,7 +330,9 @@ def test_queue_move_task_item_fail(client):
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 2
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 2
+    )
 
     task_to_add = test_task
     task_to_add["queueID"] = queue_id
@@ -319,7 +346,9 @@ def test_queue_move_task_item_fail(client):
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue")
-    assert resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 3
+    assert (
+        resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 3
+    )
 
     resp = client.post(
         ("/mxcube/api/v0.1/queue/{}/{}/{}/move").format("1:05", 2, 2),
@@ -353,7 +382,8 @@ def test_queue_set_sample_order(client):
 
     resp = client.get("/mxcube/api/v0.1/queue")
     assert (
-        resp.status_code == 200 and json.loads(resp.data).get("sample_order")[1] == "1:06"
+        resp.status_code == 200
+        and json.loads(resp.data).get("sample_order")[1] == "1:06"
     )
 
 
@@ -364,10 +394,10 @@ def test_get_default_dc_params(client):
     actual = json.loads(resp.data)
 
     # some values are taken from current value/position which is random, so ignore those
-    actual['acq_parameters'].pop('osc_start')
-    actual['acq_parameters'].pop('energy')
-    actual['acq_parameters'].pop('resolution')
-    actual['acq_parameters'].pop('transmission')
+    actual["acq_parameters"].pop("osc_start")
+    actual["acq_parameters"].pop("energy")
+    actual["acq_parameters"].pop("resolution")
+    actual["acq_parameters"].pop("transmission")
 
     assert resp.status_code == 200 and actual == default_dc_params
 
@@ -378,10 +408,10 @@ def test_get_default_char_acq_params(client):
     actual = json.loads(resp.data)
 
     # some values are taken from current value/position which is random, so ignore those
-    actual['acq_parameters'].pop('osc_start')
-    actual['acq_parameters'].pop('energy')
-    actual['acq_parameters'].pop('resolution')
-    actual['acq_parameters'].pop('transmission')
+    actual["acq_parameters"].pop("osc_start")
+    actual["acq_parameters"].pop("energy")
+    actual["acq_parameters"].pop("resolution")
+    actual["acq_parameters"].pop("transmission")
     assert resp.status_code == 200 and actual == default_char_acq_params
 
 
@@ -398,12 +428,12 @@ def test_get_default_mesh_params(client):
 
     resp = client.get("/mxcube/api/v0.1/queue/mesh")
     actual = json.loads(resp.data)
- 
+
     # some values are taken from current value/position which is random, so ignore those
-    actual['acq_parameters'].pop('osc_start')
-    actual['acq_parameters'].pop('energy')
-    actual['acq_parameters'].pop('resolution')
-    actual['acq_parameters'].pop('transmission')
+    actual["acq_parameters"].pop("osc_start")
+    actual["acq_parameters"].pop("energy")
+    actual["acq_parameters"].pop("resolution")
+    actual["acq_parameters"].pop("transmission")
 
     assert resp.status_code == 200 and actual == default_mesh_params
 
@@ -455,5 +485,6 @@ def test_set_autoadd(client):
         content_type="application/json",
     )
     assert (
-        resp.status_code == 200 and json.loads(resp.data).get("auto_add_diffplan") == True
+        resp.status_code == 200
+        and json.loads(resp.data).get("auto_add_diffplan") == True
     )

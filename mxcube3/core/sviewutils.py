@@ -29,6 +29,7 @@ CLICK_COUNT = 0
 CLICK_LIMIT = 3
 CENTRING_POINT_ID = None
 
+
 def centring_clicks_left():
     global CLICK_COUNT, CLICK_LIMIT
     return CLICK_LIMIT - CLICK_COUNT
@@ -141,6 +142,7 @@ def init_signals():
     dm = blcontrol.beamline.diffractometer
 
     for motor in utils.get_centring_motors():
+
         @utils.RateLimited(10)
         def pos_cb(pos, motor=motor, **kw):
             movable = utils.get_movable_state_and_position(motor)
@@ -367,9 +369,7 @@ def update_shapes(shapes):
                 )
 
             else:
-                shape = blcontrol.beamline.sample_view.add_shape_from_refs(
-                    refs, t
-                )
+                shape = blcontrol.beamline.sample_view.add_shape_from_refs(refs, t)
 
         # shape will be none if creation failed, so we check if shape exists
         # before setting additional parameters

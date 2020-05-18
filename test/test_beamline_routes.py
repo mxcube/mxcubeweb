@@ -20,17 +20,19 @@ def test_beamline_get_all_attribute(client):
 
     actual = list(data.get("attributes").keys())
 
-    expected = ['beamstop',
-                'capillary',
-                'detector_distance',
-                'energy',
-                'fast_shutter',
-                'flux',
-                'machine_info',
-                'resolution',
-                'safety_shutter',
-                'transmission',
-                'wavelength']
+    expected = [
+        "beamstop",
+        "capillary",
+        "detector_distance",
+        "energy",
+        "fast_shutter",
+        "flux",
+        "machine_info",
+        "resolution",
+        "safety_shutter",
+        "transmission",
+        "wavelength",
+    ]
 
     assert isinstance(data["attributes"], dict)
     assert isinstance(data["actionsList"], list)

@@ -1536,6 +1536,7 @@ def clear_queue():
     HWR.beamline.queue_model.clear_model("plate")
     HWR.beamline.queue_model.select_model("ispyb")
 
+
 def save_queue(session, redis=redis.Redis()):
     """
     Saves the current blcontrol.beamline.queue_model (blcontrol.beamline.queue_model) into a redis database.
