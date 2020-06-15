@@ -1590,17 +1590,6 @@ def queue_model_child_added(parent, child):
             parent_entry.enqueue(dc_entry)
             sample = parent.get_parent()
 
-            sampleID = sample._node_id
-            # The task comes without a shape,
-            # so find origin (char generates >task node > collection)
-            # add associate shape id
-            queue = queue_to_dict()
-            tasks = queue[str(sampleID)]["tasks"]
-            for t in tasks:
-                if t["queueID"] == parent.get_origin():
-                    shape = t["parameters"]["shape"]
-                    setattr(child, "shape", shape)
-
             task = _handle_dc(sample, child)
             socketio.emit("add_task", {"tasks": [task]}, namespace="/hwr")
 
@@ -1767,9 +1756,9 @@ def init_signals(queue):
         "queue_paused", signals.queue_execution_paused
     )
 
-    blcontrol.beamline.queue_manager.connect(
-        "queue_execute_entry_finished", signals.queue_execution_entry_finished
-    )
+    #blcontrol.beamline.queue_manager.connect(
+    #    "queue_entry_execute_finished", signals.queue_execution_entry_finished
+    #)
 
     blcontrol.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
 
@@ -1839,7 +1828,9 @@ def get_task_progress(node, pdata):
 
 
 def is_interleaved(node):
-    return hasattr(node, "interleave_num_images") and node.interleave_num_images > 0
+    return hasattr(node, "interleave_num_images") and \
+           node.interleave_num_images != None and \
+           node.interleave_num_images > 0
 
 
 def init_queue_settings():

@@ -18,6 +18,8 @@ import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionC
 import Plot1D from '../components/Plot1D';
 import { RUNNING } from '../constants';
 
+import { DraggableModal } from '../components/DraggableModal';
+
 class BeamlineActionsContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -102,7 +104,7 @@ class BeamlineActionsContainer extends React.Component {
              })}
             </DropdownButton>
         </Col>
-        <Modal id="beamlineActionOutput"
+        <DraggableModal id="beamlineActionOutput"
           show={!!this.props.currentAction.show}
           onHide={this.hideOutput}
         >
@@ -149,9 +151,9 @@ class BeamlineActionsContainer extends React.Component {
              </Well>) : '' }
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.hideOutput}> Close window </Button>
+            <Button onClick={this.hideOutput} disabled={currentActionRunning}> Close window </Button>
           </Modal.Footer>
-        </Modal>
+        </DraggableModal>
       </Row>
     );
   }

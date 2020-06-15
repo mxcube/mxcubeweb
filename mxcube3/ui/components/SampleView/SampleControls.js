@@ -292,8 +292,8 @@ Reset
                       className="bar"
                       type="range"
                       step="0.1"
-                      min="0"
-                      max="1"
+                      min={motors.BackLight.limits[0]}
+                      max={motors.BackLight.limits[1]}
                       defaultValue={motors.BackLight.position}
                       disabled={motors.BackLight.state !== MOTOR_STATE.READY}
                       onMouseUp={e => this.props.sampleActions.sendMotorPosition('BackLight', e.target.value)}
@@ -330,8 +330,8 @@ Reset
                       className="bar"
                       type="range"
                       step="0.1"
-                      min="0"
-                      max="1"
+                      min={motors.FrontLight.limits[0]}
+                      max={motors.FrontLight.limits[1]}
                       defaultValue={motors.FrontLight.position}
                       disabled={motors.FrontLight.state !== MOTOR_STATE.READY}
                       onMouseUp={e => this.props.sampleActions.sendMotorPosition('FrontLight', e.target.value)}

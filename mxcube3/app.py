@@ -143,7 +143,15 @@ def init_signal_handlers():
 
     try:
         sviewutils.init_signals()
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+
+    try:
         scutils.init_signals()
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+
+    try:
         beamlineutils.init_signals()
         beamlineutils.diffractometer_init_signals()
     except Exception:
