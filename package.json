@@ -16,6 +16,7 @@
   "license": "MIT",
   "main": "main.jsx",
   "dependencies": {
+    "@rjsf/core": "^2.0.2",
     "bootstrap": "3.4.1",
     "classnames": "^2.2.0",
     "dustjs-helpers": "^1.7.4",
@@ -47,7 +48,7 @@
     "react-router": "^3.0.2",
     "react-router-bootstrap": "^0.23.1",
     "react-sticky": "^6.0.3",
-    "react-stonecutter": "^0.3.4",
+    "react-stonecutter": "^0.3.9",
     "redux": "^3.0.4",
     "redux-form": "^7.4.2",
     "redux-logger": "^3.0.6",
