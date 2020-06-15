@@ -143,7 +143,7 @@ def init_signals():
 
     for motor in utils.get_centring_motors():
 
-        @utils.RateLimited(10)
+        @utils.RateLimited(6)
         def pos_cb(pos, motor=motor, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
@@ -171,7 +171,7 @@ def init_signals():
 
     for actuator_name in ["FrontLight", "BackLight"]:
 
-        @utils.RateLimited(10)
+        @utils.RateLimited(6)
         def light_pos_cb(pos, actuator_name=actuator_name, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
@@ -195,12 +195,7 @@ def init_signals():
             motor = dm.getObjectByRole(actuator_name)
             motor.connect(motor, "valueChanged", light_pos_cb)
             motor_sw = dm.getObjectByRole(actuator_name + "Switch")
-
-            if hasattr(motor_sw, "actuatorIn"):
-                motor_sw.connect(motor_sw, "actuatorStateChanged", light_state_cb)
-            else:
-                motor_sw = dm.getObjectByRole(actuator_name + "Switch")
-                motor_sw.connect(motor_sw, "actuatorStateChanged", light_state_cb)
+            motor_sw.connect(motor_sw, "stateChanged", light_state_cb)
 
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception(str(ex))
@@ -412,42 +407,23 @@ def move_zoom_motor(pos):
 
 
 def back_light_on():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
-
-    if hasattr(motor, "move_in"):
-        motor.move_in()
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
-        motor.actuatorIn()
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+    motor.set_value(motor.VALUES.IN)
 
 
 def back_light_off():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
-    if hasattr(motor, "move_out"):
-        motor.move_out()
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
-        motor.actuatorOut()
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+    motor.set_value(motor.VALUES.OUT)
 
 
 def front_light_on():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLight")
-
-    if hasattr(motor, "actuatorIn"):
-        motor.actuatorIn()
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
-        motor.actuatorIn()
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+    motor.set_value(motor.VALUES.IN)
 
 
 def front_light_off():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLight")
-
-    if hasattr(motor, "actuatorOut"):
-        motor.actuatorOut(wait=False)
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
-        motor.actuatorOut(wait=False)
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+    motor.set_value(motor.VALUES.OUT)
 
 
 def move_motor(motid, newpos):

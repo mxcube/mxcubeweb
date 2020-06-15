@@ -31,9 +31,11 @@ def init_signals():
         msg += "signals"
         logging.getLogger("MX3.HWR").exception(msg)
     try:
-        actions = blcontrol.actions
+
+        actions =  blcontrol.HWR.getHardwareObject("beamcmds")
+
         if actions is not None:
-            cmds = actions.getCommands()
+            cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
             for cmd in cmds:
                 cmd.connectSignal(
                     "commandBeginWaitReply", signals.beamline_action_start
@@ -111,7 +113,7 @@ def get_aperture():
     beam = blcontrol.beamline.beam
 
     aperture_list = beam.aperture.get_diameter_size_list()
-    current_aperture = beam.aperture.get_diameter_size()
+    current_aperture = beam.aperture.get_value().value[1]
 
     return aperture_list, current_aperture
 
@@ -154,8 +156,8 @@ def get_viewport_info():
         width, height, scale = blcontrol.beamline.sample_view.camera.get_stream_size()
     else:
         video_sizes = [
-            blcontrol.beamline.sample_view.camera.getWidth(),
-            blcontrol.beamline.sample_view.camera.getHeight(),
+            blcontrol.beamline.sample_view.camera.get_width(),
+            blcontrol.beamline.sample_view.camera.get_height(),
         ]
         width, height, scale = video_sizes + [1]
 
@@ -184,7 +186,7 @@ def beamline_get_all_attributes():
     actions = list()
 
     try:
-        cmds = blcontrol.actions.getCommands()
+        cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
     except Exception:
         cmds = []
     for cmd in cmds:
@@ -202,6 +204,7 @@ def beamline_get_all_attributes():
                 "username": cmd.userName(),
                 "state": READY,
                 "arguments": args,
+                "argument_type": cmd.argument_type,
                 "messages": [],
                 "type": cmd.type,
                 "data": cmd.value(),
@@ -230,7 +233,7 @@ def beamline_abort_action(name):
 
     """
     try:
-        cmds = blcontrol.actions.getCommands()
+        cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
     except Exception:
         cmds = []
 
@@ -238,9 +241,12 @@ def beamline_abort_action(name):
         if cmd.name() == name:
             cmd.abort()
 
-    ho = BeamlineAdapter(blcontrol.beamline).get_object(name.lower())
-    ho.stop()
-
+    try:
+        ho = BeamlineAdapter(blcontrol.beamline).get_object(name.lower())
+    except AttributeError:
+        pass
+    else:
+        ho.stop()
 
 def beamline_run_action(name, params):
     """
@@ -249,7 +255,7 @@ def beamline_run_action(name, params):
     : param str name: action to run
     """
     try:
-        cmds = blcontrol.actions.getCommands()
+        cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
     except Exception:
         cmds = []
 
@@ -319,15 +325,17 @@ def get_beam_info():
     :return: Beam info dictionary with keys: position, shape, size_x, size_y
     :rtype: dict
     """
-    beam_info = blcontrol.beamline.beam
+    beam = blcontrol.beamline.beam
     beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
-    if beam_info is not None:
+    sx, sy, shape, label = beam.get_value()
+
+    if beam is not None:
         beam_info_dict.update(
             {
-                "position": beam_info.get_beam_position_on_screen(),
-                "size_x": beam_info.get_beam_size()[0],
-                "size_y": beam_info.get_beam_size()[1],
-                "shape": beam_info.get_beam_shape().value,
+                "position": beam.get_beam_position_on_screen(),
+                "size_x": sx,
+                "size_y": sy,
+                "shape": shape.value,
             }
         )
 
@@ -357,8 +365,15 @@ def diffractometer_set_phase(phase):
 def set_aperture(pos):
     beam = blcontrol.beamline.beam
     msg = "Changing aperture diameter to: %s" % pos
+
     logging.getLogger("MX3.HWR").info(msg)
-    beam.aperture.set_diameter_size(float(pos))
+
+    try:
+        _e = getattr(beam.aperture.VALUES, "A" + pos)
+    except AttributeError:
+        _e = getattr(beam.aperture.VALUES, pos)
+
+    beam.aperture.set_value(_e)
 
 
 def diffractometer_get_info():
@@ -370,7 +385,7 @@ def diffractometer_get_info():
         ret["useSC"] = False
 
     try:
-        ret["currentPhase"] = blcontrol.beamline.diffractometer.current_phase
+        ret["currentPhase"] = blcontrol.beamline.diffractometer.get_current_phase()
     except AttributeError:
         ret["currentPhase"] = "None"
 
@@ -378,7 +393,7 @@ def diffractometer_get_info():
         ret["phaseList"] = blcontrol.beamline.diffractometer.get_phase_list()
     except AttributeError:
         ret["phaseList"] = []
-
+        
     return ret
 
 

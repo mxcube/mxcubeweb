@@ -50,7 +50,7 @@ def last_queue_node():
     return res
 
 
-beam_signals = ["beamPosChanged", "beamInfoChanged", "valueChanged"]
+beam_signals = ["beamPosChanged", "beamInfoChanged", "valueChanged", "stateChanged"]
 
 centringSignals = [
     "centringInvalid",
@@ -279,7 +279,7 @@ def update_task_result(entry):
     socketio.emit("update_task_lims_data", msg, namespace="/hwr")
 
 
-def queue_execution_entry_finished(entry):
+def queue_execution_entry_finished(entry, message):
     handle_auto_mount_next(entry)
 
     if not qutils.is_interleaved(entry.get_data_model()):
@@ -623,7 +623,7 @@ def beam_changed(*args, **kwargs):
     _beam = beam_info.get_value()
     beam_info_dict.update(
         {
-            "position": beam_info.get_beam_position(),
+            "position": beam_info.get_beam_position_on_screen(),
             "size_x": _beam[0],
             "size_y": _beam[1],
             "shape": _beam[2].value,

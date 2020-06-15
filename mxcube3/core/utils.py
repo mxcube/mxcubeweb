@@ -68,13 +68,11 @@ def get_light_state_and_intensity():
 
     for light in ("BackLight", "FrontLight"):
         hwobj = blcontrol.beamline.diffractometer.getObjectByRole(light)
-        if hasattr(hwobj, "get_actuator_state"):
-            switch_state = 1 if hwobj.get_actuator_state() == "in" else 0
-        else:
-            hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(
-                light + "Switch"
-            )
-            switch_state = 1 if hwobj_switch.get_actuator_state() == "in" else 0
+        hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(
+            light + "Switch"
+        )
+        switch_state = 1 if hwobj_switch.get_value().name == "IN" else 0
+
         ret.update(
             {
                 light: {
@@ -273,7 +271,6 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 "Moving Diffractometer to CentringPhase"
             )
             diffractometer.set_phase("Centring", wait=True, timeout=200)
-            self.move_to_centered_position()
 
         snapshot_directory = dc_params["fileinfo"]["archive_directory"]
         if not os.path.exists(snapshot_directory):

@@ -298,11 +298,11 @@ def login(login_id, password):
             "loginRes": login_res,
         }
 
-        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+        address, barcode = scutils.get_loaded_sample()
 
         # If A sample is mounted (and not already marked as such),
         # get sample changer contents and add mounted sample to the queue
-        if not scutils.get_current_sample() and sample:
+        if not scutils.get_current_sample() and address:
             scutils.get_sample_list()
 
         # For the moment not loading queue from persistent storage (redis),

@@ -127,13 +127,16 @@ def get_sc_contents():
             for e in element.get_components():
                 _addElement(new_element, e)
 
-    root_name = blcontrol.beamline.sample_changer.get_address()
+    if blcontrol.beamline.sample_changer:
+        root_name = blcontrol.beamline.sample_changer.get_address()
 
-    contents = {"name": root_name}
+        contents = {"name": root_name}
 
-    for element in blcontrol.beamline.sample_changer.get_components():
-        if element.is_present():
-            _addElement(contents, element)
+        for element in blcontrol.beamline.sample_changer.get_components():
+            if element.is_present():
+                _addElement(contents, element)
+    else:
+        contents = {"name": "OFFLINE"}
 
     return contents
 
@@ -404,7 +407,11 @@ def unmount_current():
 
 
 def get_loaded_sample():
-    sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+    try:
+        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+    except Exception as ex:
+        logging.getLogger("MX3.HWR").exception("")
+        sample = None
 
     if sample is not None:
         address = sample.get_address()
@@ -435,16 +442,15 @@ def get_maintenance_cmds():
 
 
 def get_global_state():
-    if blcontrol.beamline.sample_changer_maintenance is not None:
+    try:
         return blcontrol.beamline.sample_changer_maintenance.get_global_state()
-    else:
-        return {}
+    except:
+        return "OFFLINE", "OFFLINE", "OFFLINE"
 
 
 def get_initial_state():
     if blcontrol.beamline.sample_changer_maintenance is not None:
-        ret = blcontrol.beamline.sample_changer_maintenance.get_global_state()
-        global_state, cmdstate, msg = ret
+        global_state, cmdstate, msg = get_global_state()
 
         cmds = blcontrol.beamline.sample_changer_maintenance.get_cmd_info()
 
@@ -455,17 +461,14 @@ def get_initial_state():
         msg = ""
 
     contents = get_sc_contents()
-    sample = blcontrol.beamline.sample_changer.get_loaded_sample()
-
-    if sample is not None:
-        address = sample.get_address()
-        barcode = sample.get_id()
-    else:
-        address = ""
-        barcode = ""
+    address, barcode = get_loaded_sample()
 
     loaded_sample = {"address": address, "barcode": barcode}
-    state = blcontrol.beamline.sample_changer.get_status().upper()
+
+    try:
+        state = blcontrol.beamline.sample_changer.get_status().upper()
+    except:
+        state = "OFFLINE"
 
     initial_state = {
         "state": state,
