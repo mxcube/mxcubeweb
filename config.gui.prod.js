@@ -1,6 +1,6 @@
 module.exports = {
-  phaseControl: false,
+  phaseControl: true,
   apertureControl: true,
   focusControlOnCanvas: true,
-  use2dCenteredPoints: false
+  use2dCenteredPoints: true
 }
