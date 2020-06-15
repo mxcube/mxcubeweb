@@ -55,9 +55,9 @@ var config = {
           },
           { loader: "css-loader",
             options: {
-              importLoaders: 2,
-              modules: true,
-              localsConvention: 'camelCase',
+              importLoaders: 1,
+              // modules: true,
+              // localsConvention: 'camelCase',
             },
           },
           {
