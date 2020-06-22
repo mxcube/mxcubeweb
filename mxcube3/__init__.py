@@ -122,6 +122,9 @@ socketio.init_app(server)
 # (because of the Reloader)
 
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    with open("/tmp/mxcube.pid", "w") as f:
+        f.write(str(os.getpid()) + " ")
+
     from core import loginutils
 
     # Make the valid_login_only decorator available on server object
@@ -159,3 +162,4 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
     logging.getLogger("HWR").info(msg)
+    
