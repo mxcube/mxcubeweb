@@ -57,7 +57,8 @@
     "redux-thunk": "^2.0.0",
     "shortid": "^2.2.6",
     "socket.io-client": "^2.3.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "ws": "^7.3.0"
   },
   "devDependencies": {
     "ajv": "^6.10.0",
