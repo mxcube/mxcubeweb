@@ -222,15 +222,17 @@ def _snapshot_received(data):
     SNAPSHOT_RECEIVED.set()
 
 
-def _do_take_snapshot(filename):
+def _do_take_snapshot(filename, bw=False):
     from . import loginutils
+    from mxcube3 import socketio, server
 
     SNAPSHOT_RECEIVED.clear()
     rid = loginutils.get_operator()["socketio_sid"]
 
-    socketio.emit(
-        "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
-    )
+    with server.test_request_context():
+        socketio.emit(
+            "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
+        )
 
     SNAPSHOT_RECEIVED.wait(timeout=30)
 
