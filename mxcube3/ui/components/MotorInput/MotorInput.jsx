@@ -70,6 +70,7 @@ export default class MotorInput extends React.Component {
                         this.props.state === MOTOR_STATE.OFF ||
                         this.props.state === MOTOR_STATE.ALARM ||
                         this.props.state === MOTOR_STATE.OFFLINE ||
+                        this.props.state === MOTOR_STATE.UNKNOWN ||
                         this.props.state === MOTOR_STATE.INVALID,
       'input-bg-onlimit': this.props.state === MOTOR_STATE.LOWLIMIT ||
                           this.props.state === MOTOR_STATE.HIGHLIMIT
