@@ -151,7 +151,12 @@ class BeamlineActionsContainer extends React.Component {
              </Well>) : '' }
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.hideOutput} disabled={currentActionRunning}> Close window </Button>
+            <Button
+              onClick={this.hideOutput}
+              disabled={currentActionRunning}
+            >
+              Close window
+            </Button>
           </Modal.Footer>
         </DraggableModal>
       </Row>
