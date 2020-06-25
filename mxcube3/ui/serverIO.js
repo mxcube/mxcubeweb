@@ -315,7 +315,7 @@ class ServerIO {
       this.dispatch(setMaster(false, data.name));
     });
 
-    this.hwrSocket.on('take_xtal_snapshot', (unused, cb) => {
+    this.hwrSocket.on('take_xtal_snapshot', (cb) => {
       cb(window.takeSnapshot());
     });
 
