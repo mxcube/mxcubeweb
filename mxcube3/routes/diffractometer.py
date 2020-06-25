@@ -86,8 +86,6 @@ def md_in_plate_mode():
 def get_movables_state():
     ret = utils.get_centring_motors_info()
     ret.update(utils.get_light_state_and_intensity())
-
-    print(ret)
     resp = jsonify(ret)
     resp.status_code = 200
     return resp
