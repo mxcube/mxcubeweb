@@ -97,10 +97,13 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     if video_device:
         init_sample_video(video_device)
 
-    utils.enable_snapshots(
-        blcontrol.beamline.collect, blcontrol.beamline.diffractometer
-    )
     init_signal_handlers()
+    
+    utils.enable_snapshots(
+        blcontrol.beamline.collect,
+        blcontrol.beamline.diffractometer,
+        blcontrol.beamline.sample_view
+    )
 
     atexit.register(app_atexit)
 
