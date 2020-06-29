@@ -3,3 +3,4 @@ server:
   SESSION_TYPE: "redis"
   SESSION_KEY_PREFIX: "mxcube:session:"
   DEBUG: False
+  STREAMED_VIDEO: True
