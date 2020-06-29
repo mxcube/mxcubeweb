@@ -63,7 +63,7 @@ def start(device, scale, _hash):
             "mpeg1video",
             "http://localhost:4041/" + _hash,
         ],
-        stderr=FNULL,
+        stderr=subprocess.STDOUT,
         stdin=subprocess.PIPE,
         shell=False
     )

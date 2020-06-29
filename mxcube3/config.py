@@ -7,6 +7,7 @@ class Config:
     SESSION_TYPE = "redis"
     SESSION_KEY_PREFIX = "mxcube:session:"
     DEBUG: False
+    STREAMED_VIDEO: True
 
     def __init__(self, fpath=None):
         if not fpath:
