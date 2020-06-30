@@ -52,7 +52,7 @@ def remove_user(sid):
 
     if user["operator"]:
         state_storage.flush()
-        flush()
+        #flush()
     else:
         socketio.emit("observerLogout", user, namespace="/hwr")
         socketio.emit("observersChanged", get_observers(), namespace="/hwr")
@@ -172,36 +172,36 @@ def get_all_messages():
     return MESSAGES
 
 
-def flush():
-    global PENDING_EVENTS
-    PENDING_EVENTS = deque()
+# def flush():
+#     global PENDING_EVENTS
+#     PENDING_EVENTS = deque()
 
 
-def _event_callback():
-    event_id, event, json_dict, kw = PENDING_EVENTS.popleft()
-    emit_pending_events()
+# def _event_callback():
+#     event_id, event, json_dict, kw = PENDING_EVENTS.popleft()
+#     emit_pending_events()
 
 
-def emit_pending_events():
-    try:
-        event_id, event, json_dict, kwargs = PENDING_EVENTS[0]
-    except IndexError:
-        pass
-    else:
-        return _emit(event, json_dict, **kwargs)
+# def emit_pending_events():
+#     try:
+#         event_id, event, json_dict, kwargs = PENDING_EVENTS[0]
+#     except IndexError:
+#         pass
+#     else:
+#         return _emit(event, json_dict, **kwargs)
 
 
-def _emit(event, json_dict, **kwargs):
-    kw = dict(kwargs)
-    kw["callback"] = _event_callback
-    kw["room"] = get_operator()["socketio_sid"]
-    socketio.emit(event, json_dict, **kw)
+# def _emit(event, json_dict, **kwargs):
+#     kw = dict(kwargs)
+#     kw["callback"] = _event_callback
+#     kw["room"] = get_operator()["socketio_sid"]
+#     socketio.emit(event, json_dict, **kw)
 
 
-def safe_emit(event, json_dict, **kwargs):
-    PENDING_EVENTS.append((id(json_dict), event, json_dict, kwargs))
-    if len(PENDING_EVENTS) == 1:
-        emit_pending_events()
+# def safe_emit(event, json_dict, **kwargs):
+#     PENDING_EVENTS.append((id(json_dict), event, json_dict, kwargs))
+#     if len(PENDING_EVENTS) == 1:
+#         emit_pending_events()
 
 
 def remote_addr():
