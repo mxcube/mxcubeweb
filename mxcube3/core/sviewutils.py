@@ -143,7 +143,7 @@ def init_signals():
 
     for motor in utils.get_centring_motors():
 
-        @utils.RateLimited(6)
+        @utils.RateLimited(3)
         def pos_cb(pos, motor=motor, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
@@ -171,7 +171,7 @@ def init_signals():
 
     for actuator_name in ["FrontLight", "BackLight"]:
 
-        @utils.RateLimited(6)
+        @utils.RateLimited(3)
         def light_pos_cb(pos, actuator_name=actuator_name, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
