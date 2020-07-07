@@ -525,9 +525,6 @@ def move_to_beam(x, y):
 
 
 def set_centring_method(method):
-    if not method:
-        method = CENTRING_METHOD.LOOP
-
     if method == CENTRING_METHOD.LOOP:
         msg = "[Centring] Using automatic loop centring when mounting samples"
         mxcube.CENTRING_METHOD = CENTRING_METHOD.LOOP

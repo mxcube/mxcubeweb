@@ -72,8 +72,8 @@ class QueueSettings extends React.Component {
                 <span role="menuitem">
                   <Checkbox
                     name="autoMountNext"
-                    onClick={this.autoMountNextOnClick}
-                    defaultChecked={this.props.queueState.autoMountNext}
+                    onChange={this.autoMountNextOnClick}
+                    checked={this.props.queueState.autoMountNext}
                   >
                     Automount next sample
                   </Checkbox>
@@ -82,9 +82,9 @@ class QueueSettings extends React.Component {
               <li role="presentation">
                 <span role="menuitem">
                   <Checkbox
-                    onClick={this.autoLoopCentringOnClick}
+                    onChange={this.autoLoopCentringOnClick}
                     name="autoLoopCentring"
-                    defaultChecked={this.props.queueState.centringMethod === AUTO_LOOP_CENTRING}
+                    checked={this.props.queueState.centringMethod === AUTO_LOOP_CENTRING}
                   >
                     Auto loop centring
                   </Checkbox>
@@ -94,8 +94,8 @@ class QueueSettings extends React.Component {
                 <span role="menuitem">
                   <Checkbox
                     name="autoAddDiffPlan"
-                    onClick={this.setAutoAddDiffPlan}
-                    defaultChecked={this.props.queueState.autoAddDiffPlan}
+                    onChange={this.setAutoAddDiffPlan}
+                    checked={this.props.queueState.autoAddDiffPlan}
                   >
                   Auto add diffraction plan
                   </Checkbox>
