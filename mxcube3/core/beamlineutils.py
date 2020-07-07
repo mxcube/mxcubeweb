@@ -111,9 +111,9 @@ def get_aperture():
     """
     aperture_list, current_aperture = [], None
     beam = blcontrol.beamline.beam
-
-    aperture_list = beam.aperture.get_diameter_size_list()
-    current_aperture = beam.aperture.get_value().value[1]
+    
+    aperture_list = beam.get_available_size()["values"]
+    current_aperture = beam.get_value()[-1]
 
     return aperture_list, current_aperture
 
@@ -364,16 +364,9 @@ def diffractometer_set_phase(phase):
 
 def set_aperture(pos):
     beam = blcontrol.beamline.beam
-    msg = "Changing aperture diameter to: %s" % pos
-
+    msg = "Changing beam size to: %s" % pos
     logging.getLogger("MX3.HWR").info(msg)
-
-    try:
-        _e = getattr(beam.aperture.VALUES, "A" + pos)
-    except AttributeError:
-        _e = getattr(beam.aperture.VALUES, pos)
-
-    beam.aperture.set_value(_e)
+    beam.set_value(pos)
 
 
 def diffractometer_get_info():
