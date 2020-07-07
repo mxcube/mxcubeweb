@@ -6,6 +6,7 @@ from __future__ import print_function
 import logging
 import math
 
+from decimal import Decimal
 from functools import reduce
 from enum import Enum
 
@@ -923,8 +924,9 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
         self._precision = 1
 
     @utils.RateLimited(6)
-    def _value_change(self, *args, **kwargs):
-        self.value_change(*args, **kwargs)
+    def _value_change(self, value, **kwargs):
+        value = "{:.2E}".format(Decimal(self._ho.get_value()))
+        self.value_change(value, **kwargs)
 
     def set(self, value=None):
         """Read only"""
@@ -936,7 +938,8 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
             (float as str): Flux.
         """
         try:
-            value = self._ho.current_flux
+            #value = self._ho.current_flux
+            value = "{:.2E}".format(Decimal(self._ho.get_value()))
         except BaseException:
             value = "0"
 
