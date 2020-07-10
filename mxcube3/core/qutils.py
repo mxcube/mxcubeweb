@@ -243,6 +243,8 @@ def get_node_state(node_id):
         curr_entry == entry or curr_entry == entry._parent_container
     )
 
+    print(entry.status)
+    
     if failed:
         state = FAILED
     elif executed:
@@ -1602,22 +1604,21 @@ def queue_model_child_added(parent, child):
 def queue_model_diff_plan_available(char, collection_list):
     cols = []
     for collection in collection_list:
-        if isinstance(collection, qmo.DataCollection):
-            if collection.get_origin():
-                origin_model, origin_entry = get_entry(collection.get_origin())
-            else:
-                origin_model, origin_entry = get_entry(char._node_id)
+        if collection.get_origin():
+            origin_model, origin_entry = get_entry(collection.get_origin())
+        else:
+            origin_model, origin_entry = get_entry(char._node_id)
 
-            collection.set_enabled(False)
+        collection.set_enabled(False)
 
-            dcg_model = char.get_parent()
-            sample = dcg_model.get_parent()
+        dcg_model = char.get_parent()
+        sample = dcg_model.get_parent()
 
-            setattr(collection, "shape", origin_model.shape)
+        setattr(collection, "shape", origin_model.shape)
 
-            task = _handle_dc(sample, collection)
-            task.update({"isDiffractionPlan": True, "originID": origin_model._node_id})
-            cols.append(task)
+        task = _handle_dc(sample, collection)
+        task.update({"isDiffractionPlan": True, "originID": origin_model._node_id})
+        cols.append(task)
 
     socketio.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
 
@@ -1756,9 +1757,9 @@ def init_signals(queue):
         "queue_paused", signals.queue_execution_paused
     )
 
-    #blcontrol.beamline.queue_manager.connect(
-    #    "queue_entry_execute_finished", signals.queue_execution_entry_finished
-    #)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_entry_execute_finished", signals.queue_execution_entry_finished
+    )
 
     blcontrol.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
 
