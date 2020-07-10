@@ -16,6 +16,7 @@ from mock import Mock
 from HardwareRepository.HardwareObjects import queue_model_objects as qmo
 from HardwareRepository.HardwareObjects import queue_entry as qe
 from HardwareRepository.HardwareObjects import queue_model_enumerables as qme
+from HardwareRepository.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
@@ -243,11 +244,11 @@ def get_node_state(node_id):
         curr_entry == entry or curr_entry == entry._parent_container
     )
 
-    if failed:
+    if entry.status == QUEUE_ENTRY_STATUS.FAILED:
         state = FAILED
-    elif executed:
+    elif node.is_executed() or entry.status == QUEUE_ENTRY_STATUS.SUCCESS:
         state = COLLECTED
-    elif running:
+    elif running or entry.status == QUEUE_ENTRY_STATUS.RUNNING:
         state = RUNNING
     else:
         state = UNCOLLECTED
@@ -1756,9 +1757,13 @@ def init_signals(queue):
         "queue_paused", signals.queue_execution_paused
     )
 
-    #blcontrol.beamline.queue_manager.connect(
-    #    "queue_entry_execute_finished", signals.queue_execution_entry_finished
-    #)
+    blcontrol.beamline.queue_manager.connect(
+        "queue_entry_execute_finished", signals.queue_execution_entry_finished
+    )
+
+    blcontrol.beamline.queue_manager.connect(
+        "queue_entry_execute_started", signals.queue_execution_entry_started
+    )
 
     blcontrol.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
 
