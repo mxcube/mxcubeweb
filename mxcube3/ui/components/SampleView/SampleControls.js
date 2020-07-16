@@ -33,6 +33,8 @@ export default class SampleControls extends React.Component {
 
   setZoom(option) {
     const newZoom = parseInt(option.target.value, 10);
+    this.props.sampleActions.saveMotorPosition('zoom', option.target.value);
+
     if (this.props.motors.zoom.position !== newZoom) {
       this.props.sampleActions.sendZoomPos(newZoom);
     }
@@ -228,22 +230,23 @@ Reset
               placement="bottom"
               overlay={(
                 <span className="slider-overlay">
-                1
+                  {motors.zoom.limits[0]}
                   <input
                     style={{ top: '20px' }}
                     className="bar"
                     type="range"
                     id="zoom-control"
-                    min="1"
-                    max="10"
+                    min={motors.zoom.limits[0]}
+                    max={motors.zoom.limits[1]}
                     step="1"
-                    defaultValue={motors.zoom.position}
+                    value={motors.zoom.position}
                     disabled={motors.zoom.state !== MOTOR_STATE.READY}
                     onMouseUp={this.setZoom}
+                    onChange={e => this.props.sampleActions.saveMotorPosition('zoom', e.target.value)}
                     list="volsettings"
                     name="zoomSlider"
                   />
-                10
+                  {motors.zoom.limits[1]}
                 </span>
 )}
             >
@@ -256,17 +259,9 @@ Reset
                   name="zoomOut"
                 />
                 <datalist id="volsettings">
-                  <option>0</option>
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                  <option>6</option>
-                  <option>7</option>
-                  <option>8</option>
-                  <option>9</option>
-                  <option>10</option>
+                  {[...Array(motors.zoom.limits[1] - motors.zoom.limits[0]).keys()].map(i =>
+                    (<option>{motors.zoom.limits[0] + i }</option>)
+                  )}
                 </datalist>
                 <span className="sample-controll-label">Zoom</span>
               </li>
@@ -294,9 +289,10 @@ Reset
                       step="0.1"
                       min={motors.BackLight.limits[0]}
                       max={motors.BackLight.limits[1]}
-                      defaultValue={motors.BackLight.position}
+                      value={motors.BackLight.position}
                       disabled={motors.BackLight.state !== MOTOR_STATE.READY}
                       onMouseUp={e => this.props.sampleActions.sendMotorPosition('BackLight', e.target.value)}
+                      onChange={e => this.props.sampleActions.saveMotorPosition('BackLight', e.target.value)}
                       name="backlightSlider"
                     />
                   </span>
@@ -332,9 +328,10 @@ Reset
                       step="0.1"
                       min={motors.FrontLight.limits[0]}
                       max={motors.FrontLight.limits[1]}
-                      defaultValue={motors.FrontLight.position}
+                      value={motors.FrontLight.position}
                       disabled={motors.FrontLight.state !== MOTOR_STATE.READY}
                       onMouseUp={e => this.props.sampleActions.sendMotorPosition('FrontLight', e.target.value)}
+                      onChange={e => this.props.sampleActions.saveMotorPosition('FrontLight', e.target.value)}
                       name="frontLightSlider"
                     />
                   </span>
