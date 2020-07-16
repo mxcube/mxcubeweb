@@ -279,7 +279,7 @@ def move_to_centred_position(point_id):
 
     if point:
         motor_positions = point.get_centred_position().as_dict()
-        blcontrol.beamline.diffractometer.move_to_motors_positions(motor_positions)
+        blcontrol.beamline.diffractometer.move_motors(motor_positions)
 
     return point
 
