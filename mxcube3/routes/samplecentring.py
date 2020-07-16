@@ -103,7 +103,7 @@ def move_to_centred_position(point_id):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    point = sviewutils.move_to_centred_position()
+    point = sviewutils.move_to_centred_position(point_id)
 
     if point:
         return Response(status=200)
