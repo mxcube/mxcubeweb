@@ -1214,7 +1214,7 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.energyscan.getProperty("file_suffix", "raw").strip()
+    ftype = blcontrol.beamline.energy_scan.getProperty("file_suffix", "raw").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
