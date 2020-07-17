@@ -269,8 +269,7 @@ def stream_video(camera):
 
 
 def set_image_size(width, height):
-    blcontrol.beamline.sample_view.camera.set_stream_size(width, height)
-    blcontrol.beamline.sample_view.camera.restart()
+    blcontrol.beamline.sample_view.camera.restart_streaming((width, height))
     return beamlineutils.get_viewport_info()
 
 
