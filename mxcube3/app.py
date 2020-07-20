@@ -49,7 +49,7 @@ SAMPLE_LIST = {"sampleList": {}, "sampleOrder": []}
 USERS = {}
 
 # Path to video device (i.e. /dev/videoX)
-VIDEO_DEVICE = None
+VIDEO_FORMAT = "MPEG1"
 
 # Contains the complete client side ui state, managed up state_storage.py
 UI_STATE = dict()
@@ -120,20 +120,14 @@ def init_sample_video(video_device):
 
     :return: None
     """
-    global VIDEO_DEVICE
-    from mxcube3.video import streaming_processes
+    from mxcube3.video import streaming_proc
 
     try:
-        sfpath = streaming_processes.__file__
-        blcontrol.beamline.sample_view.camera.start(video_device, sfpath)
+        blcontrol.beamline.sample_view.camera.start_streaming()
     except Exception as ex:
-        msg = "Could not initialize video from %s, error was: " % video_device
+        msg = "Could not initialize video, error was: "
         msg += str(ex)
         logging.getLogger("HWR").info(msg)
-        VIDEO_DEVICE = None
-    else:
-        VIDEO_DEVICE = video_device
-
 
 def init_signal_handlers():
     """
@@ -245,7 +239,7 @@ def save_settings():
         "TEMP_DISABLED": TEMP_DISABLED,
         "ALLOW_REMOTE": ALLOW_REMOTE,
         "TIMEOUT_GIVES_CONTROL": TIMEOUT_GIVES_CONTROL,
-        "VIDEO_DEVICE": VIDEO_DEVICE,
+        "VIDEO_FORMAT": VIDEO_FORMAT,
         "AUTO_MOUNT_SAMPLE": AUTO_MOUNT_SAMPLE,
         "AUTO_ADD_DIFFPLAN": AUTO_ADD_DIFFPLAN,
         "NUM_SNAPSHOTS": NUM_SNAPSHOTS,
@@ -264,7 +258,7 @@ def load_settings():
     global CURRENTLY_MOUNTED_SAMPLE, SAMPLE_TO_BE_MOUNTED, CENTRING_METHOD
     global NODE_ID_TO_LIMS_ID, SC_CONTENTS, SAMPLE_LIST
     global TEMP_DISABLED, USERS, ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
-    global VIDEO_DEVICE, AUTO_MOUNT_SAMPLE, AUTO_ADD_DIFFPLAN, NUM_SNAPSHOTS
+    global VIDEO_FORMAT, AUTO_MOUNT_SAMPLE, AUTO_ADD_DIFFPLAN, NUM_SNAPSHOTS
     global UI_STATE
 
     with open("stored-mxcube-session.json", "r") as f:
