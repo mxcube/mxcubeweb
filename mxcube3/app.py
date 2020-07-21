@@ -120,7 +120,7 @@ def init_sample_video(video_device):
 
     :return: None
     """
-    from mxcube3.video import streaming_proc
+    from mxcube3.video import streaming_processes
 
     try:
         blcontrol.beamline.sample_view.camera.start_streaming()
