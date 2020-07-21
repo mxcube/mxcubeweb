@@ -245,8 +245,7 @@ def disconnect():
     ):
 
         loginutils.DISCONNECT_HANDLED = False
-        blcontrol.beamline.queue_manager.pause(True)
-        logging.getLogger("HWR").info("Client disconnected, pausing queue")
+        logging.getLogger("HWR").info("Client disconnected")
 
 
 @socketio.on("setRaMaster", namespace="/hwr")

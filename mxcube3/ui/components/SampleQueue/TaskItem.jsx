@@ -134,14 +134,6 @@ export default class TaskItem extends Component {
 
   wedgeParameters(wedge) {
     const parameters = wedge.parameters;
-    if (parameters.mesh) {
-      const shapes = this.props.shapes.shapes;
-      if (Object.keys(shapes).length !== 0) {
-        const shape = shapes[wedge.parameters.shape];
-        const cellCount = shape.numRows * shape.numCols;
-        parameters.num_images = cellCount;
-      }
-    }
     return (
       <tr>
         <td><a>{parameters.osc_start.toFixed(2)}</a></td>
