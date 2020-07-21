@@ -145,7 +145,7 @@ class Characterisation extends React.Component {
                 <SelectField
                   propName="detector_mode"
                   label="Detector mode"
-                  list={['0', 'C18', 'C2']}
+                  list={['0', 'C18', 'C12', 'C2']}
                 />
                 <InputField propName="overlap" label="Overlap" />
               </FieldsRow>
