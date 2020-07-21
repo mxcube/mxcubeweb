@@ -4,9 +4,10 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+import time
 
 # We are patching queue_entry.mount_sample at the end of this file.
-import queue_entry
+#import queue_entry
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
@@ -14,9 +15,8 @@ from mxcube3 import blcontrol
 from . import limsutils
 from . import qutils
 
-
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
-
+from HardwareRepository.HardwareObjects import queue_entry
 
 def init_signals():
     from mxcube3.routes import signals
@@ -194,30 +194,40 @@ def get_sample_to_be_mounted():
     return mxcube.SAMPLE_TO_BE_MOUNTED
 
 
-def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_result):
+def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
 
+    blcontrol.beamline.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")
     log = logging.getLogger("user_level_log")
 
     loc = data_model.location
+    holder_length = data_model.holder_length
+
+    robot_action_dict = {
+        "actionType": "LOAD",
+        "containerLocation": loc[1],
+        "dewarLocation": loc[0],
+        "sampleBarcode": data_model.code,
+        "sampleId": data_model.lims_id,
+        "sessionId": blcontrol.beamline.session.session_id,
+        "startTime": time.strftime("%Y-%m-%d %H:%M:%S"),
+    }
 
     # This is a possible solution how to deal with two devices that
     # can move sample on beam (sample changer, plate holder, in future
     # also harvester)
     # TODO make sample_Changer_one, sample_changer_two
-    if beamline.diffractometer.in_plate_mode():
-        sample_mount_device = beamline.plate_manipulator
+    if blcontrol.beamline.diffractometer.in_plate_mode():
+        sample_mount_device = blcontrol.beamline.plate_manipulator
     else:
-        sample_mount_device = beamline.sample_changer
+        sample_mount_device = blcontrol.beamline.sample_changer
 
     if (
         sample_mount_device.get_loaded_sample()
         and sample_mount_device.get_loaded_sample().get_address() == data_model.loc_str
     ):
         return
-
-    beamline.sample_view.clear_all()
 
     if hasattr(sample_mount_device, "__TYPE__"):
         if sample_mount_device.__TYPE__ in ["Marvin", "CATS"]:
@@ -239,6 +249,15 @@ def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_resul
                     "Sample changer could not load sample", ""
                 )
 
+    robot_action_dict["endTime"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    if sample_mount_device.has_loaded_sample():
+        robot_action_dict["status"] = "SUCCESS"
+    else:
+        robot_action_dict["message"] = "Sample was not loaded"
+        robot_action_dict["status"] = "ERROR"
+
+    blcontrol.beamline.lims.store_robot_action(robot_action_dict)            
+
     if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
         logging.getLogger("user_level_log").info("Sample not loaded")
@@ -246,11 +265,12 @@ def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_resul
     else:
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
-        dm = beamline.diffractometer
+        dm = blcontrol.beamline.diffractometer
         if dm is not None:
             try:
                 dm.connect("centringAccepted", centring_done_cb)
                 centring_method = mxcube.CENTRING_METHOD
+                
                 if centring_method == CENTRING_METHOD.MANUAL:
                     msg = "Manual centring used, waiting for" + " user to center sample"
                     log.warning(msg)
@@ -311,7 +331,7 @@ def mount_sample_clean_up(sample):
         current_queue = qutils.queue_to_dict()
 
         set_sample_to_be_mounted(sample["sampleID"])
-
+        
         if sample["location"] != "Manual":
             if not sc.get_loaded_sample():
                 res = sc.load(sample["sampleID"], wait=True)
