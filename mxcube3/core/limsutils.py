@@ -9,6 +9,7 @@ import logging
 import copy
 import os
 import io
+import math
 from scandir import scandir
 
 from HardwareRepository.HardwareObjects import queue_model_objects as qmo
@@ -454,7 +455,7 @@ def synch_with_lims(proposal_id):
                 "FlexHCD",
                 "RoboDiff",
             ]:
-                cell = int(round((basket + 0.5) / 3.0))
+                cell = int(math.ceil((basket) / 3.0))
                 puck = basket - 3 * (cell - 1)
                 sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
 
