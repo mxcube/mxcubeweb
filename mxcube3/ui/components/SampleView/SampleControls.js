@@ -42,11 +42,15 @@ export default class SampleControls extends React.Component {
 
   toggleDrawGrid() {
     // Cancel click centering before draw grid is started
-    if (this.props.clickCentring) {
-      this.props.sampleActions.sendAbortCentring();
-    }
+    if (this.props.current.sampleID === '') {
+      this.props.generalActions.showErrorPanel(true, 'There is no sample mounted');
+    } else {
+      if (this.props.clickCentring) {
+        this.props.sampleActions.sendAbortCentring();
+      }
 
-    this.props.sampleActions.toggleDrawGrid();
+      this.props.sampleActions.toggleDrawGrid();
+    }
   }
 
   doTakeSnapshot() {
