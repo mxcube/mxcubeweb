@@ -10,6 +10,7 @@ import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
+import * as GeneralActions from '../actions/general';
 import { updateTask } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -105,6 +106,7 @@ class SampleViewContainer extends Component {
                 clickCentring={this.props.sampleViewState.clickCentring}
               />
               <SampleImage
+                generalActions={this.props.generalActions}
                 sampleActions={this.props.sampleViewActions}
                 {...this.props.sampleViewState}
                 motors={this.props.motors}
@@ -161,7 +163,8 @@ function mapDispatchToProps(dispatch) {
   return {
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     updateTask: bindActionCreators(updateTask, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch)
+    showForm: bindActionCreators(showTaskForm, dispatch),
+    generalActions: bindActionCreators(GeneralActions, dispatch),
   };
 }
 
