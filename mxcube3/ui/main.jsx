@@ -24,6 +24,8 @@ import Main from './components/Main';
 import rootReducer from './reducers';
 import { serverIO } from './serverIO';
 import { getLoginInfo, startSession } from './actions/login';
+import logo from './img/mxcube_logo20.png';
+import loadingAnimation from './img/loading-animation.gif';
 
 import 'font-awesome-webpack-4';
 
@@ -77,7 +79,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { initialized: true };
+    this.state = { initialized: false };
   }
 
   componentWillMount() {
@@ -90,17 +92,28 @@ export default class App extends React.Component {
       },
       () => {
         /* eslint-disable react/no-set-state */
-        this.setState({ initialized: true });
+        // this.setState({ initialized: true });
         /* eslint-enable react/no-set-state */
       });
 
     serverIO.connectStateSocket(persistor);
+    serverIO.connectNetworkSocket(() => {
+      /* eslint-disable react/no-set-state */
+      this.setState({ initialized: true });
+      /* eslint-enable react/no-set-state */
+    });
 
     crosstabSync(persistor);
   }
 
   render() {
-    if (!this.state.initialized) return <span>Loading...</span>;
+    if (!this.state.initialized) {
+      return (
+      <div id="loading">
+        <img className="logo" src={logo} role="presentation" />
+        <div><h3>Loading, please wait</h3> <img className="loader-init" src={loadingAnimation} role="presentation" /></div>
+      </div>);
+    }
 
     return (
       <Provider store={store}>

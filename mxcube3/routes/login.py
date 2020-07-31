@@ -3,6 +3,7 @@ import logging
 from flask import session, request, jsonify, make_response, redirect
 
 from mxcube3 import server
+from mxcube3 import socketio
 from mxcube3.core import loginutils
 
 
@@ -97,3 +98,16 @@ def loginInfo():
 def send_feedback():
     loginutils.send_feedback()
     return make_response("", 200)
+
+
+@socketio.on("connect", namespace="/network")
+def network_ws_connect():
+    msg = "Client with sid %s connected" % str(request.sid)
+    logging.getLogger("MX3.HWR").info(msg)
+
+
+@socketio.on("disconnect", namespace="/network")
+def network_ws_disconnect():
+    msg = "Client with sid %s disconnected" % str(request.sid)
+    logging.getLogger("MX3.HWR").info(msg)
+
