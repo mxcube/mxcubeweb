@@ -178,9 +178,9 @@ export function abort() {
   };
 }
 
-export function sendCommand(cmdparts) {
+export function sendCommand(cmdparts, args) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/send_command/${cmdparts}`, {
+    fetch(`mxcube/api/v0.1/sample_changer/send_command/${cmdparts}/${args}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',

@@ -153,13 +153,13 @@ def get_initial_state():
 
 
 @server.route(
-    "/mxcube/api/v0.1/sample_changer/send_command/<cmdparts>", methods=["GET"]
+    "/mxcube/api/v0.1/sample_changer/send_command/<cmdparts>/<args>", methods=["GET"]
 )
 @server.require_control
 @server.restrict
-def send_command(cmdparts):
+def send_command(cmdparts, args=None):
     try:
-        ret = blcontrol.beamline.sample_changer_maintenance.send_command(cmdparts)
+        ret = blcontrol.beamline.sample_changer_maintenance.send_command(cmdparts, args)
     except Exception as ex:
         msg = str(ex)
         msg = msg.replace("\n", " - ")
