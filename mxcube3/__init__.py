@@ -17,7 +17,7 @@ import gevent
 
 from optparse import OptionParser
 
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_socketio import SocketIO
 from flask_session import Session
 
@@ -161,5 +161,4 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     )
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
-    logging.getLogger("HWR").info(msg)
-    
+    logging.getLogger("MX3.HWR").info(msg)

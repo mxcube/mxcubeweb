@@ -691,7 +691,11 @@ export default class SampleImage extends React.Component {
 
       if (this.props.videoFormat === 'MPEG1' && canvas) {
         this.player = new jsmpeg.JSMpeg.Player(source, {
-          canvas, decodeFirstFrame: true, preserveDrawingBuffer: true });
+          canvas,
+          decodeFirstFrame: false,
+          preserveDrawingBuffer: true,
+          videoBufferSize: 10000000 * 1024
+        });
         this.player.play();
       }
     }
@@ -817,6 +821,7 @@ export default class SampleImage extends React.Component {
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
+              generalActions={this.props.generalActions}
               {...this.props}
               canvas={ this.canvas }
               imageRatio={ this.props.imageRatio }

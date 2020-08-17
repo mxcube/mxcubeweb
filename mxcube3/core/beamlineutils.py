@@ -37,11 +37,11 @@ def init_signals():
         if actions is not None:
             cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
             for cmd in cmds:
-                cmd.connectSignal(
+                cmd.connect(
                     "commandBeginWaitReply", signals.beamline_action_start
                 )
-                cmd.connectSignal("commandReplyArrived", signals.beamline_action_done)
-                cmd.connectSignal("commandFailed", signals.beamline_action_failed)
+                cmd.connect("commandReplyArrived", signals.beamline_action_done)
+                cmd.connect("commandFailed", signals.beamline_action_failed)
         else:
             logging.getLogger("MX3.HWR").error(
                 "beamline_actions hardware object is not defined"
@@ -201,7 +201,7 @@ def beamline_get_all_attributes():
         actions.append(
             {
                 "name": cmd.name(),
-                "username": cmd.userName(),
+                "username": cmd.name(),
                 "state": READY,
                 "arguments": args,
                 "argument_type": cmd.argument_type,
@@ -264,7 +264,7 @@ def beamline_run_action(name, params):
             try:
                 cmd.emit("commandBeginWaitReply", name)
                 logging.getLogger("user_level_log").info(
-                    "Starting %s(%s)", cmd.userName(), ", ".join(map(str, params))
+                    "Starting %s(%s)", cmd.name(), ", ".join(map(str, params))
                 )
                 cmd(*params)
             except Exception:

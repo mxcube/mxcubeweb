@@ -425,7 +425,7 @@ export function sendStartClickCentring() {
         dispatch(videoMessageOverlay(true, msg));
       });
     } else {
-      dispatch(showErrorPanel(true, 'There is not a sample mounted! Cannot center.'));
+      dispatch(showErrorPanel(true, 'There is no sample mounted, cannot center.'));
     }};
 }
 

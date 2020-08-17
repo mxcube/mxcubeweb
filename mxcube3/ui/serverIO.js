@@ -65,6 +65,7 @@ import { CLICK_CENTRING } from './constants';
 
 class ServerIO {
   constructor() {
+    this.networkSocket = null;
     this.hwrSocket = null;
     this.loggingSocket = null;
     this.uiStateSocket = null;
@@ -85,6 +86,19 @@ class ServerIO {
         this.uiStateSocket.emit('ui_state_getkeys', null, (value) => { cb(false, value); });
       }
     };
+  }
+
+  connectNetworkSocket(cb) {
+    this.networkSocket = io.connect(`//${document.domain}:${location.port}/network`);
+    this.networkSocket.on('connect', () => {
+      cb(true);
+      this.connected = true;
+    });
+
+    this.networkSocket.on('disconnect', () => {
+      cb(false);
+      this.connected = false;
+    });
   }
 
   connectStateSocket(statePersistor) {
