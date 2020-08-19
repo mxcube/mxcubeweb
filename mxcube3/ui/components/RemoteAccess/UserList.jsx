@@ -35,13 +35,16 @@ class UserList extends React.Component {
 
   render() {
     return (
-      <Panel header="Users">
-        <div className="col-xs-12">
-          <div className="col-xs-4"><b>Name</b></div>
-          <div className="col-xs-4"><b>Host</b></div>
-          <div className="col-xs-4"><span>&nbsp;</span></div>
-          {this.getObservers()}
-        </div>
+      <Panel>
+        <Panel.Heading>Users</Panel.Heading>
+	<Panel.Body>
+          <div className="col-xs-12">
+            <div className="col-xs-4"><b>Name</b></div>
+            <div className="col-xs-4"><b>Host</b></div>
+            <div className="col-xs-4"><span>&nbsp;</span></div>
+            {this.getObservers()}
+          </div>
+	</Panel.Body>
       </Panel>
     );
   }
