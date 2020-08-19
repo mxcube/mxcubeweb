@@ -37,7 +37,7 @@ export function busyStateAction(name) {
 }
 
 export function sendGetAllAttributes() {
-  const url = 'mxcube/api/v0.1/beamline';
+  const url = 'mxcube/api/v0.1/beamline/';
 
   return (dispatch) => {
     fetch(url, {
