@@ -35,7 +35,7 @@ export default class MXNavbar extends React.Component {
         </Navbar.Header>
         <Nav style={{ marginLeft: '20em' }}>
           <LinkContainer to="/samplegrid">
-            <NavItem eventKey={1}>Sample Overview</NavItem>
+            <NavItem eventKey={1}>Samples</NavItem>
           </LinkContainer>
           <LinkContainer to="/datacollection">
             <NavItem eventKey={2}>Data collection</NavItem>
