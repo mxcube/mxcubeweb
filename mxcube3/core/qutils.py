@@ -1213,6 +1213,7 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     :param dict task_data: Dictionary with new parameters
     """
     params = task_data["parameters"]
+
     ftype = blcontrol.beamline.energy_scan.getProperty("file_suffix", "raw").strip()
 
     model.path_template.set_from_dict(params)

@@ -288,24 +288,27 @@ Abort
     }
 
     return (
-      <Panel header="Contents">
-        <Button bsStyle="default" onClick={this.props.refresh}>
+      <Panel>
+        <Panel.Heading>Contents</Panel.Heading>
+        <Panel.Body>
+          <Button bsStyle="default" onClick={this.props.refresh}>
           <Glyphicon glyph="refresh" />
-          {' '}
-Refresh
-        </Button>
-        <span style={{ marginLeft: '1em' }} />
-        <Button bsStyle="default" onClick={this.scan}>
-          <Glyphicon glyph="qrcode" />
-          {' '}
-Scan all containers
-        </Button>
-        <span style={{ marginLeft: '1em' }}>{abortButton}</span>
-        {current}
-        <div style={{ marginBottom: '1em' }} />
-        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          {nodes}
-        </div>
+            {' '}
+            Refresh
+          </Button>
+          <span style={{ marginLeft: '1em' }} />
+          <Button bsStyle="default" onClick={this.scan}>
+            <Glyphicon glyph="qrcode" />
+            {' '}
+            Scan all containers
+          </Button>
+          <span style={{ marginLeft: '1em' }}>{abortButton}</span>
+          {current}
+          <div style={{ marginBottom: '1em' }} />
+          <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+            {nodes}
+          </div>
+        </Panel.Body>
       </Panel>
     );
   }

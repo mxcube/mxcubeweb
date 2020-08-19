@@ -24,7 +24,9 @@ export default class SampleChangerState extends React.Component {
     const title = `Sample changer (${this.props.state})`;
 
     return (
-      <Panel style={{ marginTop: '0.5em' }} header={title} bsStyle={titleBackground} />
+      <Panel style={{ marginTop: '0.5em' }} bsStyle={titleBackground}>
+        <Panel.Heading>{title}</Panel.Heading>
+      </Panel>
     );
   }
 }

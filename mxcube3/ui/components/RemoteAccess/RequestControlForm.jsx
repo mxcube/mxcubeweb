@@ -67,24 +67,28 @@ class RequestControlForm extends React.Component {
 
   render() {
     return (
-      <Panel header="Request control">
-        <Form>
-          <FormGroup>
-            <ControlLabel>Name</ControlLabel>
-            <FormControl
-              inputRef={(ref) => {this.name = ref; }}
-              type="text"
-              defaultValue={this.getName()}
-            />
-          </FormGroup>
-          <FormGroup>
-            <ControlLabel>Message</ControlLabel>
-            <FormControl
-              inputRef={(ref) => {this.message = ref;}}
-              componentClass="textarea"
-              defaultValue="Please give me control"
-              rows="3"
-            />
+      <Panel>
+        <Panel.Heading>
+          Request control
+	</Panel.Heading>
+        <Panel.Body>
+          <Form>
+            <FormGroup>
+              <ControlLabel>Name</ControlLabel>
+              <FormControl
+                inputRef={(ref) => {this.name = ref; }}
+                type="text"
+x                defaultValue={this.getName()}
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>Message</ControlLabel>
+              <FormControl
+                inputRef={(ref) => {this.message = ref;}}
+                componentClass="textarea"
+                defaultValue="Please give me control"
+                rows="3"
+              />
             </FormGroup>
             <Button
               bsStyle="primary"
@@ -93,7 +97,8 @@ class RequestControlForm extends React.Component {
               Ask for control
             </Button>
             {this.getTakeControlOption()}
-        </Form>
+          </Form>
+        </Panel.Body>	  
       </Panel>);
   }
 }

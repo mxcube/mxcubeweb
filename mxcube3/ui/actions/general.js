@@ -105,7 +105,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const beamlineSetup = fetch('mxcube/api/v0.1/beamline', {
+    const beamlineSetup = fetch('mxcube/api/v0.1/beamline/', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -129,7 +129,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const detectorInfo = fetch('mxcube/api/v0.1/detector', {
+    const detectorInfo = fetch('mxcube/api/v0.1/detector/', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -185,7 +185,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const remoteAccess = fetch('mxcube/api/v0.1/ra', {
+    const remoteAccess = fetch('mxcube/api/v0.1/ra/', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -193,7 +193,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const workflow = fetch('mxcube/api/v0.1/workflow', {
+    const workflow = fetch('mxcube/api/v0.1/workflow/', {
       method: 'GET',
       credentials: 'include',
       headers: {
