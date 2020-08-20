@@ -112,7 +112,7 @@ def move_to_centred_position(point_id):
 
 
 @server.route("/mxcube/api/v0.1/sampleview/shapes", methods=["GET"])
-@server.restrict
+#@server.restrict
 def get_shapes():
     """
     Retrieve all the stored centred positions.
