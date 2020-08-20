@@ -6,10 +6,6 @@ import '../context-menu-style.css';
 /* eslint-disable react/no-multi-comp */
 
 export class SampleChangerActionButton extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     let disabled;
 
@@ -36,7 +32,7 @@ export class SampleChangerActionGroup extends React.Component {
     return (
       <Panel>
         <Panel.Heading>{this.props.name}</Panel.Heading>
-	<Panel.Body>
+        <Panel.Body>
           <ButtonGroup>{this.props.buttons}</ButtonGroup>
         </Panel.Body>
       </Panel>

@@ -70,7 +70,7 @@ class RequestControlForm extends React.Component {
       <Panel>
         <Panel.Heading>
           Request control
-	</Panel.Heading>
+        </Panel.Heading>
         <Panel.Body>
           <Form>
             <FormGroup>
@@ -78,7 +78,7 @@ class RequestControlForm extends React.Component {
               <FormControl
                 inputRef={(ref) => {this.name = ref; }}
                 type="text"
-x                defaultValue={this.getName()}
+                defaultValue={this.getName()}
               />
             </FormGroup>
             <FormGroup>
@@ -98,7 +98,7 @@ x                defaultValue={this.getName()}
             </Button>
             {this.getTakeControlOption()}
           </Form>
-        </Panel.Body>	  
+        </Panel.Body>
       </Panel>);
   }
 }

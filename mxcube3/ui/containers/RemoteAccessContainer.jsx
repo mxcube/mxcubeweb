@@ -13,10 +13,10 @@ export class RemoteAccessContainer extends React.Component {
   getRAOptions() {
     let content = (<div className="col-xs-4">
                      <Panel>
-		       <Panel.Heading>
-		         RA Options
-		       </Panel.Heading>
-		       <Panel.Body>
+                       <Panel.Heading>
+                         RA Options
+                       </Panel.Heading>
+                       <Panel.Body>
                          <Checkbox
                            onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
                            defaultChecked={this.props.remoteAccess.allowRemote}
