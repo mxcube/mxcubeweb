@@ -17,21 +17,18 @@ export default class MXNavbar extends React.Component {
 
   render() {
     const raStyle = (this.props.remoteAccess.master ? { color: 'white' } : {});
-    const proposal = this.props.userInfo.proposalList ?
-      this.props.userInfo.proposalList.find(this.findProposal) : '';
-    const propInfo = (this.props.loggedIn && this.props.selectedProposal ?
-      `Proposal: ${proposal.Proposal.code.toUpperCase()}${proposal.Proposal.number}` : '');
-
     const numObservers = this.props.remoteAccess.observers.length;
 
-    document.title = `MxCuBE-3 ${propInfo}`;
+    document.title = `MxCuBE-3 Proposal: ${this.props.selectedProposal}`;
 
     return (
       <Navbar inverse fixedTop fluid>
         <Navbar.Header>
-          <Navbar.Brand>
-            MXCuBE 3
-          </Navbar.Brand>
+          <LinkContainer to="/remoteaccess">
+            <Navbar.Brand>
+              MXCuBE3 <span className="brand-subtitle">{`(${this.props.selectedProposal})`}</span>
+            </Navbar.Brand>
+          </LinkContainer>
         </Navbar.Header>
         <Nav style={{ marginLeft: '20em' }}>
           <LinkContainer to="/samplegrid">
@@ -55,9 +52,9 @@ export default class MXNavbar extends React.Component {
           </LinkContainer>
           <LinkContainer to="/remoteaccess">
             <NavItem eventKey={6}>
-              <span style={ raStyle } className="fa fa-lg fa-universal-access">
+              <span style={ raStyle } className="fa fa-lg fa-globe">
                 {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
-              </span> RA
+              </span> Remote
             </NavItem>
           </LinkContainer>
           <NavItem eventKey={7} onClick={this.props.signOut}>
