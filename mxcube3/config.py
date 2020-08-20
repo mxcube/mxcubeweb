@@ -8,6 +8,7 @@ class Config:
     SESSION_KEY_PREFIX = "mxcube:session:"
     DEBUG: False
     STREAMED_VIDEO: True
+    ALLOWED_CORS_ORIGINS = "*"
 
     def __init__(self, fpath=None):
         if not fpath:
