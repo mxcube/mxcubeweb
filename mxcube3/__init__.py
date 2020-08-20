@@ -109,13 +109,15 @@ t0 = time.time()
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 server = Flask(__name__, static_url_path="", template_folder=template_dir)
 
-server.config.from_object(Config(cmdline_options.config_file))
+cfg = Config(cmdline_options.config_file)
+
+server.config.from_object(cfg)
 server.register_error_handler(Exception, exception_handler)
 
 _session = Session()
 _session.init_app(server)
 
-socketio = SocketIO(manage_session=False)
+socketio = SocketIO(manage_session=False, cors_allowed_origins=cfg.ALLOWED_CORS_ORIGINS)
 socketio.init_app(server)
 
 # the following test prevents Flask from initializing twice

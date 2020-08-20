@@ -4,3 +4,6 @@ server:
   SESSION_KEY_PREFIX: "mxcube:session:"
   DEBUG: False
   STREAMED_VIDEO: True
+
+  ALLOWED_CORS_ORIGINS:
+    - "https://id231.mxcube3.esrf.fr"
