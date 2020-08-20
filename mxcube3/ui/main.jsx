@@ -39,21 +39,6 @@ if (module.hot) {
   });
 }
 
-function requireAuth(nextState, replace, callback) {
-  let state = store.getState();
-  store.dispatch(getLoginInfo()).then(() => {
-    state = store.getState();
-    if (!state.login.loggedIn) {
-      replace('/login');
-    } else {
-      serverIO.listen(store);
-      store.dispatch(startSession());
-    }
-    return callback();
-  });
-}
-
-
 class ServerStorage {
   setItem(key, value) {
     if (store.getState().remoteAccess.master) {
@@ -74,6 +59,35 @@ class ServerStorage {
   }
 }
 
+function requireAuth(nextState, replace, callback) {
+  let state = store.getState();
+  store.dispatch(getLoginInfo()).then(() => {
+    state = store.getState();
+    if (!state.login.loggedIn) {
+      replace('/login');
+    } else {
+      const persistor = persistStore(store,
+        {
+          blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+            'form', 'login', 'general', 'logger', 'shapes',
+            'sampleView', 'taskResult', 'sampleChangerMaintenance'],
+          storage: new ServerStorage()
+        },
+        () => {
+          /* eslint-disable react/no-set-state */
+          // this.setState({ initialized: true });
+          /* eslint-enable react/no-set-state */
+        });
+
+      serverIO.connectStateSocket(persistor);
+      crosstabSync(persistor);
+
+      serverIO.listen(store);
+      store.dispatch(startSession());
+    }
+    return callback();
+  });
+}
 
 export default class App extends React.Component {
   constructor(props) {
@@ -83,27 +97,11 @@ export default class App extends React.Component {
   }
 
   componentWillMount() {
-    const persistor = persistStore(store,
-      {
-        blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-          'form', 'login', 'general', 'logger', 'shapes',
-          'sampleView', 'taskResult', 'sampleChangerMaintenance'],
-        storage: new ServerStorage()
-      },
-      () => {
-        /* eslint-disable react/no-set-state */
-        // this.setState({ initialized: true });
-        /* eslint-enable react/no-set-state */
-      });
-
-    serverIO.connectStateSocket(persistor);
     serverIO.connectNetworkSocket(() => {
       /* eslint-disable react/no-set-state */
       this.setState({ initialized: true });
       /* eslint-enable react/no-set-state */
     });
-
-    crosstabSync(persistor);
   }
 
   render() {
