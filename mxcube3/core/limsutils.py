@@ -339,6 +339,10 @@ def select_proposal(proposal):
             "sessionId"
         )
 
+        blcontrol.beamline.session.proposal_id = proposal_info.get("Session")[0].get(
+            "proposalId"
+        )
+
         session["proposal"] = proposal_info
 
         if hasattr(blcontrol.beamline.session, "prepare_directories"):
@@ -431,7 +435,9 @@ def get_quality_indicator_plot(dc_id):
     return "qind", data
 
 
-def synch_with_lims(proposal_id):
+def synch_with_lims():
+    proposal_id = blcontrol.beamline.session.proposal_id
+
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
     lims_samples = blcontrol.beamline.lims.get_samples(proposal_id, None)
