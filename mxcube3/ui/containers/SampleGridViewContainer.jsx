@@ -231,18 +231,10 @@ class SampleGridViewContainer extends React.Component {
    * @property {Object} loginData
    */
   syncSamples() {
-    let proposalId;
-
-    try {
-      proposalId = this.props.loginData.selectedProposalID;
-    } catch (e) {
-      return;
-    }
-
     if (Object.keys(this.props.sampleList).length === 0) {
-      this.props.getSamples().then(() => { this.props.syncSamples(proposalId); });
+      this.props.getSamples().then(() => { this.props.syncSamples(); });
     } else {
-      this.props.syncSamples(proposalId);
+      this.props.syncSamples();
     }
   }
 
@@ -720,7 +712,7 @@ function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleList()),
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
-    syncSamples: (proposalId) => dispatch(sendSyncSamples(proposalId)),
+    syncSamples: () => dispatch(sendSyncSamples()),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),

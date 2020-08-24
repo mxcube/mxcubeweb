@@ -97,10 +97,10 @@ export function sendGetSampleList() {
 }
 
 
-export function sendSyncSamples(proposalId) {
+export function sendSyncSamples() {
   return function (dispatch) {
     dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
-    fetch(`mxcube/api/v0.1/lims/samples/${proposalId}`, { credentials: 'include' })
+    fetch('mxcube/api/v0.1/lims/synch_samples', { credentials: 'include' })
       .then(response => response.json())
       .then((json) => {
         const { sampleList } = json;
