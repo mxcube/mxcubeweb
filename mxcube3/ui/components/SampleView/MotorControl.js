@@ -1,8 +1,11 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-
+// config exported by webpack at buildtime
+// eslint-disable-next-line import/no-unresolved
+import config from 'guiConfig';
 import MotorInput from '../MotorInput/MotorInput';
 import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
+import PhaseInput from './PhaseInput';
 
 import '../MotorInput/motor.css';
 
@@ -36,6 +39,17 @@ export default class MotorControl extends React.Component {
     const { save } = this.props;
     const { saveStep } = this.props;
     const { stop } = this.props;
+
+    const phaseControl = (
+      <div>
+        <p className="motor-name">Phase Control:</p>
+        <PhaseInput
+          phase={this.props.sampleViewState.currentPhase}
+          phaseList={this.props.sampleViewState.phaseList}
+          sendPhase={this.props.sampleViewActions.sendCurrentPhase}
+        />
+      </div>
+    );
 
     return (
       <div>
@@ -113,6 +127,9 @@ export default class MotorControl extends React.Component {
             stop={stop}
             disabled={this.props.motorsDisabled}
           />
+        </div>
+        <div className="col-sm-12">
+          {config.phaseControl ? phaseControl : null }
         </div>
       </div>
     );

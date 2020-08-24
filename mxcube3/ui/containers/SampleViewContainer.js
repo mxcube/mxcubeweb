@@ -3,10 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 // config exported by webpack at buildtime
 // eslint-disable-next-line import/no-unresolved
-import config from 'guiConfig';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
-import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
@@ -42,16 +40,6 @@ class SampleViewContainer extends Component {
         }
       }
     });
-    const phaseControl = (
-      <div>
-        <p className="motor-name">Phase Control:</p>
-        <PhaseInput
-          phase={this.props.sampleViewState.currentPhase}
-          phaseList={this.props.sampleViewState.phaseList}
-          sendPhase={this.props.sampleViewActions.sendCurrentPhase}
-        />
-      </div>
-    );
 
     const apertureControl = (
       <div>
@@ -77,7 +65,6 @@ class SampleViewContainer extends Component {
               className="col-xs-1"
               style={{ paddingRight: '5px', paddingLeft: '1.5em' }}
             >
-              {config.phaseControl ? phaseControl : null }
               {apertureControl}
               <MotorControl
                 save={sendMotorPosition}
@@ -87,6 +74,8 @@ class SampleViewContainer extends Component {
                                    || this.props.queueState === QUEUE_RUNNING}
                 steps={motorSteps}
                 stop={sendStopMotor}
+                sampleViewActions={this.props.sampleViewActions}
+                sampleViewState={this.props.sampleViewState}
               />
             </div>
             <div className="col-xs-7">
