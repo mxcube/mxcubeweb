@@ -1112,6 +1112,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params["sample_node_id"] = sample_model._node_id
     beamline_params["sample_lims_id"] = sample_model.lims_id
     beamline_params["beamline"] = blcontrol.beamline.session.endstation_name
+    beamline_params["shape"] = params["shape"]
 
     params_list = list(map(str, list(itertools.chain(*iter(beamline_params.items())))))
     params_list.insert(0, params["wfpath"])
