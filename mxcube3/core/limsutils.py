@@ -413,7 +413,7 @@ def get_dc_link(col_id):
 
 def get_dc_thumbnail(image_id):
     fname, data = blcontrol.beamline.lims.lims_rest.get_dc_thumbnail(image_id)
-    data = io.StringIO(data)
+    data = io.StringIO(data.decode())
     data.seek(0)
 
     return fname, data
@@ -421,7 +421,7 @@ def get_dc_thumbnail(image_id):
 
 def get_dc_image(image_id):
     fname, data = blcontrol.beamline.lims.lims_rest.get_dc_image(image_id)
-    data = io.StringIO(data)
+    data = io.StringIO(data.decode())
     data.seek(0)
 
     return fname, data
