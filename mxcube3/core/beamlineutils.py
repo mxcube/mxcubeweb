@@ -33,7 +33,6 @@ def init_signals():
     try:
 
         actions =  blcontrol.HWR.getHardwareObject("beamcmds")
-
         if actions is not None:
             cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
             for cmd in cmds:
@@ -41,6 +40,7 @@ def init_signals():
                     "commandBeginWaitReply", signals.beamline_action_start
                 )
                 cmd.connect("commandReplyArrived", signals.beamline_action_done)
+                cmd.connect("commandReady", signals.beamline_action_done)
                 cmd.connect("commandFailed", signals.beamline_action_failed)
         else:
             logging.getLogger("MX3.HWR").error(
