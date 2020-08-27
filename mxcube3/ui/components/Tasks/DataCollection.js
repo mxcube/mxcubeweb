@@ -47,6 +47,7 @@ class DataCollection extends React.Component {
       type: 'DataCollection',
       label: 'Data Collection',
       helical: false,
+      mesh: false,
       shape: this.props.pointID
     };
 
