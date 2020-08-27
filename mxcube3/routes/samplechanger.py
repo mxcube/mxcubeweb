@@ -97,7 +97,7 @@ def mount_sample():
 @server.restrict
 def unmount_sample():
     try:
-        resp = jsonify(scutils.unmount_sample(request.get_json()))
+        resp = jsonify(scutils.unmount_sample(request.get_json()["sample"]))
     except Exception as ex:
         return (
             "Cannot unload sample",
