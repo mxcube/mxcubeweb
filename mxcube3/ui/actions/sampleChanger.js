@@ -131,10 +131,10 @@ export function loadSample(sampleData, successCb = null) {
   };
 }
 
-export function unloadSample(location) {
+export function unloadSample(sample) {
   let url = '';
 
-  if (location) {
+  if (sample) {
     url = 'mxcube/api/v0.1/sample_changer/unmount';
   } else {
     url = 'mxcube/api/v0.1/sample_changer/unmount_current';
@@ -149,7 +149,7 @@ export function unloadSample(location) {
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ location, sampleID: location })
+      body: JSON.stringify({ sample })
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
