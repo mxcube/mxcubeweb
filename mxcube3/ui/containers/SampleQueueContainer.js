@@ -90,7 +90,6 @@ class SampleQueueContainer extends React.Component {
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
-      sendUnmountSample,
       changeTaskOrderAction,
       deleteTask,
       addTask,
@@ -111,7 +110,8 @@ class SampleQueueContainer extends React.Component {
       sendPrepareForNewSample
     } = this.props.beamlineActions;
     const {
-      loadSample
+      loadSample,
+      unloadSample
     } = this.props.sampleChangerActions;
 
     // go through the queue, check if sample has been collected or not
@@ -162,7 +162,7 @@ class SampleQueueContainer extends React.Component {
           centringMethod={centringMethod}
           todoList={todo}
           sampleList={sampleList}
-          sendUnmountSample={sendUnmountSample}
+          sendUnmountSample={unloadSample}
         />
         <div className="m-tree queue-body">
           <Nav
@@ -197,7 +197,7 @@ class SampleQueueContainer extends React.Component {
               unpause={sendUnpauseQueue}
               stop={sendStopQueue}
               showForm={showForm}
-              unmount={sendUnmountSample}
+              unmount={unloadSample}
               queueStatus={queueStatus}
               rootPath={rootPath}
               collapseItem={collapseItem}
