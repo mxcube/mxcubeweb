@@ -413,24 +413,21 @@ def get_dc_link(col_id):
 
 def get_dc_thumbnail(image_id):
     fname, data = blcontrol.beamline.lims.lims_rest.get_dc_thumbnail(image_id)
-    data = io.StringIO(data.decode())
-    data.seek(0)
+    data = io.BytesIO(data)
 
     return fname, data
 
 
 def get_dc_image(image_id):
     fname, data = blcontrol.beamline.lims.lims_rest.get_dc_image(image_id)
-    data = io.StringIO(data.decode())
-    data.seek(0)
+    data = io.BytesIO(data)
 
     return fname, data
 
 
 def get_quality_indicator_plot(dc_id):
     data = blcontrol.beamline.lims.lims_rest.get_quality_indicator_plot(dc_id)
-    data = io.StringIO(data)
-    data.seek(0)
+    data = io.BytesIO(data)
 
     return "qind", data
 
