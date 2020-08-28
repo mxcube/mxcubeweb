@@ -225,13 +225,19 @@ class SampleQueueContainer extends React.Component {
               showList={showList}
               sendPrepareForNewSample={sendPrepareForNewSample}
             />
-            <UserMessage
-              messages={this.props.userMessages}
-              domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
-              placement="left"
-              target="queue"
-            />
-        </div>
+            <div className="queue-messages">
+              <div className="queue-messages-title">
+                <span style={{marginRight: '7px'}} className="fa fa-lg fa-info-circle" />
+                 Log messages:
+              </div>
+              <UserMessage
+                messages={this.props.userMessages}
+                domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
+                placement="left"
+                target="queue"
+              />
+            </div>
+          </div>
       </div>
     );
   }

@@ -18,11 +18,6 @@ export default class UserMessage extends React.Component {
       include = false;
     }
 
-    // Message have expired, duration time passed, skip !
-    if (message.exp < new Date().getTime()) {
-      include = false;
-    }
-
     // Message is not for this component, skip !
     if (this.props.target && this.props.target !== message.target) {
       include = false;
@@ -79,10 +74,6 @@ export default class UserMessage extends React.Component {
       const messageClass = `message message${message.level}`;
       let tid = undefined;
 
-      if (message.duration) {
-        tid = setTimeout(this.hideMessage, message.duration, message.id);
-      }
-
       const clickHandler = this.messageOnClick.bind(this, message.id, tid);
 
       // Message is not for this component or have have expired, skip !
@@ -92,12 +83,14 @@ export default class UserMessage extends React.Component {
 
       messages.push((
         <div key={message.id} ref={message.id} className={messageClass}>
+          { message.level === 'INFO' ?
+            (<span className="fa fa-lg fa-check-circle" />)
+	    :
+	    (<span className="fa fa-lg fa-exclamation-circle" />)
+	  }
           <span className="messageText">
             {message.message}
           </span>
-          { message.level !== 'INFO' ?
-            (<span className="closebtn" onClick={clickHandler}>&times;</span>) : null
-          }
         </div>
       ));
     }
@@ -111,25 +104,17 @@ export default class UserMessage extends React.Component {
     }
 
     return (
-      <Overlay
-        ref="overlay"
-        show={show}
-        container={this}
-        placement={this.props.placement}
-        target={this.props.domTarget}
+      <div id="usermessages"
+        style={ {
+          position: 'flex',
+	  justifyContent: 'flex-end',
+	  flexDirection: 'column-reverse',
+          backgroundColor: 'rgba(255, 255, 255, 0)',
+          display: 'flex',
+          zIndex: 1000 } }
       >
-        <div id="usermessages"
-          style={ {
-            minWidth: '500px',
-            maxWidth: '500px',
-            backgroundColor: 'rgba(255, 255, 255, 0)',
-            display: 'block',
-            position: 'absolute',
-            zIndex: 1000 } }
-        >
-          {messages}
-        </div>
-      </Overlay>
+        {messages}
+      </div>
     );
   }
 }
