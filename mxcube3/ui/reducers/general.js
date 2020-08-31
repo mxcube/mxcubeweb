@@ -51,9 +51,7 @@ export default (state = initialState, action) => {
       }
 
       for (const message of state.userMessages) {
-        if (message.exp >= new Date().getTime()) {
-          userMessages.push(message);
-        }
+        userMessages.push(message);
       }
 
       userMessages.push({ ...action.message, id });
