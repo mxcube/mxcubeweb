@@ -18,6 +18,7 @@ import {
 } from './actions/beamline';
 import {
   setActionState,
+  addUserMessage,
   newPlot,
   plotData,
   plotEnd
@@ -39,7 +40,6 @@ import {
 } from './actions/queueGUI';
 import {
   setLoading,
-  addUserMessage,
   showConnectionLostDialog
 } from './actions/general';
 
@@ -124,13 +124,8 @@ class ServerIO {
     this.loggingSocket = io.connect(`//${document.domain}:${location.port}/logging`);
 
     this.loggingSocket.on('log_record', (record) => {
+      this.dispatch(addUserMessage(record));
       this.dispatch(addLogRecord(record));
-
-      if (record.logger === 'user_level_log') {
-        this.dispatch(addUserMessage(record, 'queue'));
-      } else {
-        this.dispatch(addUserMessage(record));
-      }
     });
 
     this.hwrSocket.on('ra_chat_message', (record) => {
