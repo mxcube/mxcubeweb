@@ -160,6 +160,7 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         workflow,
         detector,
         ra,
+        log
     )
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)

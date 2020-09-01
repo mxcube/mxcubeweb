@@ -1,6 +1,4 @@
 import React from 'react';
-import { Overlay } from 'react-bootstrap';
-
 import './style.css';
 
 export default class UserMessage extends React.Component {
@@ -19,7 +17,7 @@ export default class UserMessage extends React.Component {
     }
 
     // Message is not for this component, skip !
-    if (this.props.target && this.props.target !== message.target) {
+    if (this.props.target && this.props.target !== message.logger) {
       include = false;
     }
 
@@ -49,13 +47,8 @@ export default class UserMessage extends React.Component {
     }
   }
 
-  messageOnClick(mid, tid) {
+  messageOnClick(mid) {
     this.refs[mid].style.display = 'none';
-
-    if (tid) {
-      clearTimeout(tid);
-    }
-
     this._hideOverlay();
   }
 
@@ -71,10 +64,7 @@ export default class UserMessage extends React.Component {
     const messages = [];
 
     for (const message of this.props.messages) {
-      const messageClass = `message message${message.level}`;
-      let tid = undefined;
-
-      const clickHandler = this.messageOnClick.bind(this, message.id, tid);
+      const messageClass = `message message${message.severity}`;
 
       // Message is not for this component or have have expired, skip !
       if (this._exclude(message)) {
@@ -83,11 +73,11 @@ export default class UserMessage extends React.Component {
 
       messages.push((
         <div key={message.id} ref={message.id} className={messageClass}>
-          { message.level === 'INFO' ?
+          { message.severity === 'INFO' ?
             (<span className="fa fa-lg fa-check-circle" />)
-	    :
-	    (<span className="fa fa-lg fa-exclamation-circle" />)
-	  }
+            :
+            (<span className="fa fa-lg fa-exclamation-circle" />)
+          }
           <span className="messageText">
             {message.message}
           </span>
@@ -95,20 +85,12 @@ export default class UserMessage extends React.Component {
       ));
     }
 
-    let show = messages.length > 0;
-
-    // Handles the case when show is undefined, null or ''. We only want to
-    // explicitly hide if show is set to false.
-    if (this.props.show === false) {
-      show = false;
-    }
-
     return (
       <div id="usermessages"
         style={ {
           position: 'flex',
-	  justifyContent: 'flex-end',
-	  flexDirection: 'column-reverse',
+          justifyContent: 'flex-end',
+          flexDirection: 'column-reverse',
           backgroundColor: 'rgba(255, 255, 255, 0)',
           display: 'flex',
           zIndex: 1000 } }
