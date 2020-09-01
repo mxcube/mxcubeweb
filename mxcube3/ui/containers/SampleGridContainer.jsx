@@ -710,7 +710,7 @@ class SampleGridContainer extends React.Component {
 
 
   unmount() {
-    this.props.unloadSample(this.props.sampleChanger.loadedSample.address);
+    this.props.unloadSample();
   }
 
   taskContextMenuItems() {
