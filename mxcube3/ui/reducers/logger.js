@@ -13,6 +13,10 @@ export default (state = initialState, action) => {
     {
       return { ...state, activePage: action.page };
     }
+    case 'SET_INITIAL_STATE':
+    {
+      return { ...state, logRecords: [...action.data.logger] };
+    }
     default:
       return state;
   }

@@ -2,6 +2,13 @@ import fetch from 'isomorphic-fetch';
 import { RUNNING } from '../constants';
 import { checkStatus, parseJSON } from '../requests';
 
+
+export function addUserMessage(data) {
+  return {
+    type: 'ADD_USER_MESSAGE', data
+  };
+}
+
 export function setActionState(cmdName, state, data) {
   return {
     type: 'ACTION_SET_STATE', cmdName, state, data

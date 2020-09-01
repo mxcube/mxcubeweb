@@ -16,9 +16,9 @@ def connect():
     pass
 
 
-class MX3LoggingHandler(logging.Handler):
+class MX3LoggingHandler(logging.handlers.BufferingHandler):
     def __init__(self):
-        logging.Handler.__init__(self)
+        super().__init__(1000)
 
     def _record_to_json(self, record):
         if record.exc_info:
@@ -41,4 +41,7 @@ class MX3LoggingHandler(logging.Handler):
     def emit(self, record):
         if record.name != "geventwebsocket.handler":
             record_dict = self._record_to_json(record)
+            super().emit(record_dict)
             socketio.emit("log_record", record_dict, namespace="/logging")
+        else:
+            super().emit(record)

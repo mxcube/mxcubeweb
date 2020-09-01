@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
@@ -33,7 +32,7 @@ function mapStateToProps(state) {
     rootPath: state.queue.rootPath,
     displayData: state.queueGUI.displayData,
     loading: state.queueGUI.loading,
-    userMessages: state.general.userMessages,
+    logRecords: state.logger.logRecords,
     plotsData: state.beamline.plotsData,
     plotsInfo: state.beamline.plotsInfo,
     selectedShapes: state.sampleview.selectedShapes,
@@ -227,14 +226,12 @@ class SampleQueueContainer extends React.Component {
             />
             <div className="queue-messages">
               <div className="queue-messages-title">
-                <span style={{marginRight: '7px'}} className="fa fa-lg fa-info-circle" />
+                <span style={{ marginRight: '7px' }} className="fa fa-lg fa-info-circle" />
                  Log messages:
               </div>
               <UserMessage
-                messages={this.props.userMessages}
-                domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
-                placement="left"
-                target="queue"
+                messages={this.props.logRecords}
+                target="user_level_log"
               />
             </div>
           </div>
