@@ -384,7 +384,7 @@ def unmount_sample_clean_up(sample):
         signals.sc_unload(sample["location"])
 
         if not sample["location"] == "Manual":
-            blcontrol.beamline.sample_changer.unload(sample["sampleID"], wait=False)
+            blcontrol.beamline.sample_changer.unload(sample["location"], wait=False)
         else:
             set_current_sample(None)
 
