@@ -1152,7 +1152,7 @@ class _BeamlineAdapter:
         return reduce(getattr, attr.split("."), obj)
 
     def wf_parameters_needed(self, params):
-        socketio.emit("workflowParametersDialog", params, namespace="/hwr")
+        socketio.emit("workflowParametersDialog", params, broadcast=True, namespace="/hwr")
 
     def get_object(self, name):
         return getattr(self, name)
