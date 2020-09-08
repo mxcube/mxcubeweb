@@ -387,6 +387,7 @@ def unmount_sample_clean_up(sample):
             blcontrol.beamline.sample_changer.unload(sample["location"], wait=False)
         else:
             set_current_sample(None)
+            signals.sc_load_ready(sample["location"])
 
         msg = "[SC] unmounted %s" % sample["location"]
         logging.getLogger("MX3.HWR").info(msg)
