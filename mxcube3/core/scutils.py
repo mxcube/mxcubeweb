@@ -256,7 +256,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         robot_action_dict["message"] = "Sample was not loaded"
         robot_action_dict["status"] = "ERROR"
 
-    blcontrol.beamline.lims.store_robot_action(robot_action_dict)            
+    blcontrol.beamline.lims.store_robot_action(robot_action_dict)
 
     if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
@@ -270,7 +270,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
             try:
                 dm.connect("centringAccepted", centring_done_cb)
                 centring_method = mxcube.CENTRING_METHOD
-                
+
                 if centring_method == CENTRING_METHOD.MANUAL:
                     msg = "Manual centring used, waiting for" + " user to center sample"
                     log.warning(msg)
@@ -331,7 +331,7 @@ def mount_sample_clean_up(sample):
         current_queue = qutils.queue_to_dict()
 
         set_sample_to_be_mounted(sample["sampleID"])
-        
+
         if sample["location"] != "Manual":
             if not sc.get_loaded_sample():
                 res = sc.load(sample["sampleID"], wait=True)
@@ -344,7 +344,7 @@ def mount_sample_clean_up(sample):
             if (
                 res
                 and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP
-                and blcontrol.beamline.diffractometer.in_kappa_mode()
+                and not blcontrol.beamline.diffractometer.in_plate_mode()
             ):
                 msg = "Starting autoloop centring ..."
                 logging.getLogger("MX3.HWR").info(msg)
@@ -396,10 +396,7 @@ def unmount_sample_clean_up(sample):
         raise
     else:
         blcontrol.beamline.queue_model.mounted_sample = ""
-        set_current_sample(None)
         blcontrol.beamline.sample_view.clear_all()
-    finally:
-        signals.sc_load_ready(sample["location"])
 
 
 def mount_sample(sample):
@@ -420,8 +417,7 @@ def unmount_sample(sample):
 
 
 def unmount_current():
-    blcontrol.beamline.sample_changer.unload(None, wait=True)
-    set_current_sample(None)
+    unmount_sample_clean_up(get_current_sample())
 
     return get_sc_contents()
 
