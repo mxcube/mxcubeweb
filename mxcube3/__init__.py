@@ -8,10 +8,12 @@ monkey.patch_all(thread=False)
 
 import mock
 import os
+import signal
 import logging
 import sys
 import time
 import traceback
+import atexit
 
 import gevent
 
@@ -104,6 +106,21 @@ def exception_handler(e):
     return err_msg + ": " + traceback.format_exc(), 409
 
 
+def kill_processes():
+    pid_list = []
+
+    with open("/tmp/mxcube.pid", "r") as f:
+        pid_list = f.read().strip()
+        pid_list = pid_list.split(" ")
+        pid_list.reverse()
+
+    with open("/tmp/mxcube.pid", "w") as f:
+        f.write("")
+
+    for pid in pid_list:
+        os.kill(int(pid), signal.SIGKILL)
+
+
 t0 = time.time()
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
@@ -124,6 +141,8 @@ socketio.init_app(server)
 # (because of the Reloader)
 
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    atexit.register(kill_processes)
+
     with open("/tmp/mxcube.pid", "w") as f:
         f.write(str(os.getpid()) + " ")
 
