@@ -43,11 +43,14 @@ export default (state = initialState, action) => {
         {
           current: { ...state.current, sampleID: action.sampleID, running: false },
         });
-    case 'CLEAR_CURRENT_SAMPLE':
+    case 'CLEAR_CURRENT_SAMPLE': {
+      const queue = state.queue.filter(value => value !== state.current.sampleID);
       return Object.assign({}, state,
         {
+          queue,
           current: { sampleID: null, collapsed: false, running: false },
         });
+    }
     case 'RUN_SAMPLE':
       return Object.assign({}, state, { current: { ...state.current, running: true } });
     case 'CHANGE_SAMPLE_ORDER':

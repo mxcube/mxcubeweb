@@ -177,6 +177,8 @@ def loaded_sample_changed(sample):
             {"address": address, "barcode": barcode},
             namespace="/hwr",
         )
+
+        sc_load_ready(address)
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
 
@@ -276,7 +278,7 @@ def update_task_result(entry):
 
     socketio.emit("update_task_lims_data", msg, namespace="/hwr")
 
-    
+
 def queue_execution_entry_started(entry, message):
     handle_auto_mount_next(entry)
 

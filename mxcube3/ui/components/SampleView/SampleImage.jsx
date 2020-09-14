@@ -694,7 +694,6 @@ export default class SampleImage extends React.Component {
           canvas,
           decodeFirstFrame: false,
           preserveDrawingBuffer: true,
-          videoBufferSize: 10000000 * 1024
         });
         this.player.play();
       }
