@@ -6,6 +6,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import datetime
 import os
 import sys
 import logging
@@ -169,7 +170,7 @@ def init_logging(log_file):
 
     if log_file:
         log_file_handler = TimedRotatingFileHandler(
-            log_file, when="midnight", backupCount=1
+            log_file, atTime=datetime.time(8, 0, 0), backupCount=7
         )
         os.chmod(log_file, 0o666)
         log_file_handler.setFormatter(log_formatter)
