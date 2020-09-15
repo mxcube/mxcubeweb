@@ -652,16 +652,15 @@ def beamline_action_start(name):
 
 
 def beamline_action_done(name, result):
-    if result:
+    try:
         msg = {"name": name, "state": READY, "data": result}
-        try:
-            socketio.emit("beamline_action", msg, namespace="/hwr")
-        except Exception:
-            logging.getLogger("HWR").exception(
-                "error sending beamline action message: %s", msg
-            )
-        else:
-            logging.getLogger("user_level_log").info("%s done.", name)
+        socketio.emit("beamline_action", msg, namespace="/hwr")
+    except Exception:
+        logging.getLogger("HWR").exception(
+            "error sending beamline action message: %s", msg
+        )
+    else:
+        logging.getLogger("user_level_log").info("%s done.", name)
 
 
 def beamline_action_failed(name):
