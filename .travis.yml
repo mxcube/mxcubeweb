@@ -1,14 +1,15 @@
 language: python
+
 python:
   - "3.7"
   - "3.8"
-node_js:
-  - "10"
 
 services:
   - redis-server
 
 install:
+  - nvm install 12
+  - nvm use 12
   - npm install
   - npm run build
   - pip install codecov
