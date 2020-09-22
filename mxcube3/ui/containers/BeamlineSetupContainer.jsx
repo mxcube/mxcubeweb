@@ -6,6 +6,7 @@ import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
+import DeviceState from '../components/DeviceState/DeviceState';
 import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
@@ -87,7 +88,7 @@ class BeamlineSetupContainer extends React.Component {
     for (const key in this.props.beamline.attributes) {
       if (this.props.beamline.attributes[key].type === 'DUOSTATE') {
         if (this.props.beamline.attributes[key].label === 'Beamstop') {
-          acts.push(<Col key={key} sm={2} className="pull-right">
+          acts.push(<Col key={key} className="pull-right">
                     <InOutSwitch
                       onText={ this.props.beamline.attributes[key].commands[0] }
                       offText={ this.props.beamline.attributes[key].commands[1] }
@@ -100,7 +101,7 @@ class BeamlineSetupContainer extends React.Component {
                     </Col>
           );
         } else {
-          acts.push(<Col key={key} sm={2} className="pull-right">
+          acts.push(<Col key={key} className="pull-right">
                     <InOutSwitch
                       onText={ this.props.beamline.attributes[key].commands[0] }
                       offText={ this.props.beamline.attributes[key].commands[1] }
@@ -266,8 +267,8 @@ class BeamlineSetupContainer extends React.Component {
               </tr>
             </Table>
             </Col>
-            <Col sm={5} smPush={1}>
-              <Col sm={2} className="pull-right">
+            <Col className="device-status-container" sm={5} smPush={1}>
+              <Col className="pull-right">
                 { this.props.beamline.attributes.machine_info ?
                   <MachInfo
                     info={this.props.beamline.attributes.machine_info.value}
@@ -277,13 +278,21 @@ class BeamlineSetupContainer extends React.Component {
                 }
               </Col>
               {this.createActuatorComponent()}
-              <Col sm={2} className="pull-right">
+              <Col className="pull-right">
                 <SampleChangerSwitch
                   labelText={ 'Sample Changer' }
                   data = { this.props.sampleChanger.state }
                   onSave={ this.props.sendCommand }
                 />
               </Col>
+              { this.props.beamline.attributes.detector ?
+                <Col className="pull-right">
+                  <DeviceState
+                    labelText={ 'Detector' }
+                    data = { this.props.beamline.attributes.detector.state.acq_satus }
+                  />
+                </Col> : null
+              }
             </Col>
           </Row>
         </Col>
