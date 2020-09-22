@@ -909,6 +909,37 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
     def state(self):
         return HardwareObjectState.READY.value
 
+    
+class DetectorHOAdapter(HOActuatorAdapterBase):
+    def __init__(self, ho, name=""):
+        """
+        Args:
+            (object): Hardware object.
+            (str): The name of the object.
+        """
+        super(DetectorHOAdapter, self).__init__(ho, name)
+        ho.connect("statusChanged", self._value_change)
+        self._precision = 1
+
+    def set(self, value):
+        pass
+
+    @utils.RateLimited(0.1)
+    def _value_change(self, *args, **kwargs):
+        self.value_change(self.get(), **kwargs)
+
+    def get(self):
+        return self.state()
+
+    def limits(self):
+        return []
+
+    def stop(self):
+        pass
+
+    def state(self):
+        return self._ho.status
+    
 
 class PhotonFluxHOAdapter(HOActuatorAdapterBase):
     def __init__(self, ho, name=""):
@@ -1106,6 +1137,7 @@ class _BeamlineAdapter:
         "capillary": ("diffractometer.capillary", DuoStateHOAdapter),
         "beamstop": ("diffractometer.beamstop", DuoStateHOAdapter),
         "detector_distance": ("detector.distance", DetectorDistanceHOAdapter),
+        "detector": ("detector", DetectorHOAdapter),
     }
 
     _TO_SERIALIZE = [
@@ -1121,6 +1153,7 @@ class _BeamlineAdapter:
         "capillary",
         "beamstop",
         "detector_distance",
+        "detector"
     ]
 
     def __init__(self, beamline_hwobj):
