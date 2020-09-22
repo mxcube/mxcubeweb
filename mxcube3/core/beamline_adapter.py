@@ -988,7 +988,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
             (str): The name of the object.
         """
         super(CryoHOAdapter, self).__init__(ho, name)
-        
+
         try:
             ho.connect("valueChanged", self._value_change)
             # ho.connect("stateChanged", self.state_change)
@@ -1102,7 +1102,7 @@ class _BeamlineAdapter:
         "machine_info": ("machine_info", MachineInfoHOAdapter),
         "flux": ("flux", PhotonFluxHOAdapter),
         "data_publisher": ("data_publisher", DataPublisherHOAdapter),
-        "cryo": ("diffractometer.cryostream", CryoHOAdapter),
+        "cryo": ("cryostream", CryoHOAdapter),
         "capillary": ("diffractometer.capillary", DuoStateHOAdapter),
         "beamstop": ("diffractometer.beamstop", DuoStateHOAdapter),
         "detector_distance": ("detector.distance", DetectorDistanceHOAdapter),
