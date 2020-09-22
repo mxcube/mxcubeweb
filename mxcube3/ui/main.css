@@ -19,3 +19,8 @@
 #loading .loader-init {
     width: 100px;
 }
+
+.device-status-container > div {
+    margin-right: 1em;
+    width: 12%;
+}
