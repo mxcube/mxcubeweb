@@ -149,6 +149,7 @@ class HOAdapterBase:
                 "msg": self.msg(),
                 "type": "FLOAT",
                 "available": self.available(),
+                "readonly": self.read_only()
             }
 
             data.update(self._dict_repr())
@@ -161,7 +162,8 @@ class HOAdapterBase:
                 "state": "UNKNOWN",
                 "msg": "Exception: %s" % str(ex),
                 "available": self.available(),
-                "value": "0"
+                "value": "0",
+                "readonly": False
             }
 
         return data
@@ -354,7 +356,7 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
         Retuns:
             (bool): True if tunable, False if not.
         """
-        return not self._ho.read_only
+        return self._ho.read_only
 
 
 class WavelengthHOAdapter(HOActuatorAdapterBase):
