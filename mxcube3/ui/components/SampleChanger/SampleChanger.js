@@ -94,7 +94,7 @@ export class SampleChangerTreeNode extends React.Component {
         </li>
 
         <ContextMenu id={`${this.props.label}`}>
-          <li role="heading" aria-level="1" className="dropdown-header">
+          <li role="heading" aria-level="2" className="dropdown-header">
             <b>
 Container
               {this.props.label}
@@ -165,7 +165,7 @@ export class SampleChangerTreeItem extends React.Component {
               onToggle={this.toggleDropdown}
               open={this.state.dropdownIsOpen}
             >
-              <li role="heading" aria-level="1" className="dropdown-header">
+              <li role="heading" aria-level="2" className="dropdown-header">
                 <b>
 Position
                   {this.props.label}
