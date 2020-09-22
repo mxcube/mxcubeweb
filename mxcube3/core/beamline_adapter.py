@@ -918,15 +918,14 @@ class DetectorHOAdapter(HOActuatorAdapterBase):
             (str): The name of the object.
         """
         super(DetectorHOAdapter, self).__init__(ho, name)
-        ho.connect("statusChanged", self._value_change)
+        ho.connect("statusChanged", self._state_change)
         self._precision = 1
 
     def set(self, value):
         pass
 
-    @utils.RateLimited(0.1)
-    def _value_change(self, *args, **kwargs):
-        self.value_change(self.get(), **kwargs)
+    def _state_change(self, *args, **kwargs):
+        self.state_change(self.get(), **kwargs)
 
     def get(self):
         return self.state()
