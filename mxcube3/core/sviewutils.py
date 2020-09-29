@@ -143,7 +143,7 @@ def init_signals():
 
     for motor in utils.get_centring_motors():
 
-        @utils.RateLimited(3)
+        @utils.RateLimited(6)
         def pos_cb(pos, motor=motor, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
@@ -158,6 +158,9 @@ def init_signals():
             movable = utils.get_movable_state_and_position(motor)
 
             if movable:
+                # TODO check if there is a bug in get_state of expoerter motor ?
+                movable[motor]["state"] = state.value
+
                 signals.motor_state_callback(movable[motor], **kw)
             else:
                 logging.getLogger("MX3.HWR").exception(
