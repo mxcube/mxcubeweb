@@ -21,7 +21,7 @@ var config = {
     },
     output: {
         path: path.resolve(__dirname, 'mxcube3','static'),
-        filename: '[name].js', 
+        filename: '[name]-[hash:6].js', 
         publicPath: '' 
     },
     module: {
