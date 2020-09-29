@@ -116,14 +116,8 @@ export function loadSample(sampleData, successCb = null) {
           dispatch(showErrorPanel(true, response.headers.get('message')));
           throw new Error('Server refused to mount sample');
         } else {
-          setCurrentSample(sampleData.sampleID);
-
-          response.json().then((contents) => {
-            dispatch(setContents(contents));
-          }).then(dispatch(refresh()));
-
-          if (successCb) {
-            successCb();
+	  if (successCb) {
+             successCb();
           }
         }
       });
