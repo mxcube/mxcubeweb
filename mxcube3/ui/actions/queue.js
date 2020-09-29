@@ -122,6 +122,7 @@ export function addSampleAndMount(sampleData) {
         return response.json();
       }).then((data) => {
         dispatch(setQueue(data));
+	dispatch(clearCurrentSample());
         dispatch(selectSamplesAction([sampleData.sampleID]));
       }).catch(() => (queueLoading(false)))
         .then(() => (dispatch(queueLoading(false))));
