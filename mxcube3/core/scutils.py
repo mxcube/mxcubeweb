@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import logging
 import time
+import gevent
 
 # We are patching queue_entry.mount_sample at the end of this file.
 #import queue_entry
@@ -401,14 +402,7 @@ def unmount_sample_clean_up(sample):
 
 
 def mount_sample(sample):
-    res = mount_sample_clean_up(sample)
-
-    if not res:
-        msg = "Could not mount sample: No sample on given "
-        msg += "position or empty vial ?"
-
-        raise Exception(msg)
-
+    gevent.spawn(mount_sample_clean_up, sample)
     return get_sc_contents()
 
 
