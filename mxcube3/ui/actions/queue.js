@@ -80,6 +80,13 @@ export function setSampleAttribute(sampleID, attr, value) {
 }
 
 
+export function clearCurrentSample() {
+  return {
+    type: 'CLEAR_CURRENT_SAMPLE'
+  };
+}
+
+
 export function sendAddQueueItem(items) {
   return fetch('mxcube/api/v0.1/queue', {
     method: 'POST',
@@ -118,11 +125,9 @@ export function addSampleAndMount(sampleData) {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, 'Server refused to add sample'));
         }
-
         return response.json();
       }).then((data) => {
         dispatch(setQueue(data));
-	dispatch(clearCurrentSample());
         dispatch(selectSamplesAction([sampleData.sampleID]));
       }).catch(() => (queueLoading(false)))
         .then(() => (dispatch(queueLoading(false))));
@@ -260,13 +265,6 @@ export function moveTask(sampleID, oldIndex, newIndex) {
 export function runSample(queueID) {
   return {
     type: 'RUN_SAMPLE', queueID
-  };
-}
-
-
-export function clearCurrentSample() {
-  return {
-    type: 'CLEAR_CURRENT_SAMPLE'
   };
 }
 

@@ -292,6 +292,10 @@ def queue_execution_entry_finished(entry, message):
     if not qutils.is_interleaved(entry.get_data_model()):
         socketio.emit("task", get_task_state(entry), namespace="/hwr")
 
+    queue_toggle_sample(entry)
+
+
+def queue_toggle_sample(entry):
     if isinstance(entry, qe.SampleQueueEntry):
         msg = {"Signal": "DisableSample", "sampleID": entry.get_data_model().loc_str}
         socketio.emit("queue", msg, namespace="/hwr")

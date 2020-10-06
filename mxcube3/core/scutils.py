@@ -372,6 +372,7 @@ def mount_sample_clean_up(sample):
             if sid and current_queue[sid]:
                 node_id = current_queue[sid]["queueID"]
                 qutils.set_enabled_entry(node_id, False)
+                signals.queue_toggle_sample(qutils.get_entry(node_id)[1])
     finally:
         signals.sc_load_ready(sample["location"])
 
