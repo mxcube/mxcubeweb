@@ -323,8 +323,8 @@ def mount_sample_clean_up(sample):
     res = None
 
     try:
-        msg = "[SC] mounting %s" % sample["location"]
-        logging.getLogger("MX3.HWR").info(msg)
+        msg = "Mounting %s" % sample["location"]
+        logging.getLogger("user_level_log").info(msg)
 
         signals.sc_load(sample["location"])
 
