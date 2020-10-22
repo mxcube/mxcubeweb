@@ -66,10 +66,11 @@ def centring_add_current_point(*args):
     # by software like Workflows, so we add one.
     if not shape:
         try:
-            motors = args[1]["motors"]
-            x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motors)
-            centring_update_current_point(motors, x, y)
-            shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
+            if args[0]:
+                motors = args[1]["motors"]
+                x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motors)
+                centring_update_current_point(motors, x, y)
+                shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
         except Exception:
             logging.getLogger("MX3.HWR").exception("Centring failed !")
 
