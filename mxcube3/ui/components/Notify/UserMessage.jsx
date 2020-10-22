@@ -79,7 +79,7 @@ export default class UserMessage extends React.Component {
             (<span className="fa fa-lg fa-exclamation-circle" />)
           }
           <span className="messageText">
-            {message.message}
+            { `[${message.timestamp.slice(11, 19)}]: ${message.message}` }
           </span>
         </div>
       ));
