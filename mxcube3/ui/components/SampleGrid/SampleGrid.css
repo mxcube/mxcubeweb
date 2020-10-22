@@ -148,6 +148,7 @@ button[disabled] {
 .protein-acronym {
     font-size: small;
     font-weight: bold;
+    pointer-events: auto;
 }
 
 
@@ -160,6 +161,7 @@ button[disabled] {
 .sc_location {
     font-size: 11px;
     float: right;
+    pointer-events: none;
 }
 
 

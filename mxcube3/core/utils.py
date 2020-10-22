@@ -289,7 +289,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 )
 
         logging.getLogger("user_level_log").info(
-            "[COLLECT]: Taking %d sample snapshot(s)" % number_of_snapshots
+            "Taking %d sample snapshot(s)" % number_of_snapshots
         )
 
         for snapshot_index in range(number_of_snapshots):

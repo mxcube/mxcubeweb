@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
-import { setCurrentSample, clearCurrentSample } from './queue';
+import { clearCurrentSample } from './queue';
 
 export function setContents(contents) {
   return { type: 'SET_SC_CONTENTS', data: { sampleChangerContents: contents } };
@@ -116,12 +116,6 @@ export function loadSample(sampleData, successCb = null) {
           dispatch(showErrorPanel(true, response.headers.get('message')));
           throw new Error('Server refused to mount sample');
         } else {
-          setCurrentSample(sampleData.sampleID);
-
-          response.json().then((contents) => {
-            dispatch(setContents(contents));
-          }).then(dispatch(refresh()));
-
           if (successCb) {
             successCb();
           }
