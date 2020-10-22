@@ -323,9 +323,6 @@ def mount_sample_clean_up(sample):
     res = None
 
     try:
-        msg = "Mounting %s" % sample["location"]
-        logging.getLogger("user_level_log").info(msg)
-
         signals.sc_load(sample["location"])
 
         sid = get_current_sample().get("sampleID", False)
@@ -334,6 +331,9 @@ def mount_sample_clean_up(sample):
         set_sample_to_be_mounted(sample["sampleID"])
 
         if sample["location"] != "Manual":
+            msg = "Mounting sample: %s (%s)" % (sample["location"], sample.get("sampleName", ""))
+            logging.getLogger("user_level_log").info(msg)
+
             if not sc.get_loaded_sample():
                 res = sc.load(sample["sampleID"], wait=True)
             elif sc.get_loaded_sample().get_address() != sample["location"]:
@@ -354,6 +354,9 @@ def mount_sample_clean_up(sample):
             elif not sc.get_loaded_sample():
                 set_current_sample(None)
         else:
+            msg = "Mounting sample: %s" % sample["sampleName"]
+            logging.getLogger("user_level_log").info(msg)
+
             set_current_sample(sample["sampleID"])
             res = True
 
