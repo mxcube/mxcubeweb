@@ -596,7 +596,7 @@ class SampleGridViewContainer extends React.Component {
               >
                 <MenuItem eventKey="2" onClick={this.showAddSampleForm}>
                   Create new sample
-                    </MenuItem>
+                </MenuItem>
               </SplitButton>
               <span style={{ marginLeft: '1em' }} />
               <OverlayTrigger
