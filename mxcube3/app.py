@@ -170,7 +170,7 @@ def init_logging(log_file):
 
     if log_file:
         log_file_handler = TimedRotatingFileHandler(
-            log_file, when="D", backupCount=7
+            log_file, when="midnight", backupCount=7
         )
         os.chmod(log_file, 0o666)
         log_file_handler.setFormatter(log_formatter)

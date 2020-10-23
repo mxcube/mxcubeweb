@@ -22,6 +22,11 @@
   background-color: rgba(217, 83, 79, 0.8);
 }
 
+.messageDEBUG {
+  border-top: 5px solid #D9534F;
+  background-color: rgba(217, 83, 79, 0.8);
+}
+
 .messageText {
   color: #FFF;
   margin-left: 7px;

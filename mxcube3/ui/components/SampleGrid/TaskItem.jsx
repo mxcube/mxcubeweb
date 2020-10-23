@@ -34,7 +34,7 @@ export class TaskItem extends React.Component {
     } else if (type === 'Characterisation') {
       res = 'C';
     } else if (type === 'Workflow') {
-      res = 'AS';
+      res = 'WF';
     } else if (type === 'XRFScan') {
       res = 'XRF';
     } else if (type === 'EnergyScan') {
