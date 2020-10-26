@@ -682,15 +682,6 @@ export default class SampleImage extends React.Component {
 
       source = source + this.props.videoHash;
 
-      // if (this.player) {
-      //  try {
-      //    this.player.destroy();
-      //    this.player = null;
-      //  } catch (error) {
-      //    console.log(error);
-      //  }
-      // }
-
       if (this.props.videoFormat === 'MPEG1' && canvas) {
         this.player = new jsmpeg.JSMpeg.Player(source, {
           canvas,

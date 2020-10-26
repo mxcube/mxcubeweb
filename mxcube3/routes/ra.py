@@ -223,8 +223,6 @@ def connect():
 
     # (Note: User is logged in if operator)
     if loginutils.is_operator(session.sid):
-        #loginutils.emit_pending_events()
-
         if (
             not blcontrol.beamline.queue_manager.is_executing()
             and not loginutils.DISCONNECT_HANDLED
@@ -251,8 +249,6 @@ def disconnect():
 @socketio.on("setRaMaster", namespace="/hwr")
 @server.ws_restrict
 def set_master(data):
-    #loginutils.emit_pending_events()
-
     return session.sid
 
 
