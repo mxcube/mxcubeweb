@@ -5,6 +5,7 @@ import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } fr
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
+import config from 'guiConfig';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
@@ -46,6 +47,7 @@ export default class SampleImage extends React.Component {
     this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
     this.drawGridPlugin = new DrawGridPlugin();
+    this.drawGridPlugin.setResultFormat(config.use2dCenteredPoints);
     this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;

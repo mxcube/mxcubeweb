@@ -54,10 +54,11 @@ export default class DrawGridPlugin {
     this.setCellSize = this.setCellSize.bind(this);
     this.shapeFromGridData = this.shapeFromGridData.bind(this);
     this.reset = this.reset.bind(this);
+    this.setGridResultFormat = this.setGridResultFormat.bind(this);
     this.snapToGrid = true;
     this.heatMapColorForValue = this.heatMapColorForValue.bind(this);
-    // this.initializeCellFilling = this.initializeCellFilling.bind(this);
-    // this.initializeGridResult = this.initializeGridResult.bind(this);
+    this.initializeCellFilling = this.initializeCellFilling.bind(this);
+    this.initializeGridResult = this.initializeGridResult.bind(this);
     this.setGridResult = this.setGridResult.bind(this);
     this.drawing = false;
     this.gridSaved = true;
@@ -68,6 +69,7 @@ export default class DrawGridPlugin {
     this.gridData = _GridData();
     this.scale = 0;
     this.resultType = 'heatmap';
+    this.gridResultFormat = 'PNG';
   }
 
   /**
@@ -115,6 +117,10 @@ export default class DrawGridPlugin {
     }
 
     return gridData;
+  }
+
+  setGridResultFormat(format) {
+    this.gridResultFormat = format ? format : 'PNG';
   }
 
   setScale(scale) {
@@ -171,9 +177,11 @@ export default class DrawGridPlugin {
     const row = gridData.numRows;
     const cellResultMatrix = [];
 
-    for (let c = 0; c < col; c++) {
-      for (let r = 0; r < row; c++) {
-        cellResultMatrix.append([0, [0, 0, 0]]);
+    if (this.gridResultFormat === 'RGB') {
+      for (let c = 0; c < col; c++) {
+        for (let r = 0; r < row; c++) {
+          cellResultMatrix.append([0, [0, 0, 0]]);
+        }
       }
     }
 
@@ -201,7 +209,6 @@ export default class DrawGridPlugin {
       this.gridData.screenCoord[1] = options.e.layerY;
     }
   }
-
 
   /**
    * Updates current grid while drawing
@@ -242,7 +249,6 @@ export default class DrawGridPlugin {
     }
   }
 
-
   /**
    * Repaint current grid
    *
@@ -276,48 +282,51 @@ export default class DrawGridPlugin {
     return gridData;
   }
 
-  // initializeCellFilling(gd, col, row) {
-  //   const level = this.overlayLevel ? this.overlayLevel : 0.2;
-  //   const fill = `rgba(0, 0, 200, ${level}`;
-  //   const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill(fill));
-  //   return cellfillingMatrix;
-  // }
+  initializeCellFilling(gd, col, row) {
+    const level = this.overlayLevel ? this.overlayLevel : 0.2;
+    const fill = `rgba(0, 0, 200, ${level}`;
+    const cellfillingMatrix = Array(col).fill().map(() => Array(row).fill(fill));
+    return cellfillingMatrix;
+  }
 
-  // cellFillingFromData(gd, col, row) {
-  //   /**
-  //   * Creates the heatmap data for later fill grid cells
-  //   * @param {GridData} gd
-  //   * @param 2d array data
-  //   */
-  //   const data = Array(col).fill().map(() => Array(row).fill());
+  cellFillingFromData(gd, col, row) {
+    /**
+    * Creates the heatmap data for later fill grid cells
+    * @param {GridData} gd
+    * @param 2d array data
+    */
+    const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-  //   for (let nw = 0; nw < col; nw++) {
-  //     for (let nh = 0; nh < row; nh++) {
-  //       data[nw][nh] = Math.random();
-  //     }
-  //   }
+    if (self.gridResultFormat === 'RGB') {
+      const data = Array(col).fill().map(() => Array(row).fill());
 
-  //   // const fillingMatrix = this.initializeCellFilling(gd, col, row);
+      for (let nw = 0; nw < col; nw++) {
+        for (let nh = 0; nh < row; nh++) {
+          data[nw][nh] = Math.random();
+        }
+      }
 
-  //   // Asume flat result object to remain compatible with old format only
-  //   // suporting one type of results
-  //   //let { result } = gd;
+      // Asume flat result object to remain compatible with old format only
+      // suporting one type of results
+      let { result } = gd;
 
-  //   // Use selected result type if it exists
-  //   //if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
-  //   //  result = gd.result[this.resultType];
-  //   //}
+      // Use selected result type if it exists
+      if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
+      result = gd.result[this.resultType];
+      }
 
-  //   // if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
-  //   //   for (let nh = 0; nh < row; nh++) {
-  //   //     for (let nw = 0; nw < col; nw++) {
-  //   //       const index = nw + nh * col + 1;
-  //   //       fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
-  //   //     }
-  //   //   }
-  //   // }
-  //   // return fillingMatrix;
-  // }
+      if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
+        for (let nh = 0; nh < row; nh++) {
+          for (let nw = 0; nw < col; nw++) {
+            const index = nw + nh * col + 1;
+            fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
+          }
+        }
+      }
+    }
+
+    return fillingMatrix;
+  }
 
   /**
    * Creates a Fabric GridGroup shape from a GridData object
@@ -378,49 +387,49 @@ export default class DrawGridPlugin {
         ));
       }
 
-      // if (!this.drawing) {
-      //   for (let nw = 0; nw < gridData.numCols; nw++) {
-      //     for (let nh = 0; nh < gridData.numRows; nh++) {
-      //       const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
-      //         gridData.numRows, gridData.numCols);
+      if (!this.drawing && this.gridResultFormat === 'RGB') {
+        for (let nw = 0; nw < gridData.numCols; nw++) {
+          for (let nh = 0; nh < gridData.numRows; nh++) {
+            const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
+              gridData.numRows, gridData.numCols);
 
-      //       // shapes.push(new fabric.Ellipse({
-      //       //   left: left + cellHSpace / 2 + cellTW * nw,
-      //       //   top: top + cellVSpace / 2 + cellTH * nh,
-      //       //   width: cellWidth,
-      //       //   height: cellHeight,
-      //       //   fill: fillingMatrix[nw][nh],
-      //       //   stroke: 'rgba(0,0,0,0)',
-      //       //   hasControls: false,
-      //       //   selectable: false,
-      //       //   hasRotatingPoint: false,
-      //       //   lockMovementX: true,
-      //       //   lockMovementY: true,
-      //       //   lockScalingX: true,
-      //       //   lockScalingY: true,
-      //       //   lockRotation: true,
-      //       //   hoverCursor: 'pointer',
-      //       //   originX: 'left',
-      //       //   originY: 'top',
-      //       //   rx: cellWidth / 2,
-      //       //   ry: cellHeight / 2,
-      //       //   cell: cellCount
-      //       // }));
+            shapes.push(new fabric.Ellipse({
+              left: left + cellHSpace / 2 + cellTW * nw,
+              top: top + cellVSpace / 2 + cellTH * nh,
+              width: cellWidth,
+              height: cellHeight,
+              fill: fillingMatrix[nw][nh],
+              stroke: 'rgba(0,0,0,0)',
+              hasControls: false,
+              selectable: false,
+              hasRotatingPoint: false,
+              lockMovementX: true,
+              lockMovementY: true,
+              lockScalingX: true,
+              lockScalingY: true,
+              lockRotation: true,
+              hoverCursor: 'pointer',
+              originX: 'left',
+              originY: 'top',
+              rx: cellWidth / 2,
+              ry: cellHeight / 2,
+              cell: cellCount
+            }));
 
-      //       // if (this.include_cell_labels) {
-      //       //   shapes.push(new fabric.Text(cellCount, {
-      //       //     left: left + cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
-      //       //     top: top + cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
-      //       //     originX: 'center',
-      //       //     originY: 'center',
-      //       //     fill: 'rgba(0, 0, 200, 1)',
-      //       //     fontFamily: 'Helvetica',
-      //       //     fontSize: 18
-      //       //   }));
-      //       // }
-      //     }
-      //   }
-      // }
+            if (this.include_cell_labels) {
+              shapes.push(new fabric.Text(cellCount, {
+                left: left + cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
+                top: top + cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
+                originX: 'center',
+                originY: 'center',
+                fill: 'rgba(0, 0, 200, 1)',
+                fontFamily: 'Helvetica',
+                fontSize: 18
+              }));
+            }
+          }
+        }
+      }
     }
 
     shapes.push(new fabric.Rect({
