@@ -1,0 +1,10 @@
+server:
+  SECRET_KEY: "b621d016-8e17-11ea-ac72-b34a951e374b"
+  SESSION_TYPE: "redis"
+  SESSION_KEY_PREFIX: "mxcube:session:"
+  DEBUG: False
+  STREAMED_VIDEO: True
+
+  ALLOWED_CORS_ORIGINS:
+    - "https://id30a1.mxcube3.esrf.fr"
+    - "http://localhost:8081"
