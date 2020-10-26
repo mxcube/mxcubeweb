@@ -47,7 +47,7 @@ export default class SampleImage extends React.Component {
     this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
     this.drawGridPlugin = new DrawGridPlugin();
-    this.drawGridPlugin.setResultFormat(config.use2dCenteredPoints);
+    this.drawGridPlugin.setGridResultFormat(config.use2dCenteredPoints);
     this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;
