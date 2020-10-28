@@ -301,7 +301,7 @@ def login(login_id, password):
         }
 
         _users = logged_in_users(exclude_inhouse=True)
-        
+
         common_proposal = False
         if mxcube.SELECTED_PROPOSAL is not None:
             for prop in login_res['proposalList']:
@@ -315,7 +315,7 @@ def login(login_id, password):
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
-        
+
         # staff consideration only makes sense for users login
         if lims_login_type() == 'user':
             privileged = limsutils.lims_is_staff(login_id)
@@ -461,7 +461,6 @@ def login_info(login_info):
     }
 
     user = get_user_by_sid(session.sid)
-    proposal = session["proposal"]["Proposal"] if "proposal" in session else None
 
     if mxcube.SELECTED_PROPOSAL is not None:
         res["selectedProposal"] = mxcube.SELECTED_PROPOSAL
