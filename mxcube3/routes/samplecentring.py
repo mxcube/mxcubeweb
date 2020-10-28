@@ -7,11 +7,11 @@ from flask import Response, jsonify, request
 import os
 import json
 
+from mxcube3 import mxcube
 from mxcube3 import server
 from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 from mxcube3.core import sviewutils
-from mxcube3.video import streaming
 
 
 @server.route("/mxcube/api/v0.1/sampleview/camera/subscribe", methods=["GET"])
@@ -21,10 +21,10 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    if streaming.VIDEO_DEVICE:
+    if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
         result = Response(status=200)
     else:
-        frame = sviewutils.stream_video(blcontrol.beamline.microscope.camera)
+        frame = sviewutils.stream_video(blcontrol.beamline.sample_view.camera)
         result = Response(frame, mimetype='multipart/x-mixed-replace; boundary="!>"')
 
     return result
@@ -38,7 +38,7 @@ def unsubscribe_to_camera():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.beamline.microscope.camera.streaming_greenlet.kill()
+    blcontrol.beamline.sample_view.camera.streaming_greenlet.kill()
     return Response(status=200)
 
 
@@ -52,7 +52,7 @@ def snapshot():
     Return: 'True' if command issued succesfully, otherwise 'False'.
     """
     try:
-        blcontrol.beamline.microscope.camera.takeSnapshot(
+        blcontrol.beamline.sample_view.camera.takeSnapshot(
             os.path.join(os.path.dirname(__file__), "snapshots/")
         )
         return "True"
@@ -194,7 +194,7 @@ def delete_shape(sid):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.beamline.microscope.camera.delete_shape(sid)
+    blcontrol.beamline.sample_view.delete_shape(sid)
     return Response(status=200)
 
 
@@ -419,7 +419,7 @@ def accept_centring():
     """
     Accept the centring position.
     """
-    blcontrol.beamline.diffractometer.acceptCentring()
+    blcontrol.beamline.diffractometer.accept_centring()
     return Response(status=200)
 
 

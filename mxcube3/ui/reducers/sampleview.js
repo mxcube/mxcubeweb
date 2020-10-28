@@ -33,7 +33,7 @@ const initialState = {
   currentAperture: 0,
   currentPhase: '',
   beamPosition: [0, 0],
-  beamShape: 'elipse',
+  beamShape: 'ellipse',
   beamSize: { x: 0, y: 0 },
   cinema: false,
   phaseList: [],

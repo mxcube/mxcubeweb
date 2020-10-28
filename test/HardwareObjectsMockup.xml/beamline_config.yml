@@ -26,20 +26,20 @@ _objects:
     - session: session.xml
     - machine_info: machine_info.xml
     - detector: detector_mockup.xml
-    - flux: flux.xml
+    - beam: beam_info.xml
     - transmission: transmission_mockup.xml
+    - flux: flux_mockup.xml
     - energy: energy_mockup.xml
     - resolution: resolution_mockup.xml
-    - safety_shutter: safshut.xml
+    - safety_shutter: safety_shutter.xml
     - fast_shutter: fast_shutter_mockup.xml
-    - beam: beam_info.xml
     - hutch_interlock: hutchtrigger.xml
     - sample_changer: sc_mockup.xml
     - sample_changer_maintenance: sc_maint_mockup.xml
     - plate_manipulator: plate_manipulator.xml
     - diffractometer: minidiff_mockup.xml
     - lims: lims.xml
-    - microscope: microscope.xml
+    - sample_view: sample_view.xml
     - queue_manager: queue.xml
     - queue_model: queue_model.xml
 
@@ -55,7 +55,10 @@ _objects:
     # Analysis:
     - offline_processing: auto_processing.xml
     - online_processing: parallel_processing.xml
-    - data_analysis: data_analysis.xml
+    - characterisation: characterisation_mockup.xml
+    - data_publisher: data_publisher.xml
+    - scan_mockup: scan_mockup.xml
+
     # - beam_realign: # Skipped - optional
 
 # Non-object attributes:

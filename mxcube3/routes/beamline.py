@@ -2,12 +2,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
 import json
-import logging
-from . import signals
-
-from . import signals
 
 from flask import Response, jsonify, request, make_response
 
@@ -16,7 +11,7 @@ from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 
 
-@server.route("/mxcube/api/v0.1/beamline", methods=["GET"])
+@server.route("/mxcube/api/v0.1/beamline/", methods=["GET"])
 @server.restrict
 def beamline_get_all_attributes():
     return jsonify(beamlineutils.beamline_get_all_attributes())

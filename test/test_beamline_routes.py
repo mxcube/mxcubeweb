@@ -14,22 +14,25 @@ def test_beamline_get_all_attribute(client):
     Checks that the data returned has the right structure and if "all"
     beamline attributes are at least present
     """
-    resp = client.get("/mxcube/api/v0.1/beamline")
+
+    resp = client.get("/mxcube/api/v0.1/beamline/")
     data = json.loads(resp.data)
 
     actual = list(data.get("attributes").keys())
 
-    expected = ['beamstop',
-                'cryo',
-                'detdist',
-                'energy',
-                'fast_shutter',
-                'flux',
-                'machinfo',
-                'resolution',
-                'safety_shutter',
-                'transmission',
-                'wavelength']
+    expected = [
+        "beamstop",
+        "capillary",
+        "detector_distance",
+        "energy",
+        "fast_shutter",
+        "flux",
+        "machine_info",
+        "resolution",
+        "safety_shutter",
+        "transmission",
+        "wavelength",
+    ]
 
     assert isinstance(data["attributes"], dict)
     assert isinstance(data["actionsList"], list)
@@ -45,18 +48,19 @@ def test_beamline_get_attribute(client):
     the data returned at-least contain a minimal set of keys that make up a
     'beamline attribute'
     """
+
     bl_attrs = [
         "safety_shutter",
+        "capillary",
         "beamstop",
         "fast_shutter",
         "resolution",
         "energy",
         "flux",
-        "cryo",
         "wavelength",
         "transmission",
-        "machinfo",
-        "detdist",
+        "machine_info",
+        "detector_distance",
     ]
 
     for name in bl_attrs:
@@ -70,6 +74,7 @@ def test_beamline_get_attribute(client):
         for key in keys:
             assert key in data
 
+        assert data["available"] == True
         assert resp.status_code == 200
 
 
@@ -89,7 +94,7 @@ def test_beamline_set_attribute(client):
         "safety_shutter",
         "beamstop",
         "fast_shutter",
-        "detdist",
+        "detector_distance",
     ]
 
     for name in bl_attrs:
@@ -130,6 +135,7 @@ def test_get_data_path(client):
     """
     Retrieve data path, this is specific for each beamline.
     """
+
     resp = client.get("/mxcube/api/v0.1/beamline/datapath")
     data = json.loads(resp.data)
     assert isinstance(data["path"], unicode)

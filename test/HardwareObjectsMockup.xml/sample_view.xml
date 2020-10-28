@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<object class="SampleView">
+  <object hwrid="/md_camera" role="camera"/>
+  <object hwrid="/udiff_phix" role="focus"/>
+  <object hwrid="/udiff_zoom" role="zoom"/>
+  <object hwrid="/udiff_flight" role="frontlight"/>
+  <object hwrid="/udiff_light" role="backlight"/>
+  <object hwrid="/minidiff_mockup" role="diffractometer"/>
+
+  <hide_grid_threshold>5</hide_grid_threshold>
+</object>

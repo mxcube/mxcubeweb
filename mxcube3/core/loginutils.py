@@ -160,6 +160,7 @@ def valid_login_only(f):
 
     return wrapped
 
+
 def require_control(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -170,6 +171,7 @@ def require_control(f):
 
     return wrapped
 
+
 def ws_valid_login_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -177,6 +179,7 @@ def ws_valid_login_only(f):
             flask_socketio.disconnect()
         else:
             return f(*args, **kwargs)
+
     return wrapped
 
 
@@ -363,7 +366,8 @@ def login(login_id, password):
             "loginRes": login_res,
         }
 
-        sample = blcontrol.beamline.sample_changer.getLoadedSample()
+        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+
         # If A sample is mounted (and not already marked as such),
         # get sample changer contents and add mounted sample to the queue
         if not scutils.get_current_sample() and sample:

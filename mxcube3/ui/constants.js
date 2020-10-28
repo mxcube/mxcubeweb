@@ -64,23 +64,12 @@ export const SPACE_GROUPS = ['', 'P1', 'P2', 'P21', 'C2', 'P222', 'P2221', 'P212
 
 
 export const MOTOR_STATE = {
-  INITIALIZING: 0,
-  ON: 1,
-  OFF: 2,
+  UNKNOWN: 0,
+  WARNING: 1,
+  BUSY: 2,
   READY: 3,
-  BUSY: 4,
-  MOVING: 5,
-  STANDBY: 6,
-  DISABLED: 7,
-  UNKNOWN: 8,
-  ALARM: 9,
-  FAULT: 10,
-  INVALID: 11,
-  OFFLINE: 12,
-  LOWLIMIT: 13,
-  HIGHLIMIT: 14,
-  NOTINITIALIZED: 15,
-  MOVESTARTED: 16
+  FAULT: 4,
+  OFF: 5
 };
 
 export const MOTOR_STATE_DESC = {};

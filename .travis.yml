@@ -1,27 +1,23 @@
 language: python
+
 python:
   - "3.7"
   - "3.8"
-node_js:
-  - "10"
 
 services:
   - redis-server
-  - docker
-
-before_install:
-  - git clone https://github.com/mxcube/mx3docker.git mx3docker
-  - docker build --no-cache -t mxcube3-backend mx3docker/demo/mxcube3/mxcube3_debian9/
 
 install:
+  - nvm install 12
+  - nvm use 12
   - npm install
   - npm run build
   - pip install codecov
   - pip install pytest-cov
-  - pip install -r requirements.txt
+  - pip install -r requirements-pip3.txt
 
 script:
-  - pytest test/
+  - pytest -v test/
 
 after_success:
   - codecov

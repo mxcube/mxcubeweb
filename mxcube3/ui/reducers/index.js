@@ -17,7 +17,6 @@ import shapes from './shapes';
 import workflow from './workflow';
 import taskResult from './taskResult';
 
-
 const mxcubeReducer = combineReducers({
   login,
   queue,

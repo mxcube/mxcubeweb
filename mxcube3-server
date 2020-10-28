@@ -4,17 +4,19 @@ import redis
 import sys
 import os
 
-MXCUBE_ROOT = os.path.abspath(os.path.join(
-    os.path.dirname(os.path.realpath(__file__)), "./mxcube3"))
+MXCUBE_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "./mxcube3")
+)
 
 sys.path.insert(0, MXCUBE_ROOT)
 
 os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"] = os.path.join(
-    MXCUBE_ROOT, "HardwareRepository/HardwareObjects")
+    MXCUBE_ROOT, "HardwareRepository/HardwareObjects"
+)
 
 sys.path.insert(0, os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"])
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     db = redis.Redis()
 
     try:
@@ -24,4 +26,5 @@ if __name__ == '__main__':
         sys.exit(1)
 
     from mxcube3 import server, socketio
-    socketio.run(server, host='0.0.0.0', port=8081)
+
+    socketio.run(server, host="0.0.0.0", port=8081)
