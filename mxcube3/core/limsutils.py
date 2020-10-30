@@ -288,7 +288,7 @@ def lims_login(loginID, password, create_session):
 def create_lims_session(login_res):
     for prop in session["proposal_list"]:
         todays_session = blcontrol.beamline.lims.get_todays_session(prop)
-        prop["Session"] = [todays_session["session"]]
+        prop["Session"] = todays_session["session"]
 
     login_res["proposalList"] = session["proposal_list"]
 
@@ -335,11 +335,11 @@ def select_proposal(proposal):
         blcontrol.beamline.session.proposal_number = proposal_info.get("Proposal").get(
             "number", ""
         )
-        blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get(
+        blcontrol.beamline.session.session_id = proposal_info.get("Session").get(
             "sessionId"
         )
 
-        blcontrol.beamline.session.proposal_id = proposal_info.get("Session")[0].get(
+        blcontrol.beamline.session.proposal_id = proposal_info.get("Session").get(
             "proposalId"
         )
 
