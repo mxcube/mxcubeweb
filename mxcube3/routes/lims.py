@@ -21,8 +21,16 @@ from . import signals
 @server.route("/mxcube/api/v0.1/lims/synch_samples", methods=["GET"])
 @server.restrict
 def proposal_samples():
-    return jsonify(limsutils.synch_with_lims())
+    try:
+        res = jsonify(limsutils.synch_with_lims())
+    except Exception as ex:
+        res = (
+            "Could not synchronize with LIMS",
+            409,
+            {"Content-Type": "application/json", "message": str(ex)},
+        )
 
+    return res
 
 @server.route("/mxcube/api/v0.1/lims/dc/thumbnail/<image_id>", methods=["GET"])
 @server.restrict
