@@ -265,7 +265,7 @@ export default (state = INITIAL_STATE, action) => {
 
       // We might want to set current sample to be nothing in that case do
       // do nothing.
-      if (action.sampleID) {
+      if (action.sampleID && sampleList[action.sampleID]) {
         sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
       }
 

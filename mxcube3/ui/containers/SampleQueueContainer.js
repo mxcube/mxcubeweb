@@ -132,7 +132,7 @@ class SampleQueueContainer extends React.Component {
     let proteinAcronym = '';
 
     if (current.sampleID) {
-      const sampleData = sampleList[current.sampleID];
+      const sampleData = sampleList[current.sampleID] || {};
       sampleName = sampleData.sampleName ? sampleData.sampleName : '';
       proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} -` : '';
     }
