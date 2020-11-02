@@ -10,6 +10,7 @@ from flask import (
     copy_current_request_context,
 )
 
+from flask_socketio import join_room, leave_room
 
 from mxcube3 import socketio
 from mxcube3 import mxcube
@@ -249,6 +250,8 @@ def disconnect():
 @socketio.on("setRaMaster", namespace="/hwr")
 @server.ws_restrict
 def set_master(data):
+    leave_room("observers", namespace="/ui_state")
+    
     return session.sid
 
 
@@ -264,5 +267,6 @@ def set_observer(data):
         socketio.emit("observerLogin", observer, include_self=False, namespace="/hwr")
 
     socketio.emit("observersChanged", observers, namespace="/hwr")
+    join_room("observers", namespace="/ui_state")
 
     return session.sid

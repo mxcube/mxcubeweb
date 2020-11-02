@@ -1,4 +1,5 @@
 import { serverIO } from '../serverIO';
+import { getLoginInfo } from './login';
 
 export function showObserverDialog(show = true) {
   return { type: 'SHOW_OBSERVER_DIALOG', show };
@@ -23,6 +24,7 @@ export function setMaster(master, name) {
         });
       });
     }
+    dispatch(getLoginInfo());
   };
 }
 

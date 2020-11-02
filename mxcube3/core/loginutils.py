@@ -323,15 +323,15 @@ def login_info(login_info):
         "observerName": get_observer_name(),
     }
 
-    user = get_user_by_sid(session.sid)
-    proposal = session["proposal"]["Proposal"] if "proposal" in session else None
+    user = get_user_by_sid(session.sid)   
+    
+    res["selectedProposal"] = "%s%s" % (
+        blcontrol.beamline.session.proposal_code,
+        blcontrol.beamline.session.proposal_number
+    )
 
-    if proposal:
-        res["selectedProposal"] = "%s%s" % (proposal["code"], proposal["number"])
-        res["selectedProposalID"] = proposal["proposalId"]
-    else:
-        res["selectedProposal"] = ""
-        res["selectedProposalID"] = ""
+    res["selectedProposalID"] = blcontrol.beamline.session.proposal_id
+
 
     return user, res
 
