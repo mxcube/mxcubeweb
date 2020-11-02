@@ -10,6 +10,8 @@ import copy
 import os
 import io
 import math
+import re
+
 from scandir import scandir
 
 from HardwareRepository.HardwareObjects import queue_model_objects as qmo
@@ -447,6 +449,11 @@ def synch_with_lims():
         sample_info["limsLink"] = blcontrol.beamline.lims.lims_rest.sample_link()
         sample_info["defaultPrefix"] = get_default_prefix(sample_info, False)
         sample_info["defaultSubDir"] = get_default_subdir(sample_info)
+
+        regexp = re.compile("^[a-zA-Z0-9:+_-]+$")
+
+        if not regexp.match(sample_info["sampleName"]):
+            raise AttributeError("sample name contains an incorrect character")
 
         try:
             basket = int(sample_info["containerSampleChangerLocation"])
