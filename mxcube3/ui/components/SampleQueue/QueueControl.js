@@ -124,7 +124,7 @@ export default class QueueControl extends React.Component {
     if (this.props.queue) {
       const idx = this.props.queue.indexOf(this.props.mounted);
       if (this.props.queue[idx + 1]) {
-        const sampleData = this.props.sampleList[this.props.queue[idx + 1]];
+        const sampleData = this.props.sampleList[this.props.queue[idx + 1]] || {};
         const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
         const proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} - ` : '';
 

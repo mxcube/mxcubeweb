@@ -141,8 +141,8 @@ export class ConfirmCollectDialog extends React.Component {
 
     const tasks = [].concat.apply([],
       Object.values(queue).map((sampleID) => (
-        this.props.sampleGrid.sampleList[sampleID]
-      )).map((sample) => sample.tasks));
+        this.props.sampleGrid.sampleList[sampleID] || {}
+      )).map((sample) => sample.tasks || {}));
 
     return tasks.filter((task) => (task.state === TASK_UNCOLLECTED));
   }
