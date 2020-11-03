@@ -487,11 +487,12 @@ def start_manual_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
+    if blcontrol.beamline.diffractometer.current_centring_procedure:
+        logging.getLogger("user_level_log").info("Aborting current centring ...")
+
     logging.getLogger("user_level_log").info("Centring using 3-click centring")
 
-    if blcontrol.beamline.diffractometer.current_centring_procedure:
-        blcontrol.beamline.diffractometer.cancel_centring_method()
-
+    blcontrol.beamline.diffractometer.cancel_centring_method()
     blcontrol.beamline.diffractometer.start_manual_centring()
     centring_reset_click_count()
     return {"clicksLeft": centring_clicks_left()}
