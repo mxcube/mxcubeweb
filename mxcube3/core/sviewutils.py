@@ -208,6 +208,7 @@ def init_signals():
     dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
     dm.connect(dm, "centringFailed", wait_for_centring_finishes)
     dm.connect("centringAccepted", centring_add_current_point)
+    blcontrol.beamline.sample_view.connect("newGridResult", handle_grid_result)
 
     global CLICK_LIMIT
     CLICK_LIMIT = int(blcontrol.beamline.click_centring_num_clicks or 3)
@@ -312,6 +313,12 @@ def shape_add_cell_result(sid, cell, result):
 
     shape = blcontrol.beamline.sample_view.get_shape(sid)
     shape.set_cell_result(cell, result)
+    signals.grid_result_available(to_camel(shape.as_dict()))
+
+
+def handle_grid_result(shape):
+    from mxcube3.routes import signals
+
     signals.grid_result_available(to_camel(shape.as_dict()))
 
 

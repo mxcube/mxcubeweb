@@ -120,7 +120,7 @@ export default class DrawGridPlugin {
   }
 
   setGridResultFormat(format) {
-    this.gridResultFormat = format || 'PNG';
+    this.gridResultFormat = format;
   }
 
   setScale(scale) {
@@ -297,30 +297,28 @@ export default class DrawGridPlugin {
     */
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    if (self.gridResultFormat === 'RGB') {
-      const data = Array(col).fill().map(() => Array(row).fill());
+    const data = Array(col).fill().map(() => Array(row).fill());
 
-      for (let nw = 0; nw < col; nw++) {
-        for (let nh = 0; nh < row; nh++) {
-          data[nw][nh] = Math.random();
-        }
+    for (let nw = 0; nw < col; nw++) {
+      for (let nh = 0; nh < row; nh++) {
+        data[nw][nh] = Math.random();
       }
+    }
 
-      // Asume flat result object to remain compatible with old format only
-      // suporting one type of results
-      let { result } = gd;
+    // Asume flat result object to remain compatible with old format only
+    // suporting one type of results
+    let { result } = gd;
 
-      // Use selected result type if it exists
-      if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
-        result = gd.result[this.resultType];
-      }
+    // Use selected result type if it exists
+    if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
+      result = gd.result[this.resultType];
+    }
 
-      if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
-        for (let nh = 0; nh < row; nh++) {
-          for (let nw = 0; nw < col; nw++) {
-            const index = nw + nh * col + 1;
-            fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
-          }
+    if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
+      for (let nh = 0; nh < row; nh++) {
+        for (let nw = 0; nw < col; nw++) {
+          const index = nw + nh * col + 1;
+          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
         }
       }
     }
@@ -359,8 +357,6 @@ export default class DrawGridPlugin {
 
     const color = gridData.selected ? 'rgba(0, 255, 0, 1)' : 'rgba(0, 0, 100, 0.8)';
     const strokeArray = gridData.selected ? [] : [5, 5];
-    // const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
-
 
     if (cellTW > 0 && cellTH > 0) {
       for (let nw = 1; nw < gridData.numCols; nw++) {
@@ -387,46 +383,63 @@ export default class DrawGridPlugin {
         ));
       }
 
-      if (!this.drawing && this.gridResultFormat === 'RGB') {
-        for (let nw = 0; nw < gridData.numCols; nw++) {
-          for (let nh = 0; nh < gridData.numRows; nh++) {
-            const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
-              gridData.numRows, gridData.numCols);
+      if (!this.drawing) {
+        if (this.gridResultFormat === 'RGB') {
+          const fillingMatrix = this.cellFillingFromData(
+            gridData, gridData.numCols, gridData.numRows
+          );
 
-            shapes.push(new fabric.Ellipse({
-              left: left + cellHSpace / 2 + cellTW * nw,
-              top: top + cellVSpace / 2 + cellTH * nh,
-              width: cellWidth,
-              height: cellHeight,
-              // fill: fillingMatrix[nw][nh],
-              stroke: 'rgba(0,0,0,0)',
-              hasControls: false,
-              selectable: false,
-              hasRotatingPoint: false,
-              lockMovementX: true,
-              lockMovementY: true,
-              lockScalingX: true,
-              lockScalingY: true,
-              lockRotation: true,
-              hoverCursor: 'pointer',
-              originX: 'left',
-              originY: 'top',
-              rx: cellWidth / 2,
-              ry: cellHeight / 2,
-              cell: cellCount
-            }));
+          for (let nw = 0; nw < gridData.numCols; nw++) {
+            for (let nh = 0; nh < gridData.numRows; nh++) {
+              const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
+                gridData.numRows, gridData.numCols);
 
-            if (this.include_cell_labels) {
-              shapes.push(new fabric.Text(cellCount, {
-                left: left + cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
-                top: top + cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
-                originX: 'center',
-                originY: 'center',
-                fill: 'rgba(0, 0, 200, 1)',
-                fontFamily: 'Helvetica',
-                fontSize: 18
+              shapes.push(new fabric.Ellipse({
+                left: left + cellHSpace / 2 + cellTW * nw,
+                top: top + cellVSpace / 2 + cellTH * nh,
+                width: cellWidth,
+                height: cellHeight,
+                fill: fillingMatrix[nw][nh],
+                stroke: 'rgba(0,0,0,0)',
+                hasControls: false,
+                selectable: false,
+                hasRotatingPoint: false,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true,
+                hoverCursor: 'pointer',
+                originX: 'left',
+                originY: 'top',
+                rx: cellWidth / 2,
+                ry: cellHeight / 2,
+                cell: cellCount
               }));
+
+              if (this.include_cell_labels) {
+                shapes.push(new fabric.Text(cellCount, {
+                  left: left + cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
+                  top: top + cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
+                  originX: 'center',
+                  originY: 'center',
+                  fill: 'rgba(0, 0, 200, 1)',
+                  fontFamily: 'Helvetica',
+                  fontSize: 18
+                }));
+              }
             }
+          }
+        } else {
+          if (gridData.result && gridData.result.length > 0) {
+            const imageElement = document.createElement('img');
+            imageElement.src = `data:image/png;base64,${gridData.result}`;
+            const image = new fabric.Image(imageElement);
+            image.height = height;
+            image.width = width;
+            image.top = top;
+            image.left = left;
+            shapes.push(image);
           }
         }
       }
