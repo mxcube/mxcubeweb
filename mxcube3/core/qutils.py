@@ -230,16 +230,14 @@ def get_node_state(node_id):
               where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
               {'sample': sample, 'idx': index, 'queue_id': node_id}
     """
-
     try:
         node, entry = get_entry(node_id)
     except BaseException:
         return (True, UNCOLLECTED)
 
-    executed = node.is_executed()
     enabled = node.is_enabled()
-    failed = entry.status == FAILED
     curr_entry = blcontrol.beamline.queue_manager.get_current_entry()
+
     running = blcontrol.beamline.queue_manager.is_executing and (
         curr_entry == entry or curr_entry == entry._parent_container
     )

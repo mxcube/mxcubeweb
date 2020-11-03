@@ -228,7 +228,7 @@ def get_task_state(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
-        limsres = blcontrol.beamline.lims_rest.get_dc(lims_id)
+        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
     except BaseException:
         limsres = {}
 
