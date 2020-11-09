@@ -1705,6 +1705,7 @@ def execute_entry_with_id(sid, tindex=None):
         finally:
             blcontrol.beamline.queue_manager._running = False
             blcontrol.beamline.queue_manager.emit("queue_stopped", (None,))
+            blcontrol.beamline.collect.queue_finished_cleanup()
 
 
 def init_signals(queue):
