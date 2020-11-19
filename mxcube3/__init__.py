@@ -141,7 +141,12 @@ socketio.init_app(server)
 # (because of the Reloader)
 
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    atexit.register(kill_processes)
+
+    # Killing the processes causes pytest to fail because
+    # of non zero exit code, so we dont register kill_process
+    # when running the tests
+    if "COV_CORE_SOURCE" not in os.environ:
+        atexit.register(kill_processes)
 
     with open("/tmp/mxcube.pid", "w") as f:
         f.write(str(os.getpid()) + " ")
