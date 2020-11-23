@@ -346,7 +346,7 @@ def get_status_of_id(elem_id):
         return Response(status=409)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=["PUT"])
+@server.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=["GET"])
 @server.require_control
 @server.restrict
 def centre_auto():
