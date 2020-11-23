@@ -1132,7 +1132,7 @@ class _BeamlineAdapter:
         "machine_info": ("machine_info", MachineInfoHOAdapter),
         "flux": ("flux", PhotonFluxHOAdapter),
         "data_publisher": ("data_publisher", DataPublisherHOAdapter),
-        "cryo": ("cryostream", CryoHOAdapter),
+        "cryo": ("diffractometer.cryostream", CryoHOAdapter),
         "capillary": ("diffractometer.capillary", DuoStateHOAdapter),
         "beamstop": ("diffractometer.beamstop", DuoStateHOAdapter),
         "detector_distance": ("detector.distance", DetectorDistanceHOAdapter),
