@@ -161,7 +161,7 @@ def loaded_sample_changed(sample):
         address = ""
         barcode = ""
 
-    logging.getLogger("HWR").info("Loaded sample changed now is: " + address)
+    logging.getLogger("HWR").info("Loaded sample changed: " + address)
 
     try:
         sampleID = address
@@ -179,6 +179,7 @@ def loaded_sample_changed(sample):
         )
 
         sc_load_ready(address)
+
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
 
