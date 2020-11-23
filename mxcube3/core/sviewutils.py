@@ -479,9 +479,16 @@ def start_auto_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    msg = "Using automatic centring"
-    logging.getLogger("user_level_log").info(msg)
-    blcontrol.beamline.diffractometer.start_automatic_centring()
+    if not blcontrol.beamline.diffractometer.current_centring_procedure:
+        msg = "Starting automatic centring"
+        logging.getLogger("user_level_log").info(msg)
+
+        blcontrol.beamline.diffractometer.start_centring_method(
+            blcontrol.beamline.diffractometer.C3D_MODE
+        )
+    else:
+        msg = "Could not starting automatic centring, already centring."
+        logging.getLogger("user_level_log").info(msg)
 
 
 def start_manual_centring():
@@ -494,11 +501,14 @@ def start_manual_centring():
     if blcontrol.beamline.diffractometer._ready():
         if blcontrol.beamline.diffractometer.current_centring_procedure:
             logging.getLogger("user_level_log").info("Aborting current centring ...")
-            blcontrol.beamline.diffractometer.cancel_centring_method()
+            blcontrol.beamline.diffractometer.cancel_centring_method(reject=True)
 
         logging.getLogger("user_level_log").info("Centring using 3-click centring")
 
-        blcontrol.beamline.diffractometer.start_manual_centring()
+        blcontrol.beamline.diffractometer.start_centring_method(
+            blcontrol.beamline.diffractometer.MANUAL3CLICK_MODE
+        )
+
         centring_reset_click_count()
     else:
         logging.getLogger("user_level_log").warning("Diffracomter is busy, cannot start centering")
@@ -524,7 +534,10 @@ def centring_handle_click(x, y):
         if not centring_clicks_left():
             centring_reset_click_count()
             blcontrol.beamline.diffractometer.cancel_centring_method()
-            blcontrol.beamline.diffractometer.start_manual_centring()
+
+            blcontrol.beamline.diffractometer.start_centring_method(
+                blcontrol.beamline.diffractometer.MANUAL3CLICK_MODE
+            )
 
     return {"clicksLeft": centring_clicks_left()}
 
