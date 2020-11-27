@@ -115,10 +115,8 @@ export function loadSample(sampleData, successCb = null) {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, response.headers.get('message')));
           throw new Error('Server refused to mount sample');
-        } else {
-          if (successCb) {
-            successCb();
-          }
+        } else if (successCb) {
+          successCb();
         }
       });
     }
