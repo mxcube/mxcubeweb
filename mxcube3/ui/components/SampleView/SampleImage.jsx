@@ -625,7 +625,7 @@ export default class SampleImage extends React.Component {
       grid.state = 'HIDDEN';
     }
 
-    this.props.sampleActions.updateShapes([grid]);
+    this.props.sampleActions.sendUpdateShapes([grid]);
   }
 
   centringMessage() {
