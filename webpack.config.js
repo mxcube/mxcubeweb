@@ -4,6 +4,7 @@ var backend_server = require('./backend_server.js');
 var GitRevisionPlugin = require('git-revision-webpack-plugin');
 var gitRevisionPlugin = new GitRevisionPlugin();
 var CopyWebpackPlugin = require('copy-webpack-plugin')
+var ESLintPlugin = require('eslint-webpack-plugin');
 
 var VIDEO_STREAM_URL = '"ws://localhost:4042/"'
 
@@ -47,8 +48,7 @@ var config = {
 	test: /\.jsx?$/,
 	exclude: /node_modules/,
 	use:[
-          "babel-loader",
-          "eslint-loader"
+          "babel-loader"
         ]
       },
       {  
@@ -136,7 +136,10 @@ var config = {
     }),
    new CopyWebpackPlugin([
        { from: 'mxcube3/ui/img/favicon.ico' },
-   ])
+   ]),
+   new ESLintPlugin({
+     'extensions' : ['js', 'jsx']
+   }),
   ],
   externals: {
     'guiConfig': JSON.stringify(require('./config.gui.prod.js')),
