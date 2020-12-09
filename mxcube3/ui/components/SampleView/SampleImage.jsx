@@ -5,7 +5,7 @@ import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } fr
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
-import config from 'guiConfig';
+import config from 'guiConfig'; // eslint-disable-line import/no-unresolved
 
 const jsmpeg = require('./jsmpeg.min.js');
 

@@ -120,7 +120,7 @@ export default class DrawGridPlugin {
   }
 
   setGridResultFormat(format) {
-    this.gridResultFormat = format ? format : 'PNG';
+    this.gridResultFormat = format || 'PNG';
   }
 
   setScale(scale) {
@@ -312,7 +312,7 @@ export default class DrawGridPlugin {
 
       // Use selected result type if it exists
       if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
-      result = gd.result[this.resultType];
+        result = gd.result[this.resultType];
       }
 
       if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
@@ -398,7 +398,7 @@ export default class DrawGridPlugin {
               top: top + cellVSpace / 2 + cellTH * nh,
               width: cellWidth,
               height: cellHeight,
-              fill: fillingMatrix[nw][nh],
+              // fill: fillingMatrix[nw][nh],
               stroke: 'rgba(0,0,0,0)',
               hasControls: false,
               selectable: false,
