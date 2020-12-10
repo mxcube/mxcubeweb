@@ -71,7 +71,8 @@ def get_proposal():
     Return the currently selected proposal. (The proposal list is part of the login_res)
     """
     proposal_info = limsutils.get_proposal_info(
-        blcontrol.beamline.session.proposal_code
+        blcontrol.beamline.session.proposal_code +
+        blcontrol.beamline.session.proposal_number
     )
 
     return jsonify({"Proposal": proposal_info})
