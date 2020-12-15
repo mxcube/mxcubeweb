@@ -1,6 +1,16 @@
 import json
 
 from fixture import client
+from mxcube3.core.loginutils import (
+    lims_login_type,
+    user_type,
+    define_user_type,
+    logged_in_users,
+    users,
+    get_user_by_name,
+    is_local_network
+)
+
 def test_signout(client):
     """Test if we can signout."""
     resp = client.get("/mxcube/api/v0.1/signout")
@@ -22,13 +32,6 @@ def test_forceusersignout(client):
     )
     # it will fail due to wrong sid
     assert resp.status_code == 409
-
-from mxcube3.core.loginutils import (
-    lims_login_type,
-    user_type,
-    define_user_type,
-    logged_in_users
-)
 
 def test_login_type(client):
     """Test we get the correct login type"""
@@ -52,10 +55,9 @@ def test_define_user_type(client):
     _type = define_user_type(False, False, False)
     assert _type == 'remote'
 
-def test_logged_in_users():
+def test_logged_in_users(client):
     _users = logged_in_users()
-    print(_users)
-    assert False
+    assert 'idtest0' in _users
 
 def test_get_users(client):
     _users = users()
