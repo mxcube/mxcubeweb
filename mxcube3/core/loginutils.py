@@ -254,7 +254,7 @@ def is_local_network(ip):
         _address = None
     if ip == _address:
         return False
-    _ip = ipaddress.ip_address(unicode(ip))
+    _ip = ipaddress.ip_address(ip)
     return _ip.is_private
 
 
