@@ -26,11 +26,11 @@ dependencies:
   - opencv
   - requests
   - scandir
-  - redis
+  - redis-py
   - ffmpeg
   - pytango
 
   - pip:
-      - Flask-Session==0.10.1
+      - Flask-Session==0.3.2
       - git+https://github.com/marcus-oscarsson/python-v4l2.git
       - Louie-latest
