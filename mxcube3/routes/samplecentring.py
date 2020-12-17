@@ -21,7 +21,7 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    if mxcube.VIDEO_FORMAT == "MPEG1":
+    if mxcube.CONFIG.APP.VIDEO_FORMAT == "MPEG1":
         result = Response(status=200)
     else:
         frame = sviewutils.stream_video(blcontrol.beamline.sample_view.camera)

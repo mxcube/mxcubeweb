@@ -52,15 +52,6 @@ opt_parser.add_option(
     default=XML_DIR,
 )
 
-
-opt_parser.add_option(
-    "-c",
-    "--config-file",
-    dest="config_file",
-    help="Server configuration file",
-    default="",
-)
-
 opt_parser.add_option(
     "-l",
     "--log-file",
@@ -126,15 +117,18 @@ t0 = time.time()
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 server = Flask(__name__, static_url_path="", template_folder=template_dir)
 
-cfg = Config(cmdline_options.config_file)
+cfg = Config(os.path.abspath(os.path.join(
+    cmdline_options.hwr_directory, 
+    "mxcube-server-config.yml"
+)))
 
-server.config.from_object(cfg)
+server.config.from_object(cfg.FLASK)
 server.register_error_handler(Exception, exception_handler)
 
 _session = Session()
 _session.init_app(server)
 
-socketio = SocketIO(manage_session=False, cors_allowed_origins=cfg.ALLOWED_CORS_ORIGINS)
+socketio = SocketIO(manage_session=False, cors_allowed_origins=cfg.FLASK.ALLOWED_CORS_ORIGINS)
 socketio.init_app(server)
 
 # the following test prevents Flask from initializing twice
@@ -165,6 +159,7 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         cmdline_options.ra_timeout,
         cmdline_options.video_device,
         cmdline_options.log_file,
+        cfg
     )
 
     # Install server-side UI state storage
