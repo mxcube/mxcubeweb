@@ -150,7 +150,7 @@ def get_viewport_info():
     """
     fmt, source_is_scalable = "MJPEG", False
 
-    if mxcube.VIDEO_FORMAT == "MPEG1":
+    if mxcube.CONFIG.APP.VIDEO_FORMAT == "MPEG1":
         fmt, source_is_scalable = "MPEG1", True
         video_sizes = blcontrol.beamline.sample_view.camera.get_available_stream_sizes()
         width, height, scale = blcontrol.beamline.sample_view.camera.get_stream_size()

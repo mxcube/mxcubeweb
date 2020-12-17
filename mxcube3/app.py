@@ -72,8 +72,10 @@ AUTO_ADD_DIFFPLAN = False
 # Number of sample snapshots taken before collect
 NUM_SNAPSHOTS = 4
 
+CONFIG = None
 
-def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
+
+def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath, cfg):
     """
     Initializes application wide variables, sample video stream, and applies
 
@@ -87,9 +89,10 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     """
     from mxcube3.core import utils
 
-    global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
+    global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL, CONFIG
     ALLOW_REMOTE = allow_remote
     TIMEOUT_GIVES_CONTROL = ra_timeout
+    CONFIG = cfg
 
     init_logging(log_fpath)
 

@@ -7,3 +7,6 @@ server:
 
   ALLOWED_CORS_ORIGINS:
     - "http://localhost:8081"
+
+mxcube:
+  VIDEO_FORMAT: MJPEG
