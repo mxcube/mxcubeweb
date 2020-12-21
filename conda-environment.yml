@@ -26,6 +26,7 @@ dependencies:
   - opencv
   - requests
   - scandir
+  - redis
   - redis-py
   - ffmpeg
   - pytango
