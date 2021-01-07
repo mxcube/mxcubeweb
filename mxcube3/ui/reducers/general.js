@@ -1,6 +1,3 @@
-import { omit } from 'lodash/object';
-import shortid from 'shortid';
-
 const initialState = {
   loading: false,
   showErrorPanel: false,
@@ -9,7 +6,6 @@ const initialState = {
   dialogTitle: '',
   dialogType: '',
   showDialog: false,
-  userMessages: [],
   showConnectionLostDialog: false,
   showConfirmClearQueueDialog: false
 };
@@ -40,38 +36,6 @@ export default (state = initialState, action) => {
         dialogTitle: action.title,
         dialogData: action.data
       };
-    }
-    case 'ADD_USER_MESSAGE':
-    {
-      const userMessages = [];
-      let id = shortid.generate();
-
-      while (state.userMessages[id]) {
-        id = shortid.generate();
-      }
-
-      for (const message of state.userMessages) {
-        if (message.exp >= new Date().getTime()) {
-          userMessages.push(message);
-        }
-      }
-
-      userMessages.push({ ...action.message, id });
-      return { ...state, userMessages };
-    }
-    case 'REMOVE_USER_MESSAGE':
-    {
-      let { userMessages } = state;
-
-      if (userMessages[action.messageID]) {
-        userMessages = omit(userMessages, action.messageID);
-      }
-
-      return { ...state, userMessages };
-    }
-    case 'CLEAR_ALL_USER_MESSAGES':
-    {
-      return { ...state, userMessages: {} };
     }
     case 'SHOW_CONNECTION_LOST_DIALOG':
     {

@@ -76,16 +76,16 @@ export default class InOutSwitch extends React.Component {
 
   render() {
     let msgBgStyle = 'warning';
-    if (this.props.data.state === 'out') {
+    if (this.props.data.value === 1) {
       msgBgStyle = 'success';
-    } else if (this.props.data.state === 'in') {
+    } else if (this.props.data.value === 0) {
       msgBgStyle = 'danger';
     }
 
     let btn = <Button block bsSize="small" disabled>---</Button>;
-    if (this.props.data.state === 'out') {
+    if (this.props.data.value === 0) {
       btn = <Button block bsSize="small" onClick={this.setIn}>{this.props.offText}</Button>;
-    } else if (this.props.data.state === 'in') {
+    } else if (this.props.data.value === 1) {
       btn = <Button block bsSize="small" onClick={this.setOut}>{this.props.onText}</Button>;
     }
 

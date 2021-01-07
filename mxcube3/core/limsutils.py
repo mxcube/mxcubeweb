@@ -9,6 +9,7 @@ import logging
 import copy
 import os
 import io
+import math
 from scandir import scandir
 
 from HardwareRepository.HardwareObjects import queue_model_objects as qmo
@@ -194,7 +195,7 @@ def strip_prefix(pt, prefix):
 
 
 def lims_existing_session(login_res):
-    return login_res.get("Session", {}).get("session", {}) and True
+    return login_res.get("Session", {}).get("session", {}).get("sessionId", False) and True
 
 
 def lims_is_inhouse(login_res):
@@ -287,7 +288,7 @@ def lims_login(loginID, password, create_session):
 def create_lims_session(login_res):
     for prop in session["proposal_list"]:
         todays_session = blcontrol.beamline.lims.get_todays_session(prop)
-        prop["Session"] = [todays_session["session"]]
+        prop["Session"] = todays_session["session"]
 
     login_res["proposalList"] = session["proposal_list"]
 
@@ -334,8 +335,12 @@ def select_proposal(proposal):
         blcontrol.beamline.session.proposal_number = proposal_info.get("Proposal").get(
             "number", ""
         )
-        blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get(
+        blcontrol.beamline.session.session_id = proposal_info.get("Session").get(
             "sessionId"
+        )
+
+        blcontrol.beamline.session.proposal_id = proposal_info.get("Session").get(
+            "proposalId"
         )
 
         session["proposal"] = proposal_info
@@ -408,29 +413,28 @@ def get_dc_link(col_id):
 
 def get_dc_thumbnail(image_id):
     fname, data = blcontrol.beamline.lims.lims_rest.get_dc_thumbnail(image_id)
-    data = io.StringIO(data)
-    data.seek(0)
+    data = io.BytesIO(data)
 
     return fname, data
 
 
 def get_dc_image(image_id):
     fname, data = blcontrol.beamline.lims.lims_rest.get_dc_image(image_id)
-    data = io.StringIO(data)
-    data.seek(0)
+    data = io.BytesIO(data)
 
     return fname, data
 
 
 def get_quality_indicator_plot(dc_id):
     data = blcontrol.beamline.lims.lims_rest.get_quality_indicator_plot(dc_id)
-    data = io.StringIO(data)
-    data.seek(0)
+    data = io.BytesIO(data)
 
     return "qind", data
 
 
-def synch_with_lims(proposal_id):
+def synch_with_lims():
+    proposal_id = blcontrol.beamline.session.proposal_id
+
     # session_id is not used, so we can pass None as second argument to
     # 'db_connection.get_samples'
     lims_samples = blcontrol.beamline.lims.get_samples(proposal_id, None)
@@ -454,7 +458,7 @@ def synch_with_lims(proposal_id):
                 "FlexHCD",
                 "RoboDiff",
             ]:
-                cell = int(round((basket + 0.5) / 3.0))
+                cell = int(math.ceil((basket) / 3.0))
                 puck = basket - 3 * (cell - 1)
                 sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
 

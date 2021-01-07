@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
@@ -33,7 +32,7 @@ function mapStateToProps(state) {
     rootPath: state.queue.rootPath,
     displayData: state.queueGUI.displayData,
     loading: state.queueGUI.loading,
-    userMessages: state.general.userMessages,
+    logRecords: state.logger.logRecords,
     plotsData: state.beamline.plotsData,
     plotsInfo: state.beamline.plotsInfo,
     selectedShapes: state.sampleview.selectedShapes,
@@ -90,7 +89,6 @@ class SampleQueueContainer extends React.Component {
       sendPauseQueue,
       sendUnpauseQueue,
       sendStopQueue,
-      sendUnmountSample,
       changeTaskOrderAction,
       deleteTask,
       addTask,
@@ -111,7 +109,8 @@ class SampleQueueContainer extends React.Component {
       sendPrepareForNewSample
     } = this.props.beamlineActions;
     const {
-      loadSample
+      loadSample,
+      unloadSample
     } = this.props.sampleChangerActions;
 
     // go through the queue, check if sample has been collected or not
@@ -162,7 +161,7 @@ class SampleQueueContainer extends React.Component {
           centringMethod={centringMethod}
           todoList={todo}
           sampleList={sampleList}
-          sendUnmountSample={sendUnmountSample}
+          sendUnmountSample={unloadSample}
         />
         <div className="m-tree queue-body">
           <Nav
@@ -197,7 +196,7 @@ class SampleQueueContainer extends React.Component {
               unpause={sendUnpauseQueue}
               stop={sendStopQueue}
               showForm={showForm}
-              unmount={sendUnmountSample}
+              unmount={unloadSample}
               queueStatus={queueStatus}
               rootPath={rootPath}
               collapseItem={collapseItem}
@@ -225,13 +224,17 @@ class SampleQueueContainer extends React.Component {
               showList={showList}
               sendPrepareForNewSample={sendPrepareForNewSample}
             />
-            <UserMessage
-              messages={this.props.userMessages}
-              domTarget={() => ReactDOM.findDOMNode(this.refs.queueContainer)}
-              placement="left"
-              target="queue"
-            />
-        </div>
+            <div className="queue-messages">
+              <div className="queue-messages-title">
+                <span style={{ marginRight: '7px' }} className="fa fa-lg fa-info-circle" />
+                 Log messages:
+              </div>
+              <UserMessage
+                messages={this.props.logRecords}
+                target="user_level_log"
+              />
+            </div>
+          </div>
       </div>
     );
   }

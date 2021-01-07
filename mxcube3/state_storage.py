@@ -6,6 +6,7 @@ from flask_socketio import emit, join_room, leave_room
 from mxcube3 import socketio
 from mxcube3 import app as mxcube
 from mxcube3 import server
+from mxcube3.core import loginutils
 
 import json
 
@@ -42,22 +43,18 @@ def init():
     @socketio.on("ui_state_set", namespace="/ui_state")
     @server.ws_restrict
     def ui_state_update(key_val):
-        leave_room("raSlaves")
-
         key, val = key_val
-        # print 'ui state SET', key
         mxcube.UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
-
+        
         emit(
             "state_update",
             json.dumps(mxcube.UI_STATE),
             namespace="/ui_state",
-            room="raSlaves",
+            broadcast=True,
+            include_self=False 
         )
 
     @socketio.on("ui_state_getkeys", namespace="/ui_state")
     @server.ws_restrict
     def ui_state_getkeys(*args):
-        join_room("raSlaves")
-
         return ["reduxPersist:" + k for k in mxcube.UI_STATE.keys()]

@@ -6,15 +6,6 @@ import '../context-menu-style.css';
 /* eslint-disable react/no-multi-comp */
 
 export class SampleChangerActionButton extends React.Component {
-  constructor(props) {
-    super(props);
-    this.buttonClicked = this.buttonClicked.bind(this);
-  }
-
-  buttonClicked() {
-    this.props.send_command(this.props.cmd);
-  }
-
   render() {
     let disabled;
 
@@ -28,7 +19,7 @@ export class SampleChangerActionButton extends React.Component {
       <Button
         bsStyle="default"
         disabled={disabled}
-        onClick={() => this.props.send_command(this.props.cmd)}
+        onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
       >
         {this.props.label}
       </Button>
@@ -39,8 +30,11 @@ export class SampleChangerActionButton extends React.Component {
 export class SampleChangerActionGroup extends React.Component {
   render() {
     return (
-      <Panel header={this.props.name}>
-        <ButtonGroup>{this.props.buttons}</ButtonGroup>
+      <Panel>
+        <Panel.Heading>{this.props.name}</Panel.Heading>
+        <Panel.Body>
+          <ButtonGroup>{this.props.buttons}</ButtonGroup>
+        </Panel.Body>
       </Panel>
     );
   }
@@ -52,6 +46,7 @@ export default class SampleChangerMaintenance extends React.Component {
       {
         label: cmdinfo[1],
         cmd: cmdinfo[0],
+        args: cmdinfo[3],
         enabled: this.props.commands_state[cmdinfo[0]],
         send_command: this.props.send_command,
       });
@@ -95,8 +90,11 @@ export default class SampleChangerMaintenance extends React.Component {
       <div>
         { groups }
         { msg ? (
-          <Panel header="Status message">
-            <span className="scMessage">{ msg }</span>
+          <Panel>
+            <Panel.Heading>Status message</Panel.Heading>
+            <Panel.Body>
+              <span className="scMessage">{ msg }</span>
+            </Panel.Body>
           </Panel>
         ) : null
          }

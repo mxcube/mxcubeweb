@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import print_function
 
 import json
+import sys
+import logging
 
 from flask import Response, jsonify, request, make_response
 
@@ -34,7 +36,7 @@ def beamline_abort_action(name):
         err = str(sys.exc_info()[1])
         return make_response(err, 520)
     else:
-        logging.getLogger("user_level_log").error("Aborting set on %s." % name)
+        logging.getLogger("user_level_log").error("%s, aborted" % name)
         return make_response("", 200)
 
 

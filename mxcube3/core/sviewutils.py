@@ -66,10 +66,11 @@ def centring_add_current_point(*args):
     # by software like Workflows, so we add one.
     if not shape:
         try:
-            motors = args[1]["motors"]
-            x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motors)
-            centring_update_current_point(motors, x, y)
-            shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
+            if args[0]:
+                motors = args[1]["motors"]
+                x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motors)
+                centring_update_current_point(motors, x, y)
+                shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
         except Exception:
             logging.getLogger("MX3.HWR").exception("Centring failed !")
 
@@ -143,7 +144,7 @@ def init_signals():
 
     for motor in utils.get_centring_motors():
 
-        @utils.RateLimited(10)
+        @utils.RateLimited(6)
         def pos_cb(pos, motor=motor, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
@@ -158,6 +159,9 @@ def init_signals():
             movable = utils.get_movable_state_and_position(motor)
 
             if movable:
+                # TODO check if there is a bug in get_state of expoerter motor ?
+                movable[motor]["state"] = state.value
+
                 signals.motor_state_callback(movable[motor], **kw)
             else:
                 logging.getLogger("MX3.HWR").exception(
@@ -171,7 +175,7 @@ def init_signals():
 
     for actuator_name in ["FrontLight", "BackLight"]:
 
-        @utils.RateLimited(10)
+        @utils.RateLimited(3)
         def light_pos_cb(pos, actuator_name=actuator_name, **kw):
             movable = utils.get_movable_state_and_position(motor)
 
@@ -195,12 +199,7 @@ def init_signals():
             motor = dm.getObjectByRole(actuator_name)
             motor.connect(motor, "valueChanged", light_pos_cb)
             motor_sw = dm.getObjectByRole(actuator_name + "Switch")
-
-            if hasattr(motor_sw, "actuatorIn"):
-                motor_sw.connect(motor_sw, "actuatorStateChanged", light_state_cb)
-            else:
-                motor_sw = dm.getObjectByRole(actuator_name + "Switch")
-                motor_sw.connect(motor_sw, "actuatorStateChanged", light_state_cb)
+            motor_sw.connect(motor_sw, "stateChanged", light_state_cb)
 
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception(str(ex))
@@ -274,8 +273,7 @@ def stream_video(camera):
 
 
 def set_image_size(width, height):
-    blcontrol.beamline.sample_view.camera.set_stream_size(width, height)
-    blcontrol.beamline.sample_view.camera.restart()
+    blcontrol.beamline.sample_view.camera.restart_streaming((width, height))
     return beamlineutils.get_viewport_info()
 
 
@@ -284,7 +282,7 @@ def move_to_centred_position(point_id):
 
     if point:
         motor_positions = point.get_centred_position().as_dict()
-        blcontrol.beamline.diffractometer.move_to_motors_positions(motor_positions)
+        blcontrol.beamline.diffractometer.move_motors(motor_positions)
 
     return point
 
@@ -412,42 +410,23 @@ def move_zoom_motor(pos):
 
 
 def back_light_on():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
-
-    if hasattr(motor, "move_in"):
-        motor.move_in()
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
-        motor.actuatorIn()
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+    motor.set_value(motor.VALUES.IN)
 
 
 def back_light_off():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLight")
-    if hasattr(motor, "move_out"):
-        motor.move_out()
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
-        motor.actuatorOut()
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+    motor.set_value(motor.VALUES.OUT)
 
 
 def front_light_on():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLight")
-
-    if hasattr(motor, "actuatorIn"):
-        motor.actuatorIn()
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
-        motor.actuatorIn()
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+    motor.set_value(motor.VALUES.IN)
 
 
 def front_light_off():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLight")
-
-    if hasattr(motor, "actuatorOut"):
-        motor.actuatorOut(wait=False)
-    else:
-        motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
-        motor.actuatorOut(wait=False)
+    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+    motor.set_value(motor.VALUES.OUT)
 
 
 def move_motor(motid, newpos):
@@ -490,8 +469,8 @@ def start_auto_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    msg = "[Centring] Auto centring method requested"
-    logging.getLogger("MX3.HWR").info(msg)
+    msg = "Using automatic centring"
+    logging.getLogger("user_level_log").info(msg)
     blcontrol.beamline.diffractometer.start_automatic_centring()
 
 
@@ -501,7 +480,7 @@ def start_manual_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    logging.getLogger("MX3.HWR").info("[Centring] 3click method requested")
+    logging.getLogger("user_level_log").info("Centring using 3-click centring")
 
     if blcontrol.beamline.diffractometer.current_centring_procedure:
         blcontrol.beamline.diffractometer.cancel_centring_method()
@@ -512,14 +491,13 @@ def start_manual_centring():
 
 
 def abort_centring():
-    logging.getLogger("MX3.HWR").info("[Centring] Abort method requested")
+    logging.getLogger("user_level_log").info("Aborting centring")
     blcontrol.beamline.diffractometer.cancel_centring_method()
     centring_remove_current_point()
 
 
 def centring_handle_click(x, y):
     if blcontrol.beamline.diffractometer.current_centring_procedure:
-        logging.getLogger("MX3.HWR").info("A click requested, x: %s, y: %s" % (x, y))
         blcontrol.beamline.diffractometer.imageClicked(x, y, x, y)
         centring_click()
     else:
@@ -537,8 +515,8 @@ def reject_centring():
 
 
 def move_to_beam(x, y):
-    msg = "Moving to beam, A point submitted, x: %s, y: %s" % (x, y)
-    logging.getLogger("MX3.HWR").info(msg)
+    msg = "Moving point x: %s, y: %s to beam" % (x, y)
+    logging.getLogger("user_level_log").info(msg)
 
     if getattr(blcontrol.beamline.diffractometer, "move_to_beam") is None:
         # v > 2.2, or perhaps start_move_to_beam?
@@ -549,14 +527,11 @@ def move_to_beam(x, y):
 
 
 def set_centring_method(method):
-    if not method:
-        method = CENTRING_METHOD.LOOP
-
     if method == CENTRING_METHOD.LOOP:
-        msg = "[Centring] Using automatic loop centring when mounting samples"
+        msg = "Using automatic loop centring when mounting samples"
         mxcube.CENTRING_METHOD = CENTRING_METHOD.LOOP
     else:
-        msg = "[Centring] Using click centring when mounting samples"
+        msg = "Using click centring when mounting samples"
         mxcube.CENTRING_METHOD = CENTRING_METHOD.MANUAL
 
-    logging.getLogger("MX3.HWR").info(msg)
+    logging.getLogger("user_level_log").info(msg)

@@ -1,34 +1,13 @@
 import fetch from 'isomorphic-fetch';
 import { unselectShapes } from './sampleview';
 
-export function addUserMessage(record, target) {
-  let duration;
-  let level = 'INFO';
-  const { message } = record;
-  const details = record.stack_trace;
-  const meta = record.logger;
-
-  if (record.severity === 'ERROR') {
-    duration = 7000;
-    level = 'ERROR';
-  } else if (record.severutiy === 'WARNING') {
-    duration = 5000;
-    level = 'WARNING';
-  } else {
-    duration = 7000;
-  }
-
-  let exp = new Date().getTime();
-  exp += duration;
-
+export function addUserMessage(records, target) {
   return {
     type: 'ADD_USER_MESSAGE',
-    message: {
-      message, details, level, duration, exp, meta, target
-    }
+    records,
+    target,
   };
 }
-
 
 export function removeUserMessage(messageID) {
   return { type: 'REMOVE_USER_MESSAGE', messageID };
@@ -105,7 +84,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const beamlineSetup = fetch('mxcube/api/v0.1/beamline', {
+    const beamlineSetup = fetch('mxcube/api/v0.1/beamline/', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -129,7 +108,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const detectorInfo = fetch('mxcube/api/v0.1/detector', {
+    const detectorInfo = fetch('mxcube/api/v0.1/detector/', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -185,7 +164,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const remoteAccess = fetch('mxcube/api/v0.1/ra', {
+    const remoteAccess = fetch('mxcube/api/v0.1/ra/', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -193,7 +172,15 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const workflow = fetch('mxcube/api/v0.1/workflow', {
+    const workflow = fetch('mxcube/api/v0.1/workflow/', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      }
+    });
+    const log = fetch('mxcube/api/v0.1/log', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -244,7 +231,8 @@ export function getInitialState() {
         )
         .catch(notify),
       remoteAccess.then(parse).then((json) => { state.remoteAccess = json.data; }).catch(notify),
-      workflow.then(parse).then((json) => { state.workflow = json; }).catch(notify)
+      workflow.then(parse).then((json) => { state.workflow = json; }).catch(notify),
+      log.then(parse).then((json) => { state.logger = json; }).catch(notify),
     ];
 
     Promise.all(pchains).then(() => {

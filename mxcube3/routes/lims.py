@@ -18,10 +18,10 @@ from mxcube3.core import qutils
 from . import signals
 
 
-@server.route("/mxcube/api/v0.1/lims/samples/<proposal_id>", methods=["GET"])
+@server.route("/mxcube/api/v0.1/lims/synch_samples", methods=["GET"])
 @server.restrict
-def proposal_samples(proposal_id):
-    return jsonify(limsutils.synch_with_lims(proposal_id))
+def proposal_samples():
+    return jsonify(limsutils.synch_with_lims())
 
 
 @server.route("/mxcube/api/v0.1/lims/dc/thumbnail/<image_id>", methods=["GET"])

@@ -12,21 +12,26 @@ import { sendAllowRemote, sendTimeoutGivesControl } from '../actions/remoteAcces
 export class RemoteAccessContainer extends React.Component {
   getRAOptions() {
     let content = (<div className="col-xs-4">
-                     <Panel header="RA Options">
-                       <Checkbox
-                         onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
-                         defaultChecked={this.props.remoteAccess.allowRemote}
-                         checked={this.props.remoteAccess.allowRemote}
-                       >
-                         Enable remote access
-                       </Checkbox>
-                       <Checkbox
-                         onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
-                         defaultChecked={this.props.remoteAccess.timeoutGivesControl}
-                         checked={this.props.remoteAccess.timeoutGivesControl}
-                       >
-                         Timeout gives control
-                       </Checkbox>
+                     <Panel>
+                       <Panel.Heading>
+                         RA Options
+                       </Panel.Heading>
+                       <Panel.Body>
+                         <Checkbox
+                           onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
+                           defaultChecked={this.props.remoteAccess.allowRemote}
+                           checked={this.props.remoteAccess.allowRemote}
+                         >
+                           Enable remote access
+                         </Checkbox>
+                         <Checkbox
+                           onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
+                           defaultChecked={this.props.remoteAccess.timeoutGivesControl}
+                           checked={this.props.remoteAccess.timeoutGivesControl}
+                         >
+                           Timeout gives control
+                         </Checkbox>
+                       </Panel.Body>
                      </Panel>
                    </div>);
 

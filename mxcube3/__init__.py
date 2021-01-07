@@ -8,16 +8,18 @@ monkey.patch_all(thread=False)
 
 import mock
 import os
+import signal
 import logging
 import sys
 import time
 import traceback
+import atexit
 
 import gevent
 
 from optparse import OptionParser
 
-from flask import Flask, request
+from flask import Flask, request, session
 from flask_socketio import SocketIO
 from flask_session import Session
 
@@ -48,15 +50,6 @@ opt_parser.add_option(
     dest="hwr_directory",
     help="Hardware Repository XML files path",
     default=XML_DIR,
-)
-
-
-opt_parser.add_option(
-    "-c",
-    "--config-file",
-    dest="config_file",
-    help="Server configuration file",
-    default="",
 )
 
 opt_parser.add_option(
@@ -104,24 +97,54 @@ def exception_handler(e):
     return err_msg + ": " + traceback.format_exc(), 409
 
 
+def kill_processes():
+    pid_list = []
+
+    with open("/tmp/mxcube.pid", "r") as f:
+        pid_list = f.read().strip()
+        pid_list = pid_list.split(" ")
+        pid_list.reverse()
+
+    with open("/tmp/mxcube.pid", "w") as f:
+        f.write("")
+
+    for pid in pid_list:
+        os.kill(int(pid), signal.SIGKILL)
+
+
 t0 = time.time()
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 server = Flask(__name__, static_url_path="", template_folder=template_dir)
 
-server.config.from_object(Config(cmdline_options.config_file))
+cfg = Config(os.path.abspath(os.path.join(
+    cmdline_options.hwr_directory, 
+    "mxcube-server-config.yml"
+)))
+
+server.config.from_object(cfg.FLASK)
 server.register_error_handler(Exception, exception_handler)
 
 _session = Session()
 _session.init_app(server)
 
-socketio = SocketIO(manage_session=False)
+socketio = SocketIO(manage_session=False, cors_allowed_origins=cfg.FLASK.ALLOWED_CORS_ORIGINS)
 socketio.init_app(server)
 
 # the following test prevents Flask from initializing twice
 # (because of the Reloader)
 
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+
+    # Killing the processes causes pytest to fail because
+    # of non zero exit code, so we dont register kill_process
+    # when running the tests
+    if "COV_CORE_SOURCE" not in os.environ:
+        atexit.register(kill_processes)
+
+    with open("/tmp/mxcube.pid", "w") as f:
+        f.write(str(os.getpid()) + " ")
+
     from core import loginutils
 
     # Make the valid_login_only decorator available on server object
@@ -136,6 +159,7 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         cmdline_options.ra_timeout,
         cmdline_options.video_device,
         cmdline_options.log_file,
+        cfg
     )
 
     # Install server-side UI state storage
@@ -155,7 +179,8 @@ if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         workflow,
         detector,
         ra,
+        log
     )
 
     msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
-    logging.getLogger("HWR").info(msg)
+    logging.getLogger("MX3.HWR").info(msg)

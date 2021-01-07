@@ -52,7 +52,7 @@ def remove_user(sid):
 
     if user["operator"]:
         state_storage.flush()
-        flush()
+        #flush()
     else:
         socketio.emit("observerLogout", user, namespace="/hwr")
         socketio.emit("observersChanged", get_observers(), namespace="/hwr")
@@ -172,38 +172,6 @@ def get_all_messages():
     return MESSAGES
 
 
-def flush():
-    global PENDING_EVENTS
-    PENDING_EVENTS = deque()
-
-
-def _event_callback():
-    event_id, event, json_dict, kw = PENDING_EVENTS.popleft()
-    emit_pending_events()
-
-
-def emit_pending_events():
-    try:
-        event_id, event, json_dict, kwargs = PENDING_EVENTS[0]
-    except IndexError:
-        pass
-    else:
-        return _emit(event, json_dict, **kwargs)
-
-
-def _emit(event, json_dict, **kwargs):
-    kw = dict(kwargs)
-    kw["callback"] = _event_callback
-    kw["room"] = get_operator()["socketio_sid"]
-    socketio.emit(event, json_dict, **kw)
-
-
-def safe_emit(event, json_dict, **kwargs):
-    PENDING_EVENTS.append((id(json_dict), event, json_dict, kwargs))
-    if len(PENDING_EVENTS) == 1:
-        emit_pending_events()
-
-
 def remote_addr():
     hdr = request.headers.get("x-forwarded-for", request.remote_addr)
 
@@ -298,11 +266,11 @@ def login(login_id, password):
             "loginRes": login_res,
         }
 
-        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+        address, barcode = scutils.get_loaded_sample()
 
         # If A sample is mounted (and not already marked as such),
         # get sample changer contents and add mounted sample to the queue
-        if not scutils.get_current_sample() and sample:
+        if not scutils.get_current_sample() and address:
             scutils.get_sample_list()
 
         # For the moment not loading queue from persistent storage (redis),

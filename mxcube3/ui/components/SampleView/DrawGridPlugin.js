@@ -54,6 +54,7 @@ export default class DrawGridPlugin {
     this.setCellSize = this.setCellSize.bind(this);
     this.shapeFromGridData = this.shapeFromGridData.bind(this);
     this.reset = this.reset.bind(this);
+    this.setGridResultFormat = this.setGridResultFormat.bind(this);
     this.snapToGrid = true;
     this.heatMapColorForValue = this.heatMapColorForValue.bind(this);
     this.initializeCellFilling = this.initializeCellFilling.bind(this);
@@ -68,6 +69,7 @@ export default class DrawGridPlugin {
     this.gridData = _GridData();
     this.scale = 0;
     this.resultType = 'heatmap';
+    this.gridResultFormat = 'PNG';
   }
 
   /**
@@ -115,6 +117,10 @@ export default class DrawGridPlugin {
     }
 
     return gridData;
+  }
+
+  setGridResultFormat(format) {
+    this.gridResultFormat = format || 'PNG';
   }
 
   setScale(scale) {
@@ -171,9 +177,11 @@ export default class DrawGridPlugin {
     const row = gridData.numRows;
     const cellResultMatrix = [];
 
-    for (let c = 0; c < col; c++) {
-      for (let r = 0; r < row; c++) {
-        cellResultMatrix.append([0, [0, 0, 0]]);
+    if (this.gridResultFormat === 'RGB') {
+      for (let c = 0; c < col; c++) {
+        for (let r = 0; r < row; c++) {
+          cellResultMatrix.append([0, [0, 0, 0]]);
+        }
       }
     }
 
@@ -201,7 +209,6 @@ export default class DrawGridPlugin {
       this.gridData.screenCoord[1] = options.e.layerY;
     }
   }
-
 
   /**
    * Updates current grid while drawing
@@ -241,7 +248,6 @@ export default class DrawGridPlugin {
       this.repaint(canvas);
     }
   }
-
 
   /**
    * Repaint current grid
@@ -289,33 +295,36 @@ export default class DrawGridPlugin {
     * @param {GridData} gd
     * @param 2d array data
     */
-    const data = Array(col).fill().map(() => Array(row).fill());
-
-    for (let nw = 0; nw < col; nw++) {
-      for (let nh = 0; nh < row; nh++) {
-        data[nw][nh] = Math.random();
-      }
-    }
-
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    // Asume flat result object to remain compatible with old format only
-    // suporting one type of results
-    let { result } = gd;
+    if (self.gridResultFormat === 'RGB') {
+      const data = Array(col).fill().map(() => Array(row).fill());
 
-    // Use selected result type if it exists
-    if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
-      result = gd.result[this.resultType];
-    }
+      for (let nw = 0; nw < col; nw++) {
+        for (let nh = 0; nh < row; nh++) {
+          data[nw][nh] = Math.random();
+        }
+      }
 
-    if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
-      for (let nh = 0; nh < row; nh++) {
-        for (let nw = 0; nw < col; nw++) {
-          const index = nw + nh * col + 1;
-          fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
+      // Asume flat result object to remain compatible with old format only
+      // suporting one type of results
+      let { result } = gd;
+
+      // Use selected result type if it exists
+      if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
+        result = gd.result[this.resultType];
+      }
+
+      if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
+        for (let nh = 0; nh < row; nh++) {
+          for (let nw = 0; nw < col; nw++) {
+            const index = nw + nh * col + 1;
+            fillingMatrix[nw][nh] = this.heatMapColorForValue(gd, result[index][1]);
+          }
         }
       }
     }
+
     return fillingMatrix;
   }
 
@@ -350,7 +359,7 @@ export default class DrawGridPlugin {
 
     const color = gridData.selected ? 'rgba(0, 255, 0, 1)' : 'rgba(0, 0, 100, 0.8)';
     const strokeArray = gridData.selected ? [] : [5, 5];
-    const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
+    // const fillingMatrix = this.cellFillingFromData(gridData, gridData.numCols, gridData.numRows);
 
 
     if (cellTW > 0 && cellTH > 0) {
@@ -378,7 +387,7 @@ export default class DrawGridPlugin {
         ));
       }
 
-      if (!this.drawing) {
+      if (!this.drawing && this.gridResultFormat === 'RGB') {
         for (let nw = 0; nw < gridData.numCols; nw++) {
           for (let nh = 0; nh < gridData.numRows; nh++) {
             const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
@@ -389,7 +398,7 @@ export default class DrawGridPlugin {
               top: top + cellVSpace / 2 + cellTH * nh,
               width: cellWidth,
               height: cellHeight,
-              fill: fillingMatrix[nw][nh],
+              // fill: fillingMatrix[nw][nh],
               stroke: 'rgba(0,0,0,0)',
               hasControls: false,
               selectable: false,

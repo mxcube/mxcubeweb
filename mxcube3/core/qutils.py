@@ -16,6 +16,7 @@ from mock import Mock
 from HardwareRepository.HardwareObjects import queue_model_objects as qmo
 from HardwareRepository.HardwareObjects import queue_entry as qe
 from HardwareRepository.HardwareObjects import queue_model_enumerables as qme
+from HardwareRepository.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
@@ -243,11 +244,11 @@ def get_node_state(node_id):
         curr_entry == entry or curr_entry == entry._parent_container
     )
 
-    if failed:
+    if entry.status == QUEUE_ENTRY_STATUS.FAILED:
         state = FAILED
-    elif executed:
+    elif node.is_executed() or entry.status == QUEUE_ENTRY_STATUS.SUCCESS:
         state = COLLECTED
-    elif running:
+    elif running or entry.status == QUEUE_ENTRY_STATUS.RUNNING:
         state = RUNNING
     else:
         state = UNCOLLECTED
@@ -1111,6 +1112,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params["sample_node_id"] = sample_model._node_id
     beamline_params["sample_lims_id"] = sample_model.lims_id
     beamline_params["beamline"] = blcontrol.beamline.session.endstation_name
+    beamline_params["shape"] = params["shape"]
 
     params_list = list(map(str, list(itertools.chain(*iter(beamline_params.items())))))
     params_list.insert(0, params["wfpath"])
@@ -1213,7 +1215,7 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.energyscan.getProperty("file_suffix", "raw").strip()
+    ftype = blcontrol.beamline.energy_scan.getProperty("file_suffix", "raw").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
@@ -1590,17 +1592,6 @@ def queue_model_child_added(parent, child):
             parent_entry.enqueue(dc_entry)
             sample = parent.get_parent()
 
-            sampleID = sample._node_id
-            # The task comes without a shape,
-            # so find origin (char generates >task node > collection)
-            # add associate shape id
-            queue = queue_to_dict()
-            tasks = queue[str(sampleID)]["tasks"]
-            for t in tasks:
-                if t["queueID"] == parent.get_origin():
-                    shape = t["parameters"]["shape"]
-                    setattr(child, "shape", shape)
-
             task = _handle_dc(sample, child)
             socketio.emit("add_task", {"tasks": [task]}, namespace="/hwr")
 
@@ -1768,7 +1759,11 @@ def init_signals(queue):
     )
 
     blcontrol.beamline.queue_manager.connect(
-        "queue_execute_entry_finished", signals.queue_execution_entry_finished
+        "queue_entry_execute_finished", signals.queue_execution_entry_finished
+    )
+
+    blcontrol.beamline.queue_manager.connect(
+        "queue_entry_execute_started", signals.queue_execution_entry_started
     )
 
     blcontrol.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
@@ -1839,7 +1834,9 @@ def get_task_progress(node, pdata):
 
 
 def is_interleaved(node):
-    return hasattr(node, "interleave_num_images") and node.interleave_num_images > 0
+    return hasattr(node, "interleave_num_images") and \
+           node.interleave_num_images != None and \
+           node.interleave_num_images > 0
 
 
 def init_queue_settings():

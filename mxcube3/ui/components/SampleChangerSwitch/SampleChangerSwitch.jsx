@@ -26,13 +26,13 @@ export default class SampleChangerSwitch extends React.Component {
 
   powerOff() {
     this.props.onSave('powerOff');
-
     this.refs.overlay.hide();
   }
 
 
   render() {
     let msgBgStyle = 'warning';
+
     if (this.props.data === 'READY') {
       msgBgStyle = 'info';
     } else if (this.props.data === 'DISABLED') {
@@ -79,5 +79,5 @@ SampleChangerSwitch.defaultProps = {
   labelText: '',
   pkey: undefined,
   onSave: undefined,
-  data: 'DISABLED',
+  data: 'UNKNOWN',
 };

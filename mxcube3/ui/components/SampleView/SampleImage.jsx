@@ -5,6 +5,7 @@ import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } fr
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
+import config from 'guiConfig'; // eslint-disable-line import/no-unresolved
 
 const jsmpeg = require('./jsmpeg.min.js');
 
@@ -46,6 +47,7 @@ export default class SampleImage extends React.Component {
     this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
     this.drawGridPlugin = new DrawGridPlugin();
+    this.drawGridPlugin.setGridResultFormat(config.meshResultFormat);
     this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;
@@ -116,9 +118,11 @@ export default class SampleImage extends React.Component {
       this.canvas.dispose();
     }
 
-    if (navigator.userAgent.toLowerCase().indexOf('firefox') === -1) {
-      if (this.player) {
+    if (this.player) {
+      try {
         this.player.destroy();
+        this.player = null;
+      } catch (error) {
         this.player = null;
       }
     }
@@ -664,28 +668,28 @@ export default class SampleImage extends React.Component {
   }
 
   initJSMpeg() {
-    const canvas = document.getElementById('sample-img');
-    /* eslint-disable no-undef */
-    let source = !VIDEO_STREAM_URL ? `ws://${document.location.hostname}:4042/` : VIDEO_STREAM_URL;
-    const streamOnLocalHost = VIDEO_STREAM_ON_LOCAL_HOST;
-    /* eslint-enable no-undef */
+    if (this.player === null) {
+      const canvas = document.getElementById('sample-img');
+      /* eslint-disable no-undef */
+      let source = !VIDEO_STREAM_URL ? `ws://${document.location.hostname}:4042/` : VIDEO_STREAM_URL;
+      const streamOnLocalHost = VIDEO_STREAM_ON_LOCAL_HOST;
+      /* eslint-enable no-undef */
 
-    // Use local video stream if there is one
-    if (document.location.hostname === 'localhost' && streamOnLocalHost) {
-      source = `ws://${document.location.hostname}:4042/`;
-    }
+      // Use local video stream if there is one
+      if (document.location.hostname === 'localhost' && streamOnLocalHost) {
+        source = `ws://${document.location.hostname}:4042/`;
+      }
 
-    source = source + this.props.videoHash;
+      source = source + this.props.videoHash;
 
-    if (this.player) {
-      this.player.destroy();
-      this.player = null;
-    }
-
-    if (this.props.videoFormat === 'MPEG1' && canvas) {
-      this.player = new jsmpeg.JSMpeg.Player(source, {
-        canvas, decodeFirstFrame: true, preserveDrawingBuffer: true });
-      this.player.play();
+      if (this.props.videoFormat === 'MPEG1' && canvas) {
+        this.player = new jsmpeg.JSMpeg.Player(source, {
+          canvas,
+          decodeFirstFrame: false,
+          preserveDrawingBuffer: true,
+        });
+        this.player.play();
+      }
     }
   }
 
@@ -809,6 +813,7 @@ export default class SampleImage extends React.Component {
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
+              generalActions={this.props.generalActions}
               {...this.props}
               canvas={ this.canvas }
               imageRatio={ this.props.imageRatio }

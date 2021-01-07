@@ -337,7 +337,7 @@ export default (state = INITIAL_STATE, action) => {
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction, i) => {
         if (beamlineAction.name === cmdName) {
-          beamlineActionsList[i].messages.push(action.message);
+          beamlineActionsList[i].messages.push(action.data);
           Object.assign(currentBeamlineAction, state.currentBeamlineAction,
             JSON.parse(JSON.stringify(beamlineActionsList[i])));
           return true;

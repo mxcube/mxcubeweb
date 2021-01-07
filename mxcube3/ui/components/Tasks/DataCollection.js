@@ -47,6 +47,7 @@ class DataCollection extends React.Component {
       type: 'DataCollection',
       label: 'Data Collection',
       helical: false,
+      mesh: false,
       shape: this.props.pointID
     };
 
@@ -241,7 +242,7 @@ class DataCollection extends React.Component {
                 <SelectField
                   propName="detector_mode"
                   label="Detector mode"
-                  list={['0', 'C18', 'C2']}
+                  list={['0', 'C18', 'C12', 'C2']}
                 />
               </FieldsRow>
             </CollapsableRows>

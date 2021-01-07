@@ -22,6 +22,16 @@ class MOTOR_STATE(object):
     }
 
 
+ABSTRACT_NSTATE_TO_VALUE = {
+    "CLOSED": 0,
+    "OUT": 0,
+    "OPEN": 1,
+    "IN": 1,
+    "UNKNOWN": 2,
+    "UDEFINED": 2
+}
+
+
 class INOUT_STATE(object):
     """
     States for inout devices, mapped to the client (UI) representation of
@@ -51,16 +61,6 @@ class TANGO_SHUTTER_STATE(object):
         "close": INOUT_STATE.IN,
         "open": INOUT_STATE.OUT,
     }
-
-    STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OPEN", INOUT_STATE.IN: "CLOSED"}
-
-
-class MICRODIFF_INOUT_STATE(object):
-    """
-    State mapping for MicrodiffInOut
-    """
-
-    TO_INOUT_STATE = {"in": INOUT_STATE.OUT, "out": INOUT_STATE.IN}
 
     STATE_TO_MSG_STR = {INOUT_STATE.OUT: "OPEN", INOUT_STATE.IN: "CLOSED"}
 

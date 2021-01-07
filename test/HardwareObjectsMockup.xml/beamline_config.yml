@@ -130,7 +130,7 @@ available_methods:
     helical: True
     xrf_scan: True
     energy_scan: True
-    mesh_scan: fals
+    mesh_scan: False
 
 undulators:
     - type: PPU35C_GAP

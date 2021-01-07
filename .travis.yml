@@ -8,8 +8,8 @@ services:
   - redis-server
 
 install:
-  - nvm install 12
-  - nvm use 12
+  - nvm install 10
+  - nvm use 10
   - npm install
   - npm run build
   - pip install codecov

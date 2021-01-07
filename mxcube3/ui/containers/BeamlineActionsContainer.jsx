@@ -18,6 +18,8 @@ import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionC
 import Plot1D from '../components/Plot1D';
 import { RUNNING } from '../constants';
 
+import { DraggableModal } from '../components/DraggableModal';
+
 class BeamlineActionsContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -72,6 +74,19 @@ class BeamlineActionsContainer extends React.Component {
     const currentActionRunning = this.props.currentAction.state === RUNNING;
     const currentActionName = this.props.currentAction.name;
 
+    let defaultDialogPosition = { x: 0, y: 0 };
+
+    if (document.getElementsByClassName('m-tree').length > 0) {
+      const width = window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
+
+      defaultDialogPosition = {
+        x: width - document.getElementsByClassName('m-tree')[0].getClientRects()[0].x - 50,
+        y: 0
+      };
+    }
+
     return (
       <Row>
         <Col xs={12}>
@@ -102,9 +117,10 @@ class BeamlineActionsContainer extends React.Component {
              })}
             </DropdownButton>
         </Col>
-        <Modal id="beamlineActionOutput"
+        <DraggableModal id="beamlineActionOutput"
           show={!!this.props.currentAction.show}
           onHide={this.hideOutput}
+          defaultPosition={defaultDialogPosition}
         >
           <Modal.Header>
             <Modal.Title>
@@ -149,9 +165,14 @@ class BeamlineActionsContainer extends React.Component {
              </Well>) : '' }
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.hideOutput}> Close window </Button>
+            <Button
+              onClick={this.hideOutput}
+              disabled={currentActionRunning}
+            >
+              Close window
+            </Button>
           </Modal.Footer>
-        </Modal>
+        </DraggableModal>
       </Row>
     );
   }

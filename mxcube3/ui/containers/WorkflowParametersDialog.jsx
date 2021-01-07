@@ -3,7 +3,7 @@ import { bindActionCreators, createStore, combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { Modal } from 'react-bootstrap';
-import Liform from 'liform-react';
+import Form from '@rjsf/core';
 import { showWorkflowParametersDialog,
   workflowSubmitParameters } from '../actions/workflow';
 
@@ -18,7 +18,7 @@ class WorkflowParametersDialog extends React.Component {
   }
 
   submitData(values) {
-    this.props.workflowSubmitParameters(values);
+    this.props.workflowSubmitParameters(values.formData);
     this.props.hide();
   }
 
@@ -34,10 +34,11 @@ class WorkflowParametersDialog extends React.Component {
     if (this.props.show && this.props.formData) {
       form = (
         <Provider store={this.store}>
-          <Liform
-            initialValues={this.props.formData.initialValues}
+          <Form
             schema={this.props.formData}
+            formData={this.props.formData.initialValues}
             onSubmit={this.submitData}
+            onError={console.log('errors')}
           />
         </Provider>
       );
