@@ -34,10 +34,10 @@ def start(device, scale, _hash):
 
     FNULL = open(os.devnull, "w")
 
-    relay = subprocess.Popen(["node", websocket_relay_js, _hash, "4041", "4042"])
+    relay = subprocess.Popen(["node", websocket_relay_js, _hash, "4041", "4042"], shell=False)
 
     # Make sure that the relay is running (socket is open)
-    time.sleep(1)
+    time.sleep(2)
 
     scale = "scale=w=%s:h=%s:force_original_aspect_ratio=decrease" % scale
 
@@ -55,7 +55,7 @@ def start(device, scale, _hash):
             "-f",
             "mpegts",
             "-b:v",
-            "6000k",
+            "0k",
             "-q:v",
             "2",
             "-an",
@@ -63,9 +63,13 @@ def start(device, scale, _hash):
             "mpeg1video",
             "http://localhost:4041/" + _hash,
         ],
-        stdout=FNULL,
         stderr=subprocess.STDOUT,
+        stdin=subprocess.PIPE,
+        shell=False
     )
+
+    with open("/tmp/mxcube.pid", "a") as f:
+        f.write("%s %s" % (relay.pid, ffmpeg.pid))
 
     return relay, ffmpeg
 
@@ -84,7 +88,7 @@ if __name__ == "__main__":
         scale = tuple(scale.split(","))
 
     try:
-        _hash = sys.argv[2].strip()
+        _hash = sys.argv[3].strip()
     except IndexError:
         _hash = "-1,-1"
 

@@ -328,7 +328,7 @@ export class SampleGridItem extends React.Component {
         <div className={scLocationClasses}>
           {this.props.sampleData.location} {this.currentSampleText()}
         </div>
-        <div style={{ display: 'block', clear: 'both' }}>
+        <div style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
         <OverlayTrigger
           ref="sampleInfoPopoverTrigger"
           placement={this.popoverPosition()}

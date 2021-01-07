@@ -112,20 +112,21 @@ class UserList extends React.Component {
 
   render() {
     return (
-      <div>
-      <Panel header="User Info">
-        <div className="col-xs-12">
-          <div className="col-xs-2"><b>Name</b></div>
-          <div className="col-xs-4"><b>Host</b></div>
-          <div className="col-xs-2"><b>Proposal</b></div>
-          <div className="col-xs-1"><b>Type</b></div>
-          <div className="col-xs-1"><b>Role</b></div>
-          <div className="col-xs-2"><b>Control</b></div>
-          {this.getUserInfo()}
-          {this.getUsers()}
-        </div>
+      <Panel>
+        <Panel.Heading>Users</Panel.Heading>
+        <Panel.Body>
+          <div className="col-xs-12">
+            <div className="col-xs-2"><b>Name</b></div>
+            <div className="col-xs-4"><b>Host</b></div>
+            <div className="col-xs-2"><b>Proposal</b></div>
+            <div className="col-xs-1"><b>Type</b></div>
+            <div className="col-xs-1"><b>Role</b></div>
+            <div className="col-xs-2"><b>Control</b></div>
+            {this.getUserInfo()}
+            {this.getUsers()}
+          </div>
+        </Panel.Body>
       </Panel>
-      </div>
     );
   }
 }

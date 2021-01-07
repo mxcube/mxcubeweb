@@ -13,8 +13,6 @@ from mxcube3.core import qutils
 from mxcube3.core import scutils
 from mxcube3.core import limsutils
 
-from mxcube3.core.loginutils import safe_emit
-
 from abstract.AbstractSampleChanger import SampleChangerState
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 
@@ -50,7 +48,7 @@ def last_queue_node():
     return res
 
 
-beam_signals = ["beamPosChanged", "beamInfoChanged", "valueChanged"]
+beam_signals = ["beamPosChanged", "beamInfoChanged", "valueChanged", "stateChanged"]
 
 centringSignals = [
     "centringInvalid",
@@ -179,6 +177,8 @@ def loaded_sample_changed(sample):
             {"address": address, "barcode": barcode},
             namespace="/hwr",
         )
+
+        sc_load_ready(address)
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
 
@@ -247,7 +247,7 @@ def get_task_state(entry):
         "sample": node_index["sample"],
         "limsResultData": limsres,
         "state": state,
-        "progress": 1,
+        "progress": 1 if state == COLLECTED else 0,
     }
 
     return msg
@@ -279,22 +279,33 @@ def update_task_result(entry):
     socketio.emit("update_task_lims_data", msg, namespace="/hwr")
 
 
-def queue_execution_entry_finished(entry):
+def queue_execution_entry_started(entry, message):
     handle_auto_mount_next(entry)
 
     if not qutils.is_interleaved(entry.get_data_model()):
-        safe_emit("task", get_task_state(entry), namespace="/hwr")
+        socketio.emit("task", get_task_state(entry), namespace="/hwr")
 
+
+def queue_execution_entry_finished(entry, message):
+    handle_auto_mount_next(entry)
+
+    if not qutils.is_interleaved(entry.get_data_model()):
+        socketio.emit("task", get_task_state(entry), namespace="/hwr")
+
+    queue_toggle_sample(entry)
+
+
+def queue_toggle_sample(entry):
     if isinstance(entry, qe.SampleQueueEntry):
         msg = {"Signal": "DisableSample", "sampleID": entry.get_data_model().loc_str}
-        safe_emit("queue", msg, namespace="/hwr")
+        socketio.emit("queue", msg, namespace="/hwr")
 
 
 def queue_execution_started(entry, queue_state=None):
     state = queue_state if queue_state else qutils.queue_exec_state()
     msg = {"Signal": state, "Message": "Queue execution started"}
 
-    safe_emit("queue", msg, namespace="/hwr")
+    socketio.emit("queue", msg, namespace="/hwr")
 
 
 def queue_execution_finished(entry, queue_state=None):
@@ -304,13 +315,13 @@ def queue_execution_finished(entry, queue_state=None):
     qutils.enable_sample_entries(mxcube.TEMP_DISABLED, True)
     mxcube.TEMP_DISABLED = []
 
-    safe_emit("queue", msg, namespace="/hwr")
+    socketio.emit("queue", msg, namespace="/hwr")
 
 
 def queue_execution_stopped(*args):
     msg = {"Signal": "QueueStopped", "Message": "Queue execution stopped"}
 
-    safe_emit("queue", msg, namespace="/hwr")
+    socketio.emit("queue", msg, namespace="/hwr")
 
 
 def queue_execution_paused(state):
@@ -319,13 +330,13 @@ def queue_execution_paused(state):
     else:
         msg = {"Signal": "QueueRunning", "Message": "Queue execution paused"}
 
-    safe_emit("queue", msg, namespace="/hwr")
+    socketio.emit("queue", msg, namespace="/hwr")
 
 
 def queue_execution_failed(entry):
     msg = {"Signal": qutils.queue_exec_state(), "Message": "Queue execution stopped"}
 
-    safe_emit("queue", msg, namespace="/hwr")
+    socketio.emit("queue", msg, namespace="/hwr")
 
 
 def collect_oscillation_started(*args):
@@ -345,7 +356,7 @@ def collect_oscillation_started(*args):
         logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
         try:
-            safe_emit("task", msg, namespace="/hwr")
+            socketio.emit("task", msg, namespace="/hwr")
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -370,11 +381,10 @@ def collect_image_taken(frame):
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
 
-
-@utils.RateLimited(0.5)
+@utils.RateLimited(1)
 def _emit_progress(msg):
     logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
-    safe_emit("task", msg, namespace="/hwr")
+    socketio.emit("task", msg, namespace="/hwr")
 
 
 def collect_oscillation_failed(
@@ -403,7 +413,7 @@ def collect_oscillation_failed(
         logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
         try:
-            safe_emit("task", msg, namespace="/hwr")
+            socketio.emit("task", msg, namespace="/hwr")
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -428,7 +438,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
         logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
         try:
-            safe_emit("task", msg, namespace="/hwr")
+            socketio.emit("task", msg, namespace="/hwr")
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -452,7 +462,7 @@ def collect_ended(owner, success, message):
         logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
         try:
-            safe_emit("task", msg, namespace="/hwr")
+            socketio.emit("task", msg, namespace="/hwr")
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -475,7 +485,7 @@ def collect_started(*args, **kwargs):
         logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
         try:
-            safe_emit("task", msg, namespace="/hwr")
+            socketio.emit("task", msg, namespace="/hwr")
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -506,7 +516,7 @@ def queue_interleaved_started():
     logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
     try:
-        safe_emit("task", msg, namespace="/hwr")
+        socketio.emit("task", msg, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -527,7 +537,7 @@ def queue_interleaved_finished():
     logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
     try:
-        safe_emit("task", msg, namespace="/hwr")
+        socketio.emit("task", msg, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -549,7 +559,7 @@ def queue_interleaved_sw_done(data):
     logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
 
     try:
-        safe_emit("task", msg, namespace="/hwr")
+        socketio.emit("task", msg, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -568,7 +578,7 @@ def xrf_task_progress(taskId, progress):
     }
 
     try:
-        safe_emit("task", msg, namespace="/hwr")
+        socketio.emit("task", msg, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error("error sending message: " + str(msg))
 
@@ -623,7 +633,7 @@ def beam_changed(*args, **kwargs):
     _beam = beam_info.get_value()
     beam_info_dict.update(
         {
-            "position": beam_info.get_beam_position(),
+            "position": beam_info.get_beam_position_on_screen(),
             "size_x": _beam[0],
             "size_y": _beam[1],
             "shape": _beam[2].value,
@@ -646,8 +656,8 @@ def beamline_action_start(name):
 
 
 def beamline_action_done(name, result):
-    msg = {"name": name, "state": READY, "data": result}
     try:
+        msg = {"name": name, "state": READY, "data": result}
         socketio.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").exception(

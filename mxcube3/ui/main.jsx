@@ -24,6 +24,8 @@ import Main from './components/Main';
 import rootReducer from './reducers';
 import { serverIO } from './serverIO';
 import { getLoginInfo, startSession } from './actions/login';
+import logo from './img/mxcube_logo20.png';
+import loadingAnimation from './img/loading-animation.gif';
 
 import 'font-awesome-webpack-4';
 
@@ -36,21 +38,6 @@ if (module.hot) {
     store.replaceReducer(nextReducer);
   });
 }
-
-function requireAuth(nextState, replace, callback) {
-  let state = store.getState();
-  store.dispatch(getLoginInfo()).then(() => {
-    state = store.getState();
-    if (!state.login.loggedIn) {
-      replace('/login');
-    } else {
-      serverIO.listen(store);
-      store.dispatch(startSession());
-    }
-    return callback();
-  });
-}
-
 
 class ServerStorage {
   setItem(key, value) {
@@ -72,35 +59,59 @@ class ServerStorage {
   }
 }
 
+function requireAuth(nextState, replace, callback) {
+  let state = store.getState();
+  store.dispatch(getLoginInfo()).then(() => {
+    state = store.getState();
+    if (!state.login.loggedIn) {
+      replace('/login');
+    } else {
+      const persistor = persistStore(store,
+        {
+          blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+            'form', 'login', 'general', 'logger', 'shapes',
+            'sampleView', 'taskResult', 'sampleChangerMaintenance'],
+          storage: new ServerStorage()
+        },
+        () => {
+          /* eslint-disable react/no-set-state */
+          // this.setState({ initialized: true });
+          /* eslint-enable react/no-set-state */
+        });
+
+      serverIO.connectStateSocket(persistor);
+      crosstabSync(persistor);
+
+      serverIO.listen(store);
+      store.dispatch(startSession());
+    }
+    return callback();
+  });
+}
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { initialized: true };
+    this.state = { initialized: false };
   }
 
   componentWillMount() {
-    const persistor = persistStore(store,
-      {
-        blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-          'form', 'login', 'general', 'logger', 'shapes',
-          'sampleView', 'taskResult', 'sampleChangerMaintenance'],
-        storage: new ServerStorage()
-      },
-      () => {
-        /* eslint-disable react/no-set-state */
-        this.setState({ initialized: true });
-        /* eslint-enable react/no-set-state */
-      });
-
-    serverIO.connectStateSocket(persistor);
-
-    crosstabSync(persistor);
+    serverIO.connectNetworkSocket(() => {
+      /* eslint-disable react/no-set-state */
+      this.setState({ initialized: true });
+      /* eslint-enable react/no-set-state */
+    });
   }
 
   render() {
-    if (!this.state.initialized) return <span>Loading...</span>;
+    if (!this.state.initialized) {
+      return (
+      <div id="loading">
+        <img className="logo" src={logo} role="presentation" />
+        <div><h3>Loading, please wait</h3> <img className="loader-init" src={loadingAnimation} role="presentation" /></div>
+      </div>);
+    }
 
     return (
       <Provider store={store}>

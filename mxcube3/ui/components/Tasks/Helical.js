@@ -43,6 +43,7 @@ class Helical extends React.Component {
       type: 'DataCollection',
       label: 'Helical',
       helical: true,
+      mesh: false,
       shape: this.props.pointID,
     };
 

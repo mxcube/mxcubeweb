@@ -5,7 +5,16 @@ import Draggable from 'react-draggable';
 
 class DraggableModalDialog extends React.Component {
   render() {
-    return <Draggable handle=".modal-title"><ModalDialog {...this.props} /></Draggable>;
+    return (
+      <Draggable
+        handle=".modal-header"
+        defaultPosition={this.props.defaultPosition}
+      >
+        <ModalDialog
+          {...this.props}
+        />
+      </Draggable>
+    );
   }
 }
 
@@ -19,4 +28,5 @@ export const DraggableModal = (props) => (
     {props.children}
   </Modal>
 );
+
 

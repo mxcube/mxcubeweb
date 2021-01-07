@@ -25,24 +25,26 @@ export default class MXNavbar extends React.Component {
 
     const numObservers = this.props.remoteAccess.observers.length;
 
-    document.title = `MxCuBE-3 ${propInfo}`;
+    document.title = `MxCuBE-3 Proposal: ${propInfo}`;
 
     return (
       <Navbar inverse fixedTop fluid>
         <Navbar.Header>
-          <Navbar.Brand>
-            MXCuBE 3
-          </Navbar.Brand>
+          <LinkContainer to="/remoteaccess">
+            <Navbar.Brand>
+              MXCuBE3 <span className="brand-subtitle">{`(${propInfo})`}</span>
+            </Navbar.Brand>
+          </LinkContainer>
         </Navbar.Header>
         <Nav style={{ marginLeft: '20em' }}>
           <LinkContainer to="/samplegrid">
-            <NavItem eventKey={1}>Sample Overview</NavItem>
+            <NavItem eventKey={1}>Samples</NavItem>
           </LinkContainer>
           <LinkContainer to="/datacollection">
             <NavItem eventKey={2}>Data collection</NavItem>
           </LinkContainer>
           <LinkContainer to="/samplechanger">
-            <NavItem eventKey={3}>Sample Changer</NavItem>
+            <NavItem eventKey={3}>SC tools</NavItem>
           </LinkContainer>
           <LinkContainer to="/logging">
             <NavItem eventKey={4}>System log</NavItem>
@@ -56,9 +58,9 @@ export default class MXNavbar extends React.Component {
           </LinkContainer>
           <LinkContainer to="/remoteaccess">
             <NavItem eventKey={6}>
-              <span style={ raStyle } className="fa fa-lg fa-universal-access">
+              <span style={ raStyle } className="fa fa-lg fa-globe">
                 {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
-              </span> RA
+              </span> Remote
             </NavItem>
           </LinkContainer>
           <NavItem eventKey={7} onClick={this.props.signOut}>

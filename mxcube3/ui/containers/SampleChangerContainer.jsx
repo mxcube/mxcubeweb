@@ -68,7 +68,7 @@ function mapDispatchToProps(dispatch) {
     scan: (container) => dispatch(scan(container)),
     refresh: () => dispatch(refresh()),
     abort: () => dispatch(abort()),
-    sendCommand: (cmd) => dispatch(sendCommand(cmd))
+    sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args))
   };
 }
 

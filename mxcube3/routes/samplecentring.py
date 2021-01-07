@@ -21,7 +21,7 @@ def subscribe_to_camera():
     Subscribe to the camera streaming
         :response: image as html Content-type
     """
-    if mxcube.VIDEO_DEVICE and os.path.exists(mxcube.VIDEO_DEVICE):
+    if mxcube.CONFIG.APP.VIDEO_FORMAT == "MPEG1":
         result = Response(status=200)
     else:
         frame = sviewutils.stream_video(blcontrol.beamline.sample_view.camera)
@@ -86,7 +86,7 @@ def set_image_size():
     """
     params = request.get_json()
 
-    res = sviewutils.set_image_size(params["width"], params["height"])
+    res = sviewutils.set_image_size(int(params["width"]), int(params["height"]))
 
     resp = jsonify(res)
     resp.status_code = 200
@@ -103,7 +103,7 @@ def move_to_centred_position(point_id):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    point = sviewutils.move_to_centred_position()
+    point = sviewutils.move_to_centred_position(point_id)
 
     if point:
         return Response(status=200)

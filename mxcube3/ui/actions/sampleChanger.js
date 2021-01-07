@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
-import { setCurrentSample, clearCurrentSample } from './queue';
+import { clearCurrentSample } from './queue';
 
 export function setContents(contents) {
   return { type: 'SET_SC_CONTENTS', data: { sampleChangerContents: contents } };
@@ -115,31 +115,27 @@ export function loadSample(sampleData, successCb = null) {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, response.headers.get('message')));
           throw new Error('Server refused to mount sample');
-        } else {
-          setCurrentSample(sampleData.sampleID);
-
-          response.json().then((contents) => {
-            dispatch(setContents(contents));
-          }).then(dispatch(refresh()));
-
-          if (successCb) {
-            successCb();
-          }
+        } else if (successCb) {
+          successCb();
         }
       });
     }
   };
 }
 
-export function unloadSample(location) {
+export function unloadSample(sample) {
   let url = '';
+  let _sample = sample;
 
-  if (location) {
+  if (sample) {
     url = 'mxcube/api/v0.1/sample_changer/unmount';
   } else {
     url = 'mxcube/api/v0.1/sample_changer/unmount_current';
   }
 
+  if (typeof (sample) === 'string') {
+    _sample = { location: sample };
+  }
 
   return function (dispatch) {
     fetch(url, {
@@ -149,7 +145,7 @@ export function unloadSample(location) {
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ location, sampleID: location })
+      body: JSON.stringify({ sample: _sample })
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
@@ -178,9 +174,9 @@ export function abort() {
   };
 }
 
-export function sendCommand(cmdparts) {
+export function sendCommand(cmdparts, args) {
   return function (dispatch) {
-    fetch(`mxcube/api/v0.1/sample_changer/send_command/${cmdparts}`, {
+    fetch(`mxcube/api/v0.1/sample_changer/send_command/${cmdparts}/${args}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',

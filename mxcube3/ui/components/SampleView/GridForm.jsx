@@ -6,6 +6,10 @@ import Draggable from 'react-draggable';
 
 
 export default class GridForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.use_advanced_settings = false;
+  }
 
   getGridControls() {
     const gridControlList = [];
@@ -24,12 +28,14 @@ export default class GridForm extends React.Component {
           <td>
             <span style={{ lineHeight: '24px' }}>{grid.name}</span>
           </td>
-          <td>
-            {grid.cellVSpace.toFixed(2)}
-          </td>
-          <td>
-            {grid.cellHSpace.toFixed(2)}
-          </td>
+          { this.use_advanced_settings ? [
+            (<td>
+              {grid.cellVSpace.toFixed(2)}
+            </td>),
+            (<td>
+              {grid.cellHSpace.toFixed(2)}
+            </td>)] : null
+          }
           <td>
             {vdim} x {hdim}
           </td>
@@ -83,26 +89,28 @@ export default class GridForm extends React.Component {
           <td>
             <span style={{ lineHeight: '24px' }}>*</span>
           </td>
-          <td>
-            <Form>
-              <FormControl
-                style={{ width: '50px' }}
-                type="text"
-                defaultValue={0}
-                onChange={this.props.setVCellSpacing}
-              />
-            </Form>
-          </td>
-          <td>
-            <Form>
-              <FormControl
-                style={{ width: '50px' }}
-                type="text"
-                defaultValue={0}
-                onChange={this.props.setHCellSpacing}
-              />
-            </Form>
-          </td>
+          { this.use_advanced_settings ? [(
+            <td>
+              <Form>
+                <FormControl
+                  style={{ width: '50px' }}
+                  type="text"
+                  defaultValue={0}
+                  onChange={this.props.setVCellSpacing}
+                />
+              </Form>
+            </td>),
+          (<td>
+              <Form>
+                <FormControl
+                  style={{ width: '50px' }}
+                  type="text"
+                  defaultValue={0}
+                  onChange={this.props.setHCellSpacing}
+                />
+              </Form>
+            </td>)] : null
+          }
           <td>
           </td>
           <td>
@@ -141,12 +149,14 @@ export default class GridForm extends React.Component {
                   <th>
                     Name
                   </th>
-                  <th>
-                    V-Space (µm)
-                  </th>
-                  <th>
-                    H-Space (µm)
-                  </th>
+                  { this.use_advanced_settings ? [(
+                    <th>
+                      V-Space (µm)
+                    </th>),
+                  (<th>
+                      H-Space (µm)
+                    </th>)] : null
+                  }
                   <th>
                     Dim (µm)
                   </th>

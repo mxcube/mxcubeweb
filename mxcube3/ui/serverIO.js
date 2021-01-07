@@ -18,6 +18,7 @@ import {
 } from './actions/beamline';
 import {
   setActionState,
+  addUserMessage,
   newPlot,
   plotData,
   plotEnd
@@ -39,7 +40,6 @@ import {
 } from './actions/queueGUI';
 import {
   setLoading,
-  addUserMessage,
   showConnectionLostDialog
 } from './actions/general';
 
@@ -67,6 +67,7 @@ import { CLICK_CENTRING } from './constants';
 
 class ServerIO {
   constructor() {
+    this.networkSocket = null;
     this.hwrSocket = null;
     this.loggingSocket = null;
     this.uiStateSocket = null;
@@ -87,6 +88,19 @@ class ServerIO {
         this.uiStateSocket.emit('ui_state_getkeys', null, (value) => { cb(false, value); });
       }
     };
+  }
+
+  connectNetworkSocket(cb) {
+    this.networkSocket = io.connect(`//${document.domain}:${location.port}/network`);
+    this.networkSocket.on('connect', () => {
+      cb(true);
+      this.connected = true;
+    });
+
+    this.networkSocket.on('disconnect', () => {
+      cb(false);
+      this.connected = false;
+    });
   }
 
   connectStateSocket(statePersistor) {
@@ -112,13 +126,8 @@ class ServerIO {
     this.loggingSocket = io.connect(`//${document.domain}:${location.port}/logging`);
 
     this.loggingSocket.on('log_record', (record) => {
+      this.dispatch(addUserMessage(record));
       this.dispatch(addLogRecord(record));
-
-      if (record.logger === 'user_level_log') {
-        this.dispatch(addUserMessage(record, 'queue'));
-      } else {
-        this.dispatch(addUserMessage(record));
-      }
     });
 
     this.hwrSocket.on('ra_chat_message', (record) => {
@@ -325,7 +334,7 @@ class ServerIO {
       this.dispatch(setMaster(false, data.name));
     });
 
-    this.hwrSocket.on('take_xtal_snapshot', (unused, cb) => {
+    this.hwrSocket.on('take_xtal_snapshot', (cb) => {
       cb(window.takeSnapshot());
     });
 

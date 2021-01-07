@@ -6,6 +6,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import datetime
 import os
 import sys
 import logging
@@ -56,7 +57,7 @@ USERS = {}
 MESSAGES = []
 
 # Path to video device (i.e. /dev/videoX)
-VIDEO_DEVICE = None
+VIDEO_FORMAT = "MPEG1"
 
 # Contains the complete client side ui state, managed up state_storage.py
 UI_STATE = dict()
@@ -78,8 +79,10 @@ AUTO_ADD_DIFFPLAN = False
 # Number of sample snapshots taken before collect
 NUM_SNAPSHOTS = 4
 
+CONFIG = None
 
-def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
+
+def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath, cfg):
     """
     Initializes application wide variables, sample video stream, and applies
 
@@ -93,9 +96,10 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     """
     from mxcube3.core import utils
 
-    global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
+    global ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL, CONFIG
     ALLOW_REMOTE = allow_remote
     TIMEOUT_GIVES_CONTROL = ra_timeout
+    CONFIG = cfg
 
     init_logging(log_fpath)
 
@@ -104,10 +108,13 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath):
     if video_device:
         init_sample_video(video_device)
 
-    utils.enable_snapshots(
-        blcontrol.beamline.collect, blcontrol.beamline.diffractometer
-    )
     init_signal_handlers()
+    
+    utils.enable_snapshots(
+        blcontrol.beamline.collect,
+        blcontrol.beamline.diffractometer,
+        blcontrol.beamline.sample_view
+    )
 
     atexit.register(app_atexit)
 
@@ -124,20 +131,14 @@ def init_sample_video(video_device):
 
     :return: None
     """
-    global VIDEO_DEVICE
     from mxcube3.video import streaming_processes
 
     try:
-        sfpath = streaming_processes.__file__
-        blcontrol.beamline.sample_view.camera.start(video_device, sfpath)
+        blcontrol.beamline.sample_view.camera.start_streaming()
     except Exception as ex:
-        msg = "Could not initialize video from %s, error was: " % video_device
+        msg = "Could not initialize video, error was: "
         msg += str(ex)
         logging.getLogger("HWR").info(msg)
-        VIDEO_DEVICE = None
-    else:
-        VIDEO_DEVICE = video_device
-
 
 def init_signal_handlers():
     """
@@ -150,7 +151,15 @@ def init_signal_handlers():
 
     try:
         sviewutils.init_signals()
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+
+    try:
         scutils.init_signals()
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+
+    try:
         beamlineutils.init_signals()
         beamlineutils.diffractometer_init_signals()
     except Exception:
@@ -171,7 +180,7 @@ def init_logging(log_file):
 
     if log_file:
         log_file_handler = TimedRotatingFileHandler(
-            log_file, when="midnight", backupCount=1
+            log_file, when="midnight", backupCount=7
         )
         os.chmod(log_file, 0o666)
         log_file_handler.setFormatter(log_formatter)
@@ -241,7 +250,7 @@ def save_settings():
         "TEMP_DISABLED": TEMP_DISABLED,
         "ALLOW_REMOTE": ALLOW_REMOTE,
         "TIMEOUT_GIVES_CONTROL": TIMEOUT_GIVES_CONTROL,
-        "VIDEO_DEVICE": VIDEO_DEVICE,
+        "VIDEO_FORMAT": VIDEO_FORMAT,
         "AUTO_MOUNT_SAMPLE": AUTO_MOUNT_SAMPLE,
         "AUTO_ADD_DIFFPLAN": AUTO_ADD_DIFFPLAN,
         "NUM_SNAPSHOTS": NUM_SNAPSHOTS,
@@ -260,7 +269,7 @@ def load_settings():
     global CURRENTLY_MOUNTED_SAMPLE, SAMPLE_TO_BE_MOUNTED, CENTRING_METHOD
     global NODE_ID_TO_LIMS_ID, SC_CONTENTS, SAMPLE_LIST
     global TEMP_DISABLED, USERS, ALLOW_REMOTE, TIMEOUT_GIVES_CONTROL
-    global VIDEO_DEVICE, AUTO_MOUNT_SAMPLE, AUTO_ADD_DIFFPLAN, NUM_SNAPSHOTS
+    global VIDEO_FORMAT, AUTO_MOUNT_SAMPLE, AUTO_ADD_DIFFPLAN, NUM_SNAPSHOTS
     global UI_STATE
 
     with open("stored-mxcube-session.json", "r") as f:

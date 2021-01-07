@@ -1,7 +1,7 @@
-<device class="MicrodiffInOutMockup">
-  <username>Microdiff frontlight</username>
-  <motor_name>BackLightIsOn</motor_name>
-  <exporter_address>192.168.96.43:9001</exporter_address>
-  <cmd_name>BackLightIsOn</cmd_name>
-  <offset>0</offset>
- </device>
+<device class="ExporterNStateMockup">
+  <username>Back Light</username>
+  <exporter_address>wid30bmd:9001</exporter_address>
+  <value_channel_name>BackLightIsOn</value_channel_name>
+  <values>{"IN": True, "OUT": False}</values>
+  <use_hwstate>True</use_hwstate>
+</device>

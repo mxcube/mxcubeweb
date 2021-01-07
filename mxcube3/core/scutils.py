@@ -4,9 +4,11 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+import time
+import gevent
 
 # We are patching queue_entry.mount_sample at the end of this file.
-import queue_entry
+#import queue_entry
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
@@ -14,9 +16,8 @@ from mxcube3 import blcontrol
 from . import limsutils
 from . import qutils
 
-
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
-
+from HardwareRepository.HardwareObjects import queue_entry
 
 def init_signals():
     from mxcube3.routes import signals
@@ -127,13 +128,16 @@ def get_sc_contents():
             for e in element.get_components():
                 _addElement(new_element, e)
 
-    root_name = blcontrol.beamline.sample_changer.get_address()
+    if blcontrol.beamline.sample_changer:
+        root_name = blcontrol.beamline.sample_changer.get_address()
 
-    contents = {"name": root_name}
+        contents = {"name": root_name}
 
-    for element in blcontrol.beamline.sample_changer.get_components():
-        if element.is_present():
-            _addElement(contents, element)
+        for element in blcontrol.beamline.sample_changer.get_components():
+            if element.is_present():
+                _addElement(contents, element)
+    else:
+        contents = {"name": "OFFLINE"}
 
     return contents
 
@@ -191,30 +195,40 @@ def get_sample_to_be_mounted():
     return mxcube.SAMPLE_TO_BE_MOUNTED
 
 
-def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_result):
+def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
 
+    blcontrol.beamline.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")
     log = logging.getLogger("user_level_log")
 
     loc = data_model.location
+    holder_length = data_model.holder_length
+
+    robot_action_dict = {
+        "actionType": "LOAD",
+        "containerLocation": loc[1],
+        "dewarLocation": loc[0],
+        "sampleBarcode": data_model.code,
+        "sampleId": data_model.lims_id,
+        "sessionId": blcontrol.beamline.session.session_id,
+        "startTime": time.strftime("%Y-%m-%d %H:%M:%S"),
+    }
 
     # This is a possible solution how to deal with two devices that
     # can move sample on beam (sample changer, plate holder, in future
     # also harvester)
     # TODO make sample_Changer_one, sample_changer_two
-    if beamline.diffractometer.in_plate_mode():
-        sample_mount_device = beamline.plate_manipulator
+    if blcontrol.beamline.diffractometer.in_plate_mode():
+        sample_mount_device = blcontrol.beamline.plate_manipulator
     else:
-        sample_mount_device = beamline.sample_changer
+        sample_mount_device = blcontrol.beamline.sample_changer
 
     if (
         sample_mount_device.get_loaded_sample()
         and sample_mount_device.get_loaded_sample().get_address() == data_model.loc_str
     ):
         return
-
-    beamline.sample_view.clear_all()
 
     if hasattr(sample_mount_device, "__TYPE__"):
         if sample_mount_device.__TYPE__ in ["Marvin", "CATS"]:
@@ -236,6 +250,15 @@ def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_resul
                     "Sample changer could not load sample", ""
                 )
 
+    robot_action_dict["endTime"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    if sample_mount_device.has_loaded_sample():
+        robot_action_dict["status"] = "SUCCESS"
+    else:
+        robot_action_dict["message"] = "Sample was not loaded"
+        robot_action_dict["status"] = "ERROR"
+
+    blcontrol.beamline.lims.store_robot_action(robot_action_dict)
+
     if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
         logging.getLogger("user_level_log").info("Sample not loaded")
@@ -243,11 +266,12 @@ def queue_mount_sample(beamline, view, data_model, centring_done_cb, async_resul
     else:
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
-        dm = beamline.diffractometer
+        dm = blcontrol.beamline.diffractometer
         if dm is not None:
             try:
                 dm.connect("centringAccepted", centring_done_cb)
                 centring_method = mxcube.CENTRING_METHOD
+
                 if centring_method == CENTRING_METHOD.MANUAL:
                     msg = "Manual centring used, waiting for" + " user to center sample"
                     log.warning(msg)
@@ -299,9 +323,6 @@ def mount_sample_clean_up(sample):
     res = None
 
     try:
-        msg = "[SC] mounting %s" % sample["location"]
-        logging.getLogger("MX3.HWR").info(msg)
-
         signals.sc_load(sample["location"])
 
         sid = get_current_sample().get("sampleID", False)
@@ -310,6 +331,9 @@ def mount_sample_clean_up(sample):
         set_sample_to_be_mounted(sample["sampleID"])
 
         if sample["location"] != "Manual":
+            msg = "Mounting sample: %s (%s)" % (sample["location"], sample.get("sampleName", ""))
+            logging.getLogger("user_level_log").info(msg)
+
             if not sc.get_loaded_sample():
                 res = sc.load(sample["sampleID"], wait=True)
             elif sc.get_loaded_sample().get_address() != sample["location"]:
@@ -321,7 +345,7 @@ def mount_sample_clean_up(sample):
             if (
                 res
                 and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP
-                and blcontrol.beamline.diffractometer.in_kappa_mode()
+                and not blcontrol.beamline.diffractometer.in_plate_mode()
             ):
                 msg = "Starting autoloop centring ..."
                 logging.getLogger("MX3.HWR").info(msg)
@@ -330,6 +354,9 @@ def mount_sample_clean_up(sample):
             elif not sc.get_loaded_sample():
                 set_current_sample(None)
         else:
+            msg = "Mounting sample: %s" % sample["sampleName"]
+            logging.getLogger("user_level_log").info(msg)
+
             set_current_sample(sample["sampleID"])
             res = True
 
@@ -348,6 +375,7 @@ def mount_sample_clean_up(sample):
             if sid and current_queue[sid]:
                 node_id = current_queue[sid]["queueID"]
                 qutils.set_enabled_entry(node_id, False)
+                signals.queue_toggle_sample(qutils.get_entry(node_id)[1])
     finally:
         signals.sc_load_ready(sample["location"])
 
@@ -361,9 +389,10 @@ def unmount_sample_clean_up(sample):
         signals.sc_unload(sample["location"])
 
         if not sample["location"] == "Manual":
-            blcontrol.beamline.sample_changer.unload(sample["sampleID"], wait=False)
+            blcontrol.beamline.sample_changer.unload(sample["location"], wait=False)
         else:
             set_current_sample(None)
+            signals.sc_load_ready(sample["location"])
 
         msg = "[SC] unmounted %s" % sample["location"]
         logging.getLogger("MX3.HWR").info(msg)
@@ -373,21 +402,11 @@ def unmount_sample_clean_up(sample):
         raise
     else:
         blcontrol.beamline.queue_model.mounted_sample = ""
-        set_current_sample(None)
         blcontrol.beamline.sample_view.clear_all()
-    finally:
-        signals.sc_load_ready(sample["location"])
 
 
 def mount_sample(sample):
-    res = mount_sample_clean_up(sample)
-
-    if not res:
-        msg = "Could not mount sample: No sample on given "
-        msg += "position or empty vial ?"
-
-        raise Exception(msg)
-
+    gevent.spawn(mount_sample_clean_up, sample)
     return get_sc_contents()
 
 
@@ -397,14 +416,17 @@ def unmount_sample(sample):
 
 
 def unmount_current():
-    blcontrol.beamline.sample_changer.unload(None, wait=True)
-    set_current_sample(None)
+    unmount_sample_clean_up(get_current_sample())
 
     return get_sc_contents()
 
 
 def get_loaded_sample():
-    sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+    try:
+        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+    except Exception as ex:
+        logging.getLogger("MX3.HWR").exception("")
+        sample = None
 
     if sample is not None:
         address = sample.get_address()
@@ -435,16 +457,15 @@ def get_maintenance_cmds():
 
 
 def get_global_state():
-    if blcontrol.beamline.sample_changer_maintenance is not None:
+    try:
         return blcontrol.beamline.sample_changer_maintenance.get_global_state()
-    else:
-        return {}
+    except:
+        return "OFFLINE", "OFFLINE", "OFFLINE"
 
 
 def get_initial_state():
     if blcontrol.beamline.sample_changer_maintenance is not None:
-        ret = blcontrol.beamline.sample_changer_maintenance.get_global_state()
-        global_state, cmdstate, msg = ret
+        global_state, cmdstate, msg = get_global_state()
 
         cmds = blcontrol.beamline.sample_changer_maintenance.get_cmd_info()
 
@@ -455,17 +476,14 @@ def get_initial_state():
         msg = ""
 
     contents = get_sc_contents()
-    sample = blcontrol.beamline.sample_changer.get_loaded_sample()
-
-    if sample is not None:
-        address = sample.get_address()
-        barcode = sample.get_id()
-    else:
-        address = ""
-        barcode = ""
+    address, barcode = get_loaded_sample()
 
     loaded_sample = {"address": address, "barcode": barcode}
-    state = blcontrol.beamline.sample_changer.get_status().upper()
+
+    try:
+        state = blcontrol.beamline.sample_changer.get_status().upper()
+    except:
+        state = "OFFLINE"
 
     initial_state = {
         "state": state,

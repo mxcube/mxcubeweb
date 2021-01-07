@@ -4,12 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Glyphicon, MenuItem } from 'react-bootstrap';
 
-import {
-  CSSGrid,
-  enterExitStyle,
-  easings,
-  layout,
-} from 'react-stonecutter';
+import { SpringGrid } from 'react-stonecutter';
 
 import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
 
@@ -715,7 +710,7 @@ class SampleGridContainer extends React.Component {
 
 
   unmount() {
-    this.props.unloadSample(this.props.sampleChanger.loadedSample.address);
+    this.props.unloadSample();
   }
 
   taskContextMenuItems() {
@@ -786,22 +781,16 @@ class SampleGridContainer extends React.Component {
         </ul>
 
         <div className="selection-rubber-band" id="selectionRubberBand" />
-        <CSSGrid
+        <SpringGrid
           component="ul"
           columns={this.props.gridWidth[1]}
           columnWidth={SAMPLE_ITEM_WIDTH}
           gutterWidth={SAMPLE_ITEM_SPACE}
           gutterHeight={SAMPLE_ITEM_SPACE + 3}
           itemHeight={SAMPLE_ITEM_HEIGHT}
-          layout={layout.simple}
-          enter={enterExitStyle.simple.enter}
-          entered={enterExitStyle.simple.entered}
-          exit={enterExitStyle.simple.exit}
-          duration={500}
-          easing={easings.quadOut}
         >
           {this.sampleItems}
-        </CSSGrid>
+        </SpringGrid>
       </div>
     );
   }

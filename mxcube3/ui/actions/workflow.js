@@ -6,7 +6,7 @@ export function showWorkflowParametersDialog(formData, show = true) {
 
 export function workflowSubmitParameters(data) {
   return function () {
-    fetch('mxcube/api/v0.1/workflow', {
+    fetch('mxcube/api/v0.1/workflow/', {
       method: 'POST',
       credentials: 'include',
       headers: {

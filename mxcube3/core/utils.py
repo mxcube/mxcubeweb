@@ -20,14 +20,13 @@ from email.utils import make_msgid
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
-from mxcube3 import socketio
+
 
 from HardwareRepository.BaseHardwareObjects import HardwareObjectState
 from HardwareRepository.HardwareObjects.abstract.AbstractNState import AbstractNState
 
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
-
 
 def RateLimited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
@@ -68,13 +67,11 @@ def get_light_state_and_intensity():
 
     for light in ("BackLight", "FrontLight"):
         hwobj = blcontrol.beamline.diffractometer.getObjectByRole(light)
-        if hasattr(hwobj, "get_actuator_state"):
-            switch_state = 1 if hwobj.get_actuator_state() == "in" else 0
-        else:
-            hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(
-                light + "Switch"
-            )
-            switch_state = 1 if hwobj_switch.get_actuator_state() == "in" else 0
+        hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(
+            light + "Switch"
+        )
+        switch_state = 1 if hwobj_switch.get_value().name == "IN" else 0
+
         ret.update(
             {
                 light: {
@@ -135,6 +132,7 @@ def get_movable_state_and_position(item_name):
                 pos = hwobj.get_value().value
             else:
                 pos = hwobj.get_value()
+
             return {
                 item_name: {
                     "name": item_name,
@@ -164,11 +162,11 @@ def get_movable_limits(item_name):
             logging.getLogger("MX3.HWR").error(
                 "[UTILS.GET_MOVABLE_LIMIT] No movable with role '%s'" % item_role
             )
-            limits = ()
+            limits = (0, 0)
         else:
             limits = hwobj.get_limits()
 
-            return {item_name: {"limits": limits}}
+        return {item_name: {"limits": limits}}
     except Exception:
         logging.getLogger("MX3.HWR").exception(
             "[UTILS.GET_MOVABLE_LIMIT] could not get item '%s'" % item_name
@@ -203,15 +201,20 @@ def get_centring_motors_info():
 
     ret = dict()
     for name in get_centring_motors():
-        motor_info = get_movable_state_and_position(name)
+        try:
+            motor_info = get_movable_state_and_position(name)
 
-        if motor_info and motor_info[name]["position"] is not None:
-            ret.update(motor_info)
+            if motor_info and motor_info[name]["position"] is not None:
+                ret.update(motor_info)
 
-        motor_limits = get_movable_limits(name)
+            motor_limits = get_movable_limits(name)
 
-        if motor_limits and motor_limits[name]["limits"] is not None:
-            ret[name].update(motor_limits[name])
+            if motor_limits and motor_limits[name]["limits"] is not None:
+                ret[name].update(motor_limits[name])
+        except:
+            logging.getLogger("MX3.HWR").exception(
+                "[UTILS.GET_CENTRING_MOTORS_INFO]: Could not get %s" %name
+            )
 
     return ret
 
@@ -224,15 +227,17 @@ def _snapshot_received(data):
     SNAPSHOT_RECEIVED.set()
 
 
-def _do_take_snapshot(filename):
+def _do_take_snapshot(filename, bw=False):
     from . import loginutils
+    from mxcube3 import socketio, server
 
     SNAPSHOT_RECEIVED.clear()
     rid = loginutils.get_operator()["socketio_sid"]
 
-    socketio.emit(
-        "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
-    )
+    with server.test_request_context():
+        socketio.emit(
+            "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
+        )
 
     SNAPSHOT_RECEIVED.wait(timeout=30)
 
@@ -240,8 +245,8 @@ def _do_take_snapshot(filename):
         snapshot_file.write(SNAPSHOT)
 
 
-def save_snapshot(self, filename):
-    _do_take_snapshot(filename)
+def save_snapshot(self, filename, bw=False):
+    _do_take_snapshot(filename, bw)
 
 
 def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
@@ -273,7 +278,6 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 "Moving Diffractometer to CentringPhase"
             )
             diffractometer.set_phase("Centring", wait=True, timeout=200)
-            self.move_to_centered_position()
 
         snapshot_directory = dc_params["fileinfo"]["archive_directory"]
         if not os.path.exists(snapshot_directory):
@@ -285,7 +289,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                 )
 
         logging.getLogger("user_level_log").info(
-            "[COLLECT]: Taking %d sample snapshot(s)" % number_of_snapshots
+            "Taking %d sample snapshot(s)" % number_of_snapshots
         )
 
         for snapshot_index in range(number_of_snapshots):
@@ -307,15 +311,16 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
                     "Taking snapshot number: %d" % (snapshot_index + 1)
                 )
                 _do_take_snapshot(snapshot_filename)
+                #diffractometer.save_snapshot(snapshot_filename)
             except Exception:
                 sys.excepthook(*sys.exc_info())
                 raise RuntimeError("Could not take snapshot '%s'", snapshot_filename)
 
             if number_of_snapshots > 1:
                 move_omega_relative(90)
+                diffractometer.wait_ready()
 
-
-def enable_snapshots(collect_object, diffractometer_object):
+def enable_snapshots(collect_object, diffractometer_object, sample_view):
     collect_object.take_crystal_snapshots = types.MethodType(
         take_snapshots, collect_object
     )
@@ -324,6 +329,7 @@ def enable_snapshots(collect_object, diffractometer_object):
         save_snapshot, diffractometer_object
     )
 
+    #sample_view.set_ui_snapshot_cb(save_snapshot)
 
 def send_mail(_from, to, subject, content):
     smtp = smtplib.SMTP("smtp", smtplib.SMTP_PORT)
