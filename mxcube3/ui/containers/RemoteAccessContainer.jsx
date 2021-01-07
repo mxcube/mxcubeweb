@@ -11,6 +11,7 @@ import { sendAllowRemote, sendTimeoutGivesControl } from '../actions/remoteAcces
 
 export class RemoteAccessContainer extends React.Component {
   getRAOptions() {
+    const userType = this.props.remoteAccess.type;
     let content = (<div className="col-xs-4">
                      <Panel>
                        <Panel.Heading>
