@@ -169,8 +169,8 @@ def loaded_sample_changed(sample):
         if blcontrol.beamline.sample_changer.has_loaded_sample():
             scutils.set_current_sample(sampleID)
         else:
-            scutils.set_current_sample(None)
-            address = ""
+            address = blcontrol.beamline.sample_changer.hw_get_mounted_sample()
+            scutils.set_current_sample(address)
 
         socketio.emit(
             "loaded_sample_changed",
@@ -179,10 +179,8 @@ def loaded_sample_changed(sample):
         )
 
         sc_load_ready(address)
-
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
-
 
 def set_current_sample(sample_id):
     if not sample_id:

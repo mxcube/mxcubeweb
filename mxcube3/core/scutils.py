@@ -77,9 +77,7 @@ def get_sample_list():
         samples[s.get_address()] = sample_data
         sc_contents_add(sample_data)
 
-        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
-
-        if sample and sample_data["location"] == sample.get_address():
+        if sample_data["location"] == blcontrol.beamline.sample_changer.hw_get_mounted_sample():
             current_sample = sample_data
             qutils.queue_add_item([current_sample])
 
@@ -243,11 +241,17 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         else:
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
 
-            if mount_sample_clean_up(sample) is False:
+            try:
+                res = mount_sample_clean_up(sample)
+            except RuntimeError:
+                res = False
+
+            if res == False:
                 # WARNING: explicit test of False return value.
                 # This is to preserve backward compatibility (load_sample was supposed to return None);
                 # if sample could not be loaded, but no exception is raised, let's skip
                 # the sample
+
                 raise QueueSkippEntryException(
                     "Sample changer could not load sample", ""
                 )
@@ -342,9 +346,16 @@ def mount_sample_clean_up(sample):
 
             if res is None:
                 res = True
+            if (
+                res
+                and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP
+                and not blcontrol.beamline.diffractometer.in_plate_mode()
+            ):
+                msg = "Starting autoloop centring ..."
+                logging.getLogger("MX3.HWR").info(msg)
+                C3D_MODE = blcontrol.beamline.diffractometer.C3D_MODE
+                blcontrol.beamline.diffractometer.start_centring_method(C3D_MODE)
 
-            if not sc.get_loaded_sample():
-                set_current_sample(None)
         else:
             msg = "Mounting sample: %s" % sample["sampleName"]
             logging.getLogger("user_level_log").info(msg)
@@ -408,7 +419,8 @@ def unmount_sample(sample):
 
 
 def unmount_current():
-    unmount_sample_clean_up(get_current_sample())
+    location = blcontrol.beamline.sample_changer.hw_get_mounted_sample()
+    unmount_sample_clean_up({ "location": location })
 
     return get_sc_contents()
 
