@@ -373,7 +373,7 @@ def update_shapes(shapes):
                     shape = blcontrol.beamline.sample_view.add_shape_from_mpos(
                         pos, (x, y), t
                     )
-                except ex as Exception:
+                except Exception:
                     logging.getLogger("HWR.MX3").info(shape_data)
 
             else:
