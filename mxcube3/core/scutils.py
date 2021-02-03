@@ -24,6 +24,7 @@ def init_signals():
 
     """Initialize hwobj signals."""
     blcontrol.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
+    blcontrol.beamline.sample_changer.connect("statusChanged", signals.sc_state_changed)
     blcontrol.beamline.sample_changer.connect(
         "isCollisionSafe", signals.is_collision_safe
     )
@@ -77,7 +78,9 @@ def get_sample_list():
         samples[s.get_address()] = sample_data
         sc_contents_add(sample_data)
 
-        if sample_data["location"] == blcontrol.beamline.sample_changer.hw_get_mounted_sample():
+        loaded_sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+
+        if loaded_sample and sample_data["location"] == loaded_sample.get_address():
             current_sample = sample_data
             qutils.queue_add_item([current_sample])
 
@@ -419,7 +422,7 @@ def unmount_sample(sample):
 
 
 def unmount_current():
-    location = blcontrol.beamline.sample_changer.hw_get_mounted_sample()
+    location = blcontrol.beamline.sample_changer.get_loaded_sample().get_address()
     unmount_sample_clean_up({ "location": location })
 
     return get_sc_contents()
