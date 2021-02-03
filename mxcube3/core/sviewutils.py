@@ -353,25 +353,28 @@ def update_shapes(shapes):
 
             # Shape does not have any refs, create a new Centered position
             if not refs:
-                x, y = shape_data["screen_coord"]
-                mpos = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
-                    x, y, return_by_names=True
-                )
-                pos.append(mpos)
-
-                # We also store the center of the grid
-                if t == "G":
-                    # coords for the center of the grid
-                    x_c = x + (shape_data["num_cols"] / 2.0) * shape_data["cell_width"]
-                    y_c = y + (shape_data["num_rows"] / 2.0) * shape_data["cell_height"]
-                    center_positions = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
-                        x_c, y_c, return_by_names=True
+                try:
+                    x, y = shape_data["screen_coord"]
+                    mpos = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
+                        x, y, return_by_names=True
                     )
-                    pos.append(center_positions)
+                    pos.append(mpos)
 
-                shape = blcontrol.beamline.sample_view.add_shape_from_mpos(
-                    pos, (x, y), t
-                )
+                    # We also store the center of the grid
+                    if t == "G":
+                        # coords for the center of the grid
+                        x_c = x + (shape_data["num_cols"] / 2.0) * shape_data["cell_width"]
+                        y_c = y + (shape_data["num_rows"] / 2.0) * shape_data["cell_height"]
+                        center_positions = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
+                            x_c, y_c, return_by_names=True
+                        )
+                        pos.append(center_positions)
+
+                    shape = blcontrol.beamline.sample_view.add_shape_from_mpos(
+                        pos, (x, y), t
+                    )
+                except ex as Exception:
+                    logging.getLogger("HWR.MX3").info(shape_data)
 
             else:
                 shape = blcontrol.beamline.sample_view.add_shape_from_refs(refs, t)
@@ -487,21 +490,30 @@ def start_manual_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    if blcontrol.beamline.diffractometer.current_centring_procedure:
-        logging.getLogger("user_level_log").info("Aborting current centring ...")
 
-    logging.getLogger("user_level_log").info("Centring using 3-click centring")
+    if blcontrol.beamline.diffractometer._ready():
+        if blcontrol.beamline.diffractometer.current_centring_procedure:
+            logging.getLogger("user_level_log").info("Aborting current centring ...")
+            blcontrol.beamline.diffractometer.cancel_centring_method()
 
-    blcontrol.beamline.diffractometer.cancel_centring_method()
-    blcontrol.beamline.diffractometer.start_manual_centring()
-    centring_reset_click_count()
+        logging.getLogger("user_level_log").info("Centring using 3-click centring")
+
+        blcontrol.beamline.diffractometer.start_manual_centring()
+        centring_reset_click_count()
+    else:
+        logging.getLogger("user_level_log").warning("Diffracomter is busy, cannot start centering")
+        raise RuntimeError("Diffracomter is busy, cannot start centering")
+
     return {"clicksLeft": centring_clicks_left()}
 
 
 def abort_centring():
-    logging.getLogger("user_level_log").info("Aborting centring")
-    blcontrol.beamline.diffractometer.cancel_centring_method()
-    centring_remove_current_point()
+    try:
+        logging.getLogger("user_level_log").info("User canceled centring")
+        blcontrol.beamline.diffractometer.cancel_centring_method()
+        centring_remove_current_point()
+    except:
+        logging.getLogger("MX3.HWR").warning("Canceling centring failed")
 
 
 def centring_handle_click(x, y):
