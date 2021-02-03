@@ -368,10 +368,19 @@ def centre_3_click():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    data = sviewutils.start_manual_centring()
 
-    resp = jsonify(data)
-    resp.status_code = 200
+    try:
+        data = sviewutils.start_manual_centring()
+    except Exception as ex:
+        resp = (
+            "Could not move motor %s" % str(ex),
+            406,
+            {"Content-Type": "application/json", "msg": str(ex)},
+        )
+    else:
+        resp = jsonify(data)
+        resp.status_code = 200
+
     return resp
 
 

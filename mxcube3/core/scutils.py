@@ -343,16 +343,7 @@ def mount_sample_clean_up(sample):
             if res is None:
                 res = True
 
-            if (
-                res
-                and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP
-                and not blcontrol.beamline.diffractometer.in_plate_mode()
-            ):
-                msg = "Starting autoloop centring ..."
-                logging.getLogger("MX3.HWR").info(msg)
-                C3D_MODE = blcontrol.beamline.diffractometer.C3D_MODE
-                blcontrol.beamline.diffractometer.start_centring_method(C3D_MODE)
-            elif not sc.get_loaded_sample():
+            if not sc.get_loaded_sample():
                 set_current_sample(None)
         else:
             msg = "Mounting sample: %s" % sample["sampleName"]
