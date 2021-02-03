@@ -169,7 +169,13 @@ def loaded_sample_changed(sample):
         if blcontrol.beamline.sample_changer.has_loaded_sample():
             scutils.set_current_sample(sampleID)
         else:
-            address = blcontrol.beamline.sample_changer.hw_get_mounted_sample()
+            sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+
+            if sample:
+                address = sample.get_address()
+            else:
+                address = None
+
             scutils.set_current_sample(address)
 
         socketio.emit(
