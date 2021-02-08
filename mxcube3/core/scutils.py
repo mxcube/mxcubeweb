@@ -77,7 +77,9 @@ def get_sample_list():
         samples[s.get_address()] = sample_data
         sc_contents_add(sample_data)
 
-        if sample_data["state"] == qutils.SAMPLE_MOUNTED:
+        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+
+        if sample and sample_data["location"] == sample.get_address():
             current_sample = sample_data
             qutils.queue_add_item([current_sample])
 
