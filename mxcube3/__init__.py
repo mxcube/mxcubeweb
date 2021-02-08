@@ -98,18 +98,22 @@ def exception_handler(e):
 
 
 def kill_processes():
-    pid_list = []
+    # Killing the processes causes pytest to fail because
+    # of non zero exit code, so we dont kill the processes
+    # when running the tests
+    if not server.testing:
+        pid_list = []
 
-    with open("/tmp/mxcube.pid", "r") as f:
-        pid_list = f.read().strip()
-        pid_list = pid_list.split(" ")
-        pid_list.reverse()
+        with open("/tmp/mxcube.pid", "r") as f:
+            pid_list = f.read().strip()
+            pid_list = pid_list.split(" ")
+            pid_list.reverse()
 
-    with open("/tmp/mxcube.pid", "w") as f:
-        f.write("")
+        with open("/tmp/mxcube.pid", "w") as f:
+            f.write("")
 
-    for pid in pid_list:
-        os.kill(int(pid), signal.SIGKILL)
+        for pid in pid_list:
+            os.kill(int(pid), signal.SIGKILL)
 
 
 t0 = time.time()
@@ -137,12 +141,6 @@ socketio.init_app(server)
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
     logging.getLogger("MX3.HWR").info("Starting MXCuBE3...")
     atexit.register(kill_processes)
-
-    # Killing the processes causes pytest to fail because
-    # of non zero exit code, so we dont register kill_process
-    # when running the tests
-    if "COV_CORE_SOURCE" not in os.environ:
-        atexit.register(kill_processes)
 
     with open("/tmp/mxcube.pid", "w") as f:
         f.write(str(os.getpid()) + " ")
