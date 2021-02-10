@@ -430,17 +430,15 @@ export default class DrawGridPlugin {
               }
             }
           }
-        } else {
-          if (gridData.result && gridData.result.length > 0) {
-            const imageElement = document.createElement('img');
+        } else if (gridData.result && gridData.result.length > 0) {
+          const imageElement = document.createElement('img');
 
-            imageElement.src = `data:image/png;base64,${gridData.result}`;
-            const image = new fabric.Image(imageElement);
-            image.scaleToHeight(height);
-            image.scaleX = width / imageElement.naturalWidth;
-            image.set({ top, left })
-            shapes.push(image);
-          }
+          imageElement.src = `data:image/png;base64,${gridData.result}`;
+          const image = new fabric.Image(imageElement);
+          image.scaleToHeight(height);
+          image.scaleX = width / imageElement.naturalWidth;
+          image.set({ top, left });
+          shapes.push(image);
         }
       }
     }
