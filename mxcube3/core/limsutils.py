@@ -197,8 +197,15 @@ def strip_prefix(pt, prefix):
 
 
 def lims_existing_session(login_res):
-    return login_res.get("Session", {}).get("session", {}).get("sessionId", False) and True
+    res = False
 
+    try:
+        res = True
+        login_res.get("Session", {})[0].get("session", {}).get("sessionId", False) and True
+    except KeyError:
+        res = False
+
+    return res
 
 def lims_is_inhouse(login_res):
     return login_res.get("Session", {}).get("is_inhouse", False)
