@@ -24,7 +24,6 @@ def init_signals():
 
     """Initialize hwobj signals."""
     blcontrol.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
-    blcontrol.beamline.sample_changer.connect("statusChanged", signals.sc_state_changed)
     blcontrol.beamline.sample_changer.connect(
         "isCollisionSafe", signals.is_collision_safe
     )
