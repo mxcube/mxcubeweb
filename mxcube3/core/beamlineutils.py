@@ -365,7 +365,7 @@ def set_aperture(pos):
     beam = blcontrol.beamline.beam
     msg = "Changing beam size to: %s" % pos
     logging.getLogger("MX3.HWR").info(msg)
-    beam.set_value(int(pos))
+    beam.set_value(pos)
 
 
 def diffractometer_get_info():
