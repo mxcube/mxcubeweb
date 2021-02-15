@@ -137,7 +137,6 @@ socketio.init_app(server)
 # (because of the Reloader)
 
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    logging.getLogger("MX3.HWR").info("Starting MXCuBE3...")
     atexit.register(kill_processes)
 
     with open("/tmp/mxcube.pid", "w") as f:
