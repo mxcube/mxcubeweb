@@ -1922,8 +1922,6 @@ def queue_stop():
 
             blcontrol.beamline.queue_manager._is_stopped = True
             signals.queue_execution_stopped()
-            signals.collect_oscillation_failed()
-
 
 def queue_pause():
     """
