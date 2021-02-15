@@ -95,6 +95,7 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath, cf
     CONFIG = cfg
 
     init_logging(log_fpath)
+    logging.getLogger("MX3.HWR").info("Starting MXCuBE3...")
 
     blcontrol.init(hwr, hwr_xml_dir)
 
@@ -102,7 +103,7 @@ def init(hwr, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath, cf
         init_sample_video(video_device)
 
     init_signal_handlers()
-    
+
     utils.enable_snapshots(
         blcontrol.beamline.collect,
         blcontrol.beamline.diffractometer,
