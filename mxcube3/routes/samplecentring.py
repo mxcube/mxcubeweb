@@ -316,7 +316,7 @@ def move_motor(motid, newpos):
     except Exception as ex:
         return (
             "Could not move motor %s" % str(ex),
-            406,
+            409,
             {"Content-Type": "application/json", "msg": str(ex)},
         )
     else:
