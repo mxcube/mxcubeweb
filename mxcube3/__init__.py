@@ -102,8 +102,6 @@ def kill_processes():
     # of non zero exit code, so we dont kill the processes
     # when running the tests
     if not server.testing:
-        pid_list = []
-
         with open("/tmp/mxcube.pid", "r") as f:
             pid_list = f.read().strip()
             pid_list = pid_list.split(" ")
