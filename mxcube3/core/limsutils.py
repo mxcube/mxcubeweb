@@ -21,6 +21,7 @@ from mxcube3 import blcontrol
 
 from flask import session
 
+VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
 def scantree(path, include):
     res = []
@@ -457,9 +458,7 @@ def synch_with_lims():
         sample_info["defaultPrefix"] = get_default_prefix(sample_info, False)
         sample_info["defaultSubDir"] = get_default_subdir(sample_info)
 
-        regexp = re.compile("^[a-zA-Z0-9:+_-]+$")
-
-        if not regexp.match(sample_info["sampleName"]):
+        if not VALID_SAMPLE_NAME_REGEXP.match(sample_info["sampleName"]):
             raise AttributeError("sample name contains an incorrect character")
 
         try:
