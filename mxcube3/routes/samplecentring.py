@@ -374,7 +374,7 @@ def centre_3_click():
     except Exception as ex:
         resp = (
             "Could not move motor %s" % str(ex),
-            406,
+            409,
             {"Content-Type": "application/json", "msg": str(ex)},
         )
     else:
