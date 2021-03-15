@@ -228,25 +228,32 @@ def _snapshot_received(data):
 
 
 def _do_take_snapshot(filename, bw=False):
-    from . import loginutils
-    from mxcube3 import socketio, server
+    blcontrol.beamline.sample_view.save_snapshot(
+        filename, overlay=False, bw=bw
+    )
 
-    SNAPSHOT_RECEIVED.clear()
-    rid = loginutils.get_operator()["socketio_sid"]
+    # from . import loginutils
+    # from mxcube3 import socketio, server
 
-    with server.test_request_context():
-        socketio.emit(
-            "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
-        )
+    # SNAPSHOT_RECEIVED.clear()
+    # rid = loginutils.get_operator()["socketio_sid"]
 
-    SNAPSHOT_RECEIVED.wait(timeout=30)
+    # with server.test_request_context():
+    #     socketio.emit(
+    #         "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
+    #     )
 
-    with open(filename, "wb") as snapshot_file:
-        snapshot_file.write(SNAPSHOT)
+    # SNAPSHOT_RECEIVED.wait(timeout=30)
+
+    # with open(filename, "wb") as snapshot_file:
+    #     snapshot_file.write(SNAPSHOT)
 
 
 def save_snapshot(self, filename, bw=False):
-    _do_take_snapshot(filename, bw)
+    blcontrol.beamline.sample_view.save_snapshot(
+        filename, overlay=Flase, bw=bw
+    )
+    #_do_take_snapshot(filename, bw)
 
 
 def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
@@ -329,7 +336,7 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
         save_snapshot, diffractometer_object
     )
 
-    #sample_view.set_ui_snapshot_cb(save_snapshot)
+    sample_view.set_ui_snapshot_cb(save_snapshot)
 
 def send_mail(_from, to, subject, content):
     smtp = smtplib.SMTP("smtp", smtplib.SMTP_PORT)
