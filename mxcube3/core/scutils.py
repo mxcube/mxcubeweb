@@ -48,6 +48,8 @@ def get_sample_list():
     order = []
     current_sample = {}
 
+    loaded_sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+
     for s in samples_list:
         if not s.is_present():
             continue
@@ -77,8 +79,6 @@ def get_sample_list():
 
         samples[s.get_address()] = sample_data
         sc_contents_add(sample_data)
-
-        loaded_sample = blcontrol.beamline.sample_changer.get_loaded_sample()
 
         if loaded_sample and sample_data["location"] == loaded_sample.get_address():
             current_sample = sample_data
