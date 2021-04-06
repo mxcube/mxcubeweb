@@ -10,6 +10,8 @@ import copy
 import os
 import io
 import math
+import re
+
 from scandir import scandir
 
 from HardwareRepository.HardwareObjects import queue_model_objects as qmo
@@ -19,6 +21,7 @@ from mxcube3 import blcontrol
 
 from flask import session
 
+VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
 def scantree(path, include):
     res = []
@@ -195,8 +198,15 @@ def strip_prefix(pt, prefix):
 
 
 def lims_existing_session(login_res):
-    return login_res.get("Session", {}).get("session", {}).get("sessionId", False) and True
+    res = False
 
+    try:
+        res = True
+        login_res.get("Session", {})[0].get("session", {}).get("sessionId", False) and True
+    except KeyError:
+        res = False
+
+    return res
 
 def lims_is_inhouse(login_res):
     return login_res.get("Session", {}).get("is_inhouse", False)
@@ -288,7 +298,7 @@ def lims_login(loginID, password, create_session):
 def create_lims_session(login_res):
     for prop in session["proposal_list"]:
         todays_session = blcontrol.beamline.lims.get_todays_session(prop)
-        prop["Session"] = todays_session["session"]
+        prop["Session"] = [todays_session["session"]]
 
     login_res["proposalList"] = session["proposal_list"]
 
@@ -335,11 +345,11 @@ def select_proposal(proposal):
         blcontrol.beamline.session.proposal_number = proposal_info.get("Proposal").get(
             "number", ""
         )
-        blcontrol.beamline.session.session_id = proposal_info.get("Session").get(
+        blcontrol.beamline.session.session_id = proposal_info.get("Session")[0].get(
             "sessionId"
         )
 
-        blcontrol.beamline.session.proposal_id = proposal_info.get("Session").get(
+        blcontrol.beamline.session.proposal_id = proposal_info.get("Session")[0].get(
             "proposalId"
         )
 
@@ -447,6 +457,9 @@ def synch_with_lims():
         sample_info["limsLink"] = blcontrol.beamline.lims.lims_rest.sample_link()
         sample_info["defaultPrefix"] = get_default_prefix(sample_info, False)
         sample_info["defaultSubDir"] = get_default_subdir(sample_info)
+
+        if not VALID_SAMPLE_NAME_REGEXP.match(sample_info["sampleName"]):
+            raise AttributeError("sample name contains an incorrect character")
 
         try:
             basket = int(sample_info["containerSampleChangerLocation"])

@@ -101,8 +101,18 @@ export function sendSyncSamples() {
   return function (dispatch) {
     dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
     fetch('mxcube/api/v0.1/lims/synch_samples', { credentials: 'include' })
-      .then(response => response.json())
-      .then((json) => {
+      .then(response => {
+        let result = '';
+
+        if (response.status >= 400) {
+          dispatch(setLoading(false));
+          dispatch(showErrorPanel(true, `Synchronization with ISPyB failed ${response.headers.get('message')}`));
+        } else {
+          result = response.json();
+        }
+
+        return result;
+      }).then((json) => {
         const { sampleList } = json;
         const { sampleOrder } = json;
 

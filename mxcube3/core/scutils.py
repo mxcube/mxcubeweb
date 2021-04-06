@@ -24,6 +24,7 @@ def init_signals():
 
     """Initialize hwobj signals."""
     blcontrol.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
+    blcontrol.beamline.sample_changer.connect("statusChanged", signals.sc_state_changed)
     blcontrol.beamline.sample_changer.connect(
         "isCollisionSafe", signals.is_collision_safe
     )
@@ -77,7 +78,9 @@ def get_sample_list():
         samples[s.get_address()] = sample_data
         sc_contents_add(sample_data)
 
-        if sample_data["state"] == qutils.SAMPLE_MOUNTED:
+        loaded_sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+
+        if loaded_sample and sample_data["location"] == loaded_sample.get_address():
             current_sample = sample_data
             qutils.queue_add_item([current_sample])
 
@@ -241,11 +244,17 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         else:
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
 
-            if mount_sample_clean_up(sample) is False:
+            try:
+                res = mount_sample_clean_up(sample)
+            except RuntimeError:
+                res = False
+
+            if res == False:
                 # WARNING: explicit test of False return value.
                 # This is to preserve backward compatibility (load_sample was supposed to return None);
                 # if sample could not be loaded, but no exception is raised, let's skip
                 # the sample
+
                 raise QueueSkippEntryException(
                     "Sample changer could not load sample", ""
                 )
@@ -280,8 +289,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                     CENTRING_METHOD.LOOP,
                     CENTRING_METHOD.FULLY_AUTOMATIC,
                 ]:
-
-                    if not dm.currentCentringMethod:
+                    if not dm.current_centring_procedure:
                         dm.start_centring_method(dm.C3D_MODE)
 
                     if mxcube.AUTO_MOUNT_SAMPLE:
@@ -341,7 +349,6 @@ def mount_sample_clean_up(sample):
 
             if res is None:
                 res = True
-
             if (
                 res
                 and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP
@@ -351,8 +358,7 @@ def mount_sample_clean_up(sample):
                 logging.getLogger("MX3.HWR").info(msg)
                 C3D_MODE = blcontrol.beamline.diffractometer.C3D_MODE
                 blcontrol.beamline.diffractometer.start_centring_method(C3D_MODE)
-            elif not sc.get_loaded_sample():
-                set_current_sample(None)
+
         else:
             msg = "Mounting sample: %s" % sample["sampleName"]
             logging.getLogger("user_level_log").info(msg)
@@ -416,7 +422,8 @@ def unmount_sample(sample):
 
 
 def unmount_current():
-    unmount_sample_clean_up(get_current_sample())
+    location = blcontrol.beamline.sample_changer.get_loaded_sample().get_address()
+    unmount_sample_clean_up({ "location": location })
 
     return get_sc_contents()
 

@@ -45,12 +45,13 @@ def init():
     def ui_state_update(key_val):
         key, val = key_val
         mxcube.UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
+        operator = loginutils.get_operator()
         
         emit(
             "state_update",
             json.dumps(mxcube.UI_STATE),
             namespace="/ui_state",
-            broadcast=True,
+            room="observers",
             include_self=False 
         )
 

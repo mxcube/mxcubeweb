@@ -3,8 +3,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from flask import Response, jsonify, request
+import io
 
+from flask import Response, jsonify, request, send_file
 from mxcube3 import socketio
 from mxcube3 import server
 
@@ -24,6 +25,16 @@ def sumbit_parameters():
     wfutils.submit_parameters(data)
     return Response(status=200)
 
+
+@server.route("/mxcube/api/v0.1/workflow/mesh_result/<gid>/<t>", methods=["GET"])
+#@server.restrict
+def get_grid_data(gid, t, rand):
+    res = send_file(
+        io.BytesIO(wfutils.get_mesh_result(gid, t)),
+        mimetype="image/png"
+    )
+
+    return res
 
 # This route is only for testing
 @server.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=["GET"])

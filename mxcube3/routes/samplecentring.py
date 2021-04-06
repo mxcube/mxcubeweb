@@ -316,7 +316,7 @@ def move_motor(motid, newpos):
     except Exception as ex:
         return (
             "Could not move motor %s" % str(ex),
-            406,
+            409,
             {"Content-Type": "application/json", "msg": str(ex)},
         )
     else:
@@ -346,7 +346,7 @@ def get_status_of_id(elem_id):
         return Response(status=409)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=["PUT"])
+@server.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=["GET"])
 @server.require_control
 @server.restrict
 def centre_auto():
@@ -368,10 +368,19 @@ def centre_3_click():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    data = sviewutils.start_manual_centring()
 
-    resp = jsonify(data)
-    resp.status_code = 200
+    try:
+        data = sviewutils.start_manual_centring()
+    except Exception as ex:
+        resp = (
+            "Could not move motor %s" % str(ex),
+            409,
+            {"Content-Type": "application/json", "msg": str(ex)},
+        )
+    else:
+        resp = jsonify(data)
+        resp.status_code = 200
+
     return resp
 
 

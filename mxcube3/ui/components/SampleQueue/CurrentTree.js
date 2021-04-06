@@ -23,10 +23,13 @@ export default class CurrentTree extends React.Component {
 
   selectedTasks() {
     const selectedTasks = [];
-    const taskList = this.props.mounted ? this.props.sampleList[this.props.mounted].tasks : [];
+    const taskList = this.props.sampleList[this.props.mounted] ?
+      this.props.sampleList[this.props.mounted].tasks : [];
 
     taskList.forEach((task, taskIdx) => {
-      if (this.props.displayData[task.queueID].selected) {
+      const displayData = this.props.displayData[task.queueID];
+
+      if (displayData && displayData.selected) {
         const tData = this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)];
 
         if (tData) {
@@ -119,6 +122,7 @@ export default class CurrentTree extends React.Component {
         <div style={{ top: 'initial' }} className="list-body">
           {sampleTasks.map((taskData, i) => {
             let task = null;
+            const displayData = this.props.displayData[taskData.queueID] || {};
 
             if (taskData.type === 'Workflow') {
               task = (
@@ -130,14 +134,14 @@ export default class CurrentTree extends React.Component {
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   sampleId={sampleData.sampleID}
-                  selected={this.props.displayData[taskData.queueID].selected}
+                  selected={displayData.selected}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                   taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
                   state={this.props.sampleList[taskData.sampleID].tasks[i].state}
-                  show={this.props.displayData[taskData.queueID].collapsed}
-                  progress={this.props.displayData[taskData.queueID].progress}
+                  show={displayData.collapsed}
+                  progress={displayData.progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
@@ -154,14 +158,14 @@ export default class CurrentTree extends React.Component {
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   sampleId={sampleData.sampleID}
-                  selected={this.props.displayData[taskData.queueID].selected}
+                  selected={displayData.selected}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                   taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
                   state={this.props.sampleList[taskData.sampleID].tasks[i].state}
-                  show={this.props.displayData[taskData.queueID].collapsed}
-                  progress={this.props.displayData[taskData.queueID].progress}
+                  show={displayData.collapsed}
+                  progress={displayData.progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   plotsData={this.props.plotsData}
@@ -179,14 +183,14 @@ export default class CurrentTree extends React.Component {
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   sampleId={sampleData.sampleID}
-                  selected={this.props.displayData[taskData.queueID].selected}
+                  selected={displayData.selected}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                   taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
                   state={this.props.sampleList[taskData.sampleID].tasks[i].state}
-                  show={this.props.displayData[taskData.queueID].collapsed}
-                  progress={this.props.displayData[taskData.queueID].progress}
+                  show={displayData.collapsed}
+                  progress={displayData.progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
@@ -203,14 +207,14 @@ export default class CurrentTree extends React.Component {
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   sampleId={sampleData.sampleID}
-                  selected={this.props.displayData[taskData.queueID].selected}
+                  selected={displayData.selected}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                   taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
                   state={this.props.sampleList[taskData.sampleID].tasks[i].state}
-                  show={this.props.displayData[taskData.queueID].collapsed}
-                  progress={this.props.displayData[taskData.queueID].progress}
+                  show={displayData.collapsed}
+                  progress={displayData.progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   addTask={this.props.addTask}
@@ -228,14 +232,14 @@ export default class CurrentTree extends React.Component {
                   moveCard={this.moveCard}
                   deleteTask={this.props.deleteTask}
                   sampleId={sampleData.sampleID}
-                  selected={this.props.displayData[taskData.queueID].selected}
+                  selected={displayData.selected}
                   checked={this.props.checked}
                   toggleChecked={this.props.toggleCheckBox}
                   taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                   taskHeaderOnContextMenuHandler={this.taskHeaderOnContextMenuHandler}
                   state={this.props.sampleList[taskData.sampleID].tasks[i].state}
-                  show={this.props.displayData[taskData.queueID].collapsed}
-                  progress={this.props.displayData[taskData.queueID].progress}
+                  show={displayData.collapsed}
+                  progress={displayData.progress}
                   moveTask={this.props.moveTask}
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}

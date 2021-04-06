@@ -5,7 +5,10 @@ import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } fr
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
-import config from 'guiConfig'; // eslint-disable-line import/no-unresolved
+
+// config exported by webpack at buildtime
+// eslint-disable-next-line import/no-unresolved
+import config from 'guiConfig';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
@@ -742,7 +745,7 @@ export default class SampleImage extends React.Component {
         this.drawGridPlugin.setScale(imageRatio);
         gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
         fabricSelectables.push(this.drawGridPlugin.shapeFromGridData(
-          gridData).shapeGroup);
+          gridData, this.canvas).shapeGroup);
       }
     });
 

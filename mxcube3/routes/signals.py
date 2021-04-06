@@ -161,7 +161,7 @@ def loaded_sample_changed(sample):
         address = ""
         barcode = ""
 
-    logging.getLogger("HWR").info("Loaded sample changed now is: " + address)
+    logging.getLogger("HWR").info("Loaded sample changed: " + address)
 
     try:
         sampleID = address
@@ -169,8 +169,14 @@ def loaded_sample_changed(sample):
         if blcontrol.beamline.sample_changer.has_loaded_sample():
             scutils.set_current_sample(sampleID)
         else:
-            scutils.set_current_sample(None)
-            address = ""
+            sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+
+            if sample:
+                address = sample.get_address()
+            else:
+                address = None
+
+            scutils.set_current_sample(address)
 
         socketio.emit(
             "loaded_sample_changed",
@@ -181,7 +187,6 @@ def loaded_sample_changed(sample):
         sc_load_ready(address)
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
-
 
 def set_current_sample(sample_id):
     if not sample_id:
@@ -228,7 +233,7 @@ def get_task_state(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
-        limsres = blcontrol.beamline.lims_rest.get_dc(lims_id)
+        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
     except BaseException:
         limsres = {}
 
@@ -277,6 +282,13 @@ def update_task_result(entry):
     }
 
     socketio.emit("update_task_lims_data", msg, namespace="/hwr")
+
+    
+def queue_execution_entry_started(entry, message):
+    handle_auto_mount_next(entry)
+
+    if not qutils.is_interleaved(entry.get_data_model()):
+        socketio.emit("task", get_task_state(entry), namespace="/hwr")
 
 
 def queue_execution_entry_started(entry, message):

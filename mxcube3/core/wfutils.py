@@ -3,6 +3,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+from urllib.parse import quote
+import base64
+
 from mxcube3 import blcontrol
 
 
@@ -27,6 +30,13 @@ def submit_parameters(params):
     blcontrol.beamline.workflow.set_values_map(params)
 
 
+def get_mesh_result(gid, _type="heatmap"):
+    base64data = blcontrol.beamline.sample_view.get_grid_data(gid)
+    base64data = base64data if base64data else ""
+
+    data = base64.b64decode(base64data)
+    return data
+    
 def test_workflow_dialog(wf):
     dialog = {
         "properties": {
