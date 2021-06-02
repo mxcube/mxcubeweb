@@ -14,7 +14,7 @@ import re
 
 from scandir import scandir
 
-from HardwareRepository.HardwareObjects import queue_model_objects as qmo
+from mxcubecore.HardwareObjects import queue_model_objects as qmo
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
@@ -370,7 +370,7 @@ def select_proposal(proposal):
         root_path = blcontrol.beamline.session.get_base_image_directory()
 
         if not mxcube.INITIAL_FILE_LIST and os.path.isdir(root_path):
-            ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+            ftype = blcontrol.beamline.detector.get_property("file_suffix")
             mxcube.INITIAL_FILE_LIST = scantree(root_path, [ftype])
 
         logging.getLogger("user_log").info("[LIMS] Proposal selected.")

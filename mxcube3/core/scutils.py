@@ -17,7 +17,7 @@ from . import limsutils
 from . import qutils
 
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
-from HardwareRepository.HardwareObjects import queue_entry
+from mxcubecore.HardwareObjects import queue_entry
 
 def init_signals():
     from mxcube3.routes import signals

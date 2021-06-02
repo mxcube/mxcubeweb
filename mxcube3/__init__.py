@@ -23,13 +23,13 @@ from flask import Flask, request, session
 from flask_socketio import SocketIO
 from flask_session import Session
 
-# To make "from HardwareRepository import ..." possible
+# To make "from mxcubecore import ..." possible
 fname = os.path.dirname(__file__)
-sys.path.insert(0, fname)
+#sys.path.insert(0, fname)
 
-from HardwareRepository import HardwareRepository as hwr
+from mxcubecore import HardwareRepository as hwr
 
-hwr.addHardwareObjectsDirs([os.path.join(fname, "HardwareObjects")])
+hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
 
 import app as mxcube
 from config import Config

@@ -22,8 +22,8 @@ from mxcube3 import mxcube
 from mxcube3 import blcontrol
 
 
-from HardwareRepository.BaseHardwareObjects import HardwareObjectState
-from HardwareRepository.HardwareObjects.abstract.AbstractNState import AbstractNState
+from mxcubecore.BaseHardwareObjects import HardwareObjectState
+from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
 
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
@@ -66,8 +66,8 @@ def get_light_state_and_intensity():
     ret = dict()
 
     for light in ("BackLight", "FrontLight"):
-        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(light)
-        hwobj_switch = blcontrol.beamline.diffractometer.getObjectByRole(
+        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(light)
+        hwobj_switch = blcontrol.beamline.diffractometer.get_object_by_role(
             light + "Switch"
         )
         switch_state = 1 if hwobj_switch.get_value().name == "IN" else 0
@@ -97,7 +97,7 @@ def get_light_limits():
     for light in ("BackLight", "FrontLight"):
         item_role = light.lower()
 
-        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_role)
+        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(item_role)
 
         ret.update({light: {"limits": hwobj.get_limits()}})
 
@@ -111,7 +111,7 @@ def get_movable_state_and_position(item_name):
             # this returns more than needed, but it doesn't
             # matter
             return get_light_state_and_intensity()
-        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_name)
+        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(item_name)
 
         if hwobj is None:
             msg = (
@@ -156,7 +156,7 @@ def get_movable_limits(item_name):
             # matter
             return get_light_limits()
 
-        hwobj = blcontrol.beamline.diffractometer.getObjectByRole(item_role)
+        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(item_role)
 
         if hwobj is None:
             logging.getLogger("MX3.HWR").error(
@@ -385,17 +385,17 @@ def send_feedback(sender_data):
         except (KeyError):
             local_user = "unknown_user"
 
-    _from = blcontrol.beamline.session.getProperty("from_email", "")
+    _from = blcontrol.beamline.session.get_property("from_email", "")
 
     if not _from:
         _from = "%s@%s" % (
             local_user,
-            blcontrol.beamline.session.getProperty("email_extension", ""),
+            blcontrol.beamline.session.get_property("email_extension", ""),
         )
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
-    to = blcontrol.beamline.session.getProperty("feedback_email", "") + ",%s" % _sender
+    to = blcontrol.beamline.session.get_property("feedback_email", "") + ",%s" % _sender
     subject = "[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)
     content = sender_data.get("content", "")
 

@@ -14,7 +14,7 @@ from mxcube3.core import scutils
 from mxcube3.core import limsutils
 
 from abstract.AbstractSampleChanger import SampleChangerState
-from HardwareRepository.BaseHardwareObjects import HardwareObjectState
+from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.beamline_adapter import BeamlineAdapter
 from mxcube3.core.qutils import (
@@ -26,8 +26,8 @@ from mxcube3.core.qutils import (
     queue_to_dict,
 )
 
-from HardwareRepository.HardwareObjects import queue_model_objects as qmo
-from HardwareRepository.HardwareObjects import queue_entry as qe
+from mxcubecore.HardwareObjects import queue_model_objects as qmo
+from mxcubecore.HardwareObjects import queue_entry as qe
 
 from queue_entry import CENTRING_METHOD
 from mxcube3.core.utils import to_camel
@@ -692,7 +692,7 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(blcontrol.beamline).getObjectByRole("safety_shutter")
+    ho = BeamlineAdapter(blcontrol.beamline).get_object_by_role("safety_shutter")
     data = ho.dict_repr()
     try:
         socketio.emit("beamline_value_change", data, namespace="/hwr")

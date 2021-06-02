@@ -13,10 +13,10 @@ import re
 
 from mock import Mock
 
-from HardwareRepository.HardwareObjects import queue_model_objects as qmo
-from HardwareRepository.HardwareObjects import queue_entry as qe
-from HardwareRepository.HardwareObjects import queue_model_enumerables as qme
-from HardwareRepository.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
+from mxcubecore.HardwareObjects import queue_model_objects as qmo
+from mxcubecore.HardwareObjects import queue_entry as qe
+from mxcubecore.HardwareObjects import queue_model_enumerables as qme
+from mxcubecore.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcube3 import mxcube
 from mxcube3 import blcontrol
@@ -969,7 +969,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     params = task_data["parameters"]
     acq.acquisition_parameters.set_from_dict(params)
 
-    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = blcontrol.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     acq.path_template.set_from_dict(params)
@@ -979,7 +979,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.num_files = params["num_images"]
     acq.path_template.suffix = ftype
     acq.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     limsutils.apply_template(params, sample_model, acq.path_template)
@@ -1030,7 +1030,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     elif params.get("mesh", False):
         grid = blcontrol.beamline.sample_view.get_shape(params["shape"])
         acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-        mesh_center = blcontrol.beamline["default_mesh_values"].getProperty(
+        mesh_center = blcontrol.beamline["default_mesh_values"].get_property(
             "mesh_center", "top-left"
         )
         if mesh_center == "top-left":
@@ -1075,7 +1075,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.base_prefix = params["prefix"]
     model.path_template.num_files = 0
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     limsutils.apply_template(params, sample_model, model.path_template)
@@ -1161,12 +1161,12 @@ def set_xrf_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.xrf_spectrum.getProperty("file_suffix", "dat").strip()
+    ftype = blcontrol.beamline.xrf_spectrum.get_property("file_suffix", "dat").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     if params["prefix"]:
@@ -1213,12 +1213,12 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.energy_scan.getProperty("file_suffix", "raw").strip()
+    ftype = blcontrol.beamline.energy_scan.get_property("file_suffix", "raw").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     if params["prefix"]:
@@ -1526,7 +1526,7 @@ def clear_queue():
     Creates a new queue
     :returns: MxCuBE QueueModel Object
     """
-    from HardwareRepository import HardwareRepository as HWR
+    from mxcubecore import HardwareRepository as HWR
 
     # queue = pickle.loads(blcontrol.empty_queue)
     # queue.diffraction_plan = {}
@@ -1839,11 +1839,11 @@ def is_interleaved(node):
 
 
 def init_queue_settings():
-    mxcube.NUM_SNAPSHOTS = blcontrol.beamline.collect.getProperty("num_snapshots", 4)
-    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.beamline.collect.getProperty(
+    mxcube.NUM_SNAPSHOTS = blcontrol.beamline.collect.get_property("num_snapshots", 4)
+    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.beamline.collect.get_property(
         "auto_mount_sample", False
     )
-    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.beamline.collect.getProperty(
+    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.beamline.collect.get_property(
         "auto_add_diff_plan", False
     )
 
@@ -2117,7 +2117,7 @@ def get_default_dc_params():
     returns the default values for an acquisition (data collection).
     """
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
-    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = blcontrol.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     return {
@@ -2157,7 +2157,7 @@ def get_default_char_acq_params():
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters(
         "characterisation"
     )
-    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = blcontrol.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
     char_defaults = (
         blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
@@ -2229,7 +2229,7 @@ def get_default_xrf_parameters():
     int_time = 5
 
     try:
-        int_time = blcontrol.beamline.xrf_spectrum.getProperty(
+        int_time = blcontrol.beamline.xrf_spectrum.get_property(
             "default_integration_time", "5"
         ).strip()
         try:

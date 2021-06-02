@@ -31,7 +31,7 @@ def create_diff_plan(sid):
     """
 
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
-    ftype = blcontrol.beamline.detector_hwobj.getProperty("file_suffix")
+    ftype = blcontrol.beamline.detector_hwobj.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     task = {

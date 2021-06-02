@@ -13,7 +13,7 @@ from enum import Enum
 from mxcube3 import socketio
 
 # These imports needs to be "direct" as the more elegant and correct
-# way from HardwareRepository.HardwareObjects ... import ( ...)
+# way from mxcubecore.HardwareObjects ... import ( ...)
 # would break the isinstance check since pythons import mechanism
 # considreds the same module imported from two different paths to
 # be different,
@@ -27,8 +27,8 @@ import MicrodiffBeamstop
 import MicrodiffInOutMockup
 import ShutterMockup
 
-from HardwareRepository.HardwareObjects.abstract import AbstractNState
-from HardwareRepository.BaseHardwareObjects import HardwareObjectState
+from mxcubecore.HardwareObjects.abstract import AbstractNState
+from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from . import utils
 
@@ -1228,7 +1228,7 @@ class _BeamlineAdapter:
         elements = []
 
         if escan:
-            elements = escan.getElements()
+            elements = escan.get_elements()
 
         return {"elements": elements}
 

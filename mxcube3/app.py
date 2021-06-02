@@ -16,7 +16,7 @@ import json
 from logging import StreamHandler, NullHandler
 from logging.handlers import TimedRotatingFileHandler
 
-from mxcube3.HardwareRepository import removeLoggingHandlers
+from mxcubecore import removeLoggingHandlers
 import queue_entry
 
 from mxcube3 import blcontrol
