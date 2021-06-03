@@ -25,7 +25,7 @@ from flask_session import Session
 
 # To make "from mxcubecore import ..." possible
 fname = os.path.dirname(__file__)
-#sys.path.insert(0, fname)
+sys.path.insert(0, fname)
 
 from mxcubecore import HardwareRepository as hwr
 
