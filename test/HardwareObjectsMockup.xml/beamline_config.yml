@@ -1,6 +1,6 @@
 # The class to initialise, and init parameters
 _initialise_class:
-    class: HardwareRepository.HardwareObjects.Beamline.Beamline
+    class: mxcubecore.HardwareObjects.Beamline.Beamline
     # Further key-value pairs here will be passed to the class init
 #    mode: devel
 
