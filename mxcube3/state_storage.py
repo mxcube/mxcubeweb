@@ -4,7 +4,7 @@ from __future__ import print_function
 
 from flask_socketio import emit, join_room, leave_room
 from mxcube3 import socketio
-from mxcube3 import app as mxcube
+from mxcube3 import mxcube
 from mxcube3 import server
 from mxcube3.core import loginutils
 

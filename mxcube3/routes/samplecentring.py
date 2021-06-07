@@ -9,7 +9,6 @@ import json
 
 from mxcube3 import mxcube
 from mxcube3 import server
-from mxcube3 import blcontrol
 from mxcube3.core import beamlineutils
 from mxcube3.core import sviewutils
 
@@ -24,7 +23,7 @@ def subscribe_to_camera():
     if mxcube.CONFIG.APP.VIDEO_FORMAT == "MPEG1":
         result = Response(status=200)
     else:
-        frame = sviewutils.stream_video(blcontrol.beamline.sample_view.camera)
+        frame = sviewutils.stream_video(mxcube.mxcubecore.beamline.sample_view.camera)
         result = Response(frame, mimetype='multipart/x-mixed-replace; boundary="!>"')
 
     return result
@@ -38,7 +37,7 @@ def unsubscribe_to_camera():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.beamline.sample_view.camera.streaming_greenlet.kill()
+    mxcube.mxcubecore.beamline.sample_view.camera.streaming_greenlet.kill()
     return Response(status=200)
 
 
@@ -52,7 +51,7 @@ def snapshot():
     Return: 'True' if command issued succesfully, otherwise 'False'.
     """
     try:
-        blcontrol.beamline.sample_view.camera.takeSnapshot(
+        mxcube.mxcubecore.beamline.sample_view.camera.takeSnapshot(
             os.path.join(os.path.dirname(__file__), "snapshots/")
         )
         return "True"
@@ -194,7 +193,7 @@ def delete_shape(sid):
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    blcontrol.beamline.sample_view.delete_shape(sid)
+    mxcube.mxcubecore.beamline.sample_view.delete_shape(sid)
     return Response(status=200)
 
 
@@ -428,7 +427,7 @@ def accept_centring():
     """
     Accept the centring position.
     """
-    blcontrol.beamline.diffractometer.accept_centring()
+    mxcube.mxcubecore.beamline.diffractometer.accept_centring()
     return Response(status=200)
 
 

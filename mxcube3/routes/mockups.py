@@ -3,7 +3,7 @@ import logging
 from flask import Response
 
 from mxcube3 import server
-from mxcube3 import blcontrol
+from mxcube3 import mxcube
 from mxcube3.core import qutils
 from mxcube3.routes import signals
 from mxcube3.core.utils import to_camel
@@ -13,7 +13,7 @@ from mxcube3.core.utils import to_camel
 @server.restrict
 def mockup_ready():
     logging.getLogger("HWR").info("[Routes] Called mockup ready")
-    print((blcontrol.resolution.get_value()))
+    print((mxcube.mxcubecore.resolution.get_value()))
     return str(mxcube.resolution.isReady())
 
 
@@ -30,8 +30,8 @@ def create_diff_plan(sid):
     """Juts for creating a diff plan as if it were created by edna and so on.
     """
 
-    acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
-    ftype = blcontrol.beamline.detector_hwobj.get_property("file_suffix")
+    acq_parameters = mxcube.mxcubecore.beamline.get_default_acquisition_parameters()
+    ftype = mxcube.mxcubecore.beamline.detector_hwobj.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     task = {
@@ -69,7 +69,7 @@ def create_diff_plan(sid):
     qutils.set_dc_params(dc_model, dc_entry, task, sample_model)
     pt = dc_model.acquisitions[0].path_template
 
-    if blcontrol.beamline.queue_model.check_for_path_collisions(pt):
+    if mxcube.mxcubecore.beamline.queue_model.check_for_path_collisions(pt):
         msg = "[QUEUE] data collection could not be added to sample: "
         msg += "path collision"
         raise Exception(msg)
@@ -80,14 +80,14 @@ def create_diff_plan(sid):
     char, char_entry = qutils.get_entry(3)
 
     char.diffraction_plan.append([dc_model])
-    blcontrol.beamline.queue_model.emit("diff_plan_available", (char, [dc_model]))
+    mxcube.mxcubecore.beamline.queue_model.emit("diff_plan_available", (char, [dc_model]))
 
     return Response(status=200)
 
 
 @server.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=["GET"])
 def shape_mock_result(sid):
-    shape = blcontrol.beamline.sample_view.camera.get_shape(sid)
+    shape = mxcube.mxcubecore.beamline.sample_view.camera.get_shape(sid)
     hm = {}
     cm = {}
 
@@ -118,7 +118,7 @@ def shape_mock_result(sid):
 
     res = {"heatmap": hm, "crystalmap": cm}
 
-    blcontrol.beamline.sample_view.camera.set_grid_data(sid, res)
+    mxcube.mxcubecore.beamline.sample_view.camera.set_grid_data(sid, res)
     signals.grid_result_available(to_camel(shape.as_dict()))
 
     return Response(status=200)

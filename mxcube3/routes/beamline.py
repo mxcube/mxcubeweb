@@ -9,7 +9,7 @@ import logging
 from flask import Response, jsonify, request, make_response
 
 from mxcube3 import server
-from mxcube3 import blcontrol
+from mxcube3 import mxcube
 from mxcube3.core import beamlineutils
 
 
@@ -129,7 +129,7 @@ def beamline_get_data_path():
     Retrieve data directory from the session hwobj,
     this is specific for each beamline.
     """
-    data = blcontrol.beamline.session.get_base_image_directory()
+    data = mxcube.mxcubecore.beamline.session.get_base_image_directory()
     return jsonify({"path": data})
 
 

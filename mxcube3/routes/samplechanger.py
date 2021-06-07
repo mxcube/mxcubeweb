@@ -6,7 +6,7 @@ from . import signals
 
 from flask import Response, jsonify, request
 from mxcube3 import server
-from mxcube3 import blcontrol
+from mxcube3 import mxcube
 from mxcube3.core import limsutils
 from mxcube3.core import scutils
 
@@ -24,7 +24,7 @@ def get_sample_list():
 @server.route("/mxcube/api/v0.1/sample_changer/state", methods=["GET"])
 @server.restrict
 def get_sc_state():
-    state = blcontrol.beamline.sample_changer.get_status().upper()
+    state = mxcube.mxcubecore.beamline.sample_changer.get_status().upper()
     return jsonify({"state": state})
 
 
@@ -46,7 +46,7 @@ def get_sc_contents_view():
 @server.require_control
 @server.restrict
 def select_location(loc):
-    blcontrol.beamline.sample_changer.select(loc)
+    mxcube.mxcubecore.beamline.sample_changer.select(loc)
     return scutils.get_sc_contents()
 
 
@@ -55,7 +55,7 @@ def select_location(loc):
 @server.restrict
 def scan_location(loc):
     # do a recursive scan
-    blcontrol.beamline.sample_changer.scan(loc, True)
+    mxcube.mxcubecore.beamline.sample_changer.scan(loc, True)
     return scutils.get_sc_contents()
 
 
@@ -159,7 +159,7 @@ def get_initial_state():
 @server.restrict
 def send_command(cmdparts, args=None):
     try:
-        ret = blcontrol.beamline.sample_changer_maintenance.send_command(cmdparts, args)
+        ret = mxcube.mxcubecore.beamline.sample_changer_maintenance.send_command(cmdparts, args)
     except Exception as ex:
         msg = str(ex)
         msg = msg.replace("\n", " - ")

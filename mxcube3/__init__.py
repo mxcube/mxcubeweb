@@ -25,14 +25,16 @@ from flask_session import Session
 
 # To make "from mxcubecore import ..." possible
 fname = os.path.dirname(__file__)
-sys.path.insert(0, fname)
+#sys.path.insert(0, fname)
 
 from mxcubecore import HardwareRepository as hwr
 
 hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
 
-import app as mxcube
-from config import Config
+from mxcube3.app import MXCUBEApplication
+from mxcube3.config import Config
+
+mxcube = MXCUBEApplication()
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()

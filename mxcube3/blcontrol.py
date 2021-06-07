@@ -17,112 +17,109 @@ from os import path
 
 import QueueManager
 
-# The HardwareRepository object
-HWR = None
+class MXCUBECore():
+    # The HardwareRepository object
+    HWR = None
 
-# Below, all the HardwareObjects made available through this module,
-# Initialized by the init function
+    # Below, all the HardwareObjects made available through this module,
+    # Initialized by the init function
 
-# BeamlineSetup
-beamline = None
-# XMLRPCServer
-actions = None
-# Plotting
-plotting = None
+    # BeamlineSetup
+    beamline = None
+    # XMLRPCServer
+    actions = None
+    # Plotting
+    plotting = None
 
+    @staticmethod
+    def get_hwo(obj, name):
+        """
+        Convenience method for getting HardwareObjects from the HardwareRepository.
+        Retrieves the HardwareObject with the name <name> from either the
+        HardwareRepository or from a parent HardwareObject passed as <obj>
 
-def get_hwo(obj, name):
-    """
-    Convenience method for getting HardwareObjects from the HardwareRepository.
-    Retrieves the HardwareObject with the name <name> from either the
-    HardwareRepository or from a parent HardwareObject passed as <obj>
+        Handles exceptions with exit_with_error, which means that the application
+        will exit on exception
 
-    Handles exceptions with exit_with_error, which means that the application
-    will exit on exception
+        :param obj: HardwreObject or HardwareRepository
+        :param str name: The name of the HardwreObject
 
-    :param obj: HardwreObject or HardwareRepository
-    :param str name: The name of the HardwreObject
+        :rtype: HardwareObject
+        :return: The HardwareObject
+        """
+        ho = None
 
-    :rtype: HardwareObject
-    :return: The HardwareObject
-    """
-    ho = None
+        try:
+            if hasattr(obj, "get_hardware_object"):
+                ho = obj.get_hardware_object(name)
+            else:
+                ho = obj.get_object_by_role(name)
+        except Exception:
+            msg = "Could not initialize hardware object corresponding to %s \n"
+            msg = msg % name.upper()
+            msg += "Make sure that all related device servers are running \n"
+            msg += "Make sure that the detector software is running \n"
 
-    try:
-        if hasattr(obj, "get_hardware_object"):
-            ho = obj.get_hardware_object(name)
-        else:
-            ho = obj.get_object_by_role(name)
-    except Exception:
-        msg = "Could not initialize hardware object corresponding to %s \n"
-        msg = msg % name.upper()
-        msg += "Make sure that all related device servers are running \n"
-        msg += "Make sure that the detector software is running \n"
+            MXCUBECore.exit_with_error(msg)
 
-        exit_with_error(msg)
+        return ho
 
-    return ho
+    @staticmethod
+    def exit_with_error(msg):
+        """
+        Writes the traceback and msg to the log and exits the application
 
+        :param str msg: Additional message to write to log
 
-def exit_with_error(msg):
-    """
-    Writes the traceback and msg to the log and exits the application
+        """
 
-    :param str msg: Additional message to write to log
+        logging.getLogger("HWR").error(traceback.format_exc())
 
-    """
+        if msg:
+            logging.getLogger("HWR").error(msg)
 
-    logging.getLogger("HWR").error(traceback.format_exc())
+        msg = "Could not initialize one or several hardware objects, stopped "
+        msg += "at first error !"
 
-    if msg:
         logging.getLogger("HWR").error(msg)
+        logging.getLogger("HWR").error("Quitting server !")
+        sys.exit(-1)
 
-    msg = "Could not initialize one or several hardware objects, stopped "
-    msg += "at first error !"
+    @staticmethod
+    def init(hwr, hwdir):
+        """
+        Initializes the HardwareRepository with XML files read from hwdir.
 
-    logging.getLogger("HWR").error(msg)
-    logging.getLogger("HWR").error("Quitting server !")
-    sys.exit(-1)
+        The hwr module must be imported at the very beginning of the application
+        start-up to function correctly.
 
+        This method can however be called later, so that initialization can be
+        done when one wishes.
 
-def init(hwr, hwdir):
-    """
-    Initializes the HardwareRepository with XML files read from hwdir.
+        :param hwr: HardwareRepository module
+        :param str hwdir: Path to hardware objects
 
-    The hwr module must be imported at the very beginning of the application
-    start-up to function correctly.
+        :return: None
+        """
+        try:
+            hwr.init_hardware_repository(path.abspath(path.expanduser(hwdir)))
+            _hwr = hwr.get_hardware_repository()
+            _hwr.connect()
+            HWR = _hwr
+        except Exception:
+            logging.getLogger("HWR").exception("")
+        try:
+            MXCUBECore.beamline = hwr.beamline
 
-    This method can however be called later, so that initialization can be
-    done when one wishes.
+            qm = QueueManager.QueueManager("MXCuBE3")
 
-    :param hwr: HardwareRepository module
-    :param str hwdir: Path to hardware objects
+            from mxcube3.core import qutils
 
-    :return: None
-    """
+            qutils.init_signals(hwr.beamline.queue_model)
 
-    global HWR
-
-    try:
-        hwr.init_hardware_repository(path.abspath(path.expanduser(hwdir)))
-        _hwr = hwr.get_hardware_repository()
-        _hwr.connect()
-        HWR = _hwr
-    except Exception:
-        logging.getLogger("HWR").exception("")
-    try:
-        global beamline, actions, plotting
-        beamline = hwr.beamline
-
-        qm = QueueManager.QueueManager("MXCuBE3")
-
-        from mxcube3.core import qutils
-
-        qutils.init_signals(hwr.beamline.queue_model)
-
-    except Exception:
-        msg = "Could not initialize one or several hardware objects, "
-        msg += "stopped at first error ! \n"
-        msg += "Make sure That all devices servers are running \n"
-        msg += "Make sure that the detector software is running \n"
-        exit_with_error(msg)
+        except Exception:
+            msg = "Could not initialize one or several hardware objects, "
+            msg += "stopped at first error ! \n"
+            msg += "Make sure That all devices servers are running \n"
+            msg += "Make sure that the detector software is running \n"
+            MXCUBECore.exit_with_error(msg)

@@ -7,7 +7,6 @@ import json
 from flask import Response, jsonify, request, session
 from mxcube3 import mxcube
 from mxcube3 import server
-from mxcube3 import blcontrol
 from mxcube3 import socketio
 
 from mxcube3.core import qutils
@@ -57,7 +56,7 @@ def queue_abort():
               200 On success
               409 queue could not be aborted
     """
-    blcontrol.beamline.queue_manager.stop()
+    mxcube.mxcubecore.beamline.queue_manager.stop()
     return Response(status=200)
 
 
@@ -324,7 +323,7 @@ def get_default_char_params():
     returns the default values for a characterisation.
     """
     p = (
-        blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
+        mxcube.mxcubecore.beamline.characterisation.get_default_characterisation_parameters().as_dict()
     )
     resp = jsonify(p)
     resp.status_code = 200
@@ -392,7 +391,7 @@ def set_group_folder():
 @server.route("/mxcube/api/v0.1/queue/group_folder", methods=["GET"])
 @server.restrict
 def get_group_folder():
-    resp = jsonify({"path": blcontrol.beamline.session.get_group_name()})
+    resp = jsonify({"path": mxcube.mxcubecore.beamline.session.get_group_name()})
     resp.status_code = 200
 
     return resp
