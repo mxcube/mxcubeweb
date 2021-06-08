@@ -9,7 +9,7 @@ from mxcube3.routes import signals
 from mxcube3.core.utils import to_camel
 
 
-@server.route("/mxcube/api/v0.1/mockups/isready", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/mockups/isready", methods=["GET"])
 @server.restrict
 def mockup_ready():
     logging.getLogger("HWR").info("[Routes] Called mockup ready")
@@ -17,14 +17,14 @@ def mockup_ready():
     return str(mxcube.resolution.isReady())
 
 
-@server.route("/mxcube/api/v0.1/mockups/newres/<int:newres>", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/mockups/newres/<int:newres>", methods=["PUT"])
 @server.restrict
 def mockup_newres(newres):
     logging.getLogger("HWR").info("[Routes] Called mockup setting new resolution")
     return mxcube.mockups.setResolution(newres)
 
 
-@server.route("/mxcube/api/v0.1/queue/mock/diff_plan/<sid>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/mock/diff_plan/<sid>", methods=["GET"])
 @server.restrict
 def create_diff_plan(sid):
     """Juts for creating a diff plan as if it were created by edna and so on.
@@ -85,7 +85,7 @@ def create_diff_plan(sid):
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/shape_mock_result/<sid>", methods=["GET"])
 def shape_mock_result(sid):
     shape = mxcube.mxcubecore.beamline.sample_view.camera.get_shape(sid)
     hm = {}

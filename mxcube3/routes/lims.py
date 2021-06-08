@@ -18,7 +18,7 @@ from mxcube3.core import qutils
 from . import signals
 
 
-@server.route("/mxcube/api/v0.1/lims/synch_samples", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/synch_samples", methods=["GET"])
 @server.restrict
 def proposal_samples():
     try:
@@ -32,35 +32,35 @@ def proposal_samples():
 
     return res
 
-@server.route("/mxcube/api/v0.1/lims/dc/thumbnail/<image_id>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/dc/thumbnail/<image_id>", methods=["GET"])
 @server.restrict
 def get_dc_thumbnail(image_id):
     fname, data = limsutils.get_dc_thumbnail(image_id)
     return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
-@server.route("/mxcube/api/v0.1/lims/dc/image/<image_id>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/dc/image/<image_id>", methods=["GET"])
 @server.restrict
 def get_dc_image(image_id):
     fname, data = limsutils.get_dc_image(image_id)
     return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
-@server.route("/mxcube/api/v0.1/lims/quality_indicator_plot/<dc_id>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/quality_indicator_plot/<dc_id>", methods=["GET"])
 @server.restrict
 def get_quality_indicator_plot(dc_id):
     fname, data = limsutils.get_quality_indicator_plot(dc_id)
     return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
-@server.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=["GET"])
 @server.restrict
 def get_dc(dc_id):
     data = mxcube.mxcubecore.beamline.lims_rest.get_dc(dc_id)
     return jsonify(data)
 
 
-@server.route("/mxcube/api/v0.1/lims/proposal", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/proposal", methods=["POST"])
 @server.restrict
 def set_proposal():
     """
@@ -72,7 +72,7 @@ def set_proposal():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/lims/proposal", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/proposal", methods=["GET"])
 @server.restrict
 def get_proposal():
     """
@@ -102,7 +102,7 @@ def apply_template(name, data):
     return r
 
 
-@server.route("/mxcube/api/v0.1/lims/results", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/lims/results", methods=["POST"])
 @server.restrict
 def get_results():
     """

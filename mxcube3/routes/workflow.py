@@ -6,19 +6,19 @@ from __future__ import print_function
 import io
 
 from flask import Response, jsonify, request, send_file
-from mxcube3 import socketio
 from mxcube3 import server
+from mxcube3 import mxcube
 
 from mxcube3.core import wfutils
 
 
-@server.route("/mxcube/api/v0.1/workflow/", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/workflow/", methods=["GET"])
 @server.restrict
 def workflow():
     return jsonify(wfutils.get_available_workflows())
 
 
-@server.route("/mxcube/api/v0.1/workflow/", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/workflow/", methods=["POST"])
 @server.restrict
 def sumbit_parameters():
     data = request.get_json()
@@ -26,7 +26,7 @@ def sumbit_parameters():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/workflow/mesh_result/<gid>/<t>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/workflow/mesh_result/<gid>/<t>", methods=["GET"])
 #@server.restrict
 def get_grid_data(gid, t, rand):
     res = send_file(
@@ -37,10 +37,10 @@ def get_grid_data(gid, t, rand):
     return res
 
 # This route is only for testing
-@server.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/workflow/dialog/<wf>", methods=["GET"])
 @server.restrict
 def workflow_dialog(wf):
     dialog = wfutils.test_workflow_dialog(wf)
-    socketio.emit("workflowParametersDialog", dialog, namespace="/hwr")
+    server.emit("workflowParametersDialog", dialog, namespace="/hwr")
 
     return Response(status=200)

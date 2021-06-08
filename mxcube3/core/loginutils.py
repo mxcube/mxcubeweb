@@ -14,7 +14,7 @@ import flask_socketio
 from mxcube3 import mxcube
 
 from mxcube3 import state_storage
-from mxcube3 import socketio
+from mxcube3 import server
 
 from . import limsutils
 from . import utils
@@ -52,8 +52,8 @@ def remove_user(sid):
         state_storage.flush()
         #flush()
     else:
-        socketio.emit("observerLogout", user, namespace="/hwr")
-        socketio.emit("observersChanged", get_observers(), namespace="/hwr")
+        server.emit("observerLogout", user, namespace="/hwr")
+        server.emit("observersChanged", get_observers(), namespace="/hwr")
 
 
 def get_user_by_sid(sid):
@@ -163,7 +163,7 @@ def append_message(message, sid):
     }
 
     MESSAGES.append(data)
-    socketio.emit("ra_chat_message", data, namespace="/hwr")
+    server.emit("ra_chat_message", data, namespace="/hwr")
 
 
 def get_all_messages():

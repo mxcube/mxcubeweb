@@ -10,7 +10,8 @@ from decimal import Decimal
 from functools import reduce
 from enum import Enum
 
-from mxcube3 import socketio
+from mxcube3 import server
+from mxcube3 import server
 
 # These imports needs to be "direct" as the more elegant and correct
 # way from mxcubecore.HardwareObjects ... import ( ...)
@@ -123,14 +124,14 @@ class HOAdapterBase:
         socketIO.
         """
         data = {"name": self._name, "value": args[0]}
-        socketio.emit("beamline_value_change", data, namespace="/hwr")
+        server.emit("beamline_value_change", data, namespace="/hwr")
 
     def state_change(self, *args, **kwargs):
         """
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        socketio.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
+        server.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
 
     def _dict_repr(self):
         return {}
@@ -1108,10 +1109,10 @@ class DataPublisherHOAdapter(HOAdapterBase):
             self._available = True
 
     def _new_data_handler(self, data):
-        socketio.emit("data_publisher_new_data", data, namespace="/hwr")
+        server.emit("data_publisher_new_data", data, namespace="/hwr")
 
     def _update_publisher_handler(self, data):
-        socketio.emit("data_publisher_update", data, namespace="/hwr")
+        server.emit("data_publisher_update", data, namespace="/hwr")
 
     def state(self):
         return HardwareObjectState.READY.value
@@ -1186,7 +1187,7 @@ class _BeamlineAdapter:
         return reduce(getattr, attr.split("."), obj)
 
     def wf_parameters_needed(self, params):
-        socketio.emit("workflowParametersDialog", params, broadcast=True, namespace="/hwr")
+        server.emit("workflowParametersDialog", params, broadcast=True, namespace="/hwr")
 
     def get_object(self, name):
         return getattr(self, name)

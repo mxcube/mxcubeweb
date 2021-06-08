@@ -7,9 +7,6 @@ import logging
 import time
 import gevent
 
-# We are patching queue_entry.mount_sample at the end of this file.
-#import queue_entry
-
 from mxcube3 import mxcube
 
 from . import limsutils

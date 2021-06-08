@@ -232,13 +232,13 @@ def _do_take_snapshot(filename, bw=False):
     )
 
     # from . import loginutils
-    # from mxcube3 import socketio, server
+    # from mxcube3 import server, server
 
     # SNAPSHOT_RECEIVED.clear()
     # rid = loginutils.get_operator()["socketio_sid"]
 
     # with server.test_request_context():
-    #     socketio.emit(
+    #     server.emit(
     #         "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
     #     )
 

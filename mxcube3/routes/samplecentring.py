@@ -13,7 +13,7 @@ from mxcube3.core import beamlineutils
 from mxcube3.core import sviewutils
 
 
-@server.route("/mxcube/api/v0.1/sampleview/camera/subscribe", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/camera/subscribe", methods=["GET"])
 @server.restrict
 def subscribe_to_camera():
     """
@@ -29,7 +29,7 @@ def subscribe_to_camera():
     return result
 
 
-@server.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/camera/unsubscribe", methods=["PUT"])
 @server.restrict
 def unsubscribe_to_camera():
     """
@@ -41,7 +41,7 @@ def unsubscribe_to_camera():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/camera/save", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/camera/save", methods=["PUT"])
 @server.restrict
 def snapshot():
     """
@@ -59,7 +59,7 @@ def snapshot():
         return "False"
 
 
-@server.route("/mxcube/api/v0.1/sampleview/camera", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/camera", methods=["GET"])
 @server.restrict
 def get_image_data():
     """
@@ -78,7 +78,7 @@ def get_image_data():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/camera", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/camera", methods=["POST"])
 @server.restrict
 def set_image_size():
     """
@@ -92,7 +92,7 @@ def set_image_size():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/<point_id>/moveto", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/<point_id>/moveto", methods=["PUT"])
 @server.require_control
 @server.restrict
 def move_to_centred_position(point_id):
@@ -110,7 +110,7 @@ def move_to_centred_position(point_id):
         return Response(status=409)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/shapes", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/shapes", methods=["GET"])
 @server.restrict
 def get_shapes():
     """
@@ -126,7 +126,7 @@ def get_shapes():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=["GET"])
 @server.restrict
 def get_shape_with_sid(sid):
     """
@@ -145,7 +145,7 @@ def get_shape_with_sid(sid):
         return Response(status=409)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=["POST"])
 def shape_add_cell_result(sid):
     """
     Update cell result data.
@@ -163,7 +163,7 @@ def shape_add_cell_result(sid):
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/shapes", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/shapes", methods=["POST"])
 @server.require_control
 @server.restrict
 def update_shapes():
@@ -183,7 +183,7 @@ def update_shapes():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=["DELETE"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/shapes/<sid>", methods=["DELETE"])
 @server.require_control
 @server.restrict
 def delete_shape(sid):
@@ -197,7 +197,7 @@ def delete_shape(sid):
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/shapes/rotate_to", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/shapes/rotate_to", methods=["POST"])
 @server.require_control
 @server.restrict
 def rotate_to():
@@ -221,7 +221,7 @@ def rotate_to():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/zoom", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/zoom", methods=["PUT"])
 @server.require_control
 @server.restrict
 def move_zoom_motor():
@@ -244,7 +244,7 @@ def move_zoom_motor():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/backlighton", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/backlighton", methods=["PUT"])
 @server.require_control
 @server.restrict
 def back_light_on():
@@ -257,7 +257,7 @@ def back_light_on():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/backlightoff", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/backlightoff", methods=["PUT"])
 @server.require_control
 @server.restrict
 def back_light_off():
@@ -270,7 +270,7 @@ def back_light_off():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/frontlighton", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/frontlighton", methods=["PUT"])
 @server.require_control
 @server.restrict
 def front_light_on():
@@ -283,7 +283,7 @@ def front_light_on():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/frontlightoff", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/frontlightoff", methods=["PUT"])
 @server.require_control
 @server.restrict
 def front_light_off():
@@ -296,7 +296,7 @@ def front_light_off():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/<motid>/<newpos>", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/<motid>/<newpos>", methods=["PUT"])
 @server.require_control
 @server.restrict
 def move_motor(motid, newpos):
@@ -322,7 +322,7 @@ def move_motor(motid, newpos):
         return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/<elem_id>", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/<elem_id>", methods=["GET"])
 @server.restrict
 def get_status_of_id(elem_id):
     """
@@ -345,7 +345,7 @@ def get_status_of_id(elem_id):
         return Response(status=409)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/startauto", methods=["GET"])
 @server.require_control
 @server.restrict
 def centre_auto():
@@ -358,7 +358,7 @@ def centre_auto():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/start3click", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/start3click", methods=["PUT"])
 @server.require_control
 @server.restrict
 def centre_3_click():
@@ -383,7 +383,7 @@ def centre_3_click():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/abort", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/abort", methods=["PUT"])
 @server.require_control
 @server.restrict
 def abort_centring():
@@ -396,7 +396,7 @@ def abort_centring():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/click", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/click", methods=["PUT"])
 @server.require_control
 @server.restrict
 def click():
@@ -420,7 +420,7 @@ def click():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/accept", methods=["PUT"])
 @server.require_control
 @server.restrict
 def accept_centring():
@@ -431,7 +431,7 @@ def accept_centring():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/reject", methods=["PUT"])
 @server.require_control
 @server.restrict
 def reject_centring():
@@ -440,7 +440,7 @@ def reject_centring():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/movetobeam", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/movetobeam", methods=["PUT"])
 @server.require_control
 @server.restrict
 def move_to_beam():
@@ -452,7 +452,7 @@ def move_to_beam():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/sampleview/centring/centring_method", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/sampleview/centring/centring_method", methods=["PUT"])
 @server.require_control
 @server.restrict
 def set_centring_method():

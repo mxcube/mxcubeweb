@@ -12,14 +12,13 @@ from flask import (
 
 from flask_socketio import join_room, leave_room
 
-from mxcube3 import socketio
-from mxcube3 import mxcube
 from mxcube3 import server
+from mxcube3 import mxcube
 
 from mxcube3.core import loginutils
 
 
-@server.route("/mxcube/api/v0.1/ra/request_control", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/request_control", methods=["POST"])
 @server.restrict
 def request_control():
     """
@@ -54,12 +53,12 @@ def request_control():
     observers = loginutils.get_observers()
     gevent.spawn(handle_timeout_gives_control, session.sid, timeout=10)
 
-    socketio.emit("observersChanged", observers, namespace="/hwr")
+    server.emit("observersChanged", observers, namespace="/hwr")
 
     return make_response("", 200)
 
 
-@server.route("/mxcube/api/v0.1/ra/take_control", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/take_control", methods=["POST"])
 @server.restrict
 def take_control():
     """
@@ -78,7 +77,7 @@ def take_control():
     return make_response("", 200)
 
 
-@server.route("/mxcube/api/v0.1/ra/give_control", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/give_control", methods=["POST"])
 @server.restrict
 def give_control():
     """
@@ -105,24 +104,24 @@ def toggle_operator(new_op_sid, message):
     if current_op:
         current_op["rootPath"] = mxcube.mxcubecore.beamline.session.get_base_image_directory()
         current_op["message"] = message
-        socketio.emit(
+        server.emit(
             "setObserver", current_op, room=current_op["socketio_sid"], namespace="/hwr"
         )
 
-    socketio.emit("observersChanged", observers, namespace="/hwr")
-    socketio.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace="/hwr")
+    server.emit("observersChanged", observers, namespace="/hwr")
+    server.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace="/hwr")
 
 
 def remain_observer(observer_sid, message):
     observer = loginutils.get_user_by_sid(observer_sid)
     observer["message"] = message
 
-    socketio.emit(
+    server.emit(
         "setObserver", observer, room=observer["socketio_sid"], namespace="/hwr"
     )
 
 
-@server.route("/mxcube/api/v0.1/ra/", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/", methods=["GET"])
 @server.restrict
 def observers():
     """
@@ -139,7 +138,7 @@ def observers():
     return jsonify(data=data)
 
 
-@server.route("/mxcube/api/v0.1/ra/allow_remote", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/allow_remote", methods=["POST"])
 @server.restrict
 def allow_remote():
     """
@@ -147,14 +146,14 @@ def allow_remote():
     allow = request.get_json().get("allow")
 
     if mxcube.ALLOW_REMOTE and allow == False:
-        socketio.emit("forceSignoutObservers", {}, namespace="/hwr")
+        server.emit("forceSignoutObservers", {}, namespace="/hwr")
 
     mxcube.ALLOW_REMOTE = allow
 
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/ra/timeout_gives_control", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/timeout_gives_control", methods=["POST"])
 @server.restrict
 def timeout_gives_control():
     """
@@ -175,7 +174,7 @@ def observer_requesting_control():
     return observer
 
 
-@server.route("/mxcube/api/v0.1/ra/request_control_response", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/request_control_response", methods=["POST"])
 @server.restrict
 def request_control_response():
     """
@@ -194,7 +193,7 @@ def request_control_response():
     return make_response("", 200)
 
 
-@server.route("/mxcube/api/v0.1/ra/chat", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/chat", methods=["POST"])
 @server.restrict
 def append_message():
     message = request.get_json().get("message", "")
@@ -206,13 +205,13 @@ def append_message():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/ra/chat", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/ra/chat", methods=["GET"])
 @server.restrict
 def get_all_mesages():
     return jsonify({"messages": loginutils.get_all_messages()})
 
 
-@socketio.on("connect", namespace="/hwr")
+@server.FLASK_SOCKETIO.on("connect", namespace="/hwr")
 @server.ws_restrict
 def connect():
     user = loginutils.get_user_by_sid(session.sid)
@@ -228,13 +227,13 @@ def connect():
             and not loginutils.DISCONNECT_HANDLED
         ):
             loginutils.DISCONNECT_HANDLED = True
-            socketio.emit("resumeQueueDialog", namespace="/hwr")
+            server.emit("resumeQueueDialog", namespace="/hwr")
             msg = "Client reconnected, Queue was previously stopped, asking "
             msg += "client for action"
             logging.getLogger("HWR").info(msg)
 
 
-@socketio.on("disconnect", namespace="/hwr")
+@server.FLASK_SOCKETIO.on("disconnect", namespace="/hwr")
 @server.ws_restrict
 def disconnect():
     if (
@@ -246,7 +245,7 @@ def disconnect():
         logging.getLogger("HWR").info("Client disconnected")
 
 
-@socketio.on("setRaMaster", namespace="/hwr")
+@server.FLASK_SOCKETIO.on("setRaMaster", namespace="/hwr")
 @server.ws_restrict
 def set_master(data):
     leave_room("observers", namespace="/ui_state")
@@ -254,7 +253,7 @@ def set_master(data):
     return session.sid
 
 
-@socketio.on("setRaObserver", namespace="/hwr")
+@server.FLASK_SOCKETIO.on("setRaObserver", namespace="/hwr")
 @server.ws_restrict
 def set_observer(data):
     name = data.get("name", "")
@@ -263,9 +262,9 @@ def set_observer(data):
 
     if observer and name:
         observer["name"] = name
-        socketio.emit("observerLogin", observer, include_self=False, namespace="/hwr")
+        server.emit("observerLogin", observer, include_self=False, namespace="/hwr")
 
-    socketio.emit("observersChanged", observers, namespace="/hwr")
+    server.emit("observersChanged", observers, namespace="/hwr")
     join_room("observers", namespace="/ui_state")
 
     return session.sid

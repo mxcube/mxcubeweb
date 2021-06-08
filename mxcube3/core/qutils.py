@@ -19,7 +19,7 @@ from mxcubecore.HardwareObjects import queue_model_enumerables as qme
 from mxcubecore.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcube3 import mxcube
-from mxcube3 import socketio
+from mxcube3 import server
 
 from . import limsutils
 from . import utils
@@ -1590,7 +1590,7 @@ def queue_model_child_added(parent, child):
             sample = parent.get_parent()
 
             task = _handle_dc(sample, child)
-            socketio.emit("add_task", {"tasks": [task]}, namespace="/hwr")
+            server.emit("add_task", {"tasks": [task]}, namespace="/hwr")
 
         elif isinstance(child, qmo.TaskGroup):
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
@@ -1618,7 +1618,7 @@ def queue_model_diff_plan_available(char, collection_list):
             task.update({"isDiffractionPlan": True, "originID": origin_model._node_id})
             cols.append(task)
 
-    socketio.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
+    server.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
 
 
 def set_auto_add_diffplan(autoadd, current_sample=None):

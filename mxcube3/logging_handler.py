@@ -4,21 +4,19 @@ from __future__ import print_function
 
 import logging
 import traceback
-from mxcube3 import socketio
-from mxcube3 import server
-
-
-@socketio.on("connect", namespace="/logging")
-@server.ws_restrict
-def connect():
-    # this is needed to create the namespace, and the actual connection
-    # to the server, but we don't need to do anything more
-    pass
-
 
 class MX3LoggingHandler(logging.handlers.BufferingHandler):
-    def __init__(self):
+    def __init__(self, server):
         super().__init__(1000)
+        self.server = server
+
+        @server.FLASK_SOCKETIO.on("connect", namespace="/logging")
+        @server.ws_restrict
+        def connect():
+            # this is needed to create the namespace, and the actual connection
+            # to the server, but we don't need to do anything more
+            pass
+
 
     def _record_to_json(self, record):
         if record.exc_info:
@@ -42,6 +40,6 @@ class MX3LoggingHandler(logging.handlers.BufferingHandler):
         if record.name != "geventwebsocket.handler":
             record_dict = self._record_to_json(record)
             super().emit(record_dict)
-            socketio.emit("log_record", record_dict, namespace="/logging")
+            self.server.emit("log_record", record_dict, namespace="/logging")
         else:
             super().emit(record)
