@@ -19,7 +19,7 @@ class SampleChangerContainer extends React.Component {
             />
            </div>
           </div>
-          <div className="row">
+          <div className="row" style={{ marginTop: '1em' }}>
            <div className="col-xs-6">
              <SampleChanger
                state={this.props.state}

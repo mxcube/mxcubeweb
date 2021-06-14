@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import loader from '../img/loader.gif';
 
+
+
 import {
   Row, Col, Form,
   FormControl,
@@ -41,7 +43,7 @@ import {
 
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import { showConfirmClearQueueDialog } from '../actions/general';
-
+import SampleChangerState from '../components/SampleChanger/SampleChangerState';
 import { showTaskForm } from '../actions/taskForm';
 import SampleGridContainer from './SampleGridContainer';
 import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
@@ -51,6 +53,7 @@ import { SAMPLE_ITEM_WIDTH,
   SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 
 import '../components/SampleGrid/SampleGrid.css';
+
 
 class SampleGridViewContainer extends React.Component {
 
@@ -469,7 +472,7 @@ class SampleGridViewContainer extends React.Component {
               <Row>
                 <Col xs={6}>
                   <FormGroup bsSize="small" style={{ float: 'none', marginTop: '0.5em' }}>
-                    <span> Basket: </span>
+                    <span> Cell: </span>
                     <FormControl
                       style={{ float: 'none' }}
                       id="puckFilter"
@@ -574,7 +577,7 @@ class SampleGridViewContainer extends React.Component {
         <ConfirmActionDialog
           title="Clear sample grid ?"
           message="This will remove all samples (and collections) from the grid,
-                     are you sure you would like to continue ?"
+                   are you sure you would like to continue ?"
           onOk={this.props.sendClearQueue}
           show={this.props.general.showConfirmClearQueueDialog}
           hide={this.props.confirmClearQueueHide}
@@ -586,7 +589,7 @@ class SampleGridViewContainer extends React.Component {
           : null
         }
         <Row>
-          <Col xs={4}>
+          <Col xs={8}>
             <Form inline>
               <SplitButton
                 id="split-button-sample-changer-selection"
@@ -610,24 +613,8 @@ class SampleGridViewContainer extends React.Component {
                   <Glyphicon glyph="refresh" /> ISPyB
                     </Button>
               </OverlayTrigger>
-              <span style={{ marginLeft: '1em' }} />
-              <OverlayTrigger
-                placement="bottom"
-                overlay={(
-                  <Tooltip id="select-samples">
-                    Remove all samples from sample list and queue
-                  </Tooltip>)}
-              >
-                <Button
-                  onClick={this.props.confirmClearQueueShow}
-                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                >
-                  Clear sample list
-                    </Button>
-              </OverlayTrigger>
             </Form>
-          </Col>
-          <Col xs={6}>
+            <span style={{ marginLeft: '3em' }} />
             <Form inline>
               <FormGroup>
                 <ControlLabel>Filter: &nbsp;</ControlLabel>
@@ -643,7 +630,7 @@ class SampleGridViewContainer extends React.Component {
                 </InputGroup>
               </FormGroup>
             </Form>
-            <span style={{ marginLeft: '1em' }} />
+            <span style={{ marginLeft: '3em' }} />
             <Form inline>
               <SplitButton
                 id="pipeline-mode-dropdown"
@@ -659,8 +646,30 @@ class SampleGridViewContainer extends React.Component {
                     </MenuItem>
               </SplitButton>
             </Form>
+            <span style={{ marginLeft: '1em' }} />
+            <Form inline>
+              <OverlayTrigger
+                placement="bottom"
+                overlay={(
+                  <Tooltip id="select-samples">
+                    Remove all samples from sample list and queue
+                  </Tooltip>)}
+              >
+                <Button
+                  onClick={this.props.confirmClearQueueShow}
+                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                >
+                  Clear sample list
+                    </Button>
+              </OverlayTrigger>
+            </Form>
+            <div style={{ display: 'inline-flex', marginLeft: '2em', verticalAlign: 'middle' }} >
+              <SampleChangerState
+                state = { this.props.sampleChanger.state }
+              />
+            </div>
           </Col>
-          <Col xs={2} className="pull-right">
+          <Col xs={3} className="pull-right">
             {this.collectButton()}
             <QueueSettings />
           </Col>

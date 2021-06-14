@@ -46,8 +46,11 @@ export default class SampleChangerSwitch extends React.Component {
       btn = <Button block bsSize="small" onClick={this.powerOff}>{this.props.onText}</Button>;
     }
 
-    const msgLabelStyle = { display: 'block', fontSize: '100%',
-      borderRadius: '0px', color: '#000' };
+    const msgLabelStyle = {
+      display: 'block', fontSize: '100%',
+      borderRadius: '0px', color: '#000',
+      textOverflow: 'ellipsis', overflow: 'hidden'
+    };
 
     return (
       <div>

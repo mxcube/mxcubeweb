@@ -37,18 +37,19 @@ export class HelpContainer extends React.Component {
       const tel = loginRes.local_contact.phoneNumber || '';
 
       panel = (
-        <Panel header={
-          <div>
-            <span>Local Contact</span>
-            <span className="glyphicon glyphicon-user pull-right" ></span>
-          </div>}
-        >
-         <span>
-           Name: `${givenName} ${familyName}`<br />
-           Email: {email}<br />
-           Tel: {tel} <br />
-         </span>
-       </Panel>);
+        <Panel>
+          <Panel.Heading>
+            <div>
+              <span>Local Contact</span>
+              <span className="glyphicon glyphicon-user pull-right" ></span>
+            </div>}
+          </Panel.Heading>
+          <span>
+            Name: `${givenName} ${familyName}`<br />
+            Email: {email}<br />
+            Tel: {tel} <br />
+          </span>
+        </Panel>);
     }
     return panel;
   }
@@ -65,73 +66,86 @@ export class HelpContainer extends React.Component {
       <div className="col-xs-12" style={{ marginTop: '2em', zIndex: 9999 }}>
         <div className="col-xs-4">
           {this.localContactPanel()}
-          <Panel header={
-            <div>
-              <span>Feedback</span>
-              <span className="glyphicon glyphicon-envelope pull-right" ></span>
-            </div>}
-          >
-           <span>
-              <Form>
-                <FormGroup>
-                  <ControlLabel>Your email, Name or Proposal</ControlLabel>
-                  <FormControl
-                    type="email"
-                    label="Email address"
-                    placeholder="Your contact information (email, Name or Proposal)"
-                    inputRef={ (input) => {this.sender = input;} }
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Content:</ControlLabel>
-                  <FormControl
-                    componentClass="textarea"
-                    rows="7"
-                    label="Content"
-                    placeholder="Let us know whats on your mind !"
-                    inputRef={ (input) => {this.content = input;} }
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Button type="button" onClick={this.sendMail}>Submit</Button>
-                </FormGroup>
-              </Form>
-            </span>
+          <Panel>
+           <Panel.Heading>
+             <div>
+               <span>Feedback</span>
+               <span className="glyphicon glyphicon-envelope pull-right" ></span>
+             </div>
+           </Panel.Heading>
+           <Panel.Body>
+             <span>
+                <Form>
+                  <FormGroup>
+                    <ControlLabel>Your email, Name or Proposal</ControlLabel>
+                    <FormControl
+                      type="email"
+                      label="Email address"
+                      placeholder="Your contact information (email, Name or Proposal)"
+                      inputRef={ (input) => {this.sender = input;} }
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <ControlLabel>Content:</ControlLabel>
+                    <FormControl
+                      componentClass="textarea"
+                      rows="7"
+                      label="Content"
+                      placeholder="Let us know whats on your mind !"
+                      inputRef={ (input) => {this.content = input;} }
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Button type="button" onClick={this.sendMail}>Submit</Button>
+                  </FormGroup>
+                </Form>
+              </span>
+            </Panel.Body>
           </Panel>
-          <Panel header="About MXCuBE3">
-            <span>
-              Version: {/* eslint-disable no-undef */ VERSION.BRANCH}
-              <br />
-              Commit hash: { VERSION.COMMITHASH /* eslint-enable no-undef */}
-            </span>
+          <Panel>
+            <Panel.Heading>
+              About MXCuBE3
+            </Panel.Heading>
+            <Panel.Body>
+              <span>
+                Version: {/* eslint-disable no-undef */ VERSION.BRANCH}
+                <br />
+                Commit hash: { VERSION.COMMITHASH /* eslint-enable no-undef */}
+              </span>
+            </Panel.Body>
           </Panel>
         </div>
         <div className="col-xs-6">
-          <Panel header="Video Tutorials">
-            <div className="col-xs-4">
-              <span>
-                <b>Characterisation </b> <br />
-                <video width="230" height="132" controls>
-                  <source src={characterisation} type="video/mp4" />
-                </video>
-              </span>
-            </div>
-            <div className="col-xs-4">
-              <span>
-                <b>Interleaved </b> <br />
-                <video width="230" height="132" controls>
-                  <source src={interleaved} type="video/mp4" />
-                </video>
-              </span>
-            </div>
-            <div className="col-xs-4">
-              <span>
-                <b>Mesh </b> <br />
-                <video width="230" height="132" controls>
-                  <source src={mesh} type="video/mp4" />
-                </video>
-              </span>
-            </div>
+          <Panel>
+            <Panel.Heading>
+              Video Tutorials
+            </Panel.Heading>
+            <Panel.Body>
+              <div className="col-xs-4">
+                <span>
+                  <b>Characterisation </b> <br />
+                  <video width="230" height="132" controls>
+                    <source src={characterisation} type="video/mp4" />
+                  </video>
+                </span>
+              </div>
+              <div className="col-xs-4">
+                <span>
+                  <b>Interleaved </b> <br />
+                  <video width="230" height="132" controls>
+                    <source src={interleaved} type="video/mp4" />
+                  </video>
+                </span>
+              </div>
+              <div className="col-xs-4">
+                <span>
+                  <b>Mesh </b> <br />
+                  <video width="230" height="132" controls>
+                    <source src={mesh} type="video/mp4" />
+                  </video>
+                </span>
+              </div>
+            </Panel.Body>
           </Panel>
           { config.helpLinks ?
             (<Panel header={
