@@ -99,7 +99,7 @@ def diffractometer_init_signals():
     from mxcube3.routes import signals
 
     diffractometer = blcontrol.beamline.diffractometer
-    diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
+    diffractometer.connect("valueChanged", signals.diffractometer_phase_changed)
 
 
 def get_aperture():
