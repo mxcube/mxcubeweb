@@ -1906,22 +1906,22 @@ def queue_stop():
     if blcontrol.beamline.queue_manager._root_task is not None:
         blcontrol.beamline.queue_manager.stop()
     else:
-        qe = blcontrol.beamline.queue_manager.get_current_entry()
         # check if a node/task is executing and stop that one
-        if qe:
+        for qe in blcontrol.beamline.queue_manager.current_queue_entries:
             try:
                 qe.stop()
             except Exception as ex:
                 logging.getLogger("MX3.HWR").exception("[QUEUE] Could not stop queue")
+
             blcontrol.beamline.queue_manager.set_pause(False)
-            # the next two is to avoid repeating the task
-            # TODO: if you now run the queue it will be enabled and run
+            # The next two is to avoid repeating the task
             qe.get_data_model().set_executed(True)
             qe.get_data_model().set_enabled(False)
+            qe.status = QUEUE_ENTRY_STATUS.FAILED
             qe._execution_failed = True
 
-            blcontrol.beamline.queue_manager._is_stopped = True
-            signals.queue_execution_stopped()
+        blcontrol.beamline.queue_manager._is_stopped = True
+        signals.queue_execution_stopped()
 
 def queue_pause():
     """
