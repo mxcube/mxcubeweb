@@ -589,7 +589,7 @@ class SampleGridViewContainer extends React.Component {
           : null
         }
         <Row>
-          <Col xs={8}>
+          <Col xs={10}>
             <Form inline>
               <SplitButton
                 id="split-button-sample-changer-selection"
@@ -669,7 +669,7 @@ class SampleGridViewContainer extends React.Component {
               />
             </div>
           </Col>
-          <Col xs={3} className="pull-right">
+          <Col xs={2} className="pull-right">
             {this.collectButton()}
             <QueueSettings />
           </Col>
