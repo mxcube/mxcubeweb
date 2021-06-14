@@ -331,6 +331,8 @@ def queue_execution_finished(entry, queue_state=None):
 
 
 def queue_execution_stopped(*args):
+    logging.getLogger("user_level_log").error("Queue stopped")
+
     msg = {"Signal": "QueueStopped", "Message": "Queue execution stopped"}
 
     socketio.emit("queue", msg, namespace="/hwr")

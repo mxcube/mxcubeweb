@@ -1909,9 +1909,10 @@ def queue_stop():
         # check if a node/task is executing and stop that one
         for qe in blcontrol.beamline.queue_manager.current_queue_entries:
             try:
+                qe.status = QUEUE_ENTRY_STATUS.FAILED
                 qe.stop()
             except Exception as ex:
-                logging.getLogger("MX3.HWR").exception("[QUEUE] Could not stop queue")
+                pass
 
             blcontrol.beamline.queue_manager.set_pause(False)
             # The next two is to avoid repeating the task
