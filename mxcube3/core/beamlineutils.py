@@ -277,22 +277,9 @@ def beamline_run_action(name, params):
 def beamline_set_attribute(name, data):
     """
     """
-    if name.lower() == "detdist":
-        ho = BeamlineAdapter(mxcube.mxcubecore.beamline).get_object("dtox")
-    else:
-        ho = BeamlineAdapter(mxcube.mxcubecore.beamline).get_object(name.lower())
-
-    try:
-        ho.set(data["value"])
-        data = ho.dict_repr()
-        res = True
-    except Exception as ex:
-        data = ho.dict_repr()
-        data["value"] = ho.get()
-        data["state"] = "UNUSABLE"
-        data["msg"] = "submitted value out of limits"
-        res = False
-        logging.getLogger("MX3.HWR").error("Error setting bl attribute: " + str(ex))
+    ho = BeamlineAdapter(mxcube.mxcubecore.beamline).get_object(name.lower())
+    data = ho.set_value(data["value"])
+    res = data["available"]     
 
     return res, data
 
@@ -301,16 +288,8 @@ def beamline_get_attribute(name):
     """
     """
     ho = BeamlineAdapter(mxcube.mxcubecore.beamline).get_object(name.lower())
-    data = {"name": name, "value": ""}
-
-    try:
-        data = ho.dict_repr()
-        res = 200
-    except Exception as ex:
-        data["value"] = ""
-        data["state"] = "UNUSABLE"
-        data["msg"] = str(ex)
-        res = 520
+    data = ho.dict_repr()
+    res = 200 if data["available"] else 520
 
     return res, data
 

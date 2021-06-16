@@ -28,7 +28,7 @@ from .statedefs import (
     INOUT_STATE,
     TANGO_SHUTTER_STATE,
     BEAMSTOP_STATE,
-    ABSTRACT_NSTATE_TO_VALUE
+    ABSTRACT_NSTATE_TO_VALUE    
 )
 
 
@@ -61,11 +61,12 @@ class HOAdapterBase:
         self._ho = ho
         self._name = name
         self._available = True
+        self._read_only = False
 
     @property
-    def ho_proxy(self):
+    def ho(self):
         """
-        Proxy to underlaying HardwareObject
+        Underlaying HardwareObject
         Returns:
             (object): HardwareObject
         """
@@ -74,7 +75,8 @@ class HOAdapterBase:
     # Abstract method
     def state(self):
         """
-        Retrieves the state of the underlying hardware object.
+        Retrieves the state of the underlying hardware object and converts it to a str
+        that can be used by the javascript front end.
         Returns:
             (str): The state
         """
@@ -83,8 +85,8 @@ class HOAdapterBase:
     # Abstract method
     def msg(self):
         """
-        Returns a message describing the current state. should be
-        used to communicate details of the state to the user.
+        Returns a message describing the current state. should be used to communicate 
+        details of the state to the user.
         Returns:
             (str): The message string.
         """
@@ -92,11 +94,11 @@ class HOAdapterBase:
 
     def read_only(self):
         """
-        Check if the attibute is read only.
+        Returns true if the hardware object is read only, set_value can not be called
         Returns:
             (bool): True if read enly.
         """
-        return False
+        return self._read_only
 
     def available(self):
         """
@@ -107,7 +109,7 @@ class HOAdapterBase:
         return self._available
 
     # Dont't limit rate this method with utils.LimitRate, all sub-classes
-    # will share this method thus all updates wont be sent if limit rated.
+    # will share this method thus all methods will be effected if limit rated.
     # Rather LimitRate the function calling this one.
     def value_change(self, *args, **kwargs):
         """
@@ -146,8 +148,9 @@ class HOAdapterBase:
 
             data.update(self._dict_repr())
         except Exception as ex:
+            # Return a default representation if there is a problem retrieving 
+            # any of the attributes
             self._available = False
-
             data = {
                 "name": self._name,
                 "label": self._name.replace("_", " ").title(),
@@ -157,6 +160,10 @@ class HOAdapterBase:
                 "value": "0",
                 "readonly": False
             }
+
+            logging.getLogger("MX3.HWR").exception(
+                f"Failed to get dictionary representation of {self._name}"
+            )
 
         return data
 
@@ -182,14 +189,8 @@ class HOActuatorAdapterBase(HOAdapterBase):
     def step_size(self):
         return math.pow(10, -self._precision)
 
-    # def __getattr__(self, attr):
-    #     if attr.startswith("__"):
-    #         raise AttributeError(attr)
-
-    #     return getattr(self._ho, attr)
-
     # Abstract method
-    def set(self, value):
+    def set_value(self, value):
         """
         Sets a value on underlying hardware object.
         Args:
@@ -200,9 +201,20 @@ class HOActuatorAdapterBase(HOAdapterBase):
             ValueError: When conversion or treatment of value fails.
             StopItteration: When a value change was interrupted (abort/cancel).
         """
+        try:
+            self._set_value(value)
+            data = self.dict_repr()
+        except ValueError as ex:
+            self._available = False
+            data = self.dict_repr()
+            data["state"] = "UNUSABLE"
+            data["msg"] = str(ex)
+            logging.getLogger("MX3.HWR").error("Error setting bl attribute: " + str(ex))
+
+        return data
 
     # Abstract method
-    def get(self):
+    def get_value(self):
         """
         Retrieve value from underlying hardware object.
         Returns:
@@ -210,6 +222,7 @@ class HOActuatorAdapterBase(HOAdapterBase):
         Raises:
             ValueError: When value for any reason can't be retrieved.
         """
+        return self._get_value()
 
     # Abstract method
     def stop(self):
@@ -235,13 +248,14 @@ class HOActuatorAdapterBase(HOAdapterBase):
         try:
             data.update(
                 {
-                    "value": self.get(),
+                    "value": self.get_value(),
                     "limits": self.limits(),
                     "precision": self.precision(),
                     "step": self.step_size(),
                 }
             )
         except Exception as ex:
+            self._available = False
             data.update(
                 {
                     "value": "0",
@@ -280,7 +294,7 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def set(self, value):
+    def _set_value(self, value):
         """
         Execute the sequence to set the value.
         Args:
@@ -294,11 +308,11 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
         """
         try:
             self._ho.set_value(float(value))
-            return self.get()
+            return self.get_value()
         except BaseException:
             raise
 
-    def get(self):
+    def _get_value(self):
         """
         Read the energy.
         Returns:
@@ -376,7 +390,7 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
     def _value_change(self, pos, wl, *args, **kwargs):
         self.value_change(wl)
 
-    def set(self, value):
+    def _set_value(self, value):
         """
         Execute the sequence to set the value.
         Args:
@@ -390,11 +404,11 @@ class WavelengthHOAdapter(HOActuatorAdapterBase):
         """
         try:
             self._ho.set_wavelength(float(value))
-            return self.get()
+            return self.get_value()
         except BaseException:
             raise
 
-    def get(self):
+    def _get_value(self):
         """
         Read the wavelength value.
         Returns:
@@ -533,13 +547,13 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
 
         return cmds
 
-    def set(self, state): 
+    def _set_value(self, state): 
         if state == INOUT_STATE.IN:
             self._close()
         elif state == INOUT_STATE.OUT:
             self._open()
 
-    def get(self):
+    def _get_value(self):
         state = self._get_state()
 
         if isinstance(state, Enum):
@@ -583,15 +597,10 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
             (dict): The dictionary.
         """
         data = {
-            "name": self._name,
-            "label": self._name.replace("_", " ").title(),
-            "value": self.get(),
+            "value": self.get_value(),
             "limits": self.limits(),
-            "state": self.state(),
-            "msg": self.msg(),
             "commands": self.commands(),
             "type": "DUOSTATE",
-            "readonly": self.read_only(),
         }
 
         return data
@@ -613,7 +622,7 @@ class TransmissionHOAdapter(HOActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def set(self, value):
+    def _set_value(self, value):
         """Set the transmission.
         Args:
             value(float): Transmission [%].
@@ -624,11 +633,11 @@ class TransmissionHOAdapter(HOActuatorAdapterBase):
         """
         try:
             self._ho.set_value(round(float(value), self._precision))
-            return self.get()
+            return self.get_value()
         except Exception as ex:
             raise ValueError("Cannot set transmission: %s" % str(ex))
 
-    def get(self):
+    def _get_value(self):
         """
         Get the transmission value.
         Returns:
@@ -679,7 +688,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def set(self, value):
+    def _set_value(self, value):
         """
         Set the resolution.
         Args:
@@ -692,9 +701,9 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
             StopItteration: When a value change was interrupted (abort/cancel).
         """
         self._ho.set_value(round(float(value), self._precision))
-        return self.get()
+        return self.get_value()
 
-    def get(self):
+    def _get_value(self):
         """
         Read the resolution.
 
@@ -749,15 +758,10 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
             (dict): The dictionary.
         """
         data = {
-            "name": self._name,
-            "label": self._name.replace("_", " ").title(),
-            "value": self.get(),
+            "value": self.get_value(),
             "limits": self.get_lookup_limits(),
-            "state": self.state(),
-            "msg": self.msg(),
             "precision": self.precision(),
             "step": self.step_size(),
-            "readonly": self.read_only(),
         }
         return data
 
@@ -778,7 +782,7 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def set(self, value):
+    def _set_value(self, value):
         """
         Set the detector distance.
         Args:
@@ -791,9 +795,9 @@ class DetectorDistanceHOAdapter(HOActuatorAdapterBase):
             StopItteration: When a value change was interrupted (abort/cancel).
         """
         self._ho.set_value(round(float(value), self._precision))
-        return self.get()
+        return self.get_value()
 
-    def get(self):
+    def _get_value(self):
         """
         Read the detector distance.
         Returns:
@@ -846,14 +850,14 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
         ho.connect("valueChanged", self._value_change)
         self._precision = 1
 
-    def set(self, value):
+    def _set_value(self, value):
         pass
 
     @utils.RateLimited(0.1)
     def _value_change(self, *args, **kwargs):
-        self.value_change(self.get(), **kwargs)
+        self.value_change(self.get_value(), **kwargs)
 
-    def get(self):
+    def _get_value(self):
         return {
             "current": self.get_current(),
             "message": self.get_message(),
@@ -913,13 +917,13 @@ class DetectorHOAdapter(HOActuatorAdapterBase):
         ho.connect("statusChanged", self._state_change)
         self._precision = 1
 
-    def set(self, value):
+    def _set_value(self, value):
         pass
 
     def _state_change(self, *args, **kwargs):
-        self.state_change(self.get(), **kwargs)
+        self.state_change(self.get_value(), **kwargs)
 
-    def get(self):
+    def _get_value(self):
         return self.state()
 
     def limits(self):
@@ -929,7 +933,7 @@ class DetectorHOAdapter(HOActuatorAdapterBase):
         pass
 
     def state(self):
-        return self._ho.status
+        return self._ho.state
     
 
 class PhotonFluxHOAdapter(HOActuatorAdapterBase):
@@ -952,10 +956,10 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
         value = "{:.2E}".format(Decimal(self._ho.get_value()))
         self.value_change(value, **kwargs)
 
-    def set(self, value=None):
+    def _set_value(self, value=None):
         """Read only"""
 
-    def get(self):
+    def _get_value(self):
         """
         Get the photon flux.
         Returns:
@@ -989,14 +993,9 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
             (dict): The dictionary.
         """        
         data = {
-            "name": self._name,
-            "label": self._name.replace("_", " ").title(),
-            "value": self.get(),
+            "value": self.get_value(),
             "limits": self.limits(),
-            "state": self.state(),
-            "msg": self.msg(),
             "precision": self.precision(),
-            "readonly": self.read_only(),
         }
 
         return data
@@ -1028,10 +1027,10 @@ class CryoHOAdapter(HOActuatorAdapterBase):
         self.state_change(*args, **kwargs)
     """
 
-    def set(self, value=None):
+    def _set_value(self, value=None):
         """Read only"""
 
-    def get(self):
+    def _get_value(self):
         """
         Get the cryostream temperature.
         Returns:
@@ -1067,14 +1066,9 @@ class CryoHOAdapter(HOActuatorAdapterBase):
         """
         
         data = {
-            "name": self._name,
-            "label": self._name.replace("_", " ").title(),
-            "value": self.get(),
+            "value": self.get_value(),
             "limits": self.limits(),
-            "state": self.state(),
-            "msg": self.msg(),
             "precision": self.precision(),
-            "readonly": self.read_only(),
         }
 
         return data
@@ -1180,7 +1174,7 @@ class _BeamlineAdapter:
     def wf_parameters_needed(self, params):
         server.emit("workflowParametersDialog", params, broadcast=True, namespace="/hwr")
 
-    def get_object(self, name):
+    def get_object(self, name):       
         return getattr(self, name)
 
     def dict_repr(self):
