@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import logging
 import math
 
@@ -11,25 +7,20 @@ from functools import reduce
 from enum import Enum
 
 from mxcube3 import server
-from mxcube3 import server
-
-# These imports needs to be "direct" as the more elegant and correct
-# way from mxcubecore.HardwareObjects ... import ( ...)
-# would break the isinstance check since pythons import mechanism
-# considreds the same module imported from two different paths to
-# be different,
-#
-# These imports will be fixed when HWR is made a python module and
-# not appended to sys.path
-
-import MicrodiffInOut
-import TangoShutter
-import MicrodiffBeamstop
-import MicrodiffInOutMockup
-import ShutterMockup
 
 from mxcubecore.HardwareObjects.abstract import AbstractNState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
+
+from mxcubecore.HardwareObjects import (
+    MicrodiffInOut,
+    TangoShutter,
+    MicrodiffBeamstop
+)
+
+from mxcubecore.HardwareObjects.mockup import (
+    MicrodiffInOutMockup,
+    ShutterMockup
+)
 
 from . import utils
 
