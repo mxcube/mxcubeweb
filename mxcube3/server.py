@@ -11,11 +11,14 @@ from flask import Flask, request, session
 from flask_socketio import SocketIO
 from flask_session import Session
 
+from spectree import SpecTree
+
 class Server():
     INIT_EVENT = gevent.event.Event()
     FLASK = None
     FLASK_SESSION = None
     FLASK_SOCKETIO = None
+    API = None
 
     @staticmethod
     def exception_handler(e):
@@ -55,6 +58,9 @@ class Server():
 
         Server.FLASK_SOCKETIO = SocketIO(manage_session=False, cors_allowed_origins=cfg.FLASK.ALLOWED_CORS_ORIGINS)
         Server.FLASK_SOCKETIO.init_app(Server.FLASK)
+
+        Server.API = SpecTree('flask', app=Server.FLASK, title='MXCuBE3 API', version='v1.0', annotations=True)
+        Server.validate = Server.API.validate
 
         # the following test prevents Flask from initializing twice
         # (because of the Reloader)
@@ -98,7 +104,6 @@ class Server():
     def register_routes(mxcube):
         from mxcube3.routes.beamline import init_routes as init_beamline_routes
         Server.FLASK.register_blueprint(init_beamline_routes(mxcube))
-
 
     @staticmethod
     def emit(*args, **kwargs):
