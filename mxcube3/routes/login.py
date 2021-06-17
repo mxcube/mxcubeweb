@@ -2,8 +2,8 @@ import logging
 
 from flask import session, request, jsonify, make_response, redirect
 
+from mxcube3 import mxcube
 from mxcube3 import server
-from mxcube3 import socketio
 from mxcube3.core import loginutils
 
 
@@ -13,7 +13,7 @@ def deny_access(msg):
     return resp
 
 
-@server.route("/mxcube/api/v0.1/login", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/login", methods=["POST"])
 def login():
     """
     Login into mxcube application.
@@ -47,7 +47,7 @@ def login():
     return res
 
 
-@server.route("/mxcube/api/v0.1/signout")
+@server.FLASK.route("/mxcube/api/v0.1/signout")
 @server.restrict
 def signout():
     """
@@ -58,7 +58,7 @@ def signout():
     return make_response("", 200)
 
 
-@server.route("/mxcube/api/v0.1/login_info", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/login_info", methods=["GET"])
 def loginInfo():
     """
     Retrieve session/login info
@@ -93,20 +93,20 @@ def loginInfo():
     return response
 
 
-@server.route("/mxcube/api/v0.1/send_feedback", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/send_feedback", methods=["POST"])
 @server.restrict
 def send_feedback():
     loginutils.send_feedback()
     return make_response("", 200)
 
 
-@socketio.on("connect", namespace="/network")
+@server.FLASK_SOCKETIO.on("connect", namespace="/network")
 def network_ws_connect():
     msg = "Client with sid %s connected" % str(request.sid)
     logging.getLogger("MX3.HWR").info(msg)
 
 
-@socketio.on("disconnect", namespace="/network")
+@server.FLASK_SOCKETIO.on("disconnect", namespace="/network")
 def network_ws_disconnect():
     msg = "Client with sid %s disconnected" % str(request.sid)
     logging.getLogger("MX3.HWR").info(msg)

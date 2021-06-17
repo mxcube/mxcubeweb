@@ -6,14 +6,13 @@ from __future__ import print_function
 from urllib.parse import quote
 import base64
 
-from mxcube3 import blcontrol
-
+from mxcube3 import mxcube
 
 def get_available_workflows():
     workflows = {}
 
     try:
-        for wf in blcontrol.beamline.workflow.get_available_workflows():
+        for wf in mxcube.mxcubecore.beamline.workflow.get_available_workflows():
             # Rename name and path to wfname and wfpath in order to avoid name
             # clashes
             wf["wfname"] = wf.pop("name")
@@ -27,11 +26,11 @@ def get_available_workflows():
 
 
 def submit_parameters(params):
-    blcontrol.beamline.workflow.set_values_map(params)
+    mxcube.mxcubecore.beamline.workflow.set_values_map(params)
 
 
 def get_mesh_result(gid, _type="heatmap"):
-    base64data = blcontrol.beamline.sample_view.get_grid_data(gid)
+    base64data = mxcube.mxcubecore.beamline.sample_view.get_grid_data(gid)
     base64data = base64data if base64data else ""
 
     data = base64.b64decode(base64data)

@@ -13,10 +13,8 @@ import flask_socketio
 
 from mxcube3 import mxcube
 
-from mxcube3 import blcontrol
-
 from mxcube3 import state_storage
-from mxcube3 import socketio
+from mxcube3 import server
 
 from . import limsutils
 from . import utils
@@ -54,8 +52,8 @@ def remove_user(sid):
         state_storage.flush()
         #flush()
     else:
-        socketio.emit("observerLogout", user, namespace="/hwr")
-        socketio.emit("observersChanged", get_observers(), namespace="/hwr")
+        server.emit("observerLogout", user, namespace="/hwr")
+        server.emit("observersChanged", get_observers(), namespace="/hwr")
 
 
 def get_user_by_sid(sid):
@@ -89,12 +87,12 @@ def logged_in_users(exclude_inhouse=False):
     users = [user["loginID"] for user in mxcube.USERS.values()]
 
     if exclude_inhouse:
-        if isinstance(blcontrol.beamline.session.in_house_users[0], tuple):
+        if isinstance(mxcube.mxcubecore.beamline.session.in_house_users[0], tuple):
             ih_users = [
-                "%s%s" % (p, c) for (p, c) in blcontrol.beamline.session.in_house_users
+                "%s%s" % (p, c) for (p, c) in mxcube.mxcubecore.beamline.session.in_house_users
             ]
         else:
-            ih_users = blcontrol.beamline.session.in_house_users
+            ih_users = mxcube.mxcubecore.beamline.session.in_house_users
         users = [user for user in users if user not in ih_users]
 
     return users
@@ -109,7 +107,7 @@ def set_operator(sid):
     user = get_user_by_sid(sid)
     user["operator"] = True
 
-    if blcontrol.beamline.lims.loginType.lower() != "user":
+    if mxcube.mxcubecore.beamline.lims.loginType.lower() != "user":
         limsutils.select_proposal(user["loginID"])
 
 
@@ -165,7 +163,7 @@ def append_message(message, sid):
     }
 
     MESSAGES.append(data)
-    socketio.emit("ra_chat_message", data, namespace="/hwr")
+    server.emit("ra_chat_message", data, namespace="/hwr")
 
 
 def get_all_messages():
@@ -207,7 +205,7 @@ def is_local_host():
 def is_inhouse_user(user_id):
     user_id_list = [
         "%s%s" % (code, number)
-        for (code, number) in blcontrol.beamline.session.in_house_users
+        for (code, number) in mxcube.mxcubecore.beamline.session.in_house_users
     ]
 
     return user_id in user_id_list
@@ -292,13 +290,13 @@ def signout():
     if is_operator(session.sid):
         qutils.save_queue(session)
         qutils.clear_queue()
-        blcontrol.beamline.sample_view.clear_all()
+        mxcube.mxcubecore.beamline.sample_view.clear_all()
         limsutils.init_sample_list()
 
         qutils.init_queue_settings()
 
-        if hasattr(blcontrol.beamline.session, "clear_session"):
-            blcontrol.beamline.session.clear_session()
+        if hasattr(mxcube.mxcubecore.beamline.session, "clear_session"):
+            mxcube.mxcubecore.beamline.session.clear_session()
 
         mxcube.CURRENTLY_MOUNTED_SAMPLE = ""
 
@@ -315,9 +313,9 @@ def login_info(login_info):
     login_info = limsutils.convert_to_dict(login_info)
 
     res = {
-        "synchrotron_name": blcontrol.beamline.session.synchrotron_name,
-        "beamline_name": blcontrol.beamline.session.beamline_name,
-        "loginType": blcontrol.beamline.lims.loginType.title(),
+        "synchrotron_name": mxcube.mxcubecore.beamline.session.synchrotron_name,
+        "beamline_name": mxcube.mxcubecore.beamline.session.beamline_name,
+        "loginType": mxcube.mxcubecore.beamline.lims.loginType.title(),
         "loginRes": login_info,
         "master": is_operator(session.sid),
         "observerName": get_observer_name(),
@@ -326,11 +324,11 @@ def login_info(login_info):
     user = get_user_by_sid(session.sid)   
     
     res["selectedProposal"] = "%s%s" % (
-        blcontrol.beamline.session.proposal_code,
-        blcontrol.beamline.session.proposal_number
+        mxcube.mxcubecore.beamline.session.proposal_code,
+        mxcube.mxcubecore.beamline.session.proposal_number
     )
 
-    res["selectedProposalID"] = blcontrol.beamline.session.proposal_id
+    res["selectedProposalID"] = mxcube.mxcubecore.beamline.session.proposal_id
 
 
     return user, res

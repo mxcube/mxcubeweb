@@ -19,8 +19,7 @@ from mxcubecore.HardwareObjects import queue_model_enumerables as qme
 from mxcubecore.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcube3 import mxcube
-from mxcube3 import blcontrol
-from mxcube3 import socketio
+from mxcube3 import server
 
 from . import limsutils
 from . import utils
@@ -79,7 +78,7 @@ def get_run_number(pt):
     # interested in the prefix path
     fname = pt.get_image_path()
     prefix_path, _, _ = qmo.PathTemplate.interpret_path(fname)
-    run_number = blcontrol.beamline.queue_model.get_next_run_number(pt)
+    run_number = mxcube.mxcubecore.beamline.queue_model.get_next_run_number(pt)
 
     if prefix_path in prefix_path_dict:
         rn = run_number + prefix_path_dict[prefix_path]
@@ -136,7 +135,7 @@ def node_index(node):
 
 def load_queue_from_dict(queue_dict):
     """
-    Loads the queue in queue_dict in to the current blcontrol.beamline.queue_model (blcontrol.beamline.queue_model)
+    Loads the queue in queue_dict in to the current mxcube.mxcubecore.beamline.queue_model (mxcube.mxcubecore.beamline.queue_model)
 
     :param dict queue_dict: Queue dictionary, on the same format as returned by
                             queue_to_dict
@@ -176,7 +175,7 @@ def queue_to_dict(node=None, include_lims_data=False):
              the corresponding node.
     """
     if not node:
-        node = blcontrol.beamline.queue_model.get_model_root()
+        node = mxcube.mxcubecore.beamline.queue_model.get_model_root()
 
     res = reduce(
         lambda x, y: x.update(y) or x, queue_to_dict_rec(node, include_lims_data), {}
@@ -211,7 +210,7 @@ def queue_to_json(node=None, include_lims_data=False):
              the corresponding node.
     """
     if not node:
-        node = blcontrol.beamline.queue_model.get_model_root()
+        node = mxcube.mxcubecore.beamline.queue_model.get_model_root()
 
     res = reduce(
         lambda x, y: x.update(y) or x, queue_to_dict_rec(node, include_lims_data), {}
@@ -236,9 +235,9 @@ def get_node_state(node_id):
         return (True, UNCOLLECTED)
 
     enabled = node.is_enabled()
-    curr_entry = blcontrol.beamline.queue_manager.get_current_entry()
+    curr_entry = mxcube.mxcubecore.beamline.queue_manager.get_current_entry()
 
-    running = blcontrol.beamline.queue_manager.is_executing and (
+    running = mxcube.mxcubecore.beamline.queue_manager.is_executing and (
         curr_entry == entry or curr_entry == entry._parent_container
     )
 
@@ -283,7 +282,7 @@ def get_queue_state():
         "autoMountNext": get_auto_mount_sample(),
         "autoAddDiffPlan": mxcube.AUTO_ADD_DIFFPLAN,
         "numSnapshots": mxcube.NUM_SNAPSHOTS,
-        "groupFolder": blcontrol.beamline.session.get_group_name(),
+        "groupFolder": mxcube.mxcubecore.beamline.session.get_group_name(),
         "queue": sample_order,
         "sampleList": limsutils.sample_list_get(current_queue=queue),
         "queueStatus": queue_exec_state(),
@@ -307,7 +306,7 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     enabled, state = get_node_state(queueID)
 
     parameters["subdir"] = os.path.join(
-        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+        *parameters["path"].split(mxcube.mxcubecore.beamline.session.raw_data_folder_name)[1:]
     ).lstrip("/")
 
     pt = node.acquisitions[0].path_template
@@ -323,8 +322,8 @@ def _handle_dc(sample_node, node, include_lims_data=False):
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and blcontrol.beamline.lims.lims_rest:
-        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
+    if include_lims_data and mxcube.mxcubecore.beamline.lims.lims_rest:
+        limsres = mxcube.mxcubecore.beamline.lims.lims_rest.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
@@ -354,7 +353,7 @@ def _handle_wf(sample_node, node, include_lims_data):
     parameters["path"] = parameters["directory"]
 
     parameters["subdir"] = os.path.join(
-        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+        *parameters["path"].split(mxcube.mxcubecore.beamline.session.raw_data_folder_name)[1:]
     ).lstrip("/")
 
     pt = node.path_template
@@ -370,8 +369,8 @@ def _handle_wf(sample_node, node, include_lims_data):
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and blcontrol.beamline.lims.lims_rest:
-        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
+    if include_lims_data and mxcube.mxcubecore.beamline.lims.lims_rest:
+        limsres = mxcube.mxcubecore.beamline.lims.lims_rest.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
@@ -400,7 +399,7 @@ def _handle_xrf(sample_node, node):
     parameters["path"] = parameters["directory"]
 
     parameters["subdir"] = os.path.join(
-        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+        *parameters["path"].split(mxcube.mxcubecore.beamline.session.raw_data_folder_name)[1:]
     ).lstrip("/")
 
     pt = node.path_template
@@ -436,7 +435,7 @@ def _handle_energy_scan(sample_node, node):
     parameters["path"] = parameters["directory"]
 
     parameters["subdir"] = os.path.join(
-        *parameters["path"].split(blcontrol.beamline.session.raw_data_folder_name)[1:]
+        *parameters["path"].split(mxcube.mxcubecore.beamline.session.raw_data_folder_name)[1:]
     ).lstrip("/")
 
     pt = node.path_template
@@ -477,8 +476,8 @@ def _handle_char(sample_node, node, include_lims_data=False):
 
     # Only add data from lims if explicitly asked for, since
     # its a operation that can take some time.
-    if include_lims_data and blcontrol.beamline.lims.lims_rest:
-        limsres = blcontrol.beamline.lims.lims_rest.get_dc(lims_id)
+    if include_lims_data and mxcube.mxcubecore.beamline.lims.lims_rest:
+        limsres = mxcube.mxcubecore.beamline.lims.lims_rest.get_dc(lims_id)
 
     # Always add link to data, (no request made)
     limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
@@ -656,9 +655,9 @@ def queue_exec_state():
     """
     state = QUEUE_STOPPED
 
-    if blcontrol.beamline.queue_manager.is_paused():
+    if mxcube.mxcubecore.beamline.queue_manager.is_paused():
         state = QUEUE_PAUSED
-    elif blcontrol.beamline.queue_manager.is_executing():
+    elif mxcube.mxcubecore.beamline.queue_manager.is_executing():
         state = QUEUE_RUNNING
 
     return state
@@ -672,8 +671,8 @@ def get_entry(_id):
     :returns: The tuple model, entry
     :rtype: Tuple
     """
-    model = blcontrol.beamline.queue_model.get_node(int(_id))
-    entry = blcontrol.beamline.queue_manager.get_entry_with_model(model)
+    model = mxcube.mxcubecore.beamline.queue_model.get_node(int(_id))
+    entry = mxcube.mxcubecore.beamline.queue_manager.get_entry_with_model(model)
     return model, entry
 
 
@@ -690,7 +689,7 @@ def delete_entry(entry):
     parent_entry = entry.get_container()
     parent_entry.dequeue(entry)
     model = entry.get_data_model()
-    blcontrol.beamline.queue_model.del_child(model.get_parent(), model)
+    mxcube.mxcubecore.beamline.queue_model.del_child(model.get_parent(), model)
     logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % queue_to_json())
 
 
@@ -799,9 +798,9 @@ def set_sample_order(order):
         entry_list = [model_entry[1] for model_entry in model_entry_list]
 
         # Set the order in the queue model
-        blcontrol.beamline.queue_model.get_model_root()._children = model_list
+        mxcube.mxcubecore.beamline.queue_model.get_model_root()._children = model_list
         # Set queue entry order
-        blcontrol.beamline.queue_manager._queue_entry_list = entry_list
+        mxcube.mxcubecore.beamline.queue_manager._queue_entry_list = entry_list
 
     limsutils.sample_list_set_order(order)
 
@@ -949,10 +948,10 @@ def add_sample(sample_id, item):
     sample_entry = qe.SampleQueueEntry(view=Mock(), data_model=sample_model)
     enable_entry(sample_entry, True)
 
-    blcontrol.beamline.queue_model.add_child(
-        blcontrol.beamline.queue_model.get_model_root(), sample_model
+    mxcube.mxcubecore.beamline.queue_model.add_child(
+        mxcube.mxcubecore.beamline.queue_model.get_model_root(), sample_model
     )
-    blcontrol.beamline.queue_manager.enqueue(sample_entry)
+    mxcube.mxcubecore.beamline.queue_manager.enqueue(sample_entry)
 
     return sample_model._node_id
 
@@ -969,7 +968,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     params = task_data["parameters"]
     acq.acquisition_parameters.set_from_dict(params)
 
-    ftype = blcontrol.beamline.detector.get_property("file_suffix")
+    ftype = mxcube.mxcubecore.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     acq.path_template.set_from_dict(params)
@@ -979,7 +978,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.num_files = params["num_images"]
     acq.path_template.suffix = ftype
     acq.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].get_property("precision", 4)
+        mxcube.mxcubecore.beamline.session["file_info"].get_property("precision", 4)
     )
 
     limsutils.apply_template(params, sample_model, acq.path_template)
@@ -987,18 +986,18 @@ def set_dc_params(model, entry, task_data, sample_model):
     if params["prefix"]:
         acq.path_template.base_prefix = params["prefix"]
     else:
-        acq.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+        acq.path_template.base_prefix = mxcube.mxcubecore.beamline.session.get_default_prefix(
             sample_model, False
         )
 
     full_path = os.path.join(
-        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        mxcube.mxcubecore.beamline.session.get_base_image_directory(), params.get("subdir", "")
     )
 
     acq.path_template.directory = full_path
 
     process_path = os.path.join(
-        blcontrol.beamline.session.get_base_process_directory(),
+        mxcube.mxcubecore.beamline.session.get_base_process_directory(),
         params.get("subdir", ""),
     )
     acq.path_template.process_directory = process_path
@@ -1015,11 +1014,11 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2 = qmo.Acquisition()
         model.acquisitions.append(acq2)
 
-        line = blcontrol.beamline.sample_view.get_shape(params["shape"])
+        line = mxcube.mxcubecore.beamline.sample_view.get_shape(params["shape"])
         p1, p2 = line.refs
         p1, p2 = (
-            blcontrol.beamline.sample_view.get_shape(p1),
-            blcontrol.beamline.sample_view.get_shape(p2),
+            mxcube.mxcubecore.beamline.sample_view.get_shape(p1),
+            mxcube.mxcubecore.beamline.sample_view.get_shape(p2),
         )
         cpos1 = p1.get_centred_position()
         cpos2 = p2.get_centred_position()
@@ -1028,9 +1027,9 @@ def set_dc_params(model, entry, task_data, sample_model):
         acq2.acquisition_parameters.centred_position = cpos2
 
     elif params.get("mesh", False):
-        grid = blcontrol.beamline.sample_view.get_shape(params["shape"])
+        grid = mxcube.mxcubecore.beamline.sample_view.get_shape(params["shape"])
         acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-        mesh_center = blcontrol.beamline["default_mesh_values"].get_property(
+        mesh_center = mxcube.mxcubecore.beamline["default_mesh_values"].get_property(
             "mesh_center", "top-left"
         )
         if mesh_center == "top-left":
@@ -1048,7 +1047,7 @@ def set_dc_params(model, entry, task_data, sample_model):
         model.set_requires_centring(False)
 
     elif params["shape"] != -1:
-        point = blcontrol.beamline.sample_view.get_shape(params["shape"])
+        point = mxcube.mxcubecore.beamline.sample_view.get_shape(params["shape"])
         cpos = point.get_centred_position()
         acq.acquisition_parameters.centred_position = cpos
 
@@ -1075,7 +1074,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.base_prefix = params["prefix"]
     model.path_template.num_files = 0
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].get_property("precision", 4)
+        mxcube.mxcubecore.beamline.session["file_info"].get_property("precision", 4)
     )
 
     limsutils.apply_template(params, sample_model, model.path_template)
@@ -1083,18 +1082,18 @@ def set_wf_params(model, entry, task_data, sample_model):
     if params["prefix"]:
         model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+        model.path_template.base_prefix = mxcube.mxcubecore.beamline.session.get_default_prefix(
             sample_model, False
         )
 
     full_path = os.path.join(
-        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        mxcube.mxcubecore.beamline.session.get_base_image_directory(), params.get("subdir", "")
     )
 
     model.path_template.directory = full_path
 
     process_path = os.path.join(
-        blcontrol.beamline.session.get_base_process_directory(),
+        mxcube.mxcubecore.beamline.session.get_base_process_directory(),
         params.get("subdir", ""),
     )
     model.path_template.process_directory = process_path
@@ -1109,7 +1108,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     beamline_params["collection_software"] = "MXCuBE - 3.0"
     beamline_params["sample_node_id"] = sample_model._node_id
     beamline_params["sample_lims_id"] = sample_model.lims_id
-    beamline_params["beamline"] = blcontrol.beamline.session.endstation_name
+    beamline_params["beamline"] = mxcube.mxcubecore.beamline.session.endstation_name
     beamline_params["shape"] = params["shape"]
 
     params_list = list(map(str, list(itertools.chain(*iter(beamline_params.items())))))
@@ -1161,29 +1160,29 @@ def set_xrf_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.xrf_spectrum.get_property("file_suffix", "dat").strip()
+    ftype = mxcube.mxcubecore.beamline.xrf_spectrum.get_property("file_suffix", "dat").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].get_property("precision", 4)
+        mxcube.mxcubecore.beamline.session["file_info"].get_property("precision", 4)
     )
 
     if params["prefix"]:
         model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+        model.path_template.base_prefix = mxcube.mxcubecore.beamline.session.get_default_prefix(
             sample_model, False
         )
 
     full_path = os.path.join(
-        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        mxcube.mxcubecore.beamline.session.get_base_image_directory(), params.get("subdir", "")
     )
 
     model.path_template.directory = full_path
 
     process_path = os.path.join(
-        blcontrol.beamline.session.get_base_process_directory(),
+        mxcube.mxcubecore.beamline.session.get_base_process_directory(),
         params.get("subdir", ""),
     )
     model.path_template.process_directory = process_path
@@ -1213,29 +1212,29 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.energy_scan.get_property("file_suffix", "raw").strip()
+    ftype = mxcube.mxcubecore.beamline.energy_scan.get_property("file_suffix", "raw").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].get_property("precision", 4)
+        mxcube.mxcubecore.beamline.session["file_info"].get_property("precision", 4)
     )
 
     if params["prefix"]:
         model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = blcontrol.beamline.session.get_default_prefix(
+        model.path_template.base_prefix = mxcube.mxcubecore.beamline.session.get_default_prefix(
             sample_model, False
         )
 
     full_path = os.path.join(
-        blcontrol.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        mxcube.mxcubecore.beamline.session.get_base_image_directory(), params.get("subdir", "")
     )
 
     model.path_template.directory = full_path
 
     process_path = os.path.join(
-        blcontrol.beamline.session.get_base_process_directory(),
+        mxcube.mxcubecore.beamline.session.get_base_process_directory(),
         params.get("subdir", ""),
     )
     model.path_template.process_directory = process_path
@@ -1340,7 +1339,7 @@ def add_characterisation(node_id, task):
 
     char_model.set_origin(ORIGIN_MX3)
     char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
-    char_entry.queue_model = blcontrol.beamline.queue_model
+    char_entry.queue_model = mxcube.mxcubecore.beamline.queue_model
     # Set the characterisation and reference collection parameters
     set_char_params(char_model, char_entry, task, sample_model)
 
@@ -1354,8 +1353,8 @@ def add_characterisation(node_id, task):
     refgroup_model = qmo.TaskGroup()
     refgroup_model.set_origin(ORIGIN_MX3)
 
-    blcontrol.beamline.queue_model.add_child(sample_model, refgroup_model)
-    blcontrol.beamline.queue_model.add_child(refgroup_model, char_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(sample_model, refgroup_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(refgroup_model, char_model)
     refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
     refgroup_entry.set_enabled(True)
@@ -1385,8 +1384,8 @@ def add_data_collection(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
-    blcontrol.beamline.queue_model.add_child(group_model, dc_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(sample_model, group_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(group_model, dc_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1413,8 +1412,8 @@ def add_workflow(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
-    blcontrol.beamline.queue_model.add_child(group_model, wf_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(sample_model, group_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(group_model, wf_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1444,7 +1443,7 @@ def add_interleaved(node_id, task):
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
     sample_entry.enqueue(group_entry)
-    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(sample_model, group_model)
 
     wc = 0
 
@@ -1459,7 +1458,7 @@ def add_interleaved(node_id, task):
         # Disable snapshots for sub-wedges
         dc_model.acquisitions[0].acquisition_parameters.take_snapshots = False
 
-        blcontrol.beamline.queue_model.add_child(group_model, dc_model)
+        mxcube.mxcubecore.beamline.queue_model.add_child(group_model, dc_model)
         group_entry.enqueue(dc_entry)
 
     return group_model._node_id
@@ -1482,8 +1481,8 @@ def add_xrf_scan(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
-    blcontrol.beamline.queue_model.add_child(group_model, xrf_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(sample_model, group_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(group_model, xrf_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1510,8 +1509,8 @@ def add_energy_scan(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    blcontrol.beamline.queue_model.add_child(sample_model, group_model)
-    blcontrol.beamline.queue_model.add_child(group_model, escan_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(sample_model, group_model)
+    mxcube.mxcubecore.beamline.queue_model.add_child(group_model, escan_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
@@ -1528,7 +1527,7 @@ def clear_queue():
     """
     from mxcubecore import HardwareRepository as HWR
 
-    # queue = pickle.loads(blcontrol.empty_queue)
+    # queue = pickle.loads(mxcube.mxcubecore.empty_queue)
     # queue.diffraction_plan = {}
     HWR.beamline.queue_model.diffraction_plan = {}
     HWR.beamline.queue_model.clear_model("ispyb")
@@ -1539,7 +1538,7 @@ def clear_queue():
 
 def save_queue(session, redis=redis.Redis()):
     """
-    Saves the current blcontrol.beamline.queue_model (blcontrol.beamline.queue_model) into a redis database.
+    Saves the current mxcube.mxcubecore.beamline.queue_model (mxcube.mxcubecore.beamline.queue_model) into a redis database.
     The queue that is saved is the pickled result returned by queue_to_dict
 
     :param session: Session to save queue for
@@ -1551,7 +1550,7 @@ def save_queue(session, redis=redis.Redis()):
     if proposal_id is not None:
         # List of samples dicts (containing tasks) sample and tasks have same
         # order as the in queue HO
-        queue = queue_to_dict(blcontrol.beamline.queue_model.get_model_root())
+        queue = queue_to_dict(mxcube.mxcubecore.beamline.queue_model.get_model_root())
         redis.set("mxcube.queue:%d" % proposal_id, pickle.dumps(queue))
 
 
@@ -1591,7 +1590,7 @@ def queue_model_child_added(parent, child):
             sample = parent.get_parent()
 
             task = _handle_dc(sample, child)
-            socketio.emit("add_task", {"tasks": [task]}, namespace="/hwr")
+            server.emit("add_task", {"tasks": [task]}, namespace="/hwr")
 
         elif isinstance(child, qmo.TaskGroup):
             dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
@@ -1619,7 +1618,7 @@ def queue_model_diff_plan_available(char, collection_list):
             task.update({"isDiffractionPlan": True, "originID": origin_model._node_id})
             cols.append(task)
 
-    socketio.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
+    server.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
 
 
 def set_auto_add_diffplan(autoadd, current_sample=None):
@@ -1655,7 +1654,7 @@ def execute_entry_with_id(sid, tindex=None):
     from . import scutils
 
     current_queue = queue_to_dict()
-    blcontrol.beamline.queue_manager.set_pause(False)
+    mxcube.mxcubecore.beamline.queue_manager.set_pause(False)
 
     if tindex in ["undefined", "None", "null", None]:
         node_id = current_queue[sid]["queueID"]
@@ -1669,9 +1668,9 @@ def execute_entry_with_id(sid, tindex=None):
             try:
                 scutils.mount_sample_clean_up(current_queue[sid])
             except BaseException:
-                blcontrol.beamline.queue_manager.emit("queue_execution_failed", (None,))
+                mxcube.mxcubecore.beamline.queue_manager.emit("queue_execution_failed", (None,))
             else:
-                blcontrol.beamline.queue_manager.emit("queue_stopped", (None,))
+                mxcube.mxcubecore.beamline.queue_manager.emit("queue_stopped", (None,))
         else:
             enabled_entries = []
 
@@ -1684,7 +1683,7 @@ def execute_entry_with_id(sid, tindex=None):
             enable_sample_entries(enabled_entries, False)
             enable_sample_entries([sid], True)
 
-            blcontrol.beamline.queue_manager.execute()
+            mxcube.mxcubecore.beamline.queue_manager.execute()
     else:
         node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
 
@@ -1694,18 +1693,18 @@ def execute_entry_with_id(sid, tindex=None):
 
         node, entry = get_entry(parent_id)
 
-        blcontrol.beamline.queue_manager._running = True
+        mxcube.mxcubecore.beamline.queue_manager._running = True
 
-        blcontrol.beamline.queue_manager._is_stopped = False
-        blcontrol.beamline.queue_manager._set_in_queue_flag()
+        mxcube.mxcubecore.beamline.queue_manager._is_stopped = False
+        mxcube.mxcubecore.beamline.queue_manager._set_in_queue_flag()
         try:
-            blcontrol.beamline.queue_manager.execute_entry(entry)
+            mxcube.mxcubecore.beamline.queue_manager.execute_entry(entry)
         except BaseException:
-            blcontrol.beamline.queue_manager.emit("queue_execution_failed", (None,))
+            mxcube.mxcubecore.beamline.queue_manager.emit("queue_execution_failed", (None,))
         finally:
-            blcontrol.beamline.queue_manager._running = False
-            blcontrol.beamline.queue_manager.emit("queue_stopped", (None,))
-            blcontrol.beamline.collect.queue_finished_cleanup()
+            mxcube.mxcubecore.beamline.queue_manager._running = False
+            mxcube.mxcubecore.beamline.queue_manager.emit("queue_stopped", (None,))
+            mxcube.mxcubecore.beamline.collect.queue_finished_cleanup()
 
 
 def init_signals(queue):
@@ -1714,25 +1713,25 @@ def init_signals(queue):
     """
     from mxcube3.routes import signals
 
-    blcontrol.beamline.collect.connect(
-        blcontrol.beamline.collect, "collectStarted", signals.collect_started
+    mxcube.mxcubecore.beamline.collect.connect(
+        mxcube.mxcubecore.beamline.collect, "collectStarted", signals.collect_started
     )
-    blcontrol.beamline.collect.connect(
-        blcontrol.beamline.collect,
+    mxcube.mxcubecore.beamline.collect.connect(
+        mxcube.mxcubecore.beamline.collect,
         "collectOscillationStarted",
         signals.collect_oscillation_started,
     )
-    blcontrol.beamline.collect.connect(
-        blcontrol.beamline.collect,
+    mxcube.mxcubecore.beamline.collect.connect(
+        mxcube.mxcubecore.beamline.collect,
         "collectOscillationFailed",
         signals.collect_oscillation_failed,
     )
-    blcontrol.beamline.collect.connect(
-        blcontrol.beamline.collect, "collectImageTaken", signals.collect_image_taken
+    mxcube.mxcubecore.beamline.collect.connect(
+        mxcube.mxcubecore.beamline.collect, "collectImageTaken", signals.collect_image_taken
     )
 
-    blcontrol.beamline.collect.connect(
-        blcontrol.beamline.collect,
+    mxcube.mxcubecore.beamline.collect.connect(
+        mxcube.mxcubecore.beamline.collect,
         "collectOscillationFinished",
         signals.collect_oscillation_finished,
     )
@@ -1741,45 +1740,45 @@ def init_signals(queue):
 
     queue.connect(queue, "diff_plan_available", queue_model_diff_plan_available)
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_execute_started", signals.queue_execution_started
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_execution_finished", signals.queue_execution_finished
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_stopped", signals.queue_execution_finished
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_paused", signals.queue_execution_paused
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_entry_execute_finished", signals.queue_execution_entry_finished
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_entry_execute_started", signals.queue_execution_entry_started
     )
 
-    blcontrol.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
+    mxcube.mxcubecore.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_interleaved_started", signals.queue_interleaved_started
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_interleaved_finished", signals.queue_interleaved_finished
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "queue_interleaved_sw_done", signals.queue_interleaved_sw_done
     )
 
-    blcontrol.beamline.queue_manager.connect(
+    mxcube.mxcubecore.beamline.queue_manager.connect(
         "energy_scan_finished", signals.energy_scan_finished
     )
 
@@ -1839,11 +1838,11 @@ def is_interleaved(node):
 
 
 def init_queue_settings():
-    mxcube.NUM_SNAPSHOTS = blcontrol.beamline.collect.get_property("num_snapshots", 4)
-    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.beamline.collect.get_property(
+    mxcube.NUM_SNAPSHOTS = mxcube.mxcubecore.beamline.collect.get_property("num_snapshots", 4)
+    mxcube.AUTO_MOUNT_SAMPLE = mxcube.mxcubecore.beamline.collect.get_property(
         "auto_mount_sample", False
     )
-    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.beamline.collect.get_property(
+    mxcube.AUTO_ADD_DIFFPLAN = mxcube.mxcubecore.beamline.collect.get_property(
         "auto_add_diff_plan", False
     )
 
@@ -1891,8 +1890,8 @@ def queue_start(sid):
         else:
             # Making sure all sample entries are enabled before running the
             # queue qutils.enable_sample_entries(queue["sample_order"], True)
-            blcontrol.beamline.queue_manager.set_pause(False)
-            blcontrol.beamline.queue_manager.execute()
+            mxcube.mxcubecore.beamline.queue_manager.set_pause(False)
+            mxcube.mxcubecore.beamline.queue_manager.execute()
 
     except Exception as ex:
         signals.queue_execution_failed(ex)
@@ -1903,31 +1902,31 @@ def queue_start(sid):
 def queue_stop():
     from mxcube3.routes import signals
 
-    if blcontrol.beamline.queue_manager._root_task is not None:
-        blcontrol.beamline.queue_manager.stop()
+    if mxcube.mxcubecore.beamline.queue_manager._root_task is not None:
+        mxcube.mxcubecore.beamline.queue_manager.stop()
     else:
-        qe = blcontrol.beamline.queue_manager.get_current_entry()
+        qe = mxcube.mxcubecore.beamline.queue_manager.get_current_entry()
         # check if a node/task is executing and stop that one
         if qe:
             try:
                 qe.stop()
             except Exception as ex:
                 logging.getLogger("MX3.HWR").exception("[QUEUE] Could not stop queue")
-            blcontrol.beamline.queue_manager.set_pause(False)
+            mxcube.mxcubecore.beamline.queue_manager.set_pause(False)
             # the next two is to avoid repeating the task
             # TODO: if you now run the queue it will be enabled and run
             qe.get_data_model().set_executed(True)
             qe.get_data_model().set_enabled(False)
             qe._execution_failed = True
 
-            blcontrol.beamline.queue_manager._is_stopped = True
+            mxcube.mxcubecore.beamline.queue_manager._is_stopped = True
             signals.queue_execution_stopped()
 
 def queue_pause():
     """
     Pause the execution of the queue
     """
-    blcontrol.beamline.queue_manager.pause(True)
+    mxcube.mxcubecore.beamline.queue_manager.pause(True)
 
     msg = {
         "Signal": queue_exec_state(),
@@ -1948,7 +1947,7 @@ def queue_unpause():
               200: On success
               409: Queue could not be unpause
     """
-    blcontrol.beamline.queue_manager.pause(False)
+    mxcube.mxcubecore.beamline.queue_manager.pause(False)
 
     msg = {
         "Signal": queue_exec_state(),
@@ -1965,14 +1964,14 @@ def queue_clear():
     limsutils.init_sample_list()
     clear_queue()
     msg = "[QUEUE] Cleared  " + str(
-        blcontrol.beamline.queue_model.get_model_root()._name
+        mxcube.mxcubecore.beamline.queue_model.get_model_root()._name
     )
     logging.getLogger("MX3.HWR").info(msg)
 
 
 def set_queue(json_queue, session):
     # Clear queue
-    # blcontrol.beamline.queue_model = clear_queue()
+    # mxcube.mxcubecore.beamline.queue_model = clear_queue()
 
     # Set new queue
     queue_add_item(json_queue)
@@ -2003,10 +2002,10 @@ def queue_enable_item(qid_list, enabled):
 
 def update_sample(sid, params):
 
-    sample_node = blcontrol.beamline.queue_model.get_node(sid)
+    sample_node = mxcube.mxcubecore.beamline.queue_model.get_node(sid)
 
     if sample_node:
-        sample_entry = blcontrol.beamline.queue_manager.get_entry_with_model(
+        sample_entry = mxcube.mxcubecore.beamline.queue_manager.get_entry_with_model(
             sample_node
         )
         # TODO: update here the model with the new 'params'
@@ -2020,8 +2019,8 @@ def update_sample(sid, params):
 
 
 def toggle_node(node_id):
-    node = blcontrol.beamline.queue_model.get_node(node_id)
-    entry = blcontrol.beamline.queue_manager.get_entry_with_model(node)
+    node = mxcube.mxcubecore.beamline.queue_model.get_node(node_id)
+    entry = mxcube.mxcubecore.beamline.queue_manager.get_entry_with_model(node)
     queue = queue_to_dict()
 
     if isinstance(entry, qe.SampleQueueEntry):
@@ -2036,8 +2035,8 @@ def toggle_node(node_id):
 
         new_state = entry.is_enabled()
         for elem in queue[node_id]:
-            child_node = blcontrol.beamline.queue_model.get_node(elem["queueID"])
-            child_entry = blcontrol.beamline.queue_manager.get_entry_with_model(
+            child_node = mxcube.mxcubecore.beamline.queue_model.get_node(elem["queueID"])
+            child_entry = mxcube.mxcubecore.beamline.queue_manager.get_entry_with_model(
                 child_node
             )
             if new_state:
@@ -2060,7 +2059,7 @@ def toggle_node(node_id):
         if isinstance(parent_node, qmo.TaskGroup):
             parent_node = parent_node.get_parent()
         parent = parent_node._node_id
-        parent_entry = blcontrol.beamline.queue_manager.get_entry_with_model(
+        parent_entry = mxcube.mxcubecore.beamline.queue_manager.get_entry_with_model(
             parent_node
         )
         # now that we know the sample parent no matter what is the entry
@@ -2099,12 +2098,12 @@ def add_centring(_id, params):
     cent_node = qmo.SampleCentring()
     cent_entry = qe.SampleCentringQueueEntry()
     cent_entry.set_data_model(cent_node)
-    cent_entry.set_queue_controller(blcontrol.qm)
-    node = blcontrol.beamline.queue_model.get_node(int(id))
-    entry = blcontrol.beamline.queue_manager.get_entry_with_model(node)
+    cent_entry.set_queue_controller(mxcube.mxcubecore.qm)
+    node = mxcube.mxcubecore.beamline.queue_model.get_node(int(id))
+    entry = mxcube.mxcubecore.beamline.queue_manager.get_entry_with_model(node)
     entry._set_background_color = Mock()
 
-    new_node = blcontrol.beamline.queue_model.add_child_at_id(int(id), cent_node)
+    new_node = mxcube.mxcubecore.beamline.queue_model.add_child_at_id(int(id), cent_node)
     entry.enqueue(cent_entry)
 
     logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
@@ -2116,8 +2115,8 @@ def get_default_dc_params():
     """
     returns the default values for an acquisition (data collection).
     """
-    acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
-    ftype = blcontrol.beamline.detector.get_property("file_suffix")
+    acq_parameters = mxcube.mxcubecore.beamline.get_default_acquisition_parameters()
+    ftype = mxcube.mxcubecore.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     return {
@@ -2145,7 +2144,7 @@ def get_default_dc_params():
             "prefixTemplate": "{PREFIX}_{POSITION}",
             "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
         },
-        "limits": blcontrol.beamline.acquisition_limit_values,
+        "limits": mxcube.mxcubecore.beamline.acquisition_limit_values,
     }
 
 
@@ -2154,13 +2153,13 @@ def get_default_char_acq_params():
     returns the default values for a characterisation acquisition.
     TODO: implement as_dict in the qmo.AcquisitionParameters
     """
-    acq_parameters = blcontrol.beamline.get_default_acquisition_parameters(
+    acq_parameters = mxcube.mxcubecore.beamline.get_default_acquisition_parameters(
         "characterisation"
     )
-    ftype = blcontrol.beamline.detector.get_property("file_suffix")
+    ftype = mxcube.mxcubecore.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
     char_defaults = (
-        blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
+        mxcube.mxcubecore.beamline.characterisation.get_default_characterisation_parameters().as_dict()
     )
 
     acq_defaults = {
@@ -2195,7 +2194,7 @@ def get_default_mesh_params():
     """
     returns the default values for a mesh.
     """
-    acq_parameters = blcontrol.beamline.get_default_acquisition_parameters("mesh")
+    acq_parameters = mxcube.mxcubecore.beamline.get_default_acquisition_parameters("mesh")
 
     return {
         "acq_parameters": {
@@ -2229,7 +2228,7 @@ def get_default_xrf_parameters():
     int_time = 5
 
     try:
-        int_time = blcontrol.beamline.xrf_spectrum.get_property(
+        int_time = mxcube.mxcubecore.beamline.xrf_spectrum.get_property(
             "default_integration_time", "5"
         ).strip()
         try:
@@ -2284,6 +2283,6 @@ def set_group_folder(path):
 
     path = "".join([c for c in path if re.match(r"^[a-zA-Z0-9_/-]*$", c)])
 
-    blcontrol.beamline.session.set_user_group(path)
-    root_path = blcontrol.beamline.session.get_base_image_directory()
+    mxcube.mxcubecore.beamline.session.set_user_group(path)
+    root_path = mxcube.mxcubecore.beamline.session.get_base_image_directory()
     return {"path": path, "rootPath": root_path}

@@ -7,12 +7,12 @@ import json
 from flask import Response, jsonify, request
 
 from . import signals
-from mxcube3 import blcontrol
+from mxcube3 import mxcube
 from mxcube3 import server
 from mxcube3.core import beamlineutils, utils
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/phase", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/phase", methods=["GET"])
 @server.restrict
 def get_phase():
     """
@@ -24,13 +24,13 @@ def get_phase():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    data = {"current_phase": blcontrol.beamline.diffractometer.get_current_phase()}
+    data = {"current_phase": mxcube.mxcubecore.beamline.diffractometer.get_current_phase()}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/phaselist", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/phaselist", methods=["GET"])
 @server.restrict
 def get_phase_list():
     """
@@ -42,13 +42,13 @@ def get_phase_list():
         :statuscode: 409: error
     """
     resp = jsonify(
-        {"current_phase": blcontrol.beamline.diffractometer.get_phase_list()}
+        {"current_phase": mxcube.mxcubecore.beamline.diffractometer.get_phase_list()}
     )
     resp.status_code = 200
     return resp
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/phase", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/phase", methods=["PUT"])
 @server.require_control
 @server.restrict
 def set_phase():
@@ -67,7 +67,7 @@ def set_phase():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/platemode", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/platemode", methods=["GET"])
 @server.restrict
 def md_in_plate_mode():
     """
@@ -75,13 +75,13 @@ def md_in_plate_mode():
     data = {"md_in_plate_mode": } True /False
     return_data: data plus error code 200/409
     """
-    md_in_plate_mode = blcontrol.beamline.diffractometer.in_plate_mode()
+    md_in_plate_mode = mxcube.mxcubecore.beamline.diffractometer.in_plate_mode()
     resp = jsonify({"md_in_plate_mode": md_in_plate_mode})
     resp.status_code = 200
     return resp
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/movables/state", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/movables/state", methods=["GET"])
 @server.restrict
 def get_movables_state():
     ret = utils.get_centring_motors_info()
@@ -91,7 +91,7 @@ def get_movables_state():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/aperture", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/aperture", methods=["PUT"])
 @server.require_control
 @server.restrict
 def set_aperture():
@@ -110,7 +110,7 @@ def set_aperture():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/aperture", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/aperture", methods=["GET"])
 @server.restrict
 def get_aperture():
     ret = {}
@@ -124,7 +124,7 @@ def get_aperture():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/diffractometer/info", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/diffractometer/info", methods=["GET"])
 @server.restrict
 def get_diffractometer_info():
     resp = jsonify(beamlineutils.diffractometer_get_info())

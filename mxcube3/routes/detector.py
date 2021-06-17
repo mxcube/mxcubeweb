@@ -2,9 +2,10 @@ from flask import jsonify
 
 from mxcube3 import server
 from mxcube3.core import beamlineutils
+from mxcube3 import mxcube
 
 
-@server.route("/mxcube/api/v0.1/detector/", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/detector/", methods=["GET"])
 @server.restrict
 def get_detector_info():
     """

@@ -19,7 +19,6 @@ from email.mime.text import MIMEText
 from email.utils import make_msgid
 
 from mxcube3 import mxcube
-from mxcube3 import blcontrol
 
 
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
@@ -66,8 +65,8 @@ def get_light_state_and_intensity():
     ret = dict()
 
     for light in ("BackLight", "FrontLight"):
-        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(light)
-        hwobj_switch = blcontrol.beamline.diffractometer.get_object_by_role(
+        hwobj = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role(light)
+        hwobj_switch = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role(
             light + "Switch"
         )
         switch_state = 1 if hwobj_switch.get_value().name == "IN" else 0
@@ -97,7 +96,7 @@ def get_light_limits():
     for light in ("BackLight", "FrontLight"):
         item_role = light.lower()
 
-        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(item_role)
+        hwobj = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role(item_role)
 
         ret.update({light: {"limits": hwobj.get_limits()}})
 
@@ -111,7 +110,7 @@ def get_movable_state_and_position(item_name):
             # this returns more than needed, but it doesn't
             # matter
             return get_light_state_and_intensity()
-        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(item_name)
+        hwobj = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role(item_name)
 
         if hwobj is None:
             msg = (
@@ -156,7 +155,7 @@ def get_movable_limits(item_name):
             # matter
             return get_light_limits()
 
-        hwobj = blcontrol.beamline.diffractometer.get_object_by_role(item_role)
+        hwobj = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role(item_role)
 
         if hwobj is None:
             logging.getLogger("MX3.HWR").error(
@@ -181,7 +180,7 @@ def get_centring_motors():
 
     if not _centring_motors_memo:
         _centring_motors_memo = list(
-            blcontrol.beamline.diffractometer.get_positions().keys()
+            mxcube.mxcubecore.beamline.diffractometer.get_positions().keys()
         )
 
         # Adding the two pseudo motors for sample alignment in the microscope
@@ -228,18 +227,18 @@ def _snapshot_received(data):
 
 
 def _do_take_snapshot(filename, bw=False):
-    blcontrol.beamline.sample_view.save_snapshot(
+    mxcube.mxcubecore.beamline.sample_view.save_snapshot(
         filename, overlay=False, bw=bw
     )
 
     # from . import loginutils
-    # from mxcube3 import socketio, server
+    # from mxcube3 import server, server
 
     # SNAPSHOT_RECEIVED.clear()
     # rid = loginutils.get_operator()["socketio_sid"]
 
     # with server.test_request_context():
-    #     socketio.emit(
+    #     server.emit(
     #         "take_xtal_snapshot", namespace="/hwr", room=rid, callback=_snapshot_received
     #     )
 
@@ -250,7 +249,7 @@ def _do_take_snapshot(filename, bw=False):
 
 
 def save_snapshot(self, filename, bw=False):
-    blcontrol.beamline.sample_view.save_snapshot(
+    mxcube.mxcubecore.beamline.sample_view.save_snapshot(
         filename, overlay=Flase, bw=bw
     )
     #_do_take_snapshot(filename, bw)
@@ -370,7 +369,7 @@ def send_mail(_from, to, subject, content):
 
 
 def send_feedback(sender_data):
-    bl_name = blcontrol.beamline.session.beamline_name
+    bl_name = mxcube.mxcubecore.beamline.session.beamline_name
     local_user = sender_data.get("LOGGED_IN_USER", "")
 
     if not bl_name:
@@ -385,17 +384,17 @@ def send_feedback(sender_data):
         except (KeyError):
             local_user = "unknown_user"
 
-    _from = blcontrol.beamline.session.get_property("from_email", "")
+    _from = mxcube.mxcubecore.beamline.session.get_property("from_email", "")
 
     if not _from:
         _from = "%s@%s" % (
             local_user,
-            blcontrol.beamline.session.get_property("email_extension", ""),
+            mxcube.mxcubecore.beamline.session.get_property("email_extension", ""),
         )
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
-    to = blcontrol.beamline.session.get_property("feedback_email", "") + ",%s" % _sender
+    to = mxcube.mxcubecore.beamline.session.get_property("feedback_email", "") + ",%s" % _sender
     subject = "[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)
     content = sender_data.get("content", "")
 

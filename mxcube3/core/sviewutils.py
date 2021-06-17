@@ -11,9 +11,7 @@ import gevent.event
 from io import StringIO
 import base64
 
-from mxcube3 import blcontrol
 from mxcube3 import mxcube
-
 from mxcube3.core.utils import to_camel, from_camel
 from mxcube3.core import scutils
 from mxcube3.core import beamlineutils
@@ -51,7 +49,7 @@ def centring_remove_current_point():
     global CENTRING_POINT_ID
 
     if CENTRING_POINT_ID:
-        blcontrol.beamline.sample_view.delete_shape(CENTRING_POINT_ID)
+        mxcube.mxcubecore.beamline.sample_view.delete_shape(CENTRING_POINT_ID)
         signals.send_shapes(update_positions=False)
         CENTRING_POINT_ID = None
 
@@ -60,7 +58,7 @@ def centring_add_current_point(*args):
     from mxcube3.routes import signals
 
     global CENTRING_POINT_ID
-    shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
+    shape = mxcube.mxcubecore.beamline.sample_view.get_shape(CENTRING_POINT_ID)
 
     # There is no current centered point shape when the centring is done
     # by software like Workflows, so we add one.
@@ -68,9 +66,9 @@ def centring_add_current_point(*args):
         try:
             if args[0]:
                 motors = args[1]["motors"]
-                x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(motors)
+                x, y = mxcube.mxcubecore.beamline.diffractometer.motor_positions_to_screen(motors)
                 centring_update_current_point(motors, x, y)
-                shape = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
+                shape = mxcube.mxcubecore.beamline.sample_view.get_shape(CENTRING_POINT_ID)
         except Exception:
             logging.getLogger("MX3.HWR").exception("Centring failed !")
 
@@ -84,12 +82,12 @@ def centring_update_current_point(motor_positions, x, y):
     from mxcube3.routes import signals
 
     global CENTRING_POINT_ID
-    point = blcontrol.beamline.sample_view.get_shape(CENTRING_POINT_ID)
+    point = mxcube.mxcubecore.beamline.sample_view.get_shape(CENTRING_POINT_ID)
 
     if point:
         point.move_to_mpos([motor_positions], [x, y])
     else:
-        point = blcontrol.beamline.sample_view.add_shape_from_mpos(
+        point = mxcube.mxcubecore.beamline.sample_view.add_shape_from_mpos(
             [motor_positions], (x, y), "P"
         )
         point.state = "TMP"
@@ -122,15 +120,15 @@ def wait_for_centring_finishes(*args, **kwargs):
         motor_positions.pop("beam_y", None)
         motor_positions.pop("beam_x", None)
 
-        x, y = blcontrol.beamline.diffractometer.motor_positions_to_screen(
+        x, y = mxcube.mxcubecore.beamline.diffractometer.motor_positions_to_screen(
             motor_positions
         )
 
         centring_update_current_point(motor_positions, x, y)
-        blcontrol.beamline.diffractometer.emit("stateChanged", (True,))
+        mxcube.mxcubecore.beamline.diffractometer.emit("stateChanged", (True,))
 
         if mxcube.AUTO_MOUNT_SAMPLE:
-            blcontrol.beamline.diffractometer.accept_centring()
+            mxcube.mxcubecore.beamline.diffractometer.accept_centring()
 
 
 def init_signals():
@@ -140,7 +138,7 @@ def init_signals():
     """
     from mxcube3.routes import signals
 
-    dm = blcontrol.beamline.diffractometer
+    dm = mxcube.mxcubecore.beamline.diffractometer
 
     for motor in utils.get_centring_motors():
 
@@ -208,10 +206,10 @@ def init_signals():
     dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)
     dm.connect(dm, "centringFailed", wait_for_centring_finishes)
     dm.connect("centringAccepted", centring_add_current_point)
-    blcontrol.beamline.sample_view.connect("newGridResult", handle_grid_result)
+    mxcube.mxcubecore.beamline.sample_view.connect("newGridResult", handle_grid_result)
 
     global CLICK_LIMIT
-    CLICK_LIMIT = int(blcontrol.beamline.click_centring_num_clicks or 3)
+    CLICK_LIMIT = int(mxcube.mxcubecore.beamline.click_centring_num_clicks or 3)
 
 
 def new_sample_video_frame_received(img, width, height, *args, **kwargs):
@@ -239,8 +237,8 @@ def new_sample_video_frame_received(img, width, height, *args, **kwargs):
 
     SAMPLE_IMAGE = img
 
-    blcontrol.beamline.sample_view.camera.new_frame.set()
-    blcontrol.beamline.sample_view.camera.new_frame.clear()
+    mxcube.mxcubecore.beamline.sample_view.camera.new_frame.set()
+    mxcube.mxcubecore.beamline.sample_view.camera.new_frame.clear()
 
 
 def stream_video(camera):
@@ -249,16 +247,16 @@ def stream_video(camera):
     """
     global SAMPLE_IMAGE
 
-    blcontrol.beamline.sample_view.camera.new_frame = gevent.event.Event()
+    mxcube.mxcubecore.beamline.sample_view.camera.new_frame = gevent.event.Event()
 
     try:
-        blcontrol.beamline.sample_view.camera.disconnect(
+        mxcube.mxcubecore.beamline.sample_view.camera.disconnect(
             "imageReceived", new_sample_video_frame_received
         )
     except KeyError:
         pass
 
-    blcontrol.beamline.sample_view.camera.connect(
+    mxcube.mxcubecore.beamline.sample_view.camera.connect(
         "imageReceived", new_sample_video_frame_received
     )
 
@@ -274,16 +272,16 @@ def stream_video(camera):
 
 
 def set_image_size(width, height):
-    blcontrol.beamline.sample_view.camera.restart_streaming((width, height))
+    mxcube.mxcubecore.beamline.sample_view.camera.restart_streaming((width, height))
     return beamlineutils.get_viewport_info()
 
 
 def move_to_centred_position(point_id):
-    point = blcontrol.beamline.sample_view.get_shape(point_id)
+    point = mxcube.mxcubecore.beamline.sample_view.get_shape(point_id)
 
     if point:
         motor_positions = point.get_centred_position().as_dict()
-        blcontrol.beamline.diffractometer.move_motors(motor_positions)
+        mxcube.mxcubecore.beamline.diffractometer.move_motors(motor_positions)
 
     return point
 
@@ -291,7 +289,7 @@ def move_to_centred_position(point_id):
 def get_shapes():
     shape_dict = {}
 
-    for shape in blcontrol.beamline.sample_view.get_shapes():
+    for shape in mxcube.mxcubecore.beamline.sample_view.get_shapes():
         s = shape.as_dict()
         shape_dict.update({shape.id: s})
 
@@ -299,7 +297,7 @@ def get_shapes():
 
 
 def get_shape_width_sid(sid):
-    shape = blcontrol.beamline.sample_view.get_shape(sid)
+    shape = mxcube.mxcubecore.beamline.sample_view.get_shape(sid)
 
     if shape is not None:
         shape = shape.as_dict()
@@ -311,7 +309,7 @@ def get_shape_width_sid(sid):
 def shape_add_cell_result(sid, cell, result):
     from mxcube3.routes import signals
 
-    shape = blcontrol.beamline.sample_view.get_shape(sid)
+    shape = mxcube.mxcubecore.beamline.sample_view.get_shape(sid)
     shape.set_cell_result(cell, result)
     signals.grid_result_available(to_camel(shape.as_dict()))
 
@@ -330,7 +328,7 @@ def update_shapes(shapes):
         pos = []
 
         # Get the shape if already exists
-        shape = blcontrol.beamline.sample_view.get_shape(shape_data.get("id", -1))
+        shape = mxcube.mxcubecore.beamline.sample_view.get_shape(shape_data.get("id", -1))
 
         # If shape does not exist add it
         if not shape:
@@ -343,7 +341,7 @@ def update_shapes(shapes):
 
             shape_data[
                 "pixels_per_mm"
-            ] = blcontrol.beamline.diffractometer.get_pixels_per_mm()
+            ] = mxcube.mxcubecore.beamline.diffractometer.get_pixels_per_mm()
             shape_data["beam_pos"] = (
                 beam_info_dict.get("position")[0],
                 beam_info_dict.get("position")[1],
@@ -355,7 +353,7 @@ def update_shapes(shapes):
             if not refs:
                 try:
                     x, y = shape_data["screen_coord"]
-                    mpos = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
+                    mpos = mxcube.mxcubecore.beamline.diffractometer.get_centred_point_from_coord(
                         x, y, return_by_names=True
                     )
                     pos.append(mpos)
@@ -365,19 +363,19 @@ def update_shapes(shapes):
                         # coords for the center of the grid
                         x_c = x + (shape_data["num_cols"] / 2.0) * shape_data["cell_width"]
                         y_c = y + (shape_data["num_rows"] / 2.0) * shape_data["cell_height"]
-                        center_positions = blcontrol.beamline.diffractometer.get_centred_point_from_coord(
+                        center_positions = mxcube.mxcubecore.beamline.diffractometer.get_centred_point_from_coord(
                             x_c, y_c, return_by_names=True
                         )
                         pos.append(center_positions)
 
-                    shape = blcontrol.beamline.sample_view.add_shape_from_mpos(
+                    shape = mxcube.mxcubecore.beamline.sample_view.add_shape_from_mpos(
                         pos, (x, y), t
                     )
                 except Exception:
                     logging.getLogger("HWR.MX3").info(shape_data)
 
             else:
-                shape = blcontrol.beamline.sample_view.add_shape_from_refs(refs, t)
+                shape = mxcube.mxcubecore.beamline.sample_view.add_shape_from_refs(refs, t)
 
         # shape will be none if creation failed, so we check if shape exists
         # before setting additional parameters
@@ -391,18 +389,18 @@ def update_shapes(shapes):
 
 def rotate_to(sid):
     if sid:
-        shape = blcontrol.beamline.sample_view.get_shape(sid)
+        shape = mxcube.mxcubecore.beamline.sample_view.get_shape(sid)
         cp = shape.get_centred_position()
         phi_value = round(float(cp.as_dict().get("phi", None)), 3)
         if phi_value:
             try:
-                blcontrol.beamline.diffractometer.centringPhi.set_value(phi_value)
+                mxcube.mxcubecore.beamline.diffractometer.centringPhi.set_value(phi_value)
             except Exception:
                 raise
 
 
 def move_zoom_motor(pos):
-    zoom_motor = blcontrol.beamline.diffractometer.get_object_by_role("zoom")
+    zoom_motor = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role("zoom")
     if zoom_motor.get_state() != HardwareObjectState.READY:
         return (
             "motor is already moving",
@@ -415,32 +413,32 @@ def move_zoom_motor(pos):
     else:
         zoom_motor.set_value(pos)
 
-    scales = blcontrol.beamline.diffractometer.get_pixels_per_mm()
+    scales = mxcube.mxcubecore.beamline.diffractometer.get_pixels_per_mm()
     return {"pixelsPerMm": [scales[0], scales[1]]}
 
 
 def back_light_on():
-    motor = blcontrol.beamline.diffractometer.get_object_by_role("BackLightSwitch")
+    motor = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role("BackLightSwitch")
     motor.set_value(motor.VALUES.IN)
 
 
 def back_light_off():
-    motor = blcontrol.beamline.diffractometer.get_object_by_role("BackLightSwitch")
+    motor = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role("BackLightSwitch")
     motor.set_value(motor.VALUES.OUT)
 
 
 def front_light_on():
-    motor = blcontrol.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
+    motor = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
     motor.set_value(motor.VALUES.IN)
 
 
 def front_light_off():
-    motor = blcontrol.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
+    motor = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
     motor.set_value(motor.VALUES.OUT)
 
 
 def move_motor(motid, newpos):
-    motor = blcontrol.beamline.diffractometer.get_object_by_role(motid.lower())
+    motor = mxcube.mxcubecore.beamline.diffractometer.get_object_by_role(motid.lower())
 
     if newpos == "stop":
         motor.stop()
@@ -479,12 +477,12 @@ def start_auto_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    if not blcontrol.beamline.diffractometer.current_centring_procedure:
+    if not mxcube.mxcubecore.beamline.diffractometer.current_centring_procedure:
         msg = "Starting automatic centring"
         logging.getLogger("user_level_log").info(msg)
 
-        blcontrol.beamline.diffractometer.start_centring_method(
-            blcontrol.beamline.diffractometer.C3D_MODE
+        mxcube.mxcubecore.beamline.diffractometer.start_centring_method(
+            mxcube.mxcubecore.beamline.diffractometer.C3D_MODE
         )
     else:
         msg = "Could not starting automatic centring, already centring."
@@ -497,15 +495,15 @@ def start_manual_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    if blcontrol.beamline.diffractometer.is_ready():
-        if blcontrol.beamline.diffractometer.current_centring_procedure:
+    if mxcube.mxcubecore.beamline.diffractometer.is_ready():
+        if mxcube.mxcubecore.beamline.diffractometer.current_centring_procedure:
             logging.getLogger("user_level_log").info("Aborting current centring ...")
-            blcontrol.beamline.diffractometer.cancel_centring_method(reject=True)
+            mxcube.mxcubecore.beamline.diffractometer.cancel_centring_method(reject=True)
 
         logging.getLogger("user_level_log").info("Centring using 3-click centring")
 
-        blcontrol.beamline.diffractometer.start_centring_method(
-            blcontrol.beamline.diffractometer.MANUAL3CLICK_MODE
+        mxcube.mxcubecore.beamline.diffractometer.start_centring_method(
+            mxcube.mxcubecore.beamline.diffractometer.MANUAL3CLICK_MODE
         )
 
         centring_reset_click_count()
@@ -519,30 +517,30 @@ def start_manual_centring():
 def abort_centring():
     try:
         logging.getLogger("user_level_log").info("User canceled centring")
-        blcontrol.beamline.diffractometer.cancel_centring_method()
+        mxcube.mxcubecore.beamline.diffractometer.cancel_centring_method()
         centring_remove_current_point()
     except:
         logging.getLogger("MX3.HWR").warning("Canceling centring failed")
 
 
 def centring_handle_click(x, y):
-    if blcontrol.beamline.diffractometer.current_centring_procedure:
-        blcontrol.beamline.diffractometer.imageClicked(x, y, x, y)
+    if mxcube.mxcubecore.beamline.diffractometer.current_centring_procedure:
+        mxcube.mxcubecore.beamline.diffractometer.imageClicked(x, y, x, y)
         centring_click()
     else:
         if not centring_clicks_left():
             centring_reset_click_count()
-            blcontrol.beamline.diffractometer.cancel_centring_method()
+            mxcube.mxcubecore.beamline.diffractometer.cancel_centring_method()
 
-            blcontrol.beamline.diffractometer.start_centring_method(
-                blcontrol.beamline.diffractometer.MANUAL3CLICK_MODE
+            mxcube.mxcubecore.beamline.diffractometer.start_centring_method(
+                mxcube.mxcubecore.beamline.diffractometer.MANUAL3CLICK_MODE
             )
 
     return {"clicksLeft": centring_clicks_left()}
 
 
 def reject_centring():
-    blcontrol.beamline.diffractometer.reject_centring()
+    mxcube.mxcubecore.beamline.diffractometer.reject_centring()
     centring_remove_current_point()
 
 
@@ -550,12 +548,12 @@ def move_to_beam(x, y):
     msg = "Moving point x: %s, y: %s to beam" % (x, y)
     logging.getLogger("user_level_log").info(msg)
 
-    if getattr(blcontrol.beamline.diffractometer, "move_to_beam") is None:
+    if getattr(mxcube.mxcubecore.beamline.diffractometer, "move_to_beam") is None:
         # v > 2.2, or perhaps start_move_to_beam?
-        blcontrol.beamline.diffractometer.move_to_beam(x, y)
+        mxcube.mxcubecore.beamline.diffractometer.move_to_beam(x, y)
     else:
         # v <= 2.1
-        blcontrol.beamline.diffractometer.move_to_beam(x, y)
+        mxcube.mxcubecore.beamline.diffractometer.move_to_beam(x, y)
 
 
 def set_centring_method(method):

@@ -7,14 +7,12 @@ import json
 from flask import Response, jsonify, request, session
 from mxcube3 import mxcube
 from mxcube3 import server
-from mxcube3 import blcontrol
-from mxcube3 import socketio
 
 from mxcube3.core import qutils
 from mxcube3.core import limsutils
 
 
-@server.route("/mxcube/api/v0.1/queue/start", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/start", methods=["PUT"])
 @server.require_control
 @server.restrict
 def queue_start():
@@ -31,7 +29,7 @@ def queue_start():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/stop", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/stop", methods=["PUT"])
 @server.require_control
 @server.restrict
 def queue_stop():
@@ -46,7 +44,7 @@ def queue_stop():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/abort", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/abort", methods=["PUT"])
 @server.require_control
 @server.restrict
 def queue_abort():
@@ -57,11 +55,11 @@ def queue_abort():
               200 On success
               409 queue could not be aborted
     """
-    blcontrol.beamline.queue_manager.stop()
+    mxcube.mxcubecore.beamline.queue_manager.stop()
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/pause", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/pause", methods=["PUT"])
 @server.require_control
 @server.restrict
 def queue_pause():
@@ -73,11 +71,11 @@ def queue_pause():
               409: Queue could not be paused
     """
     msg = qutils.queue_pause()
-    socketio.emit("queue", msg, namespace="/hwr")
+    server.emit("queue", msg, namespace="/hwr")
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/unpause", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/unpause", methods=["PUT"])
 @server.require_control
 @server.restrict
 def queue_unpause():
@@ -89,11 +87,11 @@ def queue_unpause():
               409: Queue could not be unpause
     """
     msg = qutils.queue_unpause()
-    socketio.emit("queue", msg, namespace="/hwr")
+    server.emit("queue", msg, namespace="/hwr")
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/clear", methods=["PUT", "GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/clear", methods=["PUT", "GET"])
 @server.require_control
 @server.restrict
 def queue_clear():
@@ -108,7 +106,7 @@ def queue_clear():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue", methods=["GET"])
 @server.restrict
 def queue_get():
     """
@@ -125,7 +123,7 @@ def queue_get():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue_state", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue_state", methods=["GET"])
 @server.restrict
 def queue_get_state():
     """
@@ -142,7 +140,7 @@ def queue_get_state():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/<sid>/<tindex>/execute", methods=["PUT"])
 @server.require_control
 @server.restrict
 def execute_entry_with_id(sid, tindex):
@@ -162,7 +160,7 @@ def execute_entry_with_id(sid, tindex):
         return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue", methods=["PUT"])
 @server.require_control
 @server.restrict
 def set_queue():
@@ -170,7 +168,7 @@ def set_queue():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue", methods=["POST"])
 @server.require_control
 @server.restrict
 def queue_add_item():
@@ -190,7 +188,7 @@ def queue_add_item():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/<sqid>/<tqid>", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/<sqid>/<tqid>", methods=["POST"])
 @server.require_control
 @server.restrict
 def queue_update_item(sqid, tqid):
@@ -204,7 +202,7 @@ def queue_update_item(sqid, tqid):
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/delete", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/delete", methods=["POST"])
 @server.require_control
 @server.restrict
 def queue_delete_item():
@@ -215,7 +213,7 @@ def queue_delete_item():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/set_enabled", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/set_enabled", methods=["POST"])
 @server.require_control
 @server.restrict
 def queue_enable_item():
@@ -227,7 +225,7 @@ def queue_enable_item():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/swap", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/swap", methods=["POST"])
 @server.require_control
 @server.restrict
 def queue_swap_task_item(sid, ti1, ti2):
@@ -235,14 +233,14 @@ def queue_swap_task_item(sid, ti1, ti2):
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/move", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/<sid>/<ti1>/<ti2>/move", methods=["POST"])
 @server.require_control
 def queue_move_task_item(sid, ti1, ti2):
     qutils.move_task_entry(sid, int(ti1), int(ti2))
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/sample-order", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/sample-order", methods=["POST"])
 @server.require_control
 @server.restrict
 def queue_set_sample_order():
@@ -251,7 +249,7 @@ def queue_set_sample_order():
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/<sample_id>", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/<sample_id>", methods=["PUT"])
 @server.require_control
 @server.restrict
 def update_sample(sample_id):
@@ -278,7 +276,7 @@ def update_sample(sample_id):
         return Response(status=409)
 
 
-@server.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/<node_id>/toggle", methods=["PUT"])
 @server.require_control
 @server.restrict
 def toggle_node(node_id):
@@ -292,7 +290,7 @@ def toggle_node(node_id):
     return Response(status=200)
 
 
-@server.route("/mxcube/api/v0.1/queue/dc", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/dc", methods=["GET"])
 @server.restrict
 def get_default_dc_params():
     """
@@ -304,7 +302,7 @@ def get_default_dc_params():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/char_acq", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/char_acq", methods=["GET"])
 @server.restrict
 def get_default_char_acq_params():
     """
@@ -317,21 +315,21 @@ def get_default_char_acq_params():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/char", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/char", methods=["GET"])
 @server.restrict
 def get_default_char_params():
     """
     returns the default values for a characterisation.
     """
     p = (
-        blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
+        mxcube.mxcubecore.beamline.characterisation.get_default_characterisation_parameters().as_dict()
     )
     resp = jsonify(p)
     resp.status_code = 200
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/mesh", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/mesh", methods=["GET"])
 @server.restrict
 def get_default_mesh_params():
     """
@@ -342,7 +340,7 @@ def get_default_mesh_params():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/xrf", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/xrf", methods=["GET"])
 @server.restrict
 def get_default_xrf_parameters():
     """
@@ -353,7 +351,7 @@ def get_default_xrf_parameters():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/automount", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/automount", methods=["POST"])
 @server.require_control
 @server.restrict
 def set_autmount():
@@ -365,7 +363,7 @@ def set_autmount():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/num_snapshots", methods=["PUT"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/num_snapshots", methods=["PUT"])
 @server.require_control
 @server.restrict
 def set_num_snapshots():
@@ -377,7 +375,7 @@ def set_num_snapshots():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/group_folder", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/group_folder", methods=["POST"])
 @server.require_control
 @server.restrict
 def set_group_folder():
@@ -389,16 +387,16 @@ def set_group_folder():
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/group_folder", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/group_folder", methods=["GET"])
 @server.restrict
 def get_group_folder():
-    resp = jsonify({"path": blcontrol.beamline.session.get_group_name()})
+    resp = jsonify({"path": mxcube.mxcubecore.beamline.session.get_group_name()})
     resp.status_code = 200
 
     return resp
 
 
-@server.route("/mxcube/api/v0.1/queue/auto_add_diffplan", methods=["POST"])
+@server.FLASK.route("/mxcube/api/v0.1/queue/auto_add_diffplan", methods=["POST"])
 @server.require_control
 @server.restrict
 def set_autoadd():

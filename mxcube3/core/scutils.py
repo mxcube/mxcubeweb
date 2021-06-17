@@ -7,11 +7,7 @@ import logging
 import time
 import gevent
 
-# We are patching queue_entry.mount_sample at the end of this file.
-#import queue_entry
-
 from mxcube3 import mxcube
-from mxcube3 import blcontrol
 
 from . import limsutils
 from . import qutils
@@ -23,31 +19,31 @@ def init_signals():
     from mxcube3.routes import signals
 
     """Initialize hwobj signals."""
-    blcontrol.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
-    blcontrol.beamline.sample_changer.connect(
+    mxcube.mxcubecore.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
+    mxcube.mxcubecore.beamline.sample_changer.connect(
         "isCollisionSafe", signals.is_collision_safe
     )
-    blcontrol.beamline.sample_changer.connect(
+    mxcube.mxcubecore.beamline.sample_changer.connect(
         "loadedSampleChanged", signals.loaded_sample_changed
     )
-    blcontrol.beamline.sample_changer.connect(
+    mxcube.mxcubecore.beamline.sample_changer.connect(
         "contentsUpdated", signals.sc_contents_update
     )
 
-    if blcontrol.beamline.sample_changer_maintenance is not None:
-        blcontrol.beamline.sample_changer_maintenance.connect(
+    if mxcube.mxcubecore.beamline.sample_changer_maintenance is not None:
+        mxcube.mxcubecore.beamline.sample_changer_maintenance.connect(
             "globalStateChanged", signals.sc_maintenance_update
         )
 
 
 def get_sample_list():
-    samples_list = blcontrol.beamline.sample_changer.get_sample_list()
+    samples_list = mxcube.mxcubecore.beamline.sample_changer.get_sample_list()
     samples = {}
     samplesByCoords = {}
     order = []
     current_sample = {}
 
-    loaded_sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+    loaded_sample = mxcube.mxcubecore.beamline.sample_changer.get_loaded_sample()
 
     for s in samples_list:
         if not s.is_present():
@@ -108,7 +104,7 @@ def get_sc_contents():
         return ""
 
     def _getElementID(e):
-        if e == blcontrol.beamline.sample_changer:
+        if e == mxcube.mxcubecore.beamline.sample_changer:
             if e.get_token() is not None:
                 return e.get_token()
         else:
@@ -130,12 +126,12 @@ def get_sc_contents():
             for e in element.get_components():
                 _addElement(new_element, e)
 
-    if blcontrol.beamline.sample_changer:
-        root_name = blcontrol.beamline.sample_changer.get_address()
+    if mxcube.mxcubecore.beamline.sample_changer:
+        root_name = mxcube.mxcubecore.beamline.sample_changer.get_address()
 
         contents = {"name": root_name}
 
-        for element in blcontrol.beamline.sample_changer.get_components():
+        for element in mxcube.mxcubecore.beamline.sample_changer.get_components():
             if element.is_present():
                 _addElement(contents, element)
     else:
@@ -200,7 +196,7 @@ def get_sample_to_be_mounted():
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
 
-    blcontrol.beamline.sample_view.clear_all()
+    mxcube.mxcubecore.beamline.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")
     log = logging.getLogger("user_level_log")
 
@@ -213,7 +209,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         "dewarLocation": loc[0],
         "sampleBarcode": data_model.code,
         "sampleId": data_model.lims_id,
-        "sessionId": blcontrol.beamline.session.session_id,
+        "sessionId": mxcube.mxcubecore.beamline.session.session_id,
         "startTime": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
@@ -221,10 +217,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     # can move sample on beam (sample changer, plate holder, in future
     # also harvester)
     # TODO make sample_Changer_one, sample_changer_two
-    if blcontrol.beamline.diffractometer.in_plate_mode():
-        sample_mount_device = blcontrol.beamline.plate_manipulator
+    if mxcube.mxcubecore.beamline.diffractometer.in_plate_mode():
+        sample_mount_device = mxcube.mxcubecore.beamline.plate_manipulator
     else:
-        sample_mount_device = blcontrol.beamline.sample_changer
+        sample_mount_device = mxcube.mxcubecore.beamline.sample_changer
 
     if (
         sample_mount_device.get_loaded_sample()
@@ -265,7 +261,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         robot_action_dict["message"] = "Sample was not loaded"
         robot_action_dict["status"] = "ERROR"
 
-    blcontrol.beamline.lims.store_robot_action(robot_action_dict)
+    mxcube.mxcubecore.beamline.lims.store_robot_action(robot_action_dict)
 
     if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
@@ -274,7 +270,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     else:
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
-        dm = blcontrol.beamline.diffractometer
+        dm = mxcube.mxcubecore.beamline.diffractometer
         if dm is not None:
             try:
                 dm.connect("centringAccepted", centring_done_cb)
@@ -325,7 +321,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
 def mount_sample_clean_up(sample):
     from mxcube3.routes import signals
 
-    sc = blcontrol.beamline.sample_changer
+    sc = mxcube.mxcubecore.beamline.sample_changer
 
     res = None
 
@@ -351,12 +347,12 @@ def mount_sample_clean_up(sample):
             if (
                 res
                 and mxcube.CENTRING_METHOD == CENTRING_METHOD.LOOP
-                and not blcontrol.beamline.diffractometer.in_plate_mode()
+                and not mxcube.mxcubecore.beamline.diffractometer.in_plate_mode()
             ):
                 msg = "Starting autoloop centring ..."
                 logging.getLogger("MX3.HWR").info(msg)
-                C3D_MODE = blcontrol.beamline.diffractometer.C3D_MODE
-                blcontrol.beamline.diffractometer.start_centring_method(C3D_MODE)
+                C3D_MODE = mxcube.mxcubecore.beamline.diffractometer.C3D_MODE
+                mxcube.mxcubecore.beamline.diffractometer.start_centring_method(C3D_MODE)
 
         else:
             msg = "Mounting sample: %s" % sample["sampleName"]
@@ -373,7 +369,7 @@ def mount_sample_clean_up(sample):
         # Clean up if the new sample was mounted or the current sample was
         # unmounted and the new one, for some reason, failed to mount
         if res or (not res and not sc.get_loaded_sample()):
-            blcontrol.beamline.sample_view.clear_all()
+            mxcube.mxcubecore.beamline.sample_view.clear_all()
 
             # We remove the current sample from the queue, if we are moving
             # from one sample to another and the current sample is in the queue
@@ -394,7 +390,7 @@ def unmount_sample_clean_up(sample):
         signals.sc_unload(sample["location"])
 
         if not sample["location"] == "Manual":
-            blcontrol.beamline.sample_changer.unload(sample["location"], wait=False)
+            mxcube.mxcubecore.beamline.sample_changer.unload(sample["location"], wait=False)
         else:
             set_current_sample(None)
             signals.sc_load_ready(sample["location"])
@@ -406,8 +402,8 @@ def unmount_sample_clean_up(sample):
         logging.getLogger("MX3.HWR").exception(msg)
         raise
     else:
-        blcontrol.beamline.queue_model.mounted_sample = ""
-        blcontrol.beamline.sample_view.clear_all()
+        mxcube.mxcubecore.beamline.queue_model.mounted_sample = ""
+        mxcube.mxcubecore.beamline.sample_view.clear_all()
 
 
 def mount_sample(sample):
@@ -421,7 +417,7 @@ def unmount_sample(sample):
 
 
 def unmount_current():
-    location = blcontrol.beamline.sample_changer.get_loaded_sample().get_address()
+    location = mxcube.mxcubecore.beamline.sample_changer.get_loaded_sample().get_address()
     unmount_sample_clean_up({ "location": location })
 
     return get_sc_contents()
@@ -429,7 +425,7 @@ def unmount_current():
 
 def get_loaded_sample():
     try:
-        sample = blcontrol.beamline.sample_changer.get_loaded_sample()
+        sample = mxcube.mxcubecore.beamline.sample_changer.get_loaded_sample()
     except Exception as ex:
         logging.getLogger("MX3.HWR").exception("")
         sample = None
@@ -445,7 +441,7 @@ def get_loaded_sample():
 
 
 def get_capacity():
-    baskets = blcontrol.beamline.sample_changer.get_basket_list()
+    baskets = mxcube.mxcubecore.beamline.sample_changer.get_basket_list()
     num_samples = 0
     for basket in baskets:
         num_samples += basket.get_number_of_samples()
@@ -454,8 +450,8 @@ def get_capacity():
 
 
 def get_maintenance_cmds():
-    if blcontrol.beamline.sample_changer_maintenance is not None:
-        ret = blcontrol.beamline.sample_changer_maintenance.get_cmd_info()
+    if mxcube.mxcubecore.beamline.sample_changer_maintenance is not None:
+        ret = mxcube.mxcubecore.beamline.sample_changer_maintenance.get_cmd_info()
     else:
         ret = "SC maintenance controller not defined"
 
@@ -464,16 +460,16 @@ def get_maintenance_cmds():
 
 def get_global_state():
     try:
-        return blcontrol.beamline.sample_changer_maintenance.get_global_state()
+        return mxcube.mxcubecore.beamline.sample_changer_maintenance.get_global_state()
     except:
         return "OFFLINE", "OFFLINE", "OFFLINE"
 
 
 def get_initial_state():
-    if blcontrol.beamline.sample_changer_maintenance is not None:
+    if mxcube.mxcubecore.beamline.sample_changer_maintenance is not None:
         global_state, cmdstate, msg = get_global_state()
 
-        cmds = blcontrol.beamline.sample_changer_maintenance.get_cmd_info()
+        cmds = mxcube.mxcubecore.beamline.sample_changer_maintenance.get_cmd_info()
 
     else:
         global_state = {}
@@ -487,7 +483,7 @@ def get_initial_state():
     loaded_sample = {"address": address, "barcode": barcode}
 
     try:
-        state = blcontrol.beamline.sample_changer.get_status().upper()
+        state = mxcube.mxcubecore.beamline.sample_changer.get_status().upper()
     except:
         state = "OFFLINE"
 
@@ -498,7 +494,7 @@ def get_initial_state():
         "global_state": {"global_state": global_state, "commands_state": cmdstate},
         "cmds": {"cmds": cmds},
         "msg": msg,
-        "plate_mode": blcontrol.beamline.diffractometer.in_plate_mode(),
+        "plate_mode": mxcube.mxcubecore.beamline.diffractometer.in_plate_mode(),
     }
 
     return initial_state

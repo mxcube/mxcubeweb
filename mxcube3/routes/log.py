@@ -2,9 +2,10 @@ import logging
 from flask import jsonify, make_response
 
 from mxcube3 import server
+from mxcube3 import mxcube
 from mxcube3 import logging_handler
 
-@server.route("/mxcube/api/v0.1/log", methods=["GET"])
+@server.FLASK.route("/mxcube/api/v0.1/log", methods=["GET"])
 @server.restrict
 def log():
     """
