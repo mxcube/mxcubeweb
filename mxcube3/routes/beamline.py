@@ -2,9 +2,12 @@ import json
 import sys
 import logging
 
+import spectree
+
 from flask import Blueprint, Response, jsonify, request, make_response
 
 from mxcube3.core import beamlineutils
+from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
 
 def init_routes(mxcube):
     beamline_routes = Blueprint('beamline', __name__)
@@ -61,9 +64,10 @@ def init_routes(mxcube):
             return make_response("{}", 200)
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/<name>", methods=["PUT"])
+    @beamline_routes.route("/mxcube/api/v0.1/beamline/<string:name>", methods=["PUT"])
     @mxcube.server.require_control
     @mxcube.server.restrict
+    @mxcube.server.validate(json=HOActuatorValueChangeModel, resp=spectree.Response(HTTP_200=HOActuatorModel), tags=["beamline"])
     def beamline_set_attribute(name):
         """
         Tries to set < name > to value, replies with the following json:
@@ -73,23 +77,16 @@ def init_routes(mxcube):
         Where msg is an arbitrary msg to user, state is the internal state
         of the set operation(for the moment, VALID, ABORTED, ERROR).
 
-        Replies with status code 200 on success and 520 on exceptions.
+        Replies with status code 200 on success and 409 on exceptions.
         """
-        param = json.loads(request.data)
-        res, data = beamlineutils.beamline_set_attribute(name, param)
-
-        if res:
-            code = 200
-        else:
-            code = 520
-
-        response = jsonify(data)
-        response.code = code
-        return response
+        rd = HOActuatorValueChangeModel.parse_raw(request.data)
+        result = mxcube.mxcubecore.beamline.get_object(rd.name.lower()).set_value(rd.value)
+        return jsonify(result)
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/<name>", methods=["GET"])
+    @beamline_routes.route("/mxcube/api/v0.1/beamline/<string:name>", methods=["GET"])
     @mxcube.server.restrict
+    @mxcube.server.validate(resp=spectree.Response(HTTP_200=HOActuatorModel), tags=["beamline"])
     def beamline_get_attribute(name):
         """
         Retrieves value of attribute < name > , replies with the following json:
@@ -99,14 +96,9 @@ def init_routes(mxcube):
         Where msg is an arbitrary msg to user, state is the internal state
         of the get operation(for the moment, VALID, ABORTED, ERROR).
 
-        Replies with status code 200 on success and 520 on exceptions.
+        Replies with status code 200 on success and 409 on exceptions.
         """
-        res, data = beamlineutils.beamline_get_attribute(name)
-
-        response = jsonify(data)
-        response.code = res
-        return response
-
+        return jsonify(mxcube.mxcubecore.beamline.get_object(name.lower()).dict())
 
     @beamline_routes.route("/mxcube/api/v0.1/beam/info", methods=["GET"])
     @mxcube.server.restrict
@@ -125,7 +117,7 @@ def init_routes(mxcube):
         Retrieve data directory from the session hwobj,
         this is specific for each beamline.
         """
-        data = mxcube.mxcubecore.beamline.session.get_base_image_directory()
+        data = mxcube.mxcubecore.beamline_ho.session.get_base_image_directory()
         return jsonify({"path": data})
 
 

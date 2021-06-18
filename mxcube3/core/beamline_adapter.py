@@ -6,21 +6,34 @@ from decimal import Decimal
 from functools import reduce
 from enum import Enum
 
-from mxcube3 import server
+from flask import jsonify
 
 from mxcubecore.HardwareObjects.abstract import AbstractNState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
-from mxcubecore.HardwareObjects import (
-    MicrodiffInOut,
-    TangoShutter,
-    MicrodiffBeamstop
-)
+from mxcube3 import server
+from mxcube3.core.models import (HOModel, HOActuatorModel, HOMachineInfoModel)
 
-from mxcubecore.HardwareObjects.mockup import (
-    MicrodiffInOutMockup,
-    ShutterMockup
-)
+# from mxcubecore.HardwareObjects import (
+#     MicrodiffInOut,
+#     TangoShutter,
+#     MicrodiffBeamstop
+# )
+
+
+#from mxcubecore.HardwareObjects.mockup import (
+#    MicrodiffInOutMockup,
+#    ShutterMockup
+#)
+
+# The way HardwareObject paths are insterted into sys.path
+# in mxcubecore makes it necassary to do these imports like this
+import MicrodiffInOutMockup
+import ShutterMockup
+import MicrodiffInOut
+import TangoShutter
+import MicrodiffBeamstop
+
 
 from . import utils
 
@@ -30,6 +43,7 @@ from .statedefs import (
     BEAMSTOP_STATE,
     ABSTRACT_NSTATE_TO_VALUE    
 )
+
 
 
 BEAMLINE_ADAPTER = None
@@ -80,7 +94,7 @@ class HOAdapterBase:
         Returns:
             (str): The state
         """
-        pass
+        return ""
 
     # Abstract method
     def msg(self):
@@ -90,7 +104,7 @@ class HOAdapterBase:
         Returns:
             (str): The message string.
         """
-        return
+        return ""
 
     def read_only(self):
         """
@@ -124,12 +138,15 @@ class HOAdapterBase:
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        server.emit("beamline_value_change", self.dict_repr(), namespace="/hwr")
+        server.emit("beamline_value_change", self.dict(), namespace="/hwr")
 
-    def _dict_repr(self):
+    def data(self):
+        pass    
+
+    def _to_dict(self):
         return {}
 
-    def dict_repr(self):
+    def _dict_repr(self):
         """
         Dictionary representation of the hardware object.
         Returns:
@@ -143,19 +160,23 @@ class HOAdapterBase:
                 "msg": self.msg(),
                 "type": "FLOAT",
                 "available": self.available(),
-                "readonly": self.read_only()
+                "readonly": self.read_only(),
+                "commands": ()
             }
 
-            data.update(self._dict_repr())
+            data.update(self._to_dict())
+
         except Exception as ex:
             # Return a default representation if there is a problem retrieving 
             # any of the attributes
             self._available = False
+
             data = {
                 "name": self._name,
                 "label": self._name.replace("_", " ").title(),
                 "state": "UNKNOWN",
                 "msg": "Exception: %s" % str(ex),
+                "type": "FLOAT",
                 "available": self.available(),
                 "value": "0",
                 "readonly": False
@@ -166,6 +187,9 @@ class HOAdapterBase:
             )
 
         return data
+
+    def dict(self):
+        return HOModel(**self._dict_repr()).dict()
 
 
 class HOActuatorAdapterBase(HOAdapterBase):
@@ -203,10 +227,10 @@ class HOActuatorAdapterBase(HOAdapterBase):
         """
         try:
             self._set_value(value)
-            data = self.dict_repr()
+            data = self.dict()
         except ValueError as ex:
             self._available = False
-            data = self.dict_repr()
+            data = self.dict()
             data["state"] = "UNUSABLE"
             data["msg"] = str(ex)
             logging.getLogger("MX3.HWR").error("Error setting bl attribute: " + str(ex))
@@ -236,14 +260,14 @@ class HOActuatorAdapterBase(HOAdapterBase):
         Returns:
             (tuple): Three values tuple (min, max, step).
         """
-        return 0, 1, 1
+        return (0, 1)
 
-    def dict_repr(self):
+    def _dict_repr(self):
         """Dictionary representation of the hardware object.
         Returns:
             (dict): The dictionary.
         """
-        data = super(HOActuatorAdapterBase, self).dict_repr()
+        data = super(HOActuatorAdapterBase, self)._dict_repr()
 
         try:
             data.update(
@@ -258,16 +282,19 @@ class HOActuatorAdapterBase(HOAdapterBase):
             self._available = False
             data.update(
                 {
-                    "value": "0",
-                    "limits": "(0, 0, 0)",
+                    "value": 0,
+                    "limits": (0, 0),
                     "type": "FLOAT",
-                    "precision": "0",
-                    "step": "0",
+                    "precision": 0,
+                    "step": 0,
                     "msg": "Exception %s" % str(ex),
                 }
             )
+
         return data
 
+    def dict(self):        
+        return HOActuatorModel(**self._dict_repr()).dict()
 
 class EnergyHOAdapter(HOActuatorAdapterBase):
     """
@@ -363,6 +390,11 @@ class EnergyHOAdapter(HOActuatorAdapterBase):
             (bool): True if tunable, False if not.
         """
         return self._ho.read_only
+
+    def _data(self):
+        data = super()._data()
+        data.limits = self.limits()
+        return data
 
 
 class WavelengthHOAdapter(HOActuatorAdapterBase):
@@ -531,19 +563,19 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
             self._ho.actuatorOut()
 
     def commands(self):
-        cmds = ["Out", "In"]
+        cmds = ("Out", "In")
 
         if isinstance(self._ho, AbstractNState.AbstractNState):
             state_names = [v.name for v in self._ho.VALUES]
 
             if "OPEN" in state_names:
-                cmds = ["Close", "Open"]
+                cmds = ("Close", "Open")
             else:
-                cmds = ["Out", "In"]
+                cmds = ("Out", "In")
         elif isinstance(self._ho, TangoShutter.TangoShutter) or isinstance(
             self._ho, ShutterMockup.ShutterMockup
         ):
-            cmds = ["Open", "Close"]
+            cmds = ("Open", "Close")
 
         return cmds
 
@@ -590,7 +622,7 @@ class DuoStateHOAdapter(HOActuatorAdapterBase):
 
         return msg
 
-    def _dict_repr(self):
+    def _to_dict(self):
         """
         Dictionary representation of the hardware object.
         Returns:
@@ -751,7 +783,7 @@ class ResolutionHOAdapter(HOActuatorAdapterBase):
     def get_lookup_limits(self):
         return self.limits()
 
-    def _dict_repr(self):
+    def _to_dict(self):
         """
         Dictionary representation of the hardware object.
         Returns:
@@ -897,13 +929,16 @@ class MachineInfoHOAdapter(HOActuatorAdapterBase):
         """
         Returns: The detector distance limits.
         """
-        return []
+        return (-1, -1)
 
     def stop(self):
         pass
 
     def state(self):
         return HardwareObjectState.READY.value
+
+    def dict(self):
+        return HOMachineInfoModel(**self._dict_repr()).dict()
 
     
 class DetectorHOAdapter(HOActuatorAdapterBase):
@@ -980,13 +1015,13 @@ class PhotonFluxHOAdapter(HOActuatorAdapterBase):
 
     def limits(self):
         """No limits"""
-        return ()
+        return (-1, -1)
 
     def state(self):
         """Always READY"""
         return HardwareObjectState.READY.name
 
-    def _dict_repr(self):
+    def _to_dict(self):
         """
         Dictionary representation of the hardware object.
         Returns:
@@ -1058,7 +1093,7 @@ class CryoHOAdapter(HOActuatorAdapterBase):
         """Always READY"""
         return HardwareObjectState.READY.name
 
-    def _dict_repr(self):
+    def _to_dict(self):
         """
         Dictionary representation of the hardware object.
         Returns:
@@ -1177,7 +1212,7 @@ class _BeamlineAdapter:
     def get_object(self, name):       
         return getattr(self, name)
 
-    def dict_repr(self):
+    def dict(self):
         """
         Build dictionary value-representation for each beamline attribute
         listed in _TO_SERIALIZE.
@@ -1187,16 +1222,16 @@ class _BeamlineAdapter:
         attributes = {}
         for attr_name in self._TO_SERIALIZE:
             try:
-                _d = getattr(self, attr_name).dict_repr()
+                _d = getattr(self, attr_name).dict()
                 attributes.update({attr_name: _d})
             except Exception:
-                logging.getLogger("MX3.HWR").error(
+                logging.getLogger("MX3.HWR").exception(
                     "Failed to get dictionary representation of %s" % attr_name
                 )
 
                 # Create an empty HOAdapterBase to provide front end
                 # with defualt values
-                _d = HOAdapterBase(None).dict_repr()
+                _d = HOAdapterBase(None).dict()
                 attributes.update({attr_name: _d})
 
         return {"attributes": attributes}
