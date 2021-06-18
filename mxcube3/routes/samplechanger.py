@@ -24,7 +24,7 @@ def get_sample_list():
 @server.FLASK.route("/mxcube/api/v0.1/sample_changer/state", methods=["GET"])
 @server.restrict
 def get_sc_state():
-    state = mxcube.mxcubecore.beamline.sample_changer.get_status().upper()
+    state = mxcube.mxcubecore.beamline_ho.sample_changer.get_status().upper()
     return jsonify({"state": state})
 
 
@@ -46,7 +46,7 @@ def get_sc_contents_view():
 @server.require_control
 @server.restrict
 def select_location(loc):
-    mxcube.mxcubecore.beamline.sample_changer.select(loc)
+    mxcube.mxcubecore.beamline_ho.sample_changer.select(loc)
     return scutils.get_sc_contents()
 
 
@@ -55,7 +55,7 @@ def select_location(loc):
 @server.restrict
 def scan_location(loc):
     # do a recursive scan
-    mxcube.mxcubecore.beamline.sample_changer.scan(loc, True)
+    mxcube.mxcubecore.beamline_ho.sample_changer.scan(loc, True)
     return scutils.get_sc_contents()
 
 
@@ -159,7 +159,7 @@ def get_initial_state():
 @server.restrict
 def send_command(cmdparts, args=None):
     try:
-        ret = mxcube.mxcubecore.beamline.sample_changer_maintenance.send_command(cmdparts, args)
+        ret = mxcube.mxcubecore.beamline_ho.sample_changer_maintenance.send_command(cmdparts, args)
     except Exception as ex:
         msg = str(ex)
         msg = msg.replace("\n", " - ")

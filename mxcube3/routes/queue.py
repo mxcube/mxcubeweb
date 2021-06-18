@@ -55,7 +55,7 @@ def queue_abort():
               200 On success
               409 queue could not be aborted
     """
-    mxcube.mxcubecore.beamline.queue_manager.stop()
+    mxcube.mxcubecore.beamline_ho.queue_manager.stop()
     return Response(status=200)
 
 
@@ -322,7 +322,7 @@ def get_default_char_params():
     returns the default values for a characterisation.
     """
     p = (
-        mxcube.mxcubecore.beamline.characterisation.get_default_characterisation_parameters().as_dict()
+        mxcube.mxcubecore.beamline_ho.characterisation.get_default_characterisation_parameters().as_dict()
     )
     resp = jsonify(p)
     resp.status_code = 200
@@ -390,7 +390,7 @@ def set_group_folder():
 @server.FLASK.route("/mxcube/api/v0.1/queue/group_folder", methods=["GET"])
 @server.restrict
 def get_group_folder():
-    resp = jsonify({"path": mxcube.mxcubecore.beamline.session.get_group_name()})
+    resp = jsonify({"path": mxcube.mxcubecore.beamline_ho.session.get_group_name()})
     resp.status_code = 200
 
     return resp

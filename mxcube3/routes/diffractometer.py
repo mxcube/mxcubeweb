@@ -24,7 +24,7 @@ def get_phase():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-    data = {"current_phase": mxcube.mxcubecore.beamline.diffractometer.get_current_phase()}
+    data = {"current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_current_phase()}
     resp = jsonify(data)
     resp.status_code = 200
     return resp
@@ -42,7 +42,7 @@ def get_phase_list():
         :statuscode: 409: error
     """
     resp = jsonify(
-        {"current_phase": mxcube.mxcubecore.beamline.diffractometer.get_phase_list()}
+        {"current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_phase_list()}
     )
     resp.status_code = 200
     return resp
@@ -75,7 +75,7 @@ def md_in_plate_mode():
     data = {"md_in_plate_mode": } True /False
     return_data: data plus error code 200/409
     """
-    md_in_plate_mode = mxcube.mxcubecore.beamline.diffractometer.in_plate_mode()
+    md_in_plate_mode = mxcube.mxcubecore.beamline_ho.diffractometer.in_plate_mode()
     resp = jsonify({"md_in_plate_mode": md_in_plate_mode})
     resp.status_code = 200
     return resp

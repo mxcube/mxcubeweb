@@ -21,7 +21,6 @@ from mxcubecore.HardwareObjects import (QueueManager, queue_entry)
 from mxcube3.video import streaming_processes
 from mxcube3.logging_handler import MX3LoggingHandler
 
-
 class MXCUBECore():
     # The HardwareRepository object
     HWR = None
@@ -30,7 +29,7 @@ class MXCUBECore():
     # Initialized by the init function
 
     # BeamlineSetup
-    beamline = None
+    beamline_ho = None
     # XMLRPCServer
     actions = None
     # Plotting
@@ -105,6 +104,8 @@ class MXCUBECore():
 
         :return: None
         """
+        from mxcube3.core.beamline_adapter import BeamlineAdapter
+
         fname = os.path.dirname(__file__)
         hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
         hwr.init_hardware_repository(os.path.abspath(os.path.expanduser(hwdir)))
@@ -113,7 +114,8 @@ class MXCUBECore():
         HWR = _hwr
 
         try:
-            MXCUBECore.beamline = hwr.beamline
+            MXCUBECore.beamline_ho = hwr.beamline
+            MXCUBECore.beamline = BeamlineAdapter(hwr.beamline)
 
             qm = QueueManager.QueueManager("MXCuBE3")
 
@@ -223,9 +225,9 @@ class MXCUBEApplication():
         MXCUBEApplication.init_signal_handlers()
 
         utils.enable_snapshots(
-            MXCUBEApplication.mxcubecore.beamline.collect,
-            MXCUBEApplication.mxcubecore.beamline.diffractometer,
-            MXCUBEApplication.mxcubecore.beamline.sample_view
+            MXCUBEApplication.mxcubecore.beamline_ho.collect,
+            MXCUBEApplication.mxcubecore.beamline_ho.diffractometer,
+            MXCUBEApplication.mxcubecore.beamline_ho.sample_view
         )
 
         atexit.register(MXCUBEApplication.app_atexit)
@@ -247,7 +249,7 @@ class MXCUBEApplication():
         :return: None
         """
         try:
-            MXCUBEApplication.mxcubecore.beamline.sample_view.camera.start_streaming()
+            MXCUBEApplication.mxcubecore.beamline_ho.sample_view.camera.start_streaming()
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)
@@ -347,7 +349,7 @@ class MXCUBEApplication():
 
         from mxcube3.core import qutils
 
-        queue = qutils.queue_to_dict(MXCUBEApplication.mxcubecore.beamline.queue_model.get_model_root())
+        queue = qutils.queue_to_dict(MXCUBEApplication.mxcubecore.beamline_ho.queue_model.get_model_root())
 
         # For the moment not storing USERS
 

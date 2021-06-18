@@ -56,7 +56,7 @@ def get_quality_indicator_plot(dc_id):
 @server.FLASK.route("/mxcube/api/v0.1/lims/dc/<dc_id>", methods=["GET"])
 @server.restrict
 def get_dc(dc_id):
-    data = mxcube.mxcubecore.beamline.lims_rest.get_dc(dc_id)
+    data = mxcube.mxcubecore.beamline_ho.lims_rest.get_dc(dc_id)
     return jsonify(data)
 
 
@@ -79,7 +79,7 @@ def get_proposal():
     Return the currently selected proposal. (The proposal list is part of the login_res)
     """
     proposal_info = limsutils.get_proposal_info(
-        mxcube.mxcubecore.beamline.session.proposal_code
+        mxcube.mxcubecore.beamline_ho.session.proposal_code
     )
 
     return jsonify({"Proposal": proposal_info})
