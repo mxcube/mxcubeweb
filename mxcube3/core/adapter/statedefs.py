@@ -28,7 +28,7 @@ ABSTRACT_NSTATE_TO_VALUE = {
     "OPEN": 1,
     "IN": 1,
     "UNKNOWN": 2,
-    "UDEFINED": 2
+    "UDEFINED": 2,
 }
 
 

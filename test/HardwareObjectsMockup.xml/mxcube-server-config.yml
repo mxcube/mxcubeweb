@@ -10,3 +10,66 @@ server:
 
 mxcube:
   VIDEO_FORMAT: MJPEG
+
+  adapter_properties:
+#      energy:
+#        precision: 4
+
+      wavelength:
+        adapts: energy
+        precision: 4
+
+#      resolution:
+#        precision: 3
+      
+#      transmission:
+#        precision: 2
+
+      fast_shutter:
+        adapter: DuoStateAdapter
+
+      safety_shutter:
+        adapter: DuoStateAdapter
+
+      machine_info:
+        adapter: MachineInfoAdapter
+      
+#      flux:
+#        adapter: ActuatorAdapter
+#        precision: 2
+
+      data_publisher:
+        adapter: DataPublisherAdapter
+
+      cryo:
+        adapts: diffractometer.cryostream
+        adapter: CryoAdapter
+        precision: 1
+        signals:
+          stateChanged: ignore
+
+      capillary:
+        adapts: diffractomter.capillary
+        adapter: DuoStateAdapter
+
+      beamstop:
+        adapts: diffractometer.beamstop
+        adapter: DuoStateAdapter
+
+      detector_distance:
+        adapts: detector.distance
+        adapter: MotorAdapter
+
+      detector:
+        adapter: DetectorAdapter
+
+      beam:
+        adapter: BeamAdapter
+
+      omega:
+        adapts: diffractometer.omega
+        adapter: MotorAdapter
+
+    
+    
+    

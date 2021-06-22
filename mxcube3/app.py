@@ -104,7 +104,7 @@ class MXCUBECore():
 
         :return: None
         """
-        from mxcube3.core.beamline_adapter import BeamlineAdapter
+        from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
 
         fname = os.path.dirname(__file__)
         hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
@@ -115,7 +115,10 @@ class MXCUBECore():
 
         try:
             MXCUBECore.beamline_ho = hwr.beamline
-            MXCUBECore.beamline = BeamlineAdapter(hwr.beamline)
+            MXCUBECore.beamline = BeamlineAdapter(
+                hwr.beamline, 
+                MXCUBEApplication.CONFIG.APP.adapter_properties
+            )
 
             qm = QueueManager.QueueManager("MXCuBE3")
 

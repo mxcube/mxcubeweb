@@ -16,7 +16,7 @@ from mxcube3.core import limsutils
 from abstract.AbstractSampleChanger import SampleChangerState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
-from mxcube3.core.beamline_adapter import BeamlineAdapter
+from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcube3.core.qutils import (
     READY,
     RUNNING,

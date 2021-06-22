@@ -26,4 +26,4 @@ class HOMachineInfoModel(HOActuatorModel):
 
 class HOActuatorValueChangeModel(BaseModel):
     name: str = Field("", description='Name of the hardware object to change')
-    value: float = Field(0, description='New value of actuator (position)')
+    value: str = Field("", description='New value of actuator (position)')
