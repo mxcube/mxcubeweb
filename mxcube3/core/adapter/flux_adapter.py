@@ -16,9 +16,6 @@ class FluxAdapter(ActuatorAdapterBase):
         super(FluxAdapter, self).__init__(ho, name, **kwargs)
 
         self._read_only = ho.read_only
-        import pdb
-
-        pdb.set_trace()
 
         try:
             ho.connect("valueChanged", self._value_change)
@@ -59,17 +56,3 @@ class FluxAdapter(ActuatorAdapterBase):
     def state(self):
         """Always READY"""
         return HardwareObjectState.READY.name
-
-    def _to_dict(self):
-        """
-        Dictionary representation of the hardware object.
-        Returns:
-            (dict): The dictionary.
-        """
-        data = {
-            "value": self.get_value(),
-            "limits": self.limits(),
-            "precision": self.precision(),
-        }
-
-        return data

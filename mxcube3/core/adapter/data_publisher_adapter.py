@@ -1,7 +1,8 @@
+import logging
+
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.adapter_base import AdapterBase
-from mxcube3 import server
 
 
 class DataPublisherAdapter(AdapterBase):
@@ -24,10 +25,10 @@ class DataPublisherAdapter(AdapterBase):
             self._available = True
 
     def _new_data_handler(self, data):
-        server.emit("data_publisher_new_data", data, namespace="/hwr")
+         self._application.server.emit("data_publisher_new_data", data, namespace="/hwr")
 
     def _update_publisher_handler(self, data):
-        server.emit("data_publisher_update", data, namespace="/hwr")
+         self._application.server.emit("data_publisher_update", data, namespace="/hwr")
 
     def state(self):
         return HardwareObjectState.READY.value

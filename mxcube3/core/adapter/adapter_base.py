@@ -2,22 +2,22 @@ import math
 import logging
 
 from mxcube3.core.models import HOModel, HOActuatorModel
-from mxcube3 import server
-
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
 
-    def __init__(self, ho, name, **kwargs):
+    def __init__(self, ho, name, app=None, **kwargs):
         """
         Args:
             (object): Hardware object to mediate for.
             (str): The name of the object
         """
+        self._application = app
         self._ho = ho
         self._name = name
         self._available = True
         self._read_only = False
+        self._type = "FLOAT"
 
     @property
     def ho(self):
@@ -64,26 +64,12 @@ class AdapterBase:
         """
         return self._available
 
-    # Dont't limit rate this method with utils.LimitRate, all sub-classes
-    # will share this method thus all methods will be effected if limit rated.
-    # Rather LimitRate the function calling this one.
-    def value_change(self, *args, **kwargs):
-        """
-        Signal handler to be used for sending values to the client via
-        socketIO.
-        """
-        data = {"name": self._name, "value": args[0]}
-        server.emit("beamline_value_change", data, namespace="/hwr")
-
     def state_change(self, *args, **kwargs):
         """
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        server.emit("beamline_value_change", self.dict(), namespace="/hwr")
-
-    def _to_dict(self):
-        return {}
+        self._application.server.emit("beamline_value_change", self.dict(), namespace="/hwr")
 
     def _dict_repr(self):
         """
@@ -97,13 +83,11 @@ class AdapterBase:
                 "label": self._name.replace("_", " ").title(),
                 "state": self.state(),
                 "msg": self.msg(),
-                "type": "FLOAT",
+                "type": self._type,
                 "available": self.available(),
                 "readonly": self.read_only(),
                 "commands": (),
             }
-
-            data.update(self._to_dict())
 
         except Exception as ex:
             # Return a default representation if there is a problem retrieving
@@ -117,7 +101,6 @@ class AdapterBase:
                 "msg": "Exception: %s" % str(ex),
                 "type": "FLOAT",
                 "available": self.available(),
-                "value": "0",
                 "readonly": False,
             }
 
@@ -127,8 +110,11 @@ class AdapterBase:
 
         return data
 
+    def data(self):
+        return HOModel(**self._dict_repr())
+
     def dict(self):
-        return HOModel(**self._dict_repr()).dict()
+        return self.data().dict()
 
 
 class ActuatorAdapterBase(AdapterBase):
@@ -141,6 +127,17 @@ class ActuatorAdapterBase(AdapterBase):
         super(ActuatorAdapterBase, self).__init__(ho, name, **kwargs)
         self._STATES = None
         self._precision = precision
+
+    # Dont't limit rate this method with utils.LimitRate, all sub-classes
+    # will share this method thus all methods will be effected if limit rated.
+    # Rather LimitRate the function calling this one.
+    def value_change(self, *args, **kwargs):
+        """
+        Signal handler to be used for sending values to the client via
+        socketIO.
+        """
+        data = {"name": self._name, "value": args[0]}
+        self._application.server.emit("beamline_value_change", data, namespace="/hwr")
 
     def precision(self):
         """Display precision.
@@ -232,5 +229,5 @@ class ActuatorAdapterBase(AdapterBase):
 
         return data
 
-    def dict(self):
-        return HOActuatorModel(**self._dict_repr()).dict()
+    def data(self):
+        return HOActuatorModel(**self._dict_repr())

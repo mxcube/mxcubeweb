@@ -6,14 +6,12 @@ import pprint
 
 from functools import reduce
 
-from mxcubecore.HardwareObjects.abstract import AbstractActuator
-
-from mxcube3 import server
-from mxcube3.core import utils
+from mxcubecore.ConvertUtils import make_table
 
 from mxcube3.core.adapter.adapter_base import AdapterBase
-from mxcube3.core.adapter.actuator_adapter import ActuatorAdapter
+from mxcube3.core.adapter.utils import get_adapter_cls_from_hardware_object
 
+from mxcube3.core import utils
 
 BEAMLINE_ADAPTER = None
 
@@ -37,101 +35,80 @@ class _BeamlineAdapter:
     Adapter between Beamline route and Beamline hardware object.
     """
 
-    def __init__(self, beamline_hwobj, config):
-        self._config = config
+    def __init__(self, beamline_hwobj, app):
+        self._application = app
+        self._config = app.CONFIG.APP.adapter_properties
         self._bl = beamline_hwobj
         self._ho_dict = {}
         self._configured_adapter_dict = {}
 
         workflow = self._bl.workflow
 
-        for role in self._bl.all_roles:
-            # Iterate through the roles of Beamline object and associate them with their
-            # adapter configuration
-
-            if not role in config:
-                # Try to use the interface exposed by abstract classes in mxcubecore to adapt
-                # the object
-                # logging.getLogger("MX3.HWR").info(f"Role {role} not explicitly in adapter config")
-                if isinstance(
-                    getattr(self._bl, role), AbstractActuator.AbstractActuator
-                ):
-                    self._configured_adapter_dict[role] = (
-                        role,
-                        role,
-                        ActuatorAdapter,
-                        {},
-                    )
-            else:
-                # Role is in config, use configuration to create adapter and use mxcubecore api
-                # for hardware object if "adapter" keyword is missing. Fallback to a default
-                # adapter class <Role>Adpater if no suitable abstract class was found
-
-                adapter_cls_str = (
-                    config[role]["adapter"] if "adapter" in config[role] else None
-                )
-
-                if not adapter_cls_str:
-                    if isinstance(
-                        getattr(self._bl, role), AbstractActuator.AbstractActuator
-                    ):
-                        adapter_cls_str = "ActuatorAdapter"
-                    else:
-                        # Default to <Role>Adapter if no suitable abstract class was found
-                        adapter_cls_str = f"{role}_Adapter".title().replace("_", "")
-
-                adapter_cls = self._get_adapter_cls(adapter_cls_str)
-                self._configured_adapter_dict[role] = (
-                    role,
-                    role,
-                    adapter_cls,
-                    config[role],
-                )
-
-        # All roles defined in Beamline object is now configured
-        # Handle the additional mappings defined in the adapter configuration
+        # Role is in config, use configuration to create adapter
         for role in self._config:
+            adapter_cls_str = (
+                self._config[role]["adapter"]
+                if "adapter" in self._config[role]
+                else f"{role}_Adapter".title().replace("_", "")
+            )
+            
+            adapter_cls = self._import_adapter_cls(adapter_cls_str)
+            adapts = self._config[role]["adapts"] if "adapts" in self._config[role] else None
+            
+            self._configured_adapter_dict[role] = (
+                role,
+                adapts,
+                adapter_cls,
+                self._config[role],
+            )
+
+        # Use mxcubecore api for hardware object if "adapter" keyword is missing. 
+        # Fallback to a default adapter class <Role>Adpater if no suitable abstract
+        # class was found
+        for role in self._bl.all_roles:
             if role in self._configured_adapter_dict:
-                # Skip roles that are already configured
+                # Skip roles that are already configured (listed in the configuration)
                 continue
-            else:
-                adapter_cls_str = (
-                    config[role]["adapter"]
-                    if "adapter" in config[role]
-                    else f"{role}_Adapter".title().replace("_", "")
-                )
-                adapter_cls = self._get_adapter_cls(adapter_cls_str)
-                adapts = config[role]["adapts"] if "adapts" in config[role] else None
+
+            # Try to use the interface exposed by abstract classes in mxcubecore to adapt
+            # the object
+            adapter_cls = get_adapter_cls_from_hardware_object(getattr(self._bl, role))
+
+            if adapter_cls:
                 self._configured_adapter_dict[role] = (
                     role,
-                    adapts,
+                    role,
                     adapter_cls,
-                    config[role],
+                    {},
                 )
+            #else:
+            #    logging.getLogger("MX3.HWR").debug("No adapter for % s" % role)
 
-        pprint.pprint(self._configured_adapter_dict)
-
+        print("Adapters used by MXCuBE WEB")
+        print(make_table(
+            ["Role", "Adapter"],
+            ([[name, adapter_cls.__name__] 
+             for (name, attr_path, adapter_cls, config) 
+             in self._configured_adapter_dict.values()])
+        ))
+        
         for role, mapping in self._configured_adapter_dict.items():
             name, attr_path, adapter_cls, config = mapping
             attr = None
 
             try:
                 attr = self._getattr_from_path(self._bl, attr_path)
+                setattr(self, role, adapter_cls(attr, role, app=self._application, **dict(config)))
+                logging.getLogger("MX3.HWR").info("Added adapter for %s" % role)
             except:
-                logging.getLogger("MX3.HWR").info("Could not add adapter for %s" % role)
-            else:
-                if attr:
-                    setattr(self, role, adapter_cls(attr, role, **dict(config)))
-                    logging.getLogger("MX3.HWR").info("Added adapter for %s" % role)
-                else:
-                    logging.getLogger("MX3.HWR").info(
-                        "Could not add adapter for %s" % role
-                    )
+                logging.getLogger("MX3.HWR").exception("Could not add adapter for %s" % role)
+                logging.getLogger("MX3.HWR").info("%s not available" % role)
+                setattr(self, role, AdapterBase(None, "", app=self._application))
 
         if workflow:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
-    def _get_adapter_cls(self, adapter_cls_str):
+    def _import_adapter_cls(self, adapter_cls_str):
         adapter_mod = importlib.import_module(
             f"mxcube3.core.adapter.{utils.str_to_snake(adapter_cls_str)}"
         )
@@ -142,7 +119,7 @@ class _BeamlineAdapter:
         return reduce(getattr, attr.split("."), obj)
 
     def wf_parameters_needed(self, params):
-        server.emit(
+         self._application.server.emit(
             "workflowParametersDialog", params, broadcast=True, namespace="/hwr"
         )
 
@@ -168,7 +145,7 @@ class _BeamlineAdapter:
 
                 # Create an empty AdapterBase to provide front end
                 # with defualt values
-                _d = AdapterBase(None, "").dict()
+                _d = AdapterBase(None, "", app=self._application).dict()
                 attributes.update({attr_name: _d})
 
         return {"attributes": attributes}

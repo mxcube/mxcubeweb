@@ -71,5 +71,5 @@ class MachineInfoAdapter(ActuatorAdapterBase):
     def state(self):
         return HardwareObjectState.READY.value
 
-    def dict(self):
-        return HOMachineInfoModel(**self._dict_repr()).dict()
+    def data(self):
+        return HOMachineInfoModel(**self._dict_repr())

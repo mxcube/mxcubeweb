@@ -42,6 +42,7 @@ class DuoStateAdapter(ActuatorAdapterBase):
             (str): The name of the object.
         """
         super(DuoStateAdapter, self).__init__(ho, name, **kwargs)
+        self._type = "DUOSTATE"
         self._connect_signals(ho)
 
     def _connect_signals(self, ho):
@@ -161,18 +162,3 @@ class DuoStateAdapter(ActuatorAdapterBase):
             )
 
         return msg
-
-    def _to_dict(self):
-        """
-        Dictionary representation of the hardware object.
-        Returns:
-            (dict): The dictionary.
-        """
-        data = {
-            "value": self.get_value(),
-            "limits": self.limits(),
-            "commands": self.commands(),
-            "type": "DUOSTATE",
-        }
-
-        return data

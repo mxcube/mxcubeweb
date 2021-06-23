@@ -59,18 +59,3 @@ class CryoAdapter(ActuatorAdapterBase):
     def state(self):
         """Always READY"""
         return HardwareObjectState.READY.name
-
-    def _to_dict(self):
-        """
-        Dictionary representation of the hardware object.
-        Returns:
-            (dict): The dictionary.
-        """
-
-        data = {
-            "value": self.get_value(),
-            "limits": self.limits(),
-            "precision": self.precision(),
-        }
-
-        return data

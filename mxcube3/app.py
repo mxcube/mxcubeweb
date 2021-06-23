@@ -115,10 +115,7 @@ class MXCUBECore():
 
         try:
             MXCUBECore.beamline_ho = hwr.beamline
-            MXCUBECore.beamline = BeamlineAdapter(
-                hwr.beamline, 
-                MXCUBEApplication.CONFIG.APP.adapter_properties
-            )
+            MXCUBECore.beamline = BeamlineAdapter(hwr.beamline, MXCUBEApplication)
 
             qm = QueueManager.QueueManager("MXCuBE3")
 
