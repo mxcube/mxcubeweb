@@ -25,21 +25,21 @@ mxcube:
 #      transmission:
 #        precision: 2
 
-      fast_shutter:
-        adapter: DuoStateAdapter
+#      fast_shutter:
+#        adapter: DuoStateAdapter
 
-      safety_shutter:
-        adapter: DuoStateAdapter
+#      safety_shutter:
+#        adapter: DuoStateAdapter
 
-      machine_info:
-        adapter: MachineInfoAdapter
+#      machine_info:
+#        adapter: MachineInfoAdapter
       
 #      flux:
 #        adapter: ActuatorAdapter
 #        precision: 2
 
-      data_publisher:
-        adapter: DataPublisherAdapter
+#      data_publisher:
+#        adapter: DataPublisherAdapter
 
       cryo:
         adapts: diffractometer.cryostream
@@ -49,7 +49,7 @@ mxcube:
           stateChanged: ignore
 
       capillary:
-        adapts: diffractomter.capillary
+        adapts: diffractometer.capillary
         adapter: DuoStateAdapter
 
       beamstop:
@@ -60,16 +60,90 @@ mxcube:
         adapts: detector.distance
         adapter: MotorAdapter
 
-      detector:
-        adapter: DetectorAdapter
+#      detector:
+#        adapter: DetectorAdapter
 
-      beam:
-        adapter: BeamAdapter
+#      beam:
+#        adapter: BeamAdapter
 
       omega:
         adapts: diffractometer.omega
         adapter: MotorAdapter
 
-    
-    
+  ui_properties:
+    sample_view:
+      id: sample_view
+      components:
+        -
+          name: Omega
+          attribute: diffractometer.phi
+          step: 90
+          precision: 1
+        -
+          name: Kappa
+          attribute: diffractomter.kappa
+          step: 0.1
+          precision: 1
+        -
+          name: Kappa Phi
+          attribute: diffractomter.kappa_phi
+          step: 0.1
+          precision: 1
+
+
+    beamline_setup:
+      id: beamline_setup
+      components:
+        - 
+          name: Safety shutter
+          attribute: safety_shutter
+        -
+          name: Fast Shutter
+          attribute: fast_shutter
+        -
+          name: Capillary
+          attribute: diffractometer.capillary
+        -
+          name: Beamstop
+          attribute: diffractometer.beamstop
+        -
+          name: Energy
+          attribute: energy
+          step: 0.001
+          precision: 4
+        -
+          name: Wavelength
+          attribute: energy.wavelength
+          step: 0.01
+          precision: 2
+        -
+          name: Resolution
+          attribute: resolution
+          step: 0.001
+          precision: 3
+        -
+          name: Detector
+          attribute: detector.distance
+          step: 0.1
+          precision: 1
+        -
+          name: Transmission
+          attribute: transmission
+          step: 0.1
+          precision: 1
+        -
+          name: Flux
+          attribute: flux
+          precision: 2
+        -
+          name: Cryo
+          attribute: diffractometer.cryo
+          precision: 2
+
+
+
+
+
+
+
     
