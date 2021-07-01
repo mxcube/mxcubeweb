@@ -37,86 +37,16 @@ class _BeamlineAdapter:
 
     def __init__(self, beamline_hwobj, app):
         self._application = app
-        self._config = app.CONFIG.APP.adapter_properties
+        self._config = app.CONFIG.APP.adapter_properties or []
         self._bl = beamline_hwobj
         self._ho_dict = {}
         self._configured_adapter_dict = {}
+        self.adapter_dict = {}
 
         workflow = self._bl.workflow
 
-        # Role is in config, use configuration to create adapter
-        for role in self._config:
-            adapter_cls_str = (
-                self._config[role]["adapter"]
-                if "adapter" in self._config[role]
-                else f"{role}_Adapter".title().replace("_", "")
-            )
-            
-            adapter_cls = self._import_adapter_cls(adapter_cls_str)
-            adapts = self._config[role]["adapts"] if "adapts" in self._config[role] else None
-            
-            self._configured_adapter_dict[role] = (
-                role,
-                adapts,
-                adapter_cls,
-                self._config[role],
-            )
-
-        # Use mxcubecore api for hardware object if "adapter" keyword is missing. 
-        # Fallback to a default adapter class <Role>Adpater if no suitable abstract
-        # class was found
-        for role in self._bl.all_roles:
-            if role in self._configured_adapter_dict:
-                # Skip roles that are already configured (listed in the configuration)
-                continue
-
-            # Try to use the interface exposed by abstract classes in mxcubecore to adapt
-            # the object
-            adapter_cls = get_adapter_cls_from_hardware_object(getattr(self._bl, role))
-
-            if adapter_cls:
-                self._configured_adapter_dict[role] = (
-                    role,
-                    role,
-                    adapter_cls,
-                    {},
-                )
-            #else:
-            #    logging.getLogger("MX3.HWR").debug("No adapter for % s" % role)
-
-        print("Adapters used by MXCuBE WEB")
-        print(make_table(
-            ["Role", "Adapter"],
-            ([[name, adapter_cls.__name__] 
-             for (name, attr_path, adapter_cls, config) 
-             in self._configured_adapter_dict.values()])
-        ))
-        
-        for role, mapping in self._configured_adapter_dict.items():
-            name, attr_path, adapter_cls, config = mapping
-            attr = None
-
-            try:
-                attr = self._getattr_from_path(self._bl, attr_path)
-                setattr(self, role, adapter_cls(attr, role, app=self._application, **dict(config)))
-                logging.getLogger("MX3.HWR").info("Added adapter for %s" % role)
-            except:
-                logging.getLogger("MX3.HWR").exception("Could not add adapter for %s" % role)
-                logging.getLogger("MX3.HWR").info("%s not available" % role)
-                setattr(self, role, AdapterBase(None, "", app=self._application))
-
         if workflow:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
-
-    def _import_adapter_cls(self, adapter_cls_str):
-        adapter_mod = importlib.import_module(
-            f"mxcube3.core.adapter.{utils.str_to_snake(adapter_cls_str)}"
-        )
-        return getattr(adapter_mod, adapter_cls_str)
-
-    def _getattr_from_path(self, obj, attr):
-        """Recurses through an attribute chain to get the attribute."""
-        return reduce(getattr, attr.split("."), obj)
 
     def wf_parameters_needed(self, params):
          self._application.server.emit(
@@ -124,7 +54,7 @@ class _BeamlineAdapter:
         )
 
     def get_object(self, name):
-        return getattr(self, name)
+        return self.get_attr_from_path(name)
 
     def dict(self):
         """
@@ -134,19 +64,9 @@ class _BeamlineAdapter:
         """
         attributes = {}
 
-        for attr_name in self._configured_adapter_dict:
-            try:
-                _d = getattr(self, attr_name).dict()
-                attributes.update({attr_name: _d})
-            except Exception:
-                logging.getLogger("MX3.HWR").exception(
-                    "Failed to get dictionary representation of %s" % attr_name
-                )
-
-                # Create an empty AdapterBase to provide front end
-                # with defualt values
-                _d = AdapterBase(None, "", app=self._application).dict()
-                attributes.update({attr_name: _d})
+        for attr_name in self._application.mxcubecore.adapter_dict:
+            _d = self._application.mxcubecore.get_adapter(attr_name).dict()
+            attributes.update({attr_name: _d})
 
         return {"attributes": attributes}
 

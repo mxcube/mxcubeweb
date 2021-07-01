@@ -6,13 +6,12 @@ from mxcube3.core.adapter.adapter_base import AdapterBase
 
 
 class DataPublisherAdapter(AdapterBase):
-    def __init__(self, ho, name, **kwargs):
+    def __init__(self, ho, *args, **kwargs):
         """
         Args:
             (object): Hardware object.
-            (str): The name of the object.
         """
-        super(DataPublisherAdapter, self).__init__(ho, name, **kwargs)
+        super(DataPublisherAdapter, self).__init__(ho, *args, **kwargs)
 
         try:
             ho.connect("data", self._new_data_handler)

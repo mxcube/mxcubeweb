@@ -1,19 +1,19 @@
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core import utils
-
+from mxcube3.core.adapter.utils import RateLimited
 
 class MotorAdapter(ActuatorAdapterBase):
-    def __init__(self, ho, name, **kwargs):
+
+    def __init__(self, ho, *args, **kwargs):
         """
         Args:
             (object): Hardware object.
-            (str): The name of the object.
         """
-        super(MotorAdapter, self).__init__(ho, name, **kwargs)
+        super(MotorAdapter, self).__init__(ho, *args, **kwargs)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
+        self._type = "FLOAT"
 
-    @utils.RateLimited(6)
+    @RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
@@ -29,7 +29,7 @@ class MotorAdapter(ActuatorAdapterBase):
             RuntimeError: Timeout while setting the value.
             StopItteration: When a value change was interrupted (abort/cancel).
         """
-        self._ho.set_value(round(float(value), self._precision))
+        self._ho.set_value(value)
         return self.get_value()
 
     def _get_value(self):
@@ -42,11 +42,9 @@ class MotorAdapter(ActuatorAdapterBase):
         """
         try:
             value = self._ho.get_value()
-            value = round(float(value), self._precision)
         except (TypeError, AttributeError):
             value = 0.0
 
-        value = ("{:4.%sf}" % self._precision).format(value)
         return value
 
     def state(self):

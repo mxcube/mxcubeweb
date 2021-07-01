@@ -273,27 +273,6 @@ def beamline_run_action(name, params):
         msg = "Action cannot run: command '%s' does not exist" % name
         raise Exception(msg)
 
-
-# def beamline_set_attribute(name, data):
-#     """
-#     """
-#     ho = mxcube.mxcubecore.beamline.get_object(name.lower())
-#     data = ho.set_value(data["value"])
-#     res = data["available"]     
-
-#     return res, data
-
-
-# def beamline_get_attribute(name):
-#     """
-#     """
-#     ho = mxcube.mxcubecore.beamline.get_object(name.lower())
-#     data = ho.dict()
-#     res = 200 if data["available"] else 520
-
-#     return res, data
-
-
 def get_beam_info():
     """
     Returns beam information retrieved by the beam_info hardware object,

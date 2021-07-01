@@ -3,17 +3,16 @@ from decimal import Decimal
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core import utils
-
+from mxcube3.core.adapter.utils import RateLimited
 
 class FluxAdapter(ActuatorAdapterBase):
-    def __init__(self, ho, name, **kwargs):
+
+    def __init__(self, ho, *args, **kwargs):
         """
         Args:
             (object): Hardware object.
-            (str): The name of the object.
         """
-        super(FluxAdapter, self).__init__(ho, name, **kwargs)
+        super(FluxAdapter, self).__init__(ho, *args, **kwargs)
 
         self._read_only = ho.read_only
 
@@ -22,7 +21,7 @@ class FluxAdapter(ActuatorAdapterBase):
         except BaseException:
             pass
 
-    @utils.RateLimited(6)
+    @RateLimited(6)
     def _value_change(self, value, **kwargs):
         value = "{:.2E}".format(Decimal(self._ho.get_value()))
         self.value_change(value, **kwargs)

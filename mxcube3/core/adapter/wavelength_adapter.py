@@ -1,5 +1,5 @@
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core import utils
+from mxcube3.core.adapter.utils import RateLimited
 
 
 class WavelengthAdapter(ActuatorAdapterBase):
@@ -8,13 +8,13 @@ class WavelengthAdapter(ActuatorAdapterBase):
     information on longer running processes.
     """
 
-    def __init__(self, ho, name, **kwargs):
+    def __init__(self, ho, *args, **kwargs):
         """
         Args:
             (object): Hardware object.
-            (str): The name of the object.
         """
-        super(WavelengthAdapter, self).__init__(ho, name, **kwargs)
+        super(WavelengthAdapter, self).__init__(ho, *args, **kwargs)
+        self._type = "FLOAT"
 
         try:
             ho.connect("energyChanged", self._value_change)
@@ -22,9 +22,8 @@ class WavelengthAdapter(ActuatorAdapterBase):
         except BaseException:
             pass
 
-    @utils.RateLimited(6)
+    @RateLimited(6)
     def _value_change(self, pos, wl, *args, **kwargs):
-        wl = round(float(wl), self._precision)
         self.value_change(wl)
 
     def _set_value(self, value):
@@ -54,10 +53,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            value = self._ho.get_wavelength()
-            value = round(float(value), self._precision)
-            value = ("{:2.%sf}" % self._precision).format(value)
-            return value
+            return self._ho.get_wavelength()
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 
@@ -95,4 +91,4 @@ class WavelengthAdapter(ActuatorAdapterBase):
         Retuns:
             (bool): True if read only, False if not.
         """
-        return not self._ho.read_only
+        return self._ho.read_only

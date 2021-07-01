@@ -1,25 +1,23 @@
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core import utils
-
 from mxcube3.core.models import HOModel, HOMachineInfoModel
+from mxcube3.core.adapter.utils import RateLimited
 
 
 class MachineInfoAdapter(ActuatorAdapterBase):
-    def __init__(self, ho, name, **kwargs):
+    def __init__(self, ho, *args, **kwargs):
         """
         Args:
             (object): Hardware object.
-            (str): The name of the object.
         """
-        super(MachineInfoAdapter, self).__init__(ho, name, **kwargs)
+        super(MachineInfoAdapter, self).__init__(ho, *args, **kwargs)
         ho.connect("valueChanged", self._value_change)
 
     def _set_value(self, value):
         pass
 
-    @utils.RateLimited(0.1)
+    @RateLimited(0.1)
     def _value_change(self, *args, **kwargs):
         self.value_change(self.get_value(), **kwargs)
 

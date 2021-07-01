@@ -210,10 +210,11 @@ def get_centring_motors_info():
 
             if motor_limits and motor_limits[name]["limits"] is not None:
                 ret[name].update(motor_limits[name])
-        except:
-            logging.getLogger("MX3.HWR").exception(
-                "[UTILS.GET_CENTRING_MOTORS_INFO]: Could not get %s" %name
-            )
+        except KeyError:
+            pass
+            # logging.getLogger("MX3.HWR").exception(
+            #     "[UTILS.GET_CENTRING_MOTORS_INFO]: Could not get %s" %name
+            # )
 
     return ret
 

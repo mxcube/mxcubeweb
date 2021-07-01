@@ -140,67 +140,67 @@ def init_signals():
 
     dm = mxcube.mxcubecore.beamline_ho.diffractometer
 
-    for motor in utils.get_centring_motors():
+    # for motor in utils.get_centring_motors():
 
-        @utils.RateLimited(6)
-        def pos_cb(pos, motor=motor, **kw):
-            movable = utils.get_movable_state_and_position(motor)
+    #     @utils.RateLimited(6)
+    #     def pos_cb(pos, motor=motor, **kw):
+    #         movable = utils.get_movable_state_and_position(motor)
 
-            if movable:
-                signals.motor_position_callback(movable[motor])
-            else:
-                logging.getLogger("MX3.HWR").exception(
-                    "Could not call position callback for %s" % motor
-                )
+    #         if movable:
+    #             signals.motor_position_callback(movable[motor])
+    #         else:
+    #             logging.getLogger("MX3.HWR").exception(
+    #                 "Could not call position callback for %s" % motor
+    #             )
 
-        def state_cb(state, motor=motor, **kw):
-            movable = utils.get_movable_state_and_position(motor)
+    #     def state_cb(state, motor=motor, **kw):
+    #         movable = utils.get_movable_state_and_position(motor)
 
-            if movable:
-                # TODO check if there is a bug in get_state of expoerter motor ?
-                movable[motor]["state"] = state.value
+    #         if movable:
+    #             # TODO check if there is a bug in get_state of expoerter motor ?
+    #             movable[motor]["state"] = state.value
 
-                signals.motor_state_callback(movable[motor], **kw)
-            else:
-                logging.getLogger("MX3.HWR").exception(
-                    "Could not call state callback for %s" % motor
-                )
+    #             signals.motor_state_callback(movable[motor], **kw)
+    #         else:
+    #             logging.getLogger("MX3.HWR").exception(
+    #                 "Could not call state callback for %s" % motor
+    #             )
 
-        setattr(dm, "_%s_pos_callback" % motor, pos_cb)
-        setattr(dm, "_%s_state_callback" % motor, state_cb)
-        dm.connect(dm.get_object_by_role(motor), "valueChanged", pos_cb)
-        dm.connect(dm.get_object_by_role(motor), "stateChanged", state_cb)
+        #setattr(dm, "_%s_pos_callback" % motor, pos_cb)
+        #setattr(dm, "_%s_state_callback" % motor, state_cb)
+        #dm.connect(dm.get_object_by_role(motor), "valueChanged", pos_cb)
+        #dm.connect(dm.get_object_by_role(motor), "stateChanged", state_cb)
 
-    for actuator_name in ["FrontLight", "BackLight"]:
+    #for actuator_name in ["FrontLight", "BackLight"]:
 
-        @utils.RateLimited(3)
-        def light_pos_cb(pos, actuator_name=actuator_name, **kw):
-            movable = utils.get_movable_state_and_position(motor)
+    #    @utils.RateLimited(3)
+        #def light_pos_cb(pos, actuator_name=actuator_name, **kw):
+        #    movable = utils.get_movable_state_and_position(motor)
 
-            if movable:
-                signals.motor_position_callback(movable[motor])
-            else:
-                logging.getLogger("MX3.HWR").exception(
-                    "Could not call position callback for %s" % motor
-                )
+        #    if movable:
+        #        signals.motor_position_callback(movable[motor])
+        #    else:
+        #        logging.getLogger("MX3.HWR").exception(
+        #            "Could not call position callback for %s" % motor
+        #        )
 
-        def light_state_cb(state, actuator_name=actuator_name, **kw):
-            movable = utils.get_movable_state_and_position(actuator_name)
-            signals.motor_state_callback(movable[actuator_name], **kw)
-            signals.motor_state_callback(movable[actuator_name + "Switch"], **kw)
-            signals.motor_position_callback(movable[actuator_name + "Switch"])
+        #def light_state_cb(state, actuator_name=actuator_name, **kw):
+        #    movable = utils.get_movable_state_and_position(actuator_name)
+        #    signals.motor_state_callback(movable[actuator_name], **kw)
+        #    signals.motor_state_callback(movable[actuator_name + "Switch"], **kw)
+        #    signals.motor_position_callback(movable[actuator_name + "Switch"])
 
-        setattr(dm, "_%s_light_state_callback" % actuator_name, light_state_cb)
-        setattr(dm, "_%s_light_pos_callback" % actuator_name, light_pos_cb)
+        #setattr(dm, "_%s_light_state_callback" % actuator_name, light_state_cb)
+        #setattr(dm, "_%s_light_pos_callback" % actuator_name, light_pos_cb)
 
-        try:
-            motor = dm.get_object_by_role(actuator_name)
-            motor.connect(motor, "valueChanged", light_pos_cb)
-            motor_sw = dm.get_object_by_role(actuator_name + "Switch")
-            motor_sw.connect(motor_sw, "stateChanged", light_state_cb)
+        #try:
+        #    motor = dm.get_object_by_role(actuator_name)
+        #    motor.connect(motor, "valueChanged", light_pos_cb)
+        #    motor_sw = dm.get_object_by_role(actuator_name + "Switch")
+        #    motor_sw.connect(motor_sw, "stateChanged", light_state_cb)
 
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").exception(str(ex))
+        #except Exception as ex:
+        #    logging.getLogger("MX3.HWR").exception(str(ex))
 
     dm.connect("centringStarted", signals.centring_started)
     dm.connect(dm, "centringSuccessful", wait_for_centring_finishes)

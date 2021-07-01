@@ -6,7 +6,7 @@ from mxcube3.core.models import HOModel, HOActuatorModel
 class AdapterBase:
     """Hardware Object Adapter Base class"""
 
-    def __init__(self, ho, name, app=None, **kwargs):
+    def __init__(self, ho, role, app, **kwargs):
         """
         Args:
             (object): Hardware object to mediate for.
@@ -14,10 +14,35 @@ class AdapterBase:
         """
         self._application = app
         self._ho = ho
-        self._name = name
+        self._name = role
         self._available = True
         self._read_only = False
         self._type = "FLOAT"
+
+    def get_adapter_id(self, ho=None):
+        ho = self._ho if not ho else ho
+        return self._application.mxcubecore._get_adapter_id(ho)
+
+    def _add_adapter(self, attr_name, ho, adapter_cls=None):
+        from mxcube3.core.adapter.utils import get_adapter_cls_from_hardware_object
+
+        adapter_cls = (
+            adapter_cls if adapter_cls else get_adapter_cls_from_hardware_object(ho)
+        )
+
+        _id = f"{self.get_adapter_id()}.{attr_name}"
+        adapter_instance = adapter_cls(ho, _id, self._application)
+        self._application.mxcubecore._add_adapter(_id, adapter_cls, ho, adapter_instance)
+
+        setattr(self, attr_name, adapter_instance)
+
+    @property
+    def value_type(self):
+        """
+        Returns:
+            (str): The data type of the value 
+        """
+        return self._type
 
     @property
     def ho(self):
@@ -36,8 +61,7 @@ class AdapterBase:
         Returns:
             (str): The state
         """
-        return ""
-
+        return self._ho.get_state().name
     # Abstract method
     def msg(self):
         """
@@ -64,6 +88,9 @@ class AdapterBase:
         """
         return self._available
 
+    def commands(self):
+        return ()
+
     def state_change(self, *args, **kwargs):
         """
         Signal handler to be used for sending the state to the client via
@@ -80,13 +107,12 @@ class AdapterBase:
         try:
             data = {
                 "name": self._name,
-                "label": self._name.replace("_", " ").title(),
                 "state": self.state(),
                 "msg": self.msg(),
                 "type": self._type,
                 "available": self.available(),
                 "readonly": self.read_only(),
-                "commands": (),
+                "commands": self.commands(),
             }
 
         except Exception as ex:
@@ -96,7 +122,6 @@ class AdapterBase:
 
             data = {
                 "name": self._name,
-                "label": self._name.replace("_", " ").title(),
                 "state": "UNKNOWN",
                 "msg": "Exception: %s" % str(ex),
                 "type": "FLOAT",
@@ -118,15 +143,19 @@ class AdapterBase:
 
 
 class ActuatorAdapterBase(AdapterBase):
-    def __init__(self, ho, name, precision=1, **kwargs):
+    def __init__(self, ho, *args, **kwargs):
         """
         Args:
             (object): Hardware object to mediate for.
             (str): The name of the object.
         """
-        super(ActuatorAdapterBase, self).__init__(ho, name, **kwargs)
+        super(ActuatorAdapterBase, self).__init__(ho, *args, **kwargs)
         self._STATES = None
-        self._precision = precision
+
+        try:
+            self._read_only = ho.read_only
+        except AttributeError:
+            pass
 
     # Dont't limit rate this method with utils.LimitRate, all sub-classes
     # will share this method thus all methods will be effected if limit rated.
@@ -138,16 +167,6 @@ class ActuatorAdapterBase(AdapterBase):
         """
         data = {"name": self._name, "value": args[0]}
         self._application.server.emit("beamline_value_change", data, namespace="/hwr")
-
-    def precision(self):
-        """Display precision.
-        Returns:
-            (int): Number of digits to be displayed.
-        """
-        return self._precision
-
-    def step_size(self):
-        return math.pow(10, -self._precision)
 
     # Abstract method
     def set_value(self, value):
@@ -190,13 +209,20 @@ class ActuatorAdapterBase(AdapterBase):
         Stop an action/movement.
         """
 
-    # Abstract method
     def limits(self):
-        """ Get the limits and default stepsize of the device.
-        Returns:
-            (tuple): Three values tuple (min, max, step).
         """
-        return (0, 1)
+        Read the energy limits.
+        Returns:
+            (tuple): Two floats (min, max).
+        Raises:
+            ValueError: When limits for any reason can't be retrieved.
+        """
+        try:
+            # Limits are None when not configured, convert them to -1, -1
+            # as we are returning floats
+            return (0, 0) if None in self._ho.get_limits() else self._ho.get_limits()
+        except (AttributeError, TypeError):
+            raise ValueError("Could not get limits")
 
     def _dict_repr(self):
         """Dictionary representation of the hardware object.
@@ -210,8 +236,6 @@ class ActuatorAdapterBase(AdapterBase):
                 {
                     "value": self.get_value(),
                     "limits": self.limits(),
-                    "precision": self.precision(),
-                    "step": self.step_size(),
                 }
             )
         except Exception as ex:
@@ -221,8 +245,6 @@ class ActuatorAdapterBase(AdapterBase):
                     "value": 0,
                     "limits": (0, 0),
                     "type": "FLOAT",
-                    "precision": 0,
-                    "step": 0,
                     "msg": "Exception %s" % str(ex),
                 }
             )

@@ -1,8 +1,7 @@
 import logging
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core import utils
-
+from mxcube3.core.adapter.utils import RateLimited
 
 class ActuatorAdapter(ActuatorAdapterBase):
     """
@@ -10,15 +9,20 @@ class ActuatorAdapter(ActuatorAdapterBase):
     information on longer running processes.
     """
 
-    def __init__(self, ho, name, **kwargs):
+    def __init__(self, ho, *args, **kwargs):
         """
         Args:
             (object): Hardware object.
-            (str): The name of the object.
         """
-        super(ActuatorAdapter, self).__init__(ho, name, **kwargs)
+        super(ActuatorAdapter, self).__init__(ho, *args, **kwargs)
         self._event_rate = 4
-        self._precision = 4
+        self._type = "FLOAT"
+
+        @RateLimited(self._event_rate)
+        def _vc(value, **kwargs):
+            self.value_change(value, **kwargs)
+
+        self._vc = _vc
 
         try:
             ho.connect("valueChanged", self._value_change)
@@ -27,14 +31,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
             pass
 
     def _value_change(self, *args, **kwargs):
-        @utils.RateLimited(self._event_rate)
-        def _vc(value, **kwargs):
-            if self._precision:
-                value = round(float(value), self._precision)
-
-            self.value_change(value, **kwargs)
-
-        _vc(*args, **kwargs)
+        self._vc(*args, **kwargs)
 
     def _set_value(self, value):
         """
@@ -50,7 +47,6 @@ class ActuatorAdapter(ActuatorAdapterBase):
         """
         try:
             self._ho.set_value(float(value))
-            return self.get_value()
         except BaseException:
             raise
 
@@ -63,45 +59,15 @@ class ActuatorAdapter(ActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            value = self._ho.get_value()
-
-            if self._precision:
-                value = round(float(value), self._precision)
-                value = ("{:3.%sf}" % self._precision).format(value)
-
-            return value
+            return self._ho.get_value()
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
-
-    def state(self):
-        """
-        Get the state.
-        Returns:
-            (str): The state.
-        """
-        # The state is an enum, return the name only
-        return self._ho.get_state().name
 
     def stop(self):
         """
         Stop the execution.
         """
         self._ho.abort()
-
-    def limits(self):
-        """
-        Read the energy limits.
-        Returns:
-            (tuple): Two floats (min, max).
-        Raises:
-            ValueError: When limits for any reason can't be retrieved.
-        """
-        try:
-            # Limits are None when not configured, convert them to -1, -1
-            # as we are returning floats
-            return (-1, -1) if None in self._ho.get_limits() else self._ho.get_limits()
-        except (AttributeError, TypeError):
-            raise ValueError("Could not get limits")
 
     def read_only(self):
         """

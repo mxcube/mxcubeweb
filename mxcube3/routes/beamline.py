@@ -67,7 +67,7 @@ def init_routes(mxcube):
     @beamline_routes.route("/mxcube/api/v0.1/beamline/<string:name>", methods=["PUT"])
     @mxcube.server.require_control
     @mxcube.server.restrict
-    @mxcube.server.validate(json=HOActuatorValueChangeModel, resp=spectree.Response(HTTP_200=HOActuatorModel), tags=["beamline"])
+    @mxcube.server.validate(json=HOActuatorValueChangeModel, tags=["beamline"])
     def beamline_set_attribute(name):
         """
         Tries to set < name > to value, replies with the following json:
@@ -80,8 +80,8 @@ def init_routes(mxcube):
         Replies with status code 200 on success and 409 on exceptions.
         """
         rd = HOActuatorValueChangeModel.parse_raw(request.data)
-        result = mxcube.mxcubecore.beamline.get_object(rd.name.lower()).set_value(rd.value)
-        return jsonify(result)
+        mxcube.mxcubecore.get_adapter(rd.name.lower()).set_value(rd.value)
+        return make_response("{}", 200)
 
 
     @beamline_routes.route("/mxcube/api/v0.1/beamline/<string:name>", methods=["GET"])
@@ -98,7 +98,7 @@ def init_routes(mxcube):
 
         Replies with status code 200 on success and 409 on exceptions.
         """
-        return jsonify(mxcube.mxcubecore.beamline.get_object(name.lower()).dict())
+        return jsonify(mxcube.mxcubecore.get_adapter(name.lower()).dict())
 
     @beamline_routes.route("/mxcube/api/v0.1/beam/info", methods=["GET"])
     @mxcube.server.restrict
