@@ -92,6 +92,7 @@ class BeamlineSetupContainer extends React.Component {
     const uiproperties = this.props.uiproperties;
     if (uiproperties.hasOwnProperty('beamline_setup')) {
       const blsetup_properties = uiproperties.beamline_setup.components;
+
       for (const key in this.props.beamline.attributes) {
         if (this.props.beamline.attributes[key] !== undefined) {
           const uiprop = find(blsetup_properties, { attribute: key });
@@ -136,16 +137,7 @@ class BeamlineSetupContainer extends React.Component {
 
 
   dmState() {
-    let state = 'READY';
-
-    const notReady = Object.values(this.props.beamline.motors).
-      filter((motor) => motor.state !== 2);
-
-    if (notReady.length !== 0) {
-      state = 'BUSY';
-    }
-
-    return state;
+    return this.props.beamline.attributes.diffractometer.state;
   }
 
   render_table_row(uiprop_list) {
