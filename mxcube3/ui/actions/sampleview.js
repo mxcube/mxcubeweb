@@ -39,7 +39,7 @@ export function setAperture(size) {
 
 export function setStepSize(name, value) {
   return {
-    type: 'SET_STEP_SIZE', name, value
+    type: 'SET_STEP_SIZE', componentName: 'sample_view', name, value
   };
 }
 
