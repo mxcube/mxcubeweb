@@ -28,7 +28,7 @@ removeLoggingHandlers()
 
 class MXCUBECore():
     # The HardwareRepository object
-    HWR = None
+    hwr = None
 
     # Below, all the HardwareObjects made available through this module,
     # Initialized by the init function
@@ -192,11 +192,11 @@ class MXCUBECore():
     def adapt_hardware_objects(app):
         adapter_config = app.CONFIG.app.adapter_properties or []
 
-        for ho_name in MXCUBECore.HWR.hardware_objects:
+        for ho_name in MXCUBECore.hwr.hardware_objects:
             # Go through all hardware objects exposed by mxcubecore
             # hardware repository set id to username if its deinfed
             # use the name otherwise (file name without extension)
-            ho = MXCUBECore.HWR.get_hardware_object(ho_name)
+            ho = MXCUBECore.hwr.get_hardware_object(ho_name)
 
             _id = MXCUBECore._get_adapter_id(ho)
 

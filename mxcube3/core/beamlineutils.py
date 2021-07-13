@@ -31,9 +31,9 @@ def init_signals():
         logging.getLogger("MX3.HWR").exception(msg)
     try:
 
-        actions =  mxcube.mxcubecore.HWR.get_hardware_object("beamcmds")
+        actions =  mxcube.mxcubecore.hwr.get_hardware_object("beamcmds")
         if actions is not None:
-            cmds = mxcube.mxcubecore.HWR.get_hardware_object("beamcmds").get_commands()
+            cmds = mxcube.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
             for cmd in cmds:
                 cmd.connect(
                     "commandBeginWaitReply", signals.beamline_action_start
@@ -184,7 +184,7 @@ def beamline_get_all_attributes():
     actions = list()
 
     try:
-        cmds = mxcube.mxcubecore.HWR.get_hardware_object("beamcmds").get_commands()
+        cmds = mxcube.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
     except Exception:
         cmds = []
     for cmd in cmds:
@@ -231,7 +231,7 @@ def beamline_abort_action(name):
 
     """
     try:
-        cmds = mxcube.mxcubecore.HWR.get_hardware_object("beamcmds").get_commands()
+        cmds = mxcube.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
     except Exception:
         cmds = []
 
@@ -253,7 +253,7 @@ def beamline_run_action(name, params):
     : param str name: action to run
     """
     try:
-        cmds = mxcube.mxcubecore.HWR.get_hardware_object("beamcmds").get_commands()
+        cmds = mxcube.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
     except Exception:
         cmds = []
 
