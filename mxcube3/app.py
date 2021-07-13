@@ -184,7 +184,7 @@ class MXCUBECore():
 
     @staticmethod
     def adapt_hardware_objects(app):
-        adapter_config = app.CONFIG.APP.adapter_properties or []
+        adapter_config = app.CONFIG.app.adapter_properties or []
 
         for ho_name in MXCUBECore.HWR.hardware_objects:
             # Go through all hardware objects exposed by mxcubecore
@@ -210,7 +210,7 @@ class MXCUBECore():
 
                 MXCUBECore._add_adapter(_id, adapter_cls, ho, adapter_instance)
             else:
-                logging.getLogger("MX3.HWR").exception("No adapter for %s" % _id)
+                logging.getLogger("MX3.HWR").info("No adapter for %s" % _id)
 
         print(make_table(
             ["Name", "Adapter", "HO filename"],
@@ -436,7 +436,7 @@ class MXCUBEApplication():
     def get_ui_properties():
         # Add type information to each component retrieved from the beamline adapter 
         # (either via config or via mxcubecore.beamline)
-        for item_name, item_data in MXCUBEApplication.CONFIG.APP.ui_properties.items():
+        for item_name, item_data in MXCUBEApplication.CONFIG.app.ui_properties.items():
             for component_data in item_data["components"]:
                 try:
                     mxcore = MXCUBEApplication.mxcubecore
@@ -456,7 +456,7 @@ class MXCUBEApplication():
                     component_data["value_type"] = value_type
 
 
-        return MXCUBEApplication.CONFIG.APP.ui_properties
+        return MXCUBEApplication.CONFIG.app.ui_properties
 
     @staticmethod
     def save_settings():

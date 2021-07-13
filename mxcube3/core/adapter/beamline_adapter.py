@@ -37,7 +37,7 @@ class _BeamlineAdapter:
 
     def __init__(self, beamline_hwobj, app):
         self._application = app
-        self._config = app.CONFIG.APP.adapter_properties or []
+        self._config = app.CONFIG.app.adapter_properties or []
         self._bl = beamline_hwobj
         self._ho_dict = {}
         self._configured_adapter_dict = {}

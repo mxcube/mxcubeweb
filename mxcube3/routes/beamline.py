@@ -9,18 +9,18 @@ from flask import Blueprint, Response, jsonify, request, make_response
 from mxcube3.core import beamlineutils
 from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
 
-def init_routes(mxcube):
-    beamline_routes = Blueprint('beamline', __name__)
+def init_route(mxcube, server, url_prefix):
+    bp = Blueprint("beamline", __name__, url_prefix=url_prefix)
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/", methods=["GET"])
-    @mxcube.server.restrict
+    @bp.route("/", methods=["GET"])
+    @server.restrict
     def beamline_get_all_attributes():
         return jsonify(beamlineutils.beamline_get_all_attributes())
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=["GET"])
-    @mxcube.server.require_control
-    @mxcube.server.restrict
+    @bp.route("/<name>/abort", methods=["GET"])
+    @server.require_control
+    @server.restrict
     def beamline_abort_action(name):
         """
         Aborts an action in progress.
@@ -39,9 +39,9 @@ def init_routes(mxcube):
             return make_response("", 200)
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/<name>/run", methods=["POST"])
-    @mxcube.server.require_control
-    @mxcube.server.restrict
+    @bp.route("/<name>/run", methods=["POST"])
+    @server.require_control
+    @server.restrict
     def beamline_run_action(name):
         """
         Starts a beamline action; POST payload is a json-encoded object with
@@ -64,10 +64,10 @@ def init_routes(mxcube):
             return make_response("{}", 200)
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/<string:name>", methods=["PUT"])
-    @mxcube.server.require_control
-    @mxcube.server.restrict
-    @mxcube.server.validate(json=HOActuatorValueChangeModel, tags=["beamline"])
+    @bp.route("/<string:name>", methods=["PUT"])
+    @server.require_control
+    @server.restrict
+    @server.validate(json=HOActuatorValueChangeModel, tags=["beamline"])
     def beamline_set_attribute(name):
         """
         Tries to set < name > to value, replies with the following json:
@@ -84,9 +84,9 @@ def init_routes(mxcube):
         return make_response("{}", 200)
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/<string:name>", methods=["GET"])
-    @mxcube.server.restrict
-    @mxcube.server.validate(resp=spectree.Response(HTTP_200=HOActuatorModel), tags=["beamline"])
+    @bp.route("/<string:name>", methods=["GET"])
+    @server.restrict
+    @server.validate(resp=spectree.Response(HTTP_200=HOActuatorModel), tags=["beamline"])
     def beamline_get_attribute(name):
         """
         Retrieves value of attribute < name > , replies with the following json:
@@ -100,8 +100,8 @@ def init_routes(mxcube):
         """
         return jsonify(mxcube.mxcubecore.get_adapter(name.lower()).dict())
 
-    @beamline_routes.route("/mxcube/api/v0.1/beam/info", methods=["GET"])
-    @mxcube.server.restrict
+    @bp.route("/beam/info", methods=["GET"])
+    @server.restrict
     def get_beam_info():
         """
         Beam information: position, size, shape
@@ -110,8 +110,8 @@ def init_routes(mxcube):
         return jsonify(beamlineutils.get_beam_info())
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/datapath", methods=["GET"])
-    @mxcube.server.restrict
+    @bp.route("/datapath", methods=["GET"])
+    @server.restrict
     def beamline_get_data_path():
         """
         Retrieve data directory from the session hwobj,
@@ -121,9 +121,9 @@ def init_routes(mxcube):
         return jsonify({"path": data})
 
 
-    @beamline_routes.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=["PUT"])
-    @mxcube.server.require_control
-    @mxcube.server.restrict
+    @bp.route("/prepare_beamline", methods=["PUT"])
+    @server.require_control
+    @server.restrict
     def prepare_beamline_for_sample():
         """
         Prepare the beamline for a new sample.
@@ -136,4 +136,4 @@ def init_routes(mxcube):
             return Response(status=200)
         return Response(status=200)
 
-    return beamline_routes
+    return bp

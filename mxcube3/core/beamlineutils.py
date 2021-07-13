@@ -149,7 +149,7 @@ def get_viewport_info():
     """
     fmt, source_is_scalable = "MJPEG", False
 
-    if mxcube.CONFIG.APP.VIDEO_FORMAT == "MPEG1":
+    if mxcube.CONFIG.app.VIDEO_FORMAT == "MPEG1":
         fmt, source_is_scalable = "MPEG1", True
         video_sizes = mxcube.mxcubecore.beamline_ho.sample_view.camera.get_available_stream_sizes()
         width, height, scale = mxcube.mxcubecore.beamline_ho.sample_view.camera.get_stream_size()

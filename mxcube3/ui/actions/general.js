@@ -68,7 +68,7 @@ export function getInitialState() {
         'Content-type': 'application/json'
       }
     });
-    const queue = fetch('mxcube/api/v0.1/queue_state', {
+    const queue = fetch('mxcube/api/v0.1/queue/queue_state', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -84,7 +84,7 @@ export function getInitialState() {
     //     'Content-type': 'application/json'
     //   }
     // });
-    const beamInfo = fetch('mxcube/api/v0.1/beam/info', {
+    const beamInfo = fetch('mxcube/api/v0.1/beamline/beam/info', {
       method: 'GET',
       credentials: 'include',
       headers: {
