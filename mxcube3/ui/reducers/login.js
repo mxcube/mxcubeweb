@@ -3,7 +3,6 @@ const initialState = {
   loggedIn: false,
   data: {},
   showProposalsForm: false,
-  proposalList: [],
   selectedProposal: '',
   selectedProposalID: ''
 };
@@ -35,7 +34,7 @@ export default (state = initialState, action) => {
     }
     case 'SELECT_PROPOSAL':
     {
-      const proposals = state.proposalList;
+      const proposals = state.data.proposalList;
 
       const propInfo = proposals.find((prop) => {
         const name = `${prop.Proposal.code}${prop.Proposal.number}`;
