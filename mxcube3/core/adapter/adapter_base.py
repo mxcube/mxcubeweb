@@ -1,7 +1,7 @@
 import math
 import logging
 
-from mxcube3.core.models import HOModel, HOActuatorModel
+from mxcube3.core.models import HOModel, HOActuatorModel, HONoneModel
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
@@ -17,7 +17,8 @@ class AdapterBase:
         self._name = role
         self._available = True
         self._read_only = False
-        self._type = "FLOAT"
+        self._type = type(self).__name__.replace("Adapter", "").upper()
+        self._unique = True
 
     def get_adapter_id(self, ho=None):
         ho = self._ho if not ho else ho
@@ -36,8 +37,14 @@ class AdapterBase:
 
         setattr(self, attr_name, adapter_instance)
 
+    def _set_value(self):
+        pass
+
+    def _get_value(self):
+        pass
+
     @property
-    def value_type(self):
+    def adapter_type(self):
         """
         Returns:
             (str): The data type of the value 
@@ -150,8 +157,9 @@ class ActuatorAdapterBase(AdapterBase):
             (str): The name of the object.
         """
         super(ActuatorAdapterBase, self).__init__(ho, *args, **kwargs)
+        self._unique = False
         self._STATES = None
-
+        
         try:
             self._read_only = ho.read_only
         except AttributeError:

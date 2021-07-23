@@ -3,6 +3,13 @@ import logging
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.adapter.utils import RateLimited
 
+from mxcube3.core.models import (
+    HOModel,
+    HOActuatorModel,
+    HOActuatorValueChangeModel
+)
+
+
 class ActuatorAdapter(ActuatorAdapterBase):
     """
     Adapter for Energy Hardware Object, a web socket is used to communicate
@@ -16,7 +23,6 @@ class ActuatorAdapter(ActuatorAdapterBase):
         """
         super(ActuatorAdapter, self).__init__(ho, *args, **kwargs)
         self._event_rate = 4
-        self._type = "FLOAT"
 
         @RateLimited(self._event_rate)
         def _vc(value, **kwargs):
@@ -33,7 +39,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self._vc(*args, **kwargs)
 
-    def _set_value(self, value):
+    def _set_value(self, value: HOActuatorValueChangeModel):
         """
         Execute the sequence to set the value.
         Args:
@@ -46,11 +52,11 @@ class ActuatorAdapter(ActuatorAdapterBase):
             StopItteration: When a value change was interrupted (abort/cancel).
         """
         try:
-            self._ho.set_value(float(value))
+            self._ho.set_value(float(value.value))
         except BaseException:
             raise
 
-    def _get_value(self):
+    def _get_value(self) -> HOActuatorModel:
         """
         Read the energy.
         Returns:

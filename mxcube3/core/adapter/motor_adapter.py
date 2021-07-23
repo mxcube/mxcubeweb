@@ -1,6 +1,14 @@
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.adapter.utils import RateLimited
 
+from mxcube3.core.models import (
+    HOModel,
+    HOActuatorModel,
+    HOActuatorModel,
+    HOActuatorValueChangeModel
+)
+
+
 class MotorAdapter(ActuatorAdapterBase):
 
     def __init__(self, ho, *args, **kwargs):
@@ -11,13 +19,12 @@ class MotorAdapter(ActuatorAdapterBase):
         super(MotorAdapter, self).__init__(ho, *args, **kwargs)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
-        self._type = "FLOAT"
 
     @RateLimited(6)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def _set_value(self, value):
+    def _set_value(self, value: HOActuatorValueChangeModel):
         """
         Set the detector distance.
         Args:
@@ -29,10 +36,10 @@ class MotorAdapter(ActuatorAdapterBase):
             RuntimeError: Timeout while setting the value.
             StopItteration: When a value change was interrupted (abort/cancel).
         """
-        self._ho.set_value(value)
+        self._ho.set_value(float(value.value))
         return self.get_value()
 
-    def _get_value(self):
+    def _get_value(self) -> HOActuatorModel:
         """
         Read the detector distance.
         Returns:

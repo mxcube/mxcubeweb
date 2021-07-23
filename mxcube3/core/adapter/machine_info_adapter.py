@@ -1,7 +1,7 @@
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core.models import HOModel, HOMachineInfoModel
+from mxcube3.core.models import HOModel, HOMachineInfoModel, HOActuatorValueChangeModel
 from mxcube3.core.adapter.utils import RateLimited
 
 
@@ -13,6 +13,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
         """
         super(MachineInfoAdapter, self).__init__(ho, *args, **kwargs)
         ho.connect("valueChanged", self._value_change)
+        self._unique = True
 
     def _set_value(self, value):
         pass
@@ -21,7 +22,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(self.get_value(), **kwargs)
 
-    def _get_value(self):
+    def _get_value(self) -> HOMachineInfoModel:
         return {
             "current": self.get_current(),
             "message": self.get_message(),

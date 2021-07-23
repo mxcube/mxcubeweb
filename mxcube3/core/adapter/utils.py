@@ -1,5 +1,11 @@
 import time
 
+def export(func):
+    func._export = True
+    func._export_name = func.__name__
+
+    return func
+
 def RateLimited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
 
@@ -35,6 +41,7 @@ def get_adapter_cls_from_hardware_object(ho):
         AbstractNState,
         AbstractShutter,
         AbstractEnergy,
+        AbstractMotor
     )
 
     from mxcubecore.HardwareObjects import (
@@ -45,6 +52,7 @@ def get_adapter_cls_from_hardware_object(ho):
     from mxcubecore.HardwareObjects import DataPublisher
 
     from mxcube3.core.adapter.actuator_adapter import ActuatorAdapter
+    from mxcube3.core.adapter.motor_adapter import MotorAdapter
     from mxcube3.core.adapter.detector_adapter import DetectorAdapter
     from mxcube3.core.adapter.machine_info_adapter import MachineInfoAdapter
     from mxcube3.core.adapter.beam_adapter import BeamAdapter
@@ -68,7 +76,9 @@ def get_adapter_cls_from_hardware_object(ho):
     elif isinstance(ho, AbstractBeam.AbstractBeam):
         return BeamAdapter
     elif isinstance(ho, DataPublisher.DataPublisher):
-        return DataPublisherAdapter        
+        return DataPublisherAdapter
+    elif isinstance(ho, AbstractMotor.AbstractMotor):        
+        return MotorAdapter        
     elif isinstance(ho, AbstractActuator.AbstractActuator):        
         return ActuatorAdapter
     else:

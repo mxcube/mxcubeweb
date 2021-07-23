@@ -2,6 +2,9 @@ import json
 import sys
 import logging
 
+import types
+
+import typing
 import spectree
 
 from flask import Blueprint, Response, jsonify, request, make_response
@@ -9,8 +12,98 @@ from flask import Blueprint, Response, jsonify, request, make_response
 from mxcube3.core import beamlineutils
 from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
 
+
+def create_get_route(mxcube, server, bp, adapter, func, name):
+    atype = adapter.adapter_type.lower()
+    get_type_hint = typing.get_type_hints(func)
+
+    if "return" in get_type_hint:
+        if adapter._unique:
+            route_url = f"{atype}/{name}" if name else f"{atype}"
+        else:
+            route_url = f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
+
+        endpoint = f"{atype}_get_{name}" if name else f"{atype}_get"
+
+        @bp.route(route_url, endpoint=endpoint, methods=["GET"])
+        @server.restrict
+        @server.validate(resp=spectree.Response(HTTP_200=get_type_hint["return"]), tags=["beamline"])
+        def get_func(name):
+            """
+            Retrieves value of attribute < name > 
+            Replies with status code 200 on success and 409 on exceptions.
+            """
+            return jsonify(mxcube.mxcubecore.get_adapter(name.lower()).dict())
+
+        get_func.__name__ = f"{atype}_get_value"
+
+
+def create_set_route(mxcube, server, bp,adapter, func, name):
+    atype = adapter.adapter_type.lower()
+    set_type_hint = typing.get_type_hints(func)
+
+    if "value" in set_type_hint:
+        if adapter._unique:
+            route_url = f"{atype}/{name}" if name else f"{atype}"
+        else:
+            route_url = f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
+
+        endpoint = f"{atype}_set_{name}" if name else f"{atype}_set"
+
+        @bp.route(route_url, endpoint=endpoint, methods=["PUT"])
+        @server.require_control
+        @server.restrict
+        @server.validate(json=set_type_hint["value"], tags=["beamline"])
+        def set_func(name, _th=set_type_hint):
+            """
+            Tries to set < name > to value
+            Replies with status code 200 on success and 409 on exceptions.
+            """
+            rd = _th["value"].parse_raw(request.data)
+            mxcube.mxcubecore.get_adapter(rd.name.lower()).set_value(rd)
+            return make_response("{}", 200)
+
+        set_func.__name__ = f"{atype}_set_value"
+
+
+def add_adapter_routes(mxcube, server, bp):
+    adapter_type_list = []
+
+    for _id, a in mxcube.mxcubecore.adapter_dict.items():
+        adapter = a["adapter"]
+        atype = adapter.adapter_type.lower()
+
+        if adapter.adapter_type not in adapter_type_list:
+            adapter_type_list.append(adapter.adapter_type)
+
+            set_type_hint = typing.get_type_hints(adapter._set_value)
+            get_type_hint = typing.get_type_hints(adapter._get_value)
+
+            if "value" in set_type_hint:
+                create_set_route(mxcube, server, bp, adapter, adapter._set_value, None)
+
+            if "return" in get_type_hint:
+                create_get_route(mxcube, server, bp, adapter, adapter._get_value, None)
+
+            for attr in dir(adapter):
+                func = getattr(adapter, attr)
+
+                if attr[0] == "_" or not hasattr(func, "_export"):
+                    continue
+
+                if attr.startswith("get"): 
+                    create_get_route(mxcube, server, bp, adapter, func, attr.replace("get_", ""))
+                
+                if attr.startswith("set"):
+                    create_set_route(mxcube, server, bp, adapter, func, attr.replace("set_", ""))
+        else:
+            continue
+
+
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("beamline", __name__, url_prefix=url_prefix)
+
+    add_adapter_routes(mxcube, server, bp)
 
     @bp.route("/", methods=["GET"])
     @server.restrict
@@ -63,42 +156,6 @@ def init_route(mxcube, server, url_prefix):
         else:
             return make_response("{}", 200)
 
-
-    @bp.route("/<string:name>", methods=["PUT"])
-    @server.require_control
-    @server.restrict
-    @server.validate(json=HOActuatorValueChangeModel, tags=["beamline"])
-    def beamline_set_attribute(name):
-        """
-        Tries to set < name > to value, replies with the following json:
-
-            {name: < name > , value: < value > , msg: < msg > , state: < state >
-
-        Where msg is an arbitrary msg to user, state is the internal state
-        of the set operation(for the moment, VALID, ABORTED, ERROR).
-
-        Replies with status code 200 on success and 409 on exceptions.
-        """
-        rd = HOActuatorValueChangeModel.parse_raw(request.data)
-        mxcube.mxcubecore.get_adapter(rd.name.lower()).set_value(rd.value)
-        return make_response("{}", 200)
-
-
-    @bp.route("/<string:name>", methods=["GET"])
-    @server.restrict
-    @server.validate(resp=spectree.Response(HTTP_200=HOActuatorModel), tags=["beamline"])
-    def beamline_get_attribute(name):
-        """
-        Retrieves value of attribute < name > , replies with the following json:
-
-            {name: < name > , value: < value > , msg: < msg > , state: < state >
-
-        Where msg is an arbitrary msg to user, state is the internal state
-        of the get operation(for the moment, VALID, ABORTED, ERROR).
-
-        Replies with status code 200 on success and 409 on exceptions.
-        """
-        return jsonify(mxcube.mxcubecore.get_adapter(name.lower()).dict())
 
     @bp.route("/beam/info", methods=["GET"])
     @server.restrict

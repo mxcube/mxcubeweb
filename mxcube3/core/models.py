@@ -28,3 +28,11 @@ class HOMachineInfoModel(HOActuatorModel):
 class HOActuatorValueChangeModel(BaseModel):
     name: str = Field("", description='Name of the hardware object to change')
     value: str = Field("", description='New value of actuator (position)')
+
+class HONoneModel(BaseModel):
+        class Config:
+            extra: "forbid"
+
+class HOBeamModel(BaseModel):
+        class Config:
+            extra: "forbid"

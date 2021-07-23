@@ -188,7 +188,9 @@ class BeamlineSetupContainer extends React.Component {
     }
 
     const uiprops = this.props.uiproperties.beamline_setup.components;
-    const uiprop_list = filter(uiprops, { value_type: 'FLOAT' });
+    const uiprop_list = filter(uiprops, (o) => {
+      return o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR';
+    });
 
     return (
       <Row style={{

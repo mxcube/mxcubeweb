@@ -1,6 +1,11 @@
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.adapter.utils import RateLimited
 
+from mxcube3.core.models import (
+    HOActuatorModel,
+    HOActuatorValueChangeModel
+)
+
 
 class WavelengthAdapter(ActuatorAdapterBase):
     """
@@ -14,7 +19,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
             (object): Hardware object.
         """
         super(WavelengthAdapter, self).__init__(ho, *args, **kwargs)
-        self._type = "FLOAT"
+        self._type = "MOTOR"
 
         try:
             ho.connect("energyChanged", self._value_change)
@@ -26,7 +31,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
     def _value_change(self, pos, wl, *args, **kwargs):
         self.value_change(wl)
 
-    def _set_value(self, value):
+    def _set_value(self, value: HOActuatorValueChangeModel):
         """
         Execute the sequence to set the value.
         Args:
@@ -39,12 +44,12 @@ class WavelengthAdapter(ActuatorAdapterBase):
             StopItteration: When a value change was interrupted (abort/cancel).
         """
         try:
-            self._ho.set_wavelength(float(value))
+            self._ho.set_wavelength(float(value.value))
             return self.get_value()
         except BaseException:
             raise
 
-    def _get_value(self):
+    def _get_value(self) -> HOActuatorModel:
         """
         Read the wavelength value.
         Returns:

@@ -30,6 +30,7 @@ dependencies:
   - redis-py
   - ffmpeg
   - pytango
+  - werkzeug=1.0.1
 
   - pip:
       - Flask-Session==0.3.2

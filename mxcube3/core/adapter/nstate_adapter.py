@@ -3,7 +3,7 @@ from mxcubecore.HardwareObjects.abstract import AbstractNState
 from mxcubecore.HardwareObjects.abstract import AbstractShutter
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core.models import NStateModel
+from mxcube3.core.models import NStateModel, HOActuatorValueChangeModel
 
 class NStateAdapter(ActuatorAdapterBase):
     def __init__(self, ho, *args, **kwargs):
@@ -12,7 +12,9 @@ class NStateAdapter(ActuatorAdapterBase):
             (object): Hardware object.
         """
         super(NStateAdapter, self).__init__(ho, *args, **kwargs)
-        self._type = "NSTATE"
+        self._value_change_model = HOActuatorValueChangeModel
+        self._value_model = NStateModel
+        self._input_model = HOActuatorValueChangeModel
 
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
@@ -32,7 +34,7 @@ class NStateAdapter(ActuatorAdapterBase):
         return state_names
 
     def _get_available_states(self):
-        state_names = self._get_usable_states()
+        state_names = self._get_valid_states()
         state_names.remove(self._ho.get_value().name)
 
         return state_names
@@ -40,10 +42,10 @@ class NStateAdapter(ActuatorAdapterBase):
     def commands(self):
         return (self._get_valid_states())
 
-    def _set_value(self, value):
-        self._ho.set_value(self._ho.VALUES[value])
+    def _set_value(self, value: HOActuatorValueChangeModel):
+        self._ho.set_value(self._ho.VALUES[value.value])
 
-    def _get_value(self):
+    def _get_value(self) -> NStateModel:
         return self._ho.get_value().name
 
     def msg(self):

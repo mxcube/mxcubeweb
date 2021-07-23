@@ -17,3 +17,4 @@ class EnergyAdapter(ActuatorAdapter):
         """
         super(EnergyAdapter, self).__init__(*args, **kwargs)
         self._add_adapter("wavelength", self._ho, WavelengthAdapter)
+        self._type = "MOTOR"
