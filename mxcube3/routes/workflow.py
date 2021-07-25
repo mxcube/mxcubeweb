@@ -20,7 +20,7 @@ def init_route(mxcube, server, url_prefix):
 
     @bp.route("/", methods=["POST"])
     @server.restrict
-    def sumbit_parameters():
+    def submit_parameters():
         data = request.get_json()
         wfutils.submit_parameters(data)
         return Response(status=200)

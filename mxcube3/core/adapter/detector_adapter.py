@@ -12,7 +12,7 @@ class DetectorAdapter(AdapterBase):
         ho.connect("statusChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):
-        self.state_change(self.get_value(), **kwargs)
+        self.state_change(**kwargs)
 
     def state(self):
         return self._ho.get_state().name
