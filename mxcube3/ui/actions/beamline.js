@@ -61,7 +61,6 @@ export function setBeamlineAttribute(name, value) {
 }
 
 export function sendSetAttribute(name, value) {
-  
   return (dispatch, getState) => {
     dispatch(busyStateAction(name));
     const state = getState();
