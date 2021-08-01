@@ -2,26 +2,35 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
+import mock
+import os
+
 from gevent import monkey
+
+# NB this must be done *before* the gevent monkeypatching
+# The original socket is needed later for running py4j
+import socket as original_socket
+del sys.modules["socket"]
+del sys.modules["_socket"]
+from mxcubecore import HardwareRepository as HWR
+HWR.original_socket = original_socket
+del original_socket
+del HWR
 
 monkey.patch_all(thread=False)
 
-import mock
-import os
-import signal
-import logging
-import sys
-import time
-import traceback
-import atexit
-
-import gevent
+# import signal
+# import logging
+# import time
+# import traceback
+# import atexit
 
 from optparse import OptionParser
 
-from flask import Flask, request, session
-from flask_socketio import SocketIO
-from flask_session import Session
+# from flask import Flask, request, session
+# from flask_socketio import SocketIO
+# from flask_session import Session
 
 from mxcube3.config import Config
 from mxcube3.app import MXCUBEApplication

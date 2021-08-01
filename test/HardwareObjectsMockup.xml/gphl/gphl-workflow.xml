@@ -1,0 +1,329 @@
+<object class="GphlWorkflow">
+    <controls>
+        <settings>
+            <!-- Controls for MXCuBE UI and behaviour -->
+            <!-- Use configured multitrigger collection, default: False, any value is True -->
+            <use_multitrigger>True</use_multitrigger>
+
+            <!-- Pass path_template.prefix t wporkflow sa prefix. Default is True. any value is True Do not change -->
+            <use_path_template_prefix>True</use_path_template_prefix>
+
+            <!-- Use advanced_mode for adidtional UI options. Default is False any value is True -->
+            <advanced_mode>True</advanced_mode>
+
+            <!-- Maximum allowed value of Chi, for strategy calculation -->
+            <maximum_chi>48.0</maximum_chi>
+
+            <!-- default values for image width popup; may be overridden by the workflow -->
+            <!-- The first value is the default; values are sorted before use -->
+            <default_image_widths> 0.1</default_image_widths>
+            <default_image_widths>0.05</default_image_widths>
+            <default_image_widths>0.2</default_image_widths>
+
+            <!-- Use multitrigger data collection for multi-trigger-capable strategies.  -->
+            <!-- Default is False -->
+            <!--    <use_multitrigger>True</use_multitrigger>-->
+
+            <!-- tolerance for deciding whether angles differ, in degrees;
+            used to compare kappa and phi to decide if orientations needs separate centring -->
+            <angular_tolerance>1.0</angular_tolerance>
+
+            <!-- Parameters to control proposed total dose budget -->
+            <!-- The proposed budget is calculated so that radiation damage is predicted -->
+            <!-- to reduce the intensity at the highest expected redolution to this percentaged-->
+            <!-- after the end of the experiment (i.e. value 25 means final intensity -->
+            <!-- at the highest resolution is 25% of t starting intensity -->
+            <!-- The formula assumes an increase in B factor of 1 A^2/MGy -->
+            <!-- The formula used is dose_budget =
+                  2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity -->
+            <default_decay_limit>25</default_decay_limit>
+            <!-- Maximum dose budget to propose when converting from resolution, in MGy-->
+            <maximum_dose_budget>20</maximum_dose_budget>
+            <!-- Percentage of dose budget to propose for use in characterisation.  -->
+            <characterisation_budget_percent>5</characterisation_budget_percent>
+
+
+            <!-- Characterisation strategies popup. -->
+            <!-- names refer to stategies in  strategylib.nml -->
+            <characterisation_strategies>Char_6_5_multitrigger</characterisation_strategies>
+            <characterisation_strategies>Char_24deg</characterisation_strategies>
+{#            <characterisation_strategies>Characterisation_6_5</characterisation_strategies>#}
+{#            <characterisation_strategies>TEST_Characterisation_12_3</characterisation_strategies>#}
+{#            <characterisation_strategies>TEST_Characterisation_12_4</characterisation_strategies>#}
+{#            <characterisation_strategies>TEST_Characterisation_12_5</characterisation_strategies>#}
+
+            <!-- How to set starting value for beam energy. Values are:  -->
+            <!-- 'configured': set value from calibration and characterisation strategy file -->
+            <!-- 'current': use current value -->
+            <starting_beamline_energy>current</starting_beamline_energy>
+
+            <!-- Default wedge width in degrees, for interleaved data collection -->
+            <default_wedge_width>15</default_wedge_width>
+
+            <!-- Default number of snapshots to take when centring: 0, 1, 2, or 4 -->
+            <default_snapshot_count>2</default_snapshot_count>
+
+            <!-- Default recentring mode. Possibilities are sweep/scan/start/none, default is sweep:
+                RECENTRING_MODES = OrderedDict(
+                    ("when orientation changes","sweep"),
+                    ("for each wedge","scan"),
+                    ("at acquisition start","start"),
+                    ("use predicted centrings only", "none"),
+                )
+             mode "none" is not allowed as default -->
+            <default_recentring_mode>sweep</default_recentring_mode>
+
+        </settings>
+
+        <!-- Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8' -->
+        <invocation_properties>
+            <file.encoding>UTF-8</file.encoding>
+            <!-- Logging properties. -->
+
+            <!-- File name prefix for workflow log files -->
+            <co.gphl.wf.persistName>wf</co.gphl.wf.persistName>
+
+            <!-- Switch to pass log to stdout. Defaults to True -->
+            <!--<co.gphl.wf.logStdout>false</co.gphl.wf.logStdout>-->
+        </invocation_properties>
+
+        <!-- Properties applied after the java command - syntax as above-->
+        <!-- Note that irrelevant properties are simply ignored.-->
+        <workflow_properties>
+
+            <!-- Set to false to switch off pre-start checks for directory existence -->
+            <!-- in cases where the directories are are created after the workflow starts -->
+            <!-- Checks for data directory tree -->
+            <co.gphl.wf.blRootCheck>false</co.gphl.wf.blRootCheck>
+            <!-- Chcks for data processing directory tree -->
+            <!--<co.gphl.wf.procRootCheck>false</co.gphl.wf.procRootCheck>-->
+
+            <!-- Parameters to individual applications -->
+            <!-- Switch devMod to True to activate development parameters -->
+            <!-- NB needed as of 20201202 to pass stratcal parameters strategy_type and variant -->
+            <co.gphl.wf.devMode>true</co.gphl.wf.devMode>
+            <!-- For stratcal configuration switches edit run_stratcal_wrap.py script instead-->
+
+            <!-- Dummy sample properties. -->
+            <!-- Choose values for these to make spot predictions for the characterisation
+            strategy look reasonable
+            (they have no basis, and are not used for any scientific purpose). -->
+            <!-- NB predicted spots are not currently displayed or used. Leave unchanged -->
+            <!-- NB the following should be moved to a simcal-specific file -->
+            <co.gphl.wf.simcal_predict.b_wilson>26.0</co.gphl.wf.simcal_predict.b_wilson>
+            <co.gphl.wf.simcal_predict.cell_dim_sd_scale>1.5e-3</co.gphl.wf.simcal_predict.cell_dim_sd_scale>
+            <co.gphl.wf.simcal_predict.mosaicity>0.2</co.gphl.wf.simcal_predict.mosaicity>
+        </workflow_properties>
+    </controls>
+
+    <!--Workflows, The options in the top elements are updated with the options
+      in the individual type, and passed as options to teh workflow application-->
+    <!-- The following options are set elsewhere and can *not* be set here -->
+    <!-- <appdir> Processing root directory. -->
+    <!--        Set automatically to Session.get_process_directory()-->
+    <!-- <rootsubdir> Subdirectory under data and processing root directories. -->
+    <!--        Set automatically to reflect MXCuBE setup-->
+    <!-- <wdir> Workflow working directory -->
+    <!--        Set automatically to Session.get_process_directory()/<gphl_subdir>-->
+    <!--        see gphl_subdir in gphl-setup.xml -->
+    <!-- <persistname> Workflow persistence file is named <persistnam>.xml -->
+    <!--        Set in gph-setup.xml-->
+    <!-- gphl_subdir is not a workflow option. It is set in gphl-setup.xml -->
+
+    <workflows>
+        <title>GPhL Workflow Acquisition</title>
+        <wfname>acquisition</wfname>
+        <requires>point</requires>
+        <options>
+            <!-- NB you must set EITHER wfprefix OR samplesubdir (or both)-->
+            <!-- wfprefix is the enactment fixed file prefix -->
+            <!--        <wfprefix>gphl_wf_</wfprefix>-->
+            <!-- Include sample filename prefix as subdirectory in enactment directory path -->
+            <samplesubdir/>
+            <!-- directory paths are:
+             wfprefix:  .../RAW_DATA/<wfprefix>_001/...
+             samplesubdir:   .../RAW_DATA/<filenameprefix>_001/...
+             both:   .../RAW_DATA/<filenameprefix>/<wfprefix>_001/...
+             -->
+        </options>
+        <strategies>
+            <title>Native data collection</title>
+            <strategy_type>native</strategy_type>
+            <documentation>
+                Single wavelength data acquisition for native data collection
+                Includes initial characterisation and complete collection.
+                Variants:
+                full: 2-4 sweeps, ca. 600-1000 degrees, best possible data.
+                quick:  1-2 sweeps, 360-400 degrees, quick and cusp-free
+                minimal: 1 sweep of 180+ degrees, 1-2 centrings.
+            </documentation>
+            <application>co.gphl.wf.workflows.WFSimpleCharToProcessing</application>
+            <variants>full</variants>
+            <variants>quick</variants>
+            <variants>minimal</variants>
+            <options>
+                <!-- Filename pattern name for normal data collections -->
+                <pattern>interleaved</pattern>
+                <!-- File name pattern for characterisation data collection -->
+                <charpattern>generic</charpattern>
+            </options>
+        </strategies>
+        <strategies>
+            <title>Phasing (SAD)</title>
+            <strategy_type>phasing</strategy_type>
+            <application>co.gphl.wf.workflows.WFSimpleCharToProcessing</application>
+            <variants>full</variants>
+            <variants>quick</variants>
+            <documentation>
+                Single wavelength SAD data acquisition, full strategy.
+                Aligned on even symetry axes or inverse beam.
+                Includes initial characterisation and complete collection
+                Variants:
+                full: up to 540deg, three orientations
+                quick: up to 360deg, two orientations
+            </documentation>
+            <options>
+                <!-- Filename pattern name for normal data collections -->
+                <pattern>interleaved</pattern>
+                <!-- Filename pattern name for inverse-beam collections -->
+                <ibpattern>ib_interleaved</ibpattern>
+                <!-- Workflow interleave order (string);  Slowest changing first-->
+                <!-- 'g' (Goniostat position); 's' (Scan number); -->
+                <!-- 'b' (Beam wavelength); 'd' (Detector position)-->
+                <!-- NB position interleaving in NOT done for the moment. So 'gs' is a no-op -->
+                <interleave_order>gs</interleave_order>
+                <!-- File name pattern for characterisation data collection -->
+                <charpattern>generic</charpattern>
+            </options>
+        </strategies>
+        <strategies>
+            <title>Two-wavelength MAD</title>
+            <strategy_type>phasing</strategy_type>
+            <application>co.gphl.wf.workflows.WFSimpleCharToProcessing</application>
+            <variants>quick</variants>
+            <variants>full</variants>
+            <beam_energy_tags>Peak</beam_energy_tags>
+            <beam_energy_tags>Remote</beam_energy_tags>
+            <documentation>
+                Two wavelength MAD data acquisition, full strategy.
+                Aligned on even symetry axes or inverse beam.
+                Includes initial characterisation and complete collection
+                Variants:
+                full: up to 540deg, three orientations for each wwavelngth
+                quick: up to 360deg, two orientations for each wwavelngth
+            </documentation>
+            <options>
+                <!-- Filename pattern name for normal data collections -->
+                <pattern>interleaved</pattern>
+                <!-- Filename pattern name for inverse-beam collections -->
+                <ibpattern>ib_interleaved</ibpattern>
+                <!-- Workflow interleave order (string);  Slowest changing first-->
+                <!-- 'g' (Goniostat position); 's' (Scan number); -->
+                <!-- 'b' (Beam wavelength); 'd' (Detector position)-->
+                <!-- NB position interleaving in NOT done for the moment. So 'gs' is a no-op -->
+                <interleave_order>gsb</interleave_order>
+                <!-- File name pattern for characterisation data collection -->
+                <charpattern>generic</charpattern>
+            </options>
+        </strategies>
+        <strategies>
+            <title>Three-wavelength MAD</title>
+            <strategy_type>phasing</strategy_type>
+            <application>co.gphl.wf.workflows.WFSimpleCharToProcessing</application>
+            <variants>quick</variants>
+            <variants>full</variants>
+            <beam_energy_tags>Peak </beam_energy_tags>
+            <beam_energy_tags>Rising_Inflection</beam_energy_tags>
+            <beam_energy_tags>Falling_Inflection</beam_energy_tags>
+            <documentation>
+                Three wavelength MAD data acquisition, full strategy.
+                Aligned on even symetry axes or inverse beam.
+                Includes initial characterisation and complete collection
+                Variants:
+                full: up to 540deg, three orientations for each wwavelngth
+                quick: up to 360deg, two orientations for each wwavelngth
+            </documentation>
+            <options>
+                <!-- Filename pattern name for normal data collections -->
+                <pattern>interleaved</pattern>
+                <!-- Filename pattern name for inverse-beam collections -->
+                <ibpattern>ib_interleaved</ibpattern>
+                <!-- Workflow interleave order (string);  Slowest changing first-->
+                <!-- 'g' (Goniostat position); 's' (Scan number); -->
+                <!-- 'b' (Beam wavelength); 'd' (Detector position)-->
+                <!-- NB position interleaving in NOT done for the moment. So 'gs' is a no-op -->
+                <interleave_order>gsb</interleave_order>
+                <!-- File name pattern for characterisation data collection -->
+                <charpattern>generic</charpattern>
+            </options>
+        </strategies>
+        <strategies>
+            <title>Diffractometer calibration</title>
+            <strategy_type>diffractcal</strategy_type>
+            <application>co.gphl.wf.workflows.WFDiffractCal</application>
+            <variants>full</variants>
+            <variants>short</variants>
+            <documentation>Diffractometer calibration.
+                Designed for use by beamline personnel.
+                Calibrates axis directions, detector pane orientation, and beam centre.
+                Long data collectoin and processing, requiring a high-quality, high-symmetry
+                crystal of precisely known cell parameters.
+                Variants:
+                full: 22 60-deg sweeps, 11 orientations
+                short: 6 60-deg sweeps, 3 orientations
+            </documentation>
+            <options>
+                <!--                <wfprefix>Dcalib2_</wfprefix>-->
+                <!-- Name of strategy from library to use. Variant name is appended-->
+                <strategy>DiffractCal_</strategy>
+                <!-- Name for diffractometer calibration output -->
+                <calibration>diffractcal</calibration>
+                <!-- Pattern name for characterisation collections - used for all data here-->
+                <charpattern>multiorientation</charpattern>
+                <!-- copy calibration result to configuration directory, -->
+                <!-- moving aside previous value -->
+                <!--<updateblconfig/>-->
+                <!-- Path of file to dump persisted instrumentation configuration. OPTIONAL-->
+                <!--<instcfgout>gphl_diffractcal_out.nml</instcfgout>-->
+            </options>
+        </strategies>
+    </workflows>
+    <workflows>
+        <title>GPhL Translational Calibration</title>
+        <wfname>transcal</wfname>
+        <requires>none</requires>
+        <strategies>
+            <title>Translational Calibration</title>
+            <strategy_type>transcal</strategy_type>
+            <application>co.gphl.wf.workflows.WFTransCal</application>
+            <variants>full</variants>
+            <documentation>Translational calibration.
+                Designed for use by beamline personnel.
+                Calibrates centring motors to allow prediction of centring positions
+                Consists of mulltiple centrings, requiring a glass or tungsten tip.
+            </documentation>
+            <options>
+                <!-- file: File containing settings of rotation axes for calibration -->
+                <!-- The name is the relative path from the gphl_beamline_config directory -->
+                <!-- grid: Grid definition [axis_name:start:end:step], slowest-varying to fastest varying -->
+                <!-- EITHER file OR grid must be set.-->
+                <!--<grid>grid_axes_spec</grid>-->
+                <file>transcal_2stage.json</file>
+                <!--                <file>transcal_2stage_0_252.json</file>-->
+                <!-- copy calibration result to configuration directory, -->
+                <!-- renaming previous result file -->
+                <updateblconfig/>
+                <!-- Path of file to dump persisted instrumentation configuration. OPTIONAL-->
+                <!--<instcfgout>gphl_transcal_out.nml</instcfgout>-->
+            </options>
+            <documentation>Translational calibration.
+                Designed for use by beamline personnel.
+                Calibrates centring motors to allow prediction of centring positions
+                Consissts of mulltiple centrings, requiring a glass or tungsten tip.
+            </documentation>
+        </strategies>
+    </workflows>
+
+
+
+</object>
