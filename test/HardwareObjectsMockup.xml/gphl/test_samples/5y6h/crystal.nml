@@ -1,0 +1,17 @@
+ &SIMCAL_CRYSTAL_LIST
+ ! Taken from PDB 5Y6H
+ SG_NAME = "R3",
+ CELL_DIM        = 91.960 91.960 32.530
+ CELL_ANG_DEG    = 90.000 90.000 120.000
+ CELL_DIM_SD     =  0.092        0.092     0.033
+ ! 42-48 deg gives you both main and cusp axes
+ ! Polar angles tt,ff for horizontal goniostat require (tt-90, ff+90, -90) ??
+ U_MAT_ANG_DEG   = -60.0 120.0 -90.0
+ U_MAT_SD_DEG    = 3*0.1
+ ! highest inherent res of hkli data: 1.774 (PDB)
+ RES_LIMIT_DEF   =  2.1
+ ! B factor to cause intensities to drop off (a bit).
+ ! 10.0 is a pretty random value
+ B_WILSON = 10.0
+ GEN_MODE = -1
+ /
