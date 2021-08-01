@@ -7,13 +7,18 @@ import mock
 import os
 
 from gevent import monkey
-# NB HardwareRepository must be imported *before* the gevent monkeypatching
-# in order to set the unpatched version of socket for use elseqhere
-# See HardwareRepository.original_socket
+
+# NB this must be done *before* the gevent monkeypatching
+# The original socket is needed later for running py4j
+import socket as original_socket
+del sys.modules["socket"]
+del sys.modules["_socket"]
 from mxcubecore import HardwareRepository as HWR
-monkey.patch_all(thread=False)
+HWR.original_socket = original_socket
+del original_socket
 del HWR
 
+monkey.patch_all(thread=False)
 
 # import signal
 # import logging
