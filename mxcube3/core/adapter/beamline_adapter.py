@@ -1,17 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import math
-import importlib
-import pprint
-
-from functools import reduce
-
-from mxcubecore.ConvertUtils import make_table
-
-from mxcube3.core.adapter.adapter_base import AdapterBase
-from mxcube3.core.adapter.utils import get_adapter_cls_from_hardware_object
-
-from mxcube3.core import utils
 
 BEAMLINE_ADAPTER = None
 
