@@ -2,24 +2,23 @@
 Module that contains application wide settings and state as well as functions
 for accessing and manipulating those.
 """
-import datetime
 import os
 import sys
 import logging
 import traceback
-import pickle
 import atexit
 import json
+import importlib
+from functools import reduce
 
 from logging import StreamHandler, NullHandler
 from logging.handlers import TimedRotatingFileHandler
 
 from mxcubecore import HardwareRepository as hwr
 from mxcubecore import removeLoggingHandlers
-from mxcubecore.HardwareObjects import (QueueManager, queue_entry)
-from mxcubecore.ConvertUtils import make_table
+from mxcubecore.HardwareObjects import queue_entry
+from mxcubecore.utils.conversion import make_table
 
-from mxcube3.video import streaming_processes
 from mxcube3.logging_handler import MX3LoggingHandler
 from mxcube3.core.adapter.utils import get_adapter_cls_from_hardware_object
 from mxcube3.core.adapter.adapter_base import AdapterBase
@@ -137,8 +136,13 @@ class MXCUBECore():
 
     @staticmethod
     def _import_adapter_cls(adapter_cls_str):
+        # NBNB Cannot be imported at top level since that causes cirtular imports
+        # NBNB It is no good that a geeneric converter live in a file tat imports
+        # the mxcuve3 appliction
+        # TODO: refactor? rhfogh 20210730
+        from mxcube3.core.utils import str_to_snake
         adapter_mod = importlib.import_module(
-            f"mxcube3.core.adapter.{utils.str_to_snake(adapter_cls_str)}"
+            f"mxcube3.core.adapter.{str_to_snake(adapter_cls_str)}"
         )
 
         return getattr(adapter_mod, adapter_cls_str)
@@ -171,7 +175,9 @@ class MXCUBECore():
                 "adapter": adapter_instance
             }
         else:
-            logging.getLogger("MX3.HWR").warning(f"Skipping {ho.name()}, id: {_id} already exists" % (ho_name, _id))
+            logging.getLogger(
+                "MX3.HWR").warning(f"Skipping {ho.name()}, id: {_id} already exists"
+                                   )
 
 
     @staticmethod
@@ -180,7 +186,7 @@ class MXCUBECore():
 
     def _get_attr_from_path(self, obj, attr):
         """Recurses through an attribute chain to get the attribute."""
-        return reduce(getattr, attr.split("."), obj)        
+        return reduce(getattr, attr.split("."), obj)
 
     @staticmethod
     def adapt_hardware_objects(app):
@@ -188,7 +194,7 @@ class MXCUBECore():
 
         for ho_name in MXCUBECore.HWR.hardware_objects:
             # Go through all hardware objects exposed by mxcubecore
-            # hardware reposiotry set id to username if its deinfed
+            # hardware repository set id to username if its deinfed
             # use the name otherwise (file name without extension)
             ho = MXCUBECore.HWR.get_hardware_object(ho_name)
 

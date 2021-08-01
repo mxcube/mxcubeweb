@@ -1,0 +1,11 @@
+#!/bin/sh
+
+runit ()
+{
+     ( ulimit -s unlimited;
+     $@ )
+}
+
+#runit exec `dirname $0`/echo_limits.sh
+runit exec ${GPHL_INSTALLATION}/simcal $@
+
