@@ -10,9 +10,10 @@ from mxcube3 import mxcube
 
 def get_available_workflows():
     workflows = {}
+    hwr = mxcube.mxcubecore.beamline_ho
 
     try:
-        for wf in mxcube.mxcubecore.beamline_ho.workflow.get_available_workflows():
+        for wf in hwr.workflow.get_available_workflows():
             # Rename name and path to wfname and wfpath in order to avoid name
             # clashes
             wf["wfname"] = wf.pop("name")
@@ -21,6 +22,10 @@ def get_available_workflows():
             workflows[wf["wfname"]] = wf
     except Exception:
         pass
+
+    if hasattr(hwr, "gphl_workflow"):
+        # Add Global Phasing workflows if available
+        workflows.update(hwr.gphl_workflow.get_available_workflows())
 
     return {"workflows": workflows}
 

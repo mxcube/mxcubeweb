@@ -1,80 +1,63 @@
 <object class="GphlWorkflow">
-    <controls>
-        <settings>
-            <!-- Controls for MXCuBE UI and behaviour -->
-            <!-- Use configured multitrigger collection, default: False, any value is True -->
-            <use_multitrigger>True</use_multitrigger>
-
-            <!-- Pass path_template.prefix t wporkflow sa prefix. Default is True. any value is True Do not change -->
-            <use_path_template_prefix>True</use_path_template_prefix>
-
-            <!-- Use advanced_mode for adidtional UI options. Default is False any value is True -->
-            <advanced_mode>True</advanced_mode>
-
-            <!-- Maximum allowed value of Chi, for strategy calculation -->
-            <maximum_chi>48.0</maximum_chi>
-
-            <!-- default values for image width popup; may be overridden by the workflow -->
-            <!-- The first value is the default; values are sorted before use -->
-            <default_image_widths> 0.1</default_image_widths>
-            <default_image_widths>0.05</default_image_widths>
-            <default_image_widths>0.2</default_image_widths>
-
-            <!-- Use multitrigger data collection for multi-trigger-capable strategies.  -->
-            <!-- Default is False -->
-            <!--    <use_multitrigger>True</use_multitrigger>-->
-
-            <!-- tolerance for deciding whether angles differ, in degrees;
-            used to compare kappa and phi to decide if orientations needs separate centring -->
-            <angular_tolerance>1.0</angular_tolerance>
-
-            <!-- Parameters to control proposed total dose budget -->
-            <!-- The proposed budget is calculated so that radiation damage is predicted -->
-            <!-- to reduce the intensity at the highest expected redolution to this percentaged-->
-            <!-- after the end of the experiment (i.e. value 25 means final intensity -->
-            <!-- at the highest resolution is 25% of t starting intensity -->
-            <!-- The formula assumes an increase in B factor of 1 A^2/MGy -->
-            <!-- The formula used is dose_budget =
-                  2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity -->
-            <default_decay_limit>25</default_decay_limit>
-            <!-- Maximum dose budget to propose when converting from resolution, in MGy-->
-            <maximum_dose_budget>20</maximum_dose_budget>
-            <!-- Percentage of dose budget to propose for use in characterisation.  -->
-            <characterisation_budget_percent>5</characterisation_budget_percent>
-
-
-            <!-- Characterisation strategies popup. -->
-            <!-- names refer to stategies in  strategylib.nml -->
-            <characterisation_strategies>Char_6_5_multitrigger</characterisation_strategies>
-            <characterisation_strategies>Char_24deg</characterisation_strategies>
-{#            <characterisation_strategies>Characterisation_6_5</characterisation_strategies>#}
-{#            <characterisation_strategies>TEST_Characterisation_12_3</characterisation_strategies>#}
-{#            <characterisation_strategies>TEST_Characterisation_12_4</characterisation_strategies>#}
-{#            <characterisation_strategies>TEST_Characterisation_12_5</characterisation_strategies>#}
-
-            <!-- How to set starting value for beam energy. Values are:  -->
-            <!-- 'configured': set value from calibration and characterisation strategy file -->
-            <!-- 'current': use current value -->
-            <starting_beamline_energy>current</starting_beamline_energy>
-
-            <!-- Default wedge width in degrees, for interleaved data collection -->
-            <default_wedge_width>15</default_wedge_width>
-
-            <!-- Default number of snapshots to take when centring: 0, 1, 2, or 4 -->
-            <default_snapshot_count>2</default_snapshot_count>
-
-            <!-- Default recentring mode. Possibilities are sweep/scan/start/none, default is sweep:
-                RECENTRING_MODES = OrderedDict(
-                    ("when orientation changes","sweep"),
-                    ("for each wedge","scan"),
-                    ("at acquisition start","start"),
-                    ("use predicted centrings only", "none"),
-                )
-             mode "none" is not allowed as default -->
-            <default_recentring_mode>sweep</default_recentring_mode>
-
-        </settings>
-
+    <settings>
+        <!-- Controls for MXCuBE UI and behaviour -->
+        <!-- Use configured multitrigger collection, default: False, any value is True -->
+        <use_multitrigger>True</use_multitrigger>
+        <!-- Pass path_template.prefix t wporkflow sa prefix. Default is True. any value is True Do not change -->
+        <use_path_template_prefix>True</use_path_template_prefix>
+        <!-- Use advanced_mode for adidtional UI options. Default is False any value is True -->
+        <advanced_mode>True</advanced_mode>
+        <!-- Maximum allowed value of Chi, for strategy calculation -->
+        <maximum_chi>48.0</maximum_chi>
+        <!-- default values for image width popup; may be overridden by the workflow -->
+        <!-- The first value is the default; values are sorted before use -->
+        <default_image_widths> 0.1</default_image_widths>
+        <default_image_widths>0.05</default_image_widths>
+        <default_image_widths>0.2</default_image_widths>
+        <!-- Use multitrigger data collection for multi-trigger-capable strategies.  -->
+        <!-- Default is False -->
+        <!--    <use_multitrigger>True</use_multitrigger>-->
+        <!-- tolerance for deciding whether angles differ, in degrees;
+        used to compare kappa and phi to decide if orientations needs separate centring -->
+        <angular_tolerance>1.0</angular_tolerance>
+        <!-- Parameters to control proposed total dose budget -->
+        <!-- The proposed budget is calculated so that radiation damage is predicted -->
+        <!-- to reduce the intensity at the highest expected redolution to this percentaged-->
+        <!-- after the end of the experiment (i.e. value 25 means final intensity -->
+        <!-- at the highest resolution is 25% of t starting intensity -->
+        <!-- The formula assumes an increase in B factor of 1 A^2/MGy -->
+        <!-- The formula used is dose_budget =
+              2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity -->
+        <default_decay_limit>25</default_decay_limit>
+        <!-- Maximum dose budget to propose when converting from resolution, in MGy-->
+        <maximum_dose_budget>20</maximum_dose_budget>
+        <!-- Percentage of dose budget to propose for use in characterisation.  -->
+        <characterisation_budget_percent>5</characterisation_budget_percent>
+        <!-- Characterisation strategies popup. -->
+        <!-- names refer to stategies in  strategylib.nml -->
+        <characterisation_strategies>Char_6_5_multitrigger</characterisation_strategies>
+        <characterisation_strategies>Char_24deg</characterisation_strategies>
+        <!-- <characterisation_strategies>Characterisation_6_5</characterisation_strategies> -->
+        <!-- <characterisation_strategies>TEST_Characterisation_12_3</characterisation_strategies> -->
+        <!-- <characterisation_strategies>TEST_Characterisation_12_4</characterisation_strategies> -->
+        <!-- <characterisation_strategies>TEST_Characterisation_12_5</characterisation_strategies> -->
+        <!-- How to set starting value for beam energy. Values are:  -->
+        <!-- 'configured': set value from calibration and characterisation strategy file -->
+        <!-- 'current': use current value -->
+        <starting_beamline_energy>current</starting_beamline_energy>
+        <!-- Default wedge width in degrees, for interleaved data collection -->
+        <default_wedge_width>15</default_wedge_width>
+        <!-- Default number of snapshots to take when centring: 0, 1, 2, or 4 -->
+        <default_snapshot_count>2</default_snapshot_count>
+        <!-- Default recentring mode. Possibilities are sweep/scan/start/none, default is sweep:
+            RECENTRING_MODES = OrderedDict(
+                ("when orientation changes","sweep"),
+                ("for each wedge","scan"),
+                ("at acquisition start","start"),
+                ("use predicted centrings only", "none"),
+            )
+         mode "none" is not allowed as default -->
+        <default_recentring_mode>sweep</default_recentring_mode>
         <!-- Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8' -->
         <invocation_properties>
             <file.encoding>UTF-8</file.encoding>
@@ -86,7 +69,6 @@
             <!-- Switch to pass log to stdout. Defaults to True -->
             <!--<co.gphl.wf.logStdout>false</co.gphl.wf.logStdout>-->
         </invocation_properties>
-
         <!-- Properties applied after the java command - syntax as above-->
         <!-- Note that irrelevant properties are simply ignored.-->
         <workflow_properties>
@@ -114,8 +96,7 @@
             <co.gphl.wf.simcal_predict.cell_dim_sd_scale>1.5e-3</co.gphl.wf.simcal_predict.cell_dim_sd_scale>
             <co.gphl.wf.simcal_predict.mosaicity>0.2</co.gphl.wf.simcal_predict.mosaicity>
         </workflow_properties>
-    </controls>
-
+    </settings>
     <!--Workflows, The options in the top elements are updated with the options
       in the individual type, and passed as options to teh workflow application-->
     <!-- The following options are set elsewhere and can *not* be set here -->
@@ -129,10 +110,10 @@
     <!-- <persistname> Workflow persistence file is named <persistnam>.xml -->
     <!--        Set in gph-setup.xml-->
     <!-- gphl_subdir is not a workflow option. It is set in gphl-setup.xml -->
-
     <workflows>
-        <title>GPhL Workflow Acquisition</title>
-        <wfname>acquisition</wfname>
+        <wfname>GPhL Workflow Acquisition</wfname>
+        <wfpath>Gphl</wfpath>
+        <wftype>acquisition</wftype>
         <requires>point</requires>
         <options>
             <!-- NB you must set EITHER wfprefix OR samplesubdir (or both)-->
@@ -289,8 +270,9 @@
         </strategies>
     </workflows>
     <workflows>
-        <title>GPhL Translational Calibration</title>
-        <wfname>transcal</wfname>
+        <wfname>GPhL Translational Calibration</wfname>
+        <wfpath>Gphl</wfpath>
+        <wftype>transcal</wftype>
         <requires>none</requires>
         <strategies>
             <title>Translational Calibration</title>
@@ -323,7 +305,4 @@
             </documentation>
         </strategies>
     </workflows>
-
-
-
 </object>
