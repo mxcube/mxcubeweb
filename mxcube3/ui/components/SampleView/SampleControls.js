@@ -157,7 +157,7 @@ Reset
       this.props.uiproperties.components, { role: 'focus' }
     );
 
-    const foucs_motor = this.props.attributes[foucs_motor_uiprop.attribute];
+    const focus_motor = this.props.attributes[foucs_motor_uiprop.attribute];
 
     return (
       <div style={{ display: 'flex', position: 'absolute', width: '100%' }}>
@@ -209,14 +209,14 @@ Reset
                       <span className="slider-overlay" style={{ marginTop: '20px' }}>
                         <OneAxisTranslationControl
                           save={this.props.sendSetAttribute}
-                          value={foucs_motor.value}
-                          min={foucs_motor.limits[0]}
-                          max={foucs_motor.limits[1]}
+                          value={focus_motor.value}
+                          min={focus_motor.limits[0]}
+                          max={focus_motor.limits[1]}
                           step={this.props.steps.focusStep}
                           motorName={foucs_motor_uiprop.attribute}
                           suffix={foucs_motor_uiprop.suffix}
                           decimalPoints={foucs_motor_uiprop.precision}
-                          state={foucs_motor.state}
+                          state={focus_motor.state}
                           disabled={this.props.motorsDisabled}
                         />
                       </span>
