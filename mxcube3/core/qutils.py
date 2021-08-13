@@ -104,10 +104,9 @@ def node_index(node):
         sample = node.loc_str
     # TaskGroup just return the sampleID
     elif node.get_parent():
-        if isinstance(node, qmo.TaskGroup):
-            sample_model = node.get_parent()
-        else:
-            sample_model = node.get_parent().get_parent()
+        # NB under GPhL workflow, nodes do not have predictable distance
+        # to their sample node
+        sample_model = node.get_sample_node()
 
         sample = sample_model.loc_str
         task_groups = sample_model.get_children()
@@ -330,6 +329,59 @@ def _handle_dc(sample_node, node, include_lims_data=False):
     res = {
         "label": "Data Collection",
         "type": "DataCollection",
+        "parameters": parameters,
+        "sampleID": sample_node.loc_str,
+        "sampleQueueID": sample_node._node_id,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": queueID,
+        "checked": node.is_enabled(),
+        "state": state,
+        "limsResultData": limsres,
+    }
+
+    return res
+
+
+def _handle_gphl_wf(sample_node, node, include_lims_data=False):
+    pt = node.path_template
+    parameters = pt.as_dict()
+    parameters["path"] = parameters["directory"]
+
+
+    parameters["strategy_name"] = node.get_type()
+    parameters["label"] = "GΦL " + parameters["strategy_name"]
+    parameters["shape"] = node.get_shape()
+
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+
+    parameters["subdir"] = os.path.join(
+        *parameters["directory"].split(mxcube.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
+    ).lstrip("/")
+
+    parameters["fileName"] = pt.get_image_file_name().replace(
+        "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+    )
+
+    parameters["fullPath"] = os.path.join(
+        parameters["directory"], parameters["fileName"]
+    )
+
+    limsres = {}
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
+
+    # Only add data from lims if explicitly asked for, since
+    # its a operation that can take some time.
+    if include_lims_data and mxcube.mxcubecore.beamline_ho.lims.lims_rest:
+        limsres = mxcube.mxcubecore.beamline_ho.lims.lims_rest.get_dc(lims_id)
+
+    # Always add link to data, (no request made)
+    limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
+
+    res = {
+        "label": parameters["label"],
+        "strategy_name": parameters["strategy_name"],
+        "type": "GphlWorkflow",
         "parameters": parameters,
         "sampleID": sample_node.loc_str,
         "sampleQueueID": sample_node._node_id,
@@ -613,6 +665,9 @@ def queue_to_dict_rec(node, include_lims_data=False):
         node_list = node.get_children()
 
     for node in node_list:
+        # NB under GPhL workflow, nodes do not have predictable distance
+        # to their sample node
+        sample_node = node.get_sample_node()
         if isinstance(node, qmo.Sample):
             if len(result) == 0:
                 result = [{"sample_order": []}]
@@ -623,22 +678,18 @@ def queue_to_dict_rec(node, include_lims_data=False):
                 result[0]["sample_order"].append(node.loc_str)
 
         elif isinstance(node, qmo.Characterisation):
-            sample_node = node.get_parent().get_parent()
             result.append(_handle_char(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.DataCollection):
-            sample_node = node_index(node)["sample_node"]
             result.append(_handle_dc(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.Workflow):
-            sample_node = node.get_parent().get_parent()
             result.append(_handle_wf(sample_node, node, include_lims_data))
+        elif isinstance(node, qmo.GphlWorkflow):
+            result.append(_handle_gphl_wf(sample_node, node, include_lims_data))
         elif isinstance(node, qmo.XRFSpectrum):
-            sample_node = node.get_parent().get_parent()
             result.append(_handle_xrf(sample_node, node))
         elif isinstance(node, qmo.EnergyScan):
-            sample_node = node.get_parent().get_parent()
             result.append(_handle_energy_scan(sample_node, node))
         elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
-            sample_node = node.get_parent()
             result.append(_handle_interleaved(sample_node, node))
         else:
             result.extend(queue_to_dict_rec(node, include_lims_data))
@@ -909,7 +960,7 @@ def _queue_add_item_rec(item_list, sample_node_id=None):
             add_interleaved(sample_node_id, item)
         elif item_t == "Characterisation":
             add_characterisation(sample_node_id, item)
-        elif item_t == "Workflow":
+        elif item_t == "Workflow" or item_t == "GphlWorkflow":
             add_workflow(sample_node_id, item)
         elif item_t == "XRFScan":
             add_xrf_scan(sample_node_id, item)
@@ -1054,6 +1105,45 @@ def set_dc_params(model, entry, task_data, sample_model):
     # run number for existing items.
     if not task_data.get("queueID", ""):
         acq.path_template.run_number = get_run_number(acq.path_template)
+
+    model.set_enabled(task_data["checked"])
+    entry.set_enabled(task_data["checked"])
+
+
+def set_gphl_wf_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the parameters for a GPhL workflow task.
+
+    :param queue_model_objectsGphlWorkflow: The model to set parameters of
+    :param GphlWorkflowQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    :param dict sample_model: The Sample queueModelObject
+    """
+    params = task_data["parameters"]
+    model.path_template.set_from_dict(params)
+    model.path_template.base_prefix = params["prefix"]
+    model.path_template.num_files = 0
+    model.path_template.precision = "0" + str(
+        mxcube.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
+    )
+
+    limsutils.apply_template(params, sample_model, model.path_template)
+
+    full_path = os.path.join(
+        mxcube.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
+    )
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(
+        mxcube.mxcubecore.beamline_ho.session.get_base_process_directory(),
+        params.get("subdir", ""),
+    )
+    model.path_template.process_directory = process_path
+
+    model.set_name(params["prefix"])
+    model.set_type(params["strategy_name"])
+    model.set_shape(params.get("shape", ""))
 
     model.set_enabled(task_data["checked"])
     entry.set_enabled(task_data["checked"])
@@ -1284,6 +1374,23 @@ def _create_wf(task):
     return dc_model, dc_entry
 
 
+def _create_gphl_wf(task):
+    """
+    Creates a gphl workflow model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import GphlWorkflowQueueEntry
+    dc_model = qmo.GphlWorkflow()
+    dc_model.set_origin(ORIGIN_MX3)
+    dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
+
+    return dc_model, dc_entry
+
+
 def _create_xrf(task):
     """
     Creates a XRFSpectrum model and its corresponding queue entry from
@@ -1405,8 +1512,12 @@ def add_workflow(node_id, task):
     :rtype: int
     """
     sample_model, sample_entry = get_entry(node_id)
-    wf_model, dc_entry = _create_wf(task)
-    set_wf_params(wf_model, dc_entry, task, sample_model)
+    if task["parameters"]["wfpath"] == "Gphl":
+        wf_model, dc_entry = _create_gphl_wf(task)
+        set_gphl_wf_params(wf_model, dc_entry, task, sample_model)
+    else:
+        wf_model, dc_entry = _create_wf(task)
+        set_wf_params(wf_model, dc_entry, task, sample_model)
 
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)

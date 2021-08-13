@@ -115,7 +115,7 @@ settings:
 #        Set in gph-setup.xml
 # gphl_subdir is not a workflow option. It is set in gphl-setup.xml
 workflows:
-    "GPhL Workflow Acquisition":
+    "GΦL Acquisition Workflow":
           wfpath: Gphl
           wftype: acquisition
           requires:
@@ -274,7 +274,7 @@ workflows:
                       # Path of file to dump persisted instrumentation configuration. OPTIONAL-->
   #                    instcfgout: gphl_diffractcal_out.nml
 
-    "GPhL Translational Calibration":
+    "GΦL Translational Calibration":
           wfpath: Gphl
           wftype: transcal
           requires:
