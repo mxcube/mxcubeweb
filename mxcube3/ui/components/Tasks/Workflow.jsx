@@ -60,12 +60,12 @@ class Workflow extends React.Component {
             <StaticField label="Filename" data={this.props.filename} />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
+                <InputField propName="subdir" label="Subdirectory" col1={4} col2={8} />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
+                <InputField propName="prefix" label="Prefix" col1={4} col2={6} />
               </Col>
               {this.props.taskData.sampleID ?
                 (<Col xs={4}>
