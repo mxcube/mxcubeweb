@@ -186,7 +186,7 @@ export default class WorkflowTaskItem extends Component {
             >
               <b>
                 <span className="node-name" style={{ display: 'flex' }} >
-                  {this.pointIDString(parameters)} {data.label}
+                  {this.pointIDString(parameters)} {data.parameters.label}
                   {state === TASK_RUNNING ? this.progressBar() : null}
                 </span>
               </b>
