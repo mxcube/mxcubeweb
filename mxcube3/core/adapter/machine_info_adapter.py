@@ -22,7 +22,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(self.get_value(), **kwargs)
 
-    def _get_value(self) -> HOMachineInfoModel:
+    def _get_value(self):
         return {
             "current": self.get_current(),
             "message": self.get_message(),
@@ -70,5 +70,5 @@ class MachineInfoAdapter(ActuatorAdapterBase):
     def state(self):
         return HardwareObjectState.READY.value
 
-    def data(self):
+    def data(self) -> HOMachineInfoModel:
         return HOMachineInfoModel(**self._dict_repr())

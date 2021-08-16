@@ -1,7 +1,7 @@
 import logging
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core.adapter.utils import RateLimited
+from mxcube3.core.adapter.utils import RateLimited, export
 
 from mxcube3.core.models import (
     HOModel,
@@ -56,7 +56,8 @@ class ActuatorAdapter(ActuatorAdapterBase):
         except BaseException:
             raise
 
-    def _get_value(self) -> HOActuatorModel:
+    @export
+    def _get_value(self):
         """
         Read the energy.
         Returns:

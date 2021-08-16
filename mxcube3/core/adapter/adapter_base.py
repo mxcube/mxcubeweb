@@ -259,5 +259,5 @@ class ActuatorAdapterBase(AdapterBase):
 
         return data
 
-    def data(self):
+    def data(self) -> HOActuatorModel:
         return HOActuatorModel(**self._dict_repr())

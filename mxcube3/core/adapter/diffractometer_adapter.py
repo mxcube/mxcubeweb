@@ -16,5 +16,4 @@ class DiffractometerAdapter(AdapterBase):
         pass
 
     def state(self):
-        return ""
         return "READY" if self._ho.is_ready() else "BUSY"
