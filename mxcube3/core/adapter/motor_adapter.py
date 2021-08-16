@@ -39,7 +39,7 @@ class MotorAdapter(ActuatorAdapterBase):
         self._ho.set_value(float(value.value))
         return self.get_value()
 
-    def _get_value(self) -> HOActuatorModel:
+    def _get_value(self):
         """
         Read the detector distance.
         Returns:

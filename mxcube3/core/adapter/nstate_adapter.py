@@ -45,7 +45,7 @@ class NStateAdapter(ActuatorAdapterBase):
     def _set_value(self, value: HOActuatorValueChangeModel):
         self._ho.set_value(self._ho.VALUES[value.value])
 
-    def _get_value(self) -> NStateModel:
+    def _get_value(self):
         return self._ho.get_value().name
 
     def msg(self):
@@ -59,5 +59,5 @@ class NStateAdapter(ActuatorAdapterBase):
 
         return msg
 
-    def data(self):
+    def data(self) -> NStateModel:
         return NStateModel(**self._dict_repr())

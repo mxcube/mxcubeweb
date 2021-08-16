@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Tuple
+from typing import Tuple, List
 from pydantic import BaseModel, Field
 
 class HOModel(BaseModel):
@@ -30,9 +30,19 @@ class HOActuatorValueChangeModel(BaseModel):
     value: str = Field("", description='New value of actuator (position)')
 
 class HONoneModel(BaseModel):
-        class Config:
-            extra: "forbid"
+    class Config:
+        extra: "forbid"
 
-class HOBeamModel(BaseModel):
-        class Config:
-            extra: "forbid"
+class HOBeamValueModel(BaseModel):
+    apertureList: List[float] = Field([0], description='List of available apertures')
+    currentAperture: float = Field(0, description='Current aperture size')
+    position: Tuple[float, float] = Field((0, 0), description='Beam position on OAV')
+    shape: str = Field("ellipse", descrption="Beam shape")
+    size_x: float = Field(0.01, description='Current aperture x size (width) in millimieters')
+    size_y: float = Field(0.01, description='Current aperture y size (height) in millimieters')
+
+    class Config:
+        extra: "forbid"
+
+class HOBeamModel(HOActuatorModel):
+    value: HOBeamValueModel

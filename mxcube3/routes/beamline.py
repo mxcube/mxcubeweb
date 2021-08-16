@@ -13,16 +13,13 @@ from mxcube3.core import beamlineutils
 from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
 
 
-def create_get_route(mxcube, server, bp, adapter, func, name):
+def create_get_route(mxcube, server, bp, adapter, attr, name):
     atype = adapter.adapter_type.lower()
+    func = getattr(adapter, attr)
     get_type_hint = typing.get_type_hints(func)
 
     if "return" in get_type_hint:
-        if adapter._unique:
-            route_url = f"{atype}/{name}" if name else f"{atype}"
-        else:
-            route_url = f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
-
+        route_url = f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
         endpoint = f"{atype}_get_{name}" if name else f"{atype}_get"
 
         @bp.route(route_url, endpoint=endpoint, methods=["GET"])
@@ -33,21 +30,20 @@ def create_get_route(mxcube, server, bp, adapter, func, name):
             Retrieves value of attribute < name > 
             Replies with status code 200 on success and 409 on exceptions.
             """
-            return jsonify(mxcube.mxcubecore.get_adapter(name.lower()).dict())
+            return jsonify(
+                    getattr(mxcube.mxcubecore.get_adapter(name.lower()), attr)().dict()
+                )
 
         get_func.__name__ = f"{atype}_get_value"
 
 
-def create_set_route(mxcube, server, bp,adapter, func, name):
+def create_set_route(mxcube, server, bp,adapter, attr, name):
     atype = adapter.adapter_type.lower()
+    func = getattr(adapter, attr)
     set_type_hint = typing.get_type_hints(func)
 
     if "value" in set_type_hint:
-        if adapter._unique:
-            route_url = f"{atype}/{name}" if name else f"{atype}"
-        else:
-            route_url = f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
-
+        route_url = f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
         endpoint = f"{atype}_set_{name}" if name else f"{atype}_set"
 
         @bp.route(route_url, endpoint=endpoint, methods=["PUT"])
@@ -60,7 +56,7 @@ def create_set_route(mxcube, server, bp,adapter, func, name):
             Replies with status code 200 on success and 409 on exceptions.
             """
             rd = _th["value"].parse_raw(request.data)
-            mxcube.mxcubecore.get_adapter(rd.name.lower()).set_value(rd)
+            getattr(mxcube.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
             return make_response("{}", 200)
 
         set_func.__name__ = f"{atype}_set_value"
@@ -77,13 +73,13 @@ def add_adapter_routes(mxcube, server, bp):
             adapter_type_list.append(adapter.adapter_type)
 
             set_type_hint = typing.get_type_hints(adapter._set_value)
-            get_type_hint = typing.get_type_hints(adapter._get_value)
+            get_type_hint = typing.get_type_hints(adapter.data)
 
             if "value" in set_type_hint:
-                create_set_route(mxcube, server, bp, adapter, adapter._set_value, None)
+                create_set_route(mxcube, server, bp, adapter, "_set_value", None)
 
             if "return" in get_type_hint:
-                create_get_route(mxcube, server, bp, adapter, adapter._get_value, None)
+                create_get_route(mxcube, server, bp, adapter, "data", None)
 
             for attr in dir(adapter):
                 func = getattr(adapter, attr)
@@ -92,10 +88,10 @@ def add_adapter_routes(mxcube, server, bp):
                     continue
 
                 if attr.startswith("get"): 
-                    create_get_route(mxcube, server, bp, adapter, func, attr.replace("get_", ""))
+                    create_get_route(mxcube, server, bp, adapter, attr, attr.replace("get_", ""))
                 
                 if attr.startswith("set"):
-                    create_set_route(mxcube, server, bp, adapter, func, attr.replace("set_", ""))
+                    create_set_route(mxcube, server, bp, adapter, attr, attr.replace("set_", ""))
         else:
             continue
 
