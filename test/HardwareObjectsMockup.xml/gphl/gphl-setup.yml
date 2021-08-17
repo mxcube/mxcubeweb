@@ -75,7 +75,7 @@ software_properties:
 #
   #Location of executable XDS binary. Mandatory
 #        co.gphl.wf.xds.bin: /public/xtal/Xds/XDS-INTEL64_Linux_x86_64/xds_par
-  co.gphl.wf.xds.bin: "{GPHL_RELEASE}/XDS/xds_par</co.gphl.wf.xds.bin"
+  co.gphl.wf.xds.bin: "{GPHL_RELEASE}/XDS/xds_par"
 
   #Location of individual binaries or wrappers are optional.
   #They default to within GPHL_INSTALLATION
