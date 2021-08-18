@@ -26,7 +26,7 @@ class BeamAdapter(ActuatorAdapterBase):
 
         return aperture_list, current_aperture
 
-    def _get_value(self):
+    def _get_value(self) -> HOBeamValueModel:
         beam_ho = self._ho
 
         beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
@@ -48,7 +48,7 @@ class BeamAdapter(ActuatorAdapterBase):
             {"apertureList": aperture_list, "currentAperture": current_aperture}
         )
 
-        return beam_info_dict
+        return HOBeamValueModel(**{"value": beam_info_dict})
 
     @export
     def get_size(self) -> HOBeamModel:

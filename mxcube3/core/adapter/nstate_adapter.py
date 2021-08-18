@@ -3,7 +3,7 @@ from mxcubecore.HardwareObjects.abstract import AbstractNState
 from mxcubecore.HardwareObjects.abstract import AbstractShutter
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core.models import NStateModel, HOActuatorValueChangeModel
+from mxcube3.core.models import NStateModel, HOActuatorValueChangeModel, StrValueModel
 
 class NStateAdapter(ActuatorAdapterBase):
     def __init__(self, ho, *args, **kwargs):
@@ -45,8 +45,8 @@ class NStateAdapter(ActuatorAdapterBase):
     def _set_value(self, value: HOActuatorValueChangeModel):
         self._ho.set_value(self._ho.VALUES[value.value])
 
-    def _get_value(self):
-        return self._ho.get_value().name
+    def _get_value(self) -> StrValueModel:
+        return StrValueModel(**{"value": self._ho.get_value().name})
 
     def msg(self):
         try:

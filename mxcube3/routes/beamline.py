@@ -11,6 +11,7 @@ from flask import Blueprint, Response, jsonify, request, make_response
 
 from mxcube3.core import beamlineutils
 from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
+from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 
 
 def create_get_route(mxcube, server, bp, adapter, attr, name):
@@ -69,22 +70,36 @@ def add_adapter_routes(mxcube, server, bp):
         adapter = a["adapter"]
         atype = adapter.adapter_type.lower()
 
+        # Only add the route once for each type (class) of adapter
         if adapter.adapter_type not in adapter_type_list:
             adapter_type_list.append(adapter.adapter_type)
 
+            # All adapters, inheriting BaseAdapter have _set_value() to
+            # set the value of the underlyaing hardware object and
+            # data() to return a representation of the object, so we are
+            # mapping these by default
             set_type_hint = typing.get_type_hints(adapter._set_value)
-            get_type_hint = typing.get_type_hints(adapter.data)
+            data_type_hint = typing.get_type_hints(adapter.data)
 
             if "value" in set_type_hint:
-                create_set_route(mxcube, server, bp, adapter, "_set_value", None)
+                create_set_route(mxcube, server, bp, adapter, "_set_value", "value")
 
-            if "return" in get_type_hint:
+            if "return" in data_type_hint:
                 create_get_route(mxcube, server, bp, adapter, "data", None)
 
+            # For consitency add GET route for value even if its currently unused
+            if isinstance(adapter, ActuatorAdapterBase):
+                get_type_hint = typing.get_type_hints(adapter._get_value)
+                
+                if "return" in get_type_hint:
+                    create_get_route(mxcube, server, bp, adapter, "_get_value", "value")
+
+            # Map all other functions starting with prefix get_ or set_ and
+            # flagged with the @export
             for attr in dir(adapter):
                 func = getattr(adapter, attr)
 
-                if attr[0] == "_" or not hasattr(func, "_export"):
+                if not hasattr(func, "_export"):
                     continue
 
                 if attr.startswith("get"): 

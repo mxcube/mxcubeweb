@@ -6,7 +6,8 @@ from mxcube3.core.adapter.utils import RateLimited, export
 from mxcube3.core.models import (
     HOModel,
     HOActuatorModel,
-    HOActuatorValueChangeModel
+    HOActuatorValueChangeModel,
+    FloatValueModel
 )
 
 
@@ -57,7 +58,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
             raise
 
     @export
-    def _get_value(self):
+    def _get_value(self) -> FloatValueModel:
         """
         Read the energy.
         Returns:
@@ -66,7 +67,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            return self._ho.get_value()
+            return FloatValueModel(**{"value": self._ho.get_value()})
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 

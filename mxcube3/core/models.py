@@ -18,9 +18,8 @@ class HOActuatorModel(HOModel):
     value: float = Field(0, description='Value of actuator (position)')
     limits: Tuple[float, float] = Field((-1, -1), description='Limits (min max)')
 
-class NStateModel(HOModel):
+class NStateModel(HOActuatorModel):
     value: str = Field("", description='Value of nstate object')
-    limits: Tuple[float, float] = Field((-1, -1), description='Limits (min max)')
 
 class HOMachineInfoModel(HOActuatorModel):
     value: dict = Field(description='Value of machine info')
@@ -29,11 +28,7 @@ class HOActuatorValueChangeModel(BaseModel):
     name: str = Field("", description='Name of the hardware object to change')
     value: str = Field("", description='New value of actuator (position)')
 
-class HONoneModel(BaseModel):
-    class Config:
-        extra: "forbid"
-
-class HOBeamValueModel(BaseModel):
+class HOBeamRawValueModel(BaseModel):
     apertureList: List[float] = Field([0], description='List of available apertures')
     currentAperture: float = Field(0, description='Current aperture size')
     position: Tuple[float, float] = Field((0, 0), description='Beam position on OAV')
@@ -45,4 +40,13 @@ class HOBeamValueModel(BaseModel):
         extra: "forbid"
 
 class HOBeamModel(HOActuatorModel):
-    value: HOBeamValueModel
+    value: HOBeamRawValueModel
+
+class HOBeamValueModel(BaseModel):
+    value: HOBeamRawValueModel
+
+class FloatValueModel(BaseModel):
+    value: float = Field(0, description='Value of actuator (position)')
+
+class StrValueModel(BaseModel):
+    value: str = Field("", description='Value of actuator (position)')

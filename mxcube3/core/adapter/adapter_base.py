@@ -1,7 +1,7 @@
 import math
 import logging
 
-from mxcube3.core.models import HOModel, HOActuatorModel, HONoneModel
+from mxcube3.core.models import HOModel, HOActuatorModel
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
@@ -69,6 +69,7 @@ class AdapterBase:
             (str): The state
         """
         return self._ho.get_state().name
+
     # Abstract method
     def msg(self):
         """
@@ -209,7 +210,7 @@ class ActuatorAdapterBase(AdapterBase):
         Raises:
             ValueError: When value for any reason can't be retrieved.
         """
-        return self._get_value()
+        return self._get_value().value
 
     # Abstract method
     def stop(self):

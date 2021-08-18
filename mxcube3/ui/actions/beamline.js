@@ -66,7 +66,7 @@ export function sendSetAttribute(name, value) {
     dispatch(busyStateAction(name));
     const state = getState();
     const type = state.beamline.attributes[name].type.toLowerCase();
-    const url = `mxcube/api/v0.1/beamline/${type}/${name}`;
+    const url = `mxcube/api/v0.1/beamline/${type}/value/${name}`;
 
     fetch(url, {
       method: 'PUT',

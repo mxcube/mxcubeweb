@@ -2,7 +2,7 @@ from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.adapter.utils import RateLimited
 
 from mxcube3.core.models import (
-    HOActuatorModel,
+    FloatValueModel,
     HOActuatorValueChangeModel
 )
 
@@ -49,7 +49,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
         except BaseException:
             raise
 
-    def _get_value(self) -> HOActuatorModel:
+    def _get_value(self) -> FloatValueModel:
         """
         Read the wavelength value.
         Returns:
@@ -58,7 +58,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            return self._ho.get_wavelength()
+            return FloatValueModel(**{"value": self._ho.get_wavelength()})
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 

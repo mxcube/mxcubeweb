@@ -5,7 +5,8 @@ from mxcube3.core.models import (
     HOModel,
     HOActuatorModel,
     HOActuatorModel,
-    HOActuatorValueChangeModel
+    HOActuatorValueChangeModel,
+    FloatValueModel
 )
 
 
@@ -39,7 +40,7 @@ class MotorAdapter(ActuatorAdapterBase):
         self._ho.set_value(float(value.value))
         return self.get_value()
 
-    def _get_value(self):
+    def _get_value(self) -> FloatValueModel:
         """
         Read the detector distance.
         Returns:
@@ -52,7 +53,7 @@ class MotorAdapter(ActuatorAdapterBase):
         except (TypeError, AttributeError):
             value = 0.0
 
-        return value
+        return FloatValueModel(**{"value": value})
 
     def state(self):
         """
