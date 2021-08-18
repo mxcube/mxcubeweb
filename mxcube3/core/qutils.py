@@ -1145,6 +1145,8 @@ def set_gphl_wf_params(model, entry, task_data, sample_model):
     model.set_type(params["strategy_name"])
     model.set_shape(params.get("shape", ""))
 
+    model.init_from_sample(sample_model)
+
     model.set_enabled(task_data["checked"])
     entry.set_enabled(task_data["checked"])
 
