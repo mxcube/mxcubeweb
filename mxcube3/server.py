@@ -112,6 +112,10 @@ class Server():
         )
 
         Server.flask.register_blueprint(
+            init_lims_route(mxcube, mxcube.server, f"{url_root_prefix}/lims")
+        )
+
+        Server.flask.register_blueprint(
             init_log_route(mxcube, mxcube.server, f"{url_root_prefix}/log")
         )
 
