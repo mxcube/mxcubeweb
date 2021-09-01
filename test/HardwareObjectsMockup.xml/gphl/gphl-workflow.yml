@@ -1,7 +1,6 @@
 _initialise_class:
     class: mxcubecore.HardwareObjects.GphlWorkflow.GphlWorkflow
 
-
 settings:
     # Controls for MXCuBE UI and behaviour
     # Use configured multitrigger collection, default: false, any value is true
@@ -22,19 +21,6 @@ settings:
 #        tolerance for deciding whether angles differ, in degrees;
 #        used to compare kappa and phi to decide if orientations needs separate centring
     angular_tolerance: 1.0
-    # Parameters to control proposed total dose budget
-    # The proposed budget is calculated so that radiation damage is predicted
-    # to reduce the intensity at the highest expected redolution to this percentaged-->
-    # after the end of the experiment (i.e. value 25 means final intensity
-    # at the highest resolution is 25% of the starting intensity
-    # The formula assumes an increase in B factor of 1 A^2/MGy
-    # The formula used is dose_budget =
-    #     2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity
-    default_decay_limit: 25
-    # Maximum dose budget to propose when converting from resolution, in MGy
-    maximum_dose_budget: 20
-    # Percentage of dose budget to propose for use in characterisation. 
-    characterisation_budget_percent: 5
     # Characterisation strategies popup.
     # names refer to stategies in  strategylib.nml
     characterisation_strategies:
@@ -50,18 +36,39 @@ settings:
     # 'current': use current value
     starting_beamline_energy: current
     # Default wedge width in degrees, for interleaved data collection
-    default_wedge_width: 15
-    # Default number of snapshots to take when centring: 0, 1, 2, or 4
-    default_snapshot_count: 2
-#        Default recentring mode. Possibilities are sweep/scan/start/none, default is sweep:
-#            RECENTRING_MODES = OrderedDict(
-#                ("when orientation changes","sweep"),
-#                ("for each wedge","scan"),
-#                ("at acquisition start","start"),
-#                ("use predicted centrings only", "none"),
-#            )
-#         mode "none" is not allowed as default
-    default_recentring_mode: sweep
+    default_beam_energy_tag: Acquisition
+
+
+    defaults:
+        # Default values for queue_model_objects.GphlWorkflow attributes
+        wedge_width: 15
+        # Default number of snapshots to take when centring: 0, 1, 2, or 4
+        interleave_order: gs
+        snapshot_count: 2
+        #        Default recentring mode. Possibilities are sweep/scan/start/none, default is sweep:
+        #            RECENTRING_MODES = OrderedDict(
+        #                ("when orientation changes","sweep"),
+        #                ("for each wedge","scan"),
+        #                ("at acquisition start","start"),
+        #                ("use predicted centrings only", "none"),
+        #            )
+        #         mode "none" is not allowed as default
+        recentring_mode: sweep
+        # Parameters to control proposed total dose budget
+        # The proposed budget is calculated so that radiation damage is predicted
+        # to reduce the intensity at the highest expected redolution to this percentaged-->
+        # after the end of the experiment (i.e. value 25 means final intensity
+        # at the highest resolution is 25% of the starting intensity
+        # The formula assumes an increase in B factor of 1 A^2/MGy
+        # The formula used is dose_budget =
+        #     2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity
+        decay_limit: 25
+        # Maximum dose budget to propose when converting from resolution, in MGy
+        maximum_dose_budget: 20
+        # Percentage of dose budget to propose for use in characterisation.
+        characterisation_budget_fraction: 0.05
+        # Radiation sensitivity relative to standard crystal
+        relative_rad_sensitivity: 1.0
 
     # Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8'
     invocation_properties:
@@ -243,6 +250,25 @@ workflows:
                       interleave_order: gsb
                       # File name pattern for characterisation data collection
                       charpattern: generic
+
+    "GΦL Diffractometer calibration":
+          wfpath: Gphl
+          wftype: diffractcal
+          requires:
+              - point
+          options:
+              # NB you must set EITHER wfprefix OR samplesubdir (or both)
+              # wfprefix is the enactment fixed file prefix
+              #        wfprefix: gphl_wf_
+              # Include sample filename prefix as subdirectory in enactment directory path
+              # Any
+              samplesubdir: null
+#                directory paths are:
+#                 wfprefix:  .../RAW_DATA/<wfprefix>_001/...
+#                 samplesubdir:   .../RAW_DATA/<filenameprefix>_001/...
+#                 both:   .../RAW_DATA/<filenameprefix>/<wfprefix>_001/...
+
+          strategies:
 
                -  title: Diffractometer calibration
                   strategy_type: diffractcal
