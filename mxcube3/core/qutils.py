@@ -1120,30 +1120,12 @@ def set_gphl_wf_params(model, entry, task_data, sample_model):
     :param dict sample_model: The Sample queueModelObject
     """
     params = task_data["parameters"]
-    model.path_template.set_from_dict(params)
-    model.path_template.base_prefix = params["prefix"]
-    model.path_template.num_files = 0
-    model.path_template.precision = "0" + str(
-        mxcube.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
-    )
-
     limsutils.apply_template(params, sample_model, model.path_template)
 
-    full_path = os.path.join(
-        mxcube.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
-    )
-
-    model.path_template.directory = full_path
-
-    process_path = os.path.join(
-        mxcube.mxcubecore.beamline_ho.session.get_base_process_directory(),
-        params.get("subdir", ""),
-    )
-    model.path_template.process_directory = process_path
-
-    model.set_name(params["prefix"])
-    model.set_type(params["strategy_name"])
-    model.shape = params.get("shape", "")
+    # params include only p_template-related parametes and strategy_nameath
+    model.init_from_task_data(sample_model, params)
+    model.set_pre_strategy_params(**params)
+    model.set_pre_acquisition_params(**params)
 
     model.set_enabled(task_data["checked"])
     entry.set_enabled(task_data["checked"])
@@ -1500,21 +1482,24 @@ def add_data_collection(node_id, task):
 
     return dc_model._node_id
 
-
 def add_workflow(node_id, task):
     """
-    Adds a worklfow task to the sample with id: <id>
+    Adds a worklfow task to the parent node with id: <id>
 
-    :param int id: id of the sample to which the task belongs
+    For adding GPhL Auto workflow, call with node_id==parent_node_id
+    and all required parameers in task["parameters"]
+
+    :param int node_id: id of the parent node to which the task belongs
     :param dict task: task data
 
     :returns: The queue id of the data collection
     :rtype: int
     """
-    sample_model, sample_entry = get_entry(node_id)
+    parent_model, parent_entry = get_entry(node_id)
+    sample_model = parent_model.get_sample_node()
     if task["parameters"]["wfpath"] == "Gphl":
         wf_model, dc_entry = _create_gphl_wf(task)
-        set_gphl_wf_params(wf_model, dc_entry, task, sample_model)
+        set_gphl_wf_params(wf_model, dc_entry, task,  parent_model.get_sample_node())
     else:
         wf_model, dc_entry = _create_wf(task)
         set_wf_params(wf_model, dc_entry, task, sample_model)
@@ -1522,12 +1507,12 @@ def add_workflow(node_id, task):
     group_model = qmo.TaskGroup()
     group_model.set_origin(ORIGIN_MX3)
     group_model.set_enabled(True)
-    mxcube.mxcubecore.beamline_ho.queue_model.add_child(sample_model, group_model)
+    mxcube.mxcubecore.beamline_ho.queue_model.add_child(parent_model, group_model)
     mxcube.mxcubecore.beamline_ho.queue_model.add_child(group_model, wf_model)
 
     group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
     group_entry.set_enabled(True)
-    sample_entry.enqueue(group_entry)
+    parent_entry.enqueue(group_entry)
     group_entry.enqueue(dc_entry)
 
     return wf_model._node_id
@@ -1537,7 +1522,7 @@ def add_interleaved(node_id, task):
     """
     Adds a interleaved data collection task to the sample with id: <id>
 
-    :param int id: id of the sample to which the task belongs
+    :param int node_id: id of the sample to which the task belongs
     :param dict task: task data
 
     :returns: The queue id of the data collection

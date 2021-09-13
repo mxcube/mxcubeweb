@@ -35,15 +35,14 @@ settings:
     # 'configured': set value from calibration and characterisation strategy file
     # 'current': use current value
     starting_beamline_energy: current
-    # Default wedge width in degrees, for interleaved data collection
     default_beam_energy_tag: Acquisition
 
 
     defaults:
         # Default values for queue_model_objects.GphlWorkflow attributes
+        # Default wedge width in degrees, for interleaved data collection
         wedge_width: 15
         # Default number of snapshots to take when centring: 0, 1, 2, or 4
-        interleave_order: gs
         snapshot_count: 2
         #        Default recentring mode. Possibilities are sweep/scan/start/none, default is sweep:
         #            RECENTRING_MODES = OrderedDict(
@@ -69,6 +68,7 @@ settings:
         characterisation_budget_fraction: 0.05
         # Radiation sensitivity relative to standard crystal
         relative_rad_sensitivity: 1.0
+        interleave_order: gs
 
     # Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8'
     invocation_properties:
@@ -181,11 +181,6 @@ workflows:
                       pattern: interleaved
                       # Filename pattern name for inverse-beam collections
                       ibpattern: ib_interleaved
-                      # Workflow interleave order (string);  Slowest changing first-->
-                      # 'g' (Goniostat position); 's' (Scan number);
-                      # 'b' (Beam wavelength); 'd' (Detector position)-->
-                      # NB position interleaving in NOT done for the moment. So 'gs' is a no-op
-                      interleave_order: gs
                       # File name pattern for characterisation data collection
                       charpattern: generic
 
@@ -199,6 +194,12 @@ workflows:
                   beam_energy_tags:
                       - Peak
                       - Remote
+                  # Workflow interleave order (string);  Slowest changing first-->
+                  # 'g' (Goniostat position); 's' (Scan number);
+                  # 'b' (Beam wavelength); 'd' (Detector position)-->
+                  # NB position interleaving in NOT done for the moment.
+                  # So teh default ('gs') is a no-op
+                  interleave_order: gsb
                   documentation: |
                       Two wavelength MAD data acquisition, full strategy.
                       Aligned on even symetry axes or inverse beam.
@@ -212,11 +213,6 @@ workflows:
                       pattern: interleaved
                       # Filename pattern name for inverse-beam collections
                       ibpattern: ib_interleaved
-                      # Workflow interleave order (string);  Slowest changing first-->
-                      # 'g' (Goniostat position); 's' (Scan number);
-                      # 'b' (Beam wavelength); 'd' (Detector position)-->
-                      # NB position interleaving in NOT done for the moment. So 'gs' is a no-op
-                      interleave_order: gsb
                       # File name pattern for characterisation data collection
                       charpattern: generic
 
@@ -230,6 +226,12 @@ workflows:
                       - Peak
                       - Rising_Inflection
                       - Falling_Inflection
+                  # Workflow interleave order (string);  Slowest changing first-->
+                  # 'g' (Goniostat position); 's' (Scan number);
+                  # 'b' (Beam wavelength); 'd' (Detector position)-->
+                  # NB position interleaving in NOT done for the moment.
+                 # So teh default ('gs') is a no-op
+                  interleave_order: gsb
                   documentation: |
                       Three wavelength MAD data acquisition, full strategy.
                       Aligned on even symetry axes or inverse beam.
@@ -243,11 +245,6 @@ workflows:
                       pattern: interleaved
                       # Filename pattern name for inverse-beam collections
                       ibpattern: ib_interleaved
-                      # Workflow interleave order (string);  Slowest changing first-->
-                      # 'g' (Goniostat position); 's' (Scan number);
-                      # 'b' (Beam wavelength); 'd' (Detector position)-->
-                      # NB position interleaving in NOT done for the moment. So 'gs' is a no-op
-                      interleave_order: gsb
                       # File name pattern for characterisation data collection
                       charpattern: generic
 
