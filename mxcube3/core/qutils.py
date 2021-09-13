@@ -395,6 +395,59 @@ def _handle_gphl_wf(sample_node, node, include_lims_data=False):
     return res
 
 
+def _handle_gphl_wf(sample_node, node, include_lims_data=False):
+    pt = node.path_template
+    parameters = pt.as_dict()
+    parameters["path"] = parameters["directory"]
+
+
+    parameters["strategy_name"] = node.get_type()
+    parameters["label"] = "GΦL " + parameters["strategy_name"]
+    parameters["shape"] = node.get_shape()
+
+    queueID = node._node_id
+    enabled, state = get_node_state(queueID)
+
+    parameters["subdir"] = os.path.join(
+        *parameters["directory"].split(mxcube.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
+    ).lstrip("/")
+
+    parameters["fileName"] = pt.get_image_file_name().replace(
+        "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+    )
+
+    parameters["fullPath"] = os.path.join(
+        parameters["directory"], parameters["fileName"]
+    )
+
+    limsres = {}
+    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
+
+    # Only add data from lims if explicitly asked for, since
+    # its a operation that can take some time.
+    if include_lims_data and mxcube.mxcubecore.beamline_ho.lims.lims_rest:
+        limsres = mxcube.mxcubecore.beamline_ho.lims.lims_rest.get_dc(lims_id)
+
+    # Always add link to data, (no request made)
+    limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
+
+    res = {
+        "label": parameters["label"],
+        "strategy_name": parameters["strategy_name"],
+        "type": "GphlWorkflow",
+        "parameters": parameters,
+        "sampleID": sample_node.loc_str,
+        "sampleQueueID": sample_node._node_id,
+        "taskIndex": node_index(node)["idx"],
+        "queueID": queueID,
+        "checked": node.is_enabled(),
+        "state": state,
+        "limsResultData": limsres,
+    }
+
+    return res
+
+
 def _handle_wf(sample_node, node, include_lims_data):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
@@ -1120,6 +1173,47 @@ def set_gphl_wf_params(model, entry, task_data, sample_model):
     :param dict sample_model: The Sample queueModelObject
     """
     params = task_data["parameters"]
+    model.path_template.set_from_dict(params)
+    model.path_template.base_prefix = params["prefix"]
+    model.path_template.num_files = 0
+    model.path_template.precision = "0" + str(
+        mxcube.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
+    )
+
+    limsutils.apply_template(params, sample_model, model.path_template)
+
+    full_path = os.path.join(
+        mxcube.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
+    )
+
+    model.path_template.directory = full_path
+
+    process_path = os.path.join(
+        mxcube.mxcubecore.beamline_ho.session.get_base_process_directory(),
+        params.get("subdir", ""),
+    )
+    model.path_template.process_directory = process_path
+
+    model.set_name(params["prefix"])
+    model.set_type(params["strategy_name"])
+    model.set_shape(params.get("shape", ""))
+
+    model.init_from_sample(sample_model)
+
+    model.set_enabled(task_data["checked"])
+    entry.set_enabled(task_data["checked"])
+
+
+def set_gphl_wf_params(model, entry, task_data, sample_model):
+    """
+    Helper method that sets the parameters for a GPhL workflow task.
+
+    :param queue_model_objectsGphlWorkflow: The model to set parameters of
+    :param GphlWorkflowQueueEntry: The queue entry of the model
+    :param dict task_data: Dictionary with new parameters
+    :param dict sample_model: The Sample queueModelObject
+    """
+    params = task_data["parameters"]
     limsutils.apply_template(params, sample_model, model.path_template)
 
     # params include only p_template-related parametes and strategy_nameath
@@ -1352,6 +1446,23 @@ def _create_wf(task):
     dc_model = qmo.Workflow()
     dc_model.set_origin(ORIGIN_MX3)
     dc_entry = qe.GenericWorkflowQueueEntry(Mock(), dc_model)
+
+    return dc_model, dc_entry
+
+
+def _create_gphl_wf(task):
+    """
+    Creates a gphl workflow model and its corresponding queue entry from
+    a dict with collection parameters.
+
+    :param dict task: Collection parameters
+    :returns: The tuple (model, entry)
+    :rtype: Tuple
+    """
+    from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import GphlWorkflowQueueEntry
+    dc_model = qmo.GphlWorkflow()
+    dc_model.set_origin(ORIGIN_MX3)
+    dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
 
     return dc_model, dc_entry
 
