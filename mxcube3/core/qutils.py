@@ -350,7 +350,7 @@ def _handle_gphl_wf(sample_node, node, include_lims_data=False):
 
     parameters["strategy_name"] = node.get_type()
     parameters["label"] = "GΦL " + parameters["strategy_name"]
-    parameters["shape"] = node.get_shape()
+    parameters["shape"] = node.shape
 
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
@@ -403,7 +403,7 @@ def _handle_gphl_wf(sample_node, node, include_lims_data=False):
 
     parameters["strategy_name"] = node.get_type()
     parameters["label"] = "GΦL " + parameters["strategy_name"]
-    parameters["shape"] = node.get_shape()
+    parameters["shape"] = node.shape
 
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
@@ -1158,47 +1158,6 @@ def set_dc_params(model, entry, task_data, sample_model):
     # run number for existing items.
     if not task_data.get("queueID", ""):
         acq.path_template.run_number = get_run_number(acq.path_template)
-
-    model.set_enabled(task_data["checked"])
-    entry.set_enabled(task_data["checked"])
-
-
-def set_gphl_wf_params(model, entry, task_data, sample_model):
-    """
-    Helper method that sets the parameters for a GPhL workflow task.
-
-    :param queue_model_objectsGphlWorkflow: The model to set parameters of
-    :param GphlWorkflowQueueEntry: The queue entry of the model
-    :param dict task_data: Dictionary with new parameters
-    :param dict sample_model: The Sample queueModelObject
-    """
-    params = task_data["parameters"]
-    model.path_template.set_from_dict(params)
-    model.path_template.base_prefix = params["prefix"]
-    model.path_template.num_files = 0
-    model.path_template.precision = "0" + str(
-        mxcube.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
-    )
-
-    limsutils.apply_template(params, sample_model, model.path_template)
-
-    full_path = os.path.join(
-        mxcube.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
-    )
-
-    model.path_template.directory = full_path
-
-    process_path = os.path.join(
-        mxcube.mxcubecore.beamline_ho.session.get_base_process_directory(),
-        params.get("subdir", ""),
-    )
-    model.path_template.process_directory = process_path
-
-    model.set_name(params["prefix"])
-    model.set_type(params["strategy_name"])
-    model.set_shape(params.get("shape", ""))
-
-    model.init_from_sample(sample_model)
 
     model.set_enabled(task_data["checked"])
     entry.set_enabled(task_data["checked"])
