@@ -69,6 +69,10 @@ settings:
         # Radiation sensitivity relative to standard crystal
         relative_rad_sensitivity: 1.0
         interleave_order: gs
+        characterisation_strategy: Char_6_5_multitrigger
+
+        # For testing only:
+        automation_mode: TEST
 
     # Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8'
     invocation_properties:
@@ -158,6 +162,8 @@ workflows:
                   options:
                       # Filename pattern name for normal data collections
                       pattern: interleaved
+                      # Filename pattern name for inverse-beam collections
+                      ibpattern: ib_interleaved
                       # File name pattern for characterisation data collection
                       charpattern: generic
 

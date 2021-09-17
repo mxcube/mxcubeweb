@@ -96,7 +96,7 @@ class MXCUBECore():
         sys.exit(-1)
 
     @staticmethod
-    def init(app, hwdir):
+    def init(app):
         """
         Initializes the HardwareRepository with XML files read from hwdir.
 
@@ -106,8 +106,7 @@ class MXCUBECore():
         This method can however be called later, so that initialization can be
         done when one wishes.
 
-        :param hwr: HardwareRepository module
-        :param str hwdir: Path to hardware objects
+        :param app: FIXME ???
 
         :return: None
         """
@@ -115,9 +114,10 @@ class MXCUBECore():
 
         fname = os.path.dirname(__file__)
         hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
-        hwr.init_hardware_repository(os.path.abspath(os.path.expanduser(hwdir)))
+        # rhfogh 20210916. The change allows (me) simpler configuration handling
+        # and because of changes in init_hardware_repository does not change
+        # current functionality.
         _hwr = hwr.get_hardware_repository()
-        _hwr.connect()
 
         MXCUBECore.HWR = _hwr
        
@@ -286,12 +286,11 @@ class MXCUBEApplication():
     server = None
 
     @staticmethod
-    def init(server, hwr_xml_dir, allow_remote, ra_timeout, video_device, log_fpath, cfg):
+    def init(server, allow_remote, ra_timeout, video_device, log_fpath, cfg):
         """
         Initializes application wide variables, sample video stream, and applies
 
         :param hwr: HardwareRepository module
-        :param str hwr_xml_dir: Path to hardware objects
         :param bool allow_remote: Allow remote usage, True else False
         :param bool ra_timeout: Timeout gives control, True else False
         :param bool video_device: Path to video device
@@ -306,7 +305,7 @@ class MXCUBEApplication():
         MXCUBEApplication.TIMEOUT_GIVES_CONTROL = ra_timeout
         MXCUBEApplication.CONFIG = cfg
 
-        MXCUBEApplication.mxcubecore.init(MXCUBEApplication, hwr_xml_dir)
+        MXCUBEApplication.mxcubecore.init(MXCUBEApplication)
 
         if video_device:
             MXCUBEApplication.init_sample_video(video_device)

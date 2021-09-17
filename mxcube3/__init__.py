@@ -12,7 +12,6 @@ from gevent import monkey
 # See HardwareRepository.original_socket
 from mxcubecore import HardwareRepository as HWR
 monkey.patch_all(thread=False)
-del HWR
 
 
 # import signal
@@ -92,10 +91,13 @@ def parse_args():
 def main():
     cmdline_options, args = parse_args()
 
-    cfg = Config(os.path.abspath(os.path.join(
-        cmdline_options.hwr_directory, 
-        "mxcube-server-config.yml"
-    )))
+    # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
+    # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
+    # without continuously editing teh main config files.
+    # Note that the machinery was all there in the core alrady. rhfogh.
+    HWR.init_hardware_repository(cmdline_options.hwr_directory)
+    config_path = HWR.get_hardware_repository().find_in_repository( "mxcube-server-config.yml")
+    cfg = Config(config_path)
 
     server.init(
         cmdline_options, cfg, mxcube
@@ -103,7 +105,6 @@ def main():
 
     mxcube.init(
         server,
-        cmdline_options.hwr_directory,
         cmdline_options.allow_remote,
         cmdline_options.ra_timeout,
         cmdline_options.video_device,
