@@ -395,59 +395,6 @@ def _handle_gphl_wf(sample_node, node, include_lims_data=False):
     return res
 
 
-def _handle_gphl_wf(sample_node, node, include_lims_data=False):
-    pt = node.path_template
-    parameters = pt.as_dict()
-    parameters["path"] = parameters["directory"]
-
-
-    parameters["strategy_name"] = node.get_type()
-    parameters["label"] = "GΦL " + parameters["strategy_name"]
-    parameters["shape"] = node.shape
-
-    queueID = node._node_id
-    enabled, state = get_node_state(queueID)
-
-    parameters["subdir"] = os.path.join(
-        *parameters["directory"].split(mxcube.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
-    ).lstrip("/")
-
-    parameters["fileName"] = pt.get_image_file_name().replace(
-        "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
-    )
-
-    parameters["fullPath"] = os.path.join(
-        parameters["directory"], parameters["fileName"]
-    )
-
-    limsres = {}
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
-
-    # Only add data from lims if explicitly asked for, since
-    # its a operation that can take some time.
-    if include_lims_data and mxcube.mxcubecore.beamline_ho.lims.lims_rest:
-        limsres = mxcube.mxcubecore.beamline_ho.lims.lims_rest.get_dc(lims_id)
-
-    # Always add link to data, (no request made)
-    limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
-
-    res = {
-        "label": parameters["label"],
-        "strategy_name": parameters["strategy_name"],
-        "type": "GphlWorkflow",
-        "parameters": parameters,
-        "sampleID": sample_node.loc_str,
-        "sampleQueueID": sample_node._node_id,
-        "taskIndex": node_index(node)["idx"],
-        "queueID": queueID,
-        "checked": node.is_enabled(),
-        "state": state,
-        "limsResultData": limsres,
-    }
-
-    return res
-
-
 def _handle_wf(sample_node, node, include_lims_data):
     queueID = node._node_id
     enabled, state = get_node_state(queueID)
@@ -565,7 +512,8 @@ def _handle_energy_scan(sample_node, node):
     return res
 
 
-def _handle_char(sample_node, node, include_lims_data=False):
+def _handle_char(parent_node, node, include_lims_data=False):
+    sample_node = parent_node.get_sample_node()
     parameters = node.characterisation_parameters.as_dict()
     parameters["shape"] = node.get_point_index()
     refp = _handle_dc(sample_node, node.reference_image_collection)["parameters"]
@@ -1752,7 +1700,7 @@ def queue_model_child_added(parent, child):
             enable_entry(dc_entry, True)
             enable_entry(parent_entry, True)
             parent_entry.enqueue(dc_entry)
-            sample = parent.get_parent()
+            sample = parent.get_sample_node()
 
             task = _handle_dc(sample, child)
             server.emit("add_task", {"tasks": [task]}, namespace="/hwr")
@@ -1775,7 +1723,7 @@ def queue_model_diff_plan_available(char, collection_list):
             collection.set_enabled(False)
 
             dcg_model = char.get_parent()
-            sample = dcg_model.get_parent()
+            sample = dcg_model.get_sample_node()
 
             setattr(collection, "shape", origin_model.shape)
 

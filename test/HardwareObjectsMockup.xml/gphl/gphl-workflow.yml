@@ -4,7 +4,7 @@ _initialise_class:
 settings:
     # Controls for MXCuBE UI and behaviour
     # Use configured multitrigger collection, default: false, any value is true
-    use_multitrigger: true
+#    use_multitrigger: true
     # Pass path_template.prefix to workflow as prefix. Any value is True Do not change
     use_path_template_prefix: true
     # Use advanced_mode for adidtional UI options. Default is false, any value is true
@@ -18,8 +18,8 @@ settings:
         - 0.05
         - 0.2
 
-#        tolerance for deciding whether angles differ, in degrees;
-#        used to compare kappa and phi to decide if orientations needs separate centring
+    # tolerance for deciding whether angles differ, in degrees;
+    # used to compare kappa and phi to decide if orientations needs separate centring
     angular_tolerance: 1.0
     # Characterisation strategies popup.
     # names refer to stategies in  strategylib.nml
