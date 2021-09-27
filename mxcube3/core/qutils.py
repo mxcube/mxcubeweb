@@ -628,7 +628,7 @@ def _handle_sample(node, include_lims_data=False):
         "location": location,
         "sampleName": node.get_name(),
         "proteinAcronym": node.crystals[0].protein_acronym,
-        "defaultPrefix": limsutils.get_default_prefix(node, False),
+        "defaultPrefix": limsutils.get_default_prefix(node),
         "defaultSubDir": limsutils.get_default_subdir(node),
         "type": "Sample",
         "checked": enabled,
@@ -1037,8 +1037,8 @@ def set_dc_params(model, entry, task_data, sample_model):
     if params["prefix"]:
         acq.path_template.base_prefix = params["prefix"]
     else:
-        acq.path_template.base_prefix = mxcube.mxcubecore.beamline_ho.session.get_default_prefix(
-            sample_model, False
+        acq.path_template.base_prefix = (
+            mxcube.mxcubecore.beamline_ho.session.get_default_prefix(sample_model)
         )
 
     full_path = os.path.join(
@@ -1123,7 +1123,7 @@ def set_gphl_wf_params(model, entry, task_data, sample_model):
     params = task_data["parameters"]
     limsutils.apply_template(params, sample_model, model.path_template)
 
-    # params include only p_template-related parametes and strategy_nameath
+    # params include only path_template-related parametes and strategy_name
     model.init_from_task_data(sample_model, params)
     model.set_pre_strategy_params(**params)
     model.set_pre_acquisition_params(**params)
@@ -1154,8 +1154,8 @@ def set_wf_params(model, entry, task_data, sample_model):
     if params["prefix"]:
         model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = mxcube.mxcubecore.beamline_ho.session.get_default_prefix(
-            sample_model, False
+        model.path_template.base_prefix = (
+            mxcube.mxcubecore.beamline_ho.session.get_default_prefix(sample_model)
         )
 
     full_path = os.path.join(
@@ -1243,8 +1243,8 @@ def set_xrf_params(model, entry, task_data, sample_model):
     if params["prefix"]:
         model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = mxcube.mxcubecore.beamline_ho.session.get_default_prefix(
-            sample_model, False
+        model.path_template.base_prefix = (
+            mxcube.mxcubecore.beamline_ho.session.get_default_prefix(sample_model)
         )
 
     full_path = os.path.join(
@@ -1295,8 +1295,8 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     if params["prefix"]:
         model.path_template.base_prefix = params["prefix"]
     else:
-        model.path_template.base_prefix = mxcube.mxcubecore.beamline_ho.session.get_default_prefix(
-            sample_model, False
+        model.path_template.base_prefix = (
+            mxcube.mxcubecore.beamline_ho.session.get_default_prefix(sample_model)
         )
 
     full_path = os.path.join(
