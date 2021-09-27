@@ -1,0 +1,38 @@
+! Standard Pilatus XDS input
+! Used for XDS processing of characterisation images only.
+
+! DETECTOR and OVERLOAD are mandatory
+! http://xds.mpimf-heidelberg.mpg.de/html_doc/INPUT_templates/XDS-PILATUS.INP
+! But are handled through the workflow
+! DETECTOR=PILATUS
+! OVERLOAD=1048500
+
+! Recommended by clemens, http://confluence.globalphasing.com/display/autoPROC/Shadows+for+Thaumatin2+data?focusedCommentId=10588412#comment-10588412
+ MINIMUM_NUMBER_OF_PIXELS_IN_A_SPOT= 4
+ SEPMIN=	4
+ CLUSTER_RADIUS= 2
+ MAXIMUM_ERROR_OF_SPOT_POSITION= 2
+
+! Resolution exclusion to exclude ice rings:
+! Source Clemens Vonrhein (autoPROC values)
+ EXCLUDE_RESOLUTION_RANGE=   3.914    3.865 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   3.679    3.634 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   3.458    3.412 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   2.689    2.641 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   2.265    2.228 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   2.083    2.049 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.962    1.929 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.929    1.899 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.895    1.865 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.727    1.707 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.529    1.514 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.478    1.465 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.449    1.435 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.377    1.363 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.372    1.358 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.304    1.291 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.280    1.269 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.266    1.254 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.229    1.217 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.176    1.163 ! pre-defined ice-ring resolution
+ EXCLUDE_RESOLUTION_RANGE=   1.129    1.117 ! pre-defined ice-ring resolution

@@ -188,9 +188,9 @@ class BeamlineSetupContainer extends React.Component {
     }
 
     const uiprops = this.props.uiproperties.beamline_setup.components;
-    const uiprop_list = filter(uiprops, (o) => {
-      return o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR';
-    });
+    const uiprop_list = filter(uiprops, (o) =>
+      o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
+    );
 
     return (
       <Row style={{
@@ -210,16 +210,18 @@ class BeamlineSetupContainer extends React.Component {
                 style={{ margin: '0px', fontWeight: 'bold',
                   paddingLeft: '7em', paddingRight: '7em' }}
               >
-              <tr>
-                {this.render_table_row(uiprop_list.slice(0, 4))}
-              </tr>
-              <tr>
-                {this.render_table_row(uiprop_list.slice(4))}
-                <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
-                </td>
-                <td>
-                </td>
-              </tr>
+                <tbody>
+                  <tr>
+                    {this.render_table_row(uiprop_list.slice(0, 4))}
+                  </tr>
+                  <tr>
+                    {this.render_table_row(uiprop_list.slice(4))}
+                    <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                    </td>
+                    <td>
+                    </td>
+                  </tr>
+                </tbody>
             </Table>
             </Col>
             <Col className="device-status-container" sm={5} smPush={1}>

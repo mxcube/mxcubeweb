@@ -2,26 +2,29 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from gevent import monkey
-
-monkey.patch_all(thread=False)
-
+import sys
 import mock
 import os
-import signal
-import logging
-import sys
-import time
-import traceback
-import atexit
 
-import gevent
+from gevent import monkey
+# NB HardwareRepository must be imported *before* the gevent monkeypatching
+# in order to set the unpatched version of socket for use elseqhere
+# See HardwareRepository.original_socket
+from mxcubecore import HardwareRepository as HWR
+monkey.patch_all(thread=False)
+
+
+# import signal
+# import logging
+# import time
+# import traceback
+# import atexit
 
 from optparse import OptionParser
 
-from flask import Flask, request, session
-from flask_socketio import SocketIO
-from flask_session import Session
+# from flask import Flask, request, session
+# from flask_socketio import SocketIO
+# from flask_session import Session
 
 from mxcube3.config import Config
 from mxcube3.app import MXCUBEApplication
@@ -88,10 +91,13 @@ def parse_args():
 def main():
     cmdline_options, args = parse_args()
 
-    cfg = Config(os.path.abspath(os.path.join(
-        cmdline_options.hwr_directory, 
-        "mxcube-server-config.yml"
-    )))
+    # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
+    # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
+    # without continuously editing teh main config files.
+    # Note that the machinery was all there in the core alrady. rhfogh.
+    HWR.init_hardware_repository(cmdline_options.hwr_directory)
+    config_path = HWR.get_hardware_repository().find_in_repository( "mxcube-server-config.yml")
+    cfg = Config(config_path)
 
     server.init(
         cmdline_options, cfg, mxcube
@@ -99,7 +105,6 @@ def main():
 
     mxcube.init(
         server,
-        cmdline_options.hwr_directory,
         cmdline_options.allow_remote,
         cmdline_options.ra_timeout,
         cmdline_options.video_device,

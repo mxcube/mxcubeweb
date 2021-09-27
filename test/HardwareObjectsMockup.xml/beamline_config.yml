@@ -50,8 +50,8 @@ _objects:
     - collect: mxcollect.xml
     - xrf_spectrum: xrf.xml
     - energy_scan: energyscan.xml
-#    - gphl_workflow: gphl-workflow.xml
-#    - gphl_connection: gphl-setup.xml
+    - gphl_connection: gphl/gphl-setup.yml
+    - gphl_workflow: gphl/gphl-workflow.yml
 #    - centring: centring.xml
     # Analysis:
     - offline_processing: auto_processing.xml

@@ -251,7 +251,7 @@ def _do_take_snapshot(filename, bw=False):
 
 def save_snapshot(self, filename, bw=False):
     mxcube.mxcubecore.beamline_ho.sample_view.save_snapshot(
-        filename, overlay=Flase, bw=bw
+        filename, overlay=False, bw=bw
     )
     #_do_take_snapshot(filename, bw)
 
@@ -260,7 +260,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
     if snapshots is None:
         # called via AbstractCollect
         dc_params = self.current_dc_parameters
-        diffractometer = self.diffractometer
+        diffractometer = mxcube.mxcubecore.beamline_ho.diffractometer
         move_omega_relative = diffractometer.move_omega_relative
     else:
         # called via AbstractMultiCollect
@@ -268,7 +268,7 @@ def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
         calling_frame = inspect.currentframe().f_back.f_back
 
         dc_params = calling_frame.f_locals["data_collect_parameters"]
-        diffractometer = self.diffractometer()
+        diffractometer = mxcube.mxcubecore.beamline_ho.diffractometer
         move_omega_relative = diffractometer.phiMotor.set_value_relative
 
     if dc_params["take_snapshots"]:

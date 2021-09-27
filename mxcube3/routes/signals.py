@@ -284,14 +284,7 @@ def update_task_result(entry):
     server.emit("update_task_lims_data", msg, namespace="/hwr")
 
     
-def queue_execution_entry_started(entry, message):
-    handle_auto_mount_next(entry)
-
-    if not qutils.is_interleaved(entry.get_data_model()):
-        server.emit("task", get_task_state(entry), namespace="/hwr")
-
-
-def queue_execution_entry_started(entry, message):
+def queue_execution_entry_started(entry, message=None):
     handle_auto_mount_next(entry)
 
     if not qutils.is_interleaved(entry.get_data_model()):

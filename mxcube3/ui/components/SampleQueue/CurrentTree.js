@@ -124,7 +124,7 @@ export default class CurrentTree extends React.Component {
             let task = null;
             const displayData = this.props.displayData[taskData.queueID] || {};
 
-            if (taskData.type === 'Workflow') {
+            if (taskData.type === 'Workflow' || taskData.type === 'GphlWorkflow') {
               task = (
                 <WorkflowTaskItem
                   key={taskData.queueID}

@@ -10,7 +10,7 @@ class DiffractometerAdapter(AdapterBase):
         ho.connect("stateChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):
-        self.state_change(self.get_value(), **kwargs)
+        self.state_change(**kwargs)
 
     def stop(self):
         pass
