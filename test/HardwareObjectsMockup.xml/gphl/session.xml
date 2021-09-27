@@ -26,7 +26,7 @@
 
     <file_info>
         <file_suffix>cbf</file_suffix>
-        <precision>4</precision>
+        <precision>5</precision>
         <base_directory>/mnt/scratch/rhfogh/mxcube3_data</base_directory>
         <raw_data_folder_name>RAW_DATA</raw_data_folder_name>
         <processed_data_base_directory>/mnt/scratch/rhfogh/mxcube3_data</processed_data_base_directory>

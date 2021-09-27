@@ -160,7 +160,7 @@ def apply_template(params, sample_model, path_template):
 
     if "{" in params.get("prefix", ""):
         sample = mxcube.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
-        prefix = get_default_prefix(sample, False)
+        prefix = get_default_prefix(sample)
         shape = params["shape"] if params["shape"] > 0 else ""
         params["prefix"] = params["prefix"].format(PREFIX=prefix, POSITION=shape)
 
@@ -379,7 +379,7 @@ def select_proposal(proposal):
         return False
 
 
-def get_default_prefix(sample_data, generic_name):
+def get_default_prefix(sample_data, generic_name=False):
     if isinstance(sample_data, dict):
         sample = qmo.Sample()
         sample.code = sample_data.get("code", "")
@@ -454,7 +454,7 @@ def synch_with_lims():
     for sample_info in samples_info_list:
         sample_info["limsID"] = sample_info.pop("sampleId")
         sample_info["limsLink"] = mxcube.mxcubecore.beamline_ho.lims.lims_rest.sample_link()
-        sample_info["defaultPrefix"] = get_default_prefix(sample_info, False)
+        sample_info["defaultPrefix"] = get_default_prefix(sample_info)
         sample_info["defaultSubDir"] = get_default_subdir(sample_info)
 
         if not VALID_SAMPLE_NAME_REGEXP.match(sample_info["sampleName"]):
