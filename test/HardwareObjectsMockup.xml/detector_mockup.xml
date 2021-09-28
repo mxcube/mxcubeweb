@@ -11,7 +11,7 @@
   <width>4150</width>
   <height>4271</height>
   <hasShutterless>True</hasShutterless>
-  <fileSuffix>cbf</fileSuffix>
+  <file_suffix>cbf</file_suffix>
 
   <beam>
     <ax>0.00002</ax>
