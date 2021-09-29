@@ -15,8 +15,8 @@ MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromole
 * [ALBA](https://www.cells.es/en)
 * [DESY](https://www.desy.de)
 * [LNLS](https://www.lnls.cnpem.br/)
-* [Elettra] (https://www.elettra.trieste.it/)
-* [NSRRC] (https://www.nsrrc.org.tw/english/index.aspx)
+* [Elettra](https://www.elettra.trieste.it/)
+* [NSRRC](https://www.nsrrc.org.tw/english/index.aspx)
 
 Version 3 is developed as a web application and runs in any recent browser. The application is further built using standard web technologies and does not require any third party plugins to be installed in order to function. 
 
