@@ -1,7 +1,5 @@
 const initialState = {
-  loginInfo: {},
   loggedIn: false,
-  data: {},
   showProposalsForm: false,
   selectedProposal: '',
   selectedProposalID: ''
@@ -11,18 +9,16 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_LOGIN_INFO':
     {
-      const data = action.loginInfo.loginRes;
-      let loggedIn = false;
-      if (Object.keys(data).length > 0) {
-        loggedIn = data.status.code === 'ok';
-      }
       return Object.assign({}, state,
         {
-          loginInfo: action.loginInfo,
+          beamlineName: action.loginInfo.beamlineName,
+          synchrotronName: action.loginInfo.synchrotronName,
+          loginType: action.loginInfo.loginType,
+          user: action.loginInfo.user,
+          proposalList: action.loginInfo.proposalList,
           selectedProposal: action.loginInfo.selectedProposal,
           selectedProposalID: action.loginInfo.selectedProposalID,
-          loggedIn,
-          data
+          loggedIn: action.loginInfo.loggedIn,
         });
     }
     case 'SHOW_PROPOSALS_FORM':
@@ -34,13 +30,13 @@ export default (state = initialState, action) => {
     }
     case 'SELECT_PROPOSAL':
     {
-      const proposals = state.data.proposalList;
+      const proposals = state.proposalList;
 
       const propInfo = proposals.find((prop) => {
-        const name = `${prop.Proposal.code}${prop.Proposal.number}`;
+        const name = `${prop.code}${prop.number}`;
         return name === action.proposal;
       });
-      const propId = propInfo.Proposal.proposalId;
+      const propId = propInfo.proposalId;
 
       return {
         ...state,

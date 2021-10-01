@@ -70,8 +70,8 @@ export function sendSelectProposal(number) {
 
 export function startSession() {
   return function (dispatch, getState) {
-    const { loginInfo } = getState().login;
-    dispatch(setMaster(loginInfo.master, loginInfo.observerName));
+    const { user } = getState().login;
+    dispatch(setMaster(user.inControl, user.name));
     dispatch(getInitialState());
     dispatch(setLoading(false));
   };
@@ -137,7 +137,7 @@ export function signIn(proposal, password) {
 
 export function doSignOut() {
   return function (dispatch) {
-    return fetch('mxcube/api/v0.1/signout', {
+    return fetch('mxcube/api/v0.1/login/signout', {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());

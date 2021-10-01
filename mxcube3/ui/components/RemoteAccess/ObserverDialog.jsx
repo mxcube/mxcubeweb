@@ -23,9 +23,9 @@ export class ObserverDialog extends React.Component {
   componentDidUpdate() {
     if (this.name && this.name.value === '') {
       try {
-        this.name.value = this.props.loginInfo.loginRes.Person.familyName.toUpperCase();
+        this.name.value = this.props.login.user.name;
       } catch (err) {
-        this.name.value = this.props.loginInfo.loginRes.status.msg;
+        this.name.value = '';
       }
     }
   }
@@ -76,7 +76,7 @@ export class ObserverDialog extends React.Component {
           <FormControl
             inputRef={(ref) => { this.name = ref; }}
             type="text"
-            default={this.props.loginInfo.selectedProposal}
+            default={this.props.login.selectedProposal}
           />
           <Button onClick={this.accept}> OK </Button>
         </Modal.Footer>
@@ -87,7 +87,7 @@ export class ObserverDialog extends React.Component {
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
-    loginInfo: state.login.loginInfo
+    login: state.login
   };
 }
 

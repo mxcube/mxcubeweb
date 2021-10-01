@@ -11,6 +11,7 @@ import json
 import importlib
 from functools import reduce
 
+from pathlib import Path
 from logging import StreamHandler, NullHandler
 from logging.handlers import TimedRotatingFileHandler
 
@@ -22,7 +23,6 @@ from mxcubecore.utils.conversion import make_table
 from mxcube3.logging_handler import MX3LoggingHandler
 from mxcube3.core.adapter.utils import get_adapter_cls_from_hardware_object
 from mxcube3.core.adapter.adapter_base import AdapterBase
-
 
 removeLoggingHandlers()
 
@@ -119,20 +119,18 @@ class MXCUBECore():
         # current functionality.
         _hwr = hwr.get_hardware_repository()
 
-        MXCUBECore.HWR = _hwr
+        MXCUBECore.hwr = _hwr
        
         try:
             MXCUBECore.beamline_ho = hwr.beamline
             MXCUBECore.beamline = BeamlineAdapter(hwr.beamline, MXCUBEApplication)
             MXCUBECore.adapt_hardware_objects(app)
-
         except Exception:
             msg = "Could not initialize one or several hardware objects, "
             msg += "stopped at first error ! \n"
             msg += "Make sure That all devices servers are running \n"
             msg += "Make sure that the detector software is running \n"
             MXCUBECore.exit_with_error(msg)
-
 
     @staticmethod
     def _import_adapter_cls(adapter_cls_str):
@@ -324,6 +322,8 @@ class MXCUBEApplication():
         MXCUBEApplication.init_state_storage()
         MXCUBEApplication.init_logging(log_fpath)
 
+        # MXCUBEApplication.load_settings()
+
 
     @staticmethod
     def init_sample_video(video_device):
@@ -397,7 +397,7 @@ class MXCUBEApplication():
             log_file_handler.setFormatter(log_formatter)
 
         root_logger = logging.getLogger()
-        #root_logger.setLevel(logging.INFO)
+        root_logger.setLevel(logging.INFO)
         root_logger.addHandler(NullHandler())
 
         custom_log_handler = MX3LoggingHandler(
@@ -477,24 +477,27 @@ class MXCUBEApplication():
 
         data = {
             "QUEUE": queue,
-            "CURRENTLY_MOUNTED_SAMPLE": CURRENTLY_MOUNTED_SAMPLE,
-            "SAMPLE_TO_BE_MOUNTED": SAMPLE_TO_BE_MOUNTED,
-            "CENTRING_METHOD": CENTRING_METHOD,
-            "NODE_ID_TO_LIMS_ID": NODE_ID_TO_LIMS_ID,
-            "INITIAL_FILE_LIST": INITIAL_FILE_LIST,
-            "SC_CONTENTS": SC_CONTENTS,
-            "SAMPLE_LIST": SAMPLE_LIST,
-            "TEMP_DISABLED": TEMP_DISABLED,
-            "ALLOW_REMOTE": ALLOW_REMOTE,
-            "TIMEOUT_GIVES_CONTROL": TIMEOUT_GIVES_CONTROL,
-            "VIDEO_FORMAT": VIDEO_FORMAT,
-            "AUTO_MOUNT_SAMPLE": AUTO_MOUNT_SAMPLE,
-            "AUTO_ADD_DIFFPLAN": AUTO_ADD_DIFFPLAN,
-            "NUM_SNAPSHOTS": NUM_SNAPSHOTS,
-            "UI_STATE": UI_STATE,
+            "CURRENTLY_MOUNTED_SAMPLE": MXCUBEApplication.CURRENTLY_MOUNTED_SAMPLE,
+            "SAMPLE_TO_BE_MOUNTED": MXCUBEApplication.SAMPLE_TO_BE_MOUNTED,
+            "CENTRING_METHOD": MXCUBEApplication.CENTRING_METHOD,
+            "NODE_ID_TO_LIMS_ID": MXCUBEApplication.NODE_ID_TO_LIMS_ID,
+            "INITIAL_FILE_LIST": MXCUBEApplication.INITIAL_FILE_LIST,
+            "SC_CONTENTS": MXCUBEApplication.SC_CONTENTS,
+            "SAMPLE_LIST": MXCUBEApplication.SAMPLE_LIST,
+            "TEMP_DISABLED": MXCUBEApplication.TEMP_DISABLED,
+            "ALLOW_REMOTE": MXCUBEApplication.ALLOW_REMOTE,
+            "TIMEOUT_GIVES_CONTROL": MXCUBEApplication.TIMEOUT_GIVES_CONTROL,
+            "VIDEO_FORMAT": MXCUBEApplication.VIDEO_FORMAT,
+            "AUTO_MOUNT_SAMPLE": MXCUBEApplication.AUTO_MOUNT_SAMPLE,
+            "AUTO_ADD_DIFFPLAN": MXCUBEApplication.AUTO_ADD_DIFFPLAN,
+            "NUM_SNAPSHOTS": MXCUBEApplication.NUM_SNAPSHOTS,
+            "UI_STATE": MXCUBEApplication.UI_STATE,
         }
 
-        with open("stored-mxcube-session.json", "w") as fp:
+        fname = Path("/tmp/stored-mxcube-session.json")
+        fname.touch(exist_ok=True)
+
+        with open(fname, "w+") as fp:
             json.dump(data, fp)
 
     @staticmethod
@@ -502,7 +505,7 @@ class MXCUBEApplication():
         """
         Loads application wide variables from "stored-mxcube-session.json"
         """
-        with open("stored-mxcube-session.json", "r") as f:
+        with open("/tmp/stored-mxcube-session.json", "r") as f:
             data = json.load(f)
 
         from mxcube3.core import qutils
@@ -522,4 +525,4 @@ class MXCUBEApplication():
 
     @staticmethod
     def app_atexit():
-        pass
+        MXCUBEApplication.save_settings()

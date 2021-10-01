@@ -79,7 +79,7 @@ def client():
 
     yield client
 
-    client.get("/mxcube/api/v0.1/signout")
+    client.get("/mxcube/api/v0.1/login/signout")
 
 
 @pytest.fixture

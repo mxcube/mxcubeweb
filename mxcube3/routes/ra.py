@@ -12,6 +12,7 @@ from flask import (
 )
 
 from flask_socketio import join_room, leave_room
+from flask_security import current_user
 
 from mxcube3.core import loginutils
 
@@ -44,11 +45,15 @@ def init_route(mxcube, server, url_prefix):
                 msg = "Another user is already asking for control"
                 return make_response(msg, 409)
 
-        user = loginutils.get_user_by_sid(session.sid)
+        #user = loginutils.get_user_by_sid(session.sid)
 
-        user["name"] = data["name"]
-        user["requestsControl"] = data["control"]
-        user["message"] = data["message"]
+        #user["name"] = data["name"]
+        #user["requestsControl"] = data["control"]
+        #user["message"] = data["message"]
+
+        current_user.requests_control = data["control"]
+        mxcube.server.user_datastore.commit()
+
 
         observers = loginutils.get_observers()
         gevent.spawn(handle_timeout_gives_control, session.sid, timeout=10)
@@ -64,7 +69,7 @@ def init_route(mxcube, server, url_prefix):
         """
         """
         # Already master do nothing
-        if loginutils.is_operator(session.sid):
+        if loginutils.is_operator():
             return make_response("", 200)
 
         # Not inhouse user so not allowed to take control by force,
@@ -127,10 +132,10 @@ def init_route(mxcube, server, url_prefix):
         """
         """
         data = {
-            "observers": loginutils.get_observers(),
-            "sid": session.sid,
-            "master": loginutils.is_operator(session.sid),
-            "observerName": loginutils.get_observer_name(),
+            "observers": [], #loginutils.get_observers(),
+            "sid": current_user.username,
+            "master": loginutils.is_operator(),
+            "observerName": current_user.name,
             "allowRemote": mxcube.ALLOW_REMOTE,
             "timeoutGivesControl": mxcube.TIMEOUT_GIVES_CONTROL,
         }
@@ -214,14 +219,14 @@ def init_route(mxcube, server, url_prefix):
     @server.flask_socketio.on("connect", namespace="/hwr")
     @server.ws_restrict
     def connect():
-        user = loginutils.get_user_by_sid(session.sid)
+        #user = loginutils.get_user_by_sid(session.sid)
 
         # Make sure user is logged, session may have been closed i.e by timeout
-        if user:
-            user["socketio_sid"] = request.sid
+        #if user:
+        #    user["socketio_sid"] = request.sid
 
         # (Note: User is logged in if operator)
-        if loginutils.is_operator(session.sid):
+        if loginutils.is_operator():
             if (
                 not mxcube.mxcubecore.beamline_ho.queue_manager.is_executing()
                 and not loginutils.DISCONNECT_HANDLED
@@ -237,7 +242,7 @@ def init_route(mxcube, server, url_prefix):
     @server.ws_restrict
     def disconnect():
         if (
-            loginutils.is_operator(session.sid)
+            loginutils.is_operator()
             and mxcube.mxcubecore.beamline_ho.queue_manager.is_executing()
         ):
 
@@ -250,23 +255,23 @@ def init_route(mxcube, server, url_prefix):
     def set_master(data):
         leave_room("observers", namespace="/ui_state")
         
-        return session.sid
+        return current_user.username
 
 
     @server.flask_socketio.on("setRaObserver", namespace="/hwr")
     @server.ws_restrict
     def set_observer(data):
         name = data.get("name", "")
-        observers = loginutils.get_observers()
-        observer = loginutils.get_user_by_sid(session.sid)
+        observers = [] #loginutils.get_observers()
+        observer = {}
 
         if observer and name:
-            observer["name"] = name
+            observer["name"] = current_user.name
             server.emit("observerLogin", observer, include_self=False, namespace="/hwr")
 
         server.emit("observersChanged", observers, namespace="/hwr")
         join_room("observers", namespace="/ui_state")
 
-        return session.sid
+        return current_user.username
 
     return bp

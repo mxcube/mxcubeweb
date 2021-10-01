@@ -24,6 +24,8 @@ from mxcube3 import mxcube
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
 
+from flask_security import current_user
+
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
 
@@ -49,11 +51,7 @@ def RateLimited(maxPerSecond):
 
 
 def _proposal_id(session):
-    try:
-        return int(session["loginInfo"]["loginRes"]["Proposal"]["number"])
-    except (KeyError, TypeError, ValueError):
-        return None
-
+    return getattr(current_user, "proposal", None)
 
 def get_light_state_and_intensity():
     """

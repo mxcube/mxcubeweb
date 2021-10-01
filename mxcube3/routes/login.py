@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, session, request, jsonify, make_response, redirect
+from flask import Blueprint, request, jsonify, make_response, redirect
 
 from mxcube3.core import loginutils
 
@@ -33,6 +33,9 @@ def init_route(mxcube, server, url_prefix):
         200: On success
         409: Error, could not log in
         """
+
+        import pdb
+        pdb.set_trace()
 
         params = request.get_json()
         login_id = params.get("proposal", "")
@@ -80,9 +83,9 @@ def init_route(mxcube, server, url_prefix):
         200: On success
         409: Error, could not log in
         """
-        login_info = session.get("loginInfo")
+        #login_info = session.get("loginInfo")
 
-        user, res = loginutils.login_info(login_info)
+        user, res = loginutils.login_info()
 
         # Redirect the user to login page if for some reason logged out
         # i.e. server restart
@@ -103,13 +106,15 @@ def init_route(mxcube, server, url_prefix):
 
     @server.flask_socketio.on("connect", namespace="/network")
     def network_ws_connect():
-        msg = "Client with sid %s connected" % str(request.sid)
+        #msg = "Client with sid %s connected" % str(request.sid)
+        msg = "Client connected"
         logging.getLogger("MX3.HWR").info(msg)
 
 
     @server.flask_socketio.on("disconnect", namespace="/network")
     def network_ws_disconnect():
-        msg = "Client with sid %s disconnected" % str(request.sid)
+        #msg = "Client with sid %s disconnected" % str(request.sid)
+        msg = "Client disconnected"
         logging.getLogger("MX3.HWR").info(msg)
 
     return bp

@@ -23,9 +23,7 @@ class RequestControlForm extends React.Component {
                      <Button onClick={this.takeControlOnClick}>Take control</Button>
                    </span>);
 
-    const loginRes = this.props.login.loginInfo.loginRes;
-
-    if (loginRes && loginRes.Session && !loginRes.Session.is_inhouse) {
+    if (!this.props.login.user.isstaff) {
       content = null;
     }
 
@@ -55,14 +53,14 @@ class RequestControlForm extends React.Component {
     const message = this.message.value;
     const name = this.name.value;
 
-    this.props.requestControl(true, message, name, this.props.login.loginInfo);
+    this.props.requestControl(true, message, name, this.props.login.user);
   }
 
   cancelControlRequest() {
     const message = this.message.value;
     const name = this.name.value;
 
-    this.props.requestControl(false, message, name, this.props.login.loginInfo);
+    this.props.requestControl(false, message, name, this.props.login.user);
   }
 
   render() {

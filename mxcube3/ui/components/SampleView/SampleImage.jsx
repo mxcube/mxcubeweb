@@ -349,8 +349,13 @@ export default class SampleImage extends React.Component {
       });
 
       if (objectFound) {
-        const pointList = shapes.filter((shape) => (
+        const threeDpointList = shapes.filter((shape) => (
           this.props.points[shape.id] !== undefined)).map((shape) => (shape.id));
+
+        const twoDPointList = shapes.filter((shape) => (
+          this.props.twoDPoints[shape.id] !== undefined)).map((shape) => (shape.id));
+
+        const pointList = threeDpointList.concat(twoDPointList);
 
         const gridList = shapes.filter((shape) => (
           this.props.grids[shape.id] !== undefined)).map((shape) => (shape.id));

@@ -11,6 +11,7 @@ import os
 import io
 import math
 import re
+import json
 
 from scandir import scandir
 
@@ -19,6 +20,7 @@ from mxcubecore.HardwareObjects import queue_model_objects as qmo
 from mxcube3 import mxcube
 
 from flask import session
+from flask_security import current_user
 
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
@@ -308,18 +310,17 @@ def get_proposal_info(proposal):
     """
     Search for the given proposal in the proposal list.
     """
-    from .loginutils import users
+    limsdata = json.loads(current_user.limsdata)
+    
+    logging.getLogger("MX3.HWR").info("[LIMS] Serching for proposal: %s" % proposal)
+    for prop in limsdata.get("proposalList", []):
+        _p = "%s%s" % (
+            prop.get("Proposal").get("code", "").lower(),
+            prop.get("Proposal").get("number", ""),
+        )
 
-    for user in users().values():
-        logging.getLogger("MX3.HWR").info("[LIMS] Serching for proposal: %s" % proposal)
-        for prop in user["limsData"].get("proposalList", []):
-            _p = "%s%s" % (
-                prop.get("Proposal").get("code", "").lower(),
-                prop.get("Proposal").get("number", ""),
-            )
-
-            if _p == proposal.lower():
-                return prop
+        if _p == proposal.lower():
+            return prop
 
     return {}
 

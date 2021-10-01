@@ -7,18 +7,27 @@ import time
 
 import gevent
 
+from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, request, session
 from flask_socketio import SocketIO
 from flask_session import Session
 
+from flask_security import Security, login_required, SQLAlchemySessionUserDatastore
+
 from spectree import SpecTree
+
+from mxcube3.core.user.database import db_session, init_db, UserDatastore
+from mxcube3.core.user.models import User, Role, Message
 
 class Server():
     init_event = gevent.event.Event()
     flask = None
     flask_session = None
     flask_socketio = None
+    security = None
     api = None
+    user_datastore = None
+    db_session = None
 
     @staticmethod
     def exception_handler(e):
@@ -53,8 +62,13 @@ class Server():
         Server.flask.config.from_object(cfg.flask)
         Server.flask.register_error_handler(Exception, Server.exception_handler)
 
-        Server.flask_session = Session()
-        Server.flask_session.init_app(Server.flask)
+        #Server.flask_session = Session()
+        #Server.flask_session.init_app(Server.flask)
+
+        Server.user_datastore = UserDatastore(db_session, User, Role, message_model=Message)
+        Server.security = Security(Server.flask, Server.user_datastore)
+        init_db()
+        Server.db_session = db_session
 
         Server.flask_socketio = SocketIO(manage_session=False, cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS)
         Server.flask_socketio.init_app(Server.flask)
@@ -73,7 +87,7 @@ class Server():
             from core import loginutils
 
             # Make the valid_login_only decorator available on server object
-            Server.restrict = staticmethod(loginutils.valid_login_only)
+            Server.restrict = staticmethod(login_required) #loginutils.valid_login_only)
             Server.require_control = staticmethod(loginutils.require_control)
             Server.ws_restrict = staticmethod(loginutils.ws_valid_login_only)
             Server.route = staticmethod(Server.flask.route)
