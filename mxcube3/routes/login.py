@@ -1,9 +1,7 @@
 import logging
 
 from flask import Blueprint, request, jsonify, make_response, redirect
-
-from mxcube3.core import loginutils
-
+from mxcube3.core.util.network import send_feedback
 
 def deny_access(msg):
     resp = jsonify({"msg": msg})
@@ -33,16 +31,14 @@ def init_route(mxcube, server, url_prefix):
         200: On success
         409: Error, could not log in
         """
-
-        import pdb
-        pdb.set_trace()
-
         params = request.get_json()
         login_id = params.get("proposal", "")
         password = params.get("password", "")
 
+        
+
         try:
-            res = jsonify(loginutils.login(login_id, password))
+            res = jsonify(mxcube.usermanager.login(login_id, password))
         except Exception as ex:
             msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
             logging.getLogger("MX3.HWR").info(msg)
@@ -57,7 +53,7 @@ def init_route(mxcube, server, url_prefix):
         """
         Signout from Mxcube3 and reset the session
         """
-        loginutils.signout()
+        mxcube.usermanager.signout()
 
         return make_response("", 200)
 
@@ -85,7 +81,7 @@ def init_route(mxcube, server, url_prefix):
         """
         #login_info = session.get("loginInfo")
 
-        user, res = loginutils.login_info()
+        user, res = mxcube.usermanager.login_info()
 
         # Redirect the user to login page if for some reason logged out
         # i.e. server restart
@@ -100,7 +96,7 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/send_feedback", methods=["POST"])
     @server.restrict
     def send_feedback():
-        loginutils.send_feedback()
+        network.send_feedback()
         return make_response("", 200)
 
 

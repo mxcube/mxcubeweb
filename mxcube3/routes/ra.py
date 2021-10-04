@@ -14,8 +14,9 @@ from flask import (
 from flask_socketio import join_room, leave_room
 from flask_security import current_user
 
-from mxcube3.core import loginutils
+from mxcube3.core.util.network import remote_addr
 
+DISCONNECT_HANDLED = True
 
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("remote_access", __name__, url_prefix=url_prefix)
@@ -30,22 +31,21 @@ def init_route(mxcube, server, url_prefix):
             gevent.sleep(timeout)
 
             if mxcube.TIMEOUT_GIVES_CONTROL:
-                user = loginutils.get_user_by_sid(sid)
+                user = mxcube.usermanager.get_user_by_sid(sid)
 
                 # Pass control to user if still waiting
                 if user.get("requestsControl"):
                     toggle_operator(sid, "Timeout expired, you have control")
 
         data = request.get_json()
-        remote_addr = loginutils.remote_addr()
 
         # Is someone already asking for control
-        for observer in loginutils.get_observers():
-            if observer["requestsControl"] and observer["host"] != remote_addr:
+        for observer in mxcube.usermanager.get_observers():
+            if observer["requestsControl"] and observer["host"] != remote_addr():
                 msg = "Another user is already asking for control"
                 return make_response(msg, 409)
 
-        #user = loginutils.get_user_by_sid(session.sid)
+        #user = mxcube.usermanager.get_user_by_sid(session.sid)
 
         #user["name"] = data["name"]
         #user["requestsControl"] = data["control"]
@@ -55,7 +55,7 @@ def init_route(mxcube, server, url_prefix):
         mxcube.server.user_datastore.commit()
 
 
-        observers = loginutils.get_observers()
+        observers = mxcube.usermanager.get_observers()
         gevent.spawn(handle_timeout_gives_control, session.sid, timeout=10)
 
         server.emit("observersChanged", observers, namespace="/hwr")
@@ -69,7 +69,7 @@ def init_route(mxcube, server, url_prefix):
         """
         """
         # Already master do nothing
-        if loginutils.is_operator():
+        if mxcube.usermanager.is_operator():
             return make_response("", 200)
 
         # Not inhouse user so not allowed to take control by force,
@@ -94,13 +94,13 @@ def init_route(mxcube, server, url_prefix):
 
 
     def toggle_operator(new_op_sid, message):
-        current_op = loginutils.get_operator()
+        current_op = mxcube.usermanager.get_operator()
 
-        new_op = loginutils.get_user_by_sid(new_op_sid)
-        loginutils.set_operator(new_op["sid"])
+        new_op = mxcube.usermanager.get_user_by_sid(new_op_sid)
+        mxcube.usermanager.set_operator(new_op["sid"])
         new_op["message"] = message
 
-        observers = loginutils.get_observers()
+        observers = mxcube.usermanager.get_observers()
 
         # Append the new data path so that it can be updated on the client
         new_op["rootPath"] = mxcube.mxcubecore.beamline_ho.session.get_base_image_directory()
@@ -118,7 +118,7 @@ def init_route(mxcube, server, url_prefix):
 
 
     def remain_observer(observer_sid, message):
-        observer = loginutils.get_user_by_sid(observer_sid)
+        observer = mxcube.usermanager.get_user_by_sid(observer_sid)
         observer["message"] = message
 
         server.emit(
@@ -132,9 +132,9 @@ def init_route(mxcube, server, url_prefix):
         """
         """
         data = {
-            "observers": [], #loginutils.get_observers(),
+            "observers": [], #mxcube.usermanager.get_observers(),
             "sid": current_user.username,
-            "master": loginutils.is_operator(),
+            "master": mxcube.usermanager.is_operator(),
             "observerName": current_user.name,
             "allowRemote": mxcube.ALLOW_REMOTE,
             "timeoutGivesControl": mxcube.TIMEOUT_GIVES_CONTROL,
@@ -172,7 +172,7 @@ def init_route(mxcube, server, url_prefix):
     def observer_requesting_control():
         observer = None
 
-        for o in loginutils.get_observers():
+        for o in mxcube.usermanager.get_observers():
             if o["requestsControl"]:
                 observer = o
 
@@ -205,7 +205,7 @@ def init_route(mxcube, server, url_prefix):
         sid = request.get_json().get("sid", "")
 
         if message and sid:
-            loginutils.append_message(message, sid)
+            mxcube.chat.append_message(message, sid)
 
         return Response(status=200)
 
@@ -213,25 +213,26 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/chat", methods=["GET"])
     @server.restrict
     def get_all_mesages():
-        return jsonify({"messages": loginutils.get_all_messages()})
+        return jsonify({"messages": mxcube.chat.get_all_messages()})
 
 
     @server.flask_socketio.on("connect", namespace="/hwr")
     @server.ws_restrict
     def connect():
-        #user = loginutils.get_user_by_sid(session.sid)
+        global DISCONNECT_HANDLED
+        #user = mxcube.usermanager.get_user_by_sid(session.sid)
 
         # Make sure user is logged, session may have been closed i.e by timeout
         #if user:
         #    user["socketio_sid"] = request.sid
 
         # (Note: User is logged in if operator)
-        if loginutils.is_operator():
+        if mxcube.usermanager.is_operator():
             if (
                 not mxcube.mxcubecore.beamline_ho.queue_manager.is_executing()
-                and not loginutils.DISCONNECT_HANDLED
+                and not DISCONNECT_HANDLED
             ):
-                loginutils.DISCONNECT_HANDLED = True
+                DISCONNECT_HANDLED = True
                 server.emit("resumeQueueDialog", namespace="/hwr")
                 msg = "Client reconnected, Queue was previously stopped, asking "
                 msg += "client for action"
@@ -241,12 +242,13 @@ def init_route(mxcube, server, url_prefix):
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     @server.ws_restrict
     def disconnect():
+        global DISCONNECT_HANDLED
         if (
-            loginutils.is_operator()
+            mxcube.usermanager.is_operator()
             and mxcube.mxcubecore.beamline_ho.queue_manager.is_executing()
         ):
 
-            loginutils.DISCONNECT_HANDLED = False
+            DISCONNECT_HANDLED = False
             logging.getLogger("HWR").info("Client disconnected")
 
 
@@ -262,7 +264,7 @@ def init_route(mxcube, server, url_prefix):
     @server.ws_restrict
     def set_observer(data):
         name = data.get("name", "")
-        observers = [] #loginutils.get_observers()
+        observers = [] #mxcube.usermanager.get_observers()
         observer = {}
 
         if observer and name:

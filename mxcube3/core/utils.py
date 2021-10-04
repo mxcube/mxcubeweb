@@ -234,7 +234,7 @@ def _do_take_snapshot(filename, bw=False):
     # from mxcube3 import server, server
 
     # SNAPSHOT_RECEIVED.clear()
-    # rid = loginutils.get_operator()["socketio_sid"]
+    # rid = mxcube.usermanager.get_operator()["socketio_sid"]
 
     # with server.test_request_context():
     #     server.emit(

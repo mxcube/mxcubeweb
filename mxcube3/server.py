@@ -12,10 +12,11 @@ from flask import Flask, request, session
 from flask_socketio import SocketIO
 from flask_session import Session
 
-from flask_security import Security, login_required, SQLAlchemySessionUserDatastore
+import flask_security
 
 from spectree import SpecTree
 
+from mxcube3.core.util import network
 from mxcube3.core.user.database import db_session, init_db, UserDatastore
 from mxcube3.core.user.models import User, Role, Message
 
@@ -66,7 +67,7 @@ class Server():
         #Server.flask_session.init_app(Server.flask)
 
         Server.user_datastore = UserDatastore(db_session, User, Role, message_model=Message)
-        Server.security = Security(Server.flask, Server.user_datastore)
+        Server.security = flask_security.Security(Server.flask, Server.user_datastore)
         init_db()
         Server.db_session = db_session
 
@@ -84,12 +85,10 @@ class Server():
             with open("/tmp/mxcube.pid", "w") as f:
                 f.write(str(os.getpid()) + " ")
 
-            from core import loginutils
-
             # Make the valid_login_only decorator available on server object
-            Server.restrict = staticmethod(login_required) #loginutils.valid_login_only)
-            Server.require_control = staticmethod(loginutils.require_control)
-            Server.ws_restrict = staticmethod(loginutils.ws_valid_login_only)
+            Server.restrict = staticmethod(network.login_required)
+            Server.require_control = staticmethod(network.require_control)
+            Server.ws_restrict = staticmethod(network.ws_valid_login_only)
             Server.route = staticmethod(Server.flask.route)
 
             msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)

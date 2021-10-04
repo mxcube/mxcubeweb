@@ -1,7 +1,6 @@
 from flask_socketio import emit, join_room, leave_room
 from mxcube3 import server
 from mxcube3 import mxcube
-from mxcube3.core import loginutils
 
 import json
 
@@ -39,7 +38,7 @@ def init():
     def ui_state_update(key_val):
         key, val = key_val
         mxcube.UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
-        operator = loginutils.get_operator()
+        operator = mxcube.usermanager.get_operator()
         
         emit(
             "state_update",

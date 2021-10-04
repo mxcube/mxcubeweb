@@ -322,6 +322,12 @@ class MXCUBEApplication():
         MXCUBEApplication.init_state_storage()
         MXCUBEApplication.init_logging(log_fpath)
 
+        from mxcube3.core.usermanager import UserManager
+        from mxcube3.core.chat import Chat
+
+        MXCUBEApplication.usermanager = UserManager(MXCUBEApplication, server, {})
+        MXCUBEApplication.chat = Chat(MXCUBEApplication, server, {})
+
         # MXCUBEApplication.load_settings()
 
 
