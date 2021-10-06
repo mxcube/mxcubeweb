@@ -11,12 +11,8 @@ server:
 mxcube:
   VIDEO_FORMAT: MJPEG
 
-  adapter_properties:
-      # cryo:
-      #   adapts: diffractometer.cryostream
-      #   adapter: CryoAdapter
-      #   signals:
-      #     stateChanged: ignore
+  usermanager:
+    class: UserManager
 
   ui_properties:
     sample_view:

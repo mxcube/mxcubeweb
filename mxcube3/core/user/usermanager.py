@@ -5,15 +5,16 @@ import json
 import flask
 import flask_security
 
+
+from mxcube3.core import limsutils
+from mxcube3.core import qutils
+from mxcube3.core import scutils
+
 from mxcube3.core.component import Component
 from mxcube3.core.user.models import User
 from mxcube3.core.util.network import is_local_host, remote_addr
 
-from . import limsutils
-from . import qutils
-from . import scutils
-
-class UserManager(Component):
+class BaseUserManager(Component):
     def __init__(self, app, server, config):
         super().__init__(app, server, config)
 
@@ -72,48 +73,13 @@ class UserManager(Component):
 
         return user_id in user_id_list
 
+    # Abstract method to be implemented by concrete implementation
+    def _login(self, login_id, password):
+        pass
+
     def login(self, login_id, password):
         try:
-            login_res = limsutils.lims_login(login_id, password, create_session=False)
-            inhouse = self.is_inhouse_user(login_id)
-
-            info = {
-                "valid": limsutils.lims_valid_login(login_res),
-                "local": is_local_host(),
-                "existing_session": limsutils.lims_existing_session(login_res),
-                "inhouse": inhouse,
-            }
-
-            _users = self.logged_in_users(exclude_inhouse=True)
-
-            # Only allow in-house log-in from local host
-            if inhouse and not (inhouse and is_local_host()):
-                raise Exception("In-house only allowed from localhost")
-
-            # Only allow other users to log-in if they are from the same proposal
-            if (not inhouse) and _users and (login_id not in _users):
-                raise Exception("Another user is already logged in")
-
-            # Only allow local login when remote is disabled
-            if not self.app.ALLOW_REMOTE and not is_local_host():
-                raise Exception("Remote access disabled")
-
-            # Only allow remote logins with existing sessions
-            if limsutils.lims_valid_login(login_res) and is_local_host():
-                if not limsutils.lims_existing_session(login_res):
-                    login_res = limsutils.create_lims_session(login_res)
-
-                msg = "[LOGIN] Valid login from local host (%s)" % str(info)
-                logging.getLogger("MX3.HWR").info(msg)
-            elif limsutils.lims_valid_login(login_res) and limsutils.lims_existing_session(
-                login_res
-            ):
-                msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
-                msg += msg % (remote_addr(), str(info))
-                logging.getLogger("MX3.HWR").info(msg)
-            else:
-                logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
-                raise Exception(str(info))
+            self._login(login_id, password)
         except BaseException:
             raise
         else:
@@ -140,7 +106,12 @@ class UserManager(Component):
 
             return login_res["status"]
 
+    # Abstract method to be implemented by concrete implementation
+    def _signout(self):
+        pass
+
     def signout(self):
+        self._signout()
         user = flask_security.current_user
 
         # If operator logs out clear queue and sample list
@@ -262,3 +233,53 @@ class UserManager(Component):
             user_datastore.put(_u)
 
         self.app.server.user_datastore.commit()
+
+
+class UserManager(BaseUserManager):
+    def __init__(self, app, server, config):
+        super().__init__(app, server, config)
+
+    def _login(self, login_id, password):
+        login_res = limsutils.lims_login(login_id, password, create_session=False)
+        inhouse = self.is_inhouse_user(login_id)
+
+        info = {
+            "valid": limsutils.lims_valid_login(login_res),
+            "local": is_local_host(),
+            "existing_session": limsutils.lims_existing_session(login_res),
+            "inhouse": inhouse,
+        }
+
+        _users = self.logged_in_users(exclude_inhouse=True)
+
+        # Only allow in-house log-in from local host
+        if inhouse and not (inhouse and is_local_host()):
+            raise Exception("In-house only allowed from localhost")
+
+        # Only allow other users to log-in if they are from the same proposal
+        if (not inhouse) and _users and (login_id not in _users):
+            raise Exception("Another user is already logged in")
+
+        # Only allow local login when remote is disabled
+        if not self.app.ALLOW_REMOTE and not is_local_host():
+            raise Exception("Remote access disabled")
+
+        # Only allow remote logins with existing sessions
+        if limsutils.lims_valid_login(login_res) and is_local_host():
+            if not limsutils.lims_existing_session(login_res):
+                login_res = limsutils.create_lims_session(login_res)
+
+            msg = "[LOGIN] Valid login from local host (%s)" % str(info)
+            logging.getLogger("MX3.HWR").info(msg)
+        elif limsutils.lims_valid_login(login_res) and limsutils.lims_existing_session(
+            login_res
+        ):
+            msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
+            msg += msg % (remote_addr(), str(info))
+            logging.getLogger("MX3.HWR").info(msg)
+        else:
+            logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
+            raise Exception(str(info))
+
+    def _signout(self):
+        pass

@@ -188,7 +188,7 @@ class MXCUBECore():
 
     @staticmethod
     def adapt_hardware_objects(app):
-        adapter_config = app.CONFIG.app.adapter_properties or []
+        adapter_config = app.CONFIG.app.adapter_properties
 
         for ho_name in MXCUBECore.hwr.hardware_objects:
             # Go through all hardware objects exposed by mxcubecore
@@ -322,10 +322,13 @@ class MXCUBEApplication():
         MXCUBEApplication.init_state_storage()
         MXCUBEApplication.init_logging(log_fpath)
 
-        from mxcube3.core.usermanager import UserManager
+        from mxcube3.core.user.usermanager import UserManager
         from mxcube3.core.chat import Chat
+        from mxcube3.core.component import import_component
 
-        MXCUBEApplication.usermanager = UserManager(MXCUBEApplication, server, {})
+        _UserManagerCls = import_component(cfg.app.usermanager, package="user")
+
+        MXCUBEApplication.usermanager = _UserManagerCls(MXCUBEApplication, server, {})
         MXCUBEApplication.chat = Chat(MXCUBEApplication, server, {})
 
         # MXCUBEApplication.load_settings()
