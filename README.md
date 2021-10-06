@@ -36,14 +36,10 @@ The backend is built on a Python-flask micro-framework, a library called SocketI
 The client is implemented in ECMAScript6 and HTML5. React, Boostrap and FabricJS are the main libraries used for the UI development
 
 ### Installation and testing
-
 Follow the instructions [here](https://github.com/mxcube/mxcube3/wiki)
 
-
 ## Information for developers
-
-- [How to install and run Qt version](https://github.com/mxcube/mxcubeqt/tree/master/docs/how_to_run_mxcube_qt.md)
-- [Contributing guidelines](https://github.com/mxcube/mxcubeqt/blob/master/CONTRIBUTING.md)
+- [Contributing guidelines](https://github.com/mxcube/mxcube3/blob/master/CONTRIBUTING.md)
 
 ## Information for users
 
