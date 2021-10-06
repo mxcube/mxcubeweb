@@ -35,8 +35,6 @@ def init_route(mxcube, server, url_prefix):
         login_id = params.get("proposal", "")
         password = params.get("password", "")
 
-        
-
         try:
             res = jsonify(mxcube.usermanager.login(login_id, password))
         except Exception as ex:

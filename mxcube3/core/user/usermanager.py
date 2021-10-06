@@ -79,7 +79,7 @@ class BaseUserManager(Component):
 
     def login(self, login_id, password):
         try:
-            self._login(login_id, password)
+            login_res = self._login(login_id, password)
         except BaseException:
             raise
         else:
@@ -148,7 +148,6 @@ class BaseUserManager(Component):
 
         self.set_operator()
 
-        #login_info = login_info["loginRes"] if login_info is not None else {}
         login_info = limsutils.convert_to_dict(login_info)
 
         proposal_list = [
@@ -280,6 +279,8 @@ class UserManager(BaseUserManager):
         else:
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
             raise Exception(str(info))
+
+        return login_res
 
     def _signout(self):
         pass
