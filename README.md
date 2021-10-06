@@ -40,4 +40,20 @@ The client is implemented in ECMAScript6 and HTML5. React, Boostrap and FabricJS
 Follow the instructions [here](https://github.com/mxcube/mxcube3/wiki)
 
 
+## Information for developers
+
+- [How to install and run Qt version](https://github.com/mxcube/mxcubeqt/tree/master/docs/how_to_run_mxcube_qt.md)
+- [Contributing guidelines](https://github.com/mxcube/mxcubeqt/blob/master/CONTRIBUTING.md)
+
+## Information for users
+
+- [User Manual MXCuBE3](https://www.esrf.fr/mxcube3)
+- [Feature overview](https://github.com/mxcube/mxcubeqt/blob/master/docs/source/feature_overview.rst)
+- If you cite MXCuBE, please use the references:
+
+```
+Oscarsson, M. et al. 2019. “MXCuBE2: The Dawn of MXCuBE Collaboration.” Journal of Synchrotron Radiation 26 (Pt 2): 393–405.
+
+Gabadinho, J. et al. (2010). MxCuBE: a synchrotron beamline control environment customized for macromolecular crystallography experiments. J. Synchrotron Rad. 17, 700-707
+```
 
