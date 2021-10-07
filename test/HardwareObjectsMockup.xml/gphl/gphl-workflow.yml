@@ -40,6 +40,7 @@ settings:
 
     defaults:
         # Default values for queue_model_objects.GphlWorkflow attributes
+
         # Default wedge width in degrees, for interleaved data collection
         wedge_width: 15
         # Default number of snapshots to take when centring: 0, 1, 2, or 4
@@ -51,8 +52,8 @@ settings:
         #                ("at acquisition start","start"),
         #                ("use predicted centrings only", "none"),
         #            )
-        #         mode "none" is not allowed as default
-        recentring_mode: sweep
+        #         mode "scan" is not allowed as default
+        recentring_mode: none
         # Parameters to control proposed total dose budget
         # The proposed budget is calculated so that radiation damage is predicted
         # to reduce the intensity at the highest expected redolution to this percentaged-->

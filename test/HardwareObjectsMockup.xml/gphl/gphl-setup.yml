@@ -81,8 +81,8 @@ software_properties:
   #They default to within GPHL_INSTALLATION
 
   #Location of stratcal binary
-#       co.gphl.wf.stratcal.bin: {GPHL_RELEASE}/mxcube_setup/stratcal/scripts/run_stratcal_wrap.py
-  co.gphl.wf.stratcal.bin: "{GPHL_RELEASE}/gphl_release/exe/run_stratcal_wrap.py"
+  co.gphl.wf.stratcal.bin: "{GPHL_RELEASE}/mxcube_setup/stratcal/scripts/run_stratcal_wrap.py"
+#  co.gphl.wf.stratcal.bin: "{GPHL_RELEASE}/gphl_release/exe/run_stratcal_wrap.py"
 
   #Location of stratcal-specific license directory - OPTIONAL ->
 #        co.gphl.wf.stratcal.bdg_licence_dir: /public/xtal/Server-nightly-alpha-bdg-linux64
