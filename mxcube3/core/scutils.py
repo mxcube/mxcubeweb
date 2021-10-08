@@ -69,7 +69,7 @@ def get_sample_list():
         order.append(coords)
         samplesByCoords[coords] = sample_data["sampleID"]
 
-        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data, False)
+        sample_data["defaultPrefix"] = limsutils.get_default_prefix(sample_data)
         sample_data["defaultSubDir"] = limsutils.get_default_subdir(sample_data)
 
         samples[s.get_address()] = sample_data
