@@ -613,7 +613,7 @@ class Queue(Component):
             "location": location,
             "sampleName": node.get_name(),
             "proteinAcronym": node.crystals[0].protein_acronym,
-            "defaultPrefix": self.app.lims.get_default_prefix(node, False),
+            "defaultPrefix": self.app.lims.get_default_prefix(node),
             "defaultSubDir": self.app.lims.get_default_subdir(node),
             "type": "Sample",
             "checked": enabled,
@@ -1023,7 +1023,7 @@ class Queue(Component):
             acq.path_template.base_prefix = params["prefix"]
         else:
             acq.path_template.base_prefix = self.app.mxcubecore.beamline_ho.session.get_default_prefix(
-                sample_model, False
+                sample_model
             )
 
         full_path = os.path.join(
@@ -1108,7 +1108,7 @@ class Queue(Component):
         params = task_data["parameters"]
         self.app.lims.apply_template(params, sample_model, model.path_template)
 
-        # params include only p_template-related parametes and strategy_nameath
+        # params include only path_template-related parametes and strategy_name
         model.init_from_task_data(sample_model, params)
         model.set_pre_strategy_params(**params)
         model.set_pre_acquisition_params(**params)
@@ -1140,7 +1140,7 @@ class Queue(Component):
             model.path_template.base_prefix = params["prefix"]
         else:
             model.path_template.base_prefix = self.app.mxcubecore.beamline_ho.session.get_default_prefix(
-                sample_model, False
+                sample_model
             )
 
         full_path = os.path.join(
@@ -1229,7 +1229,7 @@ class Queue(Component):
             model.path_template.base_prefix = params["prefix"]
         else:
             model.path_template.base_prefix = self.app.mxcubecore.beamline_ho.session.get_default_prefix(
-                sample_model, False
+                sample_model
             )
 
         full_path = os.path.join(
@@ -1281,7 +1281,7 @@ class Queue(Component):
             model.path_template.base_prefix = params["prefix"]
         else:
             model.path_template.base_prefix = self.app.mxcubecore.beamline_ho.session.get_default_prefix(
-                sample_model, False
+                sample_model
             )
 
         full_path = os.path.join(
@@ -1677,6 +1677,17 @@ class Queue(Component):
                 self.enable_entry(dcg_entry, True)
                 parent_entry.enqueue(dcg_entry)
 
+            elif isinstance(child, qmo.SampleCentring):
+                # Added rhfogh 20211001
+                entry = qe.SampleCentringQueueEntry(Mock(), child)
+                enable_entry(entry, True)
+                parent_entry.enqueue(entry)
+
+            elif isinstance(child, qmo.XrayCentering):
+                # Added rhfogh 20211001
+                entry = qe.XrayCenteringQueueEntry(Mock(), child)
+                enable_entry(entry, True)
+                parent_entry.enqueue(entry)
 
     def queue_model_diff_plan_available(self, char, collection_list):
         cols = []
@@ -2175,11 +2186,11 @@ class Queue(Component):
         cent_entry = qe.SampleCentringQueueEntry()
         cent_entry.set_data_model(cent_node)
         cent_entry.set_queue_controller(self.app.mxcubecore.qm)
-        node = self.app.mxcubecore.beamline_ho.queue_model.get_node(int(id))
+        node = self.app.mxcubecore.beamline_ho.queue_model.get_node(int(_id))
         entry = self.app.mxcubecore.beamline_ho.queue_manager.get_entry_with_model(node)
         entry._set_background_color = Mock()
 
-        new_node = self.app.mxcubecore.beamline_ho.queue_model.add_child_at_id(int(id), cent_node)
+        new_node = self.app.mxcubecore.beamline_ho.queue_model.add_child_at_id(int(_id), cent_node)
         entry.enqueue(cent_entry)
 
         logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")

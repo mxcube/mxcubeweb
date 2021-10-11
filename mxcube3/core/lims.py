@@ -128,7 +128,7 @@ class Lims(Component):
 
         if "{" in params.get("prefix", ""):
             sample = self.app.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
-            prefix = self.get_default_prefix(sample, False)
+            prefix = self.get_default_prefix(sample)
             shape = params["shape"] if params["shape"] > 0 else ""
             params["prefix"] = params["prefix"].format(PREFIX=prefix, POSITION=shape)
 
@@ -337,7 +337,7 @@ class Lims(Component):
         else:
             return False
 
-    def get_default_prefix(self, sample_data, generic_name):
+    def get_default_prefix(self, sample_data, generic_name=False):
         if isinstance(sample_data, dict):
             sample = qmo.Sample()
             sample.code = sample_data.get("code", "")
@@ -406,7 +406,7 @@ class Lims(Component):
         for sample_info in samples_info_list:
             sample_info["limsID"] = sample_info.pop("sampleId")
             sample_info["limsLink"] = self.app.mxcubecore.beamline_ho.lims.lims_rest.sample_link()
-            sample_info["defaultPrefix"] = self.get_default_prefix(sample_info, False)
+            sample_info["defaultPrefix"] = self.get_default_prefix(sample_info)
             sample_info["defaultSubDir"] = self.get_default_subdir(sample_info)
 
             if not VALID_SAMPLE_NAME_REGEXP.match(sample_info["sampleName"]):

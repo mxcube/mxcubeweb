@@ -73,7 +73,7 @@ class SampleChanger(Component):
             order.append(coords)
             samplesByCoords[coords] = sample_data["sampleID"]
 
-            sample_data["defaultPrefix"] = self.app.lims.get_default_prefix(sample_data, False)
+            sample_data["defaultPrefix"] = self.app.lims.get_default_prefix(sample_data)
             sample_data["defaultSubDir"] = self.app.lims.get_default_subdir(sample_data)
 
             samples[s.get_address()] = sample_data
