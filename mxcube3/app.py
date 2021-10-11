@@ -21,7 +21,7 @@ from mxcubecore.HardwareObjects import queue_entry
 from mxcubecore.utils.conversion import make_table
 
 from mxcube3.logging_handler import MX3LoggingHandler
-from mxcube3.core.adapter.utils import get_adapter_cls_from_hardware_object
+from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.adapter.adapter_base import AdapterBase
 
 removeLoggingHandlers()
@@ -138,7 +138,7 @@ class MXCUBECore():
         # NBNB It is no good that a geeneric converter live in a file tat imports
         # the mxcuve3 appliction
         # TODO: refactor? rhfogh 20210730
-        from mxcube3.core.utils import str_to_snake
+        from mxcube3.core.util.convertutils import str_to_snake
         adapter_mod = importlib.import_module(
             f"mxcube3.core.adapter.{str_to_snake(adapter_cls_str)}"
         )
@@ -296,8 +296,6 @@ class MXCUBEApplication():
         :return None:
         """
         logging.getLogger("MX3.HWR").info("Starting MXCuBE3...")
-        from mxcube3.core import utils
-
         MXCUBEApplication.server = server
         MXCUBEApplication.ALLOW_REMOTE = allow_remote
         MXCUBEApplication.TIMEOUT_GIVES_CONTROL = ra_timeout
@@ -308,28 +306,35 @@ class MXCUBEApplication():
         if video_device:
             MXCUBEApplication.init_sample_video(video_device)
 
-        MXCUBEApplication.init_signal_handlers()
-
-        utils.enable_snapshots(
-            MXCUBEApplication.mxcubecore.beamline_ho.collect,
-            MXCUBEApplication.mxcubecore.beamline_ho.diffractometer,
-            MXCUBEApplication.mxcubecore.beamline_ho.sample_view
-        )
-
         atexit.register(MXCUBEApplication.app_atexit)
 
         # Install server-side UI state storage
         MXCUBEApplication.init_state_storage()
         MXCUBEApplication.init_logging(log_fpath)
 
-        from mxcube3.core.user.usermanager import UserManager
-        from mxcube3.core.chat import Chat
         from mxcube3.core.component import import_component
 
+        from mxcube3.core.lims import Lims
+        from mxcube3.core.user.usermanager import UserManager
+        from mxcube3.core.chat import Chat
+        from mxcube3.core.samplechanger import SampleChanger
+        from mxcube3.core.beamline import Beamline
+        from mxcube3.core.sampleview import SampleView
+        from mxcube3.core.queue import Queue
+        from mxcube3.core.workflow import Workflow
+        
         _UserManagerCls = import_component(cfg.app.usermanager, package="user")
 
-        MXCUBEApplication.usermanager = _UserManagerCls(MXCUBEApplication, server, {})
+        MXCUBEApplication.queue = Queue(MXCUBEApplication, server, {})
+        MXCUBEApplication.lims = Lims(MXCUBEApplication, server, {})
+        MXCUBEApplication.usermanager = _UserManagerCls(MXCUBEApplication, server, cfg.app.usermanager)
         MXCUBEApplication.chat = Chat(MXCUBEApplication, server, {})
+        MXCUBEApplication.sample_changer = SampleChanger(MXCUBEApplication, server, {})
+        MXCUBEApplication.beamline = Beamline(MXCUBEApplication, server, {})
+        MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, server, {})
+        MXCUBEApplication.workflow = Workflow(MXCUBEApplication, server, {})
+
+        MXCUBEApplication.init_signal_handlers()
 
         # MXCUBEApplication.load_settings()
 
@@ -360,29 +365,24 @@ class MXCUBEApplication():
         Connects the signal handlers defined in routes/signals.py to the
         corresponding signals/events
         """
-        from mxcube3.core import beamlineutils
-        from mxcube3.core import sviewutils
-        from mxcube3.core import scutils
-        from mxcube3.core import qutils
-
         try:
-            qutils.init_signals(MXCUBEApplication.mxcubecore.beamline_ho.queue_model)
+            MXCUBEApplication.queue.init_signals(MXCUBEApplication.mxcubecore.beamline_ho.queue_model)
         except Exception:
             sys.excepthook(*sys.exc_info())
 
         try:
-            sviewutils.init_signals()
+            MXCUBEApplication.sample_view.init_signals()
         except Exception:
             sys.excepthook(*sys.exc_info())
 
         try:
-            scutils.init_signals()
+            MXCUBEApplication.sample_changer.init_signals()
         except Exception:
             sys.excepthook(*sys.exc_info())
 
         try:
-            beamlineutils.init_signals()
-            beamlineutils.diffractometer_init_signals()
+            MXCUBEApplication.beamline.init_signals()
+            MXCUBEApplication.beamline.diffractometer_init_signals()
         except Exception:
             sys.excepthook(*sys.exc_info())
 
@@ -477,10 +477,7 @@ class MXCUBEApplication():
         """
         Saves all application wide variables to disk, stored-mxcube-session.json
         """
-
-        from mxcube3.core import qutils
-
-        queue = qutils.queue_to_dict(MXCUBEApplication.mxcubecore.beamline_ho.queue_model.get_model_root())
+        queue = MXCUBEApplication.queue.queue_to_dict(MXCUBEApplication.mxcubecore.beamline_ho.queue_model.get_model_root())
 
         # For the moment not storing USERS
 
@@ -517,9 +514,7 @@ class MXCUBEApplication():
         with open("/tmp/stored-mxcube-session.json", "r") as f:
             data = json.load(f)
 
-        from mxcube3.core import qutils
-
-        qutils.load_queue_from_dict(data.get("QUEUE", {}))
+        MXCUBEApplication.queue.load_queue_from_dict(data.get("QUEUE", {}))
 
         MXCUBEApplication.CENTRING_METHOD = data.get("CENTRING_METHOD", queue_entry.CENTRING_METHOD.LOOP)
         MXCUBEApplication.NODE_ID_TO_LIMS_ID = data.get("NODE_ID_TO_LIMS_ID", {})

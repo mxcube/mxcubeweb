@@ -9,7 +9,6 @@ import spectree
 
 from flask import Blueprint, Response, jsonify, request, make_response
 
-from mxcube3.core import beamlineutils
 from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 
@@ -119,7 +118,7 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/", methods=["GET"])
     @server.restrict
     def beamline_get_all_attributes():
-        return jsonify(beamlineutils.beamline_get_all_attributes())
+        return jsonify(mxcube.beamline.beamline_get_all_attributes())
 
 
     @bp.route("/<name>/abort", methods=["GET"])
@@ -134,7 +133,7 @@ def init_route(mxcube, server, url_prefix):
         Replies with status code 200 on success and 520 on exceptions.
         """
         try:
-            beamlineutils.beamline_abort_action(name)
+            mxcube.beamline.beamline_abort_action(name)
         except Exception:
             err = str(sys.exc_info()[1])
             return make_response(err, 520)
@@ -161,7 +160,7 @@ def init_route(mxcube, server, url_prefix):
             params = []
 
         try:
-            beamlineutils.beamline_run_action(name, params)
+            mxcube.beamline.beamline_run_action(name, params)
         except Exception as ex:
             return make_response(str(ex), 520)
         else:
@@ -175,7 +174,7 @@ def init_route(mxcube, server, url_prefix):
         Beam information: position, size, shape
         return_data = {"position": , "shape": , "size_x": , "size_y": }
         """
-        return jsonify(beamlineutils.get_beam_info())
+        return jsonify(mxcube.beamline.get_beam_info())
 
 
     @bp.route("/datapath", methods=["GET"])
@@ -197,7 +196,7 @@ def init_route(mxcube, server, url_prefix):
         Prepare the beamline for a new sample.
         """
         try:
-            beamlineutils.prepare_beamline_for_sample()
+            mxcube.beamline.prepare_beamline_for_sample()
         except Exception:
             msg = "Cannot prepare the Beamline for a new sample"
             logging.getLogger("HWR").error(msg)

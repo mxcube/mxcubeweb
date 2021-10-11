@@ -1,7 +1,5 @@
 from flask import Blueprint, jsonify
 
-from mxcube3.core import beamlineutils
-
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("detector", __name__, url_prefix=url_prefix)
 
@@ -16,7 +14,7 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 409: error
         """
 
-        resp = jsonify({"fileSuffix": beamlineutils.get_detector_info()})
+        resp = jsonify({"fileSuffix": mxcube.beamline.get_detector_info()})
         resp.status_code = 200
         return resp
 

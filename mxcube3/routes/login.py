@@ -1,7 +1,9 @@
 import logging
 
 from flask import Blueprint, request, jsonify, make_response, redirect
-from mxcube3.core.util.network import send_feedback
+from flask_security import current_user
+
+from mxcube3.core.util.networkutils import send_feedback
 
 def deny_access(msg):
     resp = jsonify({"msg": msg})
@@ -94,7 +96,9 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/send_feedback", methods=["POST"])
     @server.restrict
     def send_feedback():
-        network.send_feedback()
+        sender_data = flask.request.get_json()
+        sender_data["LOGGED_IN_USER"] = current_user.name
+        networkutils.send_feedback(sender_data)
         return make_response("", 200)
 
 

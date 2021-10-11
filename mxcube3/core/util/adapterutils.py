@@ -1,30 +1,8 @@
-import time
-
 def export(func):
     func._export = True
     func._export_name = func.__name__
 
     return func
-
-def RateLimited(maxPerSecond):
-    minInterval = 1.0 / float(maxPerSecond)
-
-    def decorate(func):
-        lastTimeCalled = [0.0]
-
-        def rateLimitedFunction(*args, **kargs):
-            elapsed = time.time() - lastTimeCalled[0]
-            leftToWait = minInterval - elapsed
-            if leftToWait > 0:
-                # ignore update
-                return
-            ret = func(*args, **kargs)
-            lastTimeCalled[0] = time.time()
-            return ret
-
-        return rateLimitedFunction
-
-    return decorate
 
 def get_adapter_cls_from_hardware_object(ho):
     import MicrodiffInOutMockup
@@ -45,8 +23,8 @@ def get_adapter_cls_from_hardware_object(ho):
     )
 
     from mxcubecore.HardwareObjects import (
-    MiniDiff,
-    GenericDiffractometer
+        MiniDiff,
+        GenericDiffractometer
     )
 
     from mxcubecore.HardwareObjects import DataPublisher

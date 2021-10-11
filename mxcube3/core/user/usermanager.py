@@ -1,18 +1,15 @@
 import socket
 import logging
 import json
+import uuid
 
 import flask
 import flask_security
 
-
-from mxcube3.core import limsutils
-from mxcube3.core import qutils
-from mxcube3.core import scutils
-
 from mxcube3.core.component import Component
 from mxcube3.core.user.models import User
-from mxcube3.core.util.network import is_local_host, remote_addr
+from mxcube3.core.util.networkutils import is_local_host, remote_addr
+from mxcube3.core.util.convertutils import convert_to_dict
 
 class BaseUserManager(Component):
     def __init__(self, app, server, config):
@@ -63,7 +60,7 @@ class BaseUserManager(Component):
         # Set active proposal to that of the active user
         if self.app.mxcubecore.beamline_ho.lims.loginType.lower() != "user":
             # The name of the user is the proposal when using proposalType login
-            limsutils.select_proposal(flask_security.current_user.name)
+            self.app.lims.select_proposal(flask_security.current_user.name)
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
@@ -89,18 +86,18 @@ class BaseUserManager(Component):
             user = self.db_create_user(login_id, password, login_res)
             flask_security.login_user(user)
 
-            address, barcode = scutils.get_loaded_sample()
+            address, barcode = self.app.sample_changer.get_loaded_sample()
 
             # If A sample is mounted (and not already marked as such),
             # get sample changer contents and add mounted sample to the queue
-            if not scutils.get_current_sample() and address:
-                scutils.get_sample_list()
+            if not self.app.sample_changer.get_current_sample() and address:
+                self.app.sample_changer.get_sample_list()
 
             # For the moment not loading queue from persistent storage (redis),
             # uncomment to enable loading.
-            # qutils.load_queue(session)
+            # self.app.queue.load_queue(session)
             # logging.getLogger('MX3.HWR').info('Loaded queue')
-            logging.getLogger("MX3.HWR").info("[QUEUE] %s " % qutils.queue_to_json())
+            logging.getLogger("MX3.HWR").info("[QUEUE] %s " % self.app.queue.queue_to_json())
 
             self.set_operator()
 
@@ -116,12 +113,12 @@ class BaseUserManager(Component):
 
         # If operator logs out clear queue and sample list
         if self.is_operator():
-            qutils.save_queue(flask.session)
-            qutils.clear_queue()
-            mxcube.mxcubecore.beamline_ho.sample_view.clear_all()
-            limsutils.init_sample_list()
+            self.app.queue.save_queue(flask.session)
+            self.app.queue.clear_queue()
+            self.app.mxcubecore.beamline_ho.sample_view.clear_all()
+            self.app.lims.init_sample_list()
 
-            qutils.init_queue_settings()
+            self.app.queue.init_queue_settings()
 
             if hasattr(self.app.mxcubecore.beamline_ho.session, "clear_session"):
                 self.app.mxcubecore.beamline_ho.session.clear_session()
@@ -148,7 +145,7 @@ class BaseUserManager(Component):
 
         self.set_operator()
 
-        login_info = limsutils.convert_to_dict(login_info)
+        login_info = convert_to_dict(login_info)
 
         proposal_list = [
             {
@@ -239,13 +236,13 @@ class UserManager(BaseUserManager):
         super().__init__(app, server, config)
 
     def _login(self, login_id, password):
-        login_res = limsutils.lims_login(login_id, password, create_session=False)
+        login_res = self.app.lims.lims_login(login_id, password, create_session=False)
         inhouse = self.is_inhouse_user(login_id)
 
         info = {
-            "valid": limsutils.lims_valid_login(login_res),
+            "valid": self.app.lims.lims_valid_login(login_res),
             "local": is_local_host(),
-            "existing_session": limsutils.lims_existing_session(login_res),
+            "existing_session": self.app.lims.lims_existing_session(login_res),
             "inhouse": inhouse,
         }
 
@@ -264,13 +261,13 @@ class UserManager(BaseUserManager):
             raise Exception("Remote access disabled")
 
         # Only allow remote logins with existing sessions
-        if limsutils.lims_valid_login(login_res) and is_local_host():
-            if not limsutils.lims_existing_session(login_res):
-                login_res = limsutils.create_lims_session(login_res)
+        if self.app.lims.lims_valid_login(login_res) and is_local_host():
+            if not self.app.lims.lims_existing_session(login_res):
+                login_res = self.app.lims.create_lims_session(login_res)
 
             msg = "[LOGIN] Valid login from local host (%s)" % str(info)
             logging.getLogger("MX3.HWR").info(msg)
-        elif limsutils.lims_valid_login(login_res) and limsutils.lims_existing_session(
+        elif self.app.lims.lims_valid_login(login_res) and self.app.lims.lims_existing_session(
             login_res
         ):
             msg = "[LOGIN] Valid remote login from %s with existing session (%s)"

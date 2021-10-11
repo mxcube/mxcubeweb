@@ -14,7 +14,7 @@ from flask import (
 from flask_socketio import join_room, leave_room
 from flask_security import current_user
 
-from mxcube3.core.util.network import remote_addr
+from mxcube3.core.util.networkutils import remote_addr
 
 DISCONNECT_HANDLED = True
 

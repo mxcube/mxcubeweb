@@ -11,8 +11,6 @@ from flask import Blueprint, jsonify, Response, send_file, request, render_templ
 
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 
-from mxcube3.core import limsutils
-from mxcube3.core import qutils
 from . import signals
 
 
@@ -23,7 +21,7 @@ def init_route(mxcube, server, url_prefix):
     @server.restrict
     def proposal_samples():
         try:
-            res = jsonify(limsutils.synch_with_lims())
+            res = jsonify(mxcube.lims.synch_with_lims())
         except Exception as ex:
             res = (
                 "Could not synchronize with LIMS",
@@ -36,21 +34,21 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/dc/thumbnail/<image_id>", methods=["GET"])
     @server.restrict
     def get_dc_thumbnail(image_id):
-        fname, data = limsutils.get_dc_thumbnail(image_id)
+        fname, data = mxcube.lims.get_dc_thumbnail(image_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
     @bp.route("/dc/image/<image_id>", methods=["GET"])
     @server.restrict
     def get_dc_image(image_id):
-        fname, data = limsutils.get_dc_image(image_id)
+        fname, data = mxcube.lims.get_dc_image(image_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
     @bp.route("/quality_indicator_plot/<dc_id>", methods=["GET"])
     @server.restrict
     def get_quality_indicator_plot(dc_id):
-        fname, data = limsutils.get_quality_indicator_plot(dc_id)
+        fname, data = mxcube.lims.get_quality_indicator_plot(dc_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
 
@@ -68,7 +66,7 @@ def init_route(mxcube, server, url_prefix):
         Set the selected proposal.
         """
         proposal_number = request.get_json().get("proposal_number", None)
-        limsutils.select_proposal(proposal_number)
+        mxcube.lims.select_proposal(proposal_number)
 
         return Response(status=200)
 
@@ -79,7 +77,7 @@ def init_route(mxcube, server, url_prefix):
         """
         Return the currently selected proposal. (The proposal list is part of the login_res)
         """
-        proposal_info = limsutils.get_proposal_info(
+        proposal_info = mxcube.lims.get_proposal_info(
             mxcube.mxcubecore.beamline_ho.session.proposal_code
         )
 
@@ -112,8 +110,8 @@ def init_route(mxcube, server, url_prefix):
         r = jsonify({"result": ""})
 
         if qid:
-            model, entry = qutils.get_entry(qid)
-            data = qutils.queue_to_dict([model], True)
+            model, entry = mxcube.queue.get_entry(qid)
+            data = mxcube.queue.queue_to_dict([model], True)
             signals.update_task_result(entry)
 
             if isinstance(model, qmo.DataCollection):

@@ -7,7 +7,6 @@ import io
 
 from flask import Blueprint, Response, jsonify, request, send_file
 
-from mxcube3.core import wfutils
 
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("workflow", __name__, url_prefix=url_prefix)
@@ -15,14 +14,14 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/", methods=["GET"])
     @server.restrict
     def workflow():
-        return jsonify(wfutils.get_available_workflows())
+        return jsonify(mxcube.workflow.get_available_workflows())
 
 
     @bp.route("/", methods=["POST"])
     @server.restrict
     def submit_parameters():
         data = request.get_json()
-        wfutils.submit_parameters(data)
+        mxcube.workflow.submit_parameters(data)
         return Response(status=200)
 
 
@@ -30,7 +29,7 @@ def init_route(mxcube, server, url_prefix):
     #@server.restrict
     def get_grid_data(gid, t, rand):
         res = send_file(
-            io.BytesIO(wfutils.get_mesh_result(gid, t)),
+            io.BytesIO(mxcube.workflow.get_mesh_result(gid, t)),
             mimetype="image/png"
         )
 
@@ -40,7 +39,7 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/dialog/<wf>", methods=["GET"])
     @server.restrict
     def workflow_dialog(wf):
-        dialog = wfutils.test_workflow_dialog(wf)
+        dialog = mxcube.workflow.test_workflow_dialog(wf)
         server.emit("workflowParametersDialog", dialog, namespace="/hwr")
 
         return Response(status=200)

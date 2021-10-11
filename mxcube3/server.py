@@ -16,7 +16,7 @@ import flask_security
 
 from spectree import SpecTree
 
-from mxcube3.core.util import network
+from mxcube3.core.util import networkutils
 from mxcube3.core.user.database import db_session, init_db, UserDatastore
 from mxcube3.core.user.models import User, Role, Message
 
@@ -86,9 +86,9 @@ class Server():
                 f.write(str(os.getpid()) + " ")
 
             # Make the valid_login_only decorator available on server object
-            Server.restrict = staticmethod(network.login_required)
-            Server.require_control = staticmethod(network.require_control)
-            Server.ws_restrict = staticmethod(network.ws_valid_login_only)
+            Server.restrict = staticmethod(networkutils.login_required)
+            Server.require_control = staticmethod(networkutils.require_control)
+            Server.ws_restrict = staticmethod(networkutils.ws_valid_login_only)
             Server.route = staticmethod(Server.flask.route)
 
             msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)

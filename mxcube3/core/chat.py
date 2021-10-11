@@ -5,7 +5,7 @@ from flask_security import current_user
 
 from mxcube3.core.component import Component
 from mxcube3.core.user.models import User, Message, MessagesUsers
-from mxcube3.core.util.network import remote_addr
+from mxcube3.core.util.networkutils import remote_addr
 
 class Chat(Component):
     def __init__(self, app, server, config):
@@ -15,7 +15,7 @@ class Chat(Component):
     def db_add_message(self, user, message):
         m = self.app.server.user_datastore.create_message(message=message)
         self.app.server.user_datastore.add_message_to_user(user, m)
-        mxcube.server.user_datastore.commit()
+        self.app.server.user_datastore.commit()
 
     def append_message(self, message, sid):
         user = current_user.name
@@ -34,7 +34,7 @@ class Chat(Component):
 
 
     def get_all_messages(self):
-        message_db_list = mxcube.server.user_datastore.get_all_messages()
+        message_db_list = self.app.server.user_datastore.get_all_messages()
         message_list = []
         
         for m in message_list:
