@@ -18,6 +18,7 @@ from mxcube3.core.queue import (
 class SampleChanger(Component):
     def __init__(self, app, server, config):
         super().__init__(app, server, config)
+        patch_queue_entry_mount_sample()
 
     def init_signals(self):
         from mxcube3.routes import signals
