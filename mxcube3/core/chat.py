@@ -1,10 +1,8 @@
 import datetime
 
-from flask import session, request, Response
 from flask_security import current_user
 
 from mxcube3.core.component import Component
-from mxcube3.core.user.models import User, Message, MessagesUsers
 from mxcube3.core.util.networkutils import remote_addr
 
 class Chat(Component):
@@ -34,18 +32,17 @@ class Chat(Component):
 
 
     def get_all_messages(self):
-        message_db_list = self.app.server.user_datastore.get_all_messages()
         message_list = []
         
-        for m in message_list:
+        for m in self.app.server.user_datastore.get_all_messages():
             user = m.users.all()[0]
 
             message_list.append({
-                "message": message,
+                "message": m.message,
                 "sid": user.last_session_id,
                 "user": user.username,
                 "host": user.last_login_ip,
-                "date": message.at.strftime("%H:%M"),
+                "date": m.at.strftime("%H:%M"),
             })
 
         return message_list

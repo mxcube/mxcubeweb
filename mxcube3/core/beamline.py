@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-import os
 import logging
 import sys
 
-from mxcube3.core.queue import READY
-
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcube3.core.component import Component
+from mxcube3.core.queue import READY
+
 
 class Beamline(Component):
     def __init__(self, app, server, config):
@@ -28,13 +27,13 @@ class Beamline(Component):
             logging.getLogger("MX3.HWR").exception(msg)
         try:
 
-            actions =  self.app.mxcubecore.hwr.get_hardware_object("beamcmds")
+            actions = self.app.mxcubecore.hwr.get_hardware_object("beamcmds")
             if actions is not None:
-                cmds = self.app.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
+                cmds = self.app.mxcubecore.hwr.get_hardware_object(
+                    "beamcmds"
+                ).get_commands()
                 for cmd in cmds:
-                    cmd.connect(
-                        "commandBeginWaitReply", signals.beamline_action_start
-                    )
+                    cmd.connect("commandBeginWaitReply", signals.beamline_action_start)
                     cmd.connect("commandReplyArrived", signals.beamline_action_done)
                     cmd.connect("commandReady", signals.beamline_action_done)
                     cmd.connect("commandFailed", signals.beamline_action_failed)
@@ -62,21 +61,35 @@ class Beamline(Component):
             )
 
         try:
-            self.app.mxcubecore.plotting.connect(self.app.mxcubecore.plotting, "new_plot", signals.new_plot)
-            self.app.mxcubecore.plotting.connect(self.app.mxcubecore.plotting, "plot_data", signals.plot_data)
-            self.app.mxcubecore.plotting.connect(self.app.mxcubecore.plotting, "plot_end", signals.plot_end)
+            self.app.mxcubecore.plotting.connect(
+                self.app.mxcubecore.plotting, "new_plot", signals.new_plot
+            )
+            self.app.mxcubecore.plotting.connect(
+                self.app.mxcubecore.plotting, "plot_data", signals.plot_data
+            )
+            self.app.mxcubecore.plotting.connect(
+                self.app.mxcubecore.plotting, "plot_end", signals.plot_end
+            )
         except Exception as ex:
-            logging.getLogger("MX3.HWR").error("error loading plotting hwo: %s" % str(ex))
+            logging.getLogger("MX3.HWR").error(
+                "error loading plotting hwo: %s" % str(ex)
+            )
 
         try:
             self.app.mxcubecore.beamline_ho.xrf_spectrum.connect(
-                self.app.mxcubecore.beamline_ho.xrf_spectrum, "new_plot", signals.new_plot
+                self.app.mxcubecore.beamline_ho.xrf_spectrum,
+                "new_plot",
+                signals.new_plot,
             )
             self.app.mxcubecore.beamline_ho.xrf_spectrum.connect(
-                self.app.mxcubecore.beamline_ho.xrf_spectrum, "plot_data", signals.plot_data
+                self.app.mxcubecore.beamline_ho.xrf_spectrum,
+                "plot_data",
+                signals.plot_data,
             )
             self.app.mxcubecore.beamline_ho.xrf_spectrum.connect(
-                self.app.mxcubecore.beamline_ho.xrf_spectrum, "plot_end", signals.plot_end
+                self.app.mxcubecore.beamline_ho.xrf_spectrum,
+                "plot_end",
+                signals.plot_end,
             )
             self.app.mxcubecore.beamline_ho.xrf_spectrum.connect(
                 self.app.mxcubecore.beamline_ho.xrf_spectrum,
@@ -84,8 +97,9 @@ class Beamline(Component):
                 signals.xrf_task_progress,
             )
         except Exception as ex:
-            logging.getLogger("MX3.HWR").error("error loading plotting hwo: %s" % str(ex))
-
+            logging.getLogger("MX3.HWR").error(
+                "error loading plotting hwo: %s" % str(ex)
+            )
 
     def diffractometer_init_signals(self):
         """
@@ -97,7 +111,6 @@ class Beamline(Component):
         diffractometer = self.app.mxcubecore.beamline_ho.diffractometer
         diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
 
-
     def get_aperture(self):
         """
         Returns list of apertures and the one currently used.
@@ -107,12 +120,11 @@ class Beamline(Component):
         """
         aperture_list, current_aperture = [], None
         beam = self.app.mxcubecore.beamline_ho.beam
-        
+
         aperture_list = beam.get_available_size()["values"]
         current_aperture = beam.get_value()[-1]
 
         return aperture_list, current_aperture
-
 
     def get_beam_definer(self):
         beam_info = self.app.mxcubecore.beamline_ho.beam
@@ -123,7 +135,6 @@ class Beamline(Component):
             bd = beam_info.get_object_by_role("aperture")
 
         return bd
-
 
     def get_viewport_info(self):
         """
@@ -148,8 +159,14 @@ class Beamline(Component):
 
         if self.app.CONFIG.app.VIDEO_FORMAT == "MPEG1":
             fmt, source_is_scalable = "MPEG1", True
-            video_sizes = self.app.mxcubecore.beamline_ho.sample_view.camera.get_available_stream_sizes()
-            width, height, scale = self.app.mxcubecore.beamline_ho.sample_view.camera.get_stream_size()
+            video_sizes = (
+                self.app.mxcubecore.beamline_ho.sample_view.camera.get_available_stream_sizes()
+            )
+            (
+                width,
+                height,
+                scale,
+            ) = self.app.mxcubecore.beamline_ho.sample_view.camera.get_stream_size()
         else:
             scale = 1
             width = self.app.mxcubecore.beamline_ho.sample_view.camera.get_width()
@@ -174,14 +191,15 @@ class Beamline(Component):
         data.update(beam_info_dict)
         return data
 
-
     def beamline_get_all_attributes(self):
         ho = BeamlineAdapter(self.app.mxcubecore.beamline_ho)
         data = ho.dict()
         actions = list()
 
         try:
-            cmds = self.app.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
+            cmds = self.app.mxcubecore.hwr.get_hardware_object(
+                "beamcmds"
+            ).get_commands()
         except Exception:
             cmds = []
         for cmd in cmds:
@@ -215,10 +233,11 @@ class Beamline(Component):
             }
         )
 
-        data.update({"energyScanElements": ho.get_available_elements().get("elements", [])})
+        data.update(
+            {"energyScanElements": ho.get_available_elements().get("elements", [])}
+        )
 
         return data
-
 
     def beamline_abort_action(self, name):
         """
@@ -228,7 +247,9 @@ class Beamline(Component):
 
         """
         try:
-            cmds = self.app.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
+            cmds = self.app.mxcubecore.hwr.get_hardware_object(
+                "beamcmds"
+            ).get_commands()
         except Exception:
             cmds = []
 
@@ -237,7 +258,9 @@ class Beamline(Component):
                 cmd.abort()
 
         try:
-            ho = BeamlineAdapter(self.app.mxcubecore.beamline_ho).get_object(name.lower())
+            ho = BeamlineAdapter(self.app.mxcubecore.beamline_ho).get_object(
+                name.lower()
+            )
         except AttributeError:
             pass
         else:
@@ -250,7 +273,9 @@ class Beamline(Component):
         : param str name: action to run
         """
         try:
-            cmds = self.app.mxcubecore.hwr.get_hardware_object("beamcmds").get_commands()
+            cmds = self.app.mxcubecore.hwr.get_hardware_object(
+                "beamcmds"
+            ).get_commands()
         except Exception:
             cmds = []
 
@@ -300,11 +325,9 @@ class Beamline(Component):
 
         return beam_info_dict
 
-
     def prepare_beamline_for_sample(self):
         if hasattr(self.app.mxcubecore.beamline_ho.collect, "prepare_for_new_sample"):
             self.app.mxcubecore.beamline_ho.collect.prepare_for_new_sample()
-
 
     def diffractometer_set_phase(self, phase):
         try:
@@ -314,13 +337,11 @@ class Beamline(Component):
 
         self.app.mxcubecore.beamline_ho.diffractometer.set_phase(phase)
 
-
     def set_aperture(pos):
         beam = self.app.mxcubecore.beamline_ho.beam
         msg = "Changing beam size to: %s" % pos
         logging.getLogger("MX3.HWR").info(msg)
         beam.set_value(pos)
-
 
     def diffractometer_get_info(self):
         ret = {}
@@ -331,17 +352,20 @@ class Beamline(Component):
             ret["useSC"] = False
 
         try:
-            ret["currentPhase"] = self.app.mxcubecore.beamline_ho.diffractometer.get_current_phase()
+            ret[
+                "currentPhase"
+            ] = self.app.mxcubecore.beamline_ho.diffractometer.get_current_phase()
         except AttributeError:
             ret["currentPhase"] = "None"
 
         try:
-            ret["phaseList"] = self.app.mxcubecore.beamline_ho.diffractometer.get_phase_list()
+            ret[
+                "phaseList"
+            ] = self.app.mxcubecore.beamline_ho.diffractometer.get_phase_list()
         except AttributeError:
             ret["phaseList"] = []
-            
-        return ret
 
+        return ret
 
     def get_detector_info(self):
         filetype = self.app.mxcubecore.beamline_ho.detector.get_property("file_suffix")

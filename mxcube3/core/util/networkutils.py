@@ -1,4 +1,3 @@
-import datetime
 import socket
 import functools
 import email.utils
@@ -82,7 +81,6 @@ def require_control(f):
             return f(*args, **kwargs)
 
     return wrapped
-
 
 def ws_valid_login_only(f):
     @functools.wraps(f)

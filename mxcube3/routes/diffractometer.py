@@ -6,9 +6,6 @@ import json
 
 from flask import Blueprint, Response, jsonify, request
 
-from . import signals
-from mxcube3.core.util import utils
-
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("diffractometer", __name__, url_prefix=url_prefix)
 

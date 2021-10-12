@@ -1,5 +1,4 @@
 
-import flask_security
 
 from mxcube3.core.user.usermanager import BaseUserManager
 

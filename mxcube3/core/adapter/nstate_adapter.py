@@ -1,6 +1,4 @@
 from enum import Enum
-from mxcubecore.HardwareObjects.abstract import AbstractNState
-from mxcubecore.HardwareObjects.abstract import AbstractShutter
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.models import NStateModel, HOActuatorValueChangeModel, StrValueModel

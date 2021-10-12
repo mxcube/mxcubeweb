@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import types
 import sys
 import logging
 import copy

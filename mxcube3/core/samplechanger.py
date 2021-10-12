@@ -293,7 +293,7 @@ class SampleChanger(Component):
     def get_loaded_sample(self):
         try:
             sample = self.app.mxcubecore.beamline_ho.sample_changer.get_loaded_sample()
-        except Exception as ex:
+        except Exception:
             logging.getLogger("MX3.HWR").exception("")
             sample = None
 
@@ -369,14 +369,13 @@ class SampleChanger(Component):
 
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
-    from mxcube3 import mxcube
 
     self.app.mxcubecore.beamline_ho.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")
     log = logging.getLogger("user_level_log")
 
     loc = data_model.location
-    holder_length = data_model.holder_length
+    data_model.holder_length
 
     robot_action_dict = {
         "actionType": "LOAD",

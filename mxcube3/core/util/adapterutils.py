@@ -5,12 +5,6 @@ def export(func):
     return func
 
 def get_adapter_cls_from_hardware_object(ho):
-    import MicrodiffInOutMockup
-    import ShutterMockup
-    import MicrodiffInOut
-    import TangoShutter
-    import MicrodiffBeamstop
-
     from mxcubecore.HardwareObjects.abstract import (
         AbstractActuator,
         AbstractDetector, 
@@ -56,7 +50,7 @@ def get_adapter_cls_from_hardware_object(ho):
     elif isinstance(ho, DataPublisher.DataPublisher):
         return DataPublisherAdapter
     elif isinstance(ho, AbstractMotor.AbstractMotor):        
-        return MotorAdapter        
+        return MotorAdapter     
     elif isinstance(ho, AbstractActuator.AbstractActuator):        
         return ActuatorAdapter
     else:

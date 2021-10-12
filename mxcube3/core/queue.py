@@ -1997,7 +1997,7 @@ class Queue(Component):
             if qe:
                 try:
                     qe.stop()
-                except Exception as ex:
+                except Exception:
                     logging.getLogger("MX3.HWR").exception("[QUEUE] Could not stop queue")
                 self.app.mxcubecore.beamline_ho.queue_manager.set_pause(False)
                 # the next two is to avoid repeating the task
