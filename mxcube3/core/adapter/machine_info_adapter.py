@@ -23,12 +23,15 @@ class MachineInfoAdapter(ActuatorAdapterBase):
         self.value_change(self.get_value(), **kwargs)
 
     def _get_value(self) -> HOMachineInfoModel:
-        return HOMachineInfoModel(**{"value": {
-                "current": self.get_current(),
-                "message": self.get_message(),
-                "fillmode": self.get_fill_mode(),
+        return HOMachineInfoModel(
+            **{
+                "value": {
+                    "current": self.get_current(),
+                    "message": self.get_message(),
+                    "fillmode": self.get_fill_mode(),
+                }
             }
-        })
+        )
 
     def get_message(self):
         try:

@@ -19,6 +19,7 @@ from mxcube3.core.component import Component
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
 
+
 class SampleView(Component):
     def __init__(self, app, server, config):
         super().__init__(app, server, config)
@@ -30,9 +31,8 @@ class SampleView(Component):
         enable_snapshots(
             self.app.mxcubecore.beamline_ho.collect,
             self.app.mxcubecore.beamline_ho.diffractometer,
-            self.app.mxcubecore.beamline_ho.sample_view
+            self.app.mxcubecore.beamline_ho.sample_view,
         )
-
 
     def centring_clicks_left(self):
         return self._click_limit - self._click_count
@@ -40,23 +40,25 @@ class SampleView(Component):
     def centring_reset_click_count(self):
         self._click_count = 0
 
-
     def centring_click(self):
         self._click_count += 1
-
 
     def centring_remove_current_point(self):
         from mxcube3.routes import signals
 
         if self._centring_point_id:
-            self.app.mxcubecore.beamline_ho.sample_view.delete_shape(self._centring_point_id)
+            self.app.mxcubecore.beamline_ho.sample_view.delete_shape(
+                self._centring_point_id
+            )
             signals.send_shapes(update_positions=False)
             self._centring_point_id = None
 
-
     def centring_add_current_point(self, *args):
         from mxcube3.routes import signals
-        shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(self._centring_point_id)
+
+        shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(
+            self._centring_point_id
+        )
 
         # There is no current centered point shape when the centring is done
         # by software like Workflows, so we add one.
@@ -64,9 +66,16 @@ class SampleView(Component):
             try:
                 if args[0]:
                     motors = args[1]["motors"]
-                    x, y = self.app.mxcubecore.beamline_ho.diffractometer.motor_positions_to_screen(motors)
+                    (
+                        x,
+                        y,
+                    ) = self.app.mxcubecore.beamline_ho.diffractometer.motor_positions_to_screen(
+                        motors
+                    )
                     self.centring_update_current_point(motors, x, y)
-                    shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(self._centring_point_id)
+                    shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(
+                        self._centring_point_id
+                    )
             except Exception:
                 logging.getLogger("MX3.HWR").exception("Centring failed !")
 
@@ -75,10 +84,12 @@ class SampleView(Component):
             signals.send_shapes(update_positions=False)
             self._centring_point_id = None
 
-
     def centring_update_current_point(self, motor_positions, x, y):
         from mxcube3.routes import signals
-        point = self.app.mxcubecore.beamline_ho.sample_view.get_shape(self._centring_point_id)
+
+        point = self.app.mxcubecore.beamline_ho.sample_view.get_shape(
+            self._centring_point_id
+        )
 
         if point:
             point.move_to_mpos([motor_positions], [x, y])
@@ -91,7 +102,6 @@ class SampleView(Component):
             self._centring_point_id = point.id
 
         signals.send_shapes(update_positions=False)
-
 
     def wait_for_centring_finishes(self, *args, **kwargs):
         """
@@ -116,7 +126,10 @@ class SampleView(Component):
             motor_positions.pop("beam_y", None)
             motor_positions.pop("beam_x", None)
 
-            x, y = self.app.mxcubecore.beamline_ho.diffractometer.motor_positions_to_screen(
+            (
+                x,
+                y,
+            ) = self.app.mxcubecore.beamline_ho.diffractometer.motor_positions_to_screen(
                 motor_positions
             )
 
@@ -125,7 +138,6 @@ class SampleView(Component):
 
             if self.app.AUTO_MOUNT_SAMPLE:
                 self.app.mxcubecore.beamline_ho.diffractometer.accept_centring()
-
 
     def init_signals(self):
         """
@@ -139,9 +151,12 @@ class SampleView(Component):
         dm.connect(dm, "centringSuccessful", self.wait_for_centring_finishes)
         dm.connect(dm, "centringFailed", self.wait_for_centring_finishes)
         dm.connect("centringAccepted", self.centring_add_current_point)
-        self.app.mxcubecore.beamline_ho.sample_view.connect("newGridResult", self.handle_grid_result)
-        self._click_limit = int(self.app.mxcubecore.beamline_ho.click_centring_num_clicks or 3)
-
+        self.app.mxcubecore.beamline_ho.sample_view.connect(
+            "newGridResult", self.handle_grid_result
+        )
+        self._click_limit = int(
+            self.app.mxcubecore.beamline_ho.click_centring_num_clicks or 3
+        )
 
     def new_sample_video_frame_received(self, img, width, height, *args, **kwargs):
         """
@@ -169,12 +184,13 @@ class SampleView(Component):
         self.app.mxcubecore.beamline_ho.sample_view.camera.new_frame.set()
         self.app.mxcubecore.beamline_ho.sample_view.camera.new_frame.clear()
 
-
     def stream_video(self, camera):
         """it just send a message to the client so it knows that there is a new
         image. A HO is supplying that image
         """
-        self.app.mxcubecore.beamline_ho.sample_view.camera.new_frame = gevent.event.Event()
+        self.app.mxcubecore.beamline_ho.sample_view.camera.new_frame = (
+            gevent.event.Event()
+        )
 
         try:
             self.app.mxcubecore.beamline_ho.sample_view.camera.disconnect(
@@ -197,11 +213,11 @@ class SampleView(Component):
             except Exception:
                 pass
 
-
     def set_image_size(self, width, height):
-        self.app.mxcubecore.beamline_ho.sample_view.camera.restart_streaming((width, height))
+        self.app.mxcubecore.beamline_ho.sample_view.camera.restart_streaming(
+            (width, height)
+        )
         return self.app.beamline.get_viewport_info()
-
 
     def move_to_centred_position(self, point_id):
         point = self.app.mxcubecore.beamline_ho.sample_view.get_shape(point_id)
@@ -212,7 +228,6 @@ class SampleView(Component):
 
         return point
 
-
     def get_shapes(self):
         shape_dict = {}
 
@@ -221,7 +236,6 @@ class SampleView(Component):
             shape_dict.update({shape.id: s})
 
         return {"shapes": to_camel(shape_dict)}
-
 
     def get_shape_width_sid(self, sid):
         shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(sid)
@@ -232,7 +246,6 @@ class SampleView(Component):
 
         return shape
 
-
     def shape_add_cell_result(self, sid, cell, result):
         from mxcube3.routes import signals
 
@@ -240,12 +253,10 @@ class SampleView(Component):
         shape.set_cell_result(cell, result)
         signals.grid_result_available(to_camel(shape.as_dict()))
 
-
     def handle_grid_result(self, shape):
         from mxcube3.routes import signals
 
         signals.grid_result_available(to_camel(shape.as_dict()))
-
 
     def update_shapes(self, shapes):
         updated_shapes = []
@@ -255,7 +266,9 @@ class SampleView(Component):
             pos = []
 
             # Get the shape if already exists
-            shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(shape_data.get("id", -1))
+            shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(
+                shape_data.get("id", -1)
+            )
 
             # If shape does not exist add it
             if not shape:
@@ -288,8 +301,16 @@ class SampleView(Component):
                         # We also store the center of the grid
                         if t == "G":
                             # coords for the center of the grid
-                            x_c = x + (shape_data["num_cols"] / 2.0) * shape_data["cell_width"]
-                            y_c = y + (shape_data["num_rows"] / 2.0) * shape_data["cell_height"]
+                            x_c = (
+                                x
+                                + (shape_data["num_cols"] / 2.0)
+                                * shape_data["cell_width"]
+                            )
+                            y_c = (
+                                y
+                                + (shape_data["num_rows"] / 2.0)
+                                * shape_data["cell_height"]
+                            )
                             center_positions = self.app.mxcubecore.beamline_ho.diffractometer.get_centred_point_from_coord(
                                 x_c, y_c, return_by_names=True
                             )
@@ -302,7 +323,9 @@ class SampleView(Component):
                         logging.getLogger("HWR.MX3").info(shape_data)
 
                 else:
-                    shape = self.app.mxcubecore.beamline_ho.sample_view.add_shape_from_refs(refs, t)
+                    shape = self.app.mxcubecore.beamline_ho.sample_view.add_shape_from_refs(
+                        refs, t
+                    )
 
             # shape will be none if creation failed, so we check if shape exists
             # before setting additional parameters
@@ -313,7 +336,6 @@ class SampleView(Component):
 
         return {"shapes": updated_shapes}
 
-
     def rotate_to(self, sid):
         if sid:
             shape = self.app.mxcubecore.beamline_ho.sample_view.get_shape(sid)
@@ -321,13 +343,16 @@ class SampleView(Component):
             phi_value = round(float(cp.as_dict().get("phi", None)), 3)
             if phi_value:
                 try:
-                    self.app.mxcubecore.beamline_ho.diffractometer.centringPhi.set_value(phi_value)
+                    self.app.mxcubecore.beamline_ho.diffractometer.centringPhi.set_value(
+                        phi_value
+                    )
                 except Exception:
                     raise
 
-
     def move_zoom_motor(pos):
-        zoom_motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role("zoom")
+        zoom_motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(
+            "zoom"
+        )
         if zoom_motor.get_state() != HardwareObjectState.READY:
             return (
                 "motor is already moving",
@@ -343,29 +368,34 @@ class SampleView(Component):
         scales = self.app.mxcubecore.beamline_ho.diffractometer.get_pixels_per_mm()
         return {"pixelsPerMm": [scales[0], scales[1]]}
 
-
     def back_light_on(self):
-        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role("BackLightSwitch")
+        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(
+            "BackLightSwitch"
+        )
         motor.set_value(motor.VALUES.IN)
-
 
     def back_light_off(self):
-        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role("BackLightSwitch")
+        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(
+            "BackLightSwitch"
+        )
         motor.set_value(motor.VALUES.OUT)
-
 
     def front_light_on(self):
-        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role("FrontLightSwitch")
+        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(
+            "FrontLightSwitch"
+        )
         motor.set_value(motor.VALUES.IN)
 
-
     def front_light_off(self):
-        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role("FrontLightSwitch")
+        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(
+            "FrontLightSwitch"
+        )
         motor.set_value(motor.VALUES.OUT)
 
-
     def move_motor(self, motid, newpos):
-        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(motid.lower())
+        motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(
+            motid.lower()
+        )
 
         if newpos == "stop":
             motor.stop()
@@ -381,7 +411,9 @@ class SampleView(Component):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        if not self.app.mxcubecore.beamline_ho.diffractometer.current_centring_procedure:
+        if (
+            not self.app.mxcubecore.beamline_ho.diffractometer.current_centring_procedure
+        ):
             msg = "Starting automatic centring"
             logging.getLogger("user_level_log").info(msg)
 
@@ -392,7 +424,6 @@ class SampleView(Component):
             msg = "Could not starting automatic centring, already centring."
             logging.getLogger("user_level_log").info(msg)
 
-
     def start_manual_centring(self):
         """
         Start 3 click centring procedure.
@@ -400,9 +431,15 @@ class SampleView(Component):
             :statuscode: 409: error
         """
         if self.app.mxcubecore.beamline_ho.diffractometer.is_ready():
-            if self.app.mxcubecore.beamline_ho.diffractometer.current_centring_procedure:
-                logging.getLogger("user_level_log").info("Aborting current centring ...")
-                self.app.mxcubecore.beamline_ho.diffractometer.cancel_centring_method(reject=True)
+            if (
+                self.app.mxcubecore.beamline_ho.diffractometer.current_centring_procedure
+            ):
+                logging.getLogger("user_level_log").info(
+                    "Aborting current centring ..."
+                )
+                self.app.mxcubecore.beamline_ho.diffractometer.cancel_centring_method(
+                    reject=True
+                )
 
             logging.getLogger("user_level_log").info("Centring using 3-click centring")
 
@@ -412,11 +449,12 @@ class SampleView(Component):
 
             self.centring_reset_click_count()
         else:
-            logging.getLogger("user_level_log").warning("Diffracomter is busy, cannot start centering")
+            logging.getLogger("user_level_log").warning(
+                "Diffracomter is busy, cannot start centering"
+            )
             raise RuntimeError("Diffracomter is busy, cannot start centering")
 
         return {"clicksLeft": self.centring_clicks_left()}
-
 
     def abort_centring(self):
         try:
@@ -425,7 +463,6 @@ class SampleView(Component):
             self.centring_remove_current_point()
         except:
             logging.getLogger("MX3.HWR").warning("Canceling centring failed")
-
 
     def centring_handle_click(self, x, y):
         if self.app.mxcubecore.beamline_ho.diffractometer.current_centring_procedure:
@@ -442,23 +479,23 @@ class SampleView(Component):
 
         return {"clicksLeft": self.centring_clicks_left()}
 
-
     def reject_centring(self):
         self.app.mxcubecore.beamline_ho.diffractometer.reject_centring()
         self.centring_remove_current_point()
-
 
     def move_to_beam(self, x, y):
         msg = "Moving point x: %s, y: %s to beam" % (x, y)
         logging.getLogger("user_level_log").info(msg)
 
-        if getattr(self.app.mxcubecore.beamline_ho.diffractometer, "move_to_beam") is None:
+        if (
+            getattr(self.app.mxcubecore.beamline_ho.diffractometer, "move_to_beam")
+            is None
+        ):
             # v > 2.2, or perhaps start_move_to_beam?
             self.app.mxcubecore.beamline_ho.diffractometer.move_to_beam(x, y)
         else:
             # v <= 2.1
             self.app.mxcubecore.beamline_ho.diffractometer.move_to_beam(x, y)
-
 
     def set_centring_method(self, method):
         if method == CENTRING_METHOD.LOOP:
@@ -500,13 +537,11 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
         # with open(filename, "wb") as snapshot_file:
         #     snapshot_file.write(SNAPSHOT)
 
-
     def save_snapshot(self, filename, bw=False):
         mxcube.mxcubecore.beamline_ho.sample_view.save_snapshot(
             filename, overlay=False, bw=bw
         )
-        #_do_take_snapshot(filename, bw)
-
+        # _do_take_snapshot(filename, bw)
 
     def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
         if snapshots is None:
@@ -570,15 +605,16 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
                         "Taking snapshot number: %d" % (snapshot_index + 1)
                     )
                     _do_take_snapshot(snapshot_filename)
-                    #diffractometer.save_snapshot(snapshot_filename)
+                    # diffractometer.save_snapshot(snapshot_filename)
                 except Exception:
                     sys.excepthook(*sys.exc_info())
-                    raise RuntimeError("Could not take snapshot '%s'", snapshot_filename)
+                    raise RuntimeError(
+                        "Could not take snapshot '%s'", snapshot_filename
+                    )
 
                 if number_of_snapshots > 1:
                     move_omega_relative(90)
                     diffractometer.wait_ready()
-
 
     collect_object.take_crystal_snapshots = types.MethodType(
         take_snapshots, collect_object

@@ -6,15 +6,17 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask_security import SQLAlchemySessionUserDatastore
 
-engine = create_engine('sqlite:////tmp/mxcube-user.db')
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
+engine = create_engine("sqlite:////tmp/mxcube-user.db")
+db_session = scoped_session(
+    sessionmaker(autocommit=False, autoflush=False, bind=engine)
+)
 Base = declarative_base()
 Base.query = db_session.query_property()
 
+
 def init_db():
     Base.metadata.create_all(bind=engine)
+
 
 class UserDatastore(SQLAlchemySessionUserDatastore):
     """A UserDatastore implementation that assumes the
@@ -32,7 +34,9 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
         self._messages_users_model = typing.Type["MessagesUsers"]
 
     def create_message(self, message):
-        return self.put(self._message_model(message=message, at=datetime.datetime.now()))
+        return self.put(
+            self._message_model(message=message, at=datetime.datetime.now())
+        )
 
     def add_message_to_user(self, user, message):
         user.messages.append(message)
@@ -41,4 +45,3 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
     def get_all_messages(self):
         return self._message_model.query.all()
 
-    

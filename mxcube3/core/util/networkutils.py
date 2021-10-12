@@ -12,6 +12,7 @@ import flask_socketio
 
 from flask_security import current_user, login_required
 
+
 def RateLimited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
 
@@ -32,10 +33,12 @@ def RateLimited(maxPerSecond):
 
     return decorate
 
+
 def remote_addr():
     hdr = flask.request.headers.get("x-forwarded-for", flask.request.remote_addr)
 
     return str(hdr).split(",")[-1]
+
 
 def is_local_network(ip):
     localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
@@ -43,6 +46,7 @@ def is_local_network(ip):
     private_address = ".".join(ip.split(".")[0:2])
 
     return private_address == localhost_range
+
 
 def is_local_host():
     try:
@@ -60,6 +64,7 @@ def is_local_host():
         remote_address = "127.0.0.1"
 
     return remote_address in localhost_list or is_local_network(remote_address)
+
 
 def valid_login_only(f):
     @functools.wraps(f)
@@ -82,6 +87,7 @@ def require_control(f):
 
     return wrapped
 
+
 def ws_valid_login_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
@@ -91,6 +97,7 @@ def ws_valid_login_only(f):
             return f(*args, **kwargs)
 
     return wrapped
+
 
 def send_mail(_from, to, subject, content):
     smtp = smtplib.SMTP("smtp", smtplib.SMTP_PORT)
@@ -149,7 +156,10 @@ def send_feedback(sender_data):
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
-    to = mxcube.mxcubecore.beamline_ho.session.get_property("feedback_email", "") + ",%s" % _sender
+    to = (
+        mxcube.mxcubecore.beamline_ho.session.get_property("feedback_email", "")
+        + ",%s" % _sender
+    )
     subject = "[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)
     content = sender_data.get("content", "")
 

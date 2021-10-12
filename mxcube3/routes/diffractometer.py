@@ -1,10 +1,7 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import json
 
 from flask import Blueprint, Response, jsonify, request
+
 
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("diffractometer", __name__, url_prefix=url_prefix)
@@ -21,11 +18,12 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        data = {"current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_current_phase()}
+        data = {
+            "current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_current_phase()
+        }
         resp = jsonify(data)
         resp.status_code = 200
         return resp
-
 
     @bp.route("/phaselist", methods=["GET"])
     @server.restrict
@@ -39,11 +37,12 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 409: error
         """
         resp = jsonify(
-            {"current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_phase_list()}
+            {
+                "current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_phase_list()
+            }
         )
         resp.status_code = 200
         return resp
-
 
     @bp.route("/phase", methods=["PUT"])
     @server.require_control
@@ -63,7 +62,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.beamline.diffractometer_set_phase(phase)
         return Response(status=200)
 
-
     @bp.route("/platemode", methods=["GET"])
     @server.restrict
     def md_in_plate_mode():
@@ -77,7 +75,6 @@ def init_route(mxcube, server, url_prefix):
         resp.status_code = 200
         return resp
 
-
     # @bp.route("/movables/state", methods=["GET"])
     # @server.restrict
     # def get_movables_state():
@@ -86,7 +83,6 @@ def init_route(mxcube, server, url_prefix):
     #     resp = jsonify(ret)
     #     resp.status_code = 200
     #     return resp
-
 
     @bp.route("/aperture", methods=["PUT"])
     @server.require_control
@@ -106,7 +102,6 @@ def init_route(mxcube, server, url_prefix):
 
         return Response(status=200)
 
-
     @bp.route("/aperture", methods=["GET"])
     @server.restrict
     def get_aperture():
@@ -119,7 +114,6 @@ def init_route(mxcube, server, url_prefix):
         resp = jsonify(ret)
         resp.status_code = 200
         return resp
-
 
     @bp.route("/info", methods=["GET"])
     @server.restrict

@@ -8,7 +8,6 @@ import logging
 import traceback
 import atexit
 import json
-import importlib
 from functools import reduce
 
 from pathlib import Path
@@ -26,7 +25,8 @@ from mxcube3.core.adapter.adapter_base import AdapterBase
 
 removeLoggingHandlers()
 
-class MXCUBECore():
+
+class MXCUBECore:
     # The HardwareRepository object
     hwr = None
 
@@ -41,39 +41,6 @@ class MXCUBECore():
     plotting = None
 
     adapter_dict = {}
-
-    @staticmethod
-    def get_hwo(obj, name):
-        """
-        Convenience method for getting HardwareObjects from the HardwareRepository.
-        Retrieves the HardwareObject with the name <name> from either the
-        HardwareRepository or from a parent HardwareObject passed as <obj>
-
-        Handles exceptions with exit_with_error, which means that the application
-        will exit on exception
-
-        :param obj: HardwreObject or HardwareRepository
-        :param str name: The name of the HardwreObject
-
-        :rtype: HardwareObject
-        :return: The HardwareObject
-        """
-        ho = None
-
-        try:
-            if hasattr(obj, "get_hardware_object"):
-                ho = obj.get_hardware_object(name)
-            else:
-                ho = obj.get_object_by_role(name)
-        except Exception:
-            msg = "Could not initialize hardware object corresponding to %s \n"
-            msg = msg % name.upper()
-            msg += "Make sure that all related device servers are running \n"
-            msg += "Make sure that the detector software is running \n"
-
-            MXCUBECore.exit_with_error(msg)
-
-        return ho
 
     @staticmethod
     def exit_with_error(msg):
@@ -120,7 +87,7 @@ class MXCUBECore():
         _hwr = hwr.get_hardware_repository()
 
         MXCUBECore.hwr = _hwr
-       
+
         try:
             MXCUBECore.beamline_ho = hwr.beamline
             MXCUBECore.beamline = BeamlineAdapter(hwr.beamline, MXCUBEApplication)
@@ -131,19 +98,6 @@ class MXCUBECore():
             msg += "Make sure That all devices servers are running \n"
             msg += "Make sure that the detector software is running \n"
             MXCUBECore.exit_with_error(msg)
-
-    @staticmethod
-    def _import_adapter_cls(adapter_cls_str):
-        # NBNB Cannot be imported at top level since that causes cirtular imports
-        # NBNB It is no good that a geeneric converter live in a file tat imports
-        # the mxcuve3 appliction
-        # TODO: refactor? rhfogh 20210730
-        from mxcube3.core.util.convertutils import str_to_snake
-        adapter_mod = importlib.import_module(
-            f"mxcube3.core.adapter.{str_to_snake(adapter_cls_str)}"
-        )
-
-        return getattr(adapter_mod, adapter_cls_str)
 
     @staticmethod
     def _get_object_from_id(_id):
@@ -162,7 +116,6 @@ class MXCUBECore():
 
         return _id.replace(" ", "_").lower()
 
-    
     @staticmethod
     def _add_adapter(_id, adapter_cls, ho, adapter_instance):
         if _id not in MXCUBECore.adapter_dict:
@@ -170,21 +123,16 @@ class MXCUBECore():
                 "id": str(_id),
                 "adapter_cls": adapter_cls.__name__,
                 "ho": ho.name()[1:],
-                "adapter": adapter_instance
+                "adapter": adapter_instance,
             }
         else:
-            logging.getLogger(
-                "MX3.HWR").warning(f"Skipping {ho.name()}, id: {_id} already exists"
-                                   )
-
+            logging.getLogger("MX3.HWR").warning(
+                f"Skipping {ho.name()}, id: {_id} already exists"
+            )
 
     @staticmethod
     def get_adapter(_id):
         return MXCUBECore._get_object_from_id(_id)
-
-    def _get_attr_from_path(self, obj, attr):
-        """Recurses through an attribute chain to get the attribute."""
-        return reduce(getattr, attr.split("."), obj)
 
     @staticmethod
     def adapt_hardware_objects(app):
@@ -207,7 +155,9 @@ class MXCUBECore():
                     adapter_instance = adapter_cls(ho, _id, app, **dict(adapter_config))
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
                 except:
-                    logging.getLogger("MX3.HWR").exception("Could not add adapter for %s" % _id)
+                    logging.getLogger("MX3.HWR").exception(
+                        "Could not add adapter for %s" % _id
+                    )
                     logging.getLogger("MX3.HWR").info("%s not available" % _id)
                     adapter_cls = AdapterBase
                     adapter_instance = AdapterBase(None, _id, app)
@@ -216,12 +166,18 @@ class MXCUBECore():
             else:
                 logging.getLogger("MX3.HWR").info("No adapter for %s" % _id)
 
-        print(make_table(
-            ["Name", "Adapter", "HO filename"],
-            [[item["id"], item["adapter_cls"], item["ho"]] for item in MXCUBECore.adapter_dict.values()]
-        ))
+        print(
+            make_table(
+                ["Name", "Adapter", "HO filename"],
+                [
+                    [item["id"], item["adapter_cls"], item["ho"]]
+                    for item in MXCUBECore.adapter_dict.values()
+                ],
+            )
+        )
 
-class MXCUBEApplication():
+
+class MXCUBEApplication:
     # Below variables used for internal application state
 
     # SampleID and sample data of currently mounted sample, to handle samples
@@ -315,19 +271,20 @@ class MXCUBEApplication():
         from mxcube3.core.component import import_component
 
         from mxcube3.core.lims import Lims
-        from mxcube3.core.user.usermanager import UserManager
         from mxcube3.core.chat import Chat
         from mxcube3.core.samplechanger import SampleChanger
         from mxcube3.core.beamline import Beamline
         from mxcube3.core.sampleview import SampleView
         from mxcube3.core.queue import Queue
         from mxcube3.core.workflow import Workflow
-        
+
         _UserManagerCls = import_component(cfg.app.usermanager, package="user")
 
         MXCUBEApplication.queue = Queue(MXCUBEApplication, server, {})
         MXCUBEApplication.lims = Lims(MXCUBEApplication, server, {})
-        MXCUBEApplication.usermanager = _UserManagerCls(MXCUBEApplication, server, cfg.app.usermanager)
+        MXCUBEApplication.usermanager = _UserManagerCls(
+            MXCUBEApplication, server, cfg.app.usermanager
+        )
         MXCUBEApplication.chat = Chat(MXCUBEApplication, server, {})
         MXCUBEApplication.sample_changer = SampleChanger(MXCUBEApplication, server, {})
         MXCUBEApplication.beamline = Beamline(MXCUBEApplication, server, {})
@@ -337,7 +294,6 @@ class MXCUBEApplication():
         MXCUBEApplication.init_signal_handlers()
 
         # MXCUBEApplication.load_settings()
-
 
     @staticmethod
     def init_sample_video(video_device):
@@ -366,7 +322,9 @@ class MXCUBEApplication():
         corresponding signals/events
         """
         try:
-            MXCUBEApplication.queue.init_signals(MXCUBEApplication.mxcubecore.beamline_ho.queue_model)
+            MXCUBEApplication.queue.init_signals(
+                MXCUBEApplication.mxcubecore.beamline_ho.queue_model
+            )
         except Exception:
             sys.excepthook(*sys.exc_info())
 
@@ -409,9 +367,7 @@ class MXCUBEApplication():
         root_logger.setLevel(logging.INFO)
         root_logger.addHandler(NullHandler())
 
-        custom_log_handler = MX3LoggingHandler(
-            MXCUBEApplication.server
-        )
+        custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
         custom_log_handler.setLevel(logging.DEBUG)
         custom_log_handler.setFormatter(log_formatter)
 
@@ -448,9 +404,9 @@ class MXCUBEApplication():
 
     @staticmethod
     def get_ui_properties():
-        # Add type information to each component retrieved from the beamline adapter 
+        # Add type information to each component retrieved from the beamline adapter
         # (either via config or via mxcubecore.beamline)
-        for item_name, item_data in MXCUBEApplication.CONFIG.app.ui_properties.items():
+        for _item_name, item_data in MXCUBEApplication.CONFIG.app.ui_properties.items():
             for component_data in item_data["components"]:
                 try:
                     mxcore = MXCUBEApplication.mxcubecore
@@ -462,13 +418,12 @@ class MXCUBEApplication():
                     value_type = ""
                 else:
                     adapter_cls_name = adapter_cls_name.replace("Adapter", "")
-    
+
                 if not "object_type" in component_data:
                     component_data["object_type"] = adapter_cls_name
-                
+
                 if not "value_type" in component_data:
                     component_data["value_type"] = value_type
-
 
         return MXCUBEApplication.CONFIG.app.ui_properties
 
@@ -477,7 +432,9 @@ class MXCUBEApplication():
         """
         Saves all application wide variables to disk, stored-mxcube-session.json
         """
-        queue = MXCUBEApplication.queue.queue_to_dict(MXCUBEApplication.mxcubecore.beamline_ho.queue_model.get_model_root())
+        queue = MXCUBEApplication.queue.queue_to_dict(
+            MXCUBEApplication.mxcubecore.beamline_ho.queue_model.get_model_root()
+        )
 
         # For the moment not storing USERS
 
@@ -516,12 +473,20 @@ class MXCUBEApplication():
 
         MXCUBEApplication.queue.load_queue_from_dict(data.get("QUEUE", {}))
 
-        MXCUBEApplication.CENTRING_METHOD = data.get("CENTRING_METHOD", queue_entry.CENTRING_METHOD.LOOP)
+        MXCUBEApplication.CENTRING_METHOD = data.get(
+            "CENTRING_METHOD", queue_entry.CENTRING_METHOD.LOOP
+        )
         MXCUBEApplication.NODE_ID_TO_LIMS_ID = data.get("NODE_ID_TO_LIMS_ID", {})
-        MXCUBEApplication.SC_CONTENTS = data.get("SC_CONTENTS", {"FROM_CODE": {}, "FROM_LOCATION": {}})
-        MXCUBEApplication.SAMPLE_LIST = data.get("SAMPLE_LIST", {"sampleList": {}, "sampleOrder": []})
+        MXCUBEApplication.SC_CONTENTS = data.get(
+            "SC_CONTENTS", {"FROM_CODE": {}, "FROM_LOCATION": {}}
+        )
+        MXCUBEApplication.SAMPLE_LIST = data.get(
+            "SAMPLE_LIST", {"sampleList": {}, "sampleOrder": []}
+        )
         MXCUBEApplication.ALLOW_REMOTE = data.get("ALLOW_REMOTE", False)
-        MXCUBEApplication.TIMEOUT_GIVES_CONTROL = data.get("TIMEOUT_GIVES_CONTROL", False)
+        MXCUBEApplication.TIMEOUT_GIVES_CONTROL = data.get(
+            "TIMEOUT_GIVES_CONTROL", False
+        )
         MXCUBEApplication.AUTO_MOUNT_SAMPLE = data.get("AUTO_MOUNT_SAMPLE", False)
         MXCUBEApplication.AUTO_ADD_DIFFPLAN = data.get("AUTO_ADD_DIFFPLAN", False)
         MXCUBEApplication.NUM_SNAPSHOTS = data.get("NUM_SNAPSHOTS", False)

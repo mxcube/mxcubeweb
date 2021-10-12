@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 
+
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("detector", __name__, url_prefix=url_prefix)
 

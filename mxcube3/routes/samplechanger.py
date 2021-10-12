@@ -1,12 +1,9 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from . import signals
 
 from flask import Blueprint, Response, jsonify, request
 
 from mxcube3.core.queue import UNCOLLECTED, SAMPLE_MOUNTED, COLLECTED
+
 
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("sample_changer", __name__, url_prefix=url_prefix)
@@ -17,13 +14,11 @@ def init_route(mxcube, server, url_prefix):
         mxcube.sample_changer.get_sample_list()
         return jsonify(mxcube.lims.sample_list_get())
 
-
     @bp.route("/state", methods=["GET"])
     @server.restrict
     def get_sc_state():
         state = mxcube.mxcubecore.beamline_ho.sample_changer.get_status().upper()
         return jsonify({"state": state})
-
 
     @bp.route("/loaded_sample", methods=["GET"])
     @server.restrict
@@ -31,12 +26,10 @@ def init_route(mxcube, server, url_prefix):
         address, barcode = mxcube.sample_changer.get_loaded_sample()
         return jsonify({"address": address, "barcode": barcode})
 
-
     @bp.route("/contents", methods=["GET"])
     @server.restrict
     def get_sc_contents_view():
         return jsonify(mxcube.sample_changer.get_sc_contents())
-
 
     @bp.route("/select/<loc>", methods=["GET"])
     @server.require_control
@@ -46,7 +39,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.mxcubecore.beamline_ho.sample_changer.select(loc)
         return mxcube.sample_changer.get_sc_contents()
 
-
     @bp.route("/scan/<loc>", methods=["GET"])
     @server.require_control
     @server.restrict
@@ -54,7 +46,6 @@ def init_route(mxcube, server, url_prefix):
         # do a recursive scan
         mxcube.mxcubecore.beamline_ho.sample_changer.scan(loc, True)
         return mxcube.sample_changer.get_sc_contents()
-
 
     @bp.route("/unmount_current", methods=["POST"])
     @server.require_control
@@ -69,7 +60,6 @@ def init_route(mxcube, server, url_prefix):
                 {"Content-Type": "application/json", "message": str(ex)},
             )
         return jsonify(res)
-
 
     @bp.route("/mount", methods=["POST"])
     @server.require_control
@@ -88,13 +78,14 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/unmount", methods=["POST"])
     @server.require_control
     @server.restrict
     def unmount_sample():
         try:
-            resp = jsonify(mxcube.sample_changer.unmount_sample(request.get_json()["sample"]))
+            resp = jsonify(
+                mxcube.sample_changer.unmount_sample(request.get_json()["sample"])
+            )
         except Exception as ex:
             return (
                 "Cannot unload sample",
@@ -102,7 +93,6 @@ def init_route(mxcube, server, url_prefix):
                 {"Content-Type": "application/json", "message": str(ex)},
             )
         return resp
-
 
     @bp.route("/capacity", methods=["GET"])
     @server.restrict
@@ -114,7 +104,6 @@ def init_route(mxcube, server, url_prefix):
         else:
             return jsonify(capacity=ret)
 
-
     @bp.route("/get_maintenance_cmds", methods=["GET"])
     @server.restrict
     def get_maintenance_cmds():
@@ -124,7 +113,6 @@ def init_route(mxcube, server, url_prefix):
             return Response(status=409)
         else:
             return jsonify(cmds=ret)
-
 
     @bp.route("/get_global_state", methods=["GET"])
     @server.restrict
@@ -142,21 +130,19 @@ def init_route(mxcube, server, url_prefix):
         else:
             return jsonify(state=state, commands_state=cmdstate, message=msg)
 
-
     @bp.route("/get_initial_state", methods=["GET"])
     @server.restrict
     def get_initial_state():
         return jsonify(mxcube.sample_changer.get_initial_state())
 
-
-    @bp.route(
-        "/send_command/<cmdparts>/<args>", methods=["GET"]
-    )
+    @bp.route("/send_command/<cmdparts>/<args>", methods=["GET"])
     @server.require_control
     @server.restrict
     def send_command(cmdparts, args=None):
         try:
-            ret = mxcube.mxcubecore.beamline_ho.sample_changer_maintenance.send_command(cmdparts, args)
+            ret = mxcube.mxcubecore.beamline_ho.sample_changer_maintenance.send_command(
+                cmdparts, args
+            )
         except Exception as ex:
             msg = str(ex)
             msg = msg.replace("\n", " - ")
@@ -168,5 +154,5 @@ def init_route(mxcube, server, url_prefix):
         else:
             return jsonify(response=ret)
 
-
     return bp
+

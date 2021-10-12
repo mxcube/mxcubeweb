@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import io
 
 from flask import Blueprint, Response, jsonify, request, send_file
@@ -16,7 +12,6 @@ def init_route(mxcube, server, url_prefix):
     def workflow():
         return jsonify(mxcube.workflow.get_available_workflows())
 
-
     @bp.route("/", methods=["POST"])
     @server.restrict
     def submit_parameters():
@@ -24,13 +19,11 @@ def init_route(mxcube, server, url_prefix):
         mxcube.workflow.submit_parameters(data)
         return Response(status=200)
 
-
     @bp.route("/mesh_result/<gid>/<t>", methods=["GET"])
-    #@server.restrict
+    # @server.restrict
     def get_grid_data(gid, t, rand):
         res = send_file(
-            io.BytesIO(mxcube.workflow.get_mesh_result(gid, t)),
-            mimetype="image/png"
+            io.BytesIO(mxcube.workflow.get_mesh_result(gid, t)), mimetype="image/png"
         )
 
         return res

@@ -1,5 +1,3 @@
-import logging
-
 from mxcube3.core.adapter.actuator_adapter import ActuatorAdapter
 from mxcube3.core.adapter.wavelength_adapter import WavelengthAdapter
 

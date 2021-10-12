@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from urllib.parse import quote
 import base64
 
 from mxcube3.core.component import Component
+
 
 class Workflow(Component):
     def __init__(self, app, server, config):
@@ -27,8 +23,8 @@ class Workflow(Component):
         except Exception:
             pass
 
-        #if hasattr(beamline, "gphl_workflow"):
-            # Add Global Phasing workflows if available
+        # if hasattr(beamline, "gphl_workflow"):
+        # Add Global Phasing workflows if available
         #    workflows.update(beamline.gphl_workflow.get_available_workflows())
         return {"workflows": workflows}
 
@@ -41,7 +37,7 @@ class Workflow(Component):
 
         data = base64.b64decode(base64data)
         return data
-        
+
     def test_workflow_dialog(self, wf):
         dialog = {
             "properties": {

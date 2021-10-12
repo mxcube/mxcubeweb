@@ -1,5 +1,6 @@
 from scandir import scandir
 
+
 def scantree(path, include):
     res = []
 
@@ -9,6 +10,7 @@ def scantree(path, include):
         pass
 
     return res
+
 
 def _scantree_rec(path, include=[], files=[]):
     for entry in scandir(path):

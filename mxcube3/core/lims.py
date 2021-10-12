@@ -19,6 +19,7 @@ from flask_security import current_user
 
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
+
 class Lims(Component):
     def __init__(self, app, server, config):
         super().__init__(app, server, config)
@@ -51,10 +52,14 @@ class Lims(Component):
 
         # LIMS sample has code, check if the code was read by SC
         if lims_code and self.app.samplechanger.sc_contents_from_code_get(lims_code):
-            sample_to_update = self.app.samplechanger.sc_contents_from_code_get(lims_code)
+            sample_to_update = self.app.samplechanger.sc_contents_from_code_get(
+                lims_code
+            )
         elif lims_location:
             # Asume that the samples have been put in the right place of the SC
-            sample_to_update = self.app.samplechanger.sc_contents_from_location_get(lims_location)
+            sample_to_update = self.app.samplechanger.sc_contents_from_location_get(
+                lims_location
+            )
 
         if sample_to_update:
             loc = sample_to_update["sampleID"]
@@ -166,14 +171,13 @@ class Lims(Component):
 
         try:
             res = True
-            login_res.get("Session", {})[0].get("session", {}).get("sessionId", False) and True
+            login_res.get("Session", {})[0].get("session", {}).get(
+                "sessionId", False
+            ) and True
         except KeyError:
             res = False
 
         return res
-
-    def lims_is_inhouse(self, login_res):
-        return login_res.get("Session", {}).get("is_inhouse", False)
 
     def lims_valid_login(self, login_res):
         return login_res["status"]["code"] == "ok"
@@ -194,7 +198,9 @@ class Lims(Component):
         ERROR_CODE = dict({"status": {"code": "0"}})
 
         try:
-            self.app.mxcubecore.beamline_ho.lims.lims_rest.authenticate(loginID, password)
+            self.app.mxcubecore.beamline_ho.lims.lims_rest.authenticate(
+                loginID, password
+            )
         except BaseException:
             logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
             return ERROR_CODE
@@ -210,7 +216,9 @@ class Lims(Component):
                 return ERROR_CODE
 
             try:
-                proposals = self.app.mxcubecore.beamline_ho.lims.get_proposals_by_user(loginID)
+                proposals = self.app.mxcubecore.beamline_ho.lims.get_proposals_by_user(
+                    loginID
+                )
 
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Retrieving proposal list for user: %s, proposals: %s"
@@ -224,13 +232,17 @@ class Lims(Component):
                 return ERROR_CODE
 
             for prop in session["proposal_list"]:
-                todays_session = self.app.mxcubecore.beamline_ho.lims.get_todays_session(prop)
+                todays_session = self.app.mxcubecore.beamline_ho.lims.get_todays_session(
+                    prop
+                )
                 prop["Session"] = [todays_session["session"]]
 
             if hasattr(
                 self.app.mxcubecore.beamline_ho.session, "commissioning_fake_proposal"
             ) and self.app.mxcubecore.beamline_ho.session.is_inhouse(loginID, None):
-                dummy = self.app.mxcubecore.beamline_ho.session.commissioning_fake_proposal
+                dummy = (
+                    self.app.mxcubecore.beamline_ho.session.commissioning_fake_proposal
+                )
                 session["proposal_list"].append(dummy)
 
             login_res["proposalList"] = session["proposal_list"]
@@ -251,13 +263,17 @@ class Lims(Component):
             session["proposal_list"] = [proposal]
             login_res["proposalList"] = [proposal]
 
-        logging.getLogger("MX3.HWR").info("[LIMS] Logged in, proposal data: %s" % login_res)
+        logging.getLogger("MX3.HWR").info(
+            "[LIMS] Logged in, proposal data: %s" % login_res
+        )
 
         return login_res
 
     def create_lims_session(self, login_res):
         for prop in session["proposal_list"]:
-            todays_session = self.app.mxcubecore.beamline_ho.lims.get_todays_session(prop)
+            todays_session = self.app.mxcubecore.beamline_ho.lims.get_todays_session(
+                prop
+            )
             prop["Session"] = [todays_session["session"]]
 
         login_res["proposalList"] = session["proposal_list"]
@@ -269,7 +285,7 @@ class Lims(Component):
         Search for the given proposal in the proposal list.
         """
         limsdata = json.loads(current_user.limsdata)
-        
+
         logging.getLogger("MX3.HWR").info("[LIMS] Serching for proposal: %s" % proposal)
         for prop in limsdata.get("proposalList", []):
             _p = "%s%s" % (
@@ -292,23 +308,27 @@ class Lims(Component):
             and "Commissioning" in proposal_info["Proposal"]["title"]
         ):
             if hasattr(self.app.mxcubecore.beamline_ho.session, "set_in_commissioning"):
-                self.app.mxcubecore.beamline_ho.session.set_in_commissioning(proposal_info)
-                logging.getLogger("MX3.HWR").info("[LIMS] Commissioning proposal flag set.")
+                self.app.mxcubecore.beamline_ho.session.set_in_commissioning(
+                    proposal_info
+                )
+                logging.getLogger("MX3.HWR").info(
+                    "[LIMS] Commissioning proposal flag set."
+                )
 
         if proposal_info:
-            self.app.mxcubecore.beamline_ho.session.proposal_code = proposal_info.get("Proposal").get(
-                "code", ""
-            )
-            self.app.mxcubecore.beamline_ho.session.proposal_number = proposal_info.get("Proposal").get(
-                "number", ""
-            )
-            self.app.mxcubecore.beamline_ho.session.session_id = proposal_info.get("Session")[0].get(
-                "sessionId"
-            )
+            self.app.mxcubecore.beamline_ho.session.proposal_code = proposal_info.get(
+                "Proposal"
+            ).get("code", "")
+            self.app.mxcubecore.beamline_ho.session.proposal_number = proposal_info.get(
+                "Proposal"
+            ).get("number", "")
+            self.app.mxcubecore.beamline_ho.session.session_id = proposal_info.get(
+                "Session"
+            )[0].get("sessionId")
 
-            self.app.mxcubecore.beamline_ho.session.proposal_id = proposal_info.get("Session")[0].get(
-                "proposalId"
-            )
+            self.app.mxcubecore.beamline_ho.session.proposal_id = proposal_info.get(
+                "Session"
+            )[0].get("proposalId")
 
             session["proposal"] = proposal_info
 
@@ -317,17 +337,23 @@ class Lims(Component):
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Creating data directories for proposal %s" % proposal
                     )
-                    self.app.mxcubecore.beamline_ho.session.prepare_directories(proposal_info)
+                    self.app.mxcubecore.beamline_ho.session.prepare_directories(
+                        proposal_info
+                    )
                 except BaseException:
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]
                     )
 
             # Get all the files in the root data dir for this user
-            root_path = self.app.mxcubecore.beamline_ho.session.get_base_image_directory()
+            root_path = (
+                self.app.mxcubecore.beamline_ho.session.get_base_image_directory()
+            )
 
             if not self.app.INITIAL_FILE_LIST and os.path.isdir(root_path):
-                ftype = self.app.mxcubecore.beamline_ho.detector.get_property("file_suffix")
+                ftype = self.app.mxcubecore.beamline_ho.detector.get_property(
+                    "file_suffix"
+                )
                 self.app.INITIAL_FILE_LIST = fsutils.scantree(root_path, [ftype])
 
             logging.getLogger("user_log").info("[LIMS] Proposal selected.")
@@ -347,7 +373,9 @@ class Lims(Component):
         else:
             sample = sample_data
 
-        return self.app.mxcubecore.beamline_ho.session.get_default_prefix(sample, generic_name)
+        return self.app.mxcubecore.beamline_ho.session.get_default_prefix(
+            sample, generic_name
+        )
 
     def get_default_subdir(self, sample_data):
         subdir = ""
@@ -375,19 +403,25 @@ class Lims(Component):
         return link
 
     def get_dc_thumbnail(self, image_id):
-        fname, data = self.app.mxcubecore.beamline_ho.lims.lims_rest.get_dc_thumbnail(image_id)
+        fname, data = self.app.mxcubecore.beamline_ho.lims.lims_rest.get_dc_thumbnail(
+            image_id
+        )
         data = io.BytesIO(data)
 
         return fname, data
 
     def get_dc_image(self, image_id):
-        fname, data = self.app.mxcubecore.beamline_ho.lims.lims_rest.get_dc_image(image_id)
+        fname, data = self.app.mxcubecore.beamline_ho.lims.lims_rest.get_dc_image(
+            image_id
+        )
         data = io.BytesIO(data)
 
         return fname, data
 
     def get_quality_indicator_plot(self, dc_id):
-        data = self.app.mxcubecore.beamline_ho.lims.lims_rest.get_quality_indicator_plot(dc_id)
+        data = self.app.mxcubecore.beamline_ho.lims.lims_rest.get_quality_indicator_plot(
+            dc_id
+        )
         data = io.BytesIO(data)
 
         return "qind", data
@@ -397,14 +431,17 @@ class Lims(Component):
 
         # session_id is not used, so we can pass None as second argument to
         # 'db_connection.get_samples'
-        lims_samples = self.app.mxcubecore.beamline_ho.lims.get_samples(proposal_id, None)
+        lims_samples = self.app.mxcubecore.beamline_ho.lims.get_samples(
+            proposal_id, None
+        )
 
         samples_info_list = lims_samples
-        self.app.LIMS_SAMPLE_DATA = {}
 
         for sample_info in samples_info_list:
             sample_info["limsID"] = sample_info.pop("sampleId")
-            sample_info["limsLink"] = self.app.mxcubecore.beamline_ho.lims.lims_rest.sample_link()
+            sample_info[
+                "limsLink"
+            ] = self.app.mxcubecore.beamline_ho.lims.lims_rest.sample_link()
             sample_info["defaultPrefix"] = self.get_default_prefix(sample_info)
             sample_info["defaultSubDir"] = self.get_default_subdir(sample_info)
 
@@ -416,14 +453,16 @@ class Lims(Component):
             except (TypeError, ValueError, KeyError):
                 continue
             else:
-                if self.app.mxcubecore.beamline_ho.sample_changer.__class__.__TYPE__ in [
-                    "HCD",
-                    "FlexHCD",
-                    "RoboDiff",
-                ]:
+                if (
+                    self.app.mxcubecore.beamline_ho.sample_changer.__class__.__TYPE__
+                    in ["HCD", "FlexHCD", "RoboDiff",]
+                ):
                     cell = int(math.ceil((basket) / 3.0))
                     puck = basket - 3 * (cell - 1)
-                    sample_info["containerSampleChangerLocation"] = "%d:%d" % (cell, puck)
+                    sample_info["containerSampleChangerLocation"] = "%d:%d" % (
+                        cell,
+                        puck,
+                    )
 
             try:
                 lims_location = sample_info[
@@ -438,5 +477,4 @@ class Lims(Component):
                 self.sample_list_sync_sample(sample_info)
 
         return self.sample_list_get()
-
 

@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import json
 
 from flask import Blueprint, Response, jsonify, request, session
@@ -26,7 +22,6 @@ def init_route(mxcube, server, url_prefix):
 
         return Response(status=200)
 
-
     @bp.route("/stop", methods=["PUT"])
     @server.require_control
     @server.restrict
@@ -41,7 +36,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.queue.queue_stop()
         return Response(status=200)
 
-
     @bp.route("/abort", methods=["PUT"])
     @server.require_control
     @server.restrict
@@ -55,7 +49,6 @@ def init_route(mxcube, server, url_prefix):
         """
         mxcube.mxcubecore.beamline_ho.queue_manager.stop()
         return Response(status=200)
-
 
     @bp.route("/pause", methods=["PUT"])
     @server.require_control
@@ -72,7 +65,6 @@ def init_route(mxcube, server, url_prefix):
         server.emit("queue", msg, namespace="/hwr")
         return Response(status=200)
 
-
     @bp.route("/unpause", methods=["PUT"])
     @server.require_control
     @server.restrict
@@ -88,7 +80,6 @@ def init_route(mxcube, server, url_prefix):
         server.emit("queue", msg, namespace="/hwr")
         return Response(status=200)
 
-
     @bp.route("/clear", methods=["PUT", "GET"])
     @server.require_control
     @server.restrict
@@ -102,7 +93,6 @@ def init_route(mxcube, server, url_prefix):
         """
         mxcube.queue.queue_clear()
         return Response(status=200)
-
 
     @bp.route("/", methods=["GET"])
     @server.restrict
@@ -120,7 +110,6 @@ def init_route(mxcube, server, url_prefix):
         resp.status_code = 200
         return resp
 
-
     @bp.route("/queue_state", methods=["GET"])
     @server.restrict
     def queue_get_state():
@@ -136,7 +125,6 @@ def init_route(mxcube, server, url_prefix):
         resp = jsonify(mxcube.queue.get_queue_state())
         resp.status_code = 200
         return resp
-
 
     @bp.route("/<sid>/<tindex>/execute", methods=["PUT"])
     @server.require_control
@@ -157,14 +145,12 @@ def init_route(mxcube, server, url_prefix):
         else:
             return Response(status=200)
 
-
     @bp.route("/", methods=["PUT"])
     @server.require_control
     @server.restrict
     def set_queue():
         mxcube.queue.set_queue(request.get_json(), session)
         return Response(status=200)
-
 
     @bp.route("/", methods=["POST"])
     @server.require_control
@@ -185,7 +171,6 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/<sqid>/<tqid>", methods=["POST"])
     @server.require_control
     @server.restrict
@@ -199,7 +184,6 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/delete", methods=["POST"])
     @server.require_control
     @server.restrict
@@ -209,7 +193,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.queue.delete_entry_at(item_pos_list)
 
         return Response(status=200)
-
 
     @bp.route("/set_enabled", methods=["POST"])
     @server.require_control
@@ -222,7 +205,6 @@ def init_route(mxcube, server, url_prefix):
 
         return Response(status=200)
 
-
     @bp.route("/<sid>/<ti1>/<ti2>/swap", methods=["POST"])
     @server.require_control
     @server.restrict
@@ -230,13 +212,11 @@ def init_route(mxcube, server, url_prefix):
         mxcube.queue.swap_task_entry(sid, int(ti1), int(ti2))
         return Response(status=200)
 
-
     @bp.route("/<sid>/<ti1>/<ti2>/move", methods=["POST"])
     @server.require_control
     def queue_move_task_item(sid, ti1, ti2):
         mxcube.queue.move_task_entry(sid, int(ti1), int(ti2))
         return Response(status=200)
-
 
     @bp.route("/sample-order", methods=["POST"])
     @server.require_control
@@ -245,7 +225,6 @@ def init_route(mxcube, server, url_prefix):
         sample_order = request.get_json().get("sampleOrder", [])
         mxcube.queue.set_sample_order(sample_order)
         return Response(status=200)
-
 
     @bp.route("/<sample_id>", methods=["PUT"])
     @server.require_control
@@ -273,7 +252,6 @@ def init_route(mxcube, server, url_prefix):
         except Exception:
             return Response(status=409)
 
-
     @bp.route("/<node_id>/toggle", methods=["PUT"])
     @server.require_control
     @server.restrict
@@ -287,7 +265,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.queue.toggle_node(int(node_id))
         return Response(status=200)
 
-
     @bp.route("/dc", methods=["GET"])
     @server.restrict
     def get_default_dc_params():
@@ -298,7 +275,6 @@ def init_route(mxcube, server, url_prefix):
 
         resp.status_code = 200
         return resp
-
 
     @bp.route("/char_acq", methods=["GET"])
     @server.restrict
@@ -311,7 +287,6 @@ def init_route(mxcube, server, url_prefix):
 
         resp.status_code = 200
         return resp
-
 
     @bp.route("/char", methods=["GET"])
     @server.restrict
@@ -326,7 +301,6 @@ def init_route(mxcube, server, url_prefix):
         resp.status_code = 200
         return resp
 
-
     @bp.route("/mesh", methods=["GET"])
     @server.restrict
     def get_default_mesh_params():
@@ -337,7 +311,6 @@ def init_route(mxcube, server, url_prefix):
         resp.status_code = 200
         return resp
 
-
     @bp.route("/xrf", methods=["GET"])
     @server.restrict
     def get_default_xrf_parameters():
@@ -347,7 +320,6 @@ def init_route(mxcube, server, url_prefix):
         resp = jsonify(mxcube.queue.get_default_xrf_parameters())
         resp.status_code = 200
         return resp
-
 
     @bp.route("/automount", methods=["POST"])
     @server.require_control
@@ -360,7 +332,6 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/num_snapshots", methods=["PUT"])
     @server.require_control
     @server.restrict
@@ -371,7 +342,6 @@ def init_route(mxcube, server, url_prefix):
         resp.status_code = 200
 
         return resp
-
 
     @bp.route("/group_folder", methods=["POST"])
     @server.require_control
@@ -384,7 +354,6 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/group_folder", methods=["GET"])
     @server.restrict
     def get_group_folder():
@@ -392,7 +361,6 @@ def init_route(mxcube, server, url_prefix):
         resp.status_code = 200
 
         return resp
-
 
     @bp.route("/auto_add_diffplan", methods=["POST"])
     @server.require_control
@@ -403,6 +371,5 @@ def init_route(mxcube, server, url_prefix):
         resp = jsonify({"auto_add_diffplan": autoadd})
         resp.status_code = 200
         return resp
-
 
     return bp

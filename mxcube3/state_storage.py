@@ -4,6 +4,7 @@ from mxcube3 import mxcube
 
 import json
 
+
 def flush():
     mxcube.UI_STATE = dict()
 
@@ -39,13 +40,13 @@ def init():
         key, val = key_val
         mxcube.UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
         operator = mxcube.usermanager.get_operator()
-        
+
         emit(
             "state_update",
             json.dumps(mxcube.UI_STATE),
             namespace="/ui_state",
             room="observers",
-            include_self=False 
+            include_self=False,
         )
 
     @server.flask_socketio.on("ui_state_getkeys", namespace="/ui_state")

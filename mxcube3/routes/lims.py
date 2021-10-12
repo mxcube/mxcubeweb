@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from subprocess import check_output
 from os.path import isfile, join
 import logging
@@ -37,13 +33,11 @@ def init_route(mxcube, server, url_prefix):
         fname, data = mxcube.lims.get_dc_thumbnail(image_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
-
     @bp.route("/dc/image/<image_id>", methods=["GET"])
     @server.restrict
     def get_dc_image(image_id):
         fname, data = mxcube.lims.get_dc_image(image_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
-
 
     @bp.route("/quality_indicator_plot/<dc_id>", methods=["GET"])
     @server.restrict
@@ -51,13 +45,11 @@ def init_route(mxcube, server, url_prefix):
         fname, data = mxcube.lims.get_quality_indicator_plot(dc_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
-
     @bp.route("/dc/<dc_id>", methods=["GET"])
     @server.restrict
     def get_dc(dc_id):
         data = mxcube.mxcubecore.beamline_ho.lims_rest.get_dc(dc_id)
         return jsonify(data)
-
 
     @bp.route("/proposal", methods=["POST"])
     @server.restrict
@@ -69,7 +61,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.lims.select_proposal(proposal_number)
 
         return Response(status=200)
-
 
     @bp.route("/proposal", methods=["GET"])
     @server.restrict
@@ -83,14 +74,11 @@ def init_route(mxcube, server, url_prefix):
 
         return jsonify({"Proposal": proposal_info})
 
-
     def run_get_result_script(script_name, url):
         return check_output(["node", script_name, url], close_fds=True)
 
-
     def result_file_test(prefix):
         return isfile(join(server.template_folder, prefix))
-
 
     def apply_template(name, data):
         try:
@@ -99,7 +87,6 @@ def init_route(mxcube, server, url_prefix):
             r = jsonify({"result": "No results yet, processing ..."})
 
         return r
-
 
     @bp.route("/results", methods=["POST"])
     @server.restrict
@@ -120,7 +107,9 @@ def init_route(mxcube, server, url_prefix):
                 elif result_file_test("data-collection-results.html"):
                     r = apply_template("data-collection-results.html", data)
 
-            elif isinstance(model, qmo.Characterisation) or isinstance(model, qmo.Workflow):
+            elif isinstance(model, qmo.Characterisation) or isinstance(
+                model, qmo.Workflow
+            ):
                 if result_file_test("characterisation-results.js"):
                     try:
                         url_list = data["limsResultData"]["workflow_result_url_list"]
@@ -158,5 +147,5 @@ def init_route(mxcube, server, url_prefix):
                 pass
 
         return r
-    
+
     return bp

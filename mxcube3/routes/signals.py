@@ -25,7 +25,9 @@ from mxcube3.core.util.networkutils import RateLimited
 
 
 def last_queue_node():
-    node = mxcube.mxcubecore.beamline_ho.queue_manager._current_queue_entries[-1].get_data_model()
+    node = mxcube.mxcubecore.beamline_ho.queue_manager._current_queue_entries[
+        -1
+    ].get_data_model()
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
@@ -179,6 +181,7 @@ def loaded_sample_changed(sample):
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
 
+
 def set_current_sample(sample_id):
     if not sample_id:
         sample_id = ""
@@ -274,7 +277,7 @@ def update_task_result(entry):
 
     server.emit("update_task_lims_data", msg, namespace="/hwr")
 
-    
+
 def queue_execution_entry_started(entry, message=None):
     handle_auto_mount_next(entry)
 
@@ -330,7 +333,10 @@ def queue_execution_paused(state):
 
 
 def queue_execution_failed(entry):
-    msg = {"Signal": mxcube.queue.queue_exec_state(), "Message": "Queue execution stopped"}
+    msg = {
+        "Signal": mxcube.queue.queue_exec_state(),
+        "Message": "Queue execution stopped",
+    }
 
     server.emit("queue", msg, namespace="/hwr")
 
@@ -376,6 +382,7 @@ def collect_image_taken(frame):
             _emit_progress(msg)
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
+
 
 @RateLimited(1)
 def _emit_progress(msg):
@@ -491,9 +498,7 @@ def grid_result_available(shape):
 
 
 def energy_scan_finished(pk, ip, rm, sample):
-    server.emit(
-        "energy_scan_result", {"pk": pk, "ip": ip, "rm": rm}, namespace="/hwr"
-    )
+    server.emit("energy_scan_result", {"pk": pk, "ip": ip, "rm": rm}, namespace="/hwr")
 
 
 def queue_interleaved_started():
@@ -610,9 +615,7 @@ def motor_state_callback(movable, sender=None, **kw):
         # Update the pixels per mm if it was the zoom motor that moved
         if movable["name"] == "zoom":
             ppm = mxcube.mxcubecore.beamline_ho.diffractometer.get_pixels_per_mm()
-            server.emit(
-                "update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr"
-            )
+            server.emit("update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr")
 
     server.emit("motor_state", movable, namespace="/hwr")
 
@@ -676,7 +679,9 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(mxcube.mxcubecore.beamline_ho).get_object_by_role("safety_shutter")
+    ho = BeamlineAdapter(mxcube.mxcubecore.beamline_ho).get_object_by_role(
+        "safety_shutter"
+    )
     data = ho.dict()
     try:
         server.emit("beamline_value_change", data, namespace="/hwr")

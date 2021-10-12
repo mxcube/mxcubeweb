@@ -7,10 +7,7 @@ from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 from mxcubecore.HardwareObjects import queue_entry
 
 from mxcube3.core.component import Component
-from mxcube3.core.queue import (
-    COLLECTED,
-    UNCOLLECTED
-)
+from mxcube3.core.queue import COLLECTED, UNCOLLECTED
 
 
 # TO CONSIDER:
@@ -24,7 +21,9 @@ class SampleChanger(Component):
         from mxcube3.routes import signals
 
         """Initialize hwobj signals."""
-        self.app.mxcubecore.beamline_ho.sample_changer.connect("stateChanged", signals.sc_state_changed)
+        self.app.mxcubecore.beamline_ho.sample_changer.connect(
+            "stateChanged", signals.sc_state_changed
+        )
         self.app.mxcubecore.beamline_ho.sample_changer.connect(
             "isCollisionSafe", signals.is_collision_safe
         )
@@ -40,7 +39,6 @@ class SampleChanger(Component):
                 "globalStateChanged", signals.sc_maintenance_update
             )
 
-
     def get_sample_list(self):
         samples_list = self.app.mxcubecore.beamline_ho.sample_changer.get_sample_list()
         samples = {}
@@ -48,7 +46,9 @@ class SampleChanger(Component):
         order = []
         current_sample = {}
 
-        loaded_sample = self.app.mxcubecore.beamline_ho.sample_changer.get_loaded_sample()
+        loaded_sample = (
+            self.app.mxcubecore.beamline_ho.sample_changer.get_loaded_sample()
+        )
 
         for s in samples_list:
             if not s.is_present():
@@ -96,7 +96,6 @@ class SampleChanger(Component):
         if current_sample:
             self.set_current_sample(current_sample["sampleID"])
 
-
     def get_sc_contents(self):
         def _getElementStatus(e):
             if e.is_leaf():
@@ -136,7 +135,9 @@ class SampleChanger(Component):
 
             contents = {"name": root_name}
 
-            for element in self.app.mxcubecore.beamline_ho.sample_changer.get_components():
+            for (
+                element
+            ) in self.app.mxcubecore.beamline_ho.sample_changer.get_components():
                 if element.is_present():
                     _addElement(contents, element)
         else:
@@ -144,10 +145,8 @@ class SampleChanger(Component):
 
         return contents
 
-
     def sc_contents_init(self):
         self.app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
-
 
     def sc_contents_add(self, sample):
         code, location = sample.get("code", None), sample.get("sampleID")
@@ -157,14 +156,11 @@ class SampleChanger(Component):
         if location:
             self.app.SC_CONTENTS.get("FROM_LOCATION")[location] = sample
 
-
     def sc_contents_from_code_get(self, code):
         return self.app.SC_CONTENTS["FROM_CODE"].get(code, {})
 
-
     def sc_contents_from_location_get(self, loc):
         return self.app.SC_CONTENTS["FROM_LOCATION"].get(loc, {})
-
 
     def set_current_sample(self, sample_id):
         self.app.CURRENTLY_MOUNTED_SAMPLE = sample_id
@@ -174,7 +170,6 @@ class SampleChanger(Component):
         from mxcube3.routes.signals import set_current_sample
 
         set_current_sample(sample_id)
-
 
     def get_current_sample(self):
         sample_id = self.app.CURRENTLY_MOUNTED_SAMPLE
@@ -198,10 +193,13 @@ class SampleChanger(Component):
             sid = self.get_current_sample().get("sampleID", False)
             current_queue = self.app.queue.queue_to_dict()
 
-            #self.set_sample_to_be_mounted(sample["sampleID"])
+            # self.set_sample_to_be_mounted(sample["sampleID"])
 
             if sample["location"] != "Manual":
-                msg = "Mounting sample: %s (%s)" % (sample["location"], sample.get("sampleName", ""))
+                msg = "Mounting sample: %s (%s)" % (
+                    sample["location"],
+                    sample.get("sampleName", ""),
+                )
                 logging.getLogger("user_level_log").info(msg)
 
                 if not sc.get_loaded_sample():
@@ -219,7 +217,9 @@ class SampleChanger(Component):
                     msg = "Starting autoloop centring ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     C3D_MODE = self.app.mxcubecore.beamline_ho.diffractometer.C3D_MODE
-                    self.app.mxcubecore.beamline_ho.diffractometer.start_centring_method(C3D_MODE)
+                    self.app.mxcubecore.beamline_ho.diffractometer.start_centring_method(
+                        C3D_MODE
+                    )
 
             else:
                 msg = "Mounting sample: %s" % sample["sampleName"]
@@ -249,7 +249,6 @@ class SampleChanger(Component):
 
         return res
 
-
     def unmount_sample_clean_up(self, sample):
         from mxcube3.routes import signals
 
@@ -257,7 +256,9 @@ class SampleChanger(Component):
             signals.sc_unload(sample["location"])
 
             if not sample["location"] == "Manual":
-                self.app.mxcubecore.beamline_ho.sample_changer.unload(sample["location"], wait=False)
+                self.app.mxcubecore.beamline_ho.sample_changer.unload(
+                    sample["location"], wait=False
+                )
             else:
                 self.set_current_sample(None)
                 signals.sc_load_ready(sample["location"])
@@ -272,23 +273,21 @@ class SampleChanger(Component):
             self.app.mxcubecore.beamline_ho.queue_model.mounted_sample = ""
             self.app.mxcubecore.beamline_ho.sample_view.clear_all()
 
-
     def mount_sample(self, sample):
         gevent.spawn(self.mount_sample_clean_up, sample)
         return self.get_sc_contents()
-
 
     def unmount_sample(self, sample):
         self.unmount_sample_clean_up(sample)
         return self.get_sc_contents()
 
-
     def unmount_current(self):
-        location = self.app.mxcubecore.beamline_ho.sample_changer.get_loaded_sample().get_address()
-        self.unmount_sample_clean_up({ "location": location })
+        location = (
+            self.app.mxcubecore.beamline_ho.sample_changer.get_loaded_sample().get_address()
+        )
+        self.unmount_sample_clean_up({"location": location})
 
         return self.get_sc_contents()
-
 
     def get_loaded_sample(self):
         try:
@@ -306,7 +305,6 @@ class SampleChanger(Component):
 
         return address, barcode
 
-
     def get_capacity(self):
         baskets = self.app.mxcubecore.beamline_ho.sample_changer.get_basket_list()
         num_samples = 0
@@ -315,28 +313,31 @@ class SampleChanger(Component):
         res = {"num_baskets": len(baskets), "num_samples": num_samples}
         return res
 
-
     def get_maintenance_cmds(self):
         if self.app.mxcubecore.beamline_ho.sample_changer_maintenance is not None:
-            ret = self.app.mxcubecore.beamline_ho.sample_changer_maintenance.get_cmd_info()
+            ret = (
+                self.app.mxcubecore.beamline_ho.sample_changer_maintenance.get_cmd_info()
+            )
         else:
             ret = "SC maintenance controller not defined"
 
         return ret
 
-
     def get_global_state(self):
         try:
-            return self.app.mxcubecore.beamline_ho.sample_changer_maintenance.get_global_state()
+            return (
+                self.app.mxcubecore.beamline_ho.sample_changer_maintenance.get_global_state()
+            )
         except:
             return "OFFLINE", "OFFLINE", "OFFLINE"
-
 
     def get_initial_state(self):
         if self.app.mxcubecore.beamline_ho.sample_changer_maintenance is not None:
             global_state, cmdstate, msg = self.get_global_state()
 
-            cmds = self.app.mxcubecore.beamline_ho.sample_changer_maintenance.get_cmd_info()
+            cmds = (
+                self.app.mxcubecore.beamline_ho.sample_changer_maintenance.get_cmd_info()
+            )
 
         else:
             global_state = {}
@@ -490,6 +491,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                 log.info("centring did not pass %s" % traceback.format_exc())
             finally:
                 dm.disconnect("centringAccepted", centring_done_cb)
+
 
 def patch_queue_entry_mount_sample():
     # Important, patch queue_entry.mount_sample with the mount_sample defined above

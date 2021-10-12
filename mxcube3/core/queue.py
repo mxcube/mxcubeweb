@@ -41,9 +41,6 @@ class Queue(Component):
     def __init__(self, app, server, config):
         super().__init__(app, server, config)
 
-    def is_collected(self, task):
-        return (task["state"] & COLLECTED) == COLLECTED
-
     def build_prefix_path_dict(self, path_list):
         prefix_path_dict = {}
 
@@ -164,7 +161,9 @@ class Queue(Component):
             node = self.app.mxcubecore.beamline_ho.queue_model.get_model_root()
 
         res = reduce(
-            lambda x, y: x.update(y) or x, self.queue_to_dict_rec(node, include_lims_data), {}
+            lambda x, y: x.update(y) or x,
+            self.queue_to_dict_rec(node, include_lims_data),
+            {},
         )
 
         return res
@@ -198,11 +197,12 @@ class Queue(Component):
             node = self.app.mxcubecore.beamline_ho.queue_model.get_model_root()
 
         res = reduce(
-            lambda x, y: x.update(y) or x, self.queue_to_dict_rec(node, include_lims_data), {}
+            lambda x, y: x.update(y) or x,
+            self.queue_to_dict_rec(node, include_lims_data),
+            {},
         )
 
         return json.dumps(res, sort_keys=True, indent=4)
-
 
     def get_node_state(self, node_id):
         """
@@ -236,7 +236,6 @@ class Queue(Component):
             state = UNCOLLECTED
 
         return (enabled, state)
-
 
     def get_queue_state(self):
         """
@@ -273,7 +272,6 @@ class Queue(Component):
 
         return res
 
-
     def _handle_dc(self, sample_node, node, include_lims_data=False):
         parameters = node.as_dict()
         parameters["shape"] = getattr(node, "shape", "")
@@ -289,7 +287,9 @@ class Queue(Component):
         enabled, state = self.get_node_state(queueID)
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(self.app.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
+            *parameters["path"].split(
+                self.app.mxcubecore.beamline_ho.session.raw_data_folder_name
+            )[1:]
         ).lstrip("/")
 
         pt = node.acquisitions[0].path_template
@@ -298,7 +298,9 @@ class Queue(Component):
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
         )
 
-        parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
 
         limsres = {}
         lims_id = self.app.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
@@ -326,12 +328,10 @@ class Queue(Component):
 
         return res
 
-
     def _handle_gphl_wf(self, sample_node, node, include_lims_data=False):
         pt = node.path_template
         parameters = pt.as_dict()
         parameters["path"] = parameters["directory"]
-
 
         parameters["strategy_name"] = node.get_type()
         parameters["label"] = "GΦL " + parameters["strategy_name"]
@@ -341,7 +341,9 @@ class Queue(Component):
         enabled, state = self.get_node_state(queueID)
 
         parameters["subdir"] = os.path.join(
-            *parameters["directory"].split(self.app.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
+            *parameters["directory"].split(
+                self.app.mxcubecore.beamline_ho.session.raw_data_folder_name
+            )[1:]
         ).lstrip("/")
 
         parameters["fileName"] = pt.get_image_file_name().replace(
@@ -379,7 +381,6 @@ class Queue(Component):
 
         return res
 
-
     def _handle_wf(self, sample_node, node, include_lims_data):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
@@ -389,7 +390,9 @@ class Queue(Component):
         parameters["path"] = parameters["directory"]
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(self.app.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
+            *parameters["path"].split(
+                self.app.mxcubecore.beamline_ho.session.raw_data_folder_name
+            )[1:]
         ).lstrip("/")
 
         pt = node.path_template
@@ -398,7 +401,9 @@ class Queue(Component):
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
         )
 
-        parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
 
         limsres = {}
         lims_id = self.app.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
@@ -426,7 +431,6 @@ class Queue(Component):
 
         return res
 
-
     def _handle_xrf(self, sample_node, node):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
@@ -435,7 +439,9 @@ class Queue(Component):
         parameters["path"] = parameters["directory"]
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(self.app.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
+            *parameters["path"].split(
+                self.app.mxcubecore.beamline_ho.session.raw_data_folder_name
+            )[1:]
         ).lstrip("/")
 
         pt = node.path_template
@@ -444,7 +450,9 @@ class Queue(Component):
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
         )
 
-        parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
         model, entry = self.get_entry(queueID)
 
         res = {
@@ -461,7 +469,6 @@ class Queue(Component):
 
         return res
 
-
     def _handle_energy_scan(self, sample_node, node):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
@@ -471,7 +478,9 @@ class Queue(Component):
         parameters["path"] = parameters["directory"]
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(self.app.mxcubecore.beamline_ho.session.raw_data_folder_name)[1:]
+            *parameters["path"].split(
+                self.app.mxcubecore.beamline_ho.session.raw_data_folder_name
+            )[1:]
         ).lstrip("/")
 
         pt = node.path_template
@@ -480,7 +489,9 @@ class Queue(Component):
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
         )
 
-        parameters["fullPath"] = os.path.join(parameters["path"], parameters["fileName"])
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
 
         res = {
             "label": "Energy Scan",
@@ -496,12 +507,13 @@ class Queue(Component):
 
         return res
 
-
     def _handle_char(self, parent_node, node, include_lims_data=False):
         sample_node = parent_node.get_sample_node()
         parameters = node.characterisation_parameters.as_dict()
         parameters["shape"] = node.get_point_index()
-        refp = self._handle_dc(sample_node, node.reference_image_collection)["parameters"]
+        refp = self._handle_dc(sample_node, node.reference_image_collection)[
+            "parameters"
+        ]
 
         parameters.update(refp)
 
@@ -538,7 +550,6 @@ class Queue(Component):
 
         return res
 
-
     def _handle_diffraction_plan(self, node, sample_node):
         model, entry = self.get_entry(node._node_id)
         originID = model.get_origin()
@@ -562,7 +573,6 @@ class Queue(Component):
 
         return (-1, {})
 
-
     def _handle_interleaved(self, sample_node, node):
         wedges = []
 
@@ -585,7 +595,6 @@ class Queue(Component):
         }
 
         return res
-
 
     def _handle_sample(self, node, include_lims_data=False):
         location = "Manual" if node.free_pin_mode else node.loc_str
@@ -622,7 +631,6 @@ class Queue(Component):
         }
 
         return {node.loc_str: sample}
-
 
     def queue_to_dict_rec(self, node, include_lims_data=False):
         """
@@ -670,7 +678,9 @@ class Queue(Component):
             elif isinstance(node, qmo.Workflow):
                 result.append(self._handle_wf(sample_node, node, include_lims_data))
             elif isinstance(node, qmo.GphlWorkflow):
-                result.append(self._handle_gphl_wf(sample_node, node, include_lims_data))
+                result.append(
+                    self._handle_gphl_wf(sample_node, node, include_lims_data)
+                )
             elif isinstance(node, qmo.XRFSpectrum):
                 result.append(self._handle_xrf(sample_node, node))
             elif isinstance(node, qmo.EnergyScan):
@@ -681,7 +691,6 @@ class Queue(Component):
                 result.extend(self.queue_to_dict_rec(node, include_lims_data))
 
         return result
-
 
     def queue_exec_state(self):
         """
@@ -698,7 +707,6 @@ class Queue(Component):
 
         return state
 
-
     def get_entry(self, _id):
         """
         Retrieves the model and the queue entry for the model node with id <id>
@@ -708,15 +716,15 @@ class Queue(Component):
         :rtype: Tuple
         """
         model = self.app.mxcubecore.beamline_ho.queue_model.get_node(int(_id))
-        entry = self.app.mxcubecore.beamline_ho.queue_manager.get_entry_with_model(model)
+        entry = self.app.mxcubecore.beamline_ho.queue_manager.get_entry_with_model(
+            model
+        )
         return model, entry
-
 
     def set_enabled_entry(self, qid, enabled):
         model, entry = self.get_entry(qid)
         model.set_enabled(enabled)
         entry.set_enabled(enabled)
-
 
     def delete_entry(self, entry):
         """
@@ -727,7 +735,6 @@ class Queue(Component):
         model = entry.get_data_model()
         self.app.mxcubecore.beamline_ho.queue_model.del_child(model.get_parent(), model)
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
-
 
     def delete_entry_at(self, item_pos_list):
         current_queue = self.queue_to_dict()
@@ -748,7 +755,6 @@ class Queue(Component):
 
             self.delete_entry(entry)
 
-
     def enable_entry(self, id_or_qentry, flag):
         """
         Helper function that sets the enabled flag to <flag> for the entry
@@ -767,7 +773,6 @@ class Queue(Component):
             model, entry = self.get_entry(id_or_qentry)
             entry.set_enabled(flag)
             model.set_enabled(flag)
-
 
     def swap_task_entry(self, sid, ti1, ti2):
         """
@@ -795,7 +800,6 @@ class Queue(Component):
 
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
 
-
     def move_task_entry(self, sid, ti1, ti2):
         """
         Swaps order of two queue entries in the queue, with the same sample <sid>
@@ -818,7 +822,6 @@ class Queue(Component):
 
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
 
-
     def set_sample_order(self, order):
         """
         Set the sample order of the queue
@@ -834,14 +837,15 @@ class Queue(Component):
             entry_list = [model_entry[1] for model_entry in model_entry_list]
 
             # Set the order in the queue model
-            self.app.mxcubecore.beamline_ho.queue_model.get_model_root()._children = model_list
+            self.app.mxcubecore.beamline_ho.queue_model.get_model_root()._children = (
+                model_list
+            )
             # Set queue entry order
             self.app.mxcubecore.beamline_ho.queue_manager._queue_entry_list = entry_list
 
         self.app.lims.sample_list_set_order(order)
 
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
-
 
     def queue_add_item(self, item_list):
         """
@@ -896,7 +900,6 @@ class Queue(Component):
 
         return res
 
-
     def _queue_add_item_rec(self, item_list, sample_node_id=None):
         """
         Adds the queue items in item_list to the queue. The items in the list can
@@ -943,7 +946,7 @@ class Queue(Component):
             if item_t == "DataCollection":
                 self.add_data_collection(sample_node_id, item)
             elif item_t == "Interleaved":
-                add_interleaved(sample_node_id, item)
+                self.add_interleaved(sample_node_id, item)
             elif item_t == "Characterisation":
                 self.add_characterisation(sample_node_id, item)
             elif item_t == "Workflow" or item_t == "GphlWorkflow":
@@ -952,7 +955,6 @@ class Queue(Component):
                 self.add_xrf_scan(sample_node_id, item)
             elif item_t == "EnergyScan":
                 self.add_energy_scan(sample_node_id, item)
-
 
     def add_sample(self, sample_id, item):
         """
@@ -991,7 +993,6 @@ class Queue(Component):
 
         return sample_model._node_id
 
-
     def set_dc_params(self, model, entry, task_data, sample_model):
         """
         Helper method that sets the data collection parameters for a DataCollection.
@@ -1014,7 +1015,9 @@ class Queue(Component):
         acq.path_template.num_files = params["num_images"]
         acq.path_template.suffix = ftype
         acq.path_template.precision = "0" + str(
-            self.app.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
+            self.app.mxcubecore.beamline_ho.session["file_info"].get_property(
+                "precision", 4
+            )
         )
 
         self.app.lims.apply_template(params, sample_model, acq.path_template)
@@ -1027,7 +1030,8 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
+            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(),
+            params.get("subdir", ""),
         )
 
         acq.path_template.directory = full_path
@@ -1050,7 +1054,9 @@ class Queue(Component):
             acq2 = qmo.Acquisition()
             model.acquisitions.append(acq2)
 
-            line = self.app.mxcubecore.beamline_ho.sample_view.get_shape(params["shape"])
+            line = self.app.mxcubecore.beamline_ho.sample_view.get_shape(
+                params["shape"]
+            )
             p1, p2 = line.refs
             p1, p2 = (
                 self.app.mxcubecore.beamline_ho.sample_view.get_shape(p1),
@@ -1063,11 +1069,13 @@ class Queue(Component):
             acq2.acquisition_parameters.centred_position = cpos2
 
         elif params.get("mesh", False):
-            grid = self.app.mxcubecore.beamline_ho.sample_view.get_shape(params["shape"])
-            acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-            mesh_center = self.app.mxcubecore.beamline_ho["default_mesh_values"].get_property(
-                "mesh_center", "top-left"
+            grid = self.app.mxcubecore.beamline_ho.sample_view.get_shape(
+                params["shape"]
             )
+            acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
+            mesh_center = self.app.mxcubecore.beamline_ho[
+                "default_mesh_values"
+            ].get_property("mesh_center", "top-left")
             if mesh_center == "top-left":
                 acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
                     0
@@ -1077,13 +1085,17 @@ class Queue(Component):
                     1
                 ]
             acq.acquisition_parameters.mesh_steps = grid.get_num_lines()
-            acq.acquisition_parameters.num_images = task_data["parameters"]["num_images"]
+            acq.acquisition_parameters.num_images = task_data["parameters"][
+                "num_images"
+            ]
 
             model.experiment_type = qme.EXPERIMENT_TYPE.MESH
             model.set_requires_centring(False)
 
         elif params["shape"] != -1:
-            point = self.app.mxcubecore.beamline_ho.sample_view.get_shape(params["shape"])
+            point = self.app.mxcubecore.beamline_ho.sample_view.get_shape(
+                params["shape"]
+            )
             cpos = point.get_centred_position()
             acq.acquisition_parameters.centred_position = cpos
 
@@ -1094,7 +1106,6 @@ class Queue(Component):
 
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
-
 
     def set_gphl_wf_params(self, model, entry, task_data, sample_model):
         """
@@ -1116,7 +1127,6 @@ class Queue(Component):
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-
     def set_wf_params(self, model, entry, task_data, sample_model):
         """
         Helper method that sets the parameters for a workflow task.
@@ -1131,7 +1141,9 @@ class Queue(Component):
         model.path_template.base_prefix = params["prefix"]
         model.path_template.num_files = 0
         model.path_template.precision = "0" + str(
-            self.app.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
+            self.app.mxcubecore.beamline_ho.session["file_info"].get_property(
+                "precision", 4
+            )
         )
 
         self.app.lims.apply_template(params, sample_model, model.path_template)
@@ -1144,7 +1156,8 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
+            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(),
+            params.get("subdir", ""),
         )
 
         model.path_template.directory = full_path
@@ -1165,10 +1178,14 @@ class Queue(Component):
         beamline_params["collection_software"] = "MXCuBE - 3.0"
         beamline_params["sample_node_id"] = sample_model._node_id
         beamline_params["sample_lims_id"] = sample_model.lims_id
-        beamline_params["beamline"] = self.app.mxcubecore.beamline_ho.session.endstation_name
+        beamline_params[
+            "beamline"
+        ] = self.app.mxcubecore.beamline_ho.session.endstation_name
         beamline_params["shape"] = params["shape"]
 
-        params_list = list(map(str, list(itertools.chain(*iter(beamline_params.items())))))
+        params_list = list(
+            map(str, list(itertools.chain(*iter(beamline_params.items()))))
+        )
         params_list.insert(0, params["wfpath"])
         params_list.insert(0, "modelpath")
 
@@ -1176,7 +1193,6 @@ class Queue(Component):
 
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
-
 
     def set_char_params(self, model, entry, task_data, sample_model):
         """
@@ -1188,7 +1204,9 @@ class Queue(Component):
         :param dict task_data: Dictionary with new parameters
         """
         params = task_data["parameters"]
-        self.set_dc_params(model.reference_image_collection, entry, task_data, sample_model)
+        self.set_dc_params(
+            model.reference_image_collection, entry, task_data, sample_model
+        )
 
         try:
             params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(
@@ -1206,7 +1224,6 @@ class Queue(Component):
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-
     def set_xrf_params(self, model, entry, task_data, sample_model):
         """
         Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
@@ -1217,12 +1234,16 @@ class Queue(Component):
         """
         params = task_data["parameters"]
 
-        ftype = self.app.mxcubecore.beamline_ho.xrf_spectrum.get_property("file_suffix", "dat").strip()
+        ftype = self.app.mxcubecore.beamline_ho.xrf_spectrum.get_property(
+            "file_suffix", "dat"
+        ).strip()
 
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
         model.path_template.precision = "0" + str(
-            self.app.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
+            self.app.mxcubecore.beamline_ho.session["file_info"].get_property(
+                "precision", 4
+            )
         )
 
         if params["prefix"]:
@@ -1233,7 +1254,8 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
+            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(),
+            params.get("subdir", ""),
         )
 
         model.path_template.directory = full_path
@@ -1258,7 +1280,6 @@ class Queue(Component):
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-
     def set_energy_scan_params(self, model, entry, task_data, sample_model):
         """
         Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
@@ -1269,12 +1290,16 @@ class Queue(Component):
         """
         params = task_data["parameters"]
 
-        ftype = self.app.mxcubecore.beamline_ho.energy_scan.get_property("file_suffix", "raw").strip()
+        ftype = self.app.mxcubecore.beamline_ho.energy_scan.get_property(
+            "file_suffix", "raw"
+        ).strip()
 
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
         model.path_template.precision = "0" + str(
-            self.app.mxcubecore.beamline_ho.session["file_info"].get_property("precision", 4)
+            self.app.mxcubecore.beamline_ho.session["file_info"].get_property(
+                "precision", 4
+            )
         )
 
         if params["prefix"]:
@@ -1285,7 +1310,8 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(), params.get("subdir", "")
+            self.app.mxcubecore.beamline_ho.session.get_base_image_directory(),
+            params.get("subdir", ""),
         )
 
         model.path_template.directory = full_path
@@ -1308,7 +1334,6 @@ class Queue(Component):
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-
     def _create_dc(self, task):
         """
         Creates a data collection model and its corresponding queue entry from
@@ -1325,7 +1350,6 @@ class Queue(Component):
 
         return dc_model, dc_entry
 
-
     def _create_wf(self, task):
         """
         Creates a workflow model and its corresponding queue entry from
@@ -1341,7 +1365,6 @@ class Queue(Component):
 
         return dc_model, dc_entry
 
-
     def _create_gphl_wf(self, task):
         """
         Creates a gphl workflow model and its corresponding queue entry from
@@ -1351,7 +1374,10 @@ class Queue(Component):
         :returns: The tuple (model, entry)
         :rtype: Tuple
         """
-        from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import GphlWorkflowQueueEntry
+        from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import (
+            GphlWorkflowQueueEntry,
+        )
+
         dc_model = qmo.GphlWorkflow()
         dc_model.set_origin(ORIGIN_MX3)
         dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
@@ -1373,7 +1399,6 @@ class Queue(Component):
 
         return xrf_model, xrf_entry
 
-
     def _create_energy_scan(self, task, sample_model):
         """
         Creates a energy scan model and its corresponding queue entry from
@@ -1388,7 +1413,6 @@ class Queue(Component):
         escan_entry = qe.EnergyScanQueueEntry(Mock(), escan_model)
 
         return escan_model, escan_entry
-
 
     def add_characterisation(self, node_id, task):
         """
@@ -1426,8 +1450,12 @@ class Queue(Component):
         refgroup_model = qmo.TaskGroup()
         refgroup_model.set_origin(ORIGIN_MX3)
 
-        self.app.mxcubecore.beamline_ho.queue_model.add_child(sample_model, refgroup_model)
-        self.app.mxcubecore.beamline_ho.queue_model.add_child(refgroup_model, char_model)
+        self.app.mxcubecore.beamline_ho.queue_model.add_child(
+            sample_model, refgroup_model
+        )
+        self.app.mxcubecore.beamline_ho.queue_model.add_child(
+            refgroup_model, char_model
+        )
         refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
         refgroup_entry.set_enabled(True)
@@ -1438,7 +1466,6 @@ class Queue(Component):
         char_entry.set_enabled(task["checked"])
 
         return char_model._node_id
-
 
     def add_data_collection(self, node_id, task):
         """
@@ -1484,7 +1511,9 @@ class Queue(Component):
         sample_model = parent_model.get_sample_node()
         if task["parameters"]["wfpath"] == "Gphl":
             wf_model, dc_entry = self._create_gphl_wf(task)
-            self.set_gphl_wf_params(wf_model, dc_entry, task,  parent_model.get_sample_node())
+            self.set_gphl_wf_params(
+                wf_model, dc_entry, task, parent_model.get_sample_node()
+            )
         else:
             wf_model, dc_entry = self._create_wf(task)
             self.set_wf_params(wf_model, dc_entry, task, sample_model)
@@ -1501,7 +1530,6 @@ class Queue(Component):
         group_entry.enqueue(dc_entry)
 
         return wf_model._node_id
-
 
     def add_interleaved(self, node_id, task):
         """
@@ -1543,7 +1571,6 @@ class Queue(Component):
 
         return group_model._node_id
 
-
     def add_xrf_scan(self, node_id, task):
         """
         Adds a XRF Scan task to the sample with id: <id>
@@ -1570,7 +1597,6 @@ class Queue(Component):
         group_entry.enqueue(xrf_entry)
 
         return xrf_model._node_id
-
 
     def add_energy_scan(self, node_id, task):
         """
@@ -1599,7 +1625,6 @@ class Queue(Component):
 
         return escan_model._node_id
 
-
     def clear_queue(self):
         """
         Creates a new queue
@@ -1615,7 +1640,6 @@ class Queue(Component):
         HWR.beamline.queue_model.clear_model("plate")
         HWR.beamline.queue_model.select_model("ispyb")
 
-
     def save_queue(self, session, redis=redis.Redis()):
         """
         Saves the current self.app.mxcubecore.beamline_ho.queue_model (self.app.mxcubecore.beamline_ho.queue_model) into a redis database.
@@ -1630,9 +1654,10 @@ class Queue(Component):
         if proposal_id is not None:
             # List of samples dicts (containing tasks) sample and tasks have same
             # order as the in queue HO
-            queue = self.queue_to_dict(self.app.mxcubecore.beamline_ho.queue_model.get_model_root())
+            queue = self.queue_to_dict(
+                self.app.mxcubecore.beamline_ho.queue_model.get_model_root()
+            )
             redis.set("self.app.queue:%d" % proposal_id, pickle.dumps(queue))
-
 
     def load_queue(self, session, redis=redis.Redis()):
         """
@@ -1647,7 +1672,6 @@ class Queue(Component):
             serialized_queue = redis.get("self.app.queue:%d" % proposal_id)
             queue = pickle.loads(serialized_queue)
             self.load_queue_from_dict(queue)
-
 
     def queue_model_child_added(self, parent, child):
         """
@@ -1680,13 +1704,13 @@ class Queue(Component):
             elif isinstance(child, qmo.SampleCentring):
                 # Added rhfogh 20211001
                 entry = qe.SampleCentringQueueEntry(Mock(), child)
-                enable_entry(entry, True)
+                self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
             elif isinstance(child, qmo.XrayCentering):
                 # Added rhfogh 20211001
                 entry = qe.XrayCenteringQueueEntry(Mock(), child)
-                enable_entry(entry, True)
+                self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
     def queue_model_diff_plan_available(self, char, collection_list):
@@ -1706,11 +1730,12 @@ class Queue(Component):
                 setattr(collection, "shape", origin_model.shape)
 
                 task = self._handle_dc(sample, collection)
-                task.update({"isDiffractionPlan": True, "originID": origin_model._node_id})
+                task.update(
+                    {"isDiffractionPlan": True, "originID": origin_model._node_id}
+                )
                 cols.append(task)
 
         self.server.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
-
 
     def set_auto_add_diffplan(self, autoadd, current_sample=None):
         """
@@ -1734,7 +1759,6 @@ class Queue(Component):
                     model, entry = self.get_entry(t["queueID"])
                     entry.auto_add_diff_plan = autoadd
 
-
     def execute_entry_with_id(self, sid, tindex=None):
         """
         Execute the entry at position (sampleID, task index) in queue
@@ -1752,14 +1776,20 @@ class Queue(Component):
             # tasks, so in order function as expected; just mount the sample
             if (
                 not len(current_queue[sid]["tasks"])
-            ) and sid != self.app.sample_changer.get_current_sample().get("sampleID", ""):
+            ) and sid != self.app.sample_changer.get_current_sample().get(
+                "sampleID", ""
+            ):
 
                 try:
                     self.app.sample_changer.mount_sample_clean_up(current_queue[sid])
                 except BaseException:
-                    self.app.mxcubecore.beamline_ho.queue_manager.emit("queue_execution_failed", (None,))
+                    self.app.mxcubecore.beamline_ho.queue_manager.emit(
+                        "queue_execution_failed", (None,)
+                    )
                 else:
-                    self.app.mxcubecore.beamline_ho.queue_manager.emit("queue_stopped", (None,))
+                    self.app.mxcubecore.beamline_ho.queue_manager.emit(
+                        "queue_stopped", (None,)
+                    )
             else:
                 enabled_entries = []
 
@@ -1789,12 +1819,15 @@ class Queue(Component):
             try:
                 self.app.mxcubecore.beamline_ho.queue_manager.execute_entry(entry)
             except BaseException:
-                self.app.mxcubecore.beamline_ho.queue_manager.emit("queue_execution_failed", (None,))
+                self.app.mxcubecore.beamline_ho.queue_manager.emit(
+                    "queue_execution_failed", (None,)
+                )
             finally:
                 self.app.mxcubecore.beamline_ho.queue_manager._running = False
-                self.app.mxcubecore.beamline_ho.queue_manager.emit("queue_stopped", (None,))
+                self.app.mxcubecore.beamline_ho.queue_manager.emit(
+                    "queue_stopped", (None,)
+                )
                 self.app.mxcubecore.beamline_ho.collect.queue_finished_cleanup()
-
 
     def init_signals(self, queue):
         """
@@ -1803,7 +1836,9 @@ class Queue(Component):
         from mxcube3.routes import signals
 
         self.app.mxcubecore.beamline_ho.collect.connect(
-            self.app.mxcubecore.beamline_ho.collect, "collectStarted", signals.collect_started
+            self.app.mxcubecore.beamline_ho.collect,
+            "collectStarted",
+            signals.collect_started,
         )
         self.app.mxcubecore.beamline_ho.collect.connect(
             self.app.mxcubecore.beamline_ho.collect,
@@ -1816,7 +1851,9 @@ class Queue(Component):
             signals.collect_oscillation_failed,
         )
         self.app.mxcubecore.beamline_ho.collect.connect(
-            self.app.mxcubecore.beamline_ho.collect, "collectImageTaken", signals.collect_image_taken
+            self.app.mxcubecore.beamline_ho.collect,
+            "collectImageTaken",
+            signals.collect_image_taken,
         )
 
         self.app.mxcubecore.beamline_ho.collect.connect(
@@ -1827,7 +1864,9 @@ class Queue(Component):
 
         queue.connect(queue, "child_added", self.queue_model_child_added)
 
-        queue.connect(queue, "diff_plan_available", self.queue_model_diff_plan_available)
+        queue.connect(
+            queue, "diff_plan_available", self.queue_model_diff_plan_available
+        )
 
         self.app.mxcubecore.beamline_ho.queue_manager.connect(
             "queue_execute_started", signals.queue_execution_started
@@ -1853,7 +1892,9 @@ class Queue(Component):
             "queue_entry_execute_started", signals.queue_execution_entry_started
         )
 
-        self.app.mxcubecore.beamline_ho.queue_manager.connect("collectEnded", signals.collect_ended)
+        self.app.mxcubecore.beamline_ho.queue_manager.connect(
+            "collectEnded", signals.collect_ended
+        )
 
         self.app.mxcubecore.beamline_ho.queue_manager.connect(
             "queue_interleaved_started", signals.queue_interleaved_started
@@ -1871,14 +1912,12 @@ class Queue(Component):
             "energy_scan_finished", signals.energy_scan_finished
         )
 
-
     def enable_sample_entries(self, sample_id_list, flag):
         current_queue = self.queue_to_dict()
 
         for sample_id in sample_id_list:
             sample_data = current_queue[sample_id]
             self.enable_entry(sample_data["queueID"], flag)
-
 
     def set_auto_mount_sample(self, automount, current_sample=None):
         """
@@ -1889,14 +1928,12 @@ class Queue(Component):
         """
         self.app.AUTO_MOUNT_SAMPLE = automount
 
-
     def get_auto_mount_sample(self,):
         """
         :returns: Returns auto mount flag
         :rtype: bool
         """
         return self.app.AUTO_MOUNT_SAMPLE
-
 
     def get_task_progress(self, node, pdata):
         progress = 0
@@ -1919,43 +1956,23 @@ class Queue(Component):
 
         return progress
 
-
     def is_interleaved(self, node):
-        return hasattr(node, "interleave_num_images") and \
-            node.interleave_num_images != None and \
-            node.interleave_num_images > 0
-
+        return (
+            hasattr(node, "interleave_num_images")
+            and node.interleave_num_images != None
+            and node.interleave_num_images > 0
+        )
 
     def init_queue_settings(self):
-        self.app.NUM_SNAPSHOTS = self.app.mxcubecore.beamline_ho.collect.get_property("num_snapshots", 4)
+        self.app.NUM_SNAPSHOTS = self.app.mxcubecore.beamline_ho.collect.get_property(
+            "num_snapshots", 4
+        )
         self.app.AUTO_MOUNT_SAMPLE = self.app.mxcubecore.beamline_ho.collect.get_property(
             "auto_mount_sample", False
         )
         self.app.AUTO_ADD_DIFFPLAN = self.app.mxcubecore.beamline_ho.collect.get_property(
             "auto_add_diff_plan", False
         )
-
-
-    def add_default_sample(self):
-        sample = {
-            "sampleID": "1",
-            "sampleName": "noname",
-            "proteinAcronym": "noacronym",
-            "type": "Sample",
-            "defaultPrefix": "noname",
-            "location": "Manual",
-            "loadable": True,
-            "tasks": [],
-        }
-
-        try:
-            self.app.sample_changer.mount_sample_clean_up(sample)
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").exception("[SC] sample could not be mounted")
-            logging.getLogger("MX3.HWR").exception(str(ex))
-        else:
-            self.queue_add_item([sample])
-
 
     def queue_start(self, sid):
         """
@@ -1985,7 +2002,6 @@ class Queue(Component):
         else:
             logging.getLogger("MX3.HWR").info("[QUEUE] Queue started")
 
-
     def queue_stop(self):
         from mxcube3.routes import signals
 
@@ -1998,7 +2014,9 @@ class Queue(Component):
                 try:
                     qe.stop()
                 except Exception:
-                    logging.getLogger("MX3.HWR").exception("[QUEUE] Could not stop queue")
+                    logging.getLogger("MX3.HWR").exception(
+                        "[QUEUE] Could not stop queue"
+                    )
                 self.app.mxcubecore.beamline_ho.queue_manager.set_pause(False)
                 # the next two is to avoid repeating the task
                 # TODO: if you now run the queue it will be enabled and run
@@ -2025,7 +2043,6 @@ class Queue(Component):
 
         return msg
 
-
     def queue_unpause(self):
         """
         Unpause execution of the queue
@@ -2046,7 +2063,6 @@ class Queue(Component):
 
         return msg
 
-
     def queue_clear(self,):
         self.app.lims.init_sample_list()
         self.clear_queue()
@@ -2055,7 +2071,6 @@ class Queue(Component):
         )
         logging.getLogger("MX3.HWR").info(msg)
 
-
     def set_queue(self, json_queue, session):
         # Clear queue
         # self.app.mxcubecore.beamline_ho.queue_model = clear_queue()
@@ -2063,7 +2078,6 @@ class Queue(Component):
         # Set new queue
         self.queue_add_item(json_queue)
         self.save_queue(session)
-
 
     def queue_update_item(self, sqid, tqid, data):
         model, entry = self.get_entry(tqid)
@@ -2078,14 +2092,12 @@ class Queue(Component):
 
         return model
 
-
     def queue_enable_item(self, qid_list, enabled):
 
         for qid in qid_list:
             self.set_enabled_entry(qid, enabled)
 
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
-
 
     def update_sample(self, sid, params):
 
@@ -2104,7 +2116,6 @@ class Queue(Component):
             logging.getLogger("MX3.HWR").error(msg)
             raise Exception(msg)
 
-
     def toggle_node(self, node_id):
         node = self.app.mxcubecore.beamline_ho.queue_model.get_node(node_id)
         entry = self.app.mxcubecore.beamline_ho.queue_manager.get_entry_with_model(node)
@@ -2122,7 +2133,9 @@ class Queue(Component):
 
             new_state = entry.is_enabled()
             for elem in queue[node_id]:
-                child_node = self.app.mxcubecore.beamline_ho.queue_model.get_node(elem["queueID"])
+                child_node = self.app.mxcubecore.beamline_ho.queue_model.get_node(
+                    elem["queueID"]
+                )
                 child_entry = self.app.mxcubecore.beamline_ho.queue_manager.get_entry_with_model(
                     child_node
                 )
@@ -2177,7 +2190,6 @@ class Queue(Component):
                         parent_entry.set_enabled(True)
                         parent_node.set_enabled(True)
 
-
     def add_centring(self, _id, params):
         msg = "[QUEUE] centring add requested with data: " + str(params)
         logging.getLogger("MX3.HWR").info(msg)
@@ -2190,19 +2202,22 @@ class Queue(Component):
         entry = self.app.mxcubecore.beamline_ho.queue_manager.get_entry_with_model(node)
         entry._set_background_color = Mock()
 
-        new_node = self.app.mxcubecore.beamline_ho.queue_model.add_child_at_id(int(_id), cent_node)
+        new_node = self.app.mxcubecore.beamline_ho.queue_model.add_child_at_id(
+            int(_id), cent_node
+        )
         entry.enqueue(cent_entry)
 
         logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
 
         return {"QueueId": new_node, "Type": "Centring", "Params": params}
 
-
     def get_default_dc_params(self):
         """
         returns the default values for an acquisition (data collection).
         """
-        acq_parameters = self.app.mxcubecore.beamline_ho.get_default_acquisition_parameters()
+        acq_parameters = (
+            self.app.mxcubecore.beamline_ho.get_default_acquisition_parameters()
+        )
         ftype = self.app.mxcubecore.beamline_ho.detector.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
 
@@ -2233,7 +2248,6 @@ class Queue(Component):
             },
             "limits": self.app.mxcubecore.beamline_ho.acquisition_limit_values,
         }
-
 
     def get_default_char_acq_params(self):
         """
@@ -2276,12 +2290,13 @@ class Queue(Component):
 
         return {"acq_parameters": char_defaults}
 
-
     def get_default_mesh_params(self):
         """
         returns the default values for a mesh.
         """
-        acq_parameters = self.app.mxcubecore.beamline_ho.get_default_acquisition_parameters("mesh")
+        acq_parameters = self.app.mxcubecore.beamline_ho.get_default_acquisition_parameters(
+            "mesh"
+        )
 
         return {
             "acq_parameters": {
@@ -2310,7 +2325,6 @@ class Queue(Component):
             }
         }
 
-
     def get_default_xrf_parameters(self):
         int_time = 5
 
@@ -2330,7 +2344,6 @@ class Queue(Component):
 
         return {"countTime": int_time}
 
-
     def get_sample(self, _id):
         sample = self.queue_to_dict().get(_id, None)
 
@@ -2339,7 +2352,6 @@ class Queue(Component):
             logging.getLogger("MX3.HWR").error(msg)
 
         return sample
-
 
     def get_method(self, sample_id, method_id):
         sample = self.queue_to_dict().get(int(id), None)
@@ -2359,7 +2371,6 @@ class Queue(Component):
         logging.getLogger("MX3.HWR").exception(msg)
 
         raise Exception(msg)
-
 
     def set_group_folder(self, path):
         if path and path[0] in ["/", "."]:

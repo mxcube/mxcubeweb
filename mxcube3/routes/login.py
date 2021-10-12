@@ -5,6 +5,7 @@ from flask_security import current_user
 
 from mxcube3.core.util.networkutils import send_feedback
 
+
 def deny_access(msg):
     resp = jsonify({"msg": msg})
     resp.code = 409
@@ -46,7 +47,6 @@ def init_route(mxcube, server, url_prefix):
 
         return res
 
-
     @bp.route("/signout")
     @server.restrict
     def signout():
@@ -56,7 +56,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.usermanager.signout()
 
         return make_response("", 200)
-
 
     @bp.route("/login_info", methods=["GET"])
     def loginInfo():
@@ -79,7 +78,7 @@ def init_route(mxcube, server, url_prefix):
         200: On success
         409: Error, could not log in
         """
-        #login_info = session.get("loginInfo")
+        # login_info = session.get("loginInfo")
 
         user, res = mxcube.usermanager.login_info()
 
@@ -92,7 +91,6 @@ def init_route(mxcube, server, url_prefix):
 
         return response
 
-
     @bp.route("/send_feedback", methods=["POST"])
     @server.restrict
     def send_feedback():
@@ -101,17 +99,15 @@ def init_route(mxcube, server, url_prefix):
         networkutils.send_feedback(sender_data)
         return make_response("", 200)
 
-
     @server.flask_socketio.on("connect", namespace="/network")
     def network_ws_connect():
-        #msg = "Client with sid %s connected" % str(request.sid)
+        # msg = "Client with sid %s connected" % str(request.sid)
         msg = "Client connected"
         logging.getLogger("MX3.HWR").info(msg)
 
-
     @server.flask_socketio.on("disconnect", namespace="/network")
     def network_ws_disconnect():
-        #msg = "Client with sid %s disconnected" % str(request.sid)
+        # msg = "Client with sid %s disconnected" % str(request.sid)
         msg = "Client disconnected"
         logging.getLogger("MX3.HWR").info(msg)
 

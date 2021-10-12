@@ -1,6 +1,5 @@
-
-
 from mxcube3.core.user.usermanager import BaseUserManager
+
 
 class DummyUserManager(BaseUserManager):
     def __init__(self, app, server, config):

@@ -1,5 +1,6 @@
 import re
 
+
 def convert_to_dict(ispyb_object):
     d = {}
 
@@ -31,6 +32,7 @@ def convert_to_dict(ispyb_object):
             d[key] = val
 
     return d
+
 
 def str_to_camel(name):
     if isinstance(name, str):

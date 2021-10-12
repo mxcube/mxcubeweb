@@ -16,13 +16,11 @@ def init_route(mxcube, server, url_prefix):
         print((mxcube.mxcubecore.resolution.get_value()))
         return str(mxcube.resolution.isReady())
 
-
     @bp.route("/newres/<int:newres>", methods=["PUT"])
     @server.restrict
     def mockup_newres(newres):
         logging.getLogger("HWR").info("[Routes] Called mockup setting new resolution")
         return mxcube.mockups.setResolution(newres)
-
 
     @bp.route("/diff_plan/<sid>", methods=["GET"])
     @server.restrict
@@ -30,7 +28,9 @@ def init_route(mxcube, server, url_prefix):
         """Juts for creating a diff plan as if it were created by edna and so on.
         """
 
-        acq_parameters = mxcube.mxcubecore.beamline_ho.get_default_acquisition_parameters()
+        acq_parameters = (
+            mxcube.mxcubecore.beamline_ho.get_default_acquisition_parameters()
+        )
         ftype = mxcube.mxcubecore.beamline_ho.detector_hwobj.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
 
@@ -80,10 +80,11 @@ def init_route(mxcube, server, url_prefix):
         char, char_entry = mxcube.queue.get_entry(3)
 
         char.diffraction_plan.append([dc_model])
-        mxcube.mxcubecore.beamline_ho.queue_model.emit("diff_plan_available", (char, [dc_model]))
+        mxcube.mxcubecore.beamline_ho.queue_model.emit(
+            "diff_plan_available", (char, [dc_model])
+        )
 
         return Response(status=200)
-
 
     @bp.route("/shape_mock_result/<sid>", methods=["GET"])
     def shape_mock_result(sid):

@@ -11,6 +11,7 @@ from mxcube3.core.user.models import User
 from mxcube3.core.util.networkutils import is_local_host, remote_addr
 from mxcube3.core.util.convertutils import convert_to_dict
 
+
 class BaseUserManager(Component):
     def __init__(self, app, server, config):
         super().__init__(app, server, config)
@@ -35,9 +36,12 @@ class BaseUserManager(Component):
         users = [user["loginID"] for user in self.app.USERS.values()]
 
         if exclude_inhouse:
-            if isinstance(self.app.mxcubecore.beamline_ho.session.in_house_users[0], tuple):
+            if isinstance(
+                self.app.mxcubecore.beamline_ho.session.in_house_users[0], tuple
+            ):
                 ih_users = [
-                    "%s%s" % (p, c) for (p, c) in self.app.mxcubecore.beamline_ho.session.in_house_users
+                    "%s%s" % (p, c)
+                    for (p, c) in self.app.mxcubecore.beamline_ho.session.in_house_users
                 ]
             else:
                 ih_users = self.app.mxcubecore.beamline_ho.session.in_house_users
@@ -97,7 +101,9 @@ class BaseUserManager(Component):
             # uncomment to enable loading.
             # self.app.queue.load_queue(session)
             # logging.getLogger('MX3.HWR').info('Loaded queue')
-            logging.getLogger("MX3.HWR").info("[QUEUE] %s " % self.app.queue.queue_to_json())
+            logging.getLogger("MX3.HWR").info(
+                "[QUEUE] %s " % self.app.queue.queue_to_json()
+            )
 
             self.set_operator()
 
@@ -149,11 +155,11 @@ class BaseUserManager(Component):
 
         proposal_list = [
             {
-                "code": prop["Proposal"]["code"], 
+                "code": prop["Proposal"]["code"],
                 "number": prop["Proposal"]["number"],
-                "proposalId": prop["Proposal"]["proposalId"]
+                "proposalId": prop["Proposal"]["proposalId"],
             }
-                for prop in login_info["proposalList"]
+            for prop in login_info["proposalList"]
         ]
 
         res = {
@@ -163,18 +169,20 @@ class BaseUserManager(Component):
             "loginType": self.app.mxcubecore.beamline_ho.lims.loginType.title(),
             "proposalList": proposal_list,
             "user": {
-                "username":flask_security.current_user.username,
+                "username": flask_security.current_user.username,
                 "email": flask_security.current_user.email,
                 "isstaff": "staff" in flask_security.current_user.roles,
-                "name": flask_security.current_user.name if hasattr(flask_security.current_user, "name") else "", 
+                "name": flask_security.current_user.name
+                if hasattr(flask_security.current_user, "name")
+                else "",
                 "inControl": flask_security.current_user.in_control,
                 "ip": flask_security.current_user.last_login_ip,
             },
         }
-        
+
         res["selectedProposal"] = "%s%s" % (
             self.app.mxcubecore.beamline_ho.session.proposal_code,
-            self.app.mxcubecore.beamline_ho.session.proposal_number
+            self.app.mxcubecore.beamline_ho.session.proposal_number,
         )
 
         res["selectedProposalID"] = self.app.mxcubecore.beamline_ho.session.proposal_id
@@ -184,7 +192,7 @@ class BaseUserManager(Component):
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
-        username=f"{user}-{sid}"
+        username = f"{user}-{sid}"
 
         # Make sure that the roles staff and incontrol always
         # exists
@@ -203,10 +211,10 @@ class BaseUserManager(Component):
                 last_session_id=sid,
                 selected_proposal=user,
                 limsdata=json.dumps(lims_data),
-                roles=["staff"]
+                roles=["staff"],
             )
         else:
-            _u.limsdata=json.dumps(lims_data)
+            _u.limsdata = json.dumps(lims_data)
 
         self.app.server.user_datastore.commit()
 
@@ -267,9 +275,9 @@ class UserManager(BaseUserManager):
 
             msg = "[LOGIN] Valid login from local host (%s)" % str(info)
             logging.getLogger("MX3.HWR").info(msg)
-        elif self.app.lims.lims_valid_login(login_res) and self.app.lims.lims_existing_session(
+        elif self.app.lims.lims_valid_login(
             login_res
-        ):
+        ) and self.app.lims.lims_existing_session(login_res):
             msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
             msg += msg % (remote_addr(), str(info))
             logging.getLogger("MX3.HWR").info(msg)
