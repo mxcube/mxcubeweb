@@ -327,7 +327,7 @@ class Beamline(Component):
 
         self.app.mxcubecore.beamline_ho.diffractometer.set_phase(phase)
 
-    def set_aperture(pos):
+    def set_aperture(self, pos):
         beam = self.app.mxcubecore.beamline_ho.beam
         msg = "Changing beam size to: %s" % pos
         logging.getLogger("MX3.HWR").info(msg)

@@ -28,8 +28,9 @@ class Chat(Component):
         }
 
         self.MESSAGES.append(data)
-        db_add_message(current_user, message)
-        server.emit("ra_chat_message", data, namespace="/hwr")
+        self.db_add_message(current_user, message)
+        # NBNB TODO. This fixes bug. But why have bloth self.server and self.app.server??
+        self.app.server.emit("ra_chat_message", data, namespace="/hwr")
 
     def get_all_messages(self):
         message_list = []

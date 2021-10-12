@@ -686,7 +686,7 @@ class Queue(Component):
             elif isinstance(node, qmo.EnergyScan):
                 result.append(self._handle_energy_scan(sample_node, node))
             elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
-                result.append(_handle_interleaved(sample_node, node))
+                result.append(self._handle_interleaved(sample_node, node))
             else:
                 result.extend(self.queue_to_dict_rec(node, include_lims_data))
 

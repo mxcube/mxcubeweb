@@ -4,7 +4,7 @@ import json
 from mxcube3 import server
 from mxcube3 import mxcube
 
-from abstract.AbstractSampleChanger import SampleChangerState
+from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
@@ -19,7 +19,6 @@ from mxcube3.core.queue import (
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 from mxcubecore.HardwareObjects import queue_entry as qe
 
-from queue_entry import CENTRING_METHOD
 from mxcube3.core.util.convertutils import to_camel
 from mxcube3.core.util.networkutils import RateLimited
 
@@ -213,9 +212,9 @@ def centring_started(method, *args):
     msg = {"method": method}
 
     if method in ["Computer automatic"]:
-        msg = {"method": CENTRING_METHOD.LOOP}
+        msg = {"method": qe.CENTRING_METHOD.LOOP}
     elif method in ["Manual 3-click"]:
-        msg = {"method": CENTRING_METHOD.MANUAL}
+        msg = {"method": qe.CENTRING_METHOD.MANUAL}
 
     server.emit("sample_centring", msg, namespace="/hwr")
 
@@ -626,6 +625,7 @@ def beam_changed(*args, **kwargs):
 
     if beam_info is None:
         logging.getLogger("HWR").error("beamInfo is not defined")
+        # TODO fix error
         return Response(status=409)
 
     beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
@@ -641,6 +641,7 @@ def beam_changed(*args, **kwargs):
     try:
         server.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
     except Exception:
+        # TODO fix error
         logging.getLogger("HWR").exception("error sending message: %s" + str(msg))
 
 
@@ -693,6 +694,7 @@ def mach_info_changed(values):
     try:
         server.emit("mach_info_changed", values, namespace="/hwr")
     except Exception:
+        # TODO fix error
         logging.getLogger("HWR").error("error sending message: %s" + str(msg))
 
 
