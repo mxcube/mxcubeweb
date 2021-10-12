@@ -41,9 +41,6 @@ class Queue(Component):
     def __init__(self, app, server, config):
         super().__init__(app, server, config)
 
-    def is_collected(self, task):
-        return (task["state"] & COLLECTED) == COLLECTED
-
     def build_prefix_path_dict(self, path_list):
         prefix_path_dict = {}
 
@@ -943,7 +940,7 @@ class Queue(Component):
             if item_t == "DataCollection":
                 self.add_data_collection(sample_node_id, item)
             elif item_t == "Interleaved":
-                add_interleaved(sample_node_id, item)
+                self.add_interleaved(sample_node_id, item)
             elif item_t == "Characterisation":
                 self.add_characterisation(sample_node_id, item)
             elif item_t == "Workflow" or item_t == "GphlWorkflow":
@@ -1934,28 +1931,6 @@ class Queue(Component):
         self.app.AUTO_ADD_DIFFPLAN = self.app.mxcubecore.beamline_ho.collect.get_property(
             "auto_add_diff_plan", False
         )
-
-
-    def add_default_sample(self):
-        sample = {
-            "sampleID": "1",
-            "sampleName": "noname",
-            "proteinAcronym": "noacronym",
-            "type": "Sample",
-            "defaultPrefix": "noname",
-            "location": "Manual",
-            "loadable": True,
-            "tasks": [],
-        }
-
-        try:
-            self.app.sample_changer.mount_sample_clean_up(sample)
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").exception("[SC] sample could not be mounted")
-            logging.getLogger("MX3.HWR").exception(str(ex))
-        else:
-            self.queue_add_item([sample])
-
 
     def queue_start(self, sid):
         """

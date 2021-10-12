@@ -43,39 +43,6 @@ class MXCUBECore():
     adapter_dict = {}
 
     @staticmethod
-    def get_hwo(obj, name):
-        """
-        Convenience method for getting HardwareObjects from the HardwareRepository.
-        Retrieves the HardwareObject with the name <name> from either the
-        HardwareRepository or from a parent HardwareObject passed as <obj>
-
-        Handles exceptions with exit_with_error, which means that the application
-        will exit on exception
-
-        :param obj: HardwreObject or HardwareRepository
-        :param str name: The name of the HardwreObject
-
-        :rtype: HardwareObject
-        :return: The HardwareObject
-        """
-        ho = None
-
-        try:
-            if hasattr(obj, "get_hardware_object"):
-                ho = obj.get_hardware_object(name)
-            else:
-                ho = obj.get_object_by_role(name)
-        except Exception:
-            msg = "Could not initialize hardware object corresponding to %s \n"
-            msg = msg % name.upper()
-            msg += "Make sure that all related device servers are running \n"
-            msg += "Make sure that the detector software is running \n"
-
-            MXCUBECore.exit_with_error(msg)
-
-        return ho
-
-    @staticmethod
     def exit_with_error(msg):
         """
         Writes the traceback and msg to the log and exits the application
@@ -133,19 +100,6 @@ class MXCUBECore():
             MXCUBECore.exit_with_error(msg)
 
     @staticmethod
-    def _import_adapter_cls(adapter_cls_str):
-        # NBNB Cannot be imported at top level since that causes cirtular imports
-        # NBNB It is no good that a geeneric converter live in a file tat imports
-        # the mxcuve3 appliction
-        # TODO: refactor? rhfogh 20210730
-        from mxcube3.core.util.convertutils import str_to_snake
-        adapter_mod = importlib.import_module(
-            f"mxcube3.core.adapter.{str_to_snake(adapter_cls_str)}"
-        )
-
-        return getattr(adapter_mod, adapter_cls_str)
-
-    @staticmethod
     def _get_object_from_id(_id):
         if _id in MXCUBECore.adapter_dict:
             return MXCUBECore.adapter_dict[_id]["adapter"]
@@ -181,10 +135,6 @@ class MXCUBECore():
     @staticmethod
     def get_adapter(_id):
         return MXCUBECore._get_object_from_id(_id)
-
-    def _get_attr_from_path(self, obj, attr):
-        """Recurses through an attribute chain to get the attribute."""
-        return reduce(getattr, attr.split("."), obj)
 
     @staticmethod
     def adapt_hardware_objects(app):
@@ -315,7 +265,6 @@ class MXCUBEApplication():
         from mxcube3.core.component import import_component
 
         from mxcube3.core.lims import Lims
-        from mxcube3.core.user.usermanager import UserManager
         from mxcube3.core.chat import Chat
         from mxcube3.core.samplechanger import SampleChanger
         from mxcube3.core.beamline import Beamline
@@ -450,7 +399,7 @@ class MXCUBEApplication():
     def get_ui_properties():
         # Add type information to each component retrieved from the beamline adapter 
         # (either via config or via mxcubecore.beamline)
-        for item_name, item_data in MXCUBEApplication.CONFIG.app.ui_properties.items():
+        for _item_name, item_data in MXCUBEApplication.CONFIG.app.ui_properties.items():
             for component_data in item_data["components"]:
                 try:
                     mxcore = MXCUBEApplication.mxcubecore

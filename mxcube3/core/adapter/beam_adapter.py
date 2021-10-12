@@ -30,7 +30,7 @@ class BeamAdapter(ActuatorAdapterBase):
         beam_ho = self._ho
 
         beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
-        sx, sy, shape, label = beam_ho.get_value()
+        sx, sy, shape, _label = beam_ho.get_value()
 
         if beam_ho is not None:
             beam_info_dict.update(

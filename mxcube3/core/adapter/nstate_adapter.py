@@ -11,8 +11,6 @@ class NStateAdapter(ActuatorAdapterBase):
         """
         super(NStateAdapter, self).__init__(ho, *args, **kwargs)
         self._value_change_model = HOActuatorValueChangeModel
-        self._value_model = NStateModel
-        self._input_model = HOActuatorValueChangeModel
 
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)

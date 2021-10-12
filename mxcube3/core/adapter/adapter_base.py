@@ -159,7 +159,6 @@ class ActuatorAdapterBase(AdapterBase):
         """
         super(ActuatorAdapterBase, self).__init__(ho, *args, **kwargs)
         self._unique = False
-        self._STATES = None
         
         try:
             self._read_only = ho.read_only

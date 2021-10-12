@@ -126,16 +126,6 @@ class Beamline(Component):
 
         return aperture_list, current_aperture
 
-    def get_beam_definer(self):
-        beam_info = self.app.mxcubecore.beamline_ho.beam
-
-        if hasattr(beam_info, "beam_definer") and beam_info.beam_definer:
-            bd = beam_info.beam_definer
-        else:
-            bd = beam_info.get_object_by_role("aperture")
-
-        return bd
-
     def get_viewport_info(self):
         """
         Get information about current "view port" video dimension, beam position,
@@ -305,7 +295,7 @@ class Beamline(Component):
         """
         beam = self.app.mxcubecore.beamline_ho.beam
         beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
-        sx, sy, shape, label = beam.get_value()
+        sx, sy, shape, _label = beam.get_value()
 
         if beam is not None:
             beam_info_dict.update(

@@ -10,7 +10,6 @@ import gevent
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask import Flask, request, session
 from flask_socketio import SocketIO
-from flask_session import Session
 
 import flask_security
 
@@ -20,7 +19,8 @@ from mxcube3.core.util import networkutils
 from mxcube3.core.user.database import db_session, init_db, UserDatastore
 from mxcube3.core.user.models import User, Role, Message
 
-class Server():
+
+class Server:
     init_event = gevent.event.Event()
     flask = None
     flask_session = None
@@ -59,22 +59,29 @@ class Server():
 
         template_dir = os.path.join(os.path.dirname(__file__), "templates")
         Server.flask = Flask(__name__, static_url_path="", template_folder=template_dir)
-
+        Server.flask.wsgi_app = ProxyFix(Server.flask.wsgi_app)
         Server.flask.config.from_object(cfg.flask)
         Server.flask.register_error_handler(Exception, Server.exception_handler)
 
-        #Server.flask_session = Session()
-        #Server.flask_session.init_app(Server.flask)
-
-        Server.user_datastore = UserDatastore(db_session, User, Role, message_model=Message)
+        Server.user_datastore = UserDatastore(
+            db_session, User, Role, message_model=Message
+        )
         Server.security = flask_security.Security(Server.flask, Server.user_datastore)
         init_db()
         Server.db_session = db_session
 
-        Server.flask_socketio = SocketIO(manage_session=False, cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS)
+        Server.flask_socketio = SocketIO(
+            manage_session=False, cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS
+        )
         Server.flask_socketio.init_app(Server.flask)
 
-        Server.api = SpecTree('flask', app=Server.flask, title='MXCuBE3 api', version='v1.0', annotations=True)
+        Server.api = SpecTree(
+            "flask",
+            app=Server.flask,
+            title="MXCuBE3 api",
+            version="v1.0",
+            annotations=True,
+        )
         Server.validate = Server.api.validate
 
         # the following test prevents Flask from initializing twice
@@ -98,7 +105,9 @@ class Server():
     def register_routes(mxcube):
         from mxcube3.routes.beamline import init_route as init_beamline_route
         from mxcube3.routes.detector import init_route as init_detector_route
-        from mxcube3.routes.diffractometer import init_route as init_diffractometer_route
+        from mxcube3.routes.diffractometer import (
+            init_route as init_diffractometer_route,
+        )
         from mxcube3.routes.lims import init_route as init_lims_route
         from mxcube3.routes.log import init_route as init_log_route
         from mxcube3.routes.login import init_route as init_login_route
@@ -121,7 +130,9 @@ class Server():
         )
 
         Server.flask.register_blueprint(
-            init_diffractometer_route(mxcube, mxcube.server, f"{url_root_prefix}/diffractometer")
+            init_diffractometer_route(
+                mxcube, mxcube.server, f"{url_root_prefix}/diffractometer"
+            )
         )
 
         Server.flask.register_blueprint(
@@ -153,17 +164,20 @@ class Server():
         )
 
         Server.flask.register_blueprint(
-            init_sampleview_route(mxcube, mxcube.server, f"{url_root_prefix}/sampleview")
+            init_sampleview_route(
+                mxcube, mxcube.server, f"{url_root_prefix}/sampleview"
+            )
         )
 
         Server.flask.register_blueprint(
-            init_samplechanger_route(mxcube, mxcube.server, f"{url_root_prefix}/sample_changer")
+            init_samplechanger_route(
+                mxcube, mxcube.server, f"{url_root_prefix}/sample_changer"
+            )
         )
 
         Server.flask.register_blueprint(
             init_workflow_route(mxcube, mxcube.server, f"{url_root_prefix}/workflow")
         )
-
 
     @staticmethod
     def emit(*args, **kwargs):
