@@ -9,11 +9,11 @@ def convert_to_dict(ispyb_object):
     else:
         for key in ispyb_object.__keylist__:
             val = getattr(ispyb_object, key)
-            if isinstance(val, types.InstanceType):
+            if not isinstance(val, dict):
                 val = convert_to_dict(val)
             elif isinstance(val, list):
                 val = [
-                    convert_to_dict(x) if isinstance(x, types.InstanceType) else x
+                    convert_to_dict(x) if not isinstance(x, dict) else x
                     for x in val
                 ]
             elif isinstance(val, dict):
@@ -22,7 +22,7 @@ def convert_to_dict(ispyb_object):
                         (
                             k,
                             convert_to_dict(x)
-                            if isinstance(x, types.InstanceType)
+                            if not isinstance(x, dict)
                             else x,
                         )
                         for k, x in val.items()

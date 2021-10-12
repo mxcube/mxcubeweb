@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import types
+import sys
+import os
+import inspect
 
 import PIL
 import gevent.event
@@ -10,7 +13,7 @@ import base64
 
 from mxcube3.core.util.convertutils import to_camel, from_camel
 
-from queue_entry import CENTRING_METHOD
+from  mxcubecore.HardwareObjects.queue_entry import CENTRING_METHOD
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
 
@@ -349,7 +352,7 @@ class SampleView(Component):
                 except Exception:
                     raise
 
-    def move_zoom_motor(pos):
+    def move_zoom_motor(self, pos):
         zoom_motor = self.app.mxcubecore.beamline_ho.diffractometer.get_object_by_role(
             "zoom"
         )
@@ -517,7 +520,7 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
         SNAPSHOT_RECEIVED.set()
 
     def _do_take_snapshot(filename, bw=False):
-        mxcube.mxcubecore.beamline_ho.sample_view.save_snapshot(
+        sample_view.save_snapshot(
             filename, overlay=False, bw=bw
         )
 
@@ -538,7 +541,7 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
         #     snapshot_file.write(SNAPSHOT)
 
     def save_snapshot(self, filename, bw=False):
-        mxcube.mxcubecore.beamline_ho.sample_view.save_snapshot(
+        sample_view.save_snapshot(
             filename, overlay=False, bw=bw
         )
         # _do_take_snapshot(filename, bw)
@@ -547,31 +550,32 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
         if snapshots is None:
             # called via AbstractCollect
             dc_params = self.current_dc_parameters
-            diffractometer = mxcube.mxcubecore.beamline_ho.diffractometer
-            move_omega_relative = diffractometer.move_omega_relative
+            # diffractometer = mxcube.mxcubecore.beamline_ho.diffractometer
+            move_omega_relative = diffractometer_object.move_omega_relative
         else:
             # called via AbstractMultiCollect
             # calling_frame = inspect.currentframe()
             calling_frame = inspect.currentframe().f_back.f_back
 
             dc_params = calling_frame.f_locals["data_collect_parameters"]
-            diffractometer = mxcube.mxcubecore.beamline_ho.diffractometer
-            move_omega_relative = diffractometer.phiMotor.set_value_relative
+            # diffractometer = mxcube.mxcubecore.beamline_ho.diffractometer
+            move_omega_relative = diffractometer_object.phiMotor.set_value_relative
 
         if dc_params["take_snapshots"]:
+            # The below does not work. NUM_SNAPSHOTS needs to e got in somehow
             number_of_snapshots = mxcube.NUM_SNAPSHOTS
         else:
             number_of_snapshots = 0
 
         if number_of_snapshots > 0:
             if (
-                hasattr(diffractometer, "set_phase")
-                and diffractometer.get_current_phase() != "Centring"
+                hasattr(diffractometer_object, "set_phase")
+                and diffractometer_object.get_current_phase() != "Centring"
             ):
                 logging.getLogger("user_level_log").info(
                     "Moving Diffractometer to CentringPhase"
                 )
-                diffractometer.set_phase("Centring", wait=True, timeout=200)
+                diffractometer_object.set_phase("Centring", wait=True, timeout=200)
 
             snapshot_directory = dc_params["fileinfo"]["archive_directory"]
             if not os.path.exists(snapshot_directory):
@@ -614,7 +618,7 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
 
                 if number_of_snapshots > 1:
                     move_omega_relative(90)
-                    diffractometer.wait_ready()
+                    diffractometer_object.wait_ready()
 
     collect_object.take_crystal_snapshots = types.MethodType(
         take_snapshots, collect_object
