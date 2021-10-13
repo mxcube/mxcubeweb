@@ -1195,7 +1195,12 @@ def set_xrf_params(model, entry, task_data, sample_model):
         model.path_template.run_number = get_run_number(model.path_template)
 
     # Set count time, and if any, other paramters
-    model.count_time = params.get("countTime", 0)
+    try:
+        default_count_time = float(get_default_xrf_parameters()["countTime"])
+    except (TypeError, ValueError):
+        # see if there should be a default count time or raise an error
+        default_count_time  = 2.
+    model.count_time = params.get("countTime", default_count_time)
 
     # MXCuBE3 specific shape attribute
     model.shape = params["shape"]
@@ -2228,14 +2233,14 @@ def get_default_mesh_params():
 
 
 def get_default_xrf_parameters():
-    int_time = 5
+    int_time = 3.
 
     try:
         int_time = blcontrol.beamline.xrf_spectrum.getProperty(
-            "default_integration_time", "5"
+            "default_integration_time", "3"
         ).strip()
         try:
-            int(int_time)
+            float(int_time)
         except ValueError:
             pass
 
