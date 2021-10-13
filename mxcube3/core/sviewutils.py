@@ -497,22 +497,17 @@ def start_manual_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-
-    if blcontrol.beamline.diffractometer._ready():
-        if blcontrol.beamline.diffractometer.current_centring_procedure:
-            logging.getLogger("user_level_log").info("Aborting current centring ...")
-            blcontrol.beamline.diffractometer.cancel_centring_method(reject=True)
-
+    try:
         logging.getLogger("user_level_log").info("Centring using 3-click centring")
-
+        blcontrol.beamline.diffractometer.cancel_centring_method(reject=True)
         blcontrol.beamline.diffractometer.start_centring_method(
             blcontrol.beamline.diffractometer.MANUAL3CLICK_MODE
         )
 
         centring_reset_click_count()
-    else:
-        logging.getLogger("user_level_log").warning("Diffracomter is busy, cannot start centering")
-        raise RuntimeError("Diffracomter is busy, cannot start centering")
+    except Exception as ex:
+        logging.getLogger("user_level_log").exception("Cannot start centering")
+        raise RuntimeError("Cannot start centering")
 
     return {"clicksLeft": centring_clicks_left()}
 
