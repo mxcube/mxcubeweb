@@ -81,7 +81,7 @@ class EnergyScan extends React.Component {
             <StaticField label="Filename" data={this.props.filename} />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
+                <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
               </Col>
             </Row>
             <Row>
@@ -140,11 +140,11 @@ class EnergyScan extends React.Component {
 }
 
 EnergyScan = reduxForm({
-  form: 'workflow',
+  form: 'EnergyScan',
   validate
 })(EnergyScan);
 
-const selector = formValueSelector('workflow');
+const selector = formValueSelector('EnergyScan');
 
 EnergyScan = connect(state => {
   const subdir = selector(state, 'subdir');
@@ -157,16 +157,18 @@ EnergyScan = connect(state => {
     position = `[${vals}]`;
   }
 
+  const fname = selector(state, 'prefix');
   return {
     path: `${state.queue.rootPath}/${subdir}`,
-    filename: state.taskForm.taskData.parameters.fileName,
+    filename: fname,
     edge,
     element,
-    wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,
+      edge: '',
+      element: '',
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.resolution :

@@ -187,6 +187,7 @@ class TaskContainer extends React.Component {
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           rootPath={this.props.path}
+          attributes={this.props.attributes}
         />
       );
     }
@@ -200,6 +201,7 @@ class TaskContainer extends React.Component {
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           rootPath={this.props.path}
+          attributes={this.props.attributes}
         />
       );
     }
@@ -214,6 +216,7 @@ class TaskContainer extends React.Component {
           hide={this.props.hideTaskParametersForm}
           apertureList={this.props.apertureList}
           rootPath={this.props.path}
+          attributes={this.props.attributes}
         />
       );
     }

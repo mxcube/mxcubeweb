@@ -60,7 +60,7 @@ class Workflow extends React.Component {
             <StaticField label="Filename" data={this.props.filename} />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
+                <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
               </Col>
             </Row>
             <Row>

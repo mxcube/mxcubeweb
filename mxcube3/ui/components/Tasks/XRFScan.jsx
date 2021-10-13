@@ -60,7 +60,7 @@ class XRFScan extends React.Component {
             <StaticField label="Filename" data={this.props.filename} />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
+                <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
               </Col>
             </Row>
             <Row>
@@ -115,11 +115,11 @@ class XRFScan extends React.Component {
 }
 
 XRFScan = reduxForm({
-  form: 'workflow',
+  form: 'XRFScan',
   validate
 })(XRFScan);
 
-const selector = formValueSelector('workflow');
+const selector = formValueSelector('XRFScan');
 
 XRFScan = connect(state => {
   const subdir = selector(state, 'subdir');
@@ -131,11 +131,12 @@ XRFScan = connect(state => {
     position = `[${vals}]`;
   }
 
+  const fname = selector(state, 'prefix');
+
   return {
     path: `${state.queue.rootPath}/${subdir}`,
-    filename: state.taskForm.taskData.parameters.fileName,
+    filename: fname,
     countTime,
-    wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     suffix: fileSuffix,
     initialValues: {
