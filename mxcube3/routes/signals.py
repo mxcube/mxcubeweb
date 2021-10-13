@@ -1,40 +1,32 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import logging
 import json
 
 from mxcube3 import server
 from mxcube3 import mxcube
 
-from mxcube3.core import utils
-from mxcube3.core import qutils
-from mxcube3.core import scutils
-from mxcube3.core import limsutils
-
-from abstract.AbstractSampleChanger import SampleChangerState
+from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
-from mxcube3.core.qutils import (
+from mxcube3.core.queue import (
     READY,
     RUNNING,
     FAILED,
     COLLECTED,
     WARNING,
-    queue_to_dict,
 )
 
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 from mxcubecore.HardwareObjects import queue_entry as qe
 
-from queue_entry import CENTRING_METHOD
-from mxcube3.core.utils import to_camel
+from mxcube3.core.util.convertutils import to_camel
+from mxcube3.core.util.networkutils import RateLimited
 
 
 def last_queue_node():
-    node = mxcube.mxcubecore.beamline_ho.queue_manager._current_queue_entries[-1].get_data_model()
+    node = mxcube.mxcubecore.beamline_ho.queue_manager._current_queue_entries[
+        -1
+    ].get_data_model()
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
@@ -42,7 +34,7 @@ def last_queue_node():
         parent = node.get_parent()
         node = parent._children[0]
 
-    res = qutils.node_index(node)
+    res = mxcube.queue.node_index(node)
     res["node"] = node
 
     return res
@@ -86,7 +78,7 @@ def handle_auto_mount_next(entry):
 
     if isinstance(model.get_parent(), qmo.TaskGroup):
         tgroup = model.get_parent()
-        auto_mount = qutils.get_auto_mount_sample()
+        auto_mount = mxcube.queue.get_auto_mount_sample()
         tgroup = entry.get_data_model()
         tgroup_list = entry.get_data_model().get_parent().get_children()
 
@@ -167,7 +159,7 @@ def loaded_sample_changed(sample):
         sampleID = address
 
         if mxcube.mxcubecore.beamline_ho.sample_changer.has_loaded_sample():
-            scutils.set_current_sample(sampleID)
+            mxcube.sample_changer.set_current_sample(sampleID)
         else:
             sample = mxcube.mxcubecore.beamline_ho.sample_changer.get_loaded_sample()
 
@@ -176,7 +168,7 @@ def loaded_sample_changed(sample):
             else:
                 address = None
 
-            scutils.set_current_sample(address)
+            mxcube.sample_changer.set_current_sample(address)
 
         server.emit(
             "loaded_sample_changed",
@@ -187,6 +179,7 @@ def loaded_sample_changed(sample):
         sc_load_ready(address)
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
+
 
 def set_current_sample(sample_id):
     if not sample_id:
@@ -219,17 +212,17 @@ def centring_started(method, *args):
     msg = {"method": method}
 
     if method in ["Computer automatic"]:
-        msg = {"method": CENTRING_METHOD.LOOP}
+        msg = {"method": qe.CENTRING_METHOD.LOOP}
     elif method in ["Manual 3-click"]:
-        msg = {"method": CENTRING_METHOD.MANUAL}
+        msg = {"method": qe.CENTRING_METHOD.MANUAL}
 
     server.emit("sample_centring", msg, namespace="/hwr")
 
 
 def get_task_state(entry):
     node_id = entry.get_data_model()._node_id
-    _, state = qutils.get_node_state(node_id)
-    node_index = qutils.node_index(entry.get_data_model())
+    _, state = mxcube.queue.get_node_state(node_id)
+    node_index = mxcube.queue.node_index(entry.get_data_model())
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
@@ -238,7 +231,7 @@ def get_task_state(entry):
         limsres = {}
 
     try:
-        limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
+        limsres["limsTaskLink"] = mxcube.lims.get_dc_link(lims_id)
     except Exception:
         limsres["limsTaskLink"] = "#"
         msg = "Could not get lims link for collection with id: %s" % lims_id
@@ -259,7 +252,7 @@ def get_task_state(entry):
 
 
 def update_task_result(entry):
-    node_index = qutils.node_index(entry.get_data_model())
+    node_index = mxcube.queue.node_index(entry.get_data_model())
     node_id = entry.get_data_model()._node_id
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
@@ -269,7 +262,7 @@ def update_task_result(entry):
         limsres = {}
 
     try:
-        limsres["limsTaskLink"] = limsutils.get_dc_link(lims_id)
+        limsres["limsTaskLink"] = mxcube.lims.get_dc_link(lims_id)
     except Exception:
         limsres["limsTaskLink"] = "#"
         msg = "Could not get lims link for collection with id: %s" % lims_id
@@ -283,18 +276,18 @@ def update_task_result(entry):
 
     server.emit("update_task_lims_data", msg, namespace="/hwr")
 
-    
+
 def queue_execution_entry_started(entry, message=None):
     handle_auto_mount_next(entry)
 
-    if not qutils.is_interleaved(entry.get_data_model()):
+    if not mxcube.queue.is_interleaved(entry.get_data_model()):
         server.emit("task", get_task_state(entry), namespace="/hwr")
 
 
 def queue_execution_entry_finished(entry, message):
     handle_auto_mount_next(entry)
 
-    if not qutils.is_interleaved(entry.get_data_model()):
+    if not mxcube.queue.is_interleaved(entry.get_data_model()):
         server.emit("task", get_task_state(entry), namespace="/hwr")
 
     queue_toggle_sample(entry)
@@ -307,17 +300,17 @@ def queue_toggle_sample(entry):
 
 
 def queue_execution_started(entry, queue_state=None):
-    state = queue_state if queue_state else qutils.queue_exec_state()
+    state = queue_state if queue_state else mxcube.queue.queue_exec_state()
     msg = {"Signal": state, "Message": "Queue execution started"}
 
     server.emit("queue", msg, namespace="/hwr")
 
 
 def queue_execution_finished(entry, queue_state=None):
-    state = queue_state if queue_state else qutils.queue_exec_state()
+    state = queue_state if queue_state else mxcube.queue.queue_exec_state()
     msg = {"Signal": state, "Message": "Queue execution stopped"}
 
-    qutils.enable_sample_entries(mxcube.TEMP_DISABLED, True)
+    mxcube.queue.enable_sample_entries(mxcube.TEMP_DISABLED, True)
     mxcube.TEMP_DISABLED = []
 
     server.emit("queue", msg, namespace="/hwr")
@@ -339,7 +332,10 @@ def queue_execution_paused(state):
 
 
 def queue_execution_failed(entry):
-    msg = {"Signal": qutils.queue_exec_state(), "Message": "Queue execution stopped"}
+    msg = {
+        "Signal": mxcube.queue.queue_exec_state(),
+        "Message": "Queue execution stopped",
+    }
 
     server.emit("queue", msg, namespace="/hwr")
 
@@ -347,7 +343,7 @@ def queue_execution_failed(entry):
 def collect_oscillation_started(*args):
     node = last_queue_node()
 
-    if not qutils.is_interleaved(node["node"]):
+    if not mxcube.queue.is_interleaved(node["node"]):
         msg = {
             "Signal": "collectOscillationStarted",
             "Message": task_signals["collectOscillationStarted"],
@@ -369,8 +365,8 @@ def collect_oscillation_started(*args):
 def collect_image_taken(frame):
     node = last_queue_node()
 
-    if not qutils.is_interleaved(node["node"]):
-        progress = qutils.get_task_progress(last_queue_node()["node"], frame)
+    if not mxcube.queue.is_interleaved(node["node"]):
+        progress = mxcube.queue.get_task_progress(last_queue_node()["node"], frame)
 
         msg = {
             "Signal": "collectImageTaken",
@@ -386,7 +382,8 @@ def collect_image_taken(frame):
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
 
-@utils.RateLimited(1)
+
+@RateLimited(1)
 def _emit_progress(msg):
     logging.getLogger("HWR").debug("[TASK CALLBACK] " + str(msg))
     server.emit("task", msg, namespace="/hwr")
@@ -399,7 +396,7 @@ def collect_oscillation_failed(
 
     mxcube.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
 
-    if not qutils.is_interleaved(node["node"]):
+    if not mxcube.queue.is_interleaved(node["node"]):
         try:
             mxcube.mxcubecore.beamline_ho.lims_rest.get_dc(lims_id)
         except BaseException:
@@ -427,8 +424,8 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     node = last_queue_node()
     mxcube.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
 
-    if not qutils.is_interleaved(node["node"]):
-        qutils.enable_entry(node["queue_id"], False)
+    if not mxcube.queue.is_interleaved(node["node"]):
+        mxcube.queue.enable_entry(node["queue_id"], False)
 
         msg = {
             "Signal": "collectOscillationFinished",
@@ -451,7 +448,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
 def collect_ended(owner, success, message):
     node = last_queue_node()
 
-    if not qutils.is_interleaved(node["node"]):
+    if not mxcube.queue.is_interleaved(node["node"]):
         state = COLLECTED if success else WARNING
 
         msg = {
@@ -475,7 +472,7 @@ def collect_ended(owner, success, message):
 def collect_started(*args, **kwargs):
     node = last_queue_node()
 
-    if not qutils.is_interleaved(node["node"]):
+    if not mxcube.queue.is_interleaved(node["node"]):
 
         msg = {
             "Signal": kwargs["signal"],
@@ -500,9 +497,7 @@ def grid_result_available(shape):
 
 
 def energy_scan_finished(pk, ip, rm, sample):
-    server.emit(
-        "energy_scan_result", {"pk": pk, "ip": ip, "rm": rm}, namespace="/hwr"
-    )
+    server.emit("energy_scan_result", {"pk": pk, "ip": ip, "rm": rm}, namespace="/hwr")
 
 
 def queue_interleaved_started():
@@ -549,7 +544,7 @@ def queue_interleaved_finished():
 
 def queue_interleaved_sw_done(data):
     node = last_queue_node()
-    progress = qutils.get_task_progress(node["node"], data)
+    progress = mxcube.queue.get_task_progress(node["node"], data)
 
     msg = {
         "Signal": "collectImageTaken",
@@ -619,9 +614,7 @@ def motor_state_callback(movable, sender=None, **kw):
         # Update the pixels per mm if it was the zoom motor that moved
         if movable["name"] == "zoom":
             ppm = mxcube.mxcubecore.beamline_ho.diffractometer.get_pixels_per_mm()
-            server.emit(
-                "update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr"
-            )
+            server.emit("update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr")
 
     server.emit("motor_state", movable, namespace="/hwr")
 
@@ -632,6 +625,7 @@ def beam_changed(*args, **kwargs):
 
     if beam_info is None:
         logging.getLogger("HWR").error("beamInfo is not defined")
+        # TODO fix error
         return Response(status=409)
 
     beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
@@ -647,6 +641,7 @@ def beam_changed(*args, **kwargs):
     try:
         server.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
     except Exception:
+        # TODO fix error
         logging.getLogger("HWR").exception("error sending message: %s" + str(msg))
 
 
@@ -685,7 +680,9 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(mxcube.mxcubecore.beamline_ho).get_object_by_role("safety_shutter")
+    ho = BeamlineAdapter(mxcube.mxcubecore.beamline_ho).get_object_by_role(
+        "safety_shutter"
+    )
     data = ho.dict()
     try:
         server.emit("beamline_value_change", data, namespace="/hwr")
@@ -697,6 +694,7 @@ def mach_info_changed(values):
     try:
         server.emit("mach_info_changed", values, namespace="/hwr")
     except Exception:
+        # TODO fix error
         logging.getLogger("HWR").error("error sending message: %s" + str(msg))
 
 
@@ -707,7 +705,7 @@ def new_plot(plot_info):
         logging.getLogger("HWR").error("error sending new_plot message: %s", plot_info)
 
 
-@utils.RateLimited(1)
+@RateLimited(1)
 def plot_data(data, last_index=[0], **kwargs):
     data_data = data["data"]
     if last_index[0] > len(data_data):

@@ -25,10 +25,7 @@ class _BeamlineAdapter:
 
     def __init__(self, beamline_hwobj, app):
         self._application = app
-        self._config = app.CONFIG.app.adapter_properties or []
         self._bl = beamline_hwobj
-        self._ho_dict = {}
-        self._configured_adapter_dict = {}
         self.adapter_dict = {}
 
         workflow = self._bl.workflow
@@ -37,7 +34,7 @@ class _BeamlineAdapter:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
     def wf_parameters_needed(self, params):
-         self._application.server.emit(
+        self._application.server.emit(
             "workflowParametersDialog", params, broadcast=True, namespace="/hwr"
         )
 

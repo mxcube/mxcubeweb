@@ -2,9 +2,8 @@ import logging
 
 from flask import Blueprint, Response
 
-from mxcube3.core import qutils
 from mxcube3.routes import signals
-from mxcube3.core.utils import to_camel
+from mxcube3.core.util.convertutils import to_camel
 
 
 def init_route(mxcube, server, url_prefix):
@@ -17,13 +16,11 @@ def init_route(mxcube, server, url_prefix):
         print((mxcube.mxcubecore.resolution.get_value()))
         return str(mxcube.resolution.isReady())
 
-
     @bp.route("/newres/<int:newres>", methods=["PUT"])
     @server.restrict
     def mockup_newres(newres):
         logging.getLogger("HWR").info("[Routes] Called mockup setting new resolution")
         return mxcube.mockups.setResolution(newres)
-
 
     @bp.route("/diff_plan/<sid>", methods=["GET"])
     @server.restrict
@@ -31,7 +28,9 @@ def init_route(mxcube, server, url_prefix):
         """Juts for creating a diff plan as if it were created by edna and so on.
         """
 
-        acq_parameters = mxcube.mxcubecore.beamline_ho.get_default_acquisition_parameters()
+        acq_parameters = (
+            mxcube.mxcubecore.beamline_ho.get_default_acquisition_parameters()
+        )
         ftype = mxcube.mxcubecore.beamline_ho.detector_hwobj.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
 
@@ -65,9 +64,9 @@ def init_route(mxcube, server, url_prefix):
             "checked": {True},
         }
 
-        sample_model, sample_entry = qutils.get_entry(sid)
-        dc_model, dc_entry = qutils._create_dc(task)
-        qutils.set_dc_params(dc_model, dc_entry, task, sample_model)
+        sample_model, sample_entry = mxcube.queue.get_entry(sid)
+        dc_model, dc_entry = mxcube.queue._create_dc(task)
+        mxcube.queue.set_dc_params(dc_model, dc_entry, task, sample_model)
         pt = dc_model.acquisitions[0].path_template
 
         if mxcube.mxcubecore.beamline_ho.queue_model.check_for_path_collisions(pt):
@@ -78,13 +77,14 @@ def init_route(mxcube, server, url_prefix):
         dc_model.set_origin(3)
         dc_model.set_enabled(False)
 
-        char, char_entry = qutils.get_entry(3)
+        char, char_entry = mxcube.queue.get_entry(3)
 
         char.diffraction_plan.append([dc_model])
-        mxcube.mxcubecore.beamline_ho.queue_model.emit("diff_plan_available", (char, [dc_model]))
+        mxcube.mxcubecore.beamline_ho.queue_model.emit(
+            "diff_plan_available", (char, [dc_model])
+        )
 
         return Response(status=200)
-
 
     @bp.route("/shape_mock_result/<sid>", methods=["GET"])
     def shape_mock_result(sid):

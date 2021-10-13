@@ -18,7 +18,7 @@ def init_route(mxcube, server, url_prefix):
         for handler in logging.getLogger("MX3.HWR").handlers:
             if isinstance(handler, logging_handler.MX3LoggingHandler):
                 messages = handler.buffer
-        
+
         return jsonify(messages)
 
     return bp

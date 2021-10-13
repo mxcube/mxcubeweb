@@ -1,4 +1,3 @@
-
 import logging
 
 from flask import Blueprint, jsonify
@@ -6,7 +5,7 @@ from flask import Blueprint, jsonify
 
 def init_route(mxcube, server, url_prefix):
     bp = Blueprint("main", __name__, url_prefix=url_prefix)
-    
+
     @server.route("/samplegrid")
     @server.route("/datacollection")
     @server.route("/samplechanger")
@@ -16,7 +15,6 @@ def init_route(mxcube, server, url_prefix):
     def serve_static_file():
         logging.getLogger("HWR").info("[Main] Serving main page")
         return server.flask.send_static_file("index.html")
-
 
     @server.route("/")
     @server.route("/login")

@@ -13,6 +13,9 @@ class FlaskConfig:
 
 class AppConfig:
     VIDEO_FORMAT = "MPEG1"
+    adapter_properties = []
+    ui_properties = []
+    usermanager = {"class": "UserManager"}
 
 
 class Config:

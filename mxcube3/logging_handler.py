@@ -1,9 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import logging
 import traceback
+
 
 class MX3LoggingHandler(logging.handlers.BufferingHandler):
     def __init__(self, server):
@@ -16,7 +13,6 @@ class MX3LoggingHandler(logging.handlers.BufferingHandler):
             # this is needed to create the namespace, and the actual connection
             # to the server, but we don't need to do anything more
             pass
-
 
     def _record_to_json(self, record):
         if record.exc_info:

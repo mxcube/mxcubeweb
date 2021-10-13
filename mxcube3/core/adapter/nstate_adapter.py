@@ -1,9 +1,9 @@
 from enum import Enum
-from mxcubecore.HardwareObjects.abstract import AbstractNState
-from mxcubecore.HardwareObjects.abstract import AbstractShutter
+import logging
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.models import NStateModel, HOActuatorValueChangeModel, StrValueModel
+
 
 class NStateAdapter(ActuatorAdapterBase):
     def __init__(self, ho, *args, **kwargs):
@@ -13,8 +13,6 @@ class NStateAdapter(ActuatorAdapterBase):
         """
         super(NStateAdapter, self).__init__(ho, *args, **kwargs)
         self._value_change_model = HOActuatorValueChangeModel
-        self._value_model = NStateModel
-        self._input_model = HOActuatorValueChangeModel
 
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
@@ -40,7 +38,7 @@ class NStateAdapter(ActuatorAdapterBase):
         return state_names
 
     def commands(self):
-        return (self._get_valid_states())
+        return self._get_valid_states()
 
     def _set_value(self, value: HOActuatorValueChangeModel):
         self._ho.set_value(self._ho.VALUES[value.value])

@@ -1,7 +1,7 @@
-import math
 import logging
 
 from mxcube3.core.models import HOModel, HOActuatorModel
+
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
@@ -25,7 +25,7 @@ class AdapterBase:
         return self._application.mxcubecore._get_adapter_id(ho)
 
     def _add_adapter(self, attr_name, ho, adapter_cls=None):
-        from mxcube3.core.adapter.utils import get_adapter_cls_from_hardware_object
+        from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 
         adapter_cls = (
             adapter_cls if adapter_cls else get_adapter_cls_from_hardware_object(ho)
@@ -33,7 +33,9 @@ class AdapterBase:
 
         _id = f"{self.get_adapter_id()}.{attr_name}"
         adapter_instance = adapter_cls(ho, _id, self._application)
-        self._application.mxcubecore._add_adapter(_id, adapter_cls, ho, adapter_instance)
+        self._application.mxcubecore._add_adapter(
+            _id, adapter_cls, ho, adapter_instance
+        )
 
         setattr(self, attr_name, adapter_instance)
 
@@ -104,7 +106,9 @@ class AdapterBase:
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        self._application.server.emit("beamline_value_change", self.dict(), namespace="/hwr")
+        self._application.server.emit(
+            "beamline_value_change", self.dict(), namespace="/hwr"
+        )
 
     def _dict_repr(self):
         """
@@ -159,8 +163,7 @@ class ActuatorAdapterBase(AdapterBase):
         """
         super(ActuatorAdapterBase, self).__init__(ho, *args, **kwargs)
         self._unique = False
-        self._STATES = None
-        
+
         try:
             self._read_only = ho.read_only
         except AttributeError:
@@ -242,10 +245,7 @@ class ActuatorAdapterBase(AdapterBase):
 
         try:
             data.update(
-                {
-                    "value": self.get_value(),
-                    "limits": self.limits(),
-                }
+                {"value": self.get_value(), "limits": self.limits(),}
             )
         except Exception as ex:
             self._available = False

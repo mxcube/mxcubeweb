@@ -1,13 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import json
 
 from flask import Blueprint, Response, jsonify, request, session
-
-from mxcube3.core import qutils
-from mxcube3.core import limsutils
 
 
 def init_route(mxcube, server, url_prefix):
@@ -25,10 +18,9 @@ def init_route(mxcube, server, url_prefix):
                 409: Queue could not be started
         """
         sid = request.get_json().get("sid", None)
-        qutils.queue_start(sid)
+        mxcube.queue.queue_start(sid)
 
         return Response(status=200)
-
 
     @bp.route("/stop", methods=["PUT"])
     @server.require_control
@@ -41,9 +33,8 @@ def init_route(mxcube, server, url_prefix):
                 200: On success
                 409: Queue could not be stopped
         """
-        qutils.queue_stop()
+        mxcube.queue.queue_stop()
         return Response(status=200)
-
 
     @bp.route("/abort", methods=["PUT"])
     @server.require_control
@@ -59,7 +50,6 @@ def init_route(mxcube, server, url_prefix):
         mxcube.mxcubecore.beamline_ho.queue_manager.stop()
         return Response(status=200)
 
-
     @bp.route("/pause", methods=["PUT"])
     @server.require_control
     @server.restrict
@@ -71,10 +61,9 @@ def init_route(mxcube, server, url_prefix):
                 200: On success
                 409: Queue could not be paused
         """
-        msg = qutils.queue_pause()
+        msg = mxcube.queue.queue_pause()
         server.emit("queue", msg, namespace="/hwr")
         return Response(status=200)
-
 
     @bp.route("/unpause", methods=["PUT"])
     @server.require_control
@@ -87,10 +76,9 @@ def init_route(mxcube, server, url_prefix):
                 200: On success
                 409: Queue could not be unpause
         """
-        msg = qutils.queue_unpause()
+        msg = mxcube.queue.queue_unpause()
         server.emit("queue", msg, namespace="/hwr")
         return Response(status=200)
-
 
     @bp.route("/clear", methods=["PUT", "GET"])
     @server.require_control
@@ -103,9 +91,8 @@ def init_route(mxcube, server, url_prefix):
                 200: On success
                 409: Queue could not be started
         """
-        qutils.queue_clear()
+        mxcube.queue.queue_clear()
         return Response(status=200)
-
 
     @bp.route("/", methods=["GET"])
     @server.restrict
@@ -119,10 +106,9 @@ def init_route(mxcube, server, url_prefix):
                 200: On success
                 409: On error, could not retrieve queue
         """
-        resp = jsonify(qutils.queue_to_dict(include_lims_data=True))
+        resp = jsonify(mxcube.queue.queue_to_dict(include_lims_data=True))
         resp.status_code = 200
         return resp
-
 
     @bp.route("/queue_state", methods=["GET"])
     @server.restrict
@@ -136,10 +122,9 @@ def init_route(mxcube, server, url_prefix):
                 200: On success
                 409: On error, could not retrieve queue
         """
-        resp = jsonify(qutils.get_queue_state())
+        resp = jsonify(mxcube.queue.get_queue_state())
         resp.status_code = 200
         return resp
-
 
     @bp.route("/<sid>/<tindex>/execute", methods=["PUT"])
     @server.require_control
@@ -154,20 +139,18 @@ def init_route(mxcube, server, url_prefix):
                     409, queue entry could not be executed
         """
         try:
-            qutils.execute_entry_with_id(sid, tindex)
+            mxcube.queue.execute_entry_with_id(sid, tindex)
         except Exception:
             return Response(status=409)
         else:
             return Response(status=200)
 
-
     @bp.route("/", methods=["PUT"])
     @server.require_control
     @server.restrict
     def set_queue():
-        qutils.set_queue(request.get_json(), session)
+        mxcube.queue.set_queue(request.get_json(), session)
         return Response(status=200)
-
 
     @bp.route("/", methods=["POST"])
     @server.require_control
@@ -175,8 +158,8 @@ def init_route(mxcube, server, url_prefix):
     def queue_add_item():
         tasks = request.get_json()
 
-        queue = qutils.queue_add_item(tasks)
-        sample_list = limsutils.sample_list_get(current_queue=queue)
+        queue = mxcube.queue.queue_add_item(tasks)
+        sample_list = mxcube.lims.sample_list_get(current_queue=queue)
 
         resp = jsonify(
             {
@@ -188,20 +171,18 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/<sqid>/<tqid>", methods=["POST"])
     @server.require_control
     @server.restrict
     def queue_update_item(sqid, tqid):
         data = request.get_json()
 
-        model = qutils.queue_update_item(sqid, tqid, data)
+        model = mxcube.queue.queue_update_item(sqid, tqid, data)
 
-        resp = jsonify(qutils.queue_to_dict([model]))
+        resp = jsonify(mxcube.queue.queue_to_dict([model]))
         resp.status_code = 200
 
         return resp
-
 
     @bp.route("/delete", methods=["POST"])
     @server.require_control
@@ -209,10 +190,9 @@ def init_route(mxcube, server, url_prefix):
     def queue_delete_item():
         item_pos_list = request.get_json()
 
-        qutils.delete_entry_at(item_pos_list)
+        mxcube.queue.delete_entry_at(item_pos_list)
 
         return Response(status=200)
-
 
     @bp.route("/set_enabled", methods=["POST"])
     @server.require_control
@@ -221,34 +201,30 @@ def init_route(mxcube, server, url_prefix):
         params = request.get_json()
         qid_list = params.get("qidList", None)
         enabled = params.get("enabled", False)
-        qutils.queue_enable_item(qid_list, enabled)
+        mxcube.queue.queue_enable_item(qid_list, enabled)
 
         return Response(status=200)
-
 
     @bp.route("/<sid>/<ti1>/<ti2>/swap", methods=["POST"])
     @server.require_control
     @server.restrict
     def queue_swap_task_item(sid, ti1, ti2):
-        qutils.swap_task_entry(sid, int(ti1), int(ti2))
+        mxcube.queue.swap_task_entry(sid, int(ti1), int(ti2))
         return Response(status=200)
-
 
     @bp.route("/<sid>/<ti1>/<ti2>/move", methods=["POST"])
     @server.require_control
     def queue_move_task_item(sid, ti1, ti2):
-        qutils.move_task_entry(sid, int(ti1), int(ti2))
+        mxcube.queue.move_task_entry(sid, int(ti1), int(ti2))
         return Response(status=200)
-
 
     @bp.route("/sample-order", methods=["POST"])
     @server.require_control
     @server.restrict
     def queue_set_sample_order():
         sample_order = request.get_json().get("sampleOrder", [])
-        qutils.set_sample_order(sample_order)
+        mxcube.queue.set_sample_order(sample_order)
         return Response(status=200)
-
 
     @bp.route("/<sample_id>", methods=["PUT"])
     @server.require_control
@@ -269,13 +245,12 @@ def init_route(mxcube, server, url_prefix):
         node_id = int(sample_id)
 
         try:
-            qutils.update_sample(node_id, params)
+            mxcube.queue.update_sample(node_id, params)
             resp = jsonify({"QueueId": node_id})
             resp.status_code = 200
             return resp
         except Exception:
             return Response(status=409)
-
 
     @bp.route("/<node_id>/toggle", methods=["PUT"])
     @server.require_control
@@ -287,9 +262,8 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: node could not be toggled
         """
-        qutils.toggle_node(int(node_id))
+        mxcube.queue.toggle_node(int(node_id))
         return Response(status=200)
-
 
     @bp.route("/dc", methods=["GET"])
     @server.restrict
@@ -297,11 +271,10 @@ def init_route(mxcube, server, url_prefix):
         """
         returns the default values for an acquisition (data collection).
         """
-        resp = jsonify(qutils.get_default_dc_params())
+        resp = jsonify(mxcube.queue.get_default_dc_params())
 
         resp.status_code = 200
         return resp
-
 
     @bp.route("/char_acq", methods=["GET"])
     @server.restrict
@@ -310,11 +283,10 @@ def init_route(mxcube, server, url_prefix):
         returns the default values for a characterisation acquisition.
         TODO: implement as_dict in the qmo.AcquisitionParameters
         """
-        resp = jsonify(qutils.get_default_char_acq_params())
+        resp = jsonify(mxcube.queue.get_default_char_acq_params())
 
         resp.status_code = 200
         return resp
-
 
     @bp.route("/char", methods=["GET"])
     @server.restrict
@@ -329,17 +301,15 @@ def init_route(mxcube, server, url_prefix):
         resp.status_code = 200
         return resp
 
-
     @bp.route("/mesh", methods=["GET"])
     @server.restrict
     def get_default_mesh_params():
         """
         returns the default values for a mesh.
         """
-        resp = jsonify(qutils.get_default_mesh_params())
+        resp = jsonify(mxcube.queue.get_default_mesh_params())
         resp.status_code = 200
         return resp
-
 
     @bp.route("/xrf", methods=["GET"])
     @server.restrict
@@ -347,22 +317,20 @@ def init_route(mxcube, server, url_prefix):
         """
         returns the default values for a xrf scan
         """
-        resp = jsonify(qutils.get_default_xrf_parameters())
+        resp = jsonify(mxcube.queue.get_default_xrf_parameters())
         resp.status_code = 200
         return resp
-
 
     @bp.route("/automount", methods=["POST"])
     @server.require_control
     @server.restrict
     def set_autmount():
         automount = request.get_json()
-        qutils.set_auto_mount_sample(automount)
+        mxcube.queue.set_auto_mount_sample(automount)
         resp = jsonify({"automount": automount})
         resp.status_code = 200
 
         return resp
-
 
     @bp.route("/num_snapshots", methods=["PUT"])
     @server.require_control
@@ -375,18 +343,16 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/group_folder", methods=["POST"])
     @server.require_control
     @server.restrict
     def set_group_folder():
         path = request.get_json().get("path", "")
 
-        resp = jsonify(qutils.set_group_folder(path))
+        resp = jsonify(mxcube.queue.set_group_folder(path))
         resp.status_code = 200
 
         return resp
-
 
     @bp.route("/group_folder", methods=["GET"])
     @server.restrict
@@ -396,16 +362,14 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/auto_add_diffplan", methods=["POST"])
     @server.require_control
     @server.restrict
     def set_autoadd():
         autoadd = request.get_json()
-        qutils.set_auto_add_diffplan(autoadd)
+        mxcube.queue.set_auto_add_diffplan(autoadd)
         resp = jsonify({"auto_add_diffplan": autoadd})
         resp.status_code = 200
         return resp
-
 
     return bp

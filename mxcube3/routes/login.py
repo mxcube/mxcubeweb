@@ -1,8 +1,9 @@
 import logging
 
-from flask import Blueprint, session, request, jsonify, make_response, redirect
+from flask import Blueprint, request, jsonify, make_response, redirect
+from flask_security import current_user
 
-from mxcube3.core import loginutils
+from mxcube3.core.util import networkutils
 
 
 def deny_access(msg):
@@ -33,13 +34,12 @@ def init_route(mxcube, server, url_prefix):
         200: On success
         409: Error, could not log in
         """
-
         params = request.get_json()
         login_id = params.get("proposal", "")
         password = params.get("password", "")
 
         try:
-            res = jsonify(loginutils.login(login_id, password))
+            res = jsonify(mxcube.usermanager.login(login_id, password))
         except Exception as ex:
             msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
             logging.getLogger("MX3.HWR").info(msg)
@@ -47,17 +47,15 @@ def init_route(mxcube, server, url_prefix):
 
         return res
 
-
     @bp.route("/signout")
     @server.restrict
     def signout():
         """
         Signout from Mxcube3 and reset the session
         """
-        loginutils.signout()
+        mxcube.usermanager.signout()
 
         return make_response("", 200)
-
 
     @bp.route("/login_info", methods=["GET"])
     def loginInfo():
@@ -80,9 +78,9 @@ def init_route(mxcube, server, url_prefix):
         200: On success
         409: Error, could not log in
         """
-        login_info = session.get("loginInfo")
+        # login_info = session.get("loginInfo")
 
-        user, res = loginutils.login_info(login_info)
+        user, res = mxcube.usermanager.login_info()
 
         # Redirect the user to login page if for some reason logged out
         # i.e. server restart
@@ -93,23 +91,24 @@ def init_route(mxcube, server, url_prefix):
 
         return response
 
-
     @bp.route("/send_feedback", methods=["POST"])
     @server.restrict
     def send_feedback():
-        loginutils.send_feedback()
+        sender_data = request.get_json()
+        sender_data["LOGGED_IN_USER"] = current_user.name
+        networkutils.send_feedback(sender_data)
         return make_response("", 200)
-
 
     @server.flask_socketio.on("connect", namespace="/network")
     def network_ws_connect():
-        msg = "Client with sid %s connected" % str(request.sid)
+        # msg = "Client with sid %s connected" % str(request.sid)
+        msg = "Client connected"
         logging.getLogger("MX3.HWR").info(msg)
-
 
     @server.flask_socketio.on("disconnect", namespace="/network")
     def network_ws_disconnect():
-        msg = "Client with sid %s disconnected" % str(request.sid)
+        # msg = "Client with sid %s disconnected" % str(request.sid)
+        msg = "Client disconnected"
         logging.getLogger("MX3.HWR").info(msg)
 
     return bp

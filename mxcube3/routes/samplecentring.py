@@ -1,14 +1,7 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 from flask import Blueprint, Response, jsonify, request
 
 import os
 import json
-
-from mxcube3.core import beamlineutils
-from mxcube3.core import sviewutils
 
 
 def init_route(mxcube, server, url_prefix):
@@ -24,11 +17,14 @@ def init_route(mxcube, server, url_prefix):
         if mxcube.CONFIG.app.VIDEO_FORMAT == "MPEG1":
             result = Response(status=200)
         else:
-            frame = sviewutils.stream_video(mxcube.mxcubecore.beamline_ho.sample_view.camera)
-            result = Response(frame, mimetype='multipart/x-mixed-replace; boundary="!>"')
+            frame = mxcube.sample_view.stream_video(
+                mxcube.mxcubecore.beamline_ho.sample_view.camera
+            )
+            result = Response(
+                frame, mimetype='multipart/x-mixed-replace; boundary="!>"'
+            )
 
         return result
-
 
     @bp.route("/camera/unsubscribe", methods=["PUT"])
     @server.restrict
@@ -40,7 +36,6 @@ def init_route(mxcube, server, url_prefix):
         """
         mxcube.mxcubecore.beamline_ho.sample_view.camera.streaming_greenlet.kill()
         return Response(status=200)
-
 
     @bp.route("/camera/save", methods=["PUT"])
     @server.restrict
@@ -59,7 +54,6 @@ def init_route(mxcube, server, url_prefix):
         except Exception:
             return "False"
 
-
     @bp.route("/camera", methods=["GET"])
     @server.restrict
     def get_image_data():
@@ -72,12 +66,11 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        data = beamlineutils.get_viewport_info()
+        data = mxcube.beamline.get_viewport_info()
 
         resp = jsonify(data)
         resp.status_code = 200
         return resp
-
 
     @bp.route("/camera", methods=["POST"])
     @server.restrict
@@ -86,12 +79,13 @@ def init_route(mxcube, server, url_prefix):
         """
         params = request.get_json()
 
-        res = sviewutils.set_image_size(int(params["width"]), int(params["height"]))
+        res = mxcube.sample_view.set_image_size(
+            int(params["width"]), int(params["height"])
+        )
 
         resp = jsonify(res)
         resp.status_code = 200
         return resp
-
 
     @bp.route("/centring/<point_id>/moveto", methods=["PUT"])
     @server.require_control
@@ -103,13 +97,12 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        point = sviewutils.move_to_centred_position(point_id)
+        point = mxcube.sample_view.move_to_centred_position(point_id)
 
         if point:
             return Response(status=200)
         else:
             return Response(status=409)
-
 
     @bp.route("/shapes", methods=["GET"])
     @server.restrict
@@ -120,12 +113,11 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        shapes = sviewutils.get_shapes()
+        shapes = mxcube.sample_view.get_shapes()
 
         resp = jsonify(shapes)
         resp.status_code = 200
         return resp
-
 
     @bp.route("/shapes/<sid>", methods=["GET"])
     @server.restrict
@@ -136,7 +128,7 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: shape not found
         """
-        shape = sviewutils.get_shapes()
+        shape = mxcube.sample_view.get_shapes()
 
         if shape is not None:
             resp = jsonify(shape)
@@ -144,7 +136,6 @@ def init_route(mxcube, server, url_prefix):
             return resp
         else:
             return Response(status=409)
-
 
     @bp.route("/shapes/<sid>", methods=["POST"])
     def shape_add_cell_result(sid):
@@ -160,9 +151,8 @@ def init_route(mxcube, server, url_prefix):
         cell_number = params.get("cell", 0)
         result = params.get("result", 0)
 
-        sviewutils.shape_add_cell_result(sid, cell_number, result)
+        mxcube.sample_view.shape_add_cell_result(sid, cell_number, result)
         return Response(status=200)
-
 
     @bp.route("/shapes", methods=["POST"])
     @server.require_control
@@ -178,11 +168,10 @@ def init_route(mxcube, server, url_prefix):
         resp = Response(status=409)
         shapes = request.get_json().get("shapes", [])
 
-        resp = jsonify(sviewutils.update_shapes(shapes))
+        resp = jsonify(mxcube.sample_view.update_shapes(shapes))
         resp.status_code = 200
 
         return resp
-
 
     @bp.route("/shapes/<sid>", methods=["DELETE"])
     @server.require_control
@@ -196,7 +185,6 @@ def init_route(mxcube, server, url_prefix):
         """
         mxcube.mxcubecore.beamline_ho.sample_view.delete_shape(sid)
         return Response(status=200)
-
 
     @bp.route("/shapes/rotate_to", methods=["POST"])
     @server.require_control
@@ -213,14 +201,13 @@ def init_route(mxcube, server, url_prefix):
         sid = request.get_json().get("sid", -1)
 
         try:
-            sviewutils.rotate_to(sid)
+            mxcube.sample_view.rotate_to(sid)
         except Exception:
             resp = Response(status=409)
         else:
             resp = Response(status=200)
 
         return resp
-
 
     @bp.route("/zoom", methods=["PUT"])
     @server.require_control
@@ -238,12 +225,11 @@ def init_route(mxcube, server, url_prefix):
         params = request.data
         pos = json.loads(params).get("level", 0)
 
-        res = sviewutils.move_zoom_motor(pos)
+        res = mxcube.sample_view.move_zoom_motor(pos)
 
         resp = jsonify(res)
         resp.status_code = 200
         return resp
-
 
     @bp.route("/backlighton", methods=["PUT"])
     @server.require_control
@@ -254,9 +240,8 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        sviewutils.back_light_on()
+        mxcube.sample_view.back_light_on()
         return Response(status=200)
-
 
     @bp.route("/backlightoff", methods=["PUT"])
     @server.require_control
@@ -267,9 +252,8 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        sviewutils.back_light_off()
+        mxcube.sample_view.back_light_off()
         return Response(status=200)
-
 
     @bp.route("/frontlighton", methods=["PUT"])
     @server.require_control
@@ -280,9 +264,8 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        sviewutils.front_light_on()
+        mxcube.sample_view.front_light_on()
         return Response(status=200)
-
 
     @bp.route("/frontlightoff", methods=["PUT"])
     @server.require_control
@@ -293,9 +276,8 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        sviewutils.front_light_off()
+        mxcube.sample_view.front_light_off()
         return Response(status=200)
-
 
     @bp.route("/<motid>/<newpos>", methods=["PUT"])
     @server.require_control
@@ -312,7 +294,7 @@ def init_route(mxcube, server, url_prefix):
         """
 
         try:
-            sviewutils.move_motor(motid, newpos)
+            mxcube.sample_view.move_motor(motid, newpos)
         except Exception as ex:
             return (
                 "Could not move motor %s" % str(ex),
@@ -322,29 +304,27 @@ def init_route(mxcube, server, url_prefix):
         else:
             return Response(status=200)
 
+    # @bp.route("/<elem_id>", methods=["GET"])
+    # @server.restrict
+    # def get_status_of_id(elem_id):
+    #     """
+    #     Get position and status of the given element
+    #         :parameter id: moveable to get its status, 'Phi', 'Focus', 'PhiZ',
+    #         'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch',
+    #         'FrontLight','Sampx', 'Sampy'
+    #         :response Content-type: application/json, {motorname:
+    #             {'Status': status, 'position': position} }
+    #         :statuscode: 200: no error
+    #         :statuscode: 409: error
+    #     """
 
-    @bp.route("/<elem_id>", methods=["GET"])
-    @server.restrict
-    def get_status_of_id(elem_id):
-        """
-        Get position and status of the given element
-            :parameter id: moveable to get its status, 'Phi', 'Focus', 'PhiZ',
-            'PhiY', 'Zoom', 'BackLightSwitch','BackLight','FrontLightSwitch',
-            'FrontLight','Sampx', 'Sampy'
-            :response Content-type: application/json, {motorname:
-                {'Status': status, 'position': position} }
-            :statuscode: 200: no error
-            :statuscode: 409: error
-        """
-
-        try:
-            ret = sviewutils.get_status_of_id(elem_id)
-            resp = jsonify(ret)
-            resp.status_code = 200
-            return resp
-        except Exception:
-            return Response(status=409)
-
+    #     try:
+    #         ret = mxcube.sample_view.get_status_of_id(elem_id)
+    #         resp = jsonify(ret)
+    #         resp.status_code = 200
+    #         return resp
+    #     except Exception:
+    #         return Response(status=409)
 
     @bp.route("/centring/startauto", methods=["GET"])
     @server.require_control
@@ -355,9 +335,8 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        sviewutils.start_auto_centring()
+        mxcube.sample_view.start_auto_centring()
         return Response(status=200)
-
 
     @bp.route("/centring/start3click", methods=["PUT"])
     @server.require_control
@@ -370,7 +349,7 @@ def init_route(mxcube, server, url_prefix):
         """
 
         try:
-            data = sviewutils.start_manual_centring()
+            data = mxcube.sample_view.start_manual_centring()
         except Exception as ex:
             resp = (
                 "Could not move motor %s" % str(ex),
@@ -383,7 +362,6 @@ def init_route(mxcube, server, url_prefix):
 
         return resp
 
-
     @bp.route("/centring/abort", methods=["PUT"])
     @server.require_control
     @server.restrict
@@ -393,9 +371,8 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        sviewutils.abort_centring()
+        mxcube.sample_view.abort_centring()
         return Response(status=200)
-
 
     @bp.route("/centring/click", methods=["PUT"])
     @server.require_control
@@ -414,12 +391,11 @@ def init_route(mxcube, server, url_prefix):
         """
         pos = json.loads(request.data).get("clickPos", None)
 
-        data = sviewutils.centring_handle_click(pos["x"], pos["y"])
+        data = mxcube.sample_view.centring_handle_click(pos["x"], pos["y"])
 
         resp = jsonify(data)
         resp.status_code = 200
         return resp
-
 
     @bp.route("/centring/accept", methods=["PUT"])
     @server.require_control
@@ -431,15 +407,13 @@ def init_route(mxcube, server, url_prefix):
         mxcube.mxcubecore.beamline_ho.diffractometer.accept_centring()
         return Response(status=200)
 
-
     @bp.route("/centring/reject", methods=["PUT"])
     @server.require_control
     @server.restrict
     def reject_centring():
         """Reject the centring position."""
-        sviewutils.reject_centring()
+        mxcube.sample_view.reject_centring()
         return Response(status=200)
-
 
     @bp.route("/movetobeam", methods=["PUT"])
     @server.require_control
@@ -448,10 +422,9 @@ def init_route(mxcube, server, url_prefix):
         """Go to the beam position from the given (x, y) position."""
         pos = json.loads(request.data).get("clickPos")
 
-        sviewutils.move_to_beam(pos["x"], pos["y"])
+        mxcube.sample_view.move_to_beam(pos["x"], pos["y"])
 
         return Response(status=200)
-
 
     @bp.route("/centring/centring_method", methods=["PUT"])
     @server.require_control
@@ -466,8 +439,7 @@ def init_route(mxcube, server, url_prefix):
 
         """
         method = json.loads(request.data).get("centringMethod", None)
-        sviewutils.set_centring_method(method)
+        mxcube.sample_view.set_centring_method(method)
         return Response(status=200)
-
 
     return bp
