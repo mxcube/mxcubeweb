@@ -1228,7 +1228,7 @@ class _BeamlineAdapter:
         elements = []
 
         if escan:
-            elements = escan.getElements()
+            elements = escan.get_elements()
 
         return {"elements": elements}
 

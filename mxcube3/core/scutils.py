@@ -97,7 +97,7 @@ def get_sample_list():
 
 
 def get_sc_contents():
-    def _getElementStatus(e):
+    def _get_elementstatus(e):
         if e.is_leaf():
             if e.is_loaded():
                 return "Loaded"
@@ -119,7 +119,7 @@ def get_sc_contents():
     def _addElement(parent, element):
         new_element = {
             "name": element.get_address(),
-            "status": _getElementStatus(element),
+            "status": _get_elementstatus(element),
             "id": _getElementID(element),
             "selected": element.is_selected(),
         }

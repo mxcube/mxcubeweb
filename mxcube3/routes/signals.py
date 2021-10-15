@@ -694,7 +694,7 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(blcontrol.beamline).getObjectByRole("safety_shutter")
+    ho = BeamlineAdapter(blcontrol.beamline).get_object_by_role("safety_shutter")
     data = ho.dict_repr()
     try:
         socketio.emit("beamline_value_change", data, namespace="/hwr")

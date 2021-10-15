@@ -29,7 +29,7 @@ sys.path.insert(0, fname)
 
 from HardwareRepository import HardwareRepository as hwr
 
-hwr.addHardwareObjectsDirs([os.path.join(fname, "HardwareObjects")])
+hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
 
 import app as mxcube
 from config import Config
