@@ -21,6 +21,7 @@ from mxcube3 import blcontrol
 
 from flask import session
 
+VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
 def scantree(path, include):
     res = []
@@ -197,8 +198,15 @@ def strip_prefix(pt, prefix):
 
 
 def lims_existing_session(login_res):
-    return login_res.get("Session", {}).get("session", {}).get("sessionId", False) and True
+    res = False
 
+    try:
+        res = True
+        login_res.get("Session", {})[0].get("session", {}).get("sessionId", False) and True
+    except KeyError:
+        res = False
+
+    return res
 
 def lims_is_inhouse(login_res):
     return login_res.get("Session", {}).get("is_inhouse", False)
@@ -450,9 +458,7 @@ def synch_with_lims():
         sample_info["defaultPrefix"] = get_default_prefix(sample_info, False)
         sample_info["defaultSubDir"] = get_default_subdir(sample_info)
 
-        regexp = re.compile("^[a-zA-Z0-9:+_-]+$")
-
-        if not regexp.match(sample_info["sampleName"]):
+        if not VALID_SAMPLE_NAME_REGEXP.match(sample_info["sampleName"]):
             raise AttributeError("sample name contains an incorrect character")
 
         try:
