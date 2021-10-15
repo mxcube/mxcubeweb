@@ -24,7 +24,7 @@ Version 3 is developed as a web application and runs in any recent browser. The 
 :-------------------------:|:-------------------------:
 ![datacollection-view](https://user-images.githubusercontent.com/4331447/42496925-d983bf3e-8427-11e8-890e-898dda649101.png)|![samplegrid-view](https://user-images.githubusercontent.com/4331447/42496937-e8547b34-8427-11e8-9447-645e6d7f1dc5.png)
 
-The underlaying beamline control layer is implemented using Hardware Objects. MXCuBE3 uses [Hardware Objects 2.2](https://github.com/mxcube/HardwareRepository/tree/2.2) which is compatable with both the older Qt3 application and the new Web application. The original project is based on Qt (Qt3 initially but moving to Qt4), see the [main repository](https://github.com/mxcube/mxcube). 
+The underlaying beamline control layer is implemented using the library [mxcubecore](https://github.com/mxcube/mxcubecore) previously known as [HardwareRepository](https://github.com/mxcube/HardwareRepository). The earlier version upto 3.2.x of MXCuBE3 uses [HardwareRepository](https://github.com/mxcube/HardwareRepository) which is compatable with both the older [Qt4/5 application](https://github.com/mxcube/mxcubeqt).
 
 Latest information about the MXCuBE project can be found in the
 [project webpage](http://mxcube.github.io/mxcube/).
