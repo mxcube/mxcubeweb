@@ -5,6 +5,7 @@ import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } fr
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
+import config from 'guiConfig'; // eslint-disable-line import/no-unresolved
 
 // config exported by webpack at buildtime
 // eslint-disable-next-line import/no-unresolved
