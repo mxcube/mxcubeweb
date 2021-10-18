@@ -1,5 +1,6 @@
 import logging
 
+from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.models import HOModel, HOActuatorModel
 
 
@@ -25,8 +26,6 @@ class AdapterBase:
         return self._application.mxcubecore._get_adapter_id(ho)
 
     def _add_adapter(self, attr_name, ho, adapter_cls=None):
-        from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
-
         adapter_cls = (
             adapter_cls if adapter_cls else get_adapter_cls_from_hardware_object(ho)
         )

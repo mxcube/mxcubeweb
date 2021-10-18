@@ -20,8 +20,18 @@ from mxcubecore.HardwareObjects import queue_entry
 from mxcubecore.utils.conversion import make_table
 
 from mxcube3.logging_handler import MX3LoggingHandler
+
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.adapter.adapter_base import AdapterBase
+from mxcube3.core.component import import_component
+from mxcube3.core.lims import Lims
+from mxcube3.core.chat import Chat
+from mxcube3.core.samplechanger import SampleChanger
+from mxcube3.core.beamline import Beamline
+from mxcube3.core.sampleview import SampleView
+from mxcube3.core.queue import Queue
+from mxcube3.core.workflow import Workflow
+
 
 removeLoggingHandlers()
 
@@ -267,16 +277,6 @@ class MXCUBEApplication:
         # Install server-side UI state storage
         MXCUBEApplication.init_state_storage()
         MXCUBEApplication.init_logging(log_fpath)
-
-        from mxcube3.core.component import import_component
-
-        from mxcube3.core.lims import Lims
-        from mxcube3.core.chat import Chat
-        from mxcube3.core.samplechanger import SampleChanger
-        from mxcube3.core.beamline import Beamline
-        from mxcube3.core.sampleview import SampleView
-        from mxcube3.core.queue import Queue
-        from mxcube3.core.workflow import Workflow
 
         _UserManagerCls = import_component(cfg.app.usermanager, package="user")
 

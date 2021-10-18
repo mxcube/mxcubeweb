@@ -4,7 +4,7 @@ import json
 from mxcube3 import server
 from mxcube3 import mxcube
 
-from abstract.AbstractSampleChanger import SampleChangerState
+from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
