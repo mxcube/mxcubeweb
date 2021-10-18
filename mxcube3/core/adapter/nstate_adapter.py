@@ -1,4 +1,5 @@
 from enum import Enum
+import logging
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.models import NStateModel, HOActuatorValueChangeModel, StrValueModel

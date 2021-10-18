@@ -3,6 +3,8 @@ import functools
 import email.utils
 import smtplib
 import time
+import os
+import logging
 
 from email.mime.text import MIMEText
 from email.utils import make_msgid
@@ -11,6 +13,7 @@ import flask
 import flask_socketio
 
 from flask_security import current_user, login_required
+from mxcubecore import HardwareRepository as HWR
 
 
 def RateLimited(maxPerSecond):
@@ -131,7 +134,7 @@ def send_mail(_from, to, subject, content):
 
 
 def send_feedback(sender_data):
-    bl_name = mxcube.mxcubecore.beamline_ho.session.beamline_name
+    bl_name = HWR.beamline.session.beamline_name
     local_user = sender_data.get("LOGGED_IN_USER", "")
 
     if not bl_name:
@@ -146,18 +149,18 @@ def send_feedback(sender_data):
         except (KeyError):
             local_user = "unknown_user"
 
-    _from = mxcube.mxcubecore.beamline_ho.session.get_property("from_email", "")
+    _from = HWR.beamline.session.get_property("from_email", "")
 
     if not _from:
         _from = "%s@%s" % (
             local_user,
-            mxcube.mxcubecore.beamline_ho.session.get_property("email_extension", ""),
+            HWR.beamline.session.get_property("email_extension", ""),
         )
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
     to = (
-        mxcube.mxcubecore.beamline_ho.session.get_property("feedback_email", "")
+            HWR.beamline.session.get_property("feedback_email", "")
         + ",%s" % _sender
     )
     subject = "[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)

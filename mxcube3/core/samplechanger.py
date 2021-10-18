@@ -5,6 +5,7 @@ import gevent
 
 from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 from mxcubecore.HardwareObjects import queue_entry
+from mxcubecore import HardwareRepository as HWR
 
 from mxcube3.core.component import Component
 from mxcube3.core.queue import COLLECTED, UNCOLLECTED
@@ -371,7 +372,7 @@ class SampleChanger(Component):
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
 
-    self.app.mxcubecore.beamline_ho.sample_view.clear_all()
+    HWR.beamline.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")
     log = logging.getLogger("user_level_log")
 
@@ -384,7 +385,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         "dewarLocation": loc[0],
         "sampleBarcode": data_model.code,
         "sampleId": data_model.lims_id,
-        "sessionId": self.app.mxcubecore.beamline_ho.session.session_id,
+        "sessionId": HWR.beamline.session.session_id,
         "startTime": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
@@ -392,10 +393,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     # can move sample on beam (sample changer, plate holder, in future
     # also harvester)
     # TODO make sample_Changer_one, sample_changer_two
-    if self.app.mxcubecore.beamline_ho.diffractometer.in_plate_mode():
-        sample_mount_device = self.app.mxcubecore.beamline_ho.plate_manipulator
+    if HWR.beamline.diffractometer.in_plate_mode():
+        sample_mount_device = HWR.beamline.plate_manipulator
     else:
-        sample_mount_device = self.app.mxcubecore.beamline_ho.sample_changer
+        sample_mount_device = HWR.beamline.sample_changer
 
     if (
         sample_mount_device.get_loaded_sample()
@@ -407,15 +408,15 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         if sample_mount_device.__TYPE__ in ["Marvin", "CATS"]:
             element = "%d:%02d" % loc
             sample = {"location": element, "sampleID": element}
-            self.app.sample_changer.mount_sample_clean_up(sample)
+            HWR.beamline.sample_changer.mount_sample_clean_up(sample)
         elif sample_mount_device.__TYPE__ == "PlateManipulator":
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
-            self.app.sample_changer.mount_sample_clean_up(sample)
+            HWR.beamline.sample_changer.mount_sample_clean_up(sample)
         else:
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
 
             try:
-                res = self.app.sample_changer.mount_sample_clean_up(sample)
+                res = HWR.beamline.sample_changer.mount_sample_clean_up(sample)
             except RuntimeError:
                 res = False
 
@@ -436,7 +437,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         robot_action_dict["message"] = "Sample was not loaded"
         robot_action_dict["status"] = "ERROR"
 
-    self.app.mxcubecore.beamline_ho.lims.store_robot_action(robot_action_dict)
+    HWR.beamline.lims.store_robot_action(robot_action_dict)
 
     if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
@@ -445,11 +446,11 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     else:
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
-        dm = self.app.mxcubecore.beamline_ho.diffractometer
+        dm = HWR.beamline.diffractometer
         if dm is not None:
             try:
                 dm.connect("centringAccepted", centring_done_cb)
-                centring_method = self.app.CENTRING_METHOD
+                centring_method = CENTRING_METHOD
 
                 if centring_method == CENTRING_METHOD.MANUAL:
                     msg = "Manual centring used, waiting for" + " user to center sample"
@@ -462,6 +463,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                     if not dm.current_centring_procedure:
                         dm.start_centring_method(dm.C3D_MODE)
 
+                     # NBNB  BUG . self and app are not avialble here
                     if self.app.AUTO_MOUNT_SAMPLE:
                         msg = "Going to save centring automatically, please wait"
                     else:
