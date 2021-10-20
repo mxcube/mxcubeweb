@@ -13,18 +13,21 @@ class FlaskConfig:
 
 class AppConfig:
     VIDEO_FORMAT = "MPEG1"
+    adapter_properties = []
+    ui_properties = []
+    usermanager = {"class": "UserManager"}
 
 
 class Config:
-    FLASK = FlaskConfig()
-    APP = AppConfig()
+    flask = FlaskConfig()
+    app = AppConfig()
 
     def __init__(self, fpath=None):
         with open(fpath) as f:
             config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
 
             for key, value in config["server"].items():
-                setattr(self.FLASK, key, value)
+                setattr(self.flask, key, value)
 
             for key, value in config["mxcube"].items():
-                setattr(self.APP, key, value)
+                setattr(self.app, key, value)

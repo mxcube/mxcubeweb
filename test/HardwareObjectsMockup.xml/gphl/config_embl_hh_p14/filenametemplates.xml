@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+This file specifies how file names are constructed at the beamline and internally
+in the GPhL workflow for different types of acquisition, and how the two map.
+The file names are generated separately in
+MXCuBE and the workflow, so the two name patterns have to match.
+
+The mapping system is generic and powerful enough to handle almost anything -
+see Workflow documentation for further details if required.
+
+Each pattern specifies a series of elements with formatting, asd separators
+Element names are tied to the beamline or workflow and cannot be modified
+
+-->
+
+<!-- For the simplest case within MCXCuBE the only thing(s) to edit are the
+ width of the prefix, run_number, and image_number fields in the MXCuBE pattern,
+  and the corresponding image_number fields in the workflow patterns-->
+
+<xml-fragment
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tet="Types/TemplateElementTypes"
+    xmlns:c="SDCP/Core"
+>
+
+    <!-- Beamline file format.
+
+    Edit to represent the normal filename format at the beamline
+
+    -->
+
+    <!-- The filename template is <prefix>_<run_number>_<image_number>.<suffix>
+
+     MXCuBE parameters mad_prefix, wedge_prefix, and reference_image_prefix are not
+     used by GPhL, and so have no place in the template.
+     They are treated as part of the prefix.
+
+     GPhL will add characters to the prefix to distinguish different sweeps, e.g.
+     <prefix>_G2B1B is goniostat orientation 2, beam energy 1, inverse beam sweep B
+     The GPhL-generated prefix will be passed back to MXCuBE and used.
+     GPhL truncates the resulting prefix to fit within the MXCuBE length limits.
+
+      -->
+
+    <!-- The maxumum filename length is
+    prefixMaxWidth + runMaxWidth + imageNumberMaxWidth + 2 -->
+
+    <c:filenamePattern xsi:type="c:FilenamePattern">
+        <exid>Beamline</exid>
+
+        <element xsi:type="tet:Parameter">
+        <maxWidth>43</maxWidth>
+        <name>prefix</name>
+        <type>string</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <maxWidth>2</maxWidth>
+            <name>run</name>
+            <type>unsignedInt</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:ImageNumberMask">
+            <maxWidth>5</maxWidth>
+            <minWidth>
+                <width>5</width>
+                <leftJustify>false</leftJustify>
+                <padding>0</padding>
+            </minWidth>
+        </element>
+
+    </c:filenamePattern>
+
+    <!-- GPhL filename generation
+    The pattern names ('exid') are referenced in gphl-workflow.xml
+
+    Each pattern must have one filenamePatternMapping that maps it to the beamline pattern
+
+    In normal operation the *only* thing to be changed below this point
+    would be to update the imageNumberMask width values to match the
+    imageNumberMask width value in the beamline pattern.
+
+    Note that the workflow will truncate all fields to with within the maximum widths
+    of the Beamline pattern
+
+    -->
+
+    <!-- Standard non-interleaved single-orientation acquisition -->
+    <c:filenamePattern xsi:type="c:FilenamePattern">
+        <exid>generic</exid>
+
+        <element xsi:type="tet:Parameter">
+            <name>prefix</name>
+            <type>string</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>run_number</name>
+            <type>unsignedInt</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:ImageNumberMask">
+            <maxWidth>5</maxWidth>
+            <minWidth>
+                <width>5</width>
+                <leftJustify>false</leftJustify>
+                <padding>0</padding>
+            </minWidth>
+        </element>
+
+    </c:filenamePattern>
+
+    <!-- Non-inverse-beam multi-orientation filename pattern -->
+    <c:filenamePattern xsi:type="c:FilenamePattern">
+        <exid>interleaved</exid>
+
+        <element xsi:type="tet:Parameter">
+            <name>prefix</name>
+            <type>string</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>G</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>gonio_setting_index</name>
+            <type>unsignedInt</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>B</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>beam_setting_index</name>
+            <type>unsignedInt</type>
+        </element>
+        
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>run_number</name>
+            <type>unsignedInt</type>
+        </element>
+        
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:ImageNumberMask">
+            <maxWidth>5</maxWidth>
+            <minWidth>
+                <width>5</width>
+                <leftJustify>false</leftJustify>
+                <padding>0</padding>
+            </minWidth>
+        </element>
+
+    </c:filenamePattern>
+
+    <!-- Inverse beam interleaved multi-orientation filename pattern -->
+    <c:filenamePattern xsi:type="c:FilenamePattern">
+        <exid>ib_interleaved</exid>
+
+        <element xsi:type="tet:Parameter">
+            <name>prefix</name>
+            <type>string</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>G</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>gonio_setting_index</name>
+            <type>unsignedInt</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>B</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>beam_setting_index</name>
+            <type>unsignedInt</type>
+        </element>
+        
+        <element xsi:type="tet:Parameter">
+            <name>inverse_beam_component_sign</name>
+            <type>string</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>run_number</name>
+            <type>unsignedInt</type>
+        </element>
+        
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:ImageNumberMask">
+            <maxWidth>5</maxWidth>
+            <minWidth>
+                <width>5</width>
+                <leftJustify>false</leftJustify>
+                <padding>0</padding>
+            </minWidth>
+        </element>
+
+    </c:filenamePattern>
+
+    <!-- single-wavelength multi-orientation - used for diffractometer calibration -->
+    <c:filenamePattern xsi:type="c:FilenamePattern">
+        <exid>multiorientation</exid>
+
+        <element xsi:type="tet:Parameter">
+            <name>prefix</name>
+            <type>string</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>G</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <maxWidth>2</maxWidth>
+            <minWidth>
+            <width>2</width>
+               <leftJustify>false</leftJustify>
+               <padding>0</padding>
+            </minWidth>
+            <name>gonio_setting_index</name>
+            <type>unsignedInt</type>
+        </element>
+
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:Parameter">
+            <name>run_number</name>
+            <type>unsignedInt</type>
+        </element>
+        
+        <element xsi:type="tet:Separator">
+            <value>_</value>
+        </element>
+
+        <element xsi:type="tet:ImageNumberMask">
+            <maxWidth>5</maxWidth>
+            <minWidth>
+                <width>5</width>
+                <leftJustify>false</leftJustify>
+                <padding>0</padding>
+            </minWidth>
+        </element>
+
+    </c:filenamePattern>
+
+
+    <!-- MXCuBE-GPhL format mapping.
+
+     Does *not* need to be modified in normal operation
+
+     The mappings define how the GPhL file formats are converted to the Beamline format.
+     Note that the ranges are determined in terms of *fields*, starting at field 0,
+     So that e.g. range 7-8 contains a single field, the 8th field in the list.
+
+     -->
+
+    <c:filenamePatternMapping xsi:type="c:FilenamePatternMapping">
+
+        <entry>
+            <tgtName>prefix</tgtName>
+            <srcRange>0</srcRange>
+            <srcRange>6</srcRange>
+        </entry>
+
+        <entry>
+            <tgtName>run</tgtName>
+            <srcRange>7</srcRange>
+            <srcRange>8</srcRange>
+        </entry>
+
+        <mapsFrom>interleaved</mapsFrom>
+        <mapsTo>Beamline</mapsTo>
+
+    </c:filenamePatternMapping>
+
+    <c:filenamePatternMapping xsi:type="c:FilenamePatternMapping">
+
+        <entry>
+            <tgtName>prefix</tgtName>
+            <srcRange>0</srcRange>
+            <srcRange>7</srcRange>
+        </entry>
+
+        <entry>
+            <tgtName>run</tgtName>
+            <srcRange>8</srcRange>
+            <srcRange>9</srcRange>
+        </entry>
+
+        <mapsFrom>ib_interleaved</mapsFrom>
+        <mapsTo>Beamline</mapsTo>
+
+    </c:filenamePatternMapping>
+
+    <c:filenamePatternMapping xsi:type="c:FilenamePatternMapping">
+
+        <entry>
+            <tgtName>prefix</tgtName>
+            <srcRange>0</srcRange>
+            <srcRange>1</srcRange>
+        </entry>
+
+        <entry>
+            <tgtName>run</tgtName>
+            <srcRange>2</srcRange>
+            <srcRange>3</srcRange>
+        </entry>
+
+        <mapsFrom>generic</mapsFrom>
+        <mapsTo>Beamline</mapsTo>
+
+    </c:filenamePatternMapping>
+
+    <c:filenamePatternMapping xsi:type="c:FilenamePatternMapping">
+
+        <entry>
+            <tgtName>prefix</tgtName>
+            <srcRange>0</srcRange>
+            <srcRange>4</srcRange>
+        </entry>
+
+        <entry>
+            <tgtName>run</tgtName>
+            <srcRange>5</srcRange>
+            <srcRange>6</srcRange>
+        </entry>
+
+        <mapsFrom>multiorientation</mapsFrom>
+        <mapsTo>Beamline</mapsTo>
+
+    </c:filenamePatternMapping>
+    
+
+</xml-fragment>

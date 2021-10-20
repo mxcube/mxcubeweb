@@ -10,11 +10,11 @@ MXCUBE_ROOT = os.path.abspath(
 
 sys.path.insert(0, MXCUBE_ROOT)
 
-os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"] = os.path.join(
-    MXCUBE_ROOT, "HardwareRepository/HardwareObjects"
-)
+#os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"] = os.path.join(
+#    MXCUBE_ROOT, "HardwareRepository/HardwareObjects"
+#)
 
-sys.path.insert(0, os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"])
+#sys.path.insert(0, os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"])
 
 if __name__ == "__main__":
     db = redis.Redis()
@@ -25,6 +25,6 @@ if __name__ == "__main__":
         print("No Redis server is running, exiting")
         sys.exit(1)
 
-    from mxcube3 import server, socketio
+    from mxcube3 import main
 
-    socketio.run(server, host="0.0.0.0", port=8081)
+    main()

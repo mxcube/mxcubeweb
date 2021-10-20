@@ -1,149 +1,211 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import json
+# import json
 import sys
 import logging
 
-from flask import Response, jsonify, request, make_response
+# import types
 
-from mxcube3 import server
-from mxcube3 import blcontrol
-from mxcube3.core import beamlineutils
+import typing
+import spectree
 
+from flask import Blueprint, Response, jsonify, request, make_response
 
-@server.route("/mxcube/api/v0.1/beamline/", methods=["GET"])
-@server.restrict
-def beamline_get_all_attributes():
-    return jsonify(beamlineutils.beamline_get_all_attributes())
+from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
+from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>/abort", methods=["GET"])
-@server.require_control
-@server.restrict
-def beamline_abort_action(name):
-    """
-    Aborts an action in progress.
+def create_get_route(mxcube, server, bp, adapter, attr, name):
+    atype = adapter.adapter_type.lower()
+    func = getattr(adapter, attr)
+    get_type_hint = typing.get_type_hints(func)
 
-    :param str name: Owner / Actuator of the process/action to abort
+    if "return" in get_type_hint:
+        route_url = (
+            f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
+        )
+        endpoint = f"{atype}_get_{name}" if name else f"{atype}_get"
 
-    Replies with status code 200 on success and 520 on exceptions.
-    """
-    try:
-        beamlineutils.beamline_abort_action(name)
-    except Exception:
-        err = str(sys.exc_info()[1])
-        return make_response(err, 520)
-    else:
-        logging.getLogger("user_level_log").error("%s, aborted" % name)
-        return make_response("", 200)
+        @bp.route(route_url, endpoint=endpoint, methods=["GET"])
+        @server.restrict
+        @server.validate(
+            resp=spectree.Response(HTTP_200=get_type_hint["return"]), tags=["beamline"]
+        )
+        def get_func(name):
+            """
+            Retrieves value of attribute < name > 
+            Replies with status code 200 on success and 409 on exceptions.
+            """
+            return jsonify(
+                getattr(mxcube.mxcubecore.get_adapter(name.lower()), attr)().dict()
+            )
 
-
-@server.route("/mxcube/api/v0.1/beamline/<name>/run", methods=["POST"])
-@server.require_control
-@server.restrict
-def beamline_run_action(name):
-    """
-    Starts a beamline action; POST payload is a json-encoded object with
-    'parameters' as a list of parameters
-
-    :param str name: action to run
-
-    Replies with status code 200 on success and 520 on exceptions.
-    """
-    try:
-        params = request.get_json()["parameters"]
-    except Exception:
-        params = []
-
-    try:
-        beamlineutils.beamline_run_action(name, params)
-    except Exception as ex:
-        return make_response(str(ex), 520)
-    else:
-        return make_response("{}", 200)
+        get_func.__name__ = f"{atype}_get_value"
 
 
-@server.route("/mxcube/api/v0.1/beamline/<name>", methods=["PUT"])
-@server.require_control
-@server.restrict
-def beamline_set_attribute(name):
-    """
-    Tries to set < name > to value, replies with the following json:
+def create_set_route(mxcube, server, bp, adapter, attr, name):
+    atype = adapter.adapter_type.lower()
+    func = getattr(adapter, attr)
+    set_type_hint = typing.get_type_hints(func)
 
-        {name: < name > , value: < value > , msg: < msg > , state: < state >
+    if "value" in set_type_hint:
+        route_url = (
+            f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
+        )
+        endpoint = f"{atype}_set_{name}" if name else f"{atype}_set"
 
-    Where msg is an arbitrary msg to user, state is the internal state
-    of the set operation(for the moment, VALID, ABORTED, ERROR).
+        @bp.route(route_url, endpoint=endpoint, methods=["PUT"])
+        @server.require_control
+        @server.restrict
+        @server.validate(json=set_type_hint["value"], tags=["beamline"])
+        def set_func(name, _th=set_type_hint):
+            """
+            Tries to set < name > to value
+            Replies with status code 200 on success and 409 on exceptions.
+            """
+            rd = _th["value"].parse_raw(request.data)
+            getattr(mxcube.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
+            return make_response("{}", 200)
 
-    Replies with status code 200 on success and 520 on exceptions.
-    """
-    param = json.loads(request.data)
-    res, data = beamlineutils.beamline_set_attribute(name, param)
-
-    if res:
-        code = 200
-    else:
-        code = 520
-
-    response = jsonify(data)
-    response.code = code
-    return response
-
-
-@server.route("/mxcube/api/v0.1/beamline/<name>", methods=["GET"])
-@server.restrict
-def beamline_get_attribute(name):
-    """
-    Retrieves value of attribute < name > , replies with the following json:
-
-        {name: < name > , value: < value > , msg: < msg > , state: < state >
-
-    Where msg is an arbitrary msg to user, state is the internal state
-    of the get operation(for the moment, VALID, ABORTED, ERROR).
-
-    Replies with status code 200 on success and 520 on exceptions.
-    """
-    res, data = beamlineutils.beamline_get_attribute(name)
-
-    response = jsonify(data)
-    response.code = res
-    return response
+        set_func.__name__ = f"{atype}_set_value"
 
 
-@server.route("/mxcube/api/v0.1/beam/info", methods=["GET"])
-@server.restrict
-def get_beam_info():
-    """
-    Beam information: position, size, shape
-    return_data = {"position": , "shape": , "size_x": , "size_y": }
-    """
-    return jsonify(beamlineutils.get_beam_info())
+def add_adapter_routes(mxcube, server, bp):
+    adapter_type_list = []
+
+    for _id, a in mxcube.mxcubecore.adapter_dict.items():
+        adapter = a["adapter"]
+        atype = adapter.adapter_type.lower()
+
+        # Only add the route once for each type (class) of adapter
+        if adapter.adapter_type not in adapter_type_list:
+            adapter_type_list.append(adapter.adapter_type)
+
+            # All adapters, inheriting BaseAdapter have _set_value() to
+            # set the value of the underlyaing hardware object and
+            # data() to return a representation of the object, so we are
+            # mapping these by default
+            set_type_hint = typing.get_type_hints(adapter._set_value)
+            data_type_hint = typing.get_type_hints(adapter.data)
+
+            if "value" in set_type_hint:
+                create_set_route(mxcube, server, bp, adapter, "_set_value", "value")
+
+            if "return" in data_type_hint:
+                create_get_route(mxcube, server, bp, adapter, "data", None)
+
+            # For consitency add GET route for value even if its currently unused
+            if isinstance(adapter, ActuatorAdapterBase):
+                get_type_hint = typing.get_type_hints(adapter._get_value)
+
+                if "return" in get_type_hint:
+                    create_get_route(mxcube, server, bp, adapter, "_get_value", "value")
+
+            # Map all other functions starting with prefix get_ or set_ and
+            # flagged with the @export
+            for attr in dir(adapter):
+                func = getattr(adapter, attr)
+
+                if not hasattr(func, "_export"):
+                    continue
+
+                if attr.startswith("get"):
+                    create_get_route(
+                        mxcube, server, bp, adapter, attr, attr.replace("get_", "")
+                    )
+
+                if attr.startswith("set"):
+                    create_set_route(
+                        mxcube, server, bp, adapter, attr, attr.replace("set_", "")
+                    )
+        else:
+            continue
 
 
-@server.route("/mxcube/api/v0.1/beamline/datapath", methods=["GET"])
-@server.restrict
-def beamline_get_data_path():
-    """
-    Retrieve data directory from the session hwobj,
-    this is specific for each beamline.
-    """
-    data = blcontrol.beamline.session.get_base_image_directory()
-    return jsonify({"path": data})
+def init_route(mxcube, server, url_prefix):
+    bp = Blueprint("beamline", __name__, url_prefix=url_prefix)
 
+    add_adapter_routes(mxcube, server, bp)
 
-@server.route("/mxcube/api/v0.1/beamline/prepare_beamline", methods=["PUT"])
-@server.require_control
-@server.restrict
-def prepare_beamline_for_sample():
-    """
-    Prepare the beamline for a new sample.
-    """
-    try:
-        beamlineutils.prepare_beamline_for_sample()
-    except Exception:
-        msg = "Cannot prepare the Beamline for a new sample"
-        logging.getLogger("HWR").error(msg)
+    @bp.route("/", methods=["GET"])
+    @server.restrict
+    def beamline_get_all_attributes():
+        return jsonify(mxcube.beamline.beamline_get_all_attributes())
+
+    @bp.route("/<name>/abort", methods=["GET"])
+    @server.require_control
+    @server.restrict
+    def beamline_abort_action(name):
+        """
+        Aborts an action in progress.
+
+        :param str name: Owner / Actuator of the process/action to abort
+
+        Replies with status code 200 on success and 520 on exceptions.
+        """
+        try:
+            mxcube.beamline.beamline_abort_action(name)
+        except Exception:
+            err = str(sys.exc_info()[1])
+            return make_response(err, 520)
+        else:
+            logging.getLogger("user_level_log").error("%s, aborted" % name)
+            return make_response("", 200)
+
+    @bp.route("/<name>/run", methods=["POST"])
+    @server.require_control
+    @server.restrict
+    def beamline_run_action(name):
+        """
+        Starts a beamline action; POST payload is a json-encoded object with
+        'parameters' as a list of parameters
+
+        :param str name: action to run
+
+        Replies with status code 200 on success and 520 on exceptions.
+        """
+        try:
+            params = request.get_json()["parameters"]
+        except Exception:
+            params = []
+
+        try:
+            mxcube.beamline.beamline_run_action(name, params)
+        except Exception as ex:
+            return make_response(str(ex), 520)
+        else:
+            return make_response("{}", 200)
+
+    @bp.route("/beam/info", methods=["GET"])
+    @server.restrict
+    def get_beam_info():
+        """
+        Beam information: position, size, shape
+        return_data = {"position": , "shape": , "size_x": , "size_y": }
+        """
+        return jsonify(mxcube.beamline.get_beam_info())
+
+    @bp.route("/datapath", methods=["GET"])
+    @server.restrict
+    def beamline_get_data_path():
+        """
+        Retrieve data directory from the session hwobj,
+        this is specific for each beamline.
+        """
+        data = mxcube.mxcubecore.beamline_ho.session.get_base_image_directory()
+        return jsonify({"path": data})
+
+    @bp.route("/prepare_beamline", methods=["PUT"])
+    @server.require_control
+    @server.restrict
+    def prepare_beamline_for_sample():
+        """
+        Prepare the beamline for a new sample.
+        """
+        try:
+            mxcube.beamline.prepare_beamline_for_sample()
+        except Exception:
+            msg = "Cannot prepare the Beamline for a new sample"
+            logging.getLogger("HWR").error(msg)
+            return Response(status=200)
         return Response(status=200)
-    return Response(status=200)
+
+    return bp

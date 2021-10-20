@@ -16,5 +16,5 @@
 
   <object href="/queue" role="queue"/>
   <object href="/queue_model" role="queue_model"/>
-  <object href="/beamline_setup" role="beamline_setup"/>
+<!--  <object href="/beamline_setup" role="beamline_setup"/> -->
 </object>

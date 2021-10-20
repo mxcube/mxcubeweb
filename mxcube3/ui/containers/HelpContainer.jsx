@@ -27,14 +27,13 @@ export class HelpContainer extends React.Component {
   }
 
   localContactPanel() {
-    const loginRes = this.props.login.loginRes;
     let panel = null;
 
-    if (loginRes) {
-      const familyName = loginRes.local_contact.familyName || '';
-      const givenName = loginRes.local_contact.givenName || '';
-      const email = loginRes.local_contact.emailAddress || '';
-      const tel = loginRes.local_contact.phoneNumber || '';
+    if (this.props.login.user) {
+      const familyName = user.name || '';
+      const givenName = user.name || '';
+      const email = user.email || '';
+      const tel = '';
 
       panel = (
         <Panel header={

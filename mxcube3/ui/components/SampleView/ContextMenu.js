@@ -42,11 +42,20 @@ export default class ContextMenu extends React.Component {
 
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires.includes('point')) {
-        workflowTasks.point.push({
-          text: wf.wfname,
-          action: () => this.showModal('Workflow', wf),
-          key: `wf-${wf.wfname}`
-        });
+        if (wf.wfpath === 'Gphl') {
+          workflowTasks.point.push({
+            text: wf.wfname,
+            action: () => this.showModal('GphlWorkflow', wf),
+            key: `wf-${wf.wfname}`
+          });
+
+        } else {
+          workflowTasks.point.push({
+            text: wf.wfname,
+            action: () => this.showModal('Workflow', wf),
+            key: `wf-${wf.wfname}`
+          });
+        }
       } else if (wf.requires.includes('line')) {
         workflowTasks.line.push({
           text: wf.wfname,

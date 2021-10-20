@@ -30,8 +30,11 @@ dependencies:
   - redis-py
   - ffmpeg
   - pytango
+  - werkzeug=1.0.1
 
   - pip:
       - Flask-Session==0.3.2
       - git+https://github.com/marcus-oscarsson/python-v4l2.git
       - Louie-latest
+      - spectree
+      - git+https://github.com/mxcube/mxcubecore.git

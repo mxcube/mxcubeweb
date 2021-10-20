@@ -56,12 +56,16 @@ export function sendGetAllAttributes() {
   };
 }
 
+export function setBeamlineAttribute(name, value) {
+  return setBeamlineAttrAction({ name, value });
+}
 
 export function sendSetAttribute(name, value) {
-  const url = `mxcube/api/v0.1/beamline/${name}`;
-
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch(busyStateAction(name));
+    const state = getState();
+    const type = state.beamline.attributes[name].type.toLowerCase();
+    const url = `mxcube/api/v0.1/beamline/${type}/value/${name}`;
 
     fetch(url, {
       method: 'PUT',
@@ -71,12 +75,7 @@ export function sendSetAttribute(name, value) {
       },
       credentials: 'include',
       body: JSON.stringify({ name, value })
-    }).then(response => response.json())
-      .then((data) => {
-        dispatch(setBeamlineAttrAction(data));
-      }, () => {
-        throw new Error(`PUT ${url} failed`);
-      });
+    });
   };
 }
 
