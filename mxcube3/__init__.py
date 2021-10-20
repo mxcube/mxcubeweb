@@ -29,7 +29,7 @@ sys.path.insert(0, fname)
 
 from HardwareRepository import HardwareRepository as hwr
 
-hwr.addHardwareObjectsDirs([os.path.join(fname, "HardwareObjects")])
+hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
 
 import app as mxcube
 from config import Config
@@ -102,6 +102,8 @@ def kill_processes():
     # of non zero exit code, so we dont kill the processes
     # when running the tests
     if not server.testing:
+        pid_list = []
+
         with open("/tmp/mxcube.pid", "r") as f:
             pid_list = f.read().strip()
             pid_list = pid_list.split(" ")
@@ -137,7 +139,6 @@ socketio.init_app(server)
 # (because of the Reloader)
 
 if not server.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-    logging.getLogger("MX3.HWR").info("Starting MXCuBE3...")
     atexit.register(kill_processes)
 
     with open("/tmp/mxcube.pid", "w") as f:

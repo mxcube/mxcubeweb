@@ -49,10 +49,10 @@ def get_hwo(obj, name):
     ho = None
 
     try:
-        if hasattr(obj, "getHardwareObject"):
-            ho = obj.getHardwareObject(name)
+        if hasattr(obj, "get_hardware_object"):
+            ho = obj.get_hardware_object(name)
         else:
-            ho = obj.getObjectByRole(name)
+            ho = obj.get_object_by_role(name)
     except Exception:
         msg = "Could not initialize hardware object corresponding to %s \n"
         msg = msg % name.upper()
@@ -105,7 +105,7 @@ def init(hwr, hwdir):
 
     try:
         hwr.init_hardware_repository(path.abspath(path.expanduser(hwdir)))
-        _hwr = hwr.getHardwareRepository()
+        _hwr = hwr.get_hardware_repository()
         _hwr.connect()
         HWR = _hwr
     except Exception:

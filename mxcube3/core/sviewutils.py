@@ -170,8 +170,8 @@ def init_signals():
 
         setattr(dm, "_%s_pos_callback" % motor, pos_cb)
         setattr(dm, "_%s_state_callback" % motor, state_cb)
-        dm.connect(dm.getObjectByRole(motor), "valueChanged", pos_cb)
-        dm.connect(dm.getObjectByRole(motor), "stateChanged", state_cb)
+        dm.connect(dm.get_object_by_role(motor), "valueChanged", pos_cb)
+        dm.connect(dm.get_object_by_role(motor), "stateChanged", state_cb)
 
     for actuator_name in ["FrontLight", "BackLight"]:
 
@@ -196,9 +196,9 @@ def init_signals():
         setattr(dm, "_%s_light_pos_callback" % actuator_name, light_pos_cb)
 
         try:
-            motor = dm.getObjectByRole(actuator_name)
+            motor = dm.get_object_by_role(actuator_name)
             motor.connect(motor, "valueChanged", light_pos_cb)
-            motor_sw = dm.getObjectByRole(actuator_name + "Switch")
+            motor_sw = dm.get_object_by_role(actuator_name + "Switch")
             motor_sw.connect(motor_sw, "stateChanged", light_state_cb)
 
         except Exception as ex:
@@ -402,7 +402,7 @@ def rotate_to(sid):
 
 
 def move_zoom_motor(pos):
-    zoom_motor = blcontrol.beamline.diffractometer.getObjectByRole("zoom")
+    zoom_motor = blcontrol.beamline.diffractometer.get_object_by_role("zoom")
     if zoom_motor.get_state() != HardwareObjectState.READY:
         return (
             "motor is already moving",
@@ -420,27 +420,27 @@ def move_zoom_motor(pos):
 
 
 def back_light_on():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+    motor = blcontrol.beamline.diffractometer.get_object_by_role("BackLightSwitch")
     motor.set_value(motor.VALUES.IN)
 
 
 def back_light_off():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("BackLightSwitch")
+    motor = blcontrol.beamline.diffractometer.get_object_by_role("BackLightSwitch")
     motor.set_value(motor.VALUES.OUT)
 
 
 def front_light_on():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+    motor = blcontrol.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
     motor.set_value(motor.VALUES.IN)
 
 
 def front_light_off():
-    motor = blcontrol.beamline.diffractometer.getObjectByRole("FrontLightSwitch")
+    motor = blcontrol.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
     motor.set_value(motor.VALUES.OUT)
 
 
 def move_motor(motid, newpos):
-    motor = blcontrol.beamline.diffractometer.getObjectByRole(motid.lower())
+    motor = blcontrol.beamline.diffractometer.get_object_by_role(motid.lower())
 
     if newpos == "stop":
         motor.stop()
@@ -497,22 +497,17 @@ def start_manual_centring():
         :statuscode: 200: no error
         :statuscode: 409: error
     """
-
-    if blcontrol.beamline.diffractometer._ready():
-        if blcontrol.beamline.diffractometer.current_centring_procedure:
-            logging.getLogger("user_level_log").info("Aborting current centring ...")
-            blcontrol.beamline.diffractometer.cancel_centring_method(reject=True)
-
+    try:
         logging.getLogger("user_level_log").info("Centring using 3-click centring")
-
+        blcontrol.beamline.diffractometer.cancel_centring_method(reject=True)
         blcontrol.beamline.diffractometer.start_centring_method(
             blcontrol.beamline.diffractometer.MANUAL3CLICK_MODE
         )
 
         centring_reset_click_count()
-    else:
-        logging.getLogger("user_level_log").warning("Diffracomter is busy, cannot start centering")
-        raise RuntimeError("Diffracomter is busy, cannot start centering")
+    except Exception as ex:
+        logging.getLogger("user_level_log").exception("Cannot start centering")
+        raise RuntimeError("Cannot start centering")
 
     return {"clicksLeft": centring_clicks_left()}
 

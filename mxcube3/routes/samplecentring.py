@@ -316,7 +316,7 @@ def move_motor(motid, newpos):
     except Exception as ex:
         return (
             "Could not move motor %s" % str(ex),
-            409,
+            406,
             {"Content-Type": "application/json", "msg": str(ex)},
         )
     else:
@@ -374,7 +374,7 @@ def centre_3_click():
     except Exception as ex:
         resp = (
             "Could not move motor %s" % str(ex),
-            409,
+            406,
             {"Content-Type": "application/json", "msg": str(ex)},
         )
     else:

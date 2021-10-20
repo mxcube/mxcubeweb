@@ -24,7 +24,6 @@ def init_signals():
 
     """Initialize hwobj signals."""
     blcontrol.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
-    blcontrol.beamline.sample_changer.connect("statusChanged", signals.sc_state_changed)
     blcontrol.beamline.sample_changer.connect(
         "isCollisionSafe", signals.is_collision_safe
     )
@@ -47,6 +46,8 @@ def get_sample_list():
     samplesByCoords = {}
     order = []
     current_sample = {}
+
+    loaded_sample = blcontrol.beamline.sample_changer.get_loaded_sample()
 
     for s in samples_list:
         if not s.is_present():
@@ -78,8 +79,6 @@ def get_sample_list():
         samples[s.get_address()] = sample_data
         sc_contents_add(sample_data)
 
-        loaded_sample = blcontrol.beamline.sample_changer.get_loaded_sample()
-
         if loaded_sample and sample_data["location"] == loaded_sample.get_address():
             current_sample = sample_data
             qutils.queue_add_item([current_sample])
@@ -98,7 +97,7 @@ def get_sample_list():
 
 
 def get_sc_contents():
-    def _getElementStatus(e):
+    def _get_elementstatus(e):
         if e.is_leaf():
             if e.is_loaded():
                 return "Loaded"
@@ -120,7 +119,7 @@ def get_sc_contents():
     def _addElement(parent, element):
         new_element = {
             "name": element.get_address(),
-            "status": _getElementStatus(element),
+            "status": _get_elementstatus(element),
             "id": _getElementID(element),
             "selected": element.is_selected(),
         }

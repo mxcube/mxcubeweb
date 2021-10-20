@@ -969,7 +969,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     params = task_data["parameters"]
     acq.acquisition_parameters.set_from_dict(params)
 
-    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = blcontrol.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     acq.path_template.set_from_dict(params)
@@ -979,7 +979,7 @@ def set_dc_params(model, entry, task_data, sample_model):
     acq.path_template.num_files = params["num_images"]
     acq.path_template.suffix = ftype
     acq.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     limsutils.apply_template(params, sample_model, acq.path_template)
@@ -1030,9 +1030,10 @@ def set_dc_params(model, entry, task_data, sample_model):
     elif params.get("mesh", False):
         grid = blcontrol.beamline.sample_view.get_shape(params["shape"])
         acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-        mesh_center = blcontrol.beamline["default_mesh_values"].getProperty(
+        mesh_center = blcontrol.beamline.default_acquisition_parameters["mesh"].get(
             "mesh_center", "top-left"
         )
+
         if mesh_center == "top-left":
             acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
                 0
@@ -1075,7 +1076,7 @@ def set_wf_params(model, entry, task_data, sample_model):
     model.path_template.base_prefix = params["prefix"]
     model.path_template.num_files = 0
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     limsutils.apply_template(params, sample_model, model.path_template)
@@ -1161,12 +1162,12 @@ def set_xrf_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.xrf_spectrum.getProperty("file_suffix", "dat").strip()
+    ftype = blcontrol.beamline.xrf_spectrum.get_property("file_suffix", "dat").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     if params["prefix"]:
@@ -1194,7 +1195,12 @@ def set_xrf_params(model, entry, task_data, sample_model):
         model.path_template.run_number = get_run_number(model.path_template)
 
     # Set count time, and if any, other paramters
-    model.count_time = params.get("countTime", 0)
+    try:
+        default_count_time = float(get_default_xrf_parameters()["countTime"])
+    except (TypeError, ValueError):
+        # see if there should be a default count time or raise an error
+        default_count_time  = 2.
+    model.count_time = params.get("countTime", default_count_time)
 
     # MXCuBE3 specific shape attribute
     model.shape = params["shape"]
@@ -1213,12 +1219,12 @@ def set_energy_scan_params(model, entry, task_data, sample_model):
     """
     params = task_data["parameters"]
 
-    ftype = blcontrol.beamline.energy_scan.getProperty("file_suffix", "raw").strip()
+    ftype = blcontrol.beamline.energy_scan.get_property("file_suffix", "raw").strip()
 
     model.path_template.set_from_dict(params)
     model.path_template.suffix = ftype
     model.path_template.precision = "0" + str(
-        blcontrol.beamline.session["file_info"].getProperty("precision", 4)
+        blcontrol.beamline.session["file_info"].get_property("precision", 4)
     )
 
     if params["prefix"]:
@@ -1839,11 +1845,11 @@ def is_interleaved(node):
 
 
 def init_queue_settings():
-    mxcube.NUM_SNAPSHOTS = blcontrol.beamline.collect.getProperty("num_snapshots", 4)
-    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.beamline.collect.getProperty(
+    mxcube.NUM_SNAPSHOTS = blcontrol.beamline.collect.get_property("num_snapshots", 4)
+    mxcube.AUTO_MOUNT_SAMPLE = blcontrol.beamline.collect.get_property(
         "auto_mount_sample", False
     )
-    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.beamline.collect.getProperty(
+    mxcube.AUTO_ADD_DIFFPLAN = blcontrol.beamline.collect.get_property(
         "auto_add_diff_plan", False
     )
 
@@ -1906,24 +1912,23 @@ def queue_stop():
     if blcontrol.beamline.queue_manager._root_task is not None:
         blcontrol.beamline.queue_manager.stop()
     else:
-        qe = blcontrol.beamline.queue_manager.get_current_entry()
         # check if a node/task is executing and stop that one
-        if qe:
+        for qe in blcontrol.beamline.queue_manager.current_queue_entries:
             try:
+                qe.status = QUEUE_ENTRY_STATUS.FAILED
                 qe.stop()
             except Exception as ex:
-                logging.getLogger("MX3.HWR").exception("[QUEUE] Could not stop queue")
+                pass
+
             blcontrol.beamline.queue_manager.set_pause(False)
-            # the next two is to avoid repeating the task
-            # TODO: if you now run the queue it will be enabled and run
+            # The next two is to avoid repeating the task
             qe.get_data_model().set_executed(True)
             qe.get_data_model().set_enabled(False)
+            qe.status = QUEUE_ENTRY_STATUS.FAILED
             qe._execution_failed = True
 
-            blcontrol.beamline.queue_manager._is_stopped = True
-            signals.queue_execution_stopped()
-            signals.collect_oscillation_failed()
-
+        blcontrol.beamline.queue_manager._is_stopped = True
+        signals.queue_execution_stopped()
 
 def queue_pause():
     """
@@ -2119,7 +2124,7 @@ def get_default_dc_params():
     returns the default values for an acquisition (data collection).
     """
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters()
-    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = blcontrol.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
 
     return {
@@ -2159,7 +2164,7 @@ def get_default_char_acq_params():
     acq_parameters = blcontrol.beamline.get_default_acquisition_parameters(
         "characterisation"
     )
-    ftype = blcontrol.beamline.detector.getProperty("file_suffix")
+    ftype = blcontrol.beamline.detector.get_property("file_suffix")
     ftype = ftype if ftype else ".?"
     char_defaults = (
         blcontrol.beamline.characterisation.get_default_characterisation_parameters().as_dict()
@@ -2228,14 +2233,14 @@ def get_default_mesh_params():
 
 
 def get_default_xrf_parameters():
-    int_time = 5
+    int_time = 3.
 
     try:
-        int_time = blcontrol.beamline.xrf_spectrum.getProperty(
-            "default_integration_time", "5"
+        int_time = blcontrol.beamline.xrf_spectrum.get_property(
+            "default_integration_time", "3"
         ).strip()
         try:
-            int(int_time)
+            float(int_time)
         except ValueError:
             pass
 

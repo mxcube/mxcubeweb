@@ -32,9 +32,9 @@ def init_signals():
         logging.getLogger("MX3.HWR").exception(msg)
     try:
 
-        actions =  blcontrol.HWR.getHardwareObject("beamcmds")
+        actions =  blcontrol.HWR.get_hardware_object("beamcmds")
         if actions is not None:
-            cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
+            cmds = blcontrol.HWR.get_hardware_object("beamcmds").get_commands()
             for cmd in cmds:
                 cmd.connect(
                     "commandBeginWaitReply", signals.beamline_action_start
@@ -99,7 +99,7 @@ def diffractometer_init_signals():
     from mxcube3.routes import signals
 
     diffractometer = blcontrol.beamline.diffractometer
-    diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
+    diffractometer.connect("valueChanged", signals.diffractometer_phase_changed)
 
 
 def get_aperture():
@@ -124,7 +124,7 @@ def get_beam_definer():
     if hasattr(beam_info, "beam_definer") and beam_info.beam_definer:
         bd = beam_info.beam_definer
     else:
-        bd = beam_info.getObjectByRole("aperture")
+        bd = beam_info.get_object_by_role("aperture")
 
     return bd
 
@@ -185,17 +185,17 @@ def beamline_get_all_attributes():
     actions = list()
 
     try:
-        cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
+        cmds = blcontrol.HWR.get_hardware_object("beamcmds").get_commands()
     except Exception:
         cmds = []
     for cmd in cmds:
         args = []
-        for arg in cmd.getArguments():
+        for arg in cmd.get_arguments():
             argname = arg[0]
             argtype = arg[1]
             args.append({"name": argname, "type": argtype})
             if argtype == "combo":
-                args[-1]["items"] = cmd.getComboArgumentItems(argname)
+                args[-1]["items"] = cmd.get_combo_argument_items(argname)
 
         actions.append(
             {
@@ -232,7 +232,7 @@ def beamline_abort_action(name):
 
     """
     try:
-        cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
+        cmds = blcontrol.HWR.get_hardware_object("beamcmds").get_commands()
     except Exception:
         cmds = []
 
@@ -254,7 +254,7 @@ def beamline_run_action(name, params):
     : param str name: action to run
     """
     try:
-        cmds = blcontrol.HWR.getHardwareObject("beamcmds").get_commands()
+        cmds = blcontrol.HWR.get_hardware_object("beamcmds").get_commands()
     except Exception:
         cmds = []
 
@@ -365,7 +365,7 @@ def set_aperture(pos):
     beam = blcontrol.beamline.beam
     msg = "Changing beam size to: %s" % pos
     logging.getLogger("MX3.HWR").info(msg)
-    beam.set_value(int(pos))
+    beam.set_value(pos)
 
 
 def diffractometer_get_info():
@@ -390,7 +390,7 @@ def diffractometer_get_info():
 
 
 def get_detector_info():
-    filetype = blcontrol.beamline.detector.getProperty("file_suffix")
+    filetype = blcontrol.beamline.detector.get_property("file_suffix")
 
     if filetype is None:
         filetype = "cbf"

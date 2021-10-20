@@ -24,11 +24,9 @@ export default class MXNavbar extends React.Component {
     return (
       <Navbar inverse fixedTop fluid>
         <Navbar.Header>
-          <LinkContainer to="/remoteaccess">
-            <Navbar.Brand>
-              MXCuBE3 <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
-            </Navbar.Brand>
-          </LinkContainer>
+          <Navbar.Brand>
+            MXCuBE3 <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
+          </Navbar.Brand>
         </Navbar.Header>
         <Nav style={{ marginLeft: '20em' }}>
           <LinkContainer to="/samplegrid">

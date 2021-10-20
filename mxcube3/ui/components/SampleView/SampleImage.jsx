@@ -10,6 +10,10 @@ import GridForm from './GridForm';
 // eslint-disable-next-line import/no-unresolved
 import config from 'guiConfig';
 
+// config exported by webpack at buildtime
+// eslint-disable-next-line import/no-unresolved
+import config from 'guiConfig';
+
 const jsmpeg = require('./jsmpeg.min.js');
 
 import 'fabric';

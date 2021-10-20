@@ -6,6 +6,7 @@ import { doSignOut } from '../actions/login';
 class MXNavbarContainer extends React.Component {
   render() {
     return (
+
       <MXNavbar
         userInfo={this.props.userInfo}
         selectedProposal={this.props.selectedProposal}

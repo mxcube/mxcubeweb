@@ -20,7 +20,6 @@ import { showTaskForm } from '../actions/taskForm';
 
 import { showDialog } from '../actions/general';
 
-
 import { SampleGridItem,
   SAMPLE_ITEM_WIDTH,
   SAMPLE_ITEM_HEIGHT,

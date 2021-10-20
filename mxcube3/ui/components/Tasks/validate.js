@@ -17,7 +17,14 @@ const validate = (values, props) => {
 
   /* eslint-disable no-useless-escape */
   const validPath = props.path.match(/^[-\w\-\/\_\{\}]+$/);
-  const validFname = props.filename.match(/^[-\w\-\#\_\{\}\[\]]+$/);
+  let validFname = false;
+
+  if (props.filename === undefined) {
+    validFname = true;
+  } else {
+    validFname = props.filename.match(/^[-\w\-\#\_\{\}\[\]]+$/);
+  }
+
   /* eslint-enable no-useless-escape */
 
   if (!validFname) {
