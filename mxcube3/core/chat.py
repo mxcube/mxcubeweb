@@ -12,9 +12,9 @@ class Chat(Component):
         self.MESSAGES = []
 
     def db_add_message(self, user, message):
-        m = self.app.server.user_datastore.create_message(message=message)
-        self.app.server.user_datastore.add_message_to_user(user, m)
-        self.app.server.user_datastore.commit()
+        m = self.server.user_datastore.create_message(message=message)
+        self.server.user_datastore.add_message_to_user(user, m)
+        self.server.user_datastore.commit()
 
     def append_message(self, message, sid):
         user = current_user.name
@@ -29,13 +29,12 @@ class Chat(Component):
 
         self.MESSAGES.append(data)
         self.db_add_message(current_user, message)
-        # NBNB TODO. This fixes bug. But why have bloth self.server and self.app.server??
-        self.app.server.emit("ra_chat_message", data, namespace="/hwr")
+        self.server.emit("ra_chat_message", data, namespace="/hwr")
 
     def get_all_messages(self):
         message_list = []
 
-        for m in self.app.server.user_datastore.get_all_messages():
+        for m in self.server.user_datastore.get_all_messages():
             user = m.users.all()[0]
 
             message_list.append(

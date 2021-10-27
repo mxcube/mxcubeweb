@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint, jsonify
 
 
-def init_route(mxcube, server, url_prefix):
+def init_route(app, server, url_prefix):
     bp = Blueprint("main", __name__, url_prefix=url_prefix)
 
     @server.route("/samplegrid")
@@ -25,6 +25,6 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/uiproperties")
     @server.restrict
     def get_ui_properties():
-        return jsonify(mxcube.get_ui_properties())
+        return jsonify(app.get_ui_properties())
 
     return bp

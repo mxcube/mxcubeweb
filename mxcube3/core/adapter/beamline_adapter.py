@@ -23,10 +23,11 @@ class _BeamlineAdapter:
     Adapter between Beamline route and Beamline hardware object.
     """
 
-    def __init__(self, beamline_hwobj, app):
+    def __init__(self, beamline_hwobj, app, server):
         self._application = app
         self._bl = beamline_hwobj
         self.adapter_dict = {}
+        self._server = server
 
         workflow = self._bl.workflow
 

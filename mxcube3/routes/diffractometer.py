@@ -2,8 +2,10 @@ import json
 
 from flask import Blueprint, Response, jsonify, request
 
+from mxcubecore import HardwareRepository as HWR
 
-def init_route(mxcube, server, url_prefix):
+
+def init_route(app, server, url_prefix):
     bp = Blueprint("diffractometer", __name__, url_prefix=url_prefix)
 
     @bp.route("/phase", methods=["GET"])
@@ -19,7 +21,7 @@ def init_route(mxcube, server, url_prefix):
             :statuscode: 409: error
         """
         data = {
-            "current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_current_phase()
+            "current_phase": HWR.beamline.diffractometer.get_current_phase()
         }
         resp = jsonify(data)
         resp.status_code = 200
@@ -38,7 +40,7 @@ def init_route(mxcube, server, url_prefix):
         """
         resp = jsonify(
             {
-                "current_phase": mxcube.mxcubecore.beamline_ho.diffractometer.get_phase_list()
+                "current_phase": HWR.beamline.diffractometer.get_phase_list()
             }
         )
         resp.status_code = 200
@@ -59,7 +61,7 @@ def init_route(mxcube, server, url_prefix):
         params = request.data
         params = json.loads(params)
         phase = params["phase"]
-        mxcube.beamline.diffractometer_set_phase(phase)
+        app.beamline.diffractometer_set_phase(phase)
         return Response(status=200)
 
     @bp.route("/platemode", methods=["GET"])
@@ -70,7 +72,7 @@ def init_route(mxcube, server, url_prefix):
         data = {"md_in_plate_mode": } True /False
         return_data: data plus error code 200/409
         """
-        md_in_plate_mode = mxcube.mxcubecore.beamline_ho.diffractometer.in_plate_mode()
+        md_in_plate_mode = HWR.beamline.diffractometer.in_plate_mode()
         resp = jsonify({"md_in_plate_mode": md_in_plate_mode})
         resp.status_code = 200
         return resp
@@ -98,7 +100,7 @@ def init_route(mxcube, server, url_prefix):
         params = request.data
         params = json.loads(params)
         new_pos = params["diameter"]
-        mxcube.beamline.set_aperture(new_pos)
+        app.beamline.set_aperture(new_pos)
 
         return Response(status=200)
 
@@ -107,7 +109,7 @@ def init_route(mxcube, server, url_prefix):
     def get_aperture():
         ret = {}
 
-        aperture_list, current_aperture = mxcube.beamline.get_aperture()
+        aperture_list, current_aperture = app.beamline.get_aperture()
 
         ret.update({"apertureList": aperture_list, "currentAperture": current_aperture})
 
@@ -118,7 +120,7 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/info", methods=["GET"])
     @server.restrict
     def get_diffractometer_info():
-        resp = jsonify(mxcube.beamline.diffractometer_get_info())
+        resp = jsonify(app.beamline.diffractometer_get_info())
         resp.status_code = 200
         return resp
 

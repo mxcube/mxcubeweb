@@ -6,18 +6,19 @@ import logging
 from flask import Blueprint, jsonify, Response, send_file, request, render_template
 
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
+from mxcubecore import HardwareRepository as HWR
 
 from . import signals
 
 
-def init_route(mxcube, server, url_prefix):
+def init_route(app, server, url_prefix):
     bp = Blueprint("lims", __name__, url_prefix=url_prefix)
 
     @bp.route("/synch_samples", methods=["GET"])
     @server.restrict
     def proposal_samples():
         try:
-            res = jsonify(mxcube.lims.synch_with_lims())
+            res = jsonify(app.lims.synch_with_lims())
         except Exception as ex:
             res = (
                 "Could not synchronize with LIMS",
@@ -30,25 +31,25 @@ def init_route(mxcube, server, url_prefix):
     @bp.route("/dc/thumbnail/<image_id>", methods=["GET"])
     @server.restrict
     def get_dc_thumbnail(image_id):
-        fname, data = mxcube.lims.get_dc_thumbnail(image_id)
+        fname, data = app.lims.get_dc_thumbnail(image_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
     @bp.route("/dc/image/<image_id>", methods=["GET"])
     @server.restrict
     def get_dc_image(image_id):
-        fname, data = mxcube.lims.get_dc_image(image_id)
+        fname, data = app.lims.get_dc_image(image_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
     @bp.route("/quality_indicator_plot/<dc_id>", methods=["GET"])
     @server.restrict
     def get_quality_indicator_plot(dc_id):
-        fname, data = mxcube.lims.get_quality_indicator_plot(dc_id)
+        fname, data = app.lims.get_quality_indicator_plot(dc_id)
         return send_file(data, attachment_filename=fname, as_attachment=True)
 
     @bp.route("/dc/<dc_id>", methods=["GET"])
     @server.restrict
     def get_dc(dc_id):
-        data = mxcube.mxcubecore.beamline_ho.lims_rest.get_dc(dc_id)
+        data = HWR.beamline.lims_rest.get_dc(dc_id)
         return jsonify(data)
 
     @bp.route("/proposal", methods=["POST"])
@@ -58,7 +59,7 @@ def init_route(mxcube, server, url_prefix):
         Set the selected proposal.
         """
         proposal_number = request.get_json().get("proposal_number", None)
-        mxcube.lims.select_proposal(proposal_number)
+        app.lims.select_proposal(proposal_number)
 
         return Response(status=200)
 
@@ -68,8 +69,8 @@ def init_route(mxcube, server, url_prefix):
         """
         Return the currently selected proposal. (The proposal list is part of the login_res)
         """
-        proposal_info = mxcube.lims.get_proposal_info(
-            mxcube.mxcubecore.beamline_ho.session.proposal_code
+        proposal_info = app.lims.get_proposal_info(
+            HWR.beamline.session.proposal_code
         )
 
         return jsonify({"Proposal": proposal_info})
@@ -97,8 +98,8 @@ def init_route(mxcube, server, url_prefix):
         r = jsonify({"result": ""})
 
         if qid:
-            model, entry = mxcube.queue.get_entry(qid)
-            data = mxcube.queue.queue_to_dict([model], True)
+            model, entry = app.queue.get_entry(qid)
+            data = app.queue.queue_to_dict([model], True)
             signals.update_task_result(entry)
 
             if isinstance(model, qmo.DataCollection):

@@ -2,25 +2,27 @@ import logging
 
 from flask import Blueprint, Response
 
+from mxcubecore import HardwareRepository as HWR
+
 from mxcube3.routes import signals
 from mxcube3.core.util.convertutils import to_camel
 
 
-def init_route(mxcube, server, url_prefix):
+def init_route(app, server, url_prefix):
     bp = Blueprint("mockup", __name__, url_prefix=url_prefix)
 
     @bp.route("/isready", methods=["GET"])
     @server.restrict
     def mockup_ready():
         logging.getLogger("HWR").info("[Routes] Called mockup ready")
-        print((mxcube.mxcubecore.resolution.get_value()))
-        return str(mxcube.resolution.isReady())
+        print((app.mxcubecore.resolution.get_value()))
+        return str(app.resolution.isReady())
 
     @bp.route("/newres/<int:newres>", methods=["PUT"])
     @server.restrict
     def mockup_newres(newres):
         logging.getLogger("HWR").info("[Routes] Called mockup setting new resolution")
-        return mxcube.mockups.setResolution(newres)
+        return app.mockups.setResolution(newres)
 
     @bp.route("/diff_plan/<sid>", methods=["GET"])
     @server.restrict
@@ -29,9 +31,9 @@ def init_route(mxcube, server, url_prefix):
         """
 
         acq_parameters = (
-            mxcube.mxcubecore.beamline_ho.get_default_acquisition_parameters()
+            HWR.beamline.get_default_acquisition_parameters()
         )
-        ftype = mxcube.mxcubecore.beamline_ho.detector_hwobj.get_property("file_suffix")
+        ftype = HWR.beamline.detector_hwobj.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
 
         task = {
@@ -64,12 +66,12 @@ def init_route(mxcube, server, url_prefix):
             "checked": {True},
         }
 
-        sample_model, sample_entry = mxcube.queue.get_entry(sid)
-        dc_model, dc_entry = mxcube.queue._create_dc(task)
-        mxcube.queue.set_dc_params(dc_model, dc_entry, task, sample_model)
+        sample_model, sample_entry = app.queue.get_entry(sid)
+        dc_model, dc_entry = app.queue._create_dc(task)
+        app.queue.set_dc_params(dc_model, dc_entry, task, sample_model)
         pt = dc_model.acquisitions[0].path_template
 
-        if mxcube.mxcubecore.beamline_ho.queue_model.check_for_path_collisions(pt):
+        if HWR.beamline.queue_model.check_for_path_collisions(pt):
             msg = "[QUEUE] data collection could not be added to sample: "
             msg += "path collision"
             raise Exception(msg)
@@ -77,10 +79,10 @@ def init_route(mxcube, server, url_prefix):
         dc_model.set_origin(3)
         dc_model.set_enabled(False)
 
-        char, char_entry = mxcube.queue.get_entry(3)
+        char, char_entry = app.queue.get_entry(3)
 
         char.diffraction_plan.append([dc_model])
-        mxcube.mxcubecore.beamline_ho.queue_model.emit(
+        HWR.beamline.queue_model.emit(
             "diff_plan_available", (char, [dc_model])
         )
 
@@ -88,7 +90,7 @@ def init_route(mxcube, server, url_prefix):
 
     @bp.route("/shape_mock_result/<sid>", methods=["GET"])
     def shape_mock_result(sid):
-        shape = mxcube.mxcubecore.beamline_ho.sample_view.camera.get_shape(sid)
+        shape = HWR.beamline.sample_view.camera.get_shape(sid)
         hm = {}
         cm = {}
 
@@ -119,7 +121,7 @@ def init_route(mxcube, server, url_prefix):
 
         res = {"heatmap": hm, "crystalmap": cm}
 
-        mxcube.mxcubecore.beamline_ho.sample_view.camera.set_grid_data(sid, res)
+        HWR.beamline.sample_view.camera.set_grid_data(sid, res)
         signals.grid_result_available(to_camel(shape.as_dict()))
 
         return Response(status=200)

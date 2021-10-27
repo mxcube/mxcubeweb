@@ -12,7 +12,7 @@ def deny_access(msg):
     return resp
 
 
-def init_route(mxcube, server, url_prefix):
+def init_route(app, server, url_prefix):
     bp = Blueprint("login", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["POST"])
@@ -39,7 +39,7 @@ def init_route(mxcube, server, url_prefix):
         password = params.get("password", "")
 
         try:
-            res = jsonify(mxcube.usermanager.login(login_id, password))
+            res = jsonify(app.usermanager.login(login_id, password))
         except Exception as ex:
             msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
             logging.getLogger("MX3.HWR").info(msg)
@@ -53,12 +53,12 @@ def init_route(mxcube, server, url_prefix):
         """
         Signout from Mxcube3 and reset the session
         """
-        mxcube.usermanager.signout()
+        app.usermanager.signout()
 
         return make_response("", 200)
 
     @bp.route("/login_info", methods=["GET"])
-    def loginInfo():
+    def login_info():
         """
         Retrieve session/login info
 
@@ -78,9 +78,7 @@ def init_route(mxcube, server, url_prefix):
         200: On success
         409: Error, could not log in
         """
-        # login_info = session.get("loginInfo")
-
-        user, res = mxcube.usermanager.login_info()
+        user, res = app.usermanager.login_info()
 
         # Redirect the user to login page if for some reason logged out
         # i.e. server restart
