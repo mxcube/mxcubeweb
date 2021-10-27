@@ -5,6 +5,7 @@ from flask import Blueprint, Response, jsonify, request
 
 from mxcubecore import HardwareRepository as HWR
 
+
 def init_route(app, server, url_prefix):
     bp = Blueprint("sampleview", __name__, url_prefix=url_prefix)
 
@@ -18,9 +19,7 @@ def init_route(app, server, url_prefix):
         if app.CONFIG.app.VIDEO_FORMAT == "MPEG1":
             result = Response(status=200)
         else:
-            frame = app.sample_view.stream_video(
-                HWR.beamline.sample_view.camera
-            )
+            frame = app.sample_view.stream_video(HWR.beamline.sample_view.camera)
             result = Response(
                 frame, mimetype='multipart/x-mixed-replace; boundary="!>"'
             )

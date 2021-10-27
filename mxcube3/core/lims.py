@@ -199,9 +199,7 @@ class Lims(Component):
         ERROR_CODE = dict({"status": {"code": "0"}})
 
         try:
-            HWR.beamline.lims.lims_rest.authenticate(
-                loginID, password
-            )
+            HWR.beamline.lims.lims_rest.authenticate(loginID, password)
         except BaseException:
             logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
             return ERROR_CODE
@@ -217,9 +215,7 @@ class Lims(Component):
                 return ERROR_CODE
 
             try:
-                proposals = HWR.beamline.lims.get_proposals_by_user(
-                    loginID
-                )
+                proposals = HWR.beamline.lims.get_proposals_by_user(loginID)
 
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Retrieving proposal list for user: %s, proposals: %s"
@@ -233,17 +229,13 @@ class Lims(Component):
                 return ERROR_CODE
 
             for prop in session["proposal_list"]:
-                todays_session = HWR.beamline.lims.get_todays_session(
-                    prop
-                )
+                todays_session = HWR.beamline.lims.get_todays_session(prop)
                 prop["Session"] = [todays_session["session"]]
 
             if hasattr(
                 HWR.beamline.session, "commissioning_fake_proposal"
             ) and HWR.beamline.session.is_inhouse(loginID, None):
-                dummy = (
-                    HWR.beamline.session.commissioning_fake_proposal
-                )
+                dummy = HWR.beamline.session.commissioning_fake_proposal
                 session["proposal_list"].append(dummy)
 
             login_res["proposalList"] = session["proposal_list"]
@@ -272,9 +264,7 @@ class Lims(Component):
 
     def create_lims_session(self, login_res):
         for prop in session["proposal_list"]:
-            todays_session = HWR.beamline.lims.get_todays_session(
-                prop
-            )
+            todays_session = HWR.beamline.lims.get_todays_session(prop)
             prop["Session"] = [todays_session["session"]]
 
         login_res["proposalList"] = session["proposal_list"]
@@ -309,27 +299,25 @@ class Lims(Component):
             and "Commissioning" in proposal_info["Proposal"]["title"]
         ):
             if hasattr(HWR.beamline.session, "set_in_commissioning"):
-                HWR.beamline.session.set_in_commissioning(
-                    proposal_info
-                )
+                HWR.beamline.session.set_in_commissioning(proposal_info)
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Commissioning proposal flag set."
                 )
 
         if proposal_info:
-            HWR.beamline.session.proposal_code = proposal_info.get(
-                "Proposal"
-            ).get("code", "")
-            HWR.beamline.session.proposal_number = proposal_info.get(
-                "Proposal"
-            ).get("number", "")
-            HWR.beamline.session.session_id = proposal_info.get(
-                "Session"
-            )[0].get("sessionId")
+            HWR.beamline.session.proposal_code = proposal_info.get("Proposal").get(
+                "code", ""
+            )
+            HWR.beamline.session.proposal_number = proposal_info.get("Proposal").get(
+                "number", ""
+            )
+            HWR.beamline.session.session_id = proposal_info.get("Session")[0].get(
+                "sessionId"
+            )
 
-            HWR.beamline.session.proposal_id = proposal_info.get(
-                "Session"
-            )[0].get("proposalId")
+            HWR.beamline.session.proposal_id = proposal_info.get("Session")[0].get(
+                "proposalId"
+            )
 
             session["proposal"] = proposal_info
 
@@ -338,23 +326,17 @@ class Lims(Component):
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Creating data directories for proposal %s" % proposal
                     )
-                    HWR.beamline.session.prepare_directories(
-                        proposal_info
-                    )
+                    HWR.beamline.session.prepare_directories(proposal_info)
                 except BaseException:
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]
                     )
 
             # Get all the files in the root data dir for this user
-            root_path = (
-                HWR.beamline.session.get_base_image_directory()
-            )
+            root_path = HWR.beamline.session.get_base_image_directory()
 
             if not self.app.INITIAL_FILE_LIST and os.path.isdir(root_path):
-                ftype = HWR.beamline.detector.get_property(
-                    "file_suffix"
-                )
+                ftype = HWR.beamline.detector.get_property("file_suffix")
                 self.app.INITIAL_FILE_LIST = fsutils.scantree(root_path, [ftype])
 
             logging.getLogger("user_log").info("[LIMS] Proposal selected.")
@@ -374,9 +356,7 @@ class Lims(Component):
         else:
             sample = sample_data
 
-        return HWR.beamline.session.get_default_prefix(
-            sample, generic_name
-        )
+        return HWR.beamline.session.get_default_prefix(sample, generic_name)
 
     def get_default_subdir(self, sample_data):
         subdir = ""
@@ -404,25 +384,19 @@ class Lims(Component):
         return link
 
     def get_dc_thumbnail(self, image_id):
-        fname, data = HWR.beamline.lims.lims_rest.get_dc_thumbnail(
-            image_id
-        )
+        fname, data = HWR.beamline.lims.lims_rest.get_dc_thumbnail(image_id)
         data = io.BytesIO(data)
 
         return fname, data
 
     def get_dc_image(self, image_id):
-        fname, data = HWR.beamline.lims.lims_rest.get_dc_image(
-            image_id
-        )
+        fname, data = HWR.beamline.lims.lims_rest.get_dc_image(image_id)
         data = io.BytesIO(data)
 
         return fname, data
 
     def get_quality_indicator_plot(self, dc_id):
-        data = HWR.beamline.lims.lims_rest.get_quality_indicator_plot(
-            dc_id
-        )
+        data = HWR.beamline.lims.lims_rest.get_quality_indicator_plot(dc_id)
         data = io.BytesIO(data)
 
         return "qind", data
@@ -432,17 +406,13 @@ class Lims(Component):
 
         # session_id is not used, so we can pass None as second argument to
         # 'db_connection.get_samples'
-        lims_samples = HWR.beamline.lims.get_samples(
-            proposal_id, None
-        )
+        lims_samples = HWR.beamline.lims.get_samples(proposal_id, None)
 
         samples_info_list = lims_samples
 
         for sample_info in samples_info_list:
             sample_info["limsID"] = sample_info.pop("sampleId")
-            sample_info[
-                "limsLink"
-            ] = HWR.beamline.lims.lims_rest.sample_link()
+            sample_info["limsLink"] = HWR.beamline.lims.lims_rest.sample_link()
             sample_info["defaultPrefix"] = self.get_default_prefix(sample_info)
             sample_info["defaultSubDir"] = self.get_default_subdir(sample_info)
 
@@ -454,10 +424,11 @@ class Lims(Component):
             except (TypeError, ValueError, KeyError):
                 continue
             else:
-                if (
-                    HWR.beamline.sample_changer.__class__.__TYPE__
-                    in ["HCD", "FlexHCD", "RoboDiff",]
-                ):
+                if HWR.beamline.sample_changer.__class__.__TYPE__ in [
+                    "HCD",
+                    "FlexHCD",
+                    "RoboDiff",
+                ]:
                     cell = int(math.ceil((basket) / 3.0))
                     puck = basket - 3 * (cell - 1)
                     sample_info["containerSampleChangerLocation"] = "%d:%d" % (
@@ -478,4 +449,3 @@ class Lims(Component):
                 self.sample_list_sync_sample(sample_info)
 
         return self.sample_list_get()
-

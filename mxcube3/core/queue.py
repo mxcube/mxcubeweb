@@ -288,9 +288,7 @@ class Queue(Component):
         enabled, state = self.get_node_state(queueID)
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(
-                HWR.beamline.session.raw_data_folder_name
-            )[1:]
+            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
         ).lstrip("/")
 
         pt = node.acquisitions[0].path_template
@@ -342,9 +340,9 @@ class Queue(Component):
         enabled, state = self.get_node_state(queueID)
 
         parameters["subdir"] = os.path.join(
-            *parameters["directory"].split(
-                HWR.beamline.session.raw_data_folder_name
-            )[1:]
+            *parameters["directory"].split(HWR.beamline.session.raw_data_folder_name)[
+                1:
+            ]
         ).lstrip("/")
 
         parameters["fileName"] = pt.get_image_file_name().replace(
@@ -391,9 +389,7 @@ class Queue(Component):
         parameters["path"] = parameters["directory"]
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(
-                HWR.beamline.session.raw_data_folder_name
-            )[1:]
+            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
         ).lstrip("/")
 
         pt = node.path_template
@@ -440,9 +436,7 @@ class Queue(Component):
         parameters["path"] = parameters["directory"]
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(
-                HWR.beamline.session.raw_data_folder_name
-            )[1:]
+            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
         ).lstrip("/")
 
         pt = node.path_template
@@ -479,9 +473,7 @@ class Queue(Component):
         parameters["path"] = parameters["directory"]
 
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(
-                HWR.beamline.session.raw_data_folder_name
-            )[1:]
+            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
         ).lstrip("/")
 
         pt = node.path_template
@@ -717,9 +709,7 @@ class Queue(Component):
         :rtype: Tuple
         """
         model = HWR.beamline.queue_model.get_node(int(_id))
-        entry = HWR.beamline.queue_manager.get_entry_with_model(
-            model
-        )
+        entry = HWR.beamline.queue_manager.get_entry_with_model(model)
         return model, entry
 
     def set_enabled_entry(self, qid, enabled):
@@ -838,9 +828,7 @@ class Queue(Component):
             entry_list = [model_entry[1] for model_entry in model_entry_list]
 
             # Set the order in the queue model
-            HWR.beamline.queue_model.get_model_root()._children = (
-                model_list
-            )
+            HWR.beamline.queue_model.get_model_root()._children = model_list
             # Set queue entry order
             HWR.beamline.queue_manager._queue_entry_list = entry_list
 
@@ -1016,9 +1004,7 @@ class Queue(Component):
         acq.path_template.num_files = params["num_images"]
         acq.path_template.suffix = ftype
         acq.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property(
-                "precision", 4
-            )
+            HWR.beamline.session["file_info"].get_property("precision", 4)
         )
 
         self.app.lims.apply_template(params, sample_model, acq.path_template)
@@ -1031,15 +1017,13 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
         )
 
         acq.path_template.directory = full_path
 
         process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
         )
         acq.path_template.process_directory = process_path
 
@@ -1055,9 +1039,7 @@ class Queue(Component):
             acq2 = qmo.Acquisition()
             model.acquisitions.append(acq2)
 
-            line = HWR.beamline.sample_view.get_shape(
-                params["shape"]
-            )
+            line = HWR.beamline.sample_view.get_shape(params["shape"])
             p1, p2 = line.refs
             p1, p2 = (
                 HWR.beamline.sample_view.get_shape(p1),
@@ -1070,13 +1052,11 @@ class Queue(Component):
             acq2.acquisition_parameters.centred_position = cpos2
 
         elif params.get("mesh", False):
-            grid = HWR.beamline.sample_view.get_shape(
-                params["shape"]
-            )
+            grid = HWR.beamline.sample_view.get_shape(params["shape"])
             acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-            mesh_center = HWR.beamline[
-                "default_mesh_values"
-            ].get_property("mesh_center", "top-left")
+            mesh_center = HWR.beamline["default_mesh_values"].get_property(
+                "mesh_center", "top-left"
+            )
             if mesh_center == "top-left":
                 acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
                     0
@@ -1094,9 +1074,7 @@ class Queue(Component):
             model.set_requires_centring(False)
 
         elif params["shape"] != -1:
-            point = HWR.beamline.sample_view.get_shape(
-                params["shape"]
-            )
+            point = HWR.beamline.sample_view.get_shape(params["shape"])
             cpos = point.get_centred_position()
             acq.acquisition_parameters.centred_position = cpos
 
@@ -1142,9 +1120,7 @@ class Queue(Component):
         model.path_template.base_prefix = params["prefix"]
         model.path_template.num_files = 0
         model.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property(
-                "precision", 4
-            )
+            HWR.beamline.session["file_info"].get_property("precision", 4)
         )
 
         self.app.lims.apply_template(params, sample_model, model.path_template)
@@ -1157,15 +1133,13 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
         )
 
         model.path_template.directory = full_path
 
         process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
         )
         model.path_template.process_directory = process_path
 
@@ -1179,9 +1153,7 @@ class Queue(Component):
         beamline_params["collection_software"] = "MXCuBE - 3.0"
         beamline_params["sample_node_id"] = sample_model._node_id
         beamline_params["sample_lims_id"] = sample_model.lims_id
-        beamline_params[
-            "beamline"
-        ] = HWR.beamline.session.endstation_name
+        beamline_params["beamline"] = HWR.beamline.session.endstation_name
         beamline_params["shape"] = params["shape"]
 
         params_list = list(
@@ -1235,16 +1207,12 @@ class Queue(Component):
         """
         params = task_data["parameters"]
 
-        ftype = HWR.beamline.xrf_spectrum.get_property(
-            "file_suffix", "dat"
-        ).strip()
+        ftype = HWR.beamline.xrf_spectrum.get_property("file_suffix", "dat").strip()
 
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
         model.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property(
-                "precision", 4
-            )
+            HWR.beamline.session["file_info"].get_property("precision", 4)
         )
 
         if params["prefix"]:
@@ -1255,15 +1223,13 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
         )
 
         model.path_template.directory = full_path
 
         process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
         )
         model.path_template.process_directory = process_path
 
@@ -1291,16 +1257,12 @@ class Queue(Component):
         """
         params = task_data["parameters"]
 
-        ftype = HWR.beamline.energy_scan.get_property(
-            "file_suffix", "raw"
-        ).strip()
+        ftype = HWR.beamline.energy_scan.get_property("file_suffix", "raw").strip()
 
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
         model.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property(
-                "precision", 4
-            )
+            HWR.beamline.session["file_info"].get_property("precision", 4)
         )
 
         if params["prefix"]:
@@ -1311,15 +1273,13 @@ class Queue(Component):
             )
 
         full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
         )
 
         model.path_template.directory = full_path
 
         process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(),
-            params.get("subdir", ""),
+            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
         )
         model.path_template.process_directory = process_path
 
@@ -1376,7 +1336,7 @@ class Queue(Component):
         :rtype: Tuple
         """
         from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import (
-            GphlWorkflowQueueEntry,
+            GphlWorkflowQueueEntry
         )
 
         dc_model = qmo.GphlWorkflow()
@@ -1451,12 +1411,8 @@ class Queue(Component):
         refgroup_model = qmo.TaskGroup()
         refgroup_model.set_origin(ORIGIN_MX3)
 
-        HWR.beamline.queue_model.add_child(
-            sample_model, refgroup_model
-        )
-        HWR.beamline.queue_model.add_child(
-            refgroup_model, char_model
-        )
+        HWR.beamline.queue_model.add_child(sample_model, refgroup_model)
+        HWR.beamline.queue_model.add_child(refgroup_model, char_model)
         refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
         refgroup_entry.set_enabled(True)
@@ -1655,9 +1611,7 @@ class Queue(Component):
         if proposal_id is not None:
             # List of samples dicts (containing tasks) sample and tasks have same
             # order as the in queue HO
-            queue = self.queue_to_dict(
-                HWR.beamline.queue_model.get_model_root()
-            )
+            queue = self.queue_to_dict(HWR.beamline.queue_model.get_model_root())
             redis.set("self.app.queue:%d" % proposal_id, pickle.dumps(queue))
 
     def load_queue(self, session, redis=redis.Redis()):
@@ -1784,13 +1738,9 @@ class Queue(Component):
                 try:
                     self.app.sample_changer.mount_sample_clean_up(current_queue[sid])
                 except BaseException:
-                    HWR.beamline.queue_manager.emit(
-                        "queue_execution_failed", (None,)
-                    )
+                    HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
                 else:
-                    HWR.beamline.queue_manager.emit(
-                        "queue_stopped", (None,)
-                    )
+                    HWR.beamline.queue_manager.emit("queue_stopped", (None,))
             else:
                 enabled_entries = []
 
@@ -1820,14 +1770,10 @@ class Queue(Component):
             try:
                 HWR.beamline.queue_manager.execute_entry(entry)
             except BaseException:
-                HWR.beamline.queue_manager.emit(
-                    "queue_execution_failed", (None,)
-                )
+                HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
             finally:
                 HWR.beamline.queue_manager._running = False
-                HWR.beamline.queue_manager.emit(
-                    "queue_stopped", (None,)
-                )
+                HWR.beamline.queue_manager.emit("queue_stopped", (None,))
                 HWR.beamline.collect.queue_finished_cleanup()
 
     def init_signals(self, queue):
@@ -1837,9 +1783,7 @@ class Queue(Component):
         from mxcube3.routes import signals
 
         HWR.beamline.collect.connect(
-            HWR.beamline.collect,
-            "collectStarted",
-            signals.collect_started,
+            HWR.beamline.collect, "collectStarted", signals.collect_started
         )
         HWR.beamline.collect.connect(
             HWR.beamline.collect,
@@ -1852,9 +1796,7 @@ class Queue(Component):
             signals.collect_oscillation_failed,
         )
         HWR.beamline.collect.connect(
-            HWR.beamline.collect,
-            "collectImageTaken",
-            signals.collect_image_taken,
+            HWR.beamline.collect, "collectImageTaken", signals.collect_image_taken
         )
 
         HWR.beamline.collect.connect(
@@ -1893,9 +1835,7 @@ class Queue(Component):
             "queue_entry_execute_started", signals.queue_execution_entry_started
         )
 
-        HWR.beamline.queue_manager.connect(
-            "collectEnded", signals.collect_ended
-        )
+        HWR.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
 
         HWR.beamline.queue_manager.connect(
             "queue_interleaved_started", signals.queue_interleaved_started
@@ -1965,9 +1905,7 @@ class Queue(Component):
         )
 
     def init_queue_settings(self):
-        self.app.NUM_SNAPSHOTS = HWR.beamline.collect.get_property(
-            "num_snapshots", 4
-        )
+        self.app.NUM_SNAPSHOTS = HWR.beamline.collect.get_property("num_snapshots", 4)
         self.app.AUTO_MOUNT_SAMPLE = HWR.beamline.collect.get_property(
             "auto_mount_sample", False
         )
@@ -2067,9 +2005,7 @@ class Queue(Component):
     def queue_clear(self,):
         self.app.lims.init_sample_list()
         self.clear_queue()
-        msg = "[QUEUE] Cleared  " + str(
-            HWR.beamline.queue_model.get_model_root()._name
-        )
+        msg = "[QUEUE] Cleared  " + str(HWR.beamline.queue_model.get_model_root()._name)
         logging.getLogger("MX3.HWR").info(msg)
 
     def set_queue(self, json_queue, session):
@@ -2105,9 +2041,7 @@ class Queue(Component):
         sample_node = HWR.beamline.queue_model.get_node(sid)
 
         if sample_node:
-            sample_entry = HWR.beamline.queue_manager.get_entry_with_model(
-                sample_node
-            )
+            sample_entry = HWR.beamline.queue_manager.get_entry_with_model(sample_node)
             # TODO: update here the model with the new 'params'
             # missing lines...
             sample_entry.set_data_model(sample_node)
@@ -2134,9 +2068,7 @@ class Queue(Component):
 
             new_state = entry.is_enabled()
             for elem in queue[node_id]:
-                child_node = HWR.beamline.queue_model.get_node(
-                    elem["queueID"]
-                )
+                child_node = HWR.beamline.queue_model.get_node(elem["queueID"])
                 child_entry = HWR.beamline.queue_manager.get_entry_with_model(
                     child_node
                 )
@@ -2160,9 +2092,7 @@ class Queue(Component):
             if isinstance(parent_node, qmo.TaskGroup):
                 parent_node = parent_node.get_parent()
             parent = parent_node._node_id
-            parent_entry = HWR.beamline.queue_manager.get_entry_with_model(
-                parent_node
-            )
+            parent_entry = HWR.beamline.queue_manager.get_entry_with_model(parent_node)
             # now that we know the sample parent no matter what is the entry
             # (char, dc) check if the brother&sisters are enabled (and enable the
             # parent)
@@ -2203,9 +2133,7 @@ class Queue(Component):
         entry = HWR.beamline.queue_manager.get_entry_with_model(node)
         entry._set_background_color = Mock()
 
-        new_node = HWR.beamline.queue_model.add_child_at_id(
-            int(_id), cent_node
-        )
+        new_node = HWR.beamline.queue_model.add_child_at_id(int(_id), cent_node)
         entry.enqueue(cent_entry)
 
         logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
@@ -2216,9 +2144,7 @@ class Queue(Component):
         """
         returns the default values for an acquisition (data collection).
         """
-        acq_parameters = (
-            HWR.beamline.get_default_acquisition_parameters()
-        )
+        acq_parameters = HWR.beamline.get_default_acquisition_parameters()
         ftype = HWR.beamline.detector.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
 
@@ -2295,9 +2221,7 @@ class Queue(Component):
         """
         returns the default values for a mesh.
         """
-        acq_parameters = HWR.beamline.get_default_acquisition_parameters(
-            "mesh"
-        )
+        acq_parameters = HWR.beamline.get_default_acquisition_parameters("mesh")
 
         return {
             "acq_parameters": {

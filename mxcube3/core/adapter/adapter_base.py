@@ -244,9 +244,7 @@ class ActuatorAdapterBase(AdapterBase):
         data = super(ActuatorAdapterBase, self)._dict_repr()
 
         try:
-            data.update(
-                {"value": self.get_value(), "limits": self.limits(),}
-            )
+            data.update({"value": self.get_value(), "limits": self.limits()})
         except Exception as ex:
             self._available = False
             data.update(

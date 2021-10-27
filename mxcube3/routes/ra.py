@@ -103,15 +103,11 @@ def init_route(app, server, url_prefix):
         observers = app.usermanager.get_observers()
 
         # Append the new data path so that it can be updated on the client
-        new_op[
-            "rootPath"
-        ] = HWR.beamline.session.get_base_image_directory()
+        new_op["rootPath"] = HWR.beamline.session.get_base_image_directory()
 
         # Current op might have logged out, while this is happening
         if current_op:
-            current_op[
-                "rootPath"
-            ] = HWR.beamline.session.get_base_image_directory()
+            current_op["rootPath"] = HWR.beamline.session.get_base_image_directory()
             current_op["message"] = message
             server.emit(
                 "setObserver",
@@ -226,10 +222,7 @@ def init_route(app, server, url_prefix):
 
         # (Note: User is logged in if operator)
         if app.usermanager.is_operator():
-            if (
-                not HWR.beamline.queue_manager.is_executing()
-                and not DISCONNECT_HANDLED
-            ):
+            if not HWR.beamline.queue_manager.is_executing() and not DISCONNECT_HANDLED:
                 DISCONNECT_HANDLED = True
                 server.emit("resumeQueueDialog", namespace="/hwr")
                 msg = "Client reconnected, Queue was previously stopped, asking "
@@ -240,10 +233,7 @@ def init_route(app, server, url_prefix):
     @server.ws_restrict
     def disconnect():
         global DISCONNECT_HANDLED
-        if (
-            app.usermanager.is_operator()
-            and HWR.beamline.queue_manager.is_executing()
-        ):
+        if app.usermanager.is_operator() and HWR.beamline.queue_manager.is_executing():
 
             DISCONNECT_HANDLED = False
             logging.getLogger("HWR").info("Client disconnected")

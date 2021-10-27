@@ -22,9 +22,7 @@ class SampleChanger(Component):
         from mxcube3.routes import signals
 
         """Initialize hwobj signals."""
-        HWR.beamline.sample_changer.connect(
-            "stateChanged", signals.sc_state_changed
-        )
+        HWR.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
         HWR.beamline.sample_changer.connect(
             "isCollisionSafe", signals.is_collision_safe
         )
@@ -47,9 +45,7 @@ class SampleChanger(Component):
         order = []
         current_sample = {}
 
-        loaded_sample = (
-            HWR.beamline.sample_changer.get_loaded_sample()
-        )
+        loaded_sample = HWR.beamline.sample_changer.get_loaded_sample()
 
         for s in samples_list:
             if not s.is_present():
@@ -136,9 +132,7 @@ class SampleChanger(Component):
 
             contents = {"name": root_name}
 
-            for (
-                element
-            ) in HWR.beamline.sample_changer.get_components():
+            for element in HWR.beamline.sample_changer.get_components():
                 if element.is_present():
                     _addElement(contents, element)
         else:
@@ -218,9 +212,7 @@ class SampleChanger(Component):
                     msg = "Starting autoloop centring ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
-                    HWR.beamline.diffractometer.start_centring_method(
-                        C3D_MODE
-                    )
+                    HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
 
             else:
                 msg = "Mounting sample: %s" % sample["sampleName"]
@@ -257,9 +249,7 @@ class SampleChanger(Component):
             signals.sc_unload(sample["location"])
 
             if not sample["location"] == "Manual":
-                HWR.beamline.sample_changer.unload(
-                    sample["location"], wait=False
-                )
+                HWR.beamline.sample_changer.unload(sample["location"], wait=False)
             else:
                 self.set_current_sample(None)
                 signals.sc_load_ready(sample["location"])
@@ -283,9 +273,7 @@ class SampleChanger(Component):
         return self.get_sc_contents()
 
     def unmount_current(self):
-        location = (
-            HWR.beamline.sample_changer.get_loaded_sample().get_address()
-        )
+        location = HWR.beamline.sample_changer.get_loaded_sample().get_address()
         self.unmount_sample_clean_up({"location": location})
 
         return self.get_sc_contents()
@@ -316,9 +304,7 @@ class SampleChanger(Component):
 
     def get_maintenance_cmds(self):
         if HWR.beamline.sample_changer_maintenance is not None:
-            ret = (
-                HWR.beamline.sample_changer_maintenance.get_cmd_info()
-            )
+            ret = HWR.beamline.sample_changer_maintenance.get_cmd_info()
         else:
             ret = "SC maintenance controller not defined"
 
@@ -326,9 +312,7 @@ class SampleChanger(Component):
 
     def get_global_state(self):
         try:
-            return (
-                HWR.beamline.sample_changer_maintenance.get_global_state()
-            )
+            return HWR.beamline.sample_changer_maintenance.get_global_state()
         except:
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
@@ -336,9 +320,7 @@ class SampleChanger(Component):
         if HWR.beamline.sample_changer_maintenance is not None:
             global_state, cmdstate, msg = self.get_global_state()
 
-            cmds = (
-                HWR.beamline.sample_changer_maintenance.get_cmd_info()
-            )
+            cmds = HWR.beamline.sample_changer_maintenance.get_cmd_info()
 
         else:
             global_state = {}
@@ -464,7 +446,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                     if not dm.current_centring_procedure:
                         dm.start_centring_method(dm.C3D_MODE)
 
-                     # NBNB  BUG . self and app are not avialble here
+                    # NBNB  BUG . self and app are not avialble here
                     if mxcube.AUTO_MOUNT_SAMPLE:
                         msg = "Going to save centring automatically, please wait"
                     else:

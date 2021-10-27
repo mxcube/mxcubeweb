@@ -30,9 +30,7 @@ def init_route(app, server, url_prefix):
         """Juts for creating a diff plan as if it were created by edna and so on.
         """
 
-        acq_parameters = (
-            HWR.beamline.get_default_acquisition_parameters()
-        )
+        acq_parameters = HWR.beamline.get_default_acquisition_parameters()
         ftype = HWR.beamline.detector_hwobj.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
 
@@ -82,9 +80,7 @@ def init_route(app, server, url_prefix):
         char, char_entry = app.queue.get_entry(3)
 
         char.diffraction_plan.append([dc_model])
-        HWR.beamline.queue_model.emit(
-            "diff_plan_available", (char, [dc_model])
-        )
+        HWR.beamline.queue_model.emit("diff_plan_available", (char, [dc_model]))
 
         return Response(status=200)
 

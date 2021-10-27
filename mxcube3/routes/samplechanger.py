@@ -140,9 +140,7 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def send_command(cmdparts, args=None):
         try:
-            ret = HWR.beamline.sample_changer_maintenance.send_command(
-                cmdparts, args
-            )
+            ret = HWR.beamline.sample_changer_maintenance.send_command(cmdparts, args)
         except Exception as ex:
             msg = str(ex)
             msg = msg.replace("\n", " - ")
@@ -155,4 +153,3 @@ def init_route(app, server, url_prefix):
             return jsonify(response=ret)
 
     return bp
-

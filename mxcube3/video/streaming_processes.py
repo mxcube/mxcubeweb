@@ -34,7 +34,9 @@ def start(device, scale, _hash):
 
     FNULL = open(os.devnull, "w")
 
-    relay = subprocess.Popen(["node", websocket_relay_js, _hash, "4041", "4042"], shell=False)
+    relay = subprocess.Popen(
+        ["node", websocket_relay_js, _hash, "4041", "4042"], shell=False
+    )
 
     # Make sure that the relay is running (socket is open)
     time.sleep(2)
@@ -65,7 +67,7 @@ def start(device, scale, _hash):
         ],
         stderr=subprocess.STDOUT,
         stdin=subprocess.PIPE,
-        shell=False
+        shell=False,
     )
 
     with open("/tmp/mxcube.pid", "a") as f:

@@ -44,4 +44,3 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
 
     def get_all_messages(self):
         return self._message_model.query.all()
-

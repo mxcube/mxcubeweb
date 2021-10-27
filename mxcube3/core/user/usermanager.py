@@ -37,12 +37,9 @@ class BaseUserManager(Component):
         users = [user["loginID"] for user in self.app.USERS.values()]
 
         if exclude_inhouse:
-            if isinstance(
-                HWR.beamline.session.in_house_users[0], tuple
-            ):
+            if isinstance(HWR.beamline.session.in_house_users[0], tuple):
                 ih_users = [
-                    "%s%s" % (p, c)
-                    for (p, c) in HWR.beamline.session.in_house_users
+                    "%s%s" % (p, c) for (p, c) in HWR.beamline.session.in_house_users
                 ]
             else:
                 ih_users = HWR.beamline.session.in_house_users

@@ -99,7 +99,9 @@ class MXCUBECore:
         MXCUBECore.hwr = _hwr
 
         try:
-            MXCUBECore.beamline = BeamlineAdapter(HWR.beamline, MXCUBEApplication, MXCUBEApplication._server)
+            MXCUBECore.beamline = BeamlineAdapter(
+                HWR.beamline, MXCUBEApplication, MXCUBEApplication._server
+            )
             MXCUBECore.adapt_hardware_objects(app)
         except Exception:
             msg = "Could not initialize one or several hardware objects, "
@@ -161,7 +163,9 @@ class MXCUBECore:
 
             if adapter_cls:
                 try:
-                    adapter_instance = adapter_cls(ho, _id, app, app._server, **dict(adapter_config))
+                    adapter_instance = adapter_cls(
+                        ho, _id, app, app._server, **dict(adapter_config)
+                    )
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
                 except:
                     logging.getLogger("MX3.HWR").exception(
@@ -321,9 +325,7 @@ class MXCUBEApplication:
         corresponding signals/events
         """
         try:
-            MXCUBEApplication.queue.init_signals(
-                HWR.beamline.queue_model
-            )
+            MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
         except Exception:
             sys.excepthook(*sys.exc_info())
 

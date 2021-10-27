@@ -20,9 +20,7 @@ def init_route(app, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        data = {
-            "current_phase": HWR.beamline.diffractometer.get_current_phase()
-        }
+        data = {"current_phase": HWR.beamline.diffractometer.get_current_phase()}
         resp = jsonify(data)
         resp.status_code = 200
         return resp
@@ -38,11 +36,7 @@ def init_route(app, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        resp = jsonify(
-            {
-                "current_phase": HWR.beamline.diffractometer.get_phase_list()
-            }
-        )
+        resp = jsonify({"current_phase": HWR.beamline.diffractometer.get_phase_list()})
         resp.status_code = 200
         return resp
 

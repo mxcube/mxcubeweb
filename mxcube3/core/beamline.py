@@ -79,19 +79,13 @@ class Beamline(Component):
 
         try:
             HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum,
-                "new_plot",
-                signals.new_plot,
+                HWR.beamline.xrf_spectrum, "new_plot", signals.new_plot
             )
             HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum,
-                "plot_data",
-                signals.plot_data,
+                HWR.beamline.xrf_spectrum, "plot_data", signals.plot_data
             )
             HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum,
-                "plot_end",
-                signals.plot_end,
+                HWR.beamline.xrf_spectrum, "plot_end", signals.plot_end
             )
             HWR.beamline.xrf_spectrum.connect(
                 HWR.beamline.xrf_spectrum,
@@ -151,14 +145,8 @@ class Beamline(Component):
 
         if self.app.CONFIG.app.VIDEO_FORMAT == "MPEG1":
             fmt, source_is_scalable = "MPEG1", True
-            video_sizes = (
-                HWR.beamline.sample_view.camera.get_available_stream_sizes()
-            )
-            (
-                width,
-                height,
-                scale,
-            ) = HWR.beamline.sample_view.camera.get_stream_size()
+            video_sizes = HWR.beamline.sample_view.camera.get_available_stream_sizes()
+            (width, height, scale) = HWR.beamline.sample_view.camera.get_stream_size()
         else:
             scale = 1
             width = HWR.beamline.sample_view.camera.get_width()
@@ -250,9 +238,7 @@ class Beamline(Component):
                 cmd.abort()
 
         try:
-            ho = BeamlineAdapter(HWR.beamline).get_object(
-                name.lower()
-            )
+            ho = BeamlineAdapter(HWR.beamline).get_object(name.lower())
         except AttributeError:
             pass
         else:
@@ -344,16 +330,12 @@ class Beamline(Component):
             ret["useSC"] = False
 
         try:
-            ret[
-                "currentPhase"
-            ] = HWR.beamline.diffractometer.get_current_phase()
+            ret["currentPhase"] = HWR.beamline.diffractometer.get_current_phase()
         except AttributeError:
             ret["currentPhase"] = "None"
 
         try:
-            ret[
-                "phaseList"
-            ] = HWR.beamline.diffractometer.get_phase_list()
+            ret["phaseList"] = HWR.beamline.diffractometer.get_phase_list()
         except AttributeError:
             ret["phaseList"] = []
 

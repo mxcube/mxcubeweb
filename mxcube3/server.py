@@ -106,7 +106,7 @@ class Server:
         from mxcube3.routes.beamline import init_route as init_beamline_route
         from mxcube3.routes.detector import init_route as init_detector_route
         from mxcube3.routes.diffractometer import (
-            init_route as init_diffractometer_route,
+            init_route as init_diffractometer_route
         )
         from mxcube3.routes.lims import init_route as init_lims_route
         from mxcube3.routes.log import init_route as init_log_route
@@ -164,9 +164,7 @@ class Server:
         )
 
         Server.flask.register_blueprint(
-            init_sampleview_route(
-                mxcube, Server, f"{url_root_prefix}/sampleview"
-            )
+            init_sampleview_route(mxcube, Server, f"{url_root_prefix}/sampleview")
         )
 
         Server.flask.register_blueprint(
