@@ -30,9 +30,9 @@ export class HelpContainer extends React.Component {
     let panel = null;
 
     if (this.props.login.user) {
-      const familyName = user.name || '';
-      const givenName = user.name || '';
-      const email = user.email || '';
+      const familyName = this.props.login.user.name || '';
+      const givenName = this.props.login.user.name || '';
+      const email = this.props.login.user.email || '';
       const tel = '';
 
       panel = (

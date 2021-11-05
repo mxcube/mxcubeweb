@@ -6,6 +6,7 @@ class FlaskConfig:
     SECRET_KEY = b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c"
     SESSION_TYPE = "redis"
     SESSION_KEY_PREFIX = "mxcube:session:"
+    SECURITY_PASSWORD_SALT = "ReplaceWithSomethingBetter"
     DEBUG: False
     STREAMED_VIDEO: True
     ALLOWED_CORS_ORIGINS = "*"

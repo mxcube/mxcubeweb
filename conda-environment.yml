@@ -13,6 +13,7 @@ dependencies:
   - python-socketio=4.3.0
   - flask=1.1.2
   - flask-socketio=4.3.1
+  - flask-sqlalchemy
   - gevent-websocket=0.10.1
   - mock=4.0.3
   - jsonpickle=1.4.1
@@ -33,8 +34,9 @@ dependencies:
   - werkzeug=1.0.1
 
   - pip:
-      - Flask-Session==0.3.2
+      - Flask-Session
       - git+https://github.com/marcus-oscarsson/python-v4l2.git
       - Louie-latest
       - spectree
+      - flask-security-too
       - git+https://github.com/mxcube/mxcubecore.git
