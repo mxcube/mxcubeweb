@@ -155,6 +155,9 @@ class MXCUBECore:
             # use the name otherwise (file name without extension)
             ho = MXCUBECore.hwr.get_hardware_object(ho_name)
 
+            if not ho:
+                continue
+
             _id = MXCUBECore._get_adapter_id(ho)
 
             # Try to use the interface exposed by abstract classes in mxcubecore to adapt
