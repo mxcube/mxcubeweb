@@ -23,9 +23,12 @@ class Workflow(Component):
         except Exception:
             pass
 
-        # if hasattr(beamline, "gphl_workflow"):
-        # Add Global Phasing workflows if available
-        #    workflows.update(beamline.gphl_workflow.get_available_workflows())
+        if hasattr(beamline, "gphl_workflow"):
+            # Add Global Phasing workflows if available
+            # PLEASE do not comment out
+            # If you do not want this activated,
+            # just remove gphl_workflow from the configuration
+            workflows.update(beamline.gphl_workflow.get_available_workflows())
         return {"workflows": workflows}
 
     def submit_parameters(self, params):
