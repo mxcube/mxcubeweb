@@ -9,6 +9,7 @@ class FlaskConfig:
     DEBUG: False
     STREAMED_VIDEO: True
     ALLOWED_CORS_ORIGINS = "*"
+    SECURITY_PASSWORD_SALT = "ASALT"
 
 
 class AppConfig:
