@@ -52,13 +52,13 @@ class Lims(Component):
         sample_to_update = None
 
         # LIMS sample has code, check if the code was read by SC
-        if lims_code and self.app.samplechanger.sc_contents_from_code_get(lims_code):
-            sample_to_update = self.app.samplechanger.sc_contents_from_code_get(
+        if lims_code and self.app.sample_changer.sc_contents_from_code_get(lims_code):
+            sample_to_update = self.app.sample_changer.sc_contents_from_code_get(
                 lims_code
             )
         elif lims_location:
             # Asume that the samples have been put in the right place of the SC
-            sample_to_update = self.app.samplechanger.sc_contents_from_location_get(
+            sample_to_update = self.app.sample_changer.sc_contents_from_location_get(
                 lims_location
             )
 
