@@ -31,6 +31,8 @@ dependencies:
   - ffmpeg
   - pytango
   - werkzeug=1.0.1
+  - bcrypt
+  - flask-sqlalchemy
 
   - pip:
       - Flask-Session==0.3.2
@@ -38,3 +40,4 @@ dependencies:
       - Louie-latest
       - spectree
       - git+https://github.com/mxcube/mxcubecore.git
+      - flask-security-too
