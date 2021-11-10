@@ -4,6 +4,8 @@ import json
 from mxcube3 import server
 from mxcube3 import mxcube
 
+from flask import Response
+
 from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
@@ -637,8 +639,9 @@ def beam_changed(*args, **kwargs):
     try:
         server.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
     except Exception:
-        # TODO fix error
-        logging.getLogger("HWR").exception("error sending message: %s" + str(msg))
+        logging.getLogger("HWR").exception(
+            "error sending beam_changed signal: %s" % beam_info_dict
+        )
 
 
 def beamline_action_start(name):
@@ -690,8 +693,9 @@ def mach_info_changed(values):
     try:
         server.emit("mach_info_changed", values, namespace="/hwr")
     except Exception:
-        # TODO fix error
-        logging.getLogger("HWR").error("error sending message: %s" + str(msg))
+        logging.getLogger("HWR").error(
+            "error sending mach_info_changed signal: &s" % values
+        )
 
 
 def new_plot(plot_info):
