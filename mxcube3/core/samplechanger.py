@@ -408,7 +408,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                 # if sample could not be loaded, but no exception is raised, let's skip
                 # the sample
 
-                raise queue_entry.QueueSkipEntryException(
+                raise queue_entry.QueueSkippEntryException(
                     "Sample changer could not load sample", ""
                 )
 
@@ -424,7 +424,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
         logging.getLogger("user_level_log").info("Sample not loaded")
-        raise queue_entry.QueueSkipEntryException("Sample not loaded", "")
+        raise queue_entry.QueueSkippEntryException("Sample not loaded", "")
     else:
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
@@ -464,7 +464,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                     logging.getLogger("user_level_log").info("Centring done !")
                 else:
                     if centring_method == queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC:
-                        raise queue_entry.QueueSkipEntryException(
+                        raise queue_entry.QueueSkippEntryException(
                             "Could not center sample, skipping", ""
                         )
                     else:
