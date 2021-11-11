@@ -1,9 +1,11 @@
 server:
   SECRET_KEY: "ASECRETKEY"
+  SECURITY_PASSWORD_SALT: "ASALT"
   SESSION_TYPE: "redis"
   SESSION_KEY_PREFIX: "mxcube:session:"
   DEBUG: False
   STREAMED_VIDEO: True
+  
 
   ALLOWED_CORS_ORIGINS:
     - "http://localhost:8081"

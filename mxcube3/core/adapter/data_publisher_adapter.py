@@ -24,10 +24,12 @@ class DataPublisherAdapter(AdapterBase):
             self._available = True
 
     def _new_data_handler(self, data):
-        self._application.server.emit("data_publisher_new_data", data, namespace="/hwr")
+        self._application._server.emit(
+            "data_publisher_new_data", data, namespace="/hwr"
+        )
 
     def _update_publisher_handler(self, data):
-        self._application.server.emit("data_publisher_update", data, namespace="/hwr")
+        self._application._server.emit("data_publisher_update", data, namespace="/hwr")
 
     def state(self):
         return HardwareObjectState.READY.value

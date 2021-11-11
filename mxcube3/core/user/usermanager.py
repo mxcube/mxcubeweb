@@ -1,4 +1,3 @@
-import socket
 import logging
 import json
 import uuid
@@ -10,6 +9,8 @@ from mxcube3.core.component import Component
 from mxcube3.core.user.models import User
 from mxcube3.core.util.networkutils import is_local_host, remote_addr
 from mxcube3.core.util.convertutils import convert_to_dict
+
+from mxcubecore import HardwareRepository as HWR
 
 
 class BaseUserManager(Component):
@@ -36,15 +37,12 @@ class BaseUserManager(Component):
         users = [user["loginID"] for user in self.app.USERS.values()]
 
         if exclude_inhouse:
-            if isinstance(
-                self.app.mxcubecore.beamline_ho.session.in_house_users[0], tuple
-            ):
+            if isinstance(HWR.beamline.session.in_house_users[0], tuple):
                 ih_users = [
-                    "%s%s" % (p, c)
-                    for (p, c) in self.app.mxcubecore.beamline_ho.session.in_house_users
+                    "%s%s" % (p, c) for (p, c) in HWR.beamline.session.in_house_users
                 ]
             else:
-                ih_users = self.app.mxcubecore.beamline_ho.session.in_house_users
+                ih_users = HWR.beamline.session.in_house_users
             users = [user for user in users if user not in ih_users]
 
         return users
@@ -62,14 +60,14 @@ class BaseUserManager(Component):
             self.db_set_in_control(flask_security.current_user, True)
 
         # Set active proposal to that of the active user
-        if self.app.mxcubecore.beamline_ho.lims.loginType.lower() != "user":
+        if HWR.beamline.lims.loginType.lower() != "user":
             # The name of the user is the proposal when using proposalType login
             self.app.lims.select_proposal(flask_security.current_user.name)
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
             "%s%s" % (code, number)
-            for (code, number) in self.app.mxcubecore.beamline_ho.session.in_house_users
+            for (code, number) in HWR.beamline.session.in_house_users
         ]
 
         return user_id in user_id_list
@@ -121,13 +119,13 @@ class BaseUserManager(Component):
         if self.is_operator():
             self.app.queue.save_queue(flask.session)
             self.app.queue.clear_queue()
-            self.app.mxcubecore.beamline_ho.sample_view.clear_all()
+            HWR.beamline.sample_view.clear_all()
             self.app.lims.init_sample_list()
 
             self.app.queue.init_queue_settings()
 
-            if hasattr(self.app.mxcubecore.beamline_ho.session, "clear_session"):
-                self.app.mxcubecore.beamline_ho.session.clear_session()
+            if hasattr(HWR.beamline.session, "clear_session"):
+                HWR.beamline.session.clear_session()
 
             self.app.CURRENTLY_MOUNTED_SAMPLE = ""
 
@@ -163,10 +161,10 @@ class BaseUserManager(Component):
         ]
 
         res = {
-            "synchrotronName": self.app.mxcubecore.beamline_ho.session.synchrotron_name,
-            "beamlineName": self.app.mxcubecore.beamline_ho.session.beamline_name,
+            "synchrotronName": HWR.beamline.session.synchrotron_name,
+            "beamlineName": HWR.beamline.session.beamline_name,
             "loggedIn": True,
-            "loginType": self.app.mxcubecore.beamline_ho.lims.loginType.title(),
+            "loginType": HWR.beamline.lims.loginType.title(),
             "proposalList": proposal_list,
             "user": {
                 "username": flask_security.current_user.username,
@@ -181,17 +179,17 @@ class BaseUserManager(Component):
         }
 
         res["selectedProposal"] = "%s%s" % (
-            self.app.mxcubecore.beamline_ho.session.proposal_code,
-            self.app.mxcubecore.beamline_ho.session.proposal_number,
+            HWR.beamline.session.proposal_code,
+            HWR.beamline.session.proposal_number,
         )
 
-        res["selectedProposalID"] = self.app.mxcubecore.beamline_ho.session.proposal_id
+        res["selectedProposalID"] = HWR.beamline.session.proposal_id
 
         return flask_security.current_user, res
 
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
-        user_datastore = self.app.server.user_datastore
+        user_datastore = self.server.user_datastore
         username = f"{user}-{sid}"
 
         # Make sure that the roles staff and incontrol always
@@ -199,7 +197,7 @@ class BaseUserManager(Component):
         if not user_datastore.find_role("staff"):
             user_datastore.create_role(name="staff")
             user_datastore.create_role(name="incontrol")
-            self.app.server.user_datastore.commit()
+            self.server.user_datastore.commit()
 
         _u = user_datastore.find_user(username=username)
 
@@ -216,12 +214,12 @@ class BaseUserManager(Component):
         else:
             _u.limsdata = json.dumps(lims_data)
 
-        self.app.server.user_datastore.commit()
+        self.server.user_datastore.commit()
 
         return user_datastore.find_user(username=username)
 
     def db_set_in_control(self, user, control):
-        user_datastore = self.app.server.user_datastore
+        user_datastore = self.server.user_datastore
 
         if control:
             for _u in User.query.all():
@@ -236,7 +234,7 @@ class BaseUserManager(Component):
             _u.in_control = control
             user_datastore.put(_u)
 
-        self.app.server.user_datastore.commit()
+        self.server.user_datastore.commit()
 
 
 class UserManager(BaseUserManager):

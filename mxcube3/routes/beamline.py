@@ -9,11 +9,12 @@ import spectree
 
 from flask import Blueprint, Response, jsonify, request, make_response
 
-from mxcube3.core.models import HOActuatorModel, HOActuatorValueChangeModel
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 
+from mxcubecore import HardwareRepository as HWR
 
-def create_get_route(mxcube, server, bp, adapter, attr, name):
+
+def create_get_route(app, server, bp, adapter, attr, name):
     atype = adapter.adapter_type.lower()
     func = getattr(adapter, attr)
     get_type_hint = typing.get_type_hints(func)
@@ -35,13 +36,13 @@ def create_get_route(mxcube, server, bp, adapter, attr, name):
             Replies with status code 200 on success and 409 on exceptions.
             """
             return jsonify(
-                getattr(mxcube.mxcubecore.get_adapter(name.lower()), attr)().dict()
+                getattr(app.mxcubecore.get_adapter(name.lower()), attr)().dict()
             )
 
         get_func.__name__ = f"{atype}_get_value"
 
 
-def create_set_route(mxcube, server, bp, adapter, attr, name):
+def create_set_route(app, server, bp, adapter, attr, name):
     atype = adapter.adapter_type.lower()
     func = getattr(adapter, attr)
     set_type_hint = typing.get_type_hints(func)
@@ -62,16 +63,16 @@ def create_set_route(mxcube, server, bp, adapter, attr, name):
             Replies with status code 200 on success and 409 on exceptions.
             """
             rd = _th["value"].parse_raw(request.data)
-            getattr(mxcube.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
+            getattr(app.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
             return make_response("{}", 200)
 
         set_func.__name__ = f"{atype}_set_value"
 
 
-def add_adapter_routes(mxcube, server, bp):
+def add_adapter_routes(app, server, bp):
     adapter_type_list = []
 
-    for _id, a in mxcube.mxcubecore.adapter_dict.items():
+    for _id, a in app.mxcubecore.adapter_dict.items():
         adapter = a["adapter"]
         atype = adapter.adapter_type.lower()
 
@@ -87,17 +88,17 @@ def add_adapter_routes(mxcube, server, bp):
             data_type_hint = typing.get_type_hints(adapter.data)
 
             if "value" in set_type_hint:
-                create_set_route(mxcube, server, bp, adapter, "_set_value", "value")
+                create_set_route(app, server, bp, adapter, "_set_value", "value")
 
             if "return" in data_type_hint:
-                create_get_route(mxcube, server, bp, adapter, "data", None)
+                create_get_route(app, server, bp, adapter, "data", None)
 
             # For consitency add GET route for value even if its currently unused
             if isinstance(adapter, ActuatorAdapterBase):
                 get_type_hint = typing.get_type_hints(adapter._get_value)
 
                 if "return" in get_type_hint:
-                    create_get_route(mxcube, server, bp, adapter, "_get_value", "value")
+                    create_get_route(app, server, bp, adapter, "_get_value", "value")
 
             # Map all other functions starting with prefix get_ or set_ and
             # flagged with the @export
@@ -109,26 +110,26 @@ def add_adapter_routes(mxcube, server, bp):
 
                 if attr.startswith("get"):
                     create_get_route(
-                        mxcube, server, bp, adapter, attr, attr.replace("get_", "")
+                        app, server, bp, adapter, attr, attr.replace("get_", "")
                     )
 
                 if attr.startswith("set"):
                     create_set_route(
-                        mxcube, server, bp, adapter, attr, attr.replace("set_", "")
+                        app, server, bp, adapter, attr, attr.replace("set_", "")
                     )
         else:
             continue
 
 
-def init_route(mxcube, server, url_prefix):
+def init_route(app, server, url_prefix):
     bp = Blueprint("beamline", __name__, url_prefix=url_prefix)
 
-    add_adapter_routes(mxcube, server, bp)
+    add_adapter_routes(app, server, bp)
 
     @bp.route("/", methods=["GET"])
     @server.restrict
     def beamline_get_all_attributes():
-        return jsonify(mxcube.beamline.beamline_get_all_attributes())
+        return jsonify(app.beamline.beamline_get_all_attributes())
 
     @bp.route("/<name>/abort", methods=["GET"])
     @server.require_control
@@ -142,7 +143,7 @@ def init_route(mxcube, server, url_prefix):
         Replies with status code 200 on success and 520 on exceptions.
         """
         try:
-            mxcube.beamline.beamline_abort_action(name)
+            app.beamline.beamline_abort_action(name)
         except Exception:
             err = str(sys.exc_info()[1])
             return make_response(err, 520)
@@ -168,7 +169,7 @@ def init_route(mxcube, server, url_prefix):
             params = []
 
         try:
-            mxcube.beamline.beamline_run_action(name, params)
+            app.beamline.beamline_run_action(name, params)
         except Exception as ex:
             return make_response(str(ex), 520)
         else:
@@ -181,7 +182,7 @@ def init_route(mxcube, server, url_prefix):
         Beam information: position, size, shape
         return_data = {"position": , "shape": , "size_x": , "size_y": }
         """
-        return jsonify(mxcube.beamline.get_beam_info())
+        return jsonify(app.beamline.get_beam_info())
 
     @bp.route("/datapath", methods=["GET"])
     @server.restrict
@@ -190,7 +191,7 @@ def init_route(mxcube, server, url_prefix):
         Retrieve data directory from the session hwobj,
         this is specific for each beamline.
         """
-        data = mxcube.mxcubecore.beamline_ho.session.get_base_image_directory()
+        data = HWR.beamline.session.get_base_image_directory()
         return jsonify({"path": data})
 
     @bp.route("/prepare_beamline", methods=["PUT"])
@@ -201,7 +202,7 @@ def init_route(mxcube, server, url_prefix):
         Prepare the beamline for a new sample.
         """
         try:
-            mxcube.beamline.prepare_beamline_for_sample()
+            app.beamline.prepare_beamline_for_sample()
         except Exception:
             msg = "Cannot prepare the Beamline for a new sample"
             logging.getLogger("HWR").error(msg)

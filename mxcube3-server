@@ -8,13 +8,16 @@ MXCUBE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "./mxcube3")
 )
 
+# Soon to be removed
 sys.path.insert(0, MXCUBE_ROOT)
 
-#os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"] = os.path.join(
-#    MXCUBE_ROOT, "HardwareRepository/HardwareObjects"
-#)
-
-#sys.path.insert(0, os.environ["CUSTOM_HARDWARE_OBJECTS_PATH"])
+# Temprorary solution while thinking about a better solution ...
+# The streaming realy is now located in a spearate directory structure
+# as its part of the mxcubecore module. So we need to add NODE_PATH
+# so that all the depdencies are found 
+os.environ["NODE_PATH"] = os.path.abspath(
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), "./node_modules")
+)
 
 if __name__ == "__main__":
     db = redis.Redis()

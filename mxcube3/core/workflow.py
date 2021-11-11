@@ -3,6 +3,8 @@ import base64
 
 from mxcube3.core.component import Component
 
+from mxcubecore import HardwareRepository as HWR
+
 
 class Workflow(Component):
     def __init__(self, app, server, config):
@@ -10,7 +12,7 @@ class Workflow(Component):
 
     def get_available_workflows(self):
         workflows = {}
-        beamline = self.app.mxcubecore.beamline_ho
+        beamline = HWR.beamline
 
         try:
             for wf in beamline.workflow.get_available_workflows():
@@ -23,16 +25,17 @@ class Workflow(Component):
         except Exception:
             pass
 
-        # if hasattr(beamline, "gphl_workflow"):
-        # Add Global Phasing workflows if available
-        #    workflows.update(beamline.gphl_workflow.get_available_workflows())
+        if hasattr(beamline, "gphl_workflow"):
+            # Add Global Phasing workflows if available
+            workflows.update(beamline.gphl_workflow.get_available_workflows())
+
         return {"workflows": workflows}
 
     def submit_parameters(self, params):
-        self.app.mxcubecore.beamline_ho.workflow.set_values_map(params)
+        HWR.beamline.workflow.set_values_map(params)
 
     def get_mesh_result(self, gid, _type="heatmap"):
-        base64data = self.app.mxcubecore.beamline_ho.sample_view.get_grid_data(gid)
+        base64data = HWR.beamline.sample_view.get_grid_data(gid)
         base64data = base64data if base64data else ""
 
         data = base64.b64decode(base64data)

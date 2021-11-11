@@ -14,14 +14,24 @@ from pathlib import Path
 from logging import StreamHandler, NullHandler
 from logging.handlers import TimedRotatingFileHandler
 
-from mxcubecore import HardwareRepository as hwr
+from mxcubecore import HardwareRepository as HWR
 from mxcubecore import removeLoggingHandlers
 from mxcubecore.HardwareObjects import queue_entry
 from mxcubecore.utils.conversion import make_table
 
 from mxcube3.logging_handler import MX3LoggingHandler
+
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.adapter.adapter_base import AdapterBase
+from mxcube3.core.component import import_component
+from mxcube3.core.lims import Lims
+from mxcube3.core.chat import Chat
+from mxcube3.core.samplechanger import SampleChanger
+from mxcube3.core.beamline import Beamline
+from mxcube3.core.sampleview import SampleView
+from mxcube3.core.queue import Queue
+from mxcube3.core.workflow import Workflow
+
 
 removeLoggingHandlers()
 
@@ -33,8 +43,6 @@ class MXCUBECore:
     # Below, all the HardwareObjects made available through this module,
     # Initialized by the init function
 
-    # BeamlineSetup
-    beamline_ho = None
     # XMLRPCServer
     actions = None
     # Plotting
@@ -80,17 +88,18 @@ class MXCUBECore:
         from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
 
         fname = os.path.dirname(__file__)
-        hwr.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
+        HWR.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
         # rhfogh 20210916. The change allows (me) simpler configuration handling
         # and because of changes in init_hardware_repository does not change
         # current functionality.
-        _hwr = hwr.get_hardware_repository()
+        _hwr = HWR.get_hardware_repository()
 
         MXCUBECore.hwr = _hwr
 
         try:
-            MXCUBECore.beamline_ho = hwr.beamline
-            MXCUBECore.beamline = BeamlineAdapter(hwr.beamline, MXCUBEApplication)
+            MXCUBECore.beamline = BeamlineAdapter(
+                HWR.beamline, MXCUBEApplication, MXCUBEApplication._server
+            )
             MXCUBECore.adapt_hardware_objects(app)
         except Exception:
             msg = "Could not initialize one or several hardware objects, "
@@ -144,6 +153,9 @@ class MXCUBECore:
             # use the name otherwise (file name without extension)
             ho = MXCUBECore.hwr.get_hardware_object(ho_name)
 
+            if not ho:
+                continue
+
             _id = MXCUBECore._get_adapter_id(ho)
 
             # Try to use the interface exposed by abstract classes in mxcubecore to adapt
@@ -152,7 +164,9 @@ class MXCUBECore:
 
             if adapter_cls:
                 try:
-                    adapter_instance = adapter_cls(ho, _id, app, **dict(adapter_config))
+                    adapter_instance = adapter_cls(
+                        ho, _id, app, app._server, **dict(adapter_config)
+                    )
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
                 except:
                     logging.getLogger("MX3.HWR").exception(
@@ -237,7 +251,7 @@ class MXCUBEApplication:
 
     mxcubecore = MXCUBECore()
 
-    server = None
+    _server = None
 
     @staticmethod
     def init(server, allow_remote, ra_timeout, video_device, log_fpath, cfg):
@@ -252,7 +266,7 @@ class MXCUBEApplication:
         :return None:
         """
         logging.getLogger("MX3.HWR").info("Starting MXCuBE3...")
-        MXCUBEApplication.server = server
+        MXCUBEApplication._server = server
         MXCUBEApplication.ALLOW_REMOTE = allow_remote
         MXCUBEApplication.TIMEOUT_GIVES_CONTROL = ra_timeout
         MXCUBEApplication.CONFIG = cfg
@@ -262,21 +276,7 @@ class MXCUBEApplication:
         if video_device:
             MXCUBEApplication.init_sample_video(video_device)
 
-        atexit.register(MXCUBEApplication.app_atexit)
-
-        # Install server-side UI state storage
-        MXCUBEApplication.init_state_storage()
         MXCUBEApplication.init_logging(log_fpath)
-
-        from mxcube3.core.component import import_component
-
-        from mxcube3.core.lims import Lims
-        from mxcube3.core.chat import Chat
-        from mxcube3.core.samplechanger import SampleChanger
-        from mxcube3.core.beamline import Beamline
-        from mxcube3.core.sampleview import SampleView
-        from mxcube3.core.queue import Queue
-        from mxcube3.core.workflow import Workflow
 
         _UserManagerCls = import_component(cfg.app.usermanager, package="user")
 
@@ -292,6 +292,10 @@ class MXCUBEApplication:
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, server, {})
 
         MXCUBEApplication.init_signal_handlers()
+        atexit.register(MXCUBEApplication.app_atexit)
+
+        # Install server-side UI state storage
+        MXCUBEApplication.init_state_storage()
 
         # MXCUBEApplication.load_settings()
 
@@ -309,7 +313,7 @@ class MXCUBEApplication:
         :return: None
         """
         try:
-            MXCUBEApplication.mxcubecore.beamline_ho.sample_view.camera.start_streaming()
+            HWR.beamline.sample_view.camera.start_streaming()
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)
@@ -322,9 +326,7 @@ class MXCUBEApplication:
         corresponding signals/events
         """
         try:
-            MXCUBEApplication.queue.init_signals(
-                MXCUBEApplication.mxcubecore.beamline_ho.queue_model
-            )
+            MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
         except Exception:
             sys.excepthook(*sys.exc_info())
 
@@ -367,7 +369,7 @@ class MXCUBEApplication:
         root_logger.setLevel(logging.INFO)
         root_logger.addHandler(NullHandler())
 
-        custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
+        custom_log_handler = MX3LoggingHandler(MXCUBEApplication._server)
         custom_log_handler.setLevel(logging.DEBUG)
         custom_log_handler.setFormatter(log_formatter)
 
@@ -433,7 +435,7 @@ class MXCUBEApplication:
         Saves all application wide variables to disk, stored-mxcube-session.json
         """
         queue = MXCUBEApplication.queue.queue_to_dict(
-            MXCUBEApplication.mxcubecore.beamline_ho.queue_model.get_model_root()
+            HWR.beamline.queue_model.get_model_root()
         )
 
         # For the moment not storing USERS

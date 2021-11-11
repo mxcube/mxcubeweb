@@ -1,10 +1,9 @@
 import logging
-from flask import Blueprint, jsonify, make_response
-
+from flask import Blueprint, jsonify
 from mxcube3 import logging_handler
 
 
-def init_route(mxcube, server, url_prefix):
+def init_route(app, server, url_prefix):
     bp = Blueprint("log", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["GET"])

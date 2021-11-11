@@ -1,17 +1,19 @@
 import logging
 
+from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.models import HOModel, HOActuatorModel
 
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
 
-    def __init__(self, ho, role, app, **kwargs):
+    def __init__(self, ho, role, app, server, **kwargs):
         """
         Args:
             (object): Hardware object to mediate for.
             (str): The name of the object
         """
+        self._server = server
         self._application = app
         self._ho = ho
         self._name = role
@@ -25,14 +27,12 @@ class AdapterBase:
         return self._application.mxcubecore._get_adapter_id(ho)
 
     def _add_adapter(self, attr_name, ho, adapter_cls=None):
-        from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
-
         adapter_cls = (
             adapter_cls if adapter_cls else get_adapter_cls_from_hardware_object(ho)
         )
 
         _id = f"{self.get_adapter_id()}.{attr_name}"
-        adapter_instance = adapter_cls(ho, _id, self._application)
+        adapter_instance = adapter_cls(ho, _id, self._application, self._server)
         self._application.mxcubecore._add_adapter(
             _id, adapter_cls, ho, adapter_instance
         )
@@ -106,7 +106,7 @@ class AdapterBase:
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        self._application.server.emit(
+        self._application._server.emit(
             "beamline_value_change", self.dict(), namespace="/hwr"
         )
 
@@ -178,7 +178,7 @@ class ActuatorAdapterBase(AdapterBase):
         socketIO.
         """
         data = {"name": self._name, "value": args[0]}
-        self._application.server.emit("beamline_value_change", data, namespace="/hwr")
+        self._application._server.emit("beamline_value_change", data, namespace="/hwr")
 
     # Abstract method
     def set_value(self, value):
@@ -244,9 +244,7 @@ class ActuatorAdapterBase(AdapterBase):
         data = super(ActuatorAdapterBase, self)._dict_repr()
 
         try:
-            data.update(
-                {"value": self.get_value(), "limits": self.limits(),}
-            )
+            data.update({"value": self.get_value(), "limits": self.limits()})
         except Exception as ex:
             self._available = False
             data.update(

@@ -14,12 +14,14 @@ from flask import (
 from flask_socketio import join_room, leave_room
 from flask_security import current_user
 
+from mxcubecore import HardwareRepository as HWR
+
 from mxcube3.core.util.networkutils import remote_addr
 
 DISCONNECT_HANDLED = True
 
 
-def init_route(mxcube, server, url_prefix):
+def init_route(app, server, url_prefix):
     bp = Blueprint("remote_access", __name__, url_prefix=url_prefix)
 
     @bp.route("/request_control", methods=["POST"])
@@ -32,8 +34,8 @@ def init_route(mxcube, server, url_prefix):
         def handle_timeout_gives_control(sid, timeout=30):
             gevent.sleep(timeout)
 
-            if mxcube.TIMEOUT_GIVES_CONTROL:
-                user = mxcube.usermanager.get_user_by_sid(sid)
+            if app.TIMEOUT_GIVES_CONTROL:
+                user = app.usermanager.get_user_by_sid(sid)
 
                 # Pass control to user if still waiting
                 if user.get("requestsControl"):
@@ -42,21 +44,21 @@ def init_route(mxcube, server, url_prefix):
         data = request.get_json()
 
         # Is someone already asking for control
-        for observer in mxcube.usermanager.get_observers():
+        for observer in app.usermanager.get_observers():
             if observer["requestsControl"] and observer["host"] != remote_addr():
                 msg = "Another user is already asking for control"
                 return make_response(msg, 409)
 
-        # user = mxcube.usermanager.get_user_by_sid(session.sid)
+        # user = app.usermanager.get_user_by_sid(session.sid)
 
         # user["name"] = data["name"]
         # user["requestsControl"] = data["control"]
         # user["message"] = data["message"]
 
         current_user.requests_control = data["control"]
-        mxcube.server.user_datastore.commit()
+        server.user_datastore.commit()
 
-        observers = mxcube.usermanager.get_observers()
+        observers = app.usermanager.get_observers()
         gevent.spawn(handle_timeout_gives_control, session.sid, timeout=10)
 
         server.emit("observersChanged", observers, namespace="/hwr")
@@ -69,7 +71,7 @@ def init_route(mxcube, server, url_prefix):
         """
         """
         # Already master do nothing
-        if mxcube.usermanager.is_operator():
+        if app.usermanager.is_operator():
             return make_response("", 200)
 
         # Not inhouse user so not allowed to take control by force,
@@ -92,24 +94,20 @@ def init_route(mxcube, server, url_prefix):
         return make_response("", 200)
 
     def toggle_operator(new_op_sid, message):
-        current_op = mxcube.usermanager.get_operator()
+        current_op = app.usermanager.get_operator()
 
-        new_op = mxcube.usermanager.get_user_by_sid(new_op_sid)
-        mxcube.usermanager.set_operator(new_op["sid"])
+        new_op = app.usermanager.get_user_by_sid(new_op_sid)
+        app.usermanager.set_operator(new_op["sid"])
         new_op["message"] = message
 
-        observers = mxcube.usermanager.get_observers()
+        observers = app.usermanager.get_observers()
 
         # Append the new data path so that it can be updated on the client
-        new_op[
-            "rootPath"
-        ] = mxcube.mxcubecore.beamline_ho.session.get_base_image_directory()
+        new_op["rootPath"] = HWR.beamline.session.get_base_image_directory()
 
         # Current op might have logged out, while this is happening
         if current_op:
-            current_op[
-                "rootPath"
-            ] = mxcube.mxcubecore.beamline_ho.session.get_base_image_directory()
+            current_op["rootPath"] = HWR.beamline.session.get_base_image_directory()
             current_op["message"] = message
             server.emit(
                 "setObserver",
@@ -122,7 +120,7 @@ def init_route(mxcube, server, url_prefix):
         server.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace="/hwr")
 
     def remain_observer(observer_sid, message):
-        observer = mxcube.usermanager.get_user_by_sid(observer_sid)
+        observer = app.usermanager.get_user_by_sid(observer_sid)
         observer["message"] = message
 
         server.emit(
@@ -135,12 +133,12 @@ def init_route(mxcube, server, url_prefix):
         """
         """
         data = {
-            "observers": [],  # mxcube.usermanager.get_observers(),
+            "observers": [],  # app.usermanager.get_observers(),
             "sid": current_user.username,
-            "master": mxcube.usermanager.is_operator(),
+            "master": app.usermanager.is_operator(),
             "observerName": current_user.name,
-            "allowRemote": mxcube.ALLOW_REMOTE,
-            "timeoutGivesControl": mxcube.TIMEOUT_GIVES_CONTROL,
+            "allowRemote": app.ALLOW_REMOTE,
+            "timeoutGivesControl": app.TIMEOUT_GIVES_CONTROL,
         }
 
         return jsonify(data=data)
@@ -152,10 +150,10 @@ def init_route(mxcube, server, url_prefix):
         """
         allow = request.get_json().get("allow")
 
-        if mxcube.ALLOW_REMOTE and allow == False:
+        if app.ALLOW_REMOTE and allow == False:
             server.emit("forceSignoutObservers", {}, namespace="/hwr")
 
-        mxcube.ALLOW_REMOTE = allow
+        app.ALLOW_REMOTE = allow
 
         return Response(status=200)
 
@@ -165,14 +163,14 @@ def init_route(mxcube, server, url_prefix):
         """
         """
         control = request.get_json().get("timeoutGivesControl")
-        mxcube.TIMEOUT_GIVES_CONTROL = control
+        app.TIMEOUT_GIVES_CONTROL = control
 
         return Response(status=200)
 
     def observer_requesting_control():
         observer = None
 
-        for o in mxcube.usermanager.get_observers():
+        for o in app.usermanager.get_observers():
             if o["requestsControl"]:
                 observer = o
 
@@ -203,31 +201,28 @@ def init_route(mxcube, server, url_prefix):
         sid = request.get_json().get("sid", "")
 
         if message and sid:
-            mxcube.chat.append_message(message, sid)
+            app.chat.append_message(message, sid)
 
         return Response(status=200)
 
     @bp.route("/chat", methods=["GET"])
     @server.restrict
     def get_all_mesages():
-        return jsonify({"messages": mxcube.chat.get_all_messages()})
+        return jsonify({"messages": app.chat.get_all_messages()})
 
     @server.flask_socketio.on("connect", namespace="/hwr")
     @server.ws_restrict
     def connect():
         global DISCONNECT_HANDLED
-        # user = mxcube.usermanager.get_user_by_sid(session.sid)
+        # user = app.usermanager.get_user_by_sid(session.sid)
 
         # Make sure user is logged, session may have been closed i.e by timeout
         # if user:
         #    user["socketio_sid"] = request.sid
 
         # (Note: User is logged in if operator)
-        if mxcube.usermanager.is_operator():
-            if (
-                not mxcube.mxcubecore.beamline_ho.queue_manager.is_executing()
-                and not DISCONNECT_HANDLED
-            ):
+        if app.usermanager.is_operator():
+            if not HWR.beamline.queue_manager.is_executing() and not DISCONNECT_HANDLED:
                 DISCONNECT_HANDLED = True
                 server.emit("resumeQueueDialog", namespace="/hwr")
                 msg = "Client reconnected, Queue was previously stopped, asking "
@@ -238,10 +233,7 @@ def init_route(mxcube, server, url_prefix):
     @server.ws_restrict
     def disconnect():
         global DISCONNECT_HANDLED
-        if (
-            mxcube.usermanager.is_operator()
-            and mxcube.mxcubecore.beamline_ho.queue_manager.is_executing()
-        ):
+        if app.usermanager.is_operator() and HWR.beamline.queue_manager.is_executing():
 
             DISCONNECT_HANDLED = False
             logging.getLogger("HWR").info("Client disconnected")
@@ -257,7 +249,7 @@ def init_route(mxcube, server, url_prefix):
     @server.ws_restrict
     def set_observer(data):
         name = data.get("name", "")
-        observers = []  # mxcube.usermanager.get_observers()
+        observers = []  # app.usermanager.get_observers()
         observer = {}
 
         if observer and name:
