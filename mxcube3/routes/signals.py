@@ -8,13 +8,15 @@ from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChan
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
-from mxcube3.core.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
+from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
 
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 from mxcubecore.HardwareObjects import queue_entry as qe
 
 from mxcube3.core.util.convertutils import to_camel
 from mxcube3.core.util.networkutils import RateLimited
+
+from mxcubecore import HardwareRepository as HWR
 
 
 def last_queue_node():
@@ -110,7 +112,7 @@ def sc_load(location):
     server.emit("sc", msg, namespace="/hwr")
 
 
-def sc_load_ready(location):
+def sc_load_ready(location):   
     msg = {
         "signal": "loadReady",
         "location": location,
@@ -579,11 +581,12 @@ def xrf_task_progress(taskId, progress):
 
 def send_shapes(update_positions=False, movable={}):
 
+    
     shape_dict = {}
-    for shape in mxcube.mxcubecore.beamline_ho.sample_view.get_shapes():
+    for shape in HWR.beamline.sample_view.get_shapes():
         if update_positions:
             shape.update_position(
-                mxcube.mxcubecore.beamline_ho.diffractometer.motor_positions_to_screen
+                HWR.beamline.diffractometer.motor_positions_to_screen
             )
 
         s = to_camel(shape.as_dict())

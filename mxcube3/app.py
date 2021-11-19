@@ -8,7 +8,6 @@ import logging
 import traceback
 import atexit
 import json
-from functools import reduce
 
 from pathlib import Path
 from logging import StreamHandler, NullHandler
@@ -20,17 +19,16 @@ from mxcubecore.HardwareObjects import queue_entry
 from mxcubecore.utils.conversion import make_table
 
 from mxcube3.logging_handler import MX3LoggingHandler
-
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.adapter.adapter_base import AdapterBase
-from mxcube3.core.component import import_component
-from mxcube3.core.lims import Lims
-from mxcube3.core.chat import Chat
-from mxcube3.core.samplechanger import SampleChanger
-from mxcube3.core.beamline import Beamline
-from mxcube3.core.sampleview import SampleView
-from mxcube3.core.queue import Queue
-from mxcube3.core.workflow import Workflow
+from mxcube3.core.components.component_base import import_component
+from mxcube3.core.components.lims import Lims
+from mxcube3.core.components.chat import Chat
+from mxcube3.core.components.samplechanger import SampleChanger
+from mxcube3.core.components.beamline import Beamline
+from mxcube3.core.components.sampleview import SampleView
+from mxcube3.core.components.queue import Queue
+from mxcube3.core.components.workflow import Workflow
 
 
 removeLoggingHandlers()
@@ -100,7 +98,7 @@ class MXCUBECore:
 
         try:
             MXCUBECore.beamline = BeamlineAdapter(
-                HWR.beamline, MXCUBEApplication, MXCUBEApplication._server
+                HWR.beamline, MXCUBEApplication
             )
             MXCUBECore.adapt_hardware_objects(app)
         except Exception:
@@ -167,7 +165,7 @@ class MXCUBECore:
             if adapter_cls:
                 try:
                     adapter_instance = adapter_cls(
-                        ho, _id, app, app._server, **dict(adapter_config)
+                        ho, _id, app, **dict(adapter_config)
                     )
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
                 except:
@@ -253,7 +251,7 @@ class MXCUBEApplication:
 
     mxcubecore = MXCUBECore()
 
-    _server = None
+    server = None
 
     @staticmethod
     def init(server, allow_remote, ra_timeout, video_device, log_fpath, cfg):
@@ -268,7 +266,7 @@ class MXCUBEApplication:
         :return None:
         """
         logging.getLogger("MX3.HWR").info("Starting MXCuBE3...")
-        MXCUBEApplication._server = server
+        MXCUBEApplication.server = server
         MXCUBEApplication.ALLOW_REMOTE = allow_remote
         MXCUBEApplication.TIMEOUT_GIVES_CONTROL = ra_timeout
         MXCUBEApplication.CONFIG = cfg
@@ -280,18 +278,18 @@ class MXCUBEApplication:
 
         MXCUBEApplication.init_logging(log_fpath)
 
-        _UserManagerCls = import_component(cfg.app.usermanager, package="user")
+        _UserManagerCls = import_component(cfg.app.usermanager, package="components.user")
 
-        MXCUBEApplication.queue = Queue(MXCUBEApplication, server, {})
-        MXCUBEApplication.lims = Lims(MXCUBEApplication, server, {})
+        MXCUBEApplication.queue = Queue(MXCUBEApplication, {})
+        MXCUBEApplication.lims = Lims(MXCUBEApplication, {})
         MXCUBEApplication.usermanager = _UserManagerCls(
-            MXCUBEApplication, server, cfg.app.usermanager
+            MXCUBEApplication, cfg.app.usermanager
         )
-        MXCUBEApplication.chat = Chat(MXCUBEApplication, server, {})
-        MXCUBEApplication.sample_changer = SampleChanger(MXCUBEApplication, server, {})
-        MXCUBEApplication.beamline = Beamline(MXCUBEApplication, server, {})
-        MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, server, {})
-        MXCUBEApplication.workflow = Workflow(MXCUBEApplication, server, {})
+        MXCUBEApplication.chat = Chat(MXCUBEApplication, {})
+        MXCUBEApplication.sample_changer = SampleChanger(MXCUBEApplication, {})
+        MXCUBEApplication.beamline = Beamline(MXCUBEApplication, {})
+        MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
+        MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
 
         MXCUBEApplication.init_signal_handlers()
         atexit.register(MXCUBEApplication.app_atexit)
@@ -371,7 +369,7 @@ class MXCUBEApplication:
         root_logger.setLevel(logging.INFO)
         root_logger.addHandler(NullHandler())
 
-        custom_log_handler = MX3LoggingHandler(MXCUBEApplication._server)
+        custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
         custom_log_handler.setLevel(logging.DEBUG)
         custom_log_handler.setFormatter(log_formatter)
 

@@ -11,7 +11,7 @@ import json
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 
-from mxcube3.core.component import Component
+from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.util import fsutils
 
 from flask import session
@@ -21,9 +21,9 @@ from flask_security import current_user
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
 
-class Lims(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class Lims(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
 
     def new_sample_list(self):
         return {"sampleList": {}, "sampleOrder": []}

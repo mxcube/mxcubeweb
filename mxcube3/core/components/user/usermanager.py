@@ -5,17 +5,17 @@ import uuid
 import flask
 import flask_security
 
-from mxcube3.core.component import Component
-from mxcube3.core.user.models import User
+from mxcube3.core.components.component_base import ComponentBase
+from mxcube3.core.components.user.models import User
 from mxcube3.core.util.networkutils import is_local_host, remote_addr
 from mxcube3.core.util.convertutils import convert_to_dict
 
 from mxcubecore import HardwareRepository as HWR
 
 
-class BaseUserManager(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class BaseUserManager(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
 
     def get_observers(self):
         return [user for user in User.query.all() if not user.in_control]
@@ -31,7 +31,7 @@ class BaseUserManager(Component):
         return user
 
     def is_operator(self):
-        return flask_security.current_user.in_control
+        return getattr(flask_security.current_user, "in_control", False)
 
     def logged_in_users(self, exclude_inhouse=False):
         users = [user["loginID"] for user in self.app.USERS.values()]
@@ -189,7 +189,7 @@ class BaseUserManager(Component):
 
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
-        user_datastore = self.server.user_datastore
+        user_datastore = self.app.server.user_datastore
         username = f"{user}-{sid}"
 
         # Make sure that the roles staff and incontrol always
@@ -197,7 +197,7 @@ class BaseUserManager(Component):
         if not user_datastore.find_role("staff"):
             user_datastore.create_role(name="staff")
             user_datastore.create_role(name="incontrol")
-            self.server.user_datastore.commit()
+            self.app.server.user_datastore.commit()
 
         _u = user_datastore.find_user(username=username)
 
@@ -214,12 +214,12 @@ class BaseUserManager(Component):
         else:
             _u.limsdata = json.dumps(lims_data)
 
-        self.server.user_datastore.commit()
+        self.app.server.user_datastore.commit()
 
         return user_datastore.find_user(username=username)
 
     def db_set_in_control(self, user, control):
-        user_datastore = self.server.user_datastore
+        user_datastore = self.app.server.user_datastore
 
         if control:
             for _u in User.query.all():
@@ -234,12 +234,12 @@ class BaseUserManager(Component):
             _u.in_control = control
             user_datastore.put(_u)
 
-        self.server.user_datastore.commit()
+        self.app.server.user_datastore.commit()
 
 
 class UserManager(BaseUserManager):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+    def __init__(self, app, config):
+        super().__init__(app, config)
 
     def _login(self, login_id, password):
         login_res = self.app.lims.lims_login(login_id, password, create_session=False)

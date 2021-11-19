@@ -23,7 +23,7 @@ class Config:
     flask = FlaskConfig()
     app = AppConfig()
 
-    def __init__(self, fpath=None):
+    def __init__(self, fpath):
         with open(fpath) as f:
             config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
 

@@ -20,16 +20,16 @@ from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
 
 from mxcubecore import HardwareRepository as HWR
 
-from mxcube3.core.component import Component
+from mxcube3.core.components.component_base import ComponentBase
 
 
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
 
 
-class SampleView(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class SampleView(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
         self._sample_image = None
         self._click_count = 0
         self._click_limit = 3

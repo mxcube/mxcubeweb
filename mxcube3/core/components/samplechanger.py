@@ -7,15 +7,15 @@ from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 from mxcubecore.HardwareObjects import queue_entry
 from mxcubecore import HardwareRepository as HWR
 
-from mxcube3.core.component import Component
-from mxcube3.core.queue import COLLECTED, UNCOLLECTED
+from mxcube3.core.components.component_base import ComponentBase
+from mxcube3.core.components.queue import COLLECTED, UNCOLLECTED
 
 
 # TO CONSIDER:
 # This should maybe be made into a adapter instead of a component
-class SampleChanger(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class SampleChanger(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
         patch_queue_entry_mount_sample()
 
     def init_signals(self):

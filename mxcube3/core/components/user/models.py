@@ -1,4 +1,4 @@
-from mxcube3.core.user.database import Base
+from mxcube3.core.components.user.database import Base
 from flask_security import UserMixin, RoleMixin
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import (
