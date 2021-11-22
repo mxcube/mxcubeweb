@@ -1,6 +1,6 @@
 import datetime
 
-from flask_security import current_user
+from flask_login import current_user
 
 from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.util.networkutils import remote_addr

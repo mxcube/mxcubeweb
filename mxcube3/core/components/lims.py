@@ -15,7 +15,7 @@ from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.util import fsutils
 
 from flask import session
-from flask_security import current_user
+from flask_login import current_user
 
 
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")

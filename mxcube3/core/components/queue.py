@@ -9,7 +9,7 @@ import re
 
 from mock import Mock
 
-from flask_security import current_user
+from flask_login import current_user
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects import queue_model_objects as qmo

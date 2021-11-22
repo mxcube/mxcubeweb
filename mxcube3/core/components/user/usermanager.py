@@ -4,6 +4,7 @@ import uuid
 
 import flask
 import flask_security
+import flask_login
 
 from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.components.user.models import User
@@ -31,7 +32,7 @@ class BaseUserManager(ComponentBase):
         return user
 
     def is_operator(self):
-        return getattr(flask_security.current_user, "in_control", False)
+        return getattr(flask_login.current_user, "in_control", False)
 
     def logged_in_users(self, exclude_inhouse=False):
         users = [user["loginID"] for user in self.app.USERS.values()]
@@ -57,12 +58,12 @@ class BaseUserManager(ComponentBase):
         # If no user is currently in control set this user to be
         # in control.
         if not active_in_control:
-            self.db_set_in_control(flask_security.current_user, True)
+            self.db_set_in_control(flask_login.current_user, True)
 
         # Set active proposal to that of the active user
         if HWR.beamline.lims.loginType.lower() != "user":
             # The name of the user is the proposal when using proposalType login
-            self.app.lims.select_proposal(flask_security.current_user.name)
+            self.app.lims.select_proposal(flask_login.current_user.name)
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
@@ -88,6 +89,9 @@ class BaseUserManager(ComponentBase):
             user = self.db_create_user(login_id, password, login_res)
             flask_security.login_user(user)
 
+            # Important to make flask_security user tracking work
+            self.app.server.security.datastore.commit()
+
             address, barcode = self.app.sample_changer.get_loaded_sample()
 
             # If A sample is mounted (and not already marked as such),
@@ -104,7 +108,6 @@ class BaseUserManager(ComponentBase):
             )
 
             self.set_operator()
-
             return login_res["status"]
 
     # Abstract method to be implemented by concrete implementation
@@ -113,7 +116,7 @@ class BaseUserManager(ComponentBase):
 
     def signout(self):
         self._signout()
-        user = flask_security.current_user
+        user = flask_login.current_user
 
         # If operator logs out clear queue and sample list
         if self.is_operator():
@@ -129,7 +132,7 @@ class BaseUserManager(ComponentBase):
 
             self.app.CURRENTLY_MOUNTED_SAMPLE = ""
 
-            self.db_set_in_control(flask_security.current_user, False)
+            self.db_set_in_control(flask_login.current_user, False)
 
             msg = "User %s signed out" % user.username
             logging.getLogger("MX3.HWR").info(msg)
@@ -138,16 +141,17 @@ class BaseUserManager(ComponentBase):
         flask_security.logout_user()
 
     def is_authenticated(self):
-        return flask_security.is_authenticated()
+        return flask_login.current_user.is_authenticated()
 
     def login_info(self):
         # If user object has limsdata attribute if logged in:
-        if hasattr(flask_security.current_user, "limsdata"):
-            login_info = json.loads(flask_security.current_user.limsdata)
+        if hasattr(flask_login.current_user, "limsdata"):
+            login_info = json.loads(flask_login.current_user.limsdata)
         else:
             login_info = {}
 
-        self.set_operator()
+        if not flask_login.current_user.is_anonymous:
+            self.set_operator()
 
         login_info = convert_to_dict(login_info)
 
@@ -157,7 +161,7 @@ class BaseUserManager(ComponentBase):
                 "number": prop["Proposal"]["number"],
                 "proposalId": prop["Proposal"]["proposalId"],
             }
-            for prop in login_info["proposalList"]
+            for prop in login_info.get("proposalList", [])
         ]
 
         res = {
@@ -167,14 +171,14 @@ class BaseUserManager(ComponentBase):
             "loginType": HWR.beamline.lims.loginType.title(),
             "proposalList": proposal_list,
             "user": {
-                "username": flask_security.current_user.username,
-                "email": flask_security.current_user.email,
-                "isstaff": "staff" in flask_security.current_user.roles,
-                "name": flask_security.current_user.name
-                if hasattr(flask_security.current_user, "name")
+                "username": flask_login.current_user.username,
+                "email": flask_login.current_user.email,
+                "isstaff": "staff" in flask_login.current_user.roles,
+                "name": flask_login.current_user.name
+                if hasattr(flask_login.current_user, "name")
                 else "",
-                "inControl": flask_security.current_user.in_control,
-                "ip": flask_security.current_user.last_login_ip,
+                "inControl": flask_login.current_user.in_control,
+                "ip": flask_login.current_user.last_login_ip,
             },
         }
 
@@ -185,7 +189,7 @@ class BaseUserManager(ComponentBase):
 
         res["selectedProposalID"] = HWR.beamline.session.proposal_id
 
-        return flask_security.current_user, res
+        return flask_login.current_user, res
 
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
