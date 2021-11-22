@@ -5,13 +5,13 @@ import sys
 from mxcubecore import HardwareRepository as HWR
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
-from mxcube3.core.component import Component
-from mxcube3.core.queue import READY
+from mxcube3.core.components.component_base import ComponentBase
+from mxcube3.core.components.queue import READY
 
 
-class Beamline(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class Beamline(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
 
     def init_signals(self):
         from mxcube3.routes import signals

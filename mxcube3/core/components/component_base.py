@@ -3,12 +3,10 @@ import importlib
 import logging
 
 
-class Component:
-    def __init__(self, app, server, config):
+class ComponentBase:
+    def __init__(self, app, config):
         self.app = app
         self.config = config
-        self.server = server
-
 
 def import_component(config, package="", module=""):
     _module = "mxcube3.core"

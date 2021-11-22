@@ -1,20 +1,20 @@
 import datetime
 
-from flask_security import current_user
+from flask_login import current_user
 
-from mxcube3.core.component import Component
+from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.util.networkutils import remote_addr
 
 
-class Chat(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class Chat(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
         self.MESSAGES = []
 
     def db_add_message(self, user, message):
-        m = self.server.user_datastore.create_message(message=message)
-        self.server.user_datastore.add_message_to_user(user, m)
-        self.server.user_datastore.commit()
+        m = self.app.server.user_datastore.create_message(message=message)
+        self.app.server.user_datastore.add_message_to_user(user, m)
+        self.app.server.user_datastore.commit()
 
     def append_message(self, message, sid):
         user = current_user.name
@@ -29,12 +29,12 @@ class Chat(Component):
 
         self.MESSAGES.append(data)
         self.db_add_message(current_user, message)
-        self.server.emit("ra_chat_message", data, namespace="/hwr")
+        self.app.server.emit("ra_chat_message", data, namespace="/hwr")
 
     def get_all_messages(self):
         message_list = []
 
-        for m in self.server.user_datastore.get_all_messages():
+        for m in self.app.server.user_datastore.get_all_messages():
             user = m.users.all()[0]
 
             message_list.append(

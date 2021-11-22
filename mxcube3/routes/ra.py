@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import gevent
 import logging
+import json
+
 from flask import (
     Blueprint,
     session,
@@ -12,7 +14,7 @@ from flask import (
 )
 
 from flask_socketio import join_room, leave_room
-from flask_security import current_user
+from flask_login import current_user
 
 from mxcubecore import HardwareRepository as HWR
 
@@ -29,7 +31,6 @@ def init_route(app, server, url_prefix):
     def request_control():
         """
         """
-
         @copy_current_request_context
         def handle_timeout_gives_control(sid, timeout=30):
             gevent.sleep(timeout)
@@ -70,16 +71,19 @@ def init_route(app, server, url_prefix):
     def take_control():
         """
         """
+        import flask
+        sid = flask.session["sid"]
+
         # Already master do nothing
         if app.usermanager.is_operator():
             return make_response("", 200)
 
         # Not inhouse user so not allowed to take control by force,
         # return error code
-        if not session["loginInfo"]["loginRes"]["Session"]["is_inhouse"]:
+        if not "staff" in current_user.roles:
             return make_response("", 409)
 
-        toggle_operator(session.sid, "You were given control")
+        toggle_operator(sid, "You were given control")
 
         return make_response("", 200)
 
@@ -195,7 +199,6 @@ def init_route(app, server, url_prefix):
         return make_response("", 200)
 
     @bp.route("/chat", methods=["POST"])
-    @server.restrict
     def append_message():
         message = request.get_json().get("message", "")
         sid = request.get_json().get("sid", "")
@@ -230,7 +233,6 @@ def init_route(app, server, url_prefix):
                 logging.getLogger("HWR").info(msg)
 
     @server.flask_socketio.on("disconnect", namespace="/hwr")
-    @server.ws_restrict
     def disconnect():
         global DISCONNECT_HANDLED
         if app.usermanager.is_operator() and HWR.beamline.queue_manager.is_executing():
@@ -239,14 +241,12 @@ def init_route(app, server, url_prefix):
             logging.getLogger("HWR").info("Client disconnected")
 
     @server.flask_socketio.on("setRaMaster", namespace="/hwr")
-    @server.ws_restrict
     def set_master(data):
         leave_room("observers", namespace="/ui_state")
 
         return current_user.username
 
     @server.flask_socketio.on("setRaObserver", namespace="/hwr")
-    @server.ws_restrict
     def set_observer(data):
         name = data.get("name", "")
         observers = []  # app.usermanager.get_observers()

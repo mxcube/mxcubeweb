@@ -2,12 +2,14 @@ import logging
 from flask import Blueprint, jsonify
 from mxcube3 import logging_handler
 
-
 def init_route(app, server, url_prefix):
     bp = Blueprint("log", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["GET"])
     @server.restrict
+    @server.validate(
+        tags=["log"]
+    )
     def log():
         """
         Retrive log messages
@@ -19,5 +21,5 @@ def init_route(app, server, url_prefix):
                 messages = handler.buffer
 
         return jsonify(messages)
-
+    
     return bp

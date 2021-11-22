@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import base64
 
-from mxcube3.core.component import Component
+from mxcube3.core.components.component_base import ComponentBase
 
 from mxcubecore import HardwareRepository as HWR
 
 
-class Workflow(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class Workflow(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
 
     def get_available_workflows(self):
         workflows = {}
