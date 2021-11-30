@@ -1100,8 +1100,6 @@ class Queue(ComponentBase):
 
         # params include only path_template-related parametes and strategy_name
         model.init_from_task_data(sample_model, params)
-        model.set_pre_strategy_params(**params)
-        model.set_pre_acquisition_params(**params)
 
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
@@ -1762,11 +1760,24 @@ class Queue(ComponentBase):
             parent_id = node.get_parent()._node_id
 
             node, entry = self.get_entry(parent_id)
+            if entry in HWR.beamline.queue_manager._current_queue_entries:
+                # This is to guard against a tricky bug, where the route
+                # queue/execute_entry_with_id is executed for inexplicable reasons
+                # while awaiting a collect_emulator mock acquisition,
+                # Re-adding a GphlWorkflowQueueENtry to a queue where the same is
+                # already executing.
+                # Since this should clearly never happen, please leave this code in
+                # as a marker of a problem.
+                logging.getLogger("MX3.HWR").error(
+                    "ERROR, Attempt to enqueue %s entry alrady in queue - SKIPPING"
+                    % entry.__class__.__name__
+                )
+                return
 
             HWR.beamline.queue_manager._running = True
-
             HWR.beamline.queue_manager._is_stopped = False
             HWR.beamline.queue_manager._set_in_queue_flag()
+
             try:
                 HWR.beamline.queue_manager.execute_entry(entry)
             except BaseException:
