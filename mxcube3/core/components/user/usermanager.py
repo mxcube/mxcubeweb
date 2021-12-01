@@ -19,7 +19,7 @@ class BaseUserManager(ComponentBase):
         super().__init__(app, config)
 
     def get_observers(self):
-        return [user for user in User.query.all() if not user.in_control]
+        return [user for user in User.query.all() if (not user.in_control and user.is_authenticated)]
 
     def get_operator(self):
         user = None
@@ -48,22 +48,35 @@ class BaseUserManager(ComponentBase):
 
         return users
 
-    def set_operator(self):
-        active_in_control = False
+    def set_operator(self, username):
+        user = None
 
+        for _u in User.query.all():
+            if _u.username == username:
+                self.db_set_in_control(_u, True)
+                user = _u
+            else:
+                self.db_set_in_control(_u, False)
+
+        return user
+
+    def update_operator(self):
+        active_in_control = False
         for _u in User.query.all():
             if _u.is_authenticated and _u.in_control:
                 active_in_control = True
+            else:
+                self.db_set_in_control(flask_login.current_user, False)
 
         # If no user is currently in control set this user to be
-        # in control.
+        # in control
         if not active_in_control:
             self.db_set_in_control(flask_login.current_user, True)
 
         # Set active proposal to that of the active user
         if HWR.beamline.lims.loginType.lower() != "user":
             # The name of the user is the proposal when using proposalType login
-            self.app.lims.select_proposal(flask_login.current_user.name)
+            self.app.lims.select_proposal(flask_login.current_user.nickname)
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
@@ -87,7 +100,7 @@ class BaseUserManager(ComponentBase):
                 flask.session["sid"] = str(uuid.uuid4())
 
             user = self.db_create_user(login_id, password, login_res)
-            flask_security.login_user(user)
+            flask_security.login_user(user, remember=True)
 
             # Important to make flask_security user tracking work
             self.app.server.security.datastore.commit()
@@ -107,7 +120,7 @@ class BaseUserManager(ComponentBase):
                 "[QUEUE] %s " % self.app.queue.queue_to_json()
             )
 
-            self.set_operator()
+            self.update_operator()
             return login_res["status"]
 
     # Abstract method to be implemented by concrete implementation
@@ -137,59 +150,68 @@ class BaseUserManager(ComponentBase):
             msg = "User %s signed out" % user.username
             logging.getLogger("MX3.HWR").info(msg)
 
-        flask.session.clear()
-        flask_security.logout_user()
+        #flask.session.clear()
+        flask_login.logout_user()
 
     def is_authenticated(self):
         return flask_login.current_user.is_authenticated()
 
     def login_info(self):
-        # If user object has limsdata attribute if logged in:
-        if hasattr(flask_login.current_user, "limsdata"):
-            login_info = json.loads(flask_login.current_user.limsdata)
-        else:
-            login_info = {}
-
-        if not flask_login.current_user.is_anonymous:
-            self.set_operator()
-
-        login_info = convert_to_dict(login_info)
-
-        proposal_list = [
-            {
-                "code": prop["Proposal"]["code"],
-                "number": prop["Proposal"]["number"],
-                "proposalId": prop["Proposal"]["proposalId"],
-            }
-            for prop in login_info.get("proposalList", [])
-        ]
-
         res = {
             "synchrotronName": HWR.beamline.session.synchrotron_name,
             "beamlineName": HWR.beamline.session.beamline_name,
-            "loggedIn": True,
+            "loggedIn": False,
             "loginType": HWR.beamline.lims.loginType.title(),
-            "proposalList": proposal_list,
+            "proposalList": [],
             "user": {
-                "username": flask_login.current_user.username,
-                "email": flask_login.current_user.email,
-                "isstaff": "staff" in flask_login.current_user.roles,
-                "name": flask_login.current_user.name
-                if hasattr(flask_login.current_user, "name")
-                else "",
-                "inControl": flask_login.current_user.in_control,
-                "ip": flask_login.current_user.last_login_ip,
+                "username": "",
+                "email": "",
+                "isstaff": "",
+                "nickname": "",
+                "inControl": "",
+                "ip": "",
             },
         }
 
-        res["selectedProposal"] = "%s%s" % (
-            HWR.beamline.session.proposal_code,
-            HWR.beamline.session.proposal_number,
-        )
+        if not flask_login.current_user.is_anonymous:
+            login_info = convert_to_dict(
+                json.loads(flask_login.current_user.limsdata)
+            )
 
-        res["selectedProposalID"] = HWR.beamline.session.proposal_id
+            self.update_operator()
+
+            proposal_list = [
+                {
+                    "code": prop["Proposal"]["code"],
+                    "number": prop["Proposal"]["number"],
+                    "proposalId": prop["Proposal"]["proposalId"],
+                }
+                for prop in login_info.get("proposalList", [])
+            ]
+
+            res = {
+                "synchrotronName": HWR.beamline.session.synchrotron_name,
+                "beamlineName": HWR.beamline.session.beamline_name,
+                "loggedIn": True,
+                "loginType": HWR.beamline.lims.loginType.title(),
+                "proposalList": proposal_list,
+                "rootPath": HWR.beamline.session.get_base_image_directory(),
+                "user": flask_login.current_user.todict(),
+            }
+
+            res["selectedProposal"] = "%s%s" % (
+                HWR.beamline.session.proposal_code,
+                HWR.beamline.session.proposal_number,
+            )
+
+            res["selectedProposalID"] = HWR.beamline.session.proposal_id
+
 
         return flask_login.current_user, res
+
+    def update_user(self, user):
+        self.app.server.user_datastore.put(user)
+        self.app.server.user_datastore.commit()
 
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
@@ -209,8 +231,8 @@ class BaseUserManager(ComponentBase):
             user_datastore.create_user(
                 username=username,
                 password=flask_security.hash_password("password"),
-                name=user,
-                last_session_id=sid,
+                nickname=user,
+                session_id=sid,
                 selected_proposal=user,
                 limsdata=json.dumps(lims_data),
                 roles=["staff"],

@@ -5,6 +5,11 @@ export function showObserverDialog(show = true) {
   return { type: 'SHOW_OBSERVER_DIALOG', show };
 }
 
+export function setRaState(data) {
+  return { type: 'SET_RA_STATE', data };
+}
+
+
 export function setMaster(master, name) {
   return function (dispatch) {
     if (master) {
@@ -14,7 +19,7 @@ export function setMaster(master, name) {
         });
       });
     } else {
-      if (!master && !name) {
+      if (!master) {
         dispatch(showObserverDialog(true));
       }
 
@@ -24,7 +29,6 @@ export function setMaster(master, name) {
         });
       });
     }
-    dispatch(getLoginInfo());
   };
 }
 
@@ -50,8 +54,24 @@ export function requestControl(control = true, message = '', name = '', userInfo
   };
 }
 
+export function getRaState() {
+  return function (dispatch) {
+    fetch('mxcube/api/v0.1/ra/', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include'
+    }).then(response => response.json())
+      .then((data) => {
+        dispatch(setRaState(data.data));
+      });
+  };
+}
+
 export function sendTakeControl() {
-  return function () {
+  return function (dispatch) {
     fetch('mxcube/api/v0.1/ra/take_control', {
       method: 'POST',
       credentials: 'include',
@@ -59,12 +79,15 @@ export function sendTakeControl() {
         Accept: 'application/json',
         'Content-type': 'application/json'
       }
+    }).then(() => {
+      dispatch(getLoginInfo());
+      dispatch(getRaState());
     });
   };
 }
 
-export function sendGiveControl(sid) {
-  return function () {
+export function sendGiveControl(username) {
+  return function (dispatch) {
     fetch('mxcube/api/v0.1/ra/give_control', {
       method: 'POST',
       credentials: 'include',
@@ -72,7 +95,10 @@ export function sendGiveControl(sid) {
         Accept: 'application/json',
         'Content-type': 'application/json'
       },
-      body: JSON.stringify({ sid })
+      body: JSON.stringify({ username })
+    }).then(() => {
+      dispatch(getLoginInfo());
+      dispatch(getRaState());
     });
   };
 }
@@ -138,7 +164,7 @@ export function setObservers(observers) {
   return { type: 'SET_OBSERVERS', observers };
 }
 
-export function sendChatMessage(message, sid) {
+export function sendChatMessage(message, username) {
   return fetch('mxcube/api/v0.1/ra/chat', {
     method: 'POST',
     credentials: 'include',
@@ -146,7 +172,7 @@ export function sendChatMessage(message, sid) {
       Accept: 'application/json',
       'Content-type': 'application/json'
     },
-    body: JSON.stringify({ message, sid })
+    body: JSON.stringify({ message, username })
   });
 }
 

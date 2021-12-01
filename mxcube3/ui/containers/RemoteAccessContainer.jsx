@@ -45,7 +45,7 @@ export class RemoteAccessContainer extends React.Component {
   render() {
     return (
       <div className="col-xs-12">
-        { !this.props.remoteAccess.master ?
+        { !this.props.login.user.inControl ?
           (<div className="col-xs-4">
             <RequestControlForm />
            </div>) : null

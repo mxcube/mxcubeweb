@@ -31,8 +31,7 @@ import {
   sendStopQueue,
   setCurrentSample,
   addDiffractionPlanAction,
-  setSampleAttribute,
-  setRootPath
+  setSampleAttribute
 } from './actions/queue';
 import {
   collapseItem,
@@ -46,11 +45,11 @@ import {
 import { showWorkflowParametersDialog } from './actions/workflow';
 
 import {
-  setObservers, setMaster, requestControlAction,
-  incChatMessageCount
+  requestControlAction,
+  incChatMessageCount,
 } from './actions/remoteAccess';
 
-import { doSignOut } from './actions/login';
+import { doSignOut, getLoginInfo } from './actions/login';
 
 import {
   setSCState,
@@ -129,9 +128,9 @@ class ServerIO {
     });
 
     this.hwrSocket.on('ra_chat_message', (record) => {
-      const { sid } = store.getState().remoteAccess;
-      if (record.sid !== sid) {
-        addResponseMessage(`${record.date} **${record.user}:** \n\n ${record.message}`);
+      const { username } = store.getState().login.user;
+      if (record.username !== username) {
+        addResponseMessage(`${record.date} **${record.nickname}:** \n\n ${record.message}`);
         this.dispatch(incChatMessageCount());
       }
     });
@@ -270,7 +269,14 @@ class ServerIO {
     });
 
     this.hwrSocket.on('observersChanged', (data) => {
-      this.dispatch(setObservers(data));
+      const state = store.getState();
+
+      if (data.observers.length > 0 && data.operator.username === state.login.user.username) {
+        this.dispatch(setLoading(true, 'You were given control', data.message));
+      } else if (data.observers.length > 0 && state.login.user.inControl
+        && data.observers.map((el) => el.username).includes(state.login.user.username)) {
+        this.dispatch(setLoading(true, 'You lost control', 'You lost control'));
+      }
     });
 
     this.hwrSocket.on('observerLogout', (observer) => {
@@ -286,9 +292,9 @@ class ServerIO {
     });
 
     this.hwrSocket.on('forceSignoutObservers', () => {
-      const ra = store.getState().remoteAccess;
+      const state = store.getState();
 
-      if (!ra.master) {
+      if (!state.login.user.inControl) {
         this.dispatch(doSignOut());
       }
     });
@@ -299,15 +305,13 @@ class ServerIO {
 
     this.hwrSocket.on('setMaster', (data) => {
       const state = store.getState();
-      const ra = state.remoteAccess;
 
       // Given control
-      if (!ra.master) {
+      if (!state.login.user.inControl) {
         this.dispatch(setLoading(true, 'You were given control', data.message));
       }
 
-      this.dispatch(setRootPath(data.rootPath));
-      this.dispatch(setMaster(true, data.name));
+      this.dispatch(getLoginInfo());
     });
 
     this.hwrSocket.on('setObserver', (data) => {
@@ -319,9 +323,7 @@ class ServerIO {
         this.dispatch(setLoading(true, 'You were denied control', data.message));
         this.dispatch(requestControlAction(false));
       }
-
-      this.dispatch(setRootPath(data.rootPath));
-      this.dispatch(setMaster(false, data.name));
+      this.dispatch(getLoginInfo());
     });
 
     this.hwrSocket.on('take_xtal_snapshot', (cb) => {

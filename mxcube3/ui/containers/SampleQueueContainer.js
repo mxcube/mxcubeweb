@@ -29,7 +29,7 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
-    rootPath: state.queue.rootPath,
+    rootPath: state.login.rootPath,
     displayData: state.queueGUI.displayData,
     loading: state.queueGUI.loading,
     logRecords: state.logger.logRecords,

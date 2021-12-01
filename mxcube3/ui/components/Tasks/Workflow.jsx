@@ -129,7 +129,7 @@ Workflow = connect(state => {
   }
 
   return {
-    path: `${state.queue.rootPath}/${subdir}`,
+    path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: state.taskForm.acqParametersLimits,

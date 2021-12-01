@@ -34,10 +34,10 @@ class Main extends React.Component {
   componentDidMount() {
     getAllChatMessages().then((json) => {
       json.messages.forEach((entry) => {
-        if (entry.sid === this.props.remoteAccess.sid) {
+        if (entry.username === this.props.login.user.username) {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
         } else {
-          addResponseMessage(`${entry.date} **${entry.user}:** \n\n ${entry.message}`);
+          addResponseMessage(`${entry.date} **${entry.nickname}:** \n\n ${entry.message}`);
         }
       });
     });
@@ -48,7 +48,7 @@ class Main extends React.Component {
   }
 
   handleNewUserMessage(message) {
-    sendChatMessage(message, this.props.remoteAccess.sid);
+    sendChatMessage(message, this.props.login.user.username);
   }
 
   handleClick(e) {
@@ -58,7 +58,7 @@ class Main extends React.Component {
   }
 
   render() {
-    const showReadOnlyDiv = !this.props.remoteAccess.master &&
+    const showReadOnlyDiv = !this.props.login.user.inControl &&
             this.props.location.pathname !== '/remoteaccess' &&
             this.props.location.pathname !== '/help';
 
@@ -116,7 +116,8 @@ class Main extends React.Component {
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
-    general: state.general
+    general: state.general,
+    login: state.login
   };
 }
 

@@ -10,7 +10,6 @@ const initialState = {
   centringMethod: CLICK_CENTRING,
   numSnapshots: 4,
   groupFolder: '',
-  rootPath: ''
 };
 
 export default (state = initialState, action) => {
@@ -81,9 +80,6 @@ export default (state = initialState, action) => {
     case 'SET_GROUP_FOLDER': {
       return { ...state, groupFolder: action.path };
     }
-    case 'SET_ROOT_PATH': {
-      return { ...state, rootPath: action.path };
-    }
     case 'CLEAR_ALL':
     {
       return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
@@ -96,7 +92,6 @@ export default (state = initialState, action) => {
     {
       return {
         ...state,
-        rootPath: action.data.beamlineSetup.path,
         queue: action.data.queue.queue,
         groupFolder: action.data.queue.groupFolder,
         autoMountNext: action.data.queue.autoMountNext,
