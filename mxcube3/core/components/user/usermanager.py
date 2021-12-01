@@ -19,7 +19,11 @@ class BaseUserManager(ComponentBase):
         super().__init__(app, config)
 
     def get_observers(self):
-        return [user for user in User.query.all() if (not user.in_control and user.is_authenticated)]
+        return [
+            user
+            for user in User.query.all()
+            if (not user.in_control and user.is_authenticated)
+        ]
 
     def get_operator(self):
         user = None
@@ -150,7 +154,7 @@ class BaseUserManager(ComponentBase):
             msg = "User %s signed out" % user.username
             logging.getLogger("MX3.HWR").info(msg)
 
-        #flask.session.clear()
+        # flask.session.clear()
         flask_login.logout_user()
 
     def is_authenticated(self):
@@ -174,9 +178,7 @@ class BaseUserManager(ComponentBase):
         }
 
         if not flask_login.current_user.is_anonymous:
-            login_info = convert_to_dict(
-                json.loads(flask_login.current_user.limsdata)
-            )
+            login_info = convert_to_dict(json.loads(flask_login.current_user.limsdata))
 
             self.update_operator()
 
@@ -205,7 +207,6 @@ class BaseUserManager(ComponentBase):
             )
 
             res["selectedProposalID"] = HWR.beamline.session.proposal_id
-
 
         return flask_login.current_user, res
 

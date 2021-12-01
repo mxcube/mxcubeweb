@@ -32,9 +32,7 @@ class AdapterBase:
 
         _id = f"{self.get_adapter_id()}.{attr_name}"
         adapter_instance = adapter_cls(ho, _id, self.app)
-        self.app.mxcubecore._add_adapter(
-            _id, adapter_cls, ho, adapter_instance
-        )
+        self.app.mxcubecore._add_adapter(_id, adapter_cls, ho, adapter_instance)
 
         setattr(self, attr_name, adapter_instance)
 
@@ -105,9 +103,7 @@ class AdapterBase:
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        self.app.server.emit(
-            "beamline_value_change", self.dict(), namespace="/hwr"
-        )
+        self.app.server.emit("beamline_value_change", self.dict(), namespace="/hwr")
 
     def _dict_repr(self):
         """
