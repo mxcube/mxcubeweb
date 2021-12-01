@@ -53,7 +53,8 @@ software_paths:
 
     #Gphl workflow Java classpath.
     #Should point to all contents of workflow application directory
-    gphl_java_classpath: "{GPHL_SETUP}/workflow/gphl_java_classes/wfjars/*"
+#    gphl_java_classpath: "{GPHL_SETUP}/workflow/gphl_java_classes/wfjars/*"
+    gphl_java_classpath: "{GPHL_SETUP}/workflow/gphl_java_classes/lib/*"
 
     #Directory with workflow config input, e.g. instrumentation.nml
     gphl_beamline_config: gphl/config_embl_hh_p14
