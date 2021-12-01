@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import gevent
 import logging
-import json
+import flask
 
 from flask import (
     Blueprint,
@@ -36,31 +36,23 @@ def init_route(app, server, url_prefix):
             gevent.sleep(timeout)
 
             if app.TIMEOUT_GIVES_CONTROL:
-                user = app.usermanager.get_user_by_sid(sid)
-
                 # Pass control to user if still waiting
-                if user.get("requestsControl"):
-                    toggle_operator(sid, "Timeout expired, you have control")
+                if current_user.requests_control:
+                    toggle_operator(current_user.username, "Timeout expired, you have control")
 
         data = request.get_json()
 
         # Is someone already asking for control
         for observer in app.usermanager.get_observers():
-            if observer["requestsControl"] and observer["host"] != remote_addr():
+            if observer.requests_control and observer.username != current_user.username:
                 msg = "Another user is already asking for control"
                 return make_response(msg, 409)
-
-        # user = app.usermanager.get_user_by_sid(session.sid)
-
-        # user["name"] = data["name"]
-        # user["requestsControl"] = data["control"]
-        # user["message"] = data["message"]
 
         current_user.requests_control = data["control"]
         server.user_datastore.commit()
 
-        observers = app.usermanager.get_observers()
-        gevent.spawn(handle_timeout_gives_control, session.sid, timeout=10)
+        observers = [_u.todict() for _u in app.usermanager.get_observers()]
+        gevent.spawn(handle_timeout_gives_control, current_user.username, timeout=10)
 
         server.emit("observersChanged", observers, namespace="/hwr")
 
@@ -71,19 +63,16 @@ def init_route(app, server, url_prefix):
     def take_control():
         """
         """
-        import flask
-        sid = flask.session["sid"]
-
         # Already master do nothing
         if app.usermanager.is_operator():
             return make_response("", 200)
 
         # Not inhouse user so not allowed to take control by force,
         # return error code
-        if not "staff" in current_user.roles:
+        if not current_user.isstaff():
             return make_response("", 409)
 
-        toggle_operator(sid, "You were given control")
+        toggle_operator(current_user.username, "You were given control")
 
         return make_response("", 200)
 
@@ -92,36 +81,25 @@ def init_route(app, server, url_prefix):
     def give_control():
         """
         """
-        sid = request.get_json().get("sid")
-        toggle_operator(sid, "You were given control")
+        username = request.get_json().get("username")
+        toggle_operator(username, "You were given control")
 
         return make_response("", 200)
 
-    def toggle_operator(new_op_sid, message):
-        current_op = app.usermanager.get_operator()
+    def toggle_operator(username, message):
+        oldop = app.usermanager.get_operator()
+        newop = app.usermanager.set_operator(username)
 
-        new_op = app.usermanager.get_user_by_sid(new_op_sid)
-        app.usermanager.set_operator(new_op["sid"])
-        new_op["message"] = message
+        join_room("observers", sid=oldop.socketio_session_id, namespace="/ui_state")
+        leave_room("observers", sid=newop.socketio_session_id, namespace="/ui_state")
 
-        observers = app.usermanager.get_observers()
+        data =  {
+            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
+            "message": message,
+            "operator": newop.todict()
+        }
 
-        # Append the new data path so that it can be updated on the client
-        new_op["rootPath"] = HWR.beamline.session.get_base_image_directory()
-
-        # Current op might have logged out, while this is happening
-        if current_op:
-            current_op["rootPath"] = HWR.beamline.session.get_base_image_directory()
-            current_op["message"] = message
-            server.emit(
-                "setObserver",
-                current_op,
-                room=current_op["socketio_sid"],
-                namespace="/hwr",
-            )
-
-        server.emit("observersChanged", observers, namespace="/hwr")
-        server.emit("setMaster", new_op, room=new_op["socketio_sid"], namespace="/hwr")
+        server.emit("observersChanged", data, namespace="/hwr")
 
     def remain_observer(observer_sid, message):
         observer = app.usermanager.get_user_by_sid(observer_sid)
@@ -133,14 +111,11 @@ def init_route(app, server, url_prefix):
 
     @bp.route("/", methods=["GET"])
     @server.restrict
-    def observers():
+    def rasettings():
         """
         """
         data = {
-            "observers": [],  # app.usermanager.get_observers(),
-            "sid": current_user.username,
-            "master": app.usermanager.is_operator(),
-            "observerName": current_user.name,
+            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
             "allowRemote": app.ALLOW_REMOTE,
             "timeoutGivesControl": app.TIMEOUT_GIVES_CONTROL,
         }
@@ -201,10 +176,10 @@ def init_route(app, server, url_prefix):
     @bp.route("/chat", methods=["POST"])
     def append_message():
         message = request.get_json().get("message", "")
-        sid = request.get_json().get("sid", "")
+        username = request.get_json().get("username", "")
 
-        if message and sid:
-            app.chat.append_message(message, sid)
+        if message and username:
+            app.chat.append_message(message, username)
 
         return Response(status=200)
 
@@ -217,13 +192,9 @@ def init_route(app, server, url_prefix):
     @server.ws_restrict
     def connect():
         global DISCONNECT_HANDLED
-        # user = app.usermanager.get_user_by_sid(session.sid)
+        current_user.socketio_session_id = request.sid
+        app.usermanager.update_user(current_user)
 
-        # Make sure user is logged, session may have been closed i.e by timeout
-        # if user:
-        #    user["socketio_sid"] = request.sid
-
-        # (Note: User is logged in if operator)
         if app.usermanager.is_operator():
             if not HWR.beamline.queue_manager.is_executing() and not DISCONNECT_HANDLED:
                 DISCONNECT_HANDLED = True
@@ -240,6 +211,8 @@ def init_route(app, server, url_prefix):
             DISCONNECT_HANDLED = False
             logging.getLogger("HWR").info("Client disconnected")
 
+        #app.usermanager.signout()
+
     @server.flask_socketio.on("setRaMaster", namespace="/hwr")
     def set_master(data):
         leave_room("observers", namespace="/ui_state")
@@ -249,12 +222,12 @@ def init_route(app, server, url_prefix):
     @server.flask_socketio.on("setRaObserver", namespace="/hwr")
     def set_observer(data):
         name = data.get("name", "")
-        observers = []  # app.usermanager.get_observers()
-        observer = {}
+        observers = [_u.todict() for _u in app.usermanager.get_observers()]
 
-        if observer and name:
-            observer["name"] = current_user.name
-            server.emit("observerLogin", observer, include_self=False, namespace="/hwr")
+        if name:
+            current_user.nickname = name
+            app.usermanager.update_user(current_user)
+            server.emit("observerLogin", current_user.todict(), include_self=False, namespace="/hwr")
 
         server.emit("observersChanged", observers, namespace="/hwr")
         join_room("observers", namespace="/ui_state")

@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import { browserHistory } from 'react-router';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { sendClearQueue, clearAll } from './queue';
-import { setMaster } from './remoteAccess';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -69,9 +68,7 @@ export function sendSelectProposal(number) {
 }
 
 export function startSession() {
-  return function (dispatch, getState) {
-    const { user } = getState().login;
-    dispatch(setMaster(user.inControl, user.name));
+  return function (dispatch) {
     dispatch(getInitialState());
     dispatch(setLoading(false));
   };

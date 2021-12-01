@@ -16,7 +16,7 @@ export default class MXNavbar extends React.Component {
   }
 
   render() {
-    const raStyle = (this.props.remoteAccess.master ? { color: 'white' } : {});
+    const raStyle = (this.props.user.inControl ? { color: 'white' } : {});
     const numObservers = this.props.remoteAccess.observers.length;
 
     document.title = `MxCuBE-3 Proposal: ${this.props.selectedProposal}`;

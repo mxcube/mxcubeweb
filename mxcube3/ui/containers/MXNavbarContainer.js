@@ -7,7 +7,7 @@ class MXNavbarContainer extends React.Component {
   render() {
     return (
       <MXNavbar
-        userInfo={this.props.userInfo}
+        user={this.props.user}
         selectedProposal={this.props.selectedProposal}
         signOut={this.props.signOut}
         loggedIn={this.props.loggedIn}
@@ -21,7 +21,7 @@ class MXNavbarContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    userInfo: state.login.data,
+    user: state.login.user,
     loggedIn: state.login.loggedIn,
     selectedProposal: state.login.selectedProposal,
     mode: state.queue.automatic,

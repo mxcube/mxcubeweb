@@ -21,7 +21,6 @@ import { TASK_UNCOLLECTED, AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constan
 
 import './ConfirmCollectDialog.css';
 
-
 export class ConfirmCollectDialog extends React.Component {
   constructor(props) {
     super(props);
@@ -307,7 +306,7 @@ export class ConfirmCollectDialog extends React.Component {
                   <td>{sampleName} ({sample.location})</td>
                     <td>
                       <b style={{ color: '#337ab7' }} >
-                        ...{parameters.fullPath.split(this.props.queue.rootPath)}
+                        ...{parameters.fullPath.split(this.props.login.rootPath)}
                       </b>
                     </td>
                     <td>{parameters.num_images || '-'}</td>
@@ -363,7 +362,7 @@ export class ConfirmCollectDialog extends React.Component {
 
           <br />
           <p style={{ color: '#337ab7' }}>
-            <b>Data Root: {this.props.queue.rootPath}</b>
+            <b>Data Root: {this.props.login.rootPath}</b>
           </p>
           {this.taskTable()}
         </Modal.Body>
@@ -379,7 +378,8 @@ function mapStateToProps(state) {
   return {
     show: state.queueGUI.showConfirmCollectDialog,
     queue: state.queue,
-    sampleGrid: state.sampleGrid
+    sampleGrid: state.sampleGrid,
+    login: state.login
   };
 }
 

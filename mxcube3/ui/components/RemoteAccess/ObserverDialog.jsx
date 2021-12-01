@@ -13,7 +13,7 @@ export class ObserverDialog extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.remoteAccess.master && !nextProps.remoteAccess.master) {
+    if (this.props.login.user.inControl && !nextProps.login.user.inControl) {
       this.lostControl = true;
     } else {
       this.lostControl = false;
@@ -23,7 +23,7 @@ export class ObserverDialog extends React.Component {
   componentDidUpdate() {
     if (this.name && this.name.value === '') {
       try {
-        this.name.value = this.props.login.user.name;
+        this.name.value = this.props.login.user.nickname;
       } catch (err) {
         this.name.value = '';
       }

@@ -15,7 +15,7 @@ class RequestControlForm extends React.Component {
   }
 
   componentDidUpdate() {
-    this.name.value = this.props.remoteAccess.observerName;
+    this.name.value = this.props.login.user.nickname;
   }
 
   getTakeControlOption() {
@@ -34,7 +34,7 @@ class RequestControlForm extends React.Component {
     let name = '';
 
     try {
-      name = this.props.remoteAccess.observerName;
+      name = this.props.login.user.nickname;
     } catch (e) {
       name = '';
     }

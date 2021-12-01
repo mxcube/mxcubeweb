@@ -1,8 +1,6 @@
 const initialState = {
   // the null value is used to distinguish between signed out (null) or logged in (true/false)
-  master: null,
   sid: null,
-  observerName: null,
   requestingControl: false,
   observers: [],
   allowRemote: false,
@@ -13,13 +11,20 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case 'SET_RA_STATE':
+    {
+      return {
+        ...state,
+        observers: action.data.observers,
+        allowRemote: action.data.allowRemote,
+        timeoutGivesControl: action.data.timeoutGivesControl
+      };
+    }
     case 'SET_MASTER':
     {
       return Object.assign({}, state,
         {
-          master: action.master,
           sid: action.sid,
-          observerName: action.name,
           requestingControl: false,
         });
     }
@@ -56,8 +61,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         observers: action.data.remoteAccess.observers,
-        master: action.data.remoteAccess.master,
-        observerName: action.data.remoteAccess.observerName,
         sid: action.data.remoteAccess.sid,
         allowRemote: action.data.remoteAccess.allowRemote,
         timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl

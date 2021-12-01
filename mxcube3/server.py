@@ -24,7 +24,6 @@ class Server:
     init_event = gevent.event.Event()
     flask = None
     flask_session = None
-    flask_socketio = None
     security = None
     api = None
     user_datastore = None

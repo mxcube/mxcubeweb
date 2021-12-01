@@ -94,7 +94,7 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def send_feedback():
         sender_data = request.get_json()
-        sender_data["LOGGED_IN_USER"] = current_user.name
+        sender_data["LOGGED_IN_USER"] = current_user.nickname
         networkutils.send_feedback(sender_data)
         return make_response("", 200)
 

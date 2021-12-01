@@ -158,7 +158,7 @@ EnergyScan = connect(state => {
   }
 
   return {
-    path: `${state.queue.rootPath}/${subdir}`,
+    path: `${state.login.rootPath}/${subdir}`,
     filename: state.taskForm.taskData.parameters.fileName,
     edge,
     element,

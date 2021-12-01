@@ -132,7 +132,7 @@ XRFScan = connect(state => {
   }
 
   return {
-    path: `${state.queue.rootPath}/${subdir}`,
+    path: `${state.login.rootPath}/${subdir}`,
     filename: state.taskForm.taskData.parameters.fileName,
     countTime,
     wfname: state.taskForm.taskData.parameters.wfname,
