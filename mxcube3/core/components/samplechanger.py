@@ -3,7 +3,6 @@ import logging
 import time
 import gevent
 
-from queue_entry import QueueSkippEntryException, CENTRING_METHOD
 from mxcubecore.HardwareObjects import queue_entry
 from mxcubecore import HardwareRepository as HWR
 
@@ -206,7 +205,7 @@ class SampleChanger(ComponentBase):
                     res = True
                 if (
                     res
-                    and self.app.CENTRING_METHOD == CENTRING_METHOD.LOOP
+                    and self.app.CENTRING_METHOD == queue_entry.CENTRING_METHOD.LOOP
                     and not HWR.beamline.diffractometer.in_plate_mode()
                 ):
                     msg = "Starting autoloop centring ..."
@@ -409,7 +408,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                 # if sample could not be loaded, but no exception is raised, let's skip
                 # the sample
 
-                raise QueueSkippEntryException(
+                raise queue_entry.QueueSkippEntryException(
                     "Sample changer could not load sample", ""
                 )
 
@@ -425,7 +424,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     if not sample_mount_device.has_loaded_sample():
         # Disables all related collections
         logging.getLogger("user_level_log").info("Sample not loaded")
-        raise QueueSkippEntryException("Sample not loaded", "")
+        raise queue_entry.QueueSkippEntryException("Sample not loaded", "")
     else:
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
@@ -433,15 +432,15 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         if dm is not None:
             try:
                 dm.connect("centringAccepted", centring_done_cb)
-                centring_method = CENTRING_METHOD
+                centring_method = queue_entry.CENTRING_METHOD
 
-                if centring_method == CENTRING_METHOD.MANUAL:
+                if centring_method == queue_entry.CENTRING_METHOD.MANUAL:
                     msg = "Manual centring used, waiting for" + " user to center sample"
                     log.warning(msg)
                     dm.start_centring_method(dm.MANUAL3CLICK_MODE)
                 elif centring_method in [
-                    CENTRING_METHOD.LOOP,
-                    CENTRING_METHOD.FULLY_AUTOMATIC,
+                    queue_entry.CENTRING_METHOD.LOOP,
+                    queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC,
                 ]:
                     if not dm.current_centring_procedure:
                         dm.start_centring_method(dm.C3D_MODE)
@@ -464,8 +463,8 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                 if centring_result["valid"]:
                     logging.getLogger("user_level_log").info("Centring done !")
                 else:
-                    if centring_method == CENTRING_METHOD.FULLY_AUTOMATIC:
-                        raise QueueSkippEntryException(
+                    if centring_method == queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC:
+                        raise queue_entry.QueueSkippEntryException(
                             "Could not center sample, skipping", ""
                         )
                     else:

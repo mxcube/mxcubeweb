@@ -41,8 +41,6 @@ class MXCUBECore:
     # Below, all the HardwareObjects made available through this module,
     # Initialized by the init function
 
-    # BeamlineSetup
-    beamline_ho = None
     # XMLRPCServer
     actions = None
     # Plotting

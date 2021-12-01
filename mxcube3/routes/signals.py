@@ -4,11 +4,13 @@ import json
 from mxcube3 import server
 from mxcube3 import mxcube
 
+from flask import Response
+
 from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
-from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
+from mxcube3.core.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
 
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 from mxcubecore.HardwareObjects import queue_entry as qe
@@ -20,7 +22,7 @@ from mxcubecore import HardwareRepository as HWR
 
 
 def last_queue_node():
-    node = mxcube.mxcubecore.beamline_ho.queue_manager._current_queue_entries[
+    node = HWR.beamline.queue_manager._current_queue_entries[
         -1
     ].get_data_model()
 
@@ -154,10 +156,10 @@ def loaded_sample_changed(sample):
     try:
         sampleID = address
 
-        if mxcube.mxcubecore.beamline_ho.sample_changer.has_loaded_sample():
+        if HWR.beamline.sample_changer.has_loaded_sample():
             mxcube.sample_changer.set_current_sample(sampleID)
         else:
-            sample = mxcube.mxcubecore.beamline_ho.sample_changer.get_loaded_sample()
+            sample = HWR.beamline.sample_changer.get_loaded_sample()
 
             if sample:
                 address = sample.get_address()
@@ -222,7 +224,7 @@ def get_task_state(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
-        limsres = mxcube.mxcubecore.beamline_ho.lims.lims_rest.get_dc(lims_id)
+        limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
     except BaseException:
         limsres = {}
 
@@ -253,7 +255,7 @@ def update_task_result(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
-        limsres = mxcube.mxcubecore.beamline_ho.lims_rest.get_dc(lims_id)
+        limsres = HWR.beamline.lims_rest.get_dc(lims_id)
     except BaseException:
         limsres = {}
 
@@ -394,7 +396,7 @@ def collect_oscillation_failed(
 
     if not mxcube.queue.is_interleaved(node["node"]):
         try:
-            mxcube.mxcubecore.beamline_ho.lims_rest.get_dc(lims_id)
+            HWR.beamline.lims_rest.get_dc(lims_id)
         except BaseException:
             pass
 
@@ -584,7 +586,9 @@ def send_shapes(update_positions=False, movable={}):
     shape_dict = {}
     for shape in HWR.beamline.sample_view.get_shapes():
         if update_positions:
-            shape.update_position(HWR.beamline.diffractometer.motor_positions_to_screen)
+            shape.update_position(
+                HWR.beamline.diffractometer.motor_positions_to_screen
+            )
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})
@@ -607,7 +611,7 @@ def motor_state_callback(movable, sender=None, **kw):
 
         # Update the pixels per mm if it was the zoom motor that moved
         if movable["name"] == "zoom":
-            ppm = mxcube.mxcubecore.beamline_ho.diffractometer.get_pixels_per_mm()
+            ppm = HWR.beamline.diffractometer.get_pixels_per_mm()
             server.emit("update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr")
 
     server.emit("motor_state", movable, namespace="/hwr")
@@ -615,7 +619,7 @@ def motor_state_callback(movable, sender=None, **kw):
 
 def beam_changed(*args, **kwargs):
 
-    beam_info = mxcube.mxcubecore.beamline_ho.beam
+    beam_info = HWR.beamline.beam
 
     if beam_info is None:
         logging.getLogger("HWR").error("beamInfo is not defined")
@@ -635,8 +639,9 @@ def beam_changed(*args, **kwargs):
     try:
         server.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
     except Exception:
-        # TODO fix error
-        logging.getLogger("HWR").exception("error sending message: %s" + str(msg))
+        logging.getLogger("HWR").exception(
+            "error sending beam_changed signal: %s" % beam_info_dict
+        )
 
 
 def beamline_action_start(name):
@@ -674,7 +679,7 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(mxcube.mxcubecore.beamline_ho).get_object_by_role(
+    ho = BeamlineAdapter(HWR.beamline).get_object_by_role(
         "safety_shutter"
     )
     data = ho.dict()
@@ -688,8 +693,9 @@ def mach_info_changed(values):
     try:
         server.emit("mach_info_changed", values, namespace="/hwr")
     except Exception:
-        # TODO fix error
-        logging.getLogger("HWR").error("error sending message: %s" + str(msg))
+        logging.getLogger("HWR").error(
+            "error sending mach_info_changed signal: &s" % values
+        )
 
 
 def new_plot(plot_info):
