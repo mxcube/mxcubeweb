@@ -8,6 +8,7 @@ class ComponentBase:
         self.app = app
         self.config = config
 
+
 def import_component(config, package="", module=""):
     _module = "mxcube3.core"
 

@@ -31,6 +31,7 @@ def init_route(app, server, url_prefix):
     def request_control():
         """
         """
+
         @copy_current_request_context
         def handle_timeout_gives_control(sid, timeout=30):
             gevent.sleep(timeout)
@@ -38,7 +39,9 @@ def init_route(app, server, url_prefix):
             if app.TIMEOUT_GIVES_CONTROL:
                 # Pass control to user if still waiting
                 if current_user.requests_control:
-                    toggle_operator(current_user.username, "Timeout expired, you have control")
+                    toggle_operator(
+                        current_user.username, "Timeout expired, you have control"
+                    )
 
         data = request.get_json()
 
@@ -93,10 +96,10 @@ def init_route(app, server, url_prefix):
         join_room("observers", sid=oldop.socketio_session_id, namespace="/ui_state")
         leave_room("observers", sid=newop.socketio_session_id, namespace="/ui_state")
 
-        data =  {
+        data = {
             "observers": [_u.todict() for _u in app.usermanager.get_observers()],
             "message": message,
-            "operator": newop.todict()
+            "operator": newop.todict(),
         }
 
         server.emit("observersChanged", data, namespace="/hwr")
@@ -211,7 +214,7 @@ def init_route(app, server, url_prefix):
             DISCONNECT_HANDLED = False
             logging.getLogger("HWR").info("Client disconnected")
 
-        #app.usermanager.signout()
+        # app.usermanager.signout()
 
     @server.flask_socketio.on("setRaMaster", namespace="/hwr")
     def set_master(data):
@@ -227,7 +230,12 @@ def init_route(app, server, url_prefix):
         if name:
             current_user.nickname = name
             app.usermanager.update_user(current_user)
-            server.emit("observerLogin", current_user.todict(), include_self=False, namespace="/hwr")
+            server.emit(
+                "observerLogin",
+                current_user.todict(),
+                include_self=False,
+                namespace="/hwr",
+            )
 
         server.emit("observersChanged", observers, namespace="/hwr")
         join_room("observers", namespace="/ui_state")

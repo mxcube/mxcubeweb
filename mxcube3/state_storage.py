@@ -21,7 +21,6 @@ def init():
         pass
 
     @server.flask_socketio.on("ui_state_get", namespace="/ui_state")
-
     def ui_state_get(k):
         k = k.replace("reduxPersist:", "")
         # print 'ui state GET',k,'returning:',STATE[k]
