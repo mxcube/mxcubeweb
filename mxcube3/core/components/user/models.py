@@ -83,7 +83,13 @@ class User(Base, UserMixin):
 
     def todict(self):
         # Database stores dates in UTC
-        clt_dt = self.current_login_at.replace(tzinfo=pytz.timezone("UTC"))
+        current_login_at_str = ""
+
+        if self.current_login_at:
+            clt_dt = self.current_login_at.replace(tzinfo=pytz.timezone("UTC"))
+            current_login_at_str = clt_dt.astimezone(tzlocal.get_localzone()).strftime(
+                "%Y/%m/%d, %H:%M:%S"
+            )
 
         return {
             "username": self.username,
@@ -92,8 +98,6 @@ class User(Base, UserMixin):
             "nickname": self.nickname,
             "inControl": self.in_control,
             "ip": self.current_login_ip,
-            "currentLoginAt": clt_dt.astimezone(tzlocal.get_localzone()).strftime(
-                "%Y/%m/%d, %H:%M:%S"
-            ),
+            "currentLoginAt": current_login_at_str,
             "requestsControl": self.requests_control,
         }
