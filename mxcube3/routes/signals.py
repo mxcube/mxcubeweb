@@ -586,9 +586,7 @@ def send_shapes(update_positions=False, movable={}):
     shape_dict = {}
     for shape in HWR.beamline.sample_view.get_shapes():
         if update_positions:
-            shape.update_position(
-                HWR.beamline.diffractometer.motor_positions_to_screen
-            )
+            shape.update_position(HWR.beamline.diffractometer.motor_positions_to_screen)
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})

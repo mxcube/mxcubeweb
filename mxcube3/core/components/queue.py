@@ -1100,6 +1100,10 @@ class Queue(ComponentBase):
 
         # params include only path_template-related parametes and strategy_name
         model.init_from_task_data(sample_model, params)
+
+        # NBNB 
+        # These two calls seems to be needed by the Global phasing workflows
+        # Adding them resolves the current conflict
         model.set_pre_strategy_params(**params)
         model.set_pre_acquisition_params(**params)
 
@@ -1762,7 +1766,6 @@ class Queue(ComponentBase):
             parent_id = node.get_parent()._node_id
 
             node, entry = self.get_entry(parent_id)
-
             HWR.beamline.queue_manager._running = True
             HWR.beamline.queue_manager._is_stopped = False
             HWR.beamline.queue_manager._set_in_queue_flag()
