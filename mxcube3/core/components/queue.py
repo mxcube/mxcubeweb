@@ -1764,17 +1764,13 @@ class Queue(ComponentBase):
             node, entry = self.get_entry(parent_id)
 
             HWR.beamline.queue_manager._running = True
-
             HWR.beamline.queue_manager._is_stopped = False
             HWR.beamline.queue_manager._set_in_queue_flag()
+
             try:
                 HWR.beamline.queue_manager.execute_entry(entry)
             except BaseException:
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
-            finally:
-                HWR.beamline.queue_manager._running = False
-                HWR.beamline.queue_manager.emit("queue_stopped", (None,))
-                HWR.beamline.collect.queue_finished_cleanup()
 
     def init_signals(self, queue):
         """
