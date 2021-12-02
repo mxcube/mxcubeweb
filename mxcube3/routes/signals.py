@@ -10,7 +10,7 @@ from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChan
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
-from mxcube3.core.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
+from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
 
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 from mxcubecore.HardwareObjects import queue_entry as qe
