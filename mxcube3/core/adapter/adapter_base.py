@@ -7,14 +7,13 @@ from mxcube3.core.models import HOModel, HOActuatorModel
 class AdapterBase:
     """Hardware Object Adapter Base class"""
 
-    def __init__(self, ho, role, app, server, **kwargs):
+    def __init__(self, ho, role, app, **kwargs):
         """
         Args:
             (object): Hardware object to mediate for.
             (str): The name of the object
         """
-        self._server = server
-        self._application = app
+        self.app = app
         self._ho = ho
         self._name = role
         self._available = True
@@ -24,7 +23,7 @@ class AdapterBase:
 
     def get_adapter_id(self, ho=None):
         ho = self._ho if not ho else ho
-        return self._application.mxcubecore._get_adapter_id(ho)
+        return self.app.mxcubecore._get_adapter_id(ho)
 
     def _add_adapter(self, attr_name, ho, adapter_cls=None):
         adapter_cls = (
@@ -32,10 +31,8 @@ class AdapterBase:
         )
 
         _id = f"{self.get_adapter_id()}.{attr_name}"
-        adapter_instance = adapter_cls(ho, _id, self._application, self._server)
-        self._application.mxcubecore._add_adapter(
-            _id, adapter_cls, ho, adapter_instance
-        )
+        adapter_instance = adapter_cls(ho, _id, self.app)
+        self.app.mxcubecore._add_adapter(_id, adapter_cls, ho, adapter_instance)
 
         setattr(self, attr_name, adapter_instance)
 
@@ -106,9 +103,7 @@ class AdapterBase:
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        self._application._server.emit(
-            "beamline_value_change", self.dict(), namespace="/hwr"
-        )
+        self.app.server.emit("beamline_value_change", self.dict(), namespace="/hwr")
 
     def _dict_repr(self):
         """
@@ -178,7 +173,7 @@ class ActuatorAdapterBase(AdapterBase):
         socketIO.
         """
         data = {"name": self._name, "value": args[0]}
-        self._application._server.emit("beamline_value_change", data, namespace="/hwr")
+        self.app.server.emit("beamline_value_change", data, namespace="/hwr")
 
     # Abstract method
     def set_value(self, value):

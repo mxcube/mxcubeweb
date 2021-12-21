@@ -1,9 +1,10 @@
 import logging
 
 from flask import Blueprint, request, jsonify, make_response, redirect
-from flask_security import current_user
+from flask_login import current_user
 
 from mxcube3.core.util import networkutils
+from flask_login import current_user
 
 
 def deny_access(msg):
@@ -93,11 +94,12 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def send_feedback():
         sender_data = request.get_json()
-        sender_data["LOGGED_IN_USER"] = current_user.name
+        sender_data["LOGGED_IN_USER"] = current_user.nickname
         networkutils.send_feedback(sender_data)
         return make_response("", 200)
 
     @server.flask_socketio.on("connect", namespace="/network")
+    @server.ws_restrict
     def network_ws_connect():
         # msg = "Client with sid %s connected" % str(request.sid)
         msg = "Client connected"

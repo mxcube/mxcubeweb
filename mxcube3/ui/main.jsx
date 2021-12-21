@@ -41,7 +41,7 @@ if (module.hot) {
 
 class ServerStorage {
   setItem(key, value) {
-    if (store.getState().remoteAccess.master) {
+    if (store.getState().login.user.inControl) {
       serverIO.uiStorage.setItem(key, value);
     }
   }
@@ -70,7 +70,7 @@ function requireAuth(nextState, replace, callback) {
         {
           blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
             'form', 'login', 'general', 'logger', 'shapes',
-            'sampleView', 'taskResult', 'sampleChangerMaintenance'],
+            'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
           storage: new ServerStorage()
         },
         () => {

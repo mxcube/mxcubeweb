@@ -33,6 +33,8 @@ dependencies:
   - werkzeug=1.0.1
   - bcrypt
   - flask-sqlalchemy
+  - pytz
+  - tzlocal
 
   - pip:
       - Flask-Session==0.3.2

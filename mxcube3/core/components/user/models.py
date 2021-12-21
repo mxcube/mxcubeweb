@@ -1,4 +1,7 @@
-from mxcube3.core.user.database import Base
+import pytz
+import tzlocal
+
+from mxcube3.core.components.user.database import Base
 from flask_security import UserMixin, RoleMixin
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import (
@@ -47,9 +50,10 @@ class User(Base, UserMixin):
     id = Column(Integer, primary_key=True)
     email = Column(String(255), unique=True)
     username = Column(Unicode, unique=True, nullable=True)
-    name = Column(String(255), unique=False)
+    nickname = Column(String(255), unique=False)
     password = Column(String(255), nullable=False)
-    last_session_id = Column(String(255), unique=True)
+    session_id = Column(String(255), unique=True)
+    socketio_session_id = Column(String(255), unique=True)
     last_login_at = Column(DateTime())
     current_login_at = Column(DateTime())
     last_login_ip = Column(String(100))
@@ -73,3 +77,27 @@ class User(Base, UserMixin):
 
     def has_roles(self, *args):
         return set(args).issubset({role.name for role in self.roles})
+
+    def isstaff(self):
+        return "staff" in self.roles
+
+    def todict(self):
+        # Database stores dates in UTC
+        current_login_at_str = ""
+
+        if self.current_login_at:
+            clt_dt = self.current_login_at.replace(tzinfo=pytz.timezone("UTC"))
+            current_login_at_str = clt_dt.astimezone(tzlocal.get_localzone()).strftime(
+                "%Y/%m/%d, %H:%M:%S"
+            )
+
+        return {
+            "username": self.username,
+            "email": self.email,
+            "isstaff": "staff" in self.roles,
+            "nickname": self.nickname,
+            "inControl": self.in_control,
+            "ip": self.current_login_ip,
+            "currentLoginAt": current_login_at_str,
+            "requestsControl": self.requests_control,
+        }

@@ -23,11 +23,10 @@ class _BeamlineAdapter:
     Adapter between Beamline route and Beamline hardware object.
     """
 
-    def __init__(self, beamline_hwobj, app, server):
-        self._application = app
+    def __init__(self, beamline_hwobj, app):
+        self.app = app
         self._bl = beamline_hwobj
         self.adapter_dict = {}
-        self._server = server
 
         workflow = self._bl.workflow
 
@@ -35,7 +34,7 @@ class _BeamlineAdapter:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
     def wf_parameters_needed(self, params):
-        self._application.server.emit(
+        self.app.server.emit(
             "workflowParametersDialog", params, broadcast=True, namespace="/hwr"
         )
 
@@ -50,8 +49,8 @@ class _BeamlineAdapter:
         """
         attributes = {}
 
-        for attr_name in self._application.mxcubecore.adapter_dict:
-            _d = self._application.mxcubecore.get_adapter(attr_name).dict()
+        for attr_name in self.app.mxcubecore.adapter_dict:
+            _d = self.app.mxcubecore.get_adapter(attr_name).dict()
             attributes.update({attr_name: _d})
 
         return {"attributes": attributes}

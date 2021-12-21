@@ -2,7 +2,8 @@ const initialState = {
   loggedIn: false,
   showProposalsForm: false,
   selectedProposal: '',
-  selectedProposalID: ''
+  selectedProposalID: '',
+  rootPath: ''
 };
 
 export default (state = initialState, action) => {
@@ -19,6 +20,7 @@ export default (state = initialState, action) => {
           selectedProposal: action.loginInfo.selectedProposal,
           selectedProposalID: action.loginInfo.selectedProposalID,
           loggedIn: action.loginInfo.loggedIn,
+          rootPath: action.loginInfo.rootPath,
         });
     }
     case 'SHOW_PROPOSALS_FORM':

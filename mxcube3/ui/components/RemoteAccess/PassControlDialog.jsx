@@ -31,7 +31,7 @@ export class PassControlDialog extends React.Component {
   show() {
     let show = false;
 
-    if (this.props.remoteAccess.master) {
+    if (this.props.login.user.inControl) {
       if (this.getObserver().requestsControl) {
         show = true;
       }
@@ -90,6 +90,7 @@ export class PassControlDialog extends React.Component {
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
+    login: state.login
   };
 }
 

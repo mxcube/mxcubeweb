@@ -10,16 +10,16 @@ class UserList extends React.Component {
 
     for (const observer of this.props.remoteAccess.observers) {
       observers.push((
-        <div key={observer.host}>
+        <div key={observer.username}>
           <div className="col-xs-4">
-            <span style={{ lineHeight: '24px' }}>{observer.name}</span>
+            <span style={{ lineHeight: '24px' }}>{observer.nickname}</span>
           </div>
           <div className="col-xs-4">
-            <span style={{ lineHeight: '24px' }}>{observer.host}</span>
+            <span style={{ lineHeight: '24px' }}>{observer.ip}</span>
           </div>
-          { this.props.remoteAccess.master ?
+          { this.props.login.user.inControl ?
             (<div className="col-xs-4">
-              <Button className="btn-sm" onClick={() => this.props.sendGiveControl(observer.sid)}>
+              <Button className="btn-sm" onClick={() => this.props.sendGiveControl(observer.username)}>
                  Give control
                </Button>
              </div>)

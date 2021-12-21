@@ -215,7 +215,7 @@ Helical = connect((state) => {
   }
 
   return {
-    path: `${state.queue.rootPath}/${subdir}`,
+    path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: state.taskForm.acqParametersLimits,
     beamline: state.beamline,

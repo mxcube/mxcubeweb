@@ -16,15 +16,14 @@ import flask_security
 from spectree import SpecTree
 
 from mxcube3.core.util import networkutils
-from mxcube3.core.user.database import db_session, init_db, UserDatastore
-from mxcube3.core.user.models import User, Role, Message
+from mxcube3.core.components.user.database import db_session, init_db, UserDatastore
+from mxcube3.core.components.user.models import User, Role, Message
 
 
 class Server:
     init_event = gevent.event.Event()
     flask = None
     flask_session = None
-    flask_socketio = None
     security = None
     api = None
     user_datastore = None

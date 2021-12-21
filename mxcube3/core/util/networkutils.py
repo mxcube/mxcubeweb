@@ -12,7 +12,7 @@ from email.utils import make_msgid
 import flask
 import flask_socketio
 
-from flask_security import current_user, login_required
+from flask_login import current_user, login_required
 from mxcubecore import HardwareRepository as HWR
 
 

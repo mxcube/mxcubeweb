@@ -10,7 +10,7 @@ from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChan
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
-from mxcube3.core.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
+from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
 
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
 from mxcubecore.HardwareObjects import queue_entry as qe
@@ -586,9 +586,7 @@ def send_shapes(update_positions=False, movable={}):
     shape_dict = {}
     for shape in HWR.beamline.sample_view.get_shapes():
         if update_positions:
-            shape.update_position(
-                HWR.beamline.diffractometer.motor_positions_to_screen
-            )
+            shape.update_position(HWR.beamline.diffractometer.motor_positions_to_screen)
 
         s = to_camel(shape.as_dict())
         shape_dict.update({shape.id: s})

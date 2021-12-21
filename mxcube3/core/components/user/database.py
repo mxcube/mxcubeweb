@@ -40,7 +40,8 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
 
     def add_message_to_user(self, user, message):
         user.messages.append(message)
-        return self.put(user)
+        self.put(user)
+        self.commit()
 
     def get_all_messages(self):
         return self._message_model.query.all()

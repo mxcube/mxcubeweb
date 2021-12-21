@@ -264,7 +264,7 @@ function mapStateToProps(state) {
     sampleIds: state.taskForm.sampleIds,
     pointID: state.taskForm.pointID,
     apertureList: state.sampleview.apertureList,
-    path: state.queue.rootPath,
+    path: state.login.rootPath,
     shapes: state.shapes.shapes,
     attributes: state.beamline.attributes,
     initialParameters: state.taskForm.initialParameters,

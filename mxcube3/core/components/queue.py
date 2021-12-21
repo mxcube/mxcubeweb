@@ -9,7 +9,7 @@ import re
 
 from mock import Mock
 
-from flask_security import current_user
+from flask_login import current_user
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects import queue_model_objects as qmo
@@ -17,7 +17,7 @@ from mxcubecore.HardwareObjects import queue_entry as qe
 from mxcubecore.HardwareObjects import queue_model_enumerables as qme
 from mxcubecore.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
 
-from mxcube3.core.component import Component
+from mxcube3.core.components.component_base import ComponentBase
 
 from functools import reduce
 
@@ -38,9 +38,9 @@ READY = 0
 ORIGIN_MX3 = "MX3"
 
 
-class Queue(Component):
-    def __init__(self, app, server, config):
-        super().__init__(app, server, config)
+class Queue(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
 
     def build_prefix_path_dict(self, path_list):
         prefix_path_dict = {}
@@ -1100,6 +1100,10 @@ class Queue(Component):
 
         # params include only path_template-related parametes and strategy_name
         model.init_from_task_data(sample_model, params)
+
+        # NBNB 
+        # These two calls seems to be needed by the Global phasing workflows
+        # Adding them resolves the current conflict
         model.set_pre_strategy_params(**params)
         model.set_pre_acquisition_params(**params)
 
@@ -1649,7 +1653,7 @@ class Queue(Component):
                 sample = parent.get_sample_node()
 
                 task = self._handle_dc(sample, child)
-                self.server.emit("add_task", {"tasks": [task]}, namespace="/hwr")
+                self.app.server.emit("add_task", {"tasks": [task]}, namespace="/hwr")
 
             elif isinstance(child, qmo.TaskGroup):
                 dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
@@ -1690,7 +1694,7 @@ class Queue(Component):
                 )
                 cols.append(task)
 
-        self.server.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
+        self.app.server.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
 
     def set_auto_add_diffplan(self, autoadd, current_sample=None):
         """
@@ -1762,19 +1766,14 @@ class Queue(Component):
             parent_id = node.get_parent()._node_id
 
             node, entry = self.get_entry(parent_id)
-
             HWR.beamline.queue_manager._running = True
-
             HWR.beamline.queue_manager._is_stopped = False
             HWR.beamline.queue_manager._set_in_queue_flag()
+
             try:
                 HWR.beamline.queue_manager.execute_entry(entry)
             except BaseException:
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
-            finally:
-                HWR.beamline.queue_manager._running = False
-                HWR.beamline.queue_manager.emit("queue_stopped", (None,))
-                HWR.beamline.collect.queue_finished_cleanup()
 
     def init_signals(self, queue):
         """
