@@ -5,6 +5,7 @@ import uuid
 import flask
 import flask_security
 import flask_login
+from sqlalchemy.sql.functions import current_user
 
 from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.components.user.models import User
@@ -22,7 +23,7 @@ class BaseUserManager(ComponentBase):
         return [
             user
             for user in User.query.all()
-            if (not user.in_control and user.is_authenticated)
+            if ((not user.in_control) and user.is_authenticated and user.is_active)
         ]
 
     def get_operator(self):
@@ -66,11 +67,12 @@ class BaseUserManager(ComponentBase):
 
     def update_operator(self):
         active_in_control = False
+
         for _u in User.query.all():
             if _u.is_authenticated and _u.in_control:
                 active_in_control = True
             else:
-                self.db_set_in_control(flask_login.current_user, False)
+                self.db_set_in_control(_u, False)
 
         # If no user is currently in control set this user to be
         # in control
@@ -104,6 +106,7 @@ class BaseUserManager(ComponentBase):
                 flask.session["sid"] = str(uuid.uuid4())
 
             user = self.db_create_user(login_id, password, login_res)
+            self.app.server.user_datastore.activate_user(user)
             flask_security.login_user(user, remember=True)
 
             # Important to make flask_security user tracking work
@@ -154,8 +157,8 @@ class BaseUserManager(ComponentBase):
             msg = "User %s signed out" % user.username
             logging.getLogger("MX3.HWR").info(msg)
 
-        # flask.session.clear()
-        flask_login.logout_user()
+        self.app.server.user_datastore.deactivate_user(user)
+        flask_security.logout_user()
 
     def is_authenticated(self):
         return flask_login.current_user.is_authenticated()

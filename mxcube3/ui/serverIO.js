@@ -47,6 +47,7 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 import {
   requestControlAction,
   incChatMessageCount,
+  getRaState
 } from './actions/remoteAccess';
 
 import { doSignOut, getLoginInfo } from './actions/login';
@@ -271,23 +272,27 @@ class ServerIO {
     this.hwrSocket.on('observersChanged', (data) => {
       const state = store.getState();
 
-      if (data.observers.length > 0 && data.operator.username === state.login.user.username) {
+      if (data.observers.length > 0 && data.operator.username === state.login.user.username &&
+          !state.login.user.inControl) {
         this.dispatch(setLoading(true, 'You were given control', data.message));
       } else if (data.observers.length > 0 && state.login.user.inControl
         && data.observers.map((el) => el.username).includes(state.login.user.username)) {
         this.dispatch(setLoading(true, 'You lost control', 'You lost control'));
       }
+
+      this.dispatch(getRaState());
+      this.dispatch(getLoginInfo());
     });
 
     this.hwrSocket.on('observerLogout', (observer) => {
-      addResponseMessage(`**${observer.name}** (${observer.host}) disconnected.`);
+      addResponseMessage(`**${observer.nickname}** (${observer.ip}) disconnected.`);
     });
 
     this.hwrSocket.on('observerLogin', (observer) => {
-      if (observer.name && observer.host) {
-        addResponseMessage(`**${observer.name}** (${observer.host}) connected.`);
+      if (observer.nickname && observer.ip) {
+        addResponseMessage(`**${observer.nickname}** (${observer.ip}) connected.`);
       } else {
-        addResponseMessage(`${observer.host} connecting ...`);
+        addResponseMessage(`${observer.nickname} connecting ...`);
       }
     });
 

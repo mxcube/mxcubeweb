@@ -55,8 +55,17 @@ def init_route(app, server, url_prefix):
         Signout from Mxcube3 and reset the session
         """
         app.usermanager.signout()
+        op = app.usermanager.get_operator()
 
-        return make_response("", 200)
+        data = {
+            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
+            "message": "",
+            "operator": op.todict() if op else {},
+        }
+
+        server.emit("observersChanged", data, namespace="/hwr")
+
+        return redirect("/login", code=302)
 
     @bp.route("/login_info", methods=["GET"])
     def login_info():

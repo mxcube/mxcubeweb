@@ -54,10 +54,17 @@ def init_route(app, server, url_prefix):
         current_user.requests_control = data["control"]
         server.user_datastore.commit()
 
-        observers = [_u.todict() for _u in app.usermanager.get_observers()]
         gevent.spawn(handle_timeout_gives_control, current_user.username, timeout=10)
 
-        server.emit("observersChanged", observers, namespace="/hwr")
+        op = app.usermanager.get_operator()
+
+        data = {
+            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
+            "message": "",
+            "operator": op.todict() if op else {},
+        }
+
+        server.emit("observersChanged", data, namespace="/hwr")
 
         return make_response("", 200)
 
@@ -153,7 +160,7 @@ def init_route(app, server, url_prefix):
         observer = None
 
         for o in app.usermanager.get_observers():
-            if o["requestsControl"]:
+            if o.requests_control:
                 observer = o
 
         return observer
@@ -168,11 +175,12 @@ def init_route(app, server, url_prefix):
 
         # Request was denied
         if not data["giveControl"]:
-            remain_observer(new_op["sid"], data["message"])
+            remain_observer(new_op.username, data["message"])
         else:
-            toggle_operator(new_op["sid"], data["message"])
+            toggle_operator(new_op.username, data["message"])
 
-        new_op["requestsControl"] = False
+        new_op.requests_control = False
+        app.usermanager.update_user(new_op)
 
         return make_response("", 200)
 
@@ -206,13 +214,33 @@ def init_route(app, server, url_prefix):
                 msg += "client for action"
                 logging.getLogger("HWR").info(msg)
 
+        op = app.usermanager.get_operator()
+
+        data = {
+            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
+            "message": "",
+            "operator": op.todict() if op else {},
+        }
+
+        server.emit("observersChanged", data, namespace="/hwr")
+
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     def disconnect():
         global DISCONNECT_HANDLED
-        if app.usermanager.is_operator() and HWR.beamline.queue_manager.is_executing():
 
+        if app.usermanager.is_operator() and HWR.beamline.queue_manager.is_executing():
             DISCONNECT_HANDLED = False
             logging.getLogger("HWR").info("Client disconnected")
+
+        op = app.usermanager.get_operator()
+
+        data = {
+            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
+            "message": "",
+            "operator": op.todict() if op else {},
+        }
+
+        server.emit("observersChanged", data, namespace="/hwr")
 
         # app.usermanager.signout()
 
@@ -225,19 +253,24 @@ def init_route(app, server, url_prefix):
     @server.flask_socketio.on("setRaObserver", namespace="/hwr")
     def set_observer(data):
         name = data.get("name", "")
-        observers = [_u.todict() for _u in app.usermanager.get_observers()]
 
         if name:
             current_user.nickname = name
             app.usermanager.update_user(current_user)
-            server.emit(
-                "observerLogin",
-                current_user.todict(),
-                include_self=False,
-                namespace="/hwr",
-            )
+            #server.emit(
+            #    "observerLogin",
+            #    current_user.todict(),
+            #    include_self=False,
+            #    namespace="/hwr",
+            #)
 
-        server.emit("observersChanged", observers, namespace="/hwr")
+        data = {
+            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
+            "message": "",
+            "operator": app.usermanager.get_operator().todict(),
+        }
+
+        server.emit("observersChanged", data, namespace="/hwr")
         join_room("observers", namespace="/ui_state")
 
         return current_user.username

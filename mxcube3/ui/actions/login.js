@@ -138,8 +138,8 @@ export function doSignOut() {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
-      dispatch(sendClearQueue());
-      dispatch(clearAll());
+      // dispatch(sendClearQueue());
+      // dispatch(clearAll());
       browserHistory.push('/login');
     });
   };
