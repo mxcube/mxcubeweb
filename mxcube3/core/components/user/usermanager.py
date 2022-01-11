@@ -65,6 +65,17 @@ class BaseUserManager(ComponentBase):
 
         return user
 
+    def emit_observers_changed(self, message=""):
+        operator = self.app.usermanager.get_operator()
+
+        data = {
+            "observers": [_u.todict() for _u in self.app.usermanager.get_observers()],
+            "message": message,
+            "operator": operator.todict() if operator else {},
+        }
+
+        self.app.server.emit("observersChanged", data, namespace="/hwr")
+
     def update_operator(self):
         active_in_control = False
 
@@ -159,6 +170,8 @@ class BaseUserManager(ComponentBase):
 
         self.app.server.user_datastore.deactivate_user(user)
         flask_security.logout_user()
+
+        self.emit_observers_changed()
 
     def is_authenticated(self):
         return flask_login.current_user.is_authenticated()

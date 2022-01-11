@@ -56,15 +56,7 @@ def init_route(app, server, url_prefix):
 
         gevent.spawn(handle_timeout_gives_control, current_user.username, timeout=10)
 
-        op = app.usermanager.get_operator()
-
-        data = {
-            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
-            "message": "",
-            "operator": op.todict() if op else {},
-        }
-
-        server.emit("observersChanged", data, namespace="/hwr")
+        app.usermanager.emit_observers_changed()
 
         return make_response("", 200)
 
@@ -103,13 +95,7 @@ def init_route(app, server, url_prefix):
         join_room("observers", sid=oldop.socketio_session_id, namespace="/ui_state")
         leave_room("observers", sid=newop.socketio_session_id, namespace="/ui_state")
 
-        data = {
-            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
-            "message": message,
-            "operator": newop.todict(),
-        }
-
-        server.emit("observersChanged", data, namespace="/hwr")
+        app.usermanager.emit_observers_changed(message)
 
     def remain_observer(observer_sid, message):
         observer = app.usermanager.get_user_by_sid(observer_sid)
@@ -214,15 +200,7 @@ def init_route(app, server, url_prefix):
                 msg += "client for action"
                 logging.getLogger("HWR").info(msg)
 
-        op = app.usermanager.get_operator()
-
-        data = {
-            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
-            "message": "",
-            "operator": op.todict() if op else {},
-        }
-
-        server.emit("observersChanged", data, namespace="/hwr")
+        app.usermanager.emit_observers_changed()
 
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     def disconnect():
@@ -232,15 +210,7 @@ def init_route(app, server, url_prefix):
             DISCONNECT_HANDLED = False
             logging.getLogger("HWR").info("Client disconnected")
 
-        op = app.usermanager.get_operator()
-
-        data = {
-            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
-            "message": "",
-            "operator": op.todict() if op else {},
-        }
-
-        server.emit("observersChanged", data, namespace="/hwr")
+        app.usermanager.emit_observers_changed()
 
         # app.usermanager.signout()
 
@@ -264,13 +234,7 @@ def init_route(app, server, url_prefix):
             #    namespace="/hwr",
             #)
 
-        data = {
-            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
-            "message": "",
-            "operator": app.usermanager.get_operator().todict(),
-        }
-
-        server.emit("observersChanged", data, namespace="/hwr")
+        app.usermanager.emit_observers_changed()
         join_room("observers", namespace="/ui_state")
 
         return current_user.username
