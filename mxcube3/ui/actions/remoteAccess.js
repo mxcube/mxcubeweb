@@ -32,12 +32,8 @@ export function setMaster(master, name) {
   };
 }
 
-export function requestControlAction(control) {
-  return { type: 'REQUEST_CONTROL', control };
-}
-
 export function requestControl(control = true, message = '', name = '', userInfo = { }) {
-  return function (dispatch) {
+  return function () {
     fetch('mxcube/api/v0.1/ra/request_control', {
       method: 'POST',
       credentials: 'include',
@@ -49,8 +45,6 @@ export function requestControl(control = true, message = '', name = '', userInfo
         control, message, name, userInfo
       })
     });
-
-    dispatch(requestControlAction(control));
   };
 }
 

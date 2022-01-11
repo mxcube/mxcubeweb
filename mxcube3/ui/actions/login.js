@@ -1,7 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { browserHistory } from 'react-router';
 import { showErrorPanel, setLoading, getInitialState } from './general';
-import { sendClearQueue, clearAll } from './queue';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -138,8 +137,6 @@ export function doSignOut() {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
-      // dispatch(sendClearQueue());
-      // dispatch(clearAll());
       browserHistory.push('/login');
     });
   };

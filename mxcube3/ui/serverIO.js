@@ -45,7 +45,6 @@ import {
 import { showWorkflowParametersDialog } from './actions/workflow';
 
 import {
-  requestControlAction,
   incChatMessageCount,
   getRaState
 } from './actions/remoteAccess';
@@ -320,13 +319,9 @@ class ServerIO {
     });
 
     this.hwrSocket.on('setObserver', (data) => {
-      const state = store.getState();
-      const ra = state.remoteAccess;
-
       // Control was denied by master or control was taken by force
-      if (ra.requestingControl) {
+      if (data.requestingControl) {
         this.dispatch(setLoading(true, 'You were denied control', data.message));
-        this.dispatch(requestControlAction(false));
       }
       this.dispatch(getLoginInfo());
     });
