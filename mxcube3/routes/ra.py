@@ -97,12 +97,12 @@ def init_route(app, server, url_prefix):
 
         app.usermanager.emit_observers_changed(message)
 
-    def remain_observer(observer_sid, message):
-        observer = app.usermanager.get_user_by_sid(observer_sid)
+    def remain_observer(user, message):
+        observer = user.todict()
         observer["message"] = message
 
         server.emit(
-            "setObserver", observer, room=observer["socketio_sid"], namespace="/hwr"
+            "setObserver", observer, room=user.socketio_session_id, namespace="/hwr"
         )
 
     @bp.route("/", methods=["GET"])
@@ -161,7 +161,7 @@ def init_route(app, server, url_prefix):
 
         # Request was denied
         if not data["giveControl"]:
-            remain_observer(new_op.username, data["message"])
+            remain_observer(new_op, data["message"])
         else:
             toggle_operator(new_op.username, data["message"])
 
