@@ -62,14 +62,11 @@ export class PassControlDialog extends React.Component {
       >
         <Modal.Header>
           <Modal.Title>
-            A user is asking for control
+            {observer.nickname} is asking for control
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          User "{observer.name}" is asking for control, message:
-          <div style={ { marginLeft: '2em', marginTop: '1em', marginBottom: '1em' } }>
-            "{observer.message}"
-          </div>
+          User "{observer.nickname}" is asking for control:
         </Modal.Body>
         <Modal.Footer>
           <FormControl
@@ -80,7 +77,7 @@ export class PassControlDialog extends React.Component {
             rows="3"
           />
           <br />
-          <Button onClick={this.accept}> Give control to "{observer.name}" </Button>
+          <Button onClick={this.accept}> Give control to "{observer.nickname}" </Button>
           <Button onClick={this.reject}> Deny control </Button>
         </Modal.Footer>
       </Modal>);
