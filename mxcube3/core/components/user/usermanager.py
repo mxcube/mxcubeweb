@@ -1,10 +1,13 @@
 import logging
 import json
 import uuid
+import datetime
+import time
 
 import flask
 import flask_security
 import flask_login
+import flask_socketio
 
 from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.components.user.models import User
@@ -22,7 +25,7 @@ class BaseUserManager(ComponentBase):
         return [
             user
             for user in User.query.all()
-            if (not user.in_control and user.is_authenticated)
+            if ((not user.in_control) and user.is_authenticated and user.is_active)
         ]
 
     def get_operator(self):
@@ -52,6 +55,15 @@ class BaseUserManager(ComponentBase):
 
         return users
 
+    def get_user(self, username):
+        user = None
+
+        for _u in User.query.all():
+            if _u.username == username:
+                user = _u
+
+        return user
+
     def set_operator(self, username):
         user = None
 
@@ -64,23 +76,64 @@ class BaseUserManager(ComponentBase):
 
         return user
 
-    def update_operator(self):
+    def emit_observers_changed(self, message=""):
+        operator = self.app.usermanager.get_operator()
+
+        data = {
+            "observers": [_u.todict() for _u in self.app.usermanager.get_observers()],
+            "message": message,
+            "operator": operator.todict() if operator else {},
+        }
+
+        self.app.server.emit("observersChanged", data, namespace="/hwr")
+
+    def update_operator(self, new_login=False):
         active_in_control = False
+
         for _u in User.query.all():
             if _u.is_authenticated and _u.in_control:
                 active_in_control = True
             else:
-                self.db_set_in_control(flask_login.current_user, False)
+                self.db_set_in_control(_u, False)
+
+        # If new login and new observer login, clear nickname
+        # so that the user get an opertunity to set one
+        if new_login:
+            flask_login.current_user.nickname = ""
 
         # If no user is currently in control set this user to be
         # in control
         if not active_in_control:
+            if HWR.beamline.lims.loginType.lower() != "user":
+                flask_login.current_user.nickname = self.app.lims.get_proposal(flask_login.current_user)
+            else:
+                flask_login.current_user.nickname = flask_login.current_user.username
+
             self.db_set_in_control(flask_login.current_user, True)
 
         # Set active proposal to that of the active user
-        if HWR.beamline.lims.loginType.lower() != "user":
-            # The name of the user is the proposal when using proposalType login
-            self.app.lims.select_proposal(flask_login.current_user.nickname)
+        for _u in User.query.all():
+            if _u.is_authenticated and _u.in_control:
+                if HWR.beamline.lims.loginType.lower() != "user":
+                    self.app.lims.select_proposal(
+                        self.app.lims.get_proposal(_u)
+                    )
+
+    def handle_disconnect(self, username):
+        time.sleep(30)
+
+        user = self.get_user(username)
+
+        if user.disconnect_timestamp:
+            dt = datetime.datetime.now() - user.disconnect_timestamp
+
+            # Disconnected for more than a minute
+            if dt.seconds >= 30:
+                logging.getLogger("HWR").info("Client disconnected")
+
+                user.active = False
+                self.update_user(user)
+                self.emit_observers_changed()
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
@@ -104,6 +157,7 @@ class BaseUserManager(ComponentBase):
                 flask.session["sid"] = str(uuid.uuid4())
 
             user = self.db_create_user(login_id, password, login_res)
+            self.app.server.user_datastore.activate_user(user)
             flask_security.login_user(user, remember=True)
 
             # Important to make flask_security user tracking work
@@ -124,7 +178,12 @@ class BaseUserManager(ComponentBase):
                 "[QUEUE] %s " % self.app.queue.queue_to_json()
             )
 
-            self.update_operator()
+            self.update_operator(new_login=True)
+            self.emit_observers_changed()
+
+            msg = "User %s signed in" % user
+            logging.getLogger("MX3.HWR").info(msg)
+
             return login_res["status"]
 
     # Abstract method to be implemented by concrete implementation
@@ -154,8 +213,9 @@ class BaseUserManager(ComponentBase):
             msg = "User %s signed out" % user.username
             logging.getLogger("MX3.HWR").info(msg)
 
-        # flask.session.clear()
-        flask_login.logout_user()
+        self.app.server.user_datastore.deactivate_user(user)
+        flask_security.logout_user()
+        self.emit_observers_changed()
 
     def is_authenticated(self):
         return flask_login.current_user.is_authenticated()

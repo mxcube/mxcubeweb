@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 import gevent
-import logging
-import flask
 
 from flask import (
     Blueprint,
-    session,
     jsonify,
     Response,
     request,
@@ -15,10 +13,6 @@ from flask import (
 
 from flask_socketio import join_room, leave_room
 from flask_login import current_user
-
-from mxcubecore import HardwareRepository as HWR
-
-from mxcube3.core.util.networkutils import remote_addr
 
 DISCONNECT_HANDLED = True
 
@@ -54,10 +48,9 @@ def init_route(app, server, url_prefix):
         current_user.requests_control = data["control"]
         server.user_datastore.commit()
 
-        observers = [_u.todict() for _u in app.usermanager.get_observers()]
         gevent.spawn(handle_timeout_gives_control, current_user.username, timeout=10)
 
-        server.emit("observersChanged", observers, namespace="/hwr")
+        app.usermanager.emit_observers_changed()
 
         return make_response("", 200)
 
@@ -89,6 +82,32 @@ def init_route(app, server, url_prefix):
 
         return make_response("", 200)
 
+    @bp.route("/update_user_nickname", methods=["POST"])
+    @server.restrict
+    def update_user_nickname():
+        """
+        """
+        name = request.get_json().get("name")
+        current_user.nickname = name
+        app.usermanager.update_user(current_user)
+        app.usermanager.emit_observers_changed()
+
+        return make_response("", 200)
+
+    @bp.route("/logout_user", methods=["POST"])
+    @server.restrict
+    def logout_user():
+        """
+        """
+        username = request.get_json().get("username")
+        user = app.usermanager.get_user(username)
+        if not user.in_control:
+            server.emit(
+                "forceSignoutObservers", room=user.socketio_session_id, namespace="/hwr"
+            )
+
+        return make_response("", 200)
+
     def toggle_operator(username, message):
         oldop = app.usermanager.get_operator()
         newop = app.usermanager.set_operator(username)
@@ -96,20 +115,14 @@ def init_route(app, server, url_prefix):
         join_room("observers", sid=oldop.socketio_session_id, namespace="/ui_state")
         leave_room("observers", sid=newop.socketio_session_id, namespace="/ui_state")
 
-        data = {
-            "observers": [_u.todict() for _u in app.usermanager.get_observers()],
-            "message": message,
-            "operator": newop.todict(),
-        }
+        app.usermanager.emit_observers_changed(message)
 
-        server.emit("observersChanged", data, namespace="/hwr")
-
-    def remain_observer(observer_sid, message):
-        observer = app.usermanager.get_user_by_sid(observer_sid)
+    def remain_observer(user, message):
+        observer = user.todict()
         observer["message"] = message
 
         server.emit(
-            "setObserver", observer, room=observer["socketio_sid"], namespace="/hwr"
+            "setObserver", observer, room=user.socketio_session_id, namespace="/hwr"
         )
 
     @bp.route("/", methods=["GET"])
@@ -153,7 +166,7 @@ def init_route(app, server, url_prefix):
         observer = None
 
         for o in app.usermanager.get_observers():
-            if o["requestsControl"]:
+            if o.requests_control:
                 observer = o
 
         return observer
@@ -168,11 +181,12 @@ def init_route(app, server, url_prefix):
 
         # Request was denied
         if not data["giveControl"]:
-            remain_observer(new_op["sid"], data["message"])
+            remain_observer(new_op, data["message"])
         else:
-            toggle_operator(new_op["sid"], data["message"])
+            toggle_operator(new_op.username, data["message"])
 
-        new_op["requestsControl"] = False
+        new_op.requests_control = False
+        app.usermanager.update_user(new_op)
 
         return make_response("", 200)
 
@@ -194,52 +208,17 @@ def init_route(app, server, url_prefix):
     @server.flask_socketio.on("connect", namespace="/hwr")
     @server.ws_restrict
     def connect():
-        global DISCONNECT_HANDLED
+        current_user.disconnect_timestamp = None
         current_user.socketio_session_id = request.sid
         app.usermanager.update_user(current_user)
 
-        if app.usermanager.is_operator():
-            if not HWR.beamline.queue_manager.is_executing() and not DISCONNECT_HANDLED:
-                DISCONNECT_HANDLED = True
-                server.emit("resumeQueueDialog", namespace="/hwr")
-                msg = "Client reconnected, Queue was previously stopped, asking "
-                msg += "client for action"
-                logging.getLogger("HWR").info(msg)
 
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     def disconnect():
-        global DISCONNECT_HANDLED
-        if app.usermanager.is_operator() and HWR.beamline.queue_manager.is_executing():
+        current_user.disconnect_timestamp = datetime.now()
+        app.usermanager.update_user(current_user)
 
-            DISCONNECT_HANDLED = False
-            logging.getLogger("HWR").info("Client disconnected")
+        gevent.spawn(app.usermanager.handle_disconnect, current_user.username)
 
-        # app.usermanager.signout()
-
-    @server.flask_socketio.on("setRaMaster", namespace="/hwr")
-    def set_master(data):
-        leave_room("observers", namespace="/ui_state")
-
-        return current_user.username
-
-    @server.flask_socketio.on("setRaObserver", namespace="/hwr")
-    def set_observer(data):
-        name = data.get("name", "")
-        observers = [_u.todict() for _u in app.usermanager.get_observers()]
-
-        if name:
-            current_user.nickname = name
-            app.usermanager.update_user(current_user)
-            server.emit(
-                "observerLogin",
-                current_user.todict(),
-                include_self=False,
-                namespace="/hwr",
-            )
-
-        server.emit("observersChanged", observers, namespace="/hwr")
-        join_room("observers", namespace="/ui_state")
-
-        return current_user.username
 
     return bp

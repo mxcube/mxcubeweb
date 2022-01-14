@@ -1,4 +1,3 @@
-import { serverIO } from '../serverIO';
 import { getLoginInfo } from './login';
 
 export function showObserverDialog(show = true) {
@@ -9,35 +8,25 @@ export function setRaState(data) {
   return { type: 'SET_RA_STATE', data };
 }
 
-
-export function setMaster(master, name) {
+export function sendUpdateNickname(name) {
   return function (dispatch) {
-    if (master) {
-      serverIO.setRemoteAccessMaster(name, (sid) => {
-        dispatch({
-          type: 'SET_MASTER', master, sid, name
-        });
-      });
-    } else {
-      if (!master) {
-        dispatch(showObserverDialog(true));
-      }
-
-      serverIO.setRemoteAccessObserver(name, (sid) => {
-        dispatch({
-          type: 'SET_MASTER', master, sid, name
-        });
-      });
-    }
+    fetch('mxcube/api/v0.1/ra/update_user_nickname', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ name })
+    }).then(() => {
+      dispatch(getLoginInfo());
+      dispatch(getRaState());
+    });
   };
 }
 
-export function requestControlAction(control) {
-  return { type: 'REQUEST_CONTROL', control };
-}
-
 export function requestControl(control = true, message = '', name = '', userInfo = { }) {
-  return function (dispatch) {
+  return function () {
     fetch('mxcube/api/v0.1/ra/request_control', {
       method: 'POST',
       credentials: 'include',
@@ -49,8 +38,6 @@ export function requestControl(control = true, message = '', name = '', userInfo
         control, message, name, userInfo
       })
     });
-
-    dispatch(requestControlAction(control));
   };
 }
 
@@ -89,6 +76,23 @@ export function sendTakeControl() {
 export function sendGiveControl(username) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/ra/give_control', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({ username })
+    }).then(() => {
+      dispatch(getLoginInfo());
+      dispatch(getRaState());
+    });
+  };
+}
+
+export function sendLogoutUser(username) {
+  return function (dispatch) {
+    fetch('mxcube/api/v0.1/ra/logout_user', {
       method: 'POST',
       credentials: 'include',
       headers: {

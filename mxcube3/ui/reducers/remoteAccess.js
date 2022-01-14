@@ -1,7 +1,6 @@
 const initialState = {
   // the null value is used to distinguish between signed out (null) or logged in (true/false)
   sid: null,
-  requestingControl: false,
   observers: [],
   allowRemote: false,
   timeoutGivesControl: false,
@@ -24,8 +23,7 @@ export default (state = initialState, action) => {
     {
       return Object.assign({}, state,
         {
-          sid: action.sid,
-          requestingControl: false,
+          sid: action.sid
         });
     }
     case 'SET_OBSERVERS':
@@ -51,10 +49,6 @@ export default (state = initialState, action) => {
     case 'INC_CHAT_MESSAGE_COUNT':
     {
       return Object.assign({}, state, { chatMessageCount: state.chatMessageCount + 1 });
-    }
-    case 'REQUEST_CONTROL':
-    {
-      return Object.assign({}, state, { requestingControl: action.control });
     }
     case 'SET_INITIAL_STATE':
     {
