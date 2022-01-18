@@ -405,10 +405,10 @@ class MXCUBEApplication:
         # Add type information to each component retrieved from the beamline adapter
         # (either via config or via mxcubecore.beamline)
         for _item_name, item_data in MXCUBEApplication.CONFIG.app.ui_properties.items():
-            for component_data in item_data["components"]:
+            for component_data in item_data.components:
                 try:
                     mxcore = MXCUBEApplication.mxcubecore
-                    adapter = mxcore.get_adapter(component_data["attribute"])
+                    adapter = mxcore.get_adapter(component_data.attribute)
                     adapter_cls_name = type(adapter).__name__
                     value_type = adapter.adapter_type
                 except AttributeError as ex:
@@ -417,13 +417,13 @@ class MXCUBEApplication:
                 else:
                     adapter_cls_name = adapter_cls_name.replace("Adapter", "")
 
-                if not "object_type" in component_data:
-                    component_data["object_type"] = adapter_cls_name
+                if not component_data.object_type:
+                    component_data.object_type = adapter_cls_name
 
-                if not "value_type" in component_data:
-                    component_data["value_type"] = value_type
+                if not component_data.value_type:
+                    component_data.value_type = value_type
 
-        return MXCUBEApplication.CONFIG.app.ui_properties
+        return {key: value.dict() for (key, value) in MXCUBEApplication.CONFIG.app.ui_properties.items()}
 
     @staticmethod
     def save_settings():
