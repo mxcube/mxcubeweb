@@ -47,7 +47,7 @@ mxcube_download() {
 
 init_conda() {
   command conda create --name mxcube-web
-  command conda env update --name mxcube-web --file environment.yml
+  command conda env update --name mxcube-web --file conda-environment.yml
   command conda activate mxcube-web
 }
 
