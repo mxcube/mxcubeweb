@@ -1764,14 +1764,10 @@ class Queue(ComponentBase):
             node, entry = self.get_entry(node_id)
             # in order to fill lims data, we execute first the parent (group_id missing)
             parent_id = node.get_parent()._node_id
-
             node, entry = self.get_entry(parent_id)
-            HWR.beamline.queue_manager._running = True
-            HWR.beamline.queue_manager._is_stopped = False
-            HWR.beamline.queue_manager._set_in_queue_flag()
 
             try:
-                HWR.beamline.queue_manager.execute_entry(entry)
+                HWR.beamline.queue_manager.execute_entry(entry, _async=True)
             except BaseException:
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
 
