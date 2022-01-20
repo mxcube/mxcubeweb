@@ -2,7 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Button, Panel } from 'react-bootstrap';
-import { sendGiveControl } from '../../actions/remoteAccess';
+import { sendGiveControl, sendLogoutUser } from '../../actions/remoteAccess';
 
 class UserList extends React.Component {
   getObservers() {
@@ -14,14 +14,24 @@ class UserList extends React.Component {
           <div className="col-xs-4">
             <span style={{ lineHeight: '24px' }}>{observer.nickname}</span>
           </div>
-          <div className="col-xs-4">
+          <div className="col-xs-3">
             <span style={{ lineHeight: '24px' }}>{observer.ip}</span>
           </div>
           { this.props.login.user.inControl ?
-            (<div className="col-xs-4">
-              <Button className="btn-sm" onClick={() => this.props.sendGiveControl(observer.username)}>
+            (<div className="col-xs-5">
+               <Button className="btn-sm" onClick={() => this.props.sendGiveControl(observer.username)}>
                  Give control
                </Button>
+               { this.props.login.user.isstaff ?
+                 (<span>
+                   &nbsp;
+                   <Button className="btn-sm" onClick={() => this.props.sendLogoutUser(observer.username)}>
+                     Logout
+                   </Button>
+                  </span>)
+                 :
+                 null
+               }
              </div>)
             :
             (<div className="col-xs-4"><span>&nbsp;</span></div>)
@@ -59,7 +69,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendGiveControl: bindActionCreators(sendGiveControl, dispatch)
+    sendGiveControl: bindActionCreators(sendGiveControl, dispatch),
+    sendLogoutUser: bindActionCreators(sendLogoutUser, dispatch)
   };
 }
 

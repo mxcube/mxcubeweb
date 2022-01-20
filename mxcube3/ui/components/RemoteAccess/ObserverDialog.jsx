@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Modal, Button, FormControl } from 'react-bootstrap';
-import { showObserverDialog, setMaster } from '../../actions/remoteAccess';
+import { showObserverDialog, sendUpdateNickname } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
   constructor(props) {
@@ -10,14 +10,6 @@ export class ObserverDialog extends React.Component {
     this.accept = this.accept.bind(this);
     this.reject = this.reject.bind(this);
     this.show = this.show.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.login.user.inControl && !nextProps.login.user.inControl) {
-      this.lostControl = true;
-    } else {
-      this.lostControl = false;
-    }
   }
 
   componentDidUpdate() {
@@ -33,14 +25,16 @@ export class ObserverDialog extends React.Component {
   onHide() { }
 
   show() {
-    return this.props.remoteAccess.showObserverDialog;
+    return !this.props.login.user.inControl && this.props.login.user.nickname === '';
   }
 
   accept() {
     const name = this.name.value;
 
     if (name) {
-      this.props.setMaster(false, name);
+      this.props.sendUpdateNickname(name);
+    } else {
+      this.props.sendUpdateNickname(this.props.login.user.username);
     }
 
     this.props.hide();
@@ -94,7 +88,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(showObserverDialog.bind(this, false), dispatch),
-    setMaster: bindActionCreators(setMaster, dispatch)
+    sendUpdateNickname: bindActionCreators(sendUpdateNickname, dispatch)
   };
 }
 

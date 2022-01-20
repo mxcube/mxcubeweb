@@ -3,7 +3,10 @@ const initialState = {
   showProposalsForm: false,
   selectedProposal: '',
   selectedProposalID: '',
-  rootPath: ''
+  rootPath: '',
+  user: {
+    inControl: false
+  }
 };
 
 export default (state = initialState, action) => {

@@ -56,7 +56,7 @@ def init_route(app, server, url_prefix):
         """
         app.usermanager.signout()
 
-        return make_response("", 200)
+        return redirect("/login", code=302)
 
     @bp.route("/login_info", methods=["GET"])
     def login_info():
@@ -107,8 +107,6 @@ def init_route(app, server, url_prefix):
 
     @server.flask_socketio.on("disconnect", namespace="/network")
     def network_ws_disconnect():
-        # msg = "Client with sid %s disconnected" % str(request.sid)
-        msg = "Client disconnected"
-        logging.getLogger("MX3.HWR").info(msg)
+        pass
 
     return bp

@@ -289,6 +289,16 @@ class Lims(ComponentBase):
 
         return {}
 
+    def get_proposal(self, user):
+        limsdata = json.loads(user.limsdata)
+
+        proposal = "%s%s" % (
+            limsdata.get("Proposal").get("code", "").lower(),
+            limsdata.get("Proposal").get("number", ""),
+        )
+
+        return proposal
+
     def select_proposal(self, proposal):
         proposal_info = self.get_proposal_info(proposal)
 

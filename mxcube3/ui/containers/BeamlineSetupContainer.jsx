@@ -147,11 +147,11 @@ class BeamlineSetupContainer extends React.Component {
       const beamline_attribute = this.props.beamline.attributes[uiprop.attribute];
 
       components.push(
-        <td style={{ paddingLeft: '0.5em' }}>
+        <td style={{ border: '0px', paddingLeft: '0.5em' }}>
           { uiprop.label }:
         </td>);
       components.push(
-        <td style={{ fontWeight: 'bold', borderRight: '1px solid #ddd', paddingRight: '0.5em' }}>
+        <td style={{ fontWeight: 'bold', border: '0px', borderRight: '1px solid #ddd', paddingRight: '0.5em' }}>
           { beamline_attribute.readonly ?
             (<LabeledValue
               suffix={ uiprop.suffix }
@@ -197,7 +197,7 @@ class BeamlineSetupContainer extends React.Component {
         paddingTop: '0.5em',
         paddingBottom: '0.5em',
         background: '#FAFAFA',
-        borderBottom: '1px solid rgb(180,180,180)' }}
+      }}
       >
         <Col sm={12}>
           <Row style={{ display: 'flex', alignItems: 'center' }}>
@@ -216,9 +216,9 @@ class BeamlineSetupContainer extends React.Component {
                   </tr>
                   <tr>
                     {this.render_table_row(uiprop_list.slice(4))}
-                    <td style={{ borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
+                    <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }}>
                     </td>
-                    <td>
+                    <td style={{ border: '0px' }}>
                     </td>
                   </tr>
                 </tbody>
