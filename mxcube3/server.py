@@ -17,7 +17,7 @@ from spectree import SpecTree
 
 from mxcube3.core.util import networkutils
 from mxcube3.core.components.user.database import db_session, init_db, UserDatastore
-from mxcube3.core.components.user.models import User, Role, Message
+from mxcube3.core.models.usermodels import User, Role, Message
 
 
 class Server:

@@ -87,8 +87,9 @@ def main():
     # Note that the machinery was all there in the core alrady. rhfogh.
     HWR.init_hardware_repository(cmdline_options.hwr_directory)
     config_path = HWR.get_hardware_repository().find_in_repository(
-        "mxcube-server-config.yml"
+        "mxcube-web"
     )
+
     cfg = Config(config_path)
 
     server.init(cmdline_options, cfg, mxcube)

@@ -10,7 +10,7 @@ import flask_login
 import flask_socketio
 
 from mxcube3.core.components.component_base import ComponentBase
-from mxcube3.core.components.user.models import User
+from mxcube3.core.models.usermodels import User
 from mxcube3.core.util.networkutils import is_local_host, remote_addr
 from mxcube3.core.util.convertutils import convert_to_dict
 

@@ -1,46 +1,44 @@
 import os
 import ruamel.yaml
 
+from pydantic import BaseModel
 
-class FlaskConfig:
-    SECRET_KEY = b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c"
-    SESSION_TYPE = "redis"
-    SESSION_KEY_PREFIX = "mxcube:session:"
-    DEBUG: False
-    STREAMED_VIDEO: True
-    ALLOWED_CORS_ORIGINS = "*"
-    SECURITY_PASSWORD_SALT = "ASALT"
-    SECURITY_TRACKABLE = True
+from mxcube3.core.models.configmodels import (
+    UIPropertiesListModel,
+    AppConfigModel,
+    FlaskConfigModel,
+    MXCUBEAppConfigModel
+)
 
 
-class AppConfig:
-    VIDEO_FORMAT = "MPEG1"
-    adapter_properties = []
-    ui_properties = []
-    usermanager = {"class": "UserManager"}
+class ConfigLoader:
+    @staticmethod
+    def load(path: str, schema: BaseModel, filetype="yaml"):
+
+        with open(os.path.join(path)) as f:
+            config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
+            model = schema.parse_obj(config)
+
+        return model
 
 
 class Config:
-    flask = FlaskConfig()
-    app = AppConfig()
-    CONFIG_ROOT_PATH = ""
+    CONFIG_ROOT_PATH: str = ""
+
+    flask: FlaskConfigModel
+    app: MXCUBEAppConfigModel
 
     def __init__(self, fpath):
-        with open(fpath) as f:
-            Config.CONFIG_ROOT_PATH = os.path.dirname(fpath)
-            config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
+        Config.CONFIG_ROOT_PATH = fpath
+        app_config = self.load_config("server", AppConfigModel)
+        uiprop = self.load_config("ui", UIPropertiesListModel)
 
-            for key, value in config["server"].items():
-                setattr(self.flask, key, value)
+        self.flask = app_config.server
+        self.app = app_config.mxcube
+        self.app.ui_properties = uiprop.__root__
 
-            for key, value in config["mxcube"].items():
-                setattr(self.app, key, value)
-
-    def load_config(self, component_name):
+    def load_config(self, component_name, schema):
         fpath = os.path.join(Config.CONFIG_ROOT_PATH, f"{component_name}.yaml")
-        config = None
-
-        with open(fpath) as f:
-            config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
+        config = ConfigLoader().load(path=fpath, schema=schema)
 
         return config

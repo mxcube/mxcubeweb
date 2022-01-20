@@ -1,7 +1,7 @@
 import logging
 
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
-from mxcube3.core.models import HOModel, HOActuatorModel
+from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
 
 
 class AdapterBase:
