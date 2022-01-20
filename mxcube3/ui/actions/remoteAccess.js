@@ -8,6 +8,23 @@ export function setRaState(data) {
   return { type: 'SET_RA_STATE', data };
 }
 
+export function getRaState() {
+  return function (dispatch) {
+    fetch('mxcube/api/v0.1/ra/', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include'
+    }).then(response => response.json())
+      .then((data) => {
+        dispatch(setRaState(data.data));
+      });
+  };
+}
+
+
 export function sendUpdateNickname(name) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/ra/update_user_nickname', {
@@ -38,22 +55,6 @@ export function requestControl(control = true, message = '', name = '', userInfo
         control, message, name, userInfo
       })
     });
-  };
-}
-
-export function getRaState() {
-  return function (dispatch) {
-    fetch('mxcube/api/v0.1/ra/', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json'
-      },
-      credentials: 'include'
-    }).then(response => response.json())
-      .then((data) => {
-        dispatch(setRaState(data.data));
-      });
   };
 }
 

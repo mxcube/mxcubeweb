@@ -23,14 +23,14 @@ class UserList extends React.Component {
                  Give control
                </Button>
                { this.props.login.user.isstaff ?
-                (<span>
-                  &nbsp;
-                  <Button className="btn-sm" onClick={() => this.props.sendLogoutUser(observer.username)}>
-                    Logout
-                  </Button>
-                 </span>)
-                :
-                null
+                 (<span>
+                   &nbsp;
+                   <Button className="btn-sm" onClick={() => this.props.sendLogoutUser(observer.username)}>
+                     Logout
+                   </Button>
+                  </span>)
+                 :
+                 null
                }
              </div>)
             :
