@@ -8,7 +8,6 @@ def init_route(app, server, url_prefix):
 
     @bp.route("/", methods=["GET"])
     @server.restrict
-    @server.validate(tags=["log"])
     def log():
         """
         Retrive log messages
