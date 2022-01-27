@@ -28,8 +28,7 @@ def create_get_route(app, server, bp, adapter, attr, name):
         @bp.route(route_url, endpoint=endpoint, methods=["GET"])
         @server.restrict
         @server.validate(
-            resp=spectree.Response(HTTP_200=get_type_hint["return"]), tags=["Beamline"]
-        )
+            resp=spectree.Response(HTTP_200=get_type_hint["return"]))
         def get_func(name):
             """
             Retrieves value of attribute < name > 
@@ -56,7 +55,7 @@ def create_set_route(app, server, bp, adapter, attr, name):
         @bp.route(route_url, endpoint=endpoint, methods=["PUT"])
         @server.require_control
         @server.restrict
-        @server.validate(json=set_type_hint["value"], tags=["Beamline"])
+        @server.validate(json=set_type_hint["value"])
         def set_func(name, _th=set_type_hint):
             """
             Tries to set < name > to value
