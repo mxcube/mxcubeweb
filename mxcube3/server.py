@@ -100,6 +100,18 @@ class Server:
             msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
             logging.getLogger("MX3.HWR").info(msg)
 
+    def _register_route(init_blueprint_fn, app, url_prefix, tag=None):
+        tag = url_prefix if tag is None else tag
+        bp = init_blueprint_fn(app, Server, url_prefix)
+
+        Server.flask.register_blueprint(bp)
+
+        for key, function in Server.flask.view_functions.items():
+            if key.startswith(bp.name):
+                if not hasattr(function, "tags"):
+                    function.tags = [bp.name.title().replace("_", " ")]
+
+
     @staticmethod
     def register_routes(mxcube):
         from mxcube3.routes.beamline import init_route as init_beamline_route
@@ -120,60 +132,56 @@ class Server:
 
         url_root_prefix = "/mxcube/api/v0.1"
 
-        Server.flask.register_blueprint(
-            init_beamline_route(mxcube, Server, f"{url_root_prefix}/beamline")
+        Server._register_route(
+            init_beamline_route, mxcube, f"{url_root_prefix}/beamline"
         )
 
-        Server.flask.register_blueprint(
-            init_detector_route(mxcube, Server, f"{url_root_prefix}/detector")
+        Server._register_route(
+            init_detector_route, mxcube, f"{url_root_prefix}/detector"
         )
 
-        Server.flask.register_blueprint(
-            init_diffractometer_route(
-                mxcube, Server, f"{url_root_prefix}/diffractometer"
-            )
+        Server._register_route(
+            init_diffractometer_route, mxcube, f"{url_root_prefix}/diffractometer"
         )
 
-        Server.flask.register_blueprint(
-            init_lims_route(mxcube, Server, f"{url_root_prefix}/lims")
+        Server._register_route(
+            init_lims_route, mxcube, f"{url_root_prefix}/lims"
         )
 
-        Server.flask.register_blueprint(
-            init_log_route(mxcube, Server, f"{url_root_prefix}/log")
+        Server._register_route(
+            init_log_route, mxcube, f"{url_root_prefix}/log"
         )
 
-        Server.flask.register_blueprint(
-            init_login_route(mxcube, Server, f"{url_root_prefix}/login")
+        Server._register_route(
+            init_login_route, mxcube, f"{url_root_prefix}/login"
         )
 
-        Server.flask.register_blueprint(
-            init_main_route(mxcube, Server, f"{url_root_prefix}")
+        Server._register_route(
+            init_main_route, mxcube, f"{url_root_prefix}"
         )
 
-        Server.flask.register_blueprint(
-            init_mockups_route(mxcube, Server, f"{url_root_prefix}/mockups")
+        Server._register_route(
+            init_mockups_route, mxcube, f"{url_root_prefix}/mockups"
         )
 
-        Server.flask.register_blueprint(
-            init_queue_route(mxcube, Server, f"{url_root_prefix}/queue")
+        Server._register_route(
+            init_queue_route, mxcube, f"{url_root_prefix}/queue"
         )
 
-        Server.flask.register_blueprint(
-            init_ra_route(mxcube, Server, f"{url_root_prefix}/ra")
+        Server._register_route(
+            init_ra_route, mxcube, f"{url_root_prefix}/ra"
         )
 
-        Server.flask.register_blueprint(
-            init_sampleview_route(mxcube, Server, f"{url_root_prefix}/sampleview")
+        Server._register_route(
+            init_sampleview_route, mxcube, f"{url_root_prefix}/sampleview"
         )
 
-        Server.flask.register_blueprint(
-            init_samplechanger_route(
-                mxcube, Server, f"{url_root_prefix}/sample_changer"
-            )
+        Server._register_route(
+            init_samplechanger_route, mxcube, f"{url_root_prefix}/sample_changer"
         )
 
-        Server.flask.register_blueprint(
-            init_workflow_route(mxcube, Server, f"{url_root_prefix}/workflow")
+        Server._register_route(
+            init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
         )
 
     @staticmethod
