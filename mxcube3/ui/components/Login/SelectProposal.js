@@ -36,9 +36,8 @@ class SelectProposal extends React.Component {
       hideSelectColumn: true,
     };
     const proposals = this.props.data.proposalList.map(prop => ({
-      Number: prop.Proposal.code + prop.Proposal.number,
-      Person: prop.Person.familyName,
-      Session: prop.Session[0].startDate.split(' ')[0]
+      Number: prop.code + prop.number,
+      Person: prop.person,
     }));
 
     return (
@@ -53,7 +52,6 @@ class SelectProposal extends React.Component {
 Proposal Number
               </TableHeaderColumn>
               <TableHeaderColumn dataField="Person" editable={false}>Person</TableHeaderColumn>
-              <TableHeaderColumn dataField="Session" editable={false}>Session</TableHeaderColumn>
             </BootstrapTable>
           </div>
         </Modal.Body>

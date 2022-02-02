@@ -277,7 +277,7 @@ class Lims(ComponentBase):
         """
         limsdata = json.loads(current_user.limsdata)
 
-        logging.getLogger("MX3.HWR").info("[LIMS] Serching for proposal: %s" % proposal)
+        logging.getLogger("MX3.HWR").info("[LIMS] Searching for proposal: %s" % proposal)
         for prop in limsdata.get("proposalList", []):
             _p = "%s%s" % (
                 prop.get("Proposal").get("code", "").lower(),
@@ -321,7 +321,8 @@ class Lims(ComponentBase):
             HWR.beamline.session.proposal_number = proposal_info.get("Proposal").get(
                 "number", ""
             )
-            HWR.beamline.session.session_id = proposal_info.get("Session")[0].get(
+            todays_session = HWR.beamline.lims.get_todays_session(proposal_info)
+            HWR.beamline.session.session_id = todays_session.get("session").get(
                 "sessionId"
             )
 

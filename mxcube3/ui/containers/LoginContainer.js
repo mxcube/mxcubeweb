@@ -27,7 +27,7 @@ function mapStateToProps(state) {
     loading: state.general.loading,
     showError: state.general.showErrorPanel,
     showProposalsForm: state.login.showProposalsForm,
-    data: state.login.data,
+    data: state.login,
     selectedProposal: state.login.selectedProposal
   };
 }
