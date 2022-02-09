@@ -35,6 +35,8 @@ dependencies:
   - flask-sqlalchemy
   - pytz
   - tzlocal
+! Required for GPhL code
+  - py4j
 
   - pip:
       - Flask-Session==0.3.2
@@ -43,3 +45,6 @@ dependencies:
       - spectree
       - git+https://github.com/mxcube/mxcubecore.git
       - flask-security-too
+! required for GPhL:
+      - mgen
+      - f90nml

@@ -5,8 +5,8 @@ _initialise_class:
 directory_locations:
     # Directory locations
     # file names below are set as file_name.format(directory_locations)
-    GPHL_SETUP: /mnt/scratch/rhfogh/GPhL/mxcube_setup
-    GPHL_RELEASE: /mnt/scratch/rhfogh/GPhL
+    GPHL_SETUP: /alt/rhfogh/Software/GPhL/mxcube_setup
+    GPHL_RELEASE: /alt/rhfogh/Software/GPhL
 
 
 # If set, run workflow through ssh with selected options
@@ -49,7 +49,7 @@ software_paths:
     GPHL_INSTALLATION: "{GPHL_RELEASE}/gphl_release/exe"
 
     #Location of CCP4 release binaries - required to pass on to some wrapper scripts
-    GPHL_CCP4_PATH: /mnt/scratch/rhfogh/GPhL/ccp4-7.1/bin
+    GPHL_CCP4_PATH: /alt/rhfogh/Software/CCP4/latest/bin
 
     #Gphl workflow Java classpath.
     #Should point to all contents of workflow application directory
@@ -76,7 +76,7 @@ software_properties:
 #
   #Location of executable XDS binary. Mandatory
 #        co.gphl.wf.xds.bin: /public/xtal/Xds/XDS-INTEL64_Linux_x86_64/xds_par
-  co.gphl.wf.xds.bin: "{GPHL_RELEASE}/XDS/xds_par"
+  co.gphl.wf.xds.bin: "/alt/rhfogh/Software/XDS/latest/xds_par"
 
   #Location of individual binaries or wrappers are optional.
   #They default to within GPHL_INSTALLATION
