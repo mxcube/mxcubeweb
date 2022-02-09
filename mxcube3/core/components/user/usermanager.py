@@ -275,6 +275,16 @@ class BaseUserManager(ComponentBase):
         self.app.server.user_datastore.put(user)
         self.app.server.user_datastore.commit()
 
+    def _get_configured_roles(self, user):
+        roles = []
+
+        _ihs = ["%s%s" % prop for prop in HWR.beamline.session.in_house_users]
+
+        if self.config.inhouse_is_staff and user in _ihs:
+            roles.append("staff")
+
+        return roles
+
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
@@ -297,10 +307,11 @@ class BaseUserManager(ComponentBase):
                 session_id=sid,
                 selected_proposal=user,
                 limsdata=json.dumps(lims_data),
-                roles=["staff"],
+                roles=self._get_configured_roles(user)
             )
         else:
             _u.limsdata = json.dumps(lims_data)
+            user_datastore.append_roles(_u, self._get_configured_roles(user))
 
         self.app.server.user_datastore.commit()
 
