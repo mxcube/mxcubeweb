@@ -276,12 +276,17 @@ class BaseUserManager(ComponentBase):
         self.app.server.user_datastore.commit()
 
     def _get_configured_roles(self, user):
-        roles = []
+        roles = set()
 
         _ihs = ["%s%s" % prop for prop in HWR.beamline.session.in_house_users]
 
         if self.config.inhouse_is_staff and user in _ihs:
-            roles.append("staff")
+            roles.add("staff")
+
+        for _u in self.config.users:
+            if _u.username == user:
+                roles.add(_u.role)
+                break
 
         return roles
 
