@@ -88,7 +88,7 @@ class ServerIO {
   }
 
   connectNetworkSocket(cb) {
-    this.networkSocket = io.connect(`//${document.domain}:${location.port}/network`);
+    this.networkSocket = io.connect(`//${document.domain}:${window.location.port}/network`);
     this.networkSocket.on('connect', () => {
       cb(true);
       this.connected = true;
@@ -101,7 +101,7 @@ class ServerIO {
   }
 
   connectStateSocket(statePersistor) {
-    this.uiStateSocket = io.connect(`//${document.domain}:${location.port}/ui_state`);
+    this.uiStateSocket = io.connect(`//${document.domain}:${window.location.port}/ui_state`);
 
     this.uiStateSocket.on('state_update', (newState) => {
       statePersistor.rehydrate(JSON.parse(newState));
@@ -125,8 +125,8 @@ class ServerIO {
   listen(store) {
     this.dispatch = store.dispatch;
 
-    this.hwrSocket = io.connect(`//${document.domain}:${location.port}/hwr`);
-    this.loggingSocket = io.connect(`//${document.domain}:${location.port}/logging`);
+    this.hwrSocket = io.connect(`//${document.domain}:${window.location.port}/hwr`);
+    this.loggingSocket = io.connect(`//${document.domain}:${window.location.port}/logging`);
 
     this.loggingSocket.on('log_record', (record) => {
       this.dispatch(addUserMessage(record));
