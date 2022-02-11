@@ -44,7 +44,7 @@
     "react-sticky": "^6.0.3",
     "react-stonecutter": "^0.3.9",
     "redux": "^3.0.4",
-    "redux-form": "^7.4.2",
+    "redux-form": "^8.3.8",
     "redux-logger": "^3.0.6",
     "redux-persist": "^4.10.2",
     "redux-persist-crosstab": "^3.0.0",
