@@ -6,12 +6,12 @@ import ReactDOM from 'react-dom';
 import {
   Router, Route, browserHistory, IndexRoute
 } from 'react-router';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose} from 'redux';
 import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
-import { persistStore, autoRehydrate } from 'redux-persist';
-import crosstabSync from 'redux-persist-crosstab';
+import { persistStore } from 'redux-persist';
+// import crosstabSync from 'redux-persist-crosstab';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -35,7 +35,19 @@ import { fab } from '@fortawesome/free-brands-svg-icons'
 // Add all icons to the library so you can use it in your page
 library.add(fas, far, fab)
 
-const store = createStore(rootReducer, applyMiddleware(thunk, createLogger()), autoRehydrate());
+// Logger MUST BE the last middleware
+const middleware = [
+  thunk,
+  createLogger()
+];
+
+// passing several store enhancers to createStore need to be compose together
+const composedEnhancers = compose(
+  applyMiddleware(...middleware),
+  // autoRehydrate()
+);
+
+const store = createStore(rootReducer, composedEnhancers);
 
 if (module.hot) {
   // Enable Webpack hot module replacement for reducers
@@ -86,7 +98,7 @@ function requireAuth(nextState, replace, callback) {
         });
 
       serverIO.connectStateSocket(persistor);
-      crosstabSync(persistor);
+      // crosstabSync(persistor);
 
       serverIO.listen(store);
       store.dispatch(startSession());
