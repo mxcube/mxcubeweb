@@ -1,4 +1,3 @@
-import { REHYDRATE } from 'redux-persist/constants';
 
 const initialState = {
   clickCentring: false,
@@ -213,13 +212,6 @@ export default (state = initialState, action) => {
           gridList: [],
           gridCount: 0
         });
-    }
-    case REHYDRATE:
-    {
-      return {
-        ...action.payload.sampleview,
-        ...state,
-      };
     }
     case 'SET_INITIAL_STATE':
     {
