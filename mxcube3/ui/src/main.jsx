@@ -6,12 +6,12 @@ import ReactDOM from 'react-dom';
 import {
   Router, Route, browserHistory, IndexRoute
 } from 'react-router';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose} from 'redux';
 import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
-import { persistStore, autoRehydrate } from 'redux-persist';
-import crosstabSync from 'redux-persist-crosstab';
+import { persistStore } from 'redux-persist';
+// import crosstabSync from 'redux-persist-crosstab';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -26,7 +26,18 @@ import { getLoginInfo, startSession } from './actions/login';
 import logo from './img/mxcube_logo20.png';
 import loadingAnimation from './img/loading-animation.gif';
 
-const store = createStore(rootReducer, applyMiddleware(thunk, createLogger()), autoRehydrate());
+
+// Logger MUST BE the last middleware
+const middleware = [
+  thunk,
+  createLogger()
+];
+
+const composedEnhancers = compose(
+  applyMiddleware(...middleware),
+);
+
+const store = createStore(rootReducer, composedEnhancers);
 
 if (module.hot) {
   // Enable Webpack hot module replacement for reducers
@@ -77,7 +88,7 @@ function requireAuth(nextState, replace, callback) {
         });
 
       serverIO.connectStateSocket(persistor);
-      crosstabSync(persistor);
+      // crosstabSync(persistor);
 
       serverIO.listen(store);
       store.dispatch(startSession());
