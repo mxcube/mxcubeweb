@@ -14,3 +14,8 @@ mxcube:
 
   usermanager:
     class: UserManager
+    inhouse_is_staff: True
+    users:
+      -
+        username: opid0
+        role: staff

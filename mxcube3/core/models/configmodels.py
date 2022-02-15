@@ -35,9 +35,25 @@ class UIPropertiesListModel(BaseModel):
     __root__: Dict[str, UIPropertiesModel]
 
 
+class UserManagerUserConfigModel(BaseModel):
+    username: str = Field("", description="username")
+    role: str = Field("staff", description="Role to give user")
+
+
+class UserManagerConfigModel(BaseModel):
+    class_name: str = Field(
+        "UserManager", description="UserManager class", alias="class"
+        )
+    inhouse_is_staff: bool = Field(
+        True,
+        description="Treat users defined as inhouse in session.xml as staff"
+    )
+    users: List[UserManagerUserConfigModel]
+
+
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
-    usermanager: dict = Field({"class": "UserManager"}, description="")
+    usermanager: UserManagerConfigModel
     ui_properties: Dict[str, UIPropertiesModel] = {}
     adapter_properties: List = []
 
@@ -45,3 +61,5 @@ class MXCUBEAppConfigModel(BaseModel):
 class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
+
+
