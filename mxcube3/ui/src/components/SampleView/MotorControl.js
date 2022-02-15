@@ -118,16 +118,16 @@ export default class MotorControl extends React.Component {
         { this.state.showAll
           ? (
             <div>
-              { this.renderAllMotors() }
               <Button
-                style={{ marginLeft: '8px', width: '145px' }}
+                style={{ marginTop: '1em', marginLeft: '8px', width: '145px' }}
                 onClick={() => { this.setState({ showAll: false }); }}
               >
                 <i className="fas fa-cogs" />
                 {' '}
-Hide motors
+                Hide motors
                 <i className="fas fa-caret-up" />
               </Button>
+              { this.renderAllMotors() }
             </div>
           )
           : (
@@ -137,7 +137,7 @@ Hide motors
             >
               <i className="fas fa-cogs" />
               {' '}
-Show motors
+              Show motors
               <i className="fas fa-caret-down" />
             </Button>
           )
