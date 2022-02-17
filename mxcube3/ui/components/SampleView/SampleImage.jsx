@@ -476,12 +476,6 @@ export default class SampleImage extends React.Component {
       objectFound = option.target;
     }
 
-    if (!objectFound) {
-      // this.clearSelection();
-    } else {
-      // this.selectShape([objectFound], option.e.ctrlKey);
-    }
-
     const {
       sampleActions,
       clickCentring,
