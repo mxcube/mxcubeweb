@@ -76,15 +76,18 @@ settings:
         automation_mode: TEST
 
     # Default parameters for fully automated strategies
+    # Multiple acquisitions in order - characterisation then main
     # passed to set_pre_strategy_params and set_pre_acquisition_params
-    auto_char_params:
-        # For characterisation acquisition
-        exposure_time: 0.02
+    # NB as long as we only acquire either characterisation+main or diffractcal
+    # the code will use list[0] for the first acquisition and list[-1] for the main one
+    auto_acq_parameters:
+      # For characterisation acquisition
+      - exposure_time: 0.02
         image_width: 0.1
+        resolution: 1.7
         # strategy_options: # Not currently used
-    auto_acq_params:
-        # For acquisition or diffreactcal
-        exposure_time: 0.02
+        # For acquisition or diffractcal
+      - exposure_time: 0.02
         image_width: 1.0
         strategy_options:
             # Not really needed in default situation, but to show how it works
@@ -127,7 +130,8 @@ settings:
         co.gphl.wf.simcal_predict.b_wilson: 26.0
         co.gphl.wf.simcal_predict.cell_dim_sd_scale: 1.5e-3
         co.gphl.wf.simcal_predict.mosaicity: 0.2
-        
+#        # Testing ONLY:
+#        co.gphl.wf.run_number: 7
     
 #    Workflows, The options in the top elements are updated with the options
 #    in the individual type, and passed as options to teh workflow application
@@ -175,7 +179,6 @@ workflows:
                   variants:
                       - full
                       - quick
-                      - minimal
                   options:
                       # Filename pattern name for normal data collections
                       pattern: interleaved
