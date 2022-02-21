@@ -288,7 +288,7 @@ class BaseUserManager(ComponentBase):
                 roles.add(_u.role)
                 break
 
-        return roles
+        return list(roles)
 
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
