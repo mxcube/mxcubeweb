@@ -23,7 +23,7 @@
     "dustjs-linkedin": "^2.7.5",
     "dygraphs": "^2.0.0",
     "everpolate": "0.0.3",
-    "fabric": "^3.6.3",
+    "fabric": "^5.0.0",
     "font-awesome": "^4.4.0",
     "font-awesome-webpack-4": "^1.0.0",
     "history": "4.10.x",

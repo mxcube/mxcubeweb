@@ -26,10 +26,10 @@ export function makeElipse(posX, posY, sizeX, sizeY, color) {
     originY: 'center',
     rx: sizeX / 2,
     ry: sizeY / 2,
-    angle: 0,
     fill: '',
     stroke: color,
-    strokeWidth: 3,
+    strokeWidth: 1,
+    strokeDashArray: [2, 2],
     selectable: false,
     hoverCursor: 'crosshair'
   });
@@ -165,13 +165,40 @@ export function makeCross(x, y, imageRatio, width, height) {
   ];
 }
 
+export function makeCentringVerticalLine(x, y, imageRatio, height) {
+  return makeLine(
+    x * imageRatio,
+    0,
+    x * imageRatio,
+    height,
+    'rgba(255,255,0,0.5)',
+    1,
+    false
+  );
+}
+
+export function makeCentringHorizontalLine(x, y, imageRatio, width) {
+  return makeLine(
+    0,
+    y * imageRatio,
+    width,
+    y * imageRatio,
+    'rgba(255,255,0,0.5)',
+    1,
+    false
+  );
+}
+
+
 export function makeBeam(posX, posY, sizeX, sizeY, shape) {
   return [
-    makeLine(posX - 20, posY, posX + 20, posY, 'red', 1, false),
-    makeLine(posX, posY - 20, posX, posY + 20, 'red', 1, false),
+    makeLine(posX - sizeX / 4 - 20, posY, posX - sizeX / 4, posY, 'rgba(0,255,0,1)', 1, false),
+    makeLine(posX, posY - sizeY / 4 - 20, posX, posY - sizeY / 4, 'rgba(0,255,0,1)', 1, false),
+    makeLine(posX + sizeX / 4 + 20, posY, posX + sizeX / 4, posY, 'rgba(0,255,0,1)', 1, false),
+    makeLine(posX, posY + sizeY / 4 + 20, posX, posY + sizeY / 4, 'rgba(0,255,0,1)', 1, false),
     (shape === 'ellipse'
-      ? makeElipse(posX, posY, sizeX, sizeY, 'blue')
-      : makeRectangle(posX, posY, sizeX, sizeY, 'blue'))
+      ? makeElipse(posX, posY, sizeX, sizeY, 'rgba(0,255,0,1)', 0.5)
+      : makeRectangle(posX, posY, sizeX, sizeY, 'rgba(0,255,0,1)'))
   ];
 }
 

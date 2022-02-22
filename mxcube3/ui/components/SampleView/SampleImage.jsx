@@ -1,7 +1,14 @@
 import './SampleView.css';
 import React from 'react';
 import { MOTOR_STATE } from '../../constants';
-import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } from './shapes';
+import {
+  makePoints,
+  makeTwoDPoints,
+  makeLines,
+  makeImageOverlay,
+  makeCentringHorizontalLine,
+  makeCentringVerticalLine
+} from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
@@ -63,7 +70,12 @@ export default class SampleImage extends React.Component {
 
   componentDidMount() {
     // Create fabric and set image background to sample
-    this.canvas = new fabric.Canvas('canvas', { defaultCursor: 'crosshair' });
+    this.canvas = new fabric.Canvas('canvas', {
+      defaultCursor: 'crosshair',
+      altSelectionKey: 'altKey',
+      selectionKey: 'ctrlKey',
+      preserveObjectStacking: true,
+    });
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', this.leftClick);
@@ -72,6 +84,7 @@ export default class SampleImage extends React.Component {
 
     this.canvas.on('selection:created', this.selectShapeEvent);
     this.canvas.on('selection:cleared', this.clearSelectionEvent);
+    this.canvas.on('selection:updated', this.selectShapeEvent);
 
     // Bind rigth click to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
@@ -134,6 +147,7 @@ export default class SampleImage extends React.Component {
     this.canvas.off('mouse:move', this.onMouseMove);
     this.canvas.off('mouse:up', this.onMouseUp);
     this.canvas.off('selection:created', this.selectShapeEvent);
+    this.canvas.off('selection:updated', this.selectShapeEvent);
     this.canvas.off('selection:cleared', this.clearSelectionEvent);
 
     document.removeEventListener('keydown', this.keyDown);
@@ -149,18 +163,34 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
-    if (this.props.clickCentring && this.props.clickCentringClicksLeft > 0) {
-      if (this.centringCross.length === 2) {
-        this.canvas.remove(this.centringCross[0]);
-        this.canvas.remove(this.centringCross[1]);
+    if (this.props.clickCentring) {
+      if (this.props.clickCentringClicksLeft > 0) {
+        if (this.centringVerticalLine !== undefined) {
+          this.canvas.remove(this.centringVerticalLine);
+        }
+
+        this.centringVerticalLine = makeCentringVerticalLine(
+          (options.e.layerX + 1.5) / this.props.imageRatio,
+          (options.e.layerY + 1) / this.props.imageRatio,
+          this.props.imageRatio,
+          this.canvas.height
+        );
+
+        if (this.props.clickCentringClicksLeft > 2) {
+          if (this.centringHorizontalLine !== undefined) {
+            // this.canvas.remove(this.centringHorizontalLine);
+          }
+
+          this.centringHorizontalLine = makeCentringHorizontalLine(
+            (options.e.layerX + 1.5) / this.props.imageRatio,
+            (options.e.layerY + 1) / this.props.imageRatio,
+            this.props.imageRatio,
+            this.canvas.width
+          );
+        }
+
+        this.canvas.add(...[this.centringVerticalLine]);
       }
-
-      this.centringCross = makeCross((options.e.layerX + 1.5) / this.props.imageRatio,
-        (options.e.layerY + 1) / this.props.imageRatio,
-        this.props.imageRatio,
-        this.canvas.width, this.canvas.height);
-
-      this.canvas.add(...this.centringCross);
     }
 
     if (options.e.buttons > 0) {
@@ -428,28 +458,22 @@ export default class SampleImage extends React.Component {
 
     this.drawGridPlugin.clearMouseOverGridLabel(this.canvas);
 
-    if (option.target && option.target.type === 'group') {
+    if (option.target && option.target.type === 'activeSelection') {
       const group = this.canvas.getActiveObject();
       const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
 
       // Important to call this for containsPoint to work properly
-      this.canvas.discardActiveObject();
+      // this.canvas.discardActiveObject();
 
       group.getObjects().forEach((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = obj;
         } else {
-          this.deSelectShape([obj], option.e.ctrlKey);
+          // this.deSelectShape([obj], option.e.ctrlKey);
         }
       });
     } else if (option.target) {
       objectFound = option.target;
-    }
-
-    if (!objectFound) {
-      this.clearSelection();
-    } else {
-      this.selectShape([objectFound], option.e.ctrlKey);
     }
 
     const {
@@ -470,6 +494,17 @@ export default class SampleImage extends React.Component {
       sampleActions.addDistancePoint(option.e.layerX / imageRatio, option.e.layerY / imageRatio);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
+    }
+
+    if (this.props.clickCentring === true && this.props.clickCentringClicksLeft < 3) {
+      this.centringHorizontalLine = makeCentringHorizontalLine(
+        (option.e.layerX + 1.5) / this.props.imageRatio,
+        (option.e.layerY + 1) / this.props.imageRatio,
+        this.props.imageRatio,
+        this.canvas.width
+      );
+
+      this.canvas.add(this.centringHorizontalLine);
     }
   }
 
@@ -583,12 +618,12 @@ export default class SampleImage extends React.Component {
   }
 
   selectShapeEvent(options) {
-    let shapes = [];
-
-    if (options.e !== undefined && options.target.id === undefined) {
-      shapes = options.target.getObjects();
-      this.selectShape(shapes, options.e.ctrlKey);
+    if (options.e !== undefined && options.selected.length > 0) {
+      this.selectShape(options.selected, options.e.ctrlKey);
+    } else if (options.e !== undefined && options.deselected.length > 0) {
+      this.deSelectShape(options.deselected);
     }
+
   }
 
   clearSelection() {
@@ -613,6 +648,8 @@ export default class SampleImage extends React.Component {
     // Single selection if control key is NOT pressed
     if (options.e !== undefined && !options.e.ctrlKey) {
       this.clearSelection();
+    } else if (options.e !== undefined) {
+      this.deSelectShape(options.deselected);
     }
   }
 
@@ -737,10 +774,13 @@ export default class SampleImage extends React.Component {
     ));
 
     if (this.props.clickCentring === false || this.props.clickCentringClicksLeft === 0) {
-      this.centringCross = [];
+      this.canvas.remove(this.centringHorizontalLine);
+      this.centringHorizontalLine = undefined;
     }
 
-    this.canvas.add(...this.centringCross);
+    if (this.props.clickCentring === true && this.centringHorizontalLine !== undefined) {
+      this.canvas.add(this.centringHorizontalLine);
+    }
 
     const fabricSelectables = [...makeLines(lines, imageRatio)];
 
