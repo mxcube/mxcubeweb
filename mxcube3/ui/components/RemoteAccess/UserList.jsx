@@ -46,7 +46,7 @@ class UserList extends React.Component {
   render() {
     return (
       <Panel>
-        <Panel.Heading>Users</Panel.Heading>
+        <Panel.Heading>Observers</Panel.Heading>
         <Panel.Body>
           <div className="col-xs-12">
             <div className="col-xs-4"><b>Name</b></div>

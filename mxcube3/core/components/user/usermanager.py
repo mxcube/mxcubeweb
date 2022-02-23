@@ -233,6 +233,7 @@ class BaseUserManager(ComponentBase):
                 "isstaff": "",
                 "nickname": "",
                 "inControl": "",
+                "islocal": "",
                 "ip": "",
             },
         }
@@ -283,6 +284,9 @@ class BaseUserManager(ComponentBase):
         if self.config.inhouse_is_staff and user in _ihs:
             roles.add("staff")
 
+        if is_local_host():
+            roles.add("local")
+
         for _u in self.config.users:
             if _u.username == user:
                 roles.add(_u.role)
@@ -300,6 +304,10 @@ class BaseUserManager(ComponentBase):
         if not user_datastore.find_role("staff"):
             user_datastore.create_role(name="staff")
             user_datastore.create_role(name="incontrol")
+            self.app.server.user_datastore.commit()
+
+        if not user_datastore.find_role("local"):
+            user_datastore.create_role(name="local")
             self.app.server.user_datastore.commit()
 
         _u = user_datastore.find_user(username=username)
