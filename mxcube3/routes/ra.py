@@ -215,9 +215,10 @@ def init_route(app, server, url_prefix):
 
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     def disconnect():
+        return
+        # Update in socket-io library seems to create unepected disconnects.
         current_user.disconnect_timestamp = datetime.now()
         app.usermanager.update_user(current_user)
-
         gevent.spawn(app.usermanager.handle_disconnect, current_user.username)
 
 
