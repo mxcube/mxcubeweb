@@ -20,8 +20,8 @@ export default class MotorControl extends React.Component {
 
     const to_arg = to !== null ? to : this.props.uiproperties.components.length;
 
-    const motor_components = Object.values(this.props.uiproperties.components).
-      slice(from, to_arg).map((motor_uiprop) => {
+    const motor_components = Object.values(this.props.uiproperties.components)
+      .slice(from, to_arg).map((motor_uiprop) => {
         const motor = this.props.attributes[motor_uiprop.attribute];
         return (
           <div className="col-sm-12">

@@ -91,8 +91,8 @@ export default class SampleControls extends React.Component {
 
   toggleLight(name) {
     const lighstate = this.props.attributes[`${name}_switch`].value;
-    const newState = this.props.attributes[`${name}_switch`].
-      commands.filter(state => state !== lighstate)[0];
+    const newState = this.props.attributes[`${name}_switch`]
+      .commands.filter(state => state !== lighstate)[0];
     this.props.sendSetAttribute(`${name}_switch`, newState);
   }
 
