@@ -35,32 +35,39 @@ class SelectProposal extends React.Component {
       clickToSelectAndEditCell: false,
       hideSelectColumn: true,
     };
-    const proposals = this.props.data.proposalList.map(prop => ({
+    const proposals = this.props.data.proposalList.map((prop) => ({
       Number: prop.code + prop.number,
       Person: prop.person,
     }));
 
     return (
-      <Modal show={this.props.show} backdrop="static" onHide={this.handleCancel}>
+      <Modal
+        show={this.props.show}
+        backdrop="static"
+        onHide={this.handleCancel}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Select a proposal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
-            <BootstrapTable data={proposals} bordered={false} selectRow={selectRowProp}>
+            <BootstrapTable
+              data={proposals}
+              bordered={false}
+              selectRow={selectRowProp}
+            >
               <TableHeaderColumn dataField="Number" isKey editable={false}>
-Proposal Number
+                Proposal Number
               </TableHeaderColumn>
-              <TableHeaderColumn dataField="Person" editable={false}>Person</TableHeaderColumn>
+              <TableHeaderColumn dataField="Person" editable={false}>
+                Person
+              </TableHeaderColumn>
             </BootstrapTable>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>
-            <Button
-              bsStyle="default"
-              onClick={this.handleCancel}
-            >
+            <Button bsStyle="default" onClick={this.handleCancel}>
               Sign Out
             </Button>
             <Button
@@ -79,9 +86,11 @@ Proposal Number
 }
 
 SelectProposal = reduxForm({
-  form: 'proposals'
+  form: 'proposals',
 })(SelectProposal);
 
-SelectProposal = connect(state => ({ initialValues: { ...state.login.data } }))(SelectProposal);
+SelectProposal = connect((state) => ({
+  initialValues: { ...state.login.data },
+}))(SelectProposal);
 
 export default SelectProposal;

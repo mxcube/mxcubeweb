@@ -1,6 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Panel, Button, FormGroup, Form, FormControl, ControlLabel } from 'react-bootstrap';
+import {
+  Panel,
+  Button,
+  FormGroup,
+  Form,
+  FormControl,
+  ControlLabel,
+} from 'react-bootstrap';
 
 import { sendMail } from '../actions/login';
 
@@ -32,18 +39,22 @@ export class HelpContainer extends React.Component {
       const tel = '';
 
       panel = (
-        <Panel header={
-          <div>
-            <span>Local Contact</span>
-            <span className="glyphicon glyphicon-user pull-right" ></span>
-          </div>}
+        <Panel
+          header={
+            <div>
+              <span>Local Contact</span>
+              <span className="glyphicon glyphicon-user pull-right"></span>
+            </div>
+          }
         >
-         <span>
-           Name: `${givenName} ${familyName}`<br />
-           Email: {email}<br />
-           Tel: {tel} <br />
-         </span>
-       </Panel>);
+          <span>
+            Name: `${givenName} ${familyName}`<br />
+            Email: {email}
+            <br />
+            Tel: {tel} <br />
+          </span>
+        </Panel>
+      );
     }
     return panel;
   }
@@ -52,21 +63,28 @@ export class HelpContainer extends React.Component {
     let links = [];
 
     if (process.env.helpLinks) {
-      links = process.env.helpLinks.map((link) =>
-          <div><a target="_blank" href={link.url}>{link.name}</a></div>);
+      links = process.env.helpLinks.map((link) => (
+        <div>
+          <a target="_blank" href={link.url}>
+            {link.name}
+          </a>
+        </div>
+      ));
     }
 
     return (
       <div className="col-xs-12" style={{ marginTop: '2em', zIndex: 9999 }}>
         <div className="col-xs-4">
           {this.localContactPanel()}
-          <Panel header={
-            <div>
-              <span>Feedback</span>
-              <span className="glyphicon glyphicon-envelope pull-right" ></span>
-            </div>}
+          <Panel
+            header={
+              <div>
+                <span>Feedback</span>
+                <span className="glyphicon glyphicon-envelope pull-right"></span>
+              </div>
+            }
           >
-           <span>
+            <span>
               <Form>
                 <FormGroup>
                   <ControlLabel>Your email, Name or Proposal</ControlLabel>
@@ -74,7 +92,9 @@ export class HelpContainer extends React.Component {
                     type="email"
                     label="Email address"
                     placeholder="Your contact information (email, Name or Proposal)"
-                    inputRef={ (input) => {this.sender = input;} }
+                    inputRef={(input) => {
+                      this.sender = input;
+                    }}
                   />
                 </FormGroup>
                 <FormGroup>
@@ -84,11 +104,15 @@ export class HelpContainer extends React.Component {
                     rows="7"
                     label="Content"
                     placeholder="Let us know whats on your mind !"
-                    inputRef={ (input) => {this.content = input;} }
+                    inputRef={(input) => {
+                      this.content = input;
+                    }}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Button type="button" onClick={this.sendMail}>Submit</Button>
+                  <Button type="button" onClick={this.sendMail}>
+                    Submit
+                  </Button>
                 </FormGroup>
               </Form>
             </span>
@@ -97,7 +121,7 @@ export class HelpContainer extends React.Component {
             <span>
               Version: {/* eslint-disable no-undef */ VERSION.BRANCH}
               <br />
-              Commit hash: { VERSION.COMMITHASH /* eslint-enable no-undef */}
+              Commit hash: {VERSION.COMMITHASH /* eslint-enable no-undef */}
             </span>
           </Panel>
         </div>
@@ -128,32 +152,28 @@ export class HelpContainer extends React.Component {
               </span>
             </div>
           </Panel>
-          { process.env.helpLinks ?
-            (<Panel header={
-              <div>
-                <span>Help Links</span>
-                <span className="glyphicon glyphicon-info-sign pull-right" ></span>
-              </div>}
+          {process.env.helpLinks ? (
+            <Panel
+              header={
+                <div>
+                  <span>Help Links</span>
+                  <span className="glyphicon glyphicon-info-sign pull-right"></span>
+                </div>
+              }
             >
-              <span>
-              {links}
-              </span>
-            </Panel>) : null
-           }
+              <span>{links}</span>
+            </Panel>
+          ) : null}
         </div>
       </div>
     );
   }
 }
 
-
 function mapStateToProps(state) {
   return {
-    login: state.login
+    login: state.login,
   };
 }
 
-
-export default connect(
-  mapStateToProps
-)(HelpContainer);
+export default connect(mapStateToProps)(HelpContainer);

@@ -1,7 +1,14 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Form, ControlLabel, FormControl, Button, FormGroup, Panel } from 'react-bootstrap';
+import {
+  Form,
+  ControlLabel,
+  FormControl,
+  Button,
+  FormGroup,
+  Panel,
+} from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
 import { requestControl, sendTakeControl } from '../../actions/remoteAccess';
 
@@ -19,9 +26,11 @@ class RequestControlForm extends React.Component {
   }
 
   getTakeControlOption() {
-    let content = (<span style={{ marginLeft: '1em' }}>
-                     <Button onClick={this.takeControlOnClick}>Take control</Button>
-                   </span>);
+    let content = (
+      <span style={{ marginLeft: '1em' }}>
+        <Button onClick={this.takeControlOnClick}>Take control</Button>
+      </span>
+    );
 
     if (!this.props.login.user.isstaff) {
       content = null;
@@ -47,9 +56,13 @@ class RequestControlForm extends React.Component {
   }
 
   askForControl() {
-    this.props.askForControlDialog(true, 'Asking for control',
+    this.props.askForControlDialog(
+      true,
+      'Asking for control',
       'Please wait while asking for control',
-      true, this.cancelControlRequest);
+      true,
+      this.cancelControlRequest
+    );
     const message = this.message.value;
     const name = this.name.value;
 
@@ -66,15 +79,15 @@ class RequestControlForm extends React.Component {
   render() {
     return (
       <Panel>
-        <Panel.Heading>
-          Request control
-        </Panel.Heading>
+        <Panel.Heading>Request control</Panel.Heading>
         <Panel.Body>
           <Form>
             <FormGroup>
               <ControlLabel>Name</ControlLabel>
               <FormControl
-                inputRef={(ref) => {this.name = ref; }}
+                inputRef={(ref) => {
+                  this.name = ref;
+                }}
                 type="text"
                 defaultValue={this.getName()}
               />
@@ -82,29 +95,29 @@ class RequestControlForm extends React.Component {
             <FormGroup>
               <ControlLabel>Message</ControlLabel>
               <FormControl
-                inputRef={(ref) => {this.message = ref;}}
+                inputRef={(ref) => {
+                  this.message = ref;
+                }}
                 componentClass="textarea"
                 defaultValue="Please give me control"
                 rows="3"
               />
             </FormGroup>
-            <Button
-              bsStyle="primary"
-              onClick={this.askForControl}
-            >
+            <Button bsStyle="primary" onClick={this.askForControl}>
               Ask for control
             </Button>
             {this.getTakeControlOption()}
           </Form>
         </Panel.Body>
-      </Panel>);
+      </Panel>
+    );
   }
 }
 
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
-    login: state.login
+    login: state.login,
   };
 }
 
@@ -112,12 +125,8 @@ function mapDispatchToProps(dispatch) {
   return {
     askForControlDialog: bindActionCreators(setLoading, dispatch),
     requestControl: bindActionCreators(requestControl, dispatch),
-    sendTakeControl: bindActionCreators(sendTakeControl, dispatch)
+    sendTakeControl: bindActionCreators(sendTakeControl, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(RequestControlForm);
-
+export default connect(mapStateToProps, mapDispatchToProps)(RequestControlForm);

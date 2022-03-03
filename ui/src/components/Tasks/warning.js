@@ -16,25 +16,38 @@ const warn = (values, props) => {
   const blTrans = parseFloat(props.attributes.transmission.value);
   const transThreshold = blTrans * 0.01;
 
-  if (blEnergy - energyThreshold > energy || energy > blEnergy + energyThreshold) {
+  if (
+    blEnergy - energyThreshold > energy ||
+    energy > blEnergy + energyThreshold
+  ) {
     warnings.energy = 'Entered energy is different from current energy';
   }
 
-  if (blResolution - resThreshold > resolution || resolution > blResolution + resThreshold) {
-    warnings.resolution = 'Entered resolution is different from current resolution';
+  if (
+    blResolution - resThreshold > resolution ||
+    resolution > blResolution + resThreshold
+  ) {
+    warnings.resolution =
+      'Entered resolution is different from current resolution';
   }
 
   if (blTrans - transThreshold > trans || trans > blTrans + transThreshold) {
-    warnings.transmission = 'Entered transmission is different from current transmission';
+    warnings.transmission =
+      'Entered transmission is different from current transmission';
   }
 
   if (props.beamline.attributes.omega.value !== parseFloat(values.osc_start)) {
-    warnings.osc_start = 'Oscillation start angle is different from current omega';
+    warnings.osc_start =
+      'Oscillation start angle is different from current omega';
   }
 
-  if (props.pointID !== -1 && props.pointID.includes('2D')
-      && (parseFloat(values.osc_range) * parseFloat(values.num_images)) > 5) {
-    warnings.osc_range = 'The given oscillation range might be to large for this centering';
+  if (
+    props.pointID !== -1 &&
+    props.pointID.includes('2D') &&
+    parseFloat(values.osc_range) * parseFloat(values.num_images) > 5
+  ) {
+    warnings.osc_range =
+      'The given oscillation range might be to large for this centering';
   }
 
   return warnings;

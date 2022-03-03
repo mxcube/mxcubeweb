@@ -5,14 +5,11 @@ import { isCollected } from '../../constants';
 
 import './SampleGrid.css';
 
-
 export const SAMPLE_ITEM_WIDTH = 192;
 export const SAMPLE_ITEM_HEIGHT = 130;
 export const SAMPLE_ITEM_SPACE = 8;
 
-
 export class SampleGridItem extends React.Component {
-
   constructor(props) {
     super(props);
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
@@ -30,9 +27,12 @@ export class SampleGridItem extends React.Component {
     this.sampleInformation = this.sampleInformation.bind(this);
   }
 
-
   componentDidMount() {
-    this.refs.sampleItem.addEventListener('contextmenu', this.contextMenu, false);
+    this.refs.sampleItem.addEventListener(
+      'contextmenu',
+      this.contextMenu,
+      false
+    );
   }
 
   componentWillUnmount() {
@@ -79,7 +79,9 @@ export class SampleGridItem extends React.Component {
     const pickButton = (
       <OverlayTrigger
         placement="top"
-        overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
+        overlay={
+          <Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>
+        }
       >
         <button
           disabled={this.props.current && this.props.picked}
@@ -96,10 +98,11 @@ export class SampleGridItem extends React.Component {
     const moveButton = (
       <OverlayTrigger
         placement="top"
-        overlay={(
+        overlay={
           <Tooltip id="move-sample">
             Move sample (change order in which sample is collected)
-          </Tooltip>)}
+          </Tooltip>
+        }
       >
         <button
           className="samples-grid-item-button"
@@ -111,12 +114,13 @@ export class SampleGridItem extends React.Component {
     );
 
     let content = (
-      <div className="samples-item-controls-container">
-      {pickButton}
-      </div>
+      <div className="samples-item-controls-container">{pickButton}</div>
     );
 
-    if (this.props.selected && !this.props.allowedDirections.every(value => value === false)) {
+    if (
+      this.props.selected &&
+      !this.props.allowedDirections.every((value) => value === false)
+    ) {
       content = (
         <div className="samples-item-controls-container">
           {pickButton}
@@ -128,36 +132,32 @@ export class SampleGridItem extends React.Component {
     return content;
   }
 
-
   moveItemUp(e) {
     this.moveItem(e, 'UP');
   }
-
 
   moveItemDown(e) {
     this.moveItem(e, 'DOWN');
   }
 
-
   moveItemRight(e) {
     this.moveItem(e, 'RIGHT');
   }
-
 
   moveItemLeft(e) {
     this.moveItem(e, 'LEFT');
   }
 
-
   seqId() {
     const showId = this.props.picked ? '' : 'none';
     return (
       <div>
-        <div style={{ display: showId }} className="queue-order">{this.props.queueOrder}</div>
+        <div style={{ display: showId }} className="queue-order">
+          {this.props.queueOrder}
+        </div>
       </div>
     );
   }
-
 
   moveArrows() {
     let [displayUp, displayDown, displayLeft, displayRight] = ['', '', '', ''];
@@ -179,7 +179,7 @@ export class SampleGridItem extends React.Component {
       displayRight = 'none';
     }
 
-    let content = (<div></div>);
+    let content = <div></div>;
 
     if (this.props.moving) {
       content = (
@@ -219,7 +219,6 @@ export class SampleGridItem extends React.Component {
     return content;
   }
 
-
   sampleDisplayName() {
     let name = this.props.sampleData.proteinAcronym || '';
 
@@ -231,7 +230,6 @@ export class SampleGridItem extends React.Component {
 
     return name;
   }
-
 
   sampleInformation() {
     const sampleData = this.props.sampleData;
@@ -260,7 +258,8 @@ export class SampleGridItem extends React.Component {
           <span className="col-sm-1">&gamma;:</span>
           <span className="col-sm-2">{sampleData.cellGamma}</span>
         </div>
-      </div>);
+      </div>
+    );
 
     return (
       <div>
@@ -270,18 +269,20 @@ export class SampleGridItem extends React.Component {
           <span className="col-sm-6">Data matrix:</span>
           <span className="col-sm-6">{sampleData.code}</span>
         </div>
-        { sampleData.limsID ? limsData : '' }
+        {sampleData.limsID ? limsData : ''}
       </div>
     );
   }
 
-
   popoverPosition() {
-    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    const viewportHeight = Math.max(
+      document.documentElement.clientHeight,
+      window.innerHeight || 0
+    );
     let result = 'bottom';
 
     if (this.refs.sampleItem) {
-      if (parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
+      if (parseInt(this.refs.sampleItem.style.top, 10) <= viewportHeight / 2) {
         result = 'bottom';
       } else {
         result = 'top';
@@ -290,7 +291,6 @@ export class SampleGridItem extends React.Component {
 
     return result;
   }
-
 
   sampleItemOnClick(e) {
     if (this.props.onClick) {
@@ -302,18 +302,24 @@ export class SampleGridItem extends React.Component {
     return this.props.current ? '(MOUNTED)' : '';
   }
 
-
   render() {
-    const classes = classNames('samples-grid-item',
-      { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
-        'samples-grid-item-moving': this.props.moving,
-        'samples-grid-item-to-be-collected': this.props.picked,
-        'samples-grid-item-collected': isCollected(this.props.sampleData) });
+    const classes = classNames('samples-grid-item', {
+      'samples-grid-item-selected': this.props.selected && !this.props.moving,
+      'samples-grid-item-moving': this.props.moving,
+      'samples-grid-item-to-be-collected': this.props.picked,
+      'samples-grid-item-collected': isCollected(this.props.sampleData),
+    });
 
-    const scLocationClasses = classNames('sc_location', 'label', 'label-default',
-      { 'label-custom-success': this.props.sampleData.loadable === true });
+    const scLocationClasses = classNames(
+      'sc_location',
+      'label',
+      'label-default',
+      { 'label-custom-success': this.props.sampleData.loadable === true }
+    );
 
-    const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
+    const limsLink = this.props.sampleData.limsLink
+      ? this.props.sampleData.limsLink
+      : '#';
 
     return (
       <div
@@ -321,7 +327,10 @@ export class SampleGridItem extends React.Component {
         ref="sampleItem"
         className={classes}
         onClick={this.sampleItemOnClick}
-        style={{ width: `${SAMPLE_ITEM_WIDTH}px`, height: `${SAMPLE_ITEM_HEIGHT}px` }}
+        style={{
+          width: `${SAMPLE_ITEM_WIDTH}px`,
+          height: `${SAMPLE_ITEM_HEIGHT}px`,
+        }}
       >
         {this.moveArrows()}
         {this.itemControls()}
@@ -329,31 +338,39 @@ export class SampleGridItem extends React.Component {
           {this.props.sampleData.location} {this.currentSampleText()}
         </div>
         <div style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
-        <OverlayTrigger
-          ref="sampleInfoPopoverTrigger"
-          placement={this.popoverPosition()}
-          overlay={(
-            <Popover id={this.sampleDisplayName()} title={(<b>{this.sampleDisplayName()}</b>)}>
-              {this.sampleInformation()}
-            </Popover>)}
-        >
-          <a href={limsLink} target="_blank" ref="pacronym" className="protein-acronym"
-            data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym"
+          <OverlayTrigger
+            ref="sampleInfoPopoverTrigger"
+            placement={this.popoverPosition()}
+            overlay={
+              <Popover
+                id={this.sampleDisplayName()}
+                title={<b>{this.sampleDisplayName()}</b>}
+              >
+                {this.sampleInformation()}
+              </Popover>
+            }
           >
-            {this.sampleDisplayName()}
-          </a>
-        </OverlayTrigger>
+            <a
+              href={limsLink}
+              target="_blank"
+              ref="pacronym"
+              className="protein-acronym"
+              data-type="text"
+              data-pk="1"
+              data-url="/post"
+              data-title="Enter protein acronym"
+            >
+              {this.sampleDisplayName()}
+            </a>
+          </OverlayTrigger>
         </div>
         {this.seqId()}
         <br />
-        <div className="samples-grid-item-tasks">
-          { this.props.children }
-        </div>
+        <div className="samples-grid-item-tasks">{this.props.children}</div>
       </div>
     );
   }
 }
-
 
 SampleGridItem.defaultProps = {
   itemKey: '',
@@ -366,5 +383,5 @@ SampleGridItem.defaultProps = {
   allowedDirections: [],
   pickButtonOnClickHandler: undefined,
   moveButtonOnClickHandler: undefined,
-  onMoveHandler: undefined
+  onMoveHandler: undefined,
 };

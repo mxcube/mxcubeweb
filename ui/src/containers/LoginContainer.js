@@ -6,19 +6,14 @@ import {
   doSignOut,
   selectProposal,
   sendSelectProposal,
-  hideProposalsForm
+  hideProposalsForm,
 } from '../actions/login';
 import { setLoading } from '../actions/general';
 import Login from '../components/Login/Login';
 
-
 class LoginContainer extends Component {
   render() {
-    return (
-      <Login
-        {...this.props}
-      />
-    );
+    return <Login {...this.props} />;
   }
 }
 
@@ -28,7 +23,7 @@ function mapStateToProps(state) {
     showError: state.general.showErrorPanel,
     showProposalsForm: state.login.showProposalsForm,
     data: state.login,
-    selectedProposal: state.login.selectedProposal
+    selectedProposal: state.login.selectedProposal,
   };
 }
 
@@ -39,11 +34,8 @@ function mapDispatchToProps(dispatch) {
     setLoading: bindActionCreators(setLoading, dispatch),
     selectProposal: bindActionCreators(selectProposal, dispatch),
     sendSelectProposal: bindActionCreators(sendSelectProposal, dispatch),
-    hideProposalsForm: bindActionCreators(hideProposalsForm, dispatch)
+    hideProposalsForm: bindActionCreators(hideProposalsForm, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LoginContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(LoginContainer);

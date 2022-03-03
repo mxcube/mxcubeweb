@@ -5,7 +5,6 @@ import { Form, Button, FormControl, ButtonToolbar } from 'react-bootstrap';
 import './style.css';
 
 export default class DefaultInput extends React.Component {
-
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
@@ -20,19 +19,18 @@ export default class DefaultInput extends React.Component {
     return input.value;
   }
 
-
   stepChange(name, operator) {
     const input = ReactDOM.findDOMNode(this.refs.formControl);
-    const nv = (Number(input.value) + this.props.step * operator).toFixed(this.props.precision);
+    const nv = (Number(input.value) + this.props.step * operator).toFixed(
+      this.props.precision
+    );
     input.value = nv;
     input.defaultValue = nv;
   }
 
-
   save() {
     this.props.onSave();
   }
-
 
   cancel() {
     this.props.onCancel();
@@ -45,8 +43,12 @@ export default class DefaultInput extends React.Component {
   render() {
     return (
       <Form inline onSubmit={this.submit} noValidate>
-        <div className="rw-widget rw-numberpicker"
-          style={ { width: Number(this.props.inputSize) + 10, display: 'inline-block' } }
+        <div
+          className="rw-widget rw-numberpicker"
+          style={{
+            width: Number(this.props.inputSize) + 10,
+            display: 'inline-block',
+          }}
         >
           <span className="rw-select">
             <button
@@ -66,33 +68,35 @@ export default class DefaultInput extends React.Component {
           </span>
           <FormControl
             className="rw-input"
-            style={ { width: this.props.inputSize } }
+            style={{ width: this.props.inputSize }}
             ref="formControl"
             label="input"
             step="any"
-            inputRef={(ref) => {this.input = ref;}}
+            inputRef={(ref) => {
+              this.input = ref;
+            }}
             type={this.props.dataType}
             placeholder=""
             defaultValue={this.props.value}
           />
         </div>
-        <ButtonToolbar style={{ marginLeft: '0px' }} className="form-group editable-buttons">
+        <ButtonToolbar
+          style={{ marginLeft: '0px' }}
+          className="form-group editable-buttons"
+        >
           <Button bsStyle="primary" className="btn-sm" onClick={this.save}>
             <i className="glyphicon glyphicon-ok" />
           </Button>
-          { !this.props.inplace ?
+          {!this.props.inplace ? (
             <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
               <i className="glyphicon glyphicon-remove" />
             </Button>
-            :
-            null
-          }
+          ) : null}
         </ButtonToolbar>
       </Form>
     );
   }
 }
-
 
 DefaultInput.defaultProps = {
   dataType: 'number',

@@ -16,7 +16,7 @@ export default class ApertureInput extends React.Component {
   render() {
     const inputCSS = cx('form-control input-sm', {
       'input-bg-moving': this.props.aperture === 'Unknown',
-      'input-bg-ready': this.props.aperture !== 'Unknown'
+      'input-bg-ready': this.props.aperture !== 'Unknown',
     });
 
     return (
@@ -26,11 +26,8 @@ export default class ApertureInput extends React.Component {
           onChange={this.sendAperture}
           value={this.props.aperture}
         >
-          {this.props.apertureList.map(option => (
-            <option
-              key={option}
-              value={option}
-            >
+          {this.props.apertureList.map((option) => (
+            <option key={option} value={option}>
               {option}
             </option>
           ))}

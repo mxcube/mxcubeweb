@@ -1,7 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
-
 export default class ConfirmActionDialog extends React.Component {
   constructor(props) {
     super(props);
@@ -27,22 +26,19 @@ export default class ConfirmActionDialog extends React.Component {
 
   render() {
     return (
-      <Modal
-        show={this.props.show}
-      >
+      <Modal show={this.props.show}>
         <Modal.Header>
-          <Modal.Title>
-            {this.props.title}
-          </Modal.Title>
+          <Modal.Title>{this.props.title}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          {this.props.message}
-        </Modal.Body>
+        <Modal.Body>{this.props.message}</Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.onCancelClick}>{this.props.cancelButtonText}</Button>
+          <Button onClick={this.onCancelClick}>
+            {this.props.cancelButtonText}
+          </Button>
           <Button onClick={this.onOkClick}>{this.props.okButtonText}</Button>
         </Modal.Footer>
-      </Modal>);
+      </Modal>
+    );
   }
 }
 

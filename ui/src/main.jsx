@@ -3,10 +3,8 @@ import 'react-bootstrap-table/css/react-bootstrap-table.css';
 import './main.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {
-  Router, Route, browserHistory, IndexRoute
-} from 'react-router';
-import { createStore, applyMiddleware, compose} from 'redux';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
@@ -26,16 +24,10 @@ import { getLoginInfo, startSession } from './actions/login';
 import logo from './img/mxcube_logo20.png';
 import loadingAnimation from './img/loading-animation.gif';
 
-
 // Logger MUST BE the last middleware
-const middleware = [
-  thunk,
-  createLogger()
-];
+const middleware = [thunk, createLogger()];
 
-const composedEnhancers = compose(
-  applyMiddleware(...middleware),
-);
+const composedEnhancers = compose(applyMiddleware(...middleware));
 
 const store = createStore(rootReducer, composedEnhancers);
 
@@ -74,18 +66,31 @@ function requireAuth(nextState, replace, callback) {
     if (!state.login.loggedIn) {
       replace('/login');
     } else {
-      const persistor = persistStore(store,
+      const persistor = persistStore(
+        store,
         {
-          blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-            'form', 'login', 'general', 'logger', 'shapes',
-            'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
-          storage: new ServerStorage()
+          blacklist: [
+            'remoteAccess',
+            'beamline',
+            'sampleChanger',
+            'form',
+            'login',
+            'general',
+            'logger',
+            'shapes',
+            'sampleView',
+            'taskResult',
+            'sampleChangerMaintenance',
+            'uiproperties',
+          ],
+          storage: new ServerStorage(),
         },
         () => {
           /* eslint-disable react/no-set-state */
           // this.setState({ initialized: true });
           /* eslint-enable react/no-set-state */
-        });
+        }
+      );
 
       serverIO.connectStateSocket(persistor);
       // crosstabSync(persistor);
@@ -115,10 +120,18 @@ export default class App extends React.Component {
   render() {
     if (!this.state.initialized) {
       return (
-      <div id="loading">
-        <img className="logo" src={logo} role="presentation" />
-        <div><h3>Loading, please wait</h3> <img className="loader-init" src={loadingAnimation} role="presentation" /></div>
-      </div>);
+        <div id="loading">
+          <img className="logo" src={logo} role="presentation" />
+          <div>
+            <h3>Loading, please wait</h3>{' '}
+            <img
+              className="loader-init"
+              src={loadingAnimation}
+              role="presentation"
+            />
+          </div>
+        </div>
+      );
     }
 
     return (
@@ -140,8 +153,4 @@ export default class App extends React.Component {
   }
 }
 
-
-ReactDOM.render(
-  <App />,
-  document.getElementById('main')
-);
+ReactDOM.render(<App />, document.getElementById('main'));

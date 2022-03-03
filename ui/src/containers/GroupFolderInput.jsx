@@ -1,7 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { FormGroup, Form, FormControl, ControlLabel, Button } from 'react-bootstrap';
+import {
+  FormGroup,
+  Form,
+  FormControl,
+  ControlLabel,
+  Button,
+} from 'react-bootstrap';
 import * as QueueActions from '../actions/queue';
 
 class GroupFolderInput extends React.Component {
@@ -34,20 +40,39 @@ class GroupFolderInput extends React.Component {
   render() {
     return (
       <span>
-        <ControlLabel>Group path:</ControlLabel><br />
-        <Form inline onSubmit={e => { e.preventDefault(); }} >
-          <FormGroup bsSize="small" validationState={this.state.validationState}>
+        <ControlLabel>Group path:</ControlLabel>
+        <br />
+        <Form
+          inline
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <FormGroup
+            bsSize="small"
+            validationState={this.state.validationState}
+          >
             <FormControl
               bsSize="sm"
               defaultValue={this.props.queue.groupFolder}
-              style={{ maxWidth: '13em', minWidth: '13em', marginRight: '0.5em' }}
+              style={{
+                maxWidth: '13em',
+                minWidth: '13em',
+                marginRight: '0.5em',
+              }}
               type="text"
               onSelect={this.inputOnSelectHandler}
               onChange={this.inputOnChangeHandler}
-              inputRef={ (input) => {this.inputValue = input;} }
+              inputRef={(input) => {
+                this.inputValue = input;
+              }}
             />
           </FormGroup>
-          <Button type="button" bsSize="small" onClick={this.setGroupFolderInput}>
+          <Button
+            type="button"
+            bsSize="small"
+            onClick={this.setGroupFolderInput}
+          >
             Set
           </Button>
         </Form>
@@ -58,18 +83,14 @@ class GroupFolderInput extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    queue: state.queue
+    queue: state.queue,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch)
+    queueActions: bindActionCreators(QueueActions, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(GroupFolderInput);
-
+export default connect(mapStateToProps, mapDispatchToProps)(GroupFolderInput);

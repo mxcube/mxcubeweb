@@ -13,15 +13,17 @@ import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
-import { sendChatMessage, getAllChatMessages,
-  resetChatMessageCount } from '../actions/remoteAccess';
+import {
+  sendChatMessage,
+  getAllChatMessages,
+  resetChatMessageCount,
+} from '../actions/remoteAccess';
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
-
 
 class Main extends React.Component {
   constructor(props) {
@@ -37,7 +39,9 @@ class Main extends React.Component {
         if (entry.username === this.props.login.user.username) {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
         } else {
-          addResponseMessage(`${entry.date} **${entry.nickname}:** \n\n ${entry.message}`);
+          addResponseMessage(
+            `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`
+          );
         }
       });
     });
@@ -58,14 +62,15 @@ class Main extends React.Component {
   }
 
   render() {
-    const showReadOnlyDiv = !this.props.login.user.inControl &&
-            this.props.location.pathname !== '/remoteaccess' &&
-            this.props.location.pathname !== '/help';
+    const showReadOnlyDiv =
+      !this.props.login.user.inControl &&
+      this.props.location.pathname !== '/remoteaccess' &&
+      this.props.location.pathname !== '/help';
 
     return (
       <div>
-        {showReadOnlyDiv ?
-          (<div
+        {showReadOnlyDiv ? (
+          <div
             onMouseDown={this.handleClick}
             style={{
               backgroundImage: `url(${diagonalNoise})`,
@@ -76,10 +81,10 @@ class Main extends React.Component {
               top: 50,
               left: 0,
               width: '100vw',
-              height: '100vh'
+              height: '100vh',
             }}
-          />) : null
-          }
+          />
+        ) : null}
         <TaskContainer />
         <PleaseWaitDialog />
         <ErrorNotificationPanel />
@@ -95,18 +100,16 @@ class Main extends React.Component {
           onHide={() => this.props.showDialog(false)}
         />
         <MXNavbarContainer location={this.props.location} />
-        <Grid fluid>
-            {this.props.children}
-        </Grid>
+        <Grid fluid>{this.props.children}</Grid>
         <span onClick={this.onChatContainerClick}>
-          { this.props.remoteAccess.observers.length > 0 ?
-            (<Widget
+          {this.props.remoteAccess.observers.length > 0 ? (
+            <Widget
               title="Chat"
               subtitle=""
               badge={this.props.remoteAccess.chatMessageCount}
               handleNewUserMessage={this.handleNewUserMessage}
-            />) : null
-          }
+            />
+          ) : null}
         </span>
       </div>
     );
@@ -117,19 +120,15 @@ function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
     general: state.general,
-    login: state.login
+    login: state.login,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     resetChatMessageCount: bindActionCreators(resetChatMessageCount, dispatch),
-    showDialog: bindActionCreators(showDialog, dispatch)
+    showDialog: bindActionCreators(showDialog, dispatch),
   };
 }
 
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

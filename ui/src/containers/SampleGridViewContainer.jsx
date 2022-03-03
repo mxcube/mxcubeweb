@@ -6,7 +6,9 @@ import ReactDOM from 'react-dom';
 import loader from '../img/loader.gif';
 
 import {
-  Row, Col, Form,
+  Row,
+  Col,
+  Form,
   FormControl,
   FormGroup,
   Checkbox,
@@ -47,13 +49,14 @@ import SampleGridContainer from './SampleGridContainer';
 import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
 import QueueSettings from './QueueSettings.jsx';
 
-import { SAMPLE_ITEM_WIDTH,
-  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
+import {
+  SAMPLE_ITEM_WIDTH,
+  SAMPLE_ITEM_SPACE,
+} from '../components/SampleGrid/SampleGridItem';
 
 import '../components/SampleGrid/SampleGrid.css';
 
 class SampleGridViewContainer extends React.Component {
-
   constructor(props) {
     super(props);
     this.onResize = this.onResize.bind(this);
@@ -70,12 +73,21 @@ class SampleGridViewContainer extends React.Component {
     this.addSelectedSamplesToQueue = this.addSelectedSamplesToQueue.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
     this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
-    this.showCharacterisationForm = this.showTaskForm.bind(this, 'Characterisation', {});
-    this.showDataCollectionForm = this.showTaskForm.bind(this, 'DataCollection', {});
+    this.showCharacterisationForm = this.showTaskForm.bind(
+      this,
+      'Characterisation',
+      {}
+    );
+    this.showDataCollectionForm = this.showTaskForm.bind(
+      this,
+      'DataCollection',
+      {}
+    );
     this.showWorkflowForm = this.showTaskForm.bind(this, 'Workflow');
     this.showAddSampleForm = this.showTaskForm.bind(this, 'AddSample');
     this.inQueue = this.inQueue.bind(this);
-    this.inQueueDeleteElseAddSamples = this.inQueueDeleteElseAddSamples.bind(this);
+    this.inQueueDeleteElseAddSamples =
+      this.inQueueDeleteElseAddSamples.bind(this);
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeSelectedTasks = this.removeSelectedTasks.bind(this);
 
@@ -83,27 +95,22 @@ class SampleGridViewContainer extends React.Component {
     this.startCollect = this.startCollect.bind(this);
   }
 
-
   componentDidMount() {
     window.addEventListener('resize', this.onResize, false);
     this.resizeGridContainer();
   }
 
-
   componentDidUpdate() {
     this.resizeGridContainer();
   }
-
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
   }
 
-
   onResize() {
     this.forceUpdate();
   }
-
 
   /**
    * Mapping between a input and a filter option value
@@ -121,7 +128,7 @@ class SampleGridViewContainer extends React.Component {
       notCollected: this.props.filterOptions.notCollected,
       limsSamples: this.props.filterOptions.limsSamples,
       filterText: this.props.filterOptions.text,
-      puckFilter: this.props.filterOptions.puckFilter
+      puckFilter: this.props.filterOptions.puckFilter,
     };
 
     value = optionMap[id];
@@ -129,22 +136,20 @@ class SampleGridViewContainer extends React.Component {
     return value;
   }
 
-
   getPuckFilterOptions() {
     const sc = this.props.sampleChanger.contents;
     let options = [];
 
     if (sc.children) {
       options = Object.values(sc.children).map((basket) => (
-        (<option value={`${basket.name}:`}>{basket.name}</option>)
+        <option value={`${basket.name}:`}>{basket.name}</option>
       ));
     }
 
-    options.push((<option value="">ALL</option>));
+    options.push(<option value="">ALL</option>);
 
     return options;
   }
-
 
   /**
    * Calculates the grid width
@@ -156,7 +161,10 @@ class SampleGridViewContainer extends React.Component {
     // bootstrap is 15px so content starts at 80px;
 
     // Get the viewportWidth
-    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const viewportWidth = Math.max(
+      document.documentElement.clientWidth,
+      window.innerWidth || 0
+    );
 
     // The full content width for this media (not forgeting the padding to the right 15px)
     const fullContentWidth = viewportWidth - 80 - 15;
@@ -165,21 +173,25 @@ class SampleGridViewContainer extends React.Component {
     const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
 
     // Caculating the actual grid size, with space between sample items;
-    const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
+    const actualGridWidth =
+      numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
 
     return [actualGridWidth, numCols];
   }
-
 
   /**
    * Resizes the grid container element (with id smapleGridContainer)
    */
   resizeGridContainer() {
-    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const viewportWidth = Math.max(
+      document.documentElement.clientWidth,
+      window.innerWidth || 0
+    );
     const width = Math.min(viewportWidth, this.calcGridWidth()[0] || 0);
-    document.getElementById('sampleGridContainer').style.width = `${width - 38}px`;
+    document.getElementById('sampleGridContainer').style.width = `${
+      width - 38
+    }px`;
   }
-
 
   /**
    * Helper function that displays a task form
@@ -194,20 +206,29 @@ class SampleGridViewContainer extends React.Component {
     let subdir = `${this.props.queue.groupFolder}`;
 
     if (Object.keys(this.props.selected).length === 1) {
-      prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
-      subdir += this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
+      prefix =
+        this.props.sampleList[Object.keys(this.props.selected)[0]]
+          .defaultPrefix;
+      subdir +=
+        this.props.sampleList[Object.keys(this.props.selected)[0]]
+          .defaultSubDir;
     } else {
-      prefix = this.props.defaultParameters[formName.toLowerCase()].prefixTemplate;
-      subdir += this.props.defaultParameters[formName.toLowerCase()].subDirTemplate;
+      prefix =
+        this.props.defaultParameters[formName.toLowerCase()].prefixTemplate;
+      subdir +=
+        this.props.defaultParameters[formName.toLowerCase()].subDirTemplate;
     }
 
-    const parameters = { parameters: {
-      ...this.props.defaultParameters[formName.toLowerCase()],
-      ...extraParams,
-      prefix,
-      path,
-      subdir,
-      shape: -1 } };
+    const parameters = {
+      parameters: {
+        ...this.props.defaultParameters[formName.toLowerCase()],
+        ...extraParams,
+        prefix,
+        path,
+        subdir,
+        shape: -1,
+      },
+    };
 
     const selected = [];
 
@@ -224,7 +245,6 @@ class SampleGridViewContainer extends React.Component {
     }
   }
 
-
   /**
    * Synchronises samples with ISPyB
    *
@@ -232,25 +252,27 @@ class SampleGridViewContainer extends React.Component {
    */
   syncSamples() {
     if (Object.keys(this.props.sampleList).length === 0) {
-      this.props.getSamples().then(() => { this.props.syncSamples(); });
+      this.props.getSamples().then(() => {
+        this.props.syncSamples();
+      });
     } else {
       this.props.syncSamples();
     }
   }
 
-
   /**
    * @return {boolean} true if any filter option is used
    */
   filterIsUsed() {
-    return (this.props.filterOptions.inQueue ||
-            this.props.filterOptions.notInQueue ||
-            this.props.filterOptions.collected ||
-            this.props.filterOptions.notCollected ||
-            this.props.filterOptions.limsSamples ||
-            (this.props.filterOptions.text.length > 0));
+    return (
+      this.props.filterOptions.inQueue ||
+      this.props.filterOptions.notInQueue ||
+      this.props.filterOptions.collected ||
+      this.props.filterOptions.notCollected ||
+      this.props.filterOptions.limsSamples ||
+      this.props.filterOptions.text.length > 0
+    );
   }
-
 
   /**
    * Applies filter defined by user
@@ -263,25 +285,25 @@ class SampleGridViewContainer extends React.Component {
       collected: { collected: e.target.checked },
       notCollected: { notCollected: e.target.checked },
       limsSamples: { limsSamples: e.target.checked },
-      filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() }
+      filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() },
     };
 
     this.props.filter(optionMap[e.target.id]);
   }
 
-
   /**
    *  Clears the filter
    */
   sampleGridClearFilter() {
-    this.props.filter({ inQueue: false,
+    this.props.filter({
+      inQueue: false,
       notInQueue: false,
       collected: false,
       notCollected: false,
       limsFilter: false,
-      filterText: '' });
+      filterText: '',
+    });
   }
-
 
   /**
    * @return {number} number of sammples in queue
@@ -298,14 +320,12 @@ class SampleGridViewContainer extends React.Component {
     return samples.length;
   }
 
-
   /**
    * @return {boolean} true if collect should be disabled otherwise false
    */
   isCollectDisabled() {
     return this.numSamplesPicked() === 0;
   }
-
 
   /**
    * Checks if sample with sampleID is in queue
@@ -315,9 +335,11 @@ class SampleGridViewContainer extends React.Component {
    * @return {boolean} true if sample with sampleID is in queue otherwise false
    */
   inQueue(sampleID) {
-    return this.props.queue.queue.includes(sampleID) && this.props.sampleList[sampleID].checked;
+    return (
+      this.props.queue.queue.includes(sampleID) &&
+      this.props.sampleList[sampleID].checked
+    );
   }
-
 
   /**
    * Adds samples with sampleIDs in sampleIDList, removes the samples if they
@@ -342,16 +364,20 @@ class SampleGridViewContainer extends React.Component {
     if (samplesToRemove.length > 0) {
       this.props.setEnabledSample(samplesToRemove, false);
     }
-    if (samples.length > 0) { this.addSamplesToQueue(samples); }
+    if (samples.length > 0) {
+      this.addSamplesToQueue(samples);
+    }
   }
-
 
   /**
    * Removes selected samples
    */
   removeSelectedSamples() {
     for (const sampleID of Object.keys(this.props.selected)) {
-      if (this.inQueue(sampleID) && sampleID !== this.props.sampleChanger.loadedSample.address) {
+      if (
+        this.inQueue(sampleID) &&
+        sampleID !== this.props.sampleChanger.loadedSample.address
+      ) {
         this.props.setEnabledSample([sampleID], false);
       }
     }
@@ -370,14 +396,12 @@ class SampleGridViewContainer extends React.Component {
     }
   }
 
-
   /**
    * @returns {number} total number of samples
    */
   numSamples() {
     return Object.keys(this.props.sampleList).length;
   }
-
 
   /**
    * Selects all samples
@@ -386,14 +410,12 @@ class SampleGridViewContainer extends React.Component {
     this.props.selectSamples(Object.keys(this.props.sampleList));
   }
 
-
   /**
    * Un-selects all samples
    */
   clearSelectedSamples() {
     this.props.selectSamples(Object.keys(this.props.sampleList), false);
   }
-
 
   /**
    * Adds samples in sampleIDList to queue
@@ -402,13 +424,18 @@ class SampleGridViewContainer extends React.Component {
    */
   addSamplesToQueue(sampleIDList) {
     const samplesToAdd = sampleIDList.map((sampleID) => {
-      const sample = { ...this.props.sampleList[sampleID], checked: true, tasks: [] };
+      const sample = {
+        ...this.props.sampleList[sampleID],
+        checked: true,
+        tasks: [],
+      };
       return sample;
     });
 
-    if (samplesToAdd.length > 0) { this.props.addSamplesToQueue(samplesToAdd); }
+    if (samplesToAdd.length > 0) {
+      this.props.addSamplesToQueue(samplesToAdd);
+    }
   }
-
 
   /**
    * Adds all selected samples to queue
@@ -417,7 +444,6 @@ class SampleGridViewContainer extends React.Component {
     this.addSamplesToQueue(Object.keys(this.props.selected));
   }
 
-
   /**
    * Start collection
    */
@@ -425,7 +451,6 @@ class SampleGridViewContainer extends React.Component {
     this.props.router.push('datacollection');
     this.props.showConfirmCollectDialog();
   }
-
 
   /**
    * Collect button markup
@@ -442,7 +467,8 @@ class SampleGridViewContainer extends React.Component {
       >
         {collectText}
         <Glyphicon glyph="chevron-right" />
-      </Button>);
+      </Button>
+    );
 
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       button = (
@@ -452,23 +478,30 @@ class SampleGridViewContainer extends React.Component {
           style={{ marginLeft: '1em' }}
         >
           <b> Stop queue </b>
-        </Button>);
+        </Button>
+      );
     }
 
     return button;
   }
 
-
   render() {
     const innerSearchIcon = (
-      <DropdownButton componentClass={InputGroup.Button} title="" id="filter-drop-down">
+      <DropdownButton
+        componentClass={InputGroup.Button}
+        title=""
+        id="filter-drop-down"
+      >
         <div style={{ padding: '1em', width: '300px' }}>
           <b>Filter: </b>
           <Row>
             <Col xs={12}>
               <Row>
                 <Col xs={6}>
-                  <FormGroup bsSize="small" style={{ float: 'none', marginTop: '0.5em' }}>
+                  <FormGroup
+                    bsSize="small"
+                    style={{ float: 'none', marginTop: '0.5em' }}
+                  >
                     <span> Basket: </span>
                     <FormControl
                       style={{ float: 'none' }}
@@ -501,7 +534,8 @@ class SampleGridViewContainer extends React.Component {
                         </Checkbox>
                       </Col>
                       <Col xs={6}>
-                        <Checkbox inline
+                        <Checkbox
+                          inline
                           id="notInQueue"
                           checked={this.getFilterOptionValue('notInQueue')}
                           onChange={this.sampleGridFilter}
@@ -559,9 +593,7 @@ class SampleGridViewContainer extends React.Component {
                 </Row>
               </div>
               <div className="pull-right">
-                <Button onClick={this.sampleGridClearFilter}>
-                  Clear
-                </Button>
+                <Button onClick={this.sampleGridClearFilter}>Clear</Button>
               </div>
             </Col>
           </Row>
@@ -579,12 +611,11 @@ class SampleGridViewContainer extends React.Component {
           show={this.props.general.showConfirmClearQueueDialog}
           hide={this.props.confirmClearQueueHide}
         />
-        {this.props.loading ?
-          <div className="center-in-box" style={{ zIndex: 1200 }} >
+        {this.props.loading ? (
+          <div className="center-in-box" style={{ zIndex: 1200 }}>
             <img src={loader} className="img-responsive" alt="" />
           </div>
-          : null
-        }
+        ) : null}
         <Row>
           <Col xs={4}>
             <Form inline>
@@ -601,29 +632,31 @@ class SampleGridViewContainer extends React.Component {
               <span style={{ marginLeft: '1em' }} />
               <OverlayTrigger
                 placement="bottom"
-                overlay={(
+                overlay={
                   <Tooltip id="select-samples">
                     Synchronise sample list with ISPyB
-                  </Tooltip>)}
+                  </Tooltip>
+                }
               >
                 <Button onClick={this.syncSamples}>
                   <Glyphicon glyph="refresh" /> ISPyB
-                    </Button>
+                </Button>
               </OverlayTrigger>
               <span style={{ marginLeft: '1em' }} />
               <OverlayTrigger
                 placement="bottom"
-                overlay={(
+                overlay={
                   <Tooltip id="select-samples">
                     Remove all samples from sample list and queue
-                  </Tooltip>)}
+                  </Tooltip>
+                }
               >
                 <Button
                   onClick={this.props.confirmClearQueueShow}
                   disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                 >
                   Clear sample list
-                    </Button>
+                </Button>
               </OverlayTrigger>
             </Form>
           </Col>
@@ -631,11 +664,15 @@ class SampleGridViewContainer extends React.Component {
             <Form inline>
               <FormGroup>
                 <ControlLabel>Filter: &nbsp;</ControlLabel>
-                <InputGroup className={this.filterIsUsed() ? 'filter-input-active' : ''}>
+                <InputGroup
+                  className={this.filterIsUsed() ? 'filter-input-active' : ''}
+                >
                   <FormControl
                     id="filterText"
                     type="text"
-                    ref={(input) => { this.filterInput = input; }}
+                    ref={(input) => {
+                      this.filterInput = input;
+                    }}
                     defaultValue={this.props.filterOptions.text}
                     onChange={this.sampleGridFilter}
                   />
@@ -649,14 +686,18 @@ class SampleGridViewContainer extends React.Component {
                 id="pipeline-mode-dropdown"
                 disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                 onClick={this.addSelectedSamplesToQueue}
-                title={<span><Glyphicon glyph="plus" /> Add to Queue</span>}
+                title={
+                  <span>
+                    <Glyphicon glyph="plus" /> Add to Queue
+                  </span>
+                }
               >
                 <MenuItem eventKey="2" onClick={this.showDataCollectionForm}>
                   Add Data collection
-                    </MenuItem>
+                </MenuItem>
                 <MenuItem eventKey="3" onClick={this.showCharacterisationForm}>
                   Add Characterisation
-                    </MenuItem>
+                </MenuItem>
               </SplitButton>
             </Form>
           </Col>
@@ -683,7 +724,6 @@ class SampleGridViewContainer extends React.Component {
   }
 }
 
-
 /**
  * @property {Object} loginData - current user data
  * @property {Object} sampleList - list of samples
@@ -703,10 +743,9 @@ function mapStateToProps(state) {
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
     sampleChanger: state.sampleChanger,
-    general: state.general
+    general: state.general,
   };
 }
-
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -714,17 +753,28 @@ function mapDispatchToProps(dispatch) {
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
     syncSamples: () => dispatch(sendSyncSamples()),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
-    selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
-    deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
-    setEnabledSample: (qidList, value) => dispatch(setEnabledSample(qidList, value)),
+    selectSamples: (keys, selected) =>
+      dispatch(selectSamplesAction(keys, selected)),
+    deleteSamplesFromQueue: (sampleID) =>
+      dispatch(deleteSamplesFromQueue(sampleID)),
+    setEnabledSample: (qidList, value) =>
+      dispatch(setEnabledSample(qidList, value)),
     deleteTask: (qid, taskIndex) => dispatch(deleteTask(qid, taskIndex)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     sendStopQueue: () => dispatch(sendStopQueue()),
-    confirmClearQueueShow: bindActionCreators(showConfirmClearQueueDialog, dispatch),
-    confirmClearQueueHide:
-      bindActionCreators(showConfirmClearQueueDialog.bind(this, false), dispatch),
-    showConfirmCollectDialog: bindActionCreators(showConfirmCollectDialog, dispatch)
+    confirmClearQueueShow: bindActionCreators(
+      showConfirmClearQueueDialog,
+      dispatch
+    ),
+    confirmClearQueueHide: bindActionCreators(
+      showConfirmClearQueueDialog.bind(this, false),
+      dispatch
+    ),
+    showConfirmCollectDialog: bindActionCreators(
+      showConfirmCollectDialog,
+      dispatch
+    ),
   };
 }
 

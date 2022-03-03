@@ -1,32 +1,32 @@
-.popinput-input-label{ 
+.popinput-input-label {
   display: inline-block;
   min-width: 90px;
   margin-right: 1rem;
   font-weight: bold;
 }
 
-.popinput-input-value{
+.popinput-input-value {
   display: inline-block;
 }
 
-.popinput-busy-buttonbar{
+.popinput-busy-buttonbar {
   display: inline-block;
   float: right;
 }
 
-.popinput-input-busy{
+.popinput-input-busy {
   display: inline-block;
   background-image: url(../../img/busy-indicator.gif);
   height: 32px;
   width: 32px;
 }
 
-.visibility-hidden{ 
+.visibility-hidden {
   visibility: hidden;
   display: inline;
 }
 
-.value-label-enter-success{
+.value-label-enter-success {
   transition: background-color 1000ms ease-out;
 }
 
@@ -34,13 +34,11 @@
   display: inline;
 }
 
-
 .popinput-input-editicon {
   visibility: hidden;
   color: #999;
   margin-right: 5px;
 }
-
 
 .popinput-input-link:hover > .popinput-input-editicon {
   visibility: visible;
@@ -49,4 +47,3 @@
 .editable-click {
   cursor: pointer;
 }
-

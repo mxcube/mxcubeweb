@@ -1,26 +1,26 @@
 .popover {
-    width: auto !important;
+  width: auto !important;
 }
 
 .modal-dialog {
-    margin: 130px auto;
+  margin: 130px auto;
 }
 
 #loading {
-    margin-top: 20%;
-    text-align: center;
+  margin-top: 20%;
+  text-align: center;
 }
 
 #loading .logo {
-    width: 159px;
-    opacity: 0.7;
+  width: 159px;
+  opacity: 0.7;
 }
 
 #loading .loader-init {
-    width: 100px;
+  width: 100px;
 }
 
 .device-status-container > div {
-    margin-right: 1em;
-    width: 12%;
+  margin-right: 1em;
+  width: 12%;
 }

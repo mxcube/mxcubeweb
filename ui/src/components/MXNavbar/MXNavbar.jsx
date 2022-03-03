@@ -3,20 +3,21 @@ import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import './MXNavbar.css';
 
-
 export default class MXNavbar extends React.Component {
-
   constructor(props) {
     super(props);
     this.findProposal = this.findProposal.bind(this);
   }
 
   findProposal(prop) {
-    return `${prop.Proposal.code}${prop.Proposal.number}` === this.props.selectedProposal;
+    return (
+      `${prop.Proposal.code}${prop.Proposal.number}` ===
+      this.props.selectedProposal
+    );
   }
 
   render() {
-    const raStyle = (this.props.user.inControl ? { color: 'white' } : {});
+    const raStyle = this.props.user.inControl ? { color: 'white' } : {};
     const numObservers = this.props.remoteAccess.observers.length;
 
     document.title = `MxCuBE-3 Proposal: ${this.props.selectedProposal}`;
@@ -26,7 +27,8 @@ export default class MXNavbar extends React.Component {
         <Navbar.Header>
           <LinkContainer to="/remoteaccess">
             <Navbar.Brand>
-              MXCuBE3 <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
+              MXCuBE3{' '}
+              <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
             </Navbar.Brand>
           </LinkContainer>
         </Navbar.Header>
@@ -52,9 +54,12 @@ export default class MXNavbar extends React.Component {
           </LinkContainer>
           <LinkContainer to="/remoteaccess">
             <NavItem eventKey={6}>
-              <span style={ raStyle } className="fas fa-lg fa-globe">
-                {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
-              </span> Remote
+              <span style={raStyle} className="fas fa-lg fa-globe">
+                {numObservers > 0 ? (
+                  <span className="badge-num">{numObservers}</span>
+                ) : null}
+              </span>{' '}
+              Remote
             </NavItem>
           </LinkContainer>
           <NavItem eventKey={7} onClick={this.props.signOut}>
@@ -65,4 +70,3 @@ export default class MXNavbar extends React.Component {
     );
   }
 }
-

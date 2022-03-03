@@ -28,13 +28,17 @@ export default class TodoTree extends React.Component {
   }
 
   filter(list, searchWord) {
-    const filteredList = list.filter(sampleID => String(sampleID).includes(searchWord));
+    const filteredList = list.filter((sampleID) =>
+      String(sampleID).includes(searchWord)
+    );
 
     return filteredList;
   }
 
   render() {
-    if (!this.props.show) { return <div />; }
+    if (!this.props.show) {
+      return <div />;
+    }
 
     const list = this.filter(this.props.list, this.state.searchWord);
 
@@ -56,31 +60,32 @@ export default class TodoTree extends React.Component {
               bsSize="sm"
               onClick={this.showAddSampleForm}
             >
-                    Create new sample
+              Create new sample
             </Button>
           </div>
         </div>
         <div className="list-body">
           {list.map((key, id) => {
             const sampleData = this.props.sampleList[key];
-            const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+            const sampleName = sampleData.sampleName
+              ? sampleData.sampleName
+              : '';
             const proteinAcronym = sampleData.proteinAcronym
-              ? `${sampleData.proteinAcronym} -` : '';
+              ? `${sampleData.proteinAcronym} -`
+              : '';
 
             return (
               <div key={id} className="node node-sample">
                 <div className="task-head">
                   <p className="node-name">
-                    <b>
-                      {`${sampleData.sampleID} `}
-                    </b>
+                    <b>{`${sampleData.sampleID} `}</b>
                     {`${proteinAcronym} ${sampleName}`}
                     <Button
                       className="pull-right"
                       bsSize="xs"
                       onClick={() => this.mountAndSwitchTab(sampleData)}
                     >
-                          Mount
+                      Mount
                     </Button>
                   </p>
                 </div>

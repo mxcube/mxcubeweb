@@ -5,59 +5,53 @@ const initialState = {
   allowRemote: false,
   timeoutGivesControl: false,
   showObserverDialog: false,
-  chatMessageCount: 0
+  chatMessageCount: 0,
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_RA_STATE':
-    {
+    case 'SET_RA_STATE': {
       return {
         ...state,
         observers: action.data.observers,
         allowRemote: action.data.allowRemote,
-        timeoutGivesControl: action.data.timeoutGivesControl
+        timeoutGivesControl: action.data.timeoutGivesControl,
       };
     }
-    case 'SET_MASTER':
-    {
-      return Object.assign({}, state,
-        {
-          sid: action.sid
-        });
+    case 'SET_MASTER': {
+      return Object.assign({}, state, {
+        sid: action.sid,
+      });
     }
-    case 'SET_OBSERVERS':
-    {
+    case 'SET_OBSERVERS': {
       return Object.assign({}, state, { observers: action.observers });
     }
-    case 'SHOW_OBSERVER_DIALOG':
-    {
+    case 'SHOW_OBSERVER_DIALOG': {
       return Object.assign({}, state, { showObserverDialog: action.show });
     }
-    case 'SET_ALLOW_REMOTE':
-    {
+    case 'SET_ALLOW_REMOTE': {
       return Object.assign({}, state, { allowRemote: action.allow });
     }
-    case 'SET_TIMEOUT_GIVES_CONTROL':
-    {
-      return Object.assign({}, state, { timeoutGivesControl: action.timeoutGivesControl });
+    case 'SET_TIMEOUT_GIVES_CONTROL': {
+      return Object.assign({}, state, {
+        timeoutGivesControl: action.timeoutGivesControl,
+      });
     }
-    case 'RESET_CHAT_MESSAGE_COUNT':
-    {
+    case 'RESET_CHAT_MESSAGE_COUNT': {
       return Object.assign({}, state, { chatMessageCount: 0 });
     }
-    case 'INC_CHAT_MESSAGE_COUNT':
-    {
-      return Object.assign({}, state, { chatMessageCount: state.chatMessageCount + 1 });
+    case 'INC_CHAT_MESSAGE_COUNT': {
+      return Object.assign({}, state, {
+        chatMessageCount: state.chatMessageCount + 1,
+      });
     }
-    case 'SET_INITIAL_STATE':
-    {
+    case 'SET_INITIAL_STATE': {
       return {
         ...state,
         observers: action.data.remoteAccess.observers,
         sid: action.data.remoteAccess.sid,
         allowRemote: action.data.remoteAccess.allowRemote,
-        timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl
+        timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl,
       };
     }
     default:

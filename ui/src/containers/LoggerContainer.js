@@ -26,19 +26,24 @@ export class LoggerContainer extends React.Component {
   render() {
     const { records, page } = this.props;
 
-    const filteredRecords = records.slice(page * 20, page * 20 + 20).map((record, index) => (
-      <tr key={index}>
-        <td>{record.timestamp}</td>
-        <td>{record.logger}</td>
-        <td>{record.severity}</td>
-        <td>{record.message}</td>
-      </tr>
-    ));
+    const filteredRecords = records
+      .slice(page * 20, page * 20 + 20)
+      .map((record, index) => (
+        <tr key={index}>
+          <td>{record.timestamp}</td>
+          <td>{record.logger}</td>
+          <td>{record.severity}</td>
+          <td>{record.message}</td>
+        </tr>
+      ));
 
     return (
       <div className="col-xs-12">
         <row>
-          <div className="col-xs-12 text-center" style={{ float: 'none', margin: '0 auto' }}>
+          <div
+            className="col-xs-12 text-center"
+            style={{ float: 'none', margin: '0 auto' }}
+          >
             <nav>
               <ul className="pagination">
                 <li>
@@ -51,7 +56,9 @@ export class LoggerContainer extends React.Component {
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
-                <li><a>{page}</a></li>
+                <li>
+                  <a>{page}</a>
+                </li>
                 <li>
                   <a onClick={this.forwardPage}>
                     <span aria-hidden="true">&raquo;</span>
@@ -77,9 +84,7 @@ export class LoggerContainer extends React.Component {
                   <th>Message</th>
                 </tr>
               </thead>
-              <tbody>
-                {filteredRecords}
-              </tbody>
+              <tbody>{filteredRecords}</tbody>
             </table>
           </div>
         </row>
@@ -88,21 +93,17 @@ export class LoggerContainer extends React.Component {
   }
 }
 
-
 function mapStateToProps(state) {
   return {
     records: state.logger.logRecords,
-    page: state.logger.activePage
+    page: state.logger.activePage,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    setLogPage: bindActionCreators(setLogPage, dispatch)
+    setLogPage: bindActionCreators(setLogPage, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(LoggerContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(LoggerContainer);

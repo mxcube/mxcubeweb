@@ -3,11 +3,11 @@
 }
 
 .treeNode ~ ul {
- display: none;
+  display: none;
 }
 
 .treeNode:checked ~ ul {
- display: block;
+  display: block;
 }
 
 .treeNodeLabel {
@@ -39,11 +39,11 @@
 }
 
 .custom-btn-color {
-  color: hsl(0,0%,50%) !important;
+  color: hsl(0, 0%, 50%) !important;
 }
 
 .custom-btn-color:hover {
-  color: hsl(0,0%,0%) !important;
+  color: hsl(0, 0%, 0%) !important;
 }
 
 .scMessage {

@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import {
-  Modal, Button, Form, Row, Col, ButtonToolbar
-} from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
@@ -14,7 +12,7 @@ import {
   InputField,
   SelectField,
   FieldsRow,
-  CollapsableRows
+  CollapsableRows,
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -48,7 +46,7 @@ class DataCollection extends React.Component {
       label: 'Data Collection',
       helical: false,
       mesh: false,
-      shape: this.props.pointID
+      shape: this.props.pointID,
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -63,7 +61,7 @@ class DataCollection extends React.Component {
       'type',
       'shape',
       'label',
-      'helical'
+      'helical',
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -77,9 +75,14 @@ class DataCollection extends React.Component {
   defaultParameters() {
     this.props.resetTaskParameters();
     const { type } = this.props.taskData.parameters;
-    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
+    const fieldNames = Object.keys(
+      this.props.initialParameters[type.toLowerCase()]
+    );
     fieldNames.forEach((field) => {
-      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(
+        field,
+        this.props.initialParameters[type.toLowerCase()][field]
+      );
     });
   }
 
@@ -93,16 +96,19 @@ class DataCollection extends React.Component {
               bsStyle="default"
               onClick={this.defaultParameters}
             >
-             Default Parameters
+              Default Parameters
             </Button>
           </ButtonToolbar>
           <ButtonToolbar className="pull-right">
             <Button
               bsStyle="success"
-              disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+              disabled={
+                this.props.taskData.parameters.shape === -1 ||
+                this.props.invalid
+              }
               onClick={this.submitRunNow}
             >
-             Run Now
+              Run Now
             </Button>
             <Button
               bsStyle="primary"
@@ -123,17 +129,19 @@ class DataCollection extends React.Component {
         <ButtonToolbar className="pull-right">
           <Button
             bsStyle="success"
-            disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+            disabled={
+              this.props.taskData.parameters.shape === -1 || this.props.invalid
+            }
             onClick={this.submitRunNow}
           >
-             Run Now
+            Run Now
           </Button>
           <Button
             bsStyle="primary"
             disabled={this.props.invalid}
             onClick={this.submitAddToQueue}
           >
-            { 'Add Diffraction Plan to Queue' }
+            {'Add Diffraction Plan to Queue'}
           </Button>
         </ButtonToolbar>
       </Modal.Footer>
@@ -153,8 +161,12 @@ class DataCollection extends React.Component {
   }
 
   render() {
-    const energyScanResult = this.props.taskResult.energyScan.length > 0
-      ? this.props.taskResult.energyScan[this.props.taskResult.energyScan.length - 1] : [];
+    const energyScanResult =
+      this.props.taskResult.energyScan.length > 0
+        ? this.props.taskResult.energyScan[
+            this.props.taskResult.energyScan.length - 1
+          ]
+        : [];
 
     const energyList = [];
 
@@ -173,42 +185,74 @@ class DataCollection extends React.Component {
             <StaticField label="Filename" data={this.props.filename} />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="2" col2="8" />
+                <InputField
+                  propName="subdir"
+                  label="Subdirectory"
+                  col1="2"
+                  col2="8"
+                />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="2" col2="6" />
+                <InputField
+                  propName="prefix"
+                  label="Prefix"
+                  col1="2"
+                  col2="6"
+                />
               </Col>
-              {this.props.taskData.sampleID
-                ? (
-                  <Col xs={8}>
-                    <InputField
-                      propName="run_number"
-                      disabled
-                      label="Run number"
-                      col1="4"
-                      col2="3"
-                    />
-                  </Col>
-                )
-                : null}
+              {this.props.taskData.sampleID ? (
+                <Col xs={8}>
+                  <InputField
+                    propName="run_number"
+                    disabled
+                    label="Run number"
+                    col1="4"
+                    col2="3"
+                  />
+                </Col>
+              ) : null}
             </Row>
           </Form>
 
           <FieldsHeader title="Acquisition" />
           <Form horizontal>
             <FieldsRow>
-              <InputField propName="osc_range" type="number" label="Oscillation range" />
-              <InputField propName="first_image" type="number" label="First image" />
+              <InputField
+                propName="osc_range"
+                type="number"
+                label="Oscillation range"
+              />
+              <InputField
+                propName="first_image"
+                type="number"
+                label="First image"
+              />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="osc_start" type="number" label="Oscillation start" />
-              <InputField propName="num_images" type="number" label="Number of images" />
+              <InputField
+                propName="osc_start"
+                type="number"
+                label="Oscillation start"
+              />
+              <InputField
+                propName="num_images"
+                type="number"
+                label="Number of images"
+              />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" type="number" label="Exposure time (s)" />
-              <InputField propName="transmission" type="number" label="Transmission" />
+              <InputField
+                propName="exp_time"
+                type="number"
+                label="Exposure time (s)"
+              />
+              <InputField
+                propName="transmission"
+                type="number"
+                label="Transmission"
+              />
             </FieldsRow>
             <FieldsRow>
               <InputField
@@ -217,22 +261,23 @@ class DataCollection extends React.Component {
                 type="number"
                 label="Energy"
               />
-              <InputField propName="resolution" type="number" label="Resolution" />
+              <InputField
+                propName="resolution"
+                type="number"
+                label="Resolution"
+              />
             </FieldsRow>
-            { this.props.taskResult.energyScan.length > 0
-              ? (
-                <FieldsRow>
-                  <SelectField
-                    col1="7"
-                    col2="5"
-                    propName="energy"
-                    label="Energy scan result"
-                    list={energyList}
-                  />
-                </FieldsRow>
-              )
-              : null
-            }
+            {this.props.taskResult.energyScan.length > 0 ? (
+              <FieldsRow>
+                <SelectField
+                  col1="7"
+                  col2="5"
+                  propName="energy"
+                  label="Energy scan result"
+                  list={energyList}
+                />
+              </FieldsRow>
+            ) : null}
             <CollapsableRows>
               <FieldsRow>
                 <InputField propName="kappa" type="number" label="Kappa" />
@@ -265,17 +310,30 @@ class DataCollection extends React.Component {
                 <InputField col1="1" col2="5" propName="cellC" label="c" />
               </FieldsRow>
               <FieldsRow>
-                <InputField col1="1" col2="5" propName="cellAlpha" label="&alpha;" />
-                <InputField col1="1" col2="5" propName="cellBeta" label="&beta;" />
-                <InputField col1="1" col2="5" propName="cellGamma" label="&gamma;" />
+                <InputField
+                  col1="1"
+                  col2="5"
+                  propName="cellAlpha"
+                  label="&alpha;"
+                />
+                <InputField
+                  col1="1"
+                  col2="5"
+                  propName="cellBeta"
+                  label="&beta;"
+                />
+                <InputField
+                  col1="1"
+                  col2="5"
+                  propName="cellGamma"
+                  label="&gamma;"
+                />
               </FieldsRow>
             </Form>
           </CollapsableRows>
-
         </Modal.Body>
 
-        { this.props.taskData.state ? '' : this.showFooter() }
-
+        {this.props.taskData.state ? '' : this.showFooter()}
       </DraggableModal>
     );
   }
@@ -284,7 +342,7 @@ class DataCollection extends React.Component {
 DataCollection = reduxForm({
   form: 'datacollection',
   validate,
-  warn
+  warn,
 })(DataCollection);
 
 const selector = formValueSelector('datacollection');
@@ -315,19 +373,23 @@ DataCollection = connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value),
-      energy: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value),
-      transmission: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value),
-      osc_start: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.attributes.omega.value)
-    }
+      resolution:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.resolution
+          : state.beamline.attributes.resolution.value,
+      energy:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.energy
+          : state.beamline.attributes.energy.value,
+      transmission:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.transmission
+          : state.beamline.attributes.transmission.value,
+      osc_start:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.osc_start
+          : state.beamline.attributes.omega.value,
+    },
   };
 })(DataCollection);
 

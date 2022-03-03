@@ -107,7 +107,7 @@
   z-index: 1;
 }
 .passive {
-  background-color: #ADABAB !important;
+  background-color: #adabab !important;
 }
 .active {
   background-color: #337ab7 !important;
@@ -126,7 +126,7 @@
 }
 .m-tree {
   background-color: white;
-  border: 1px solid #AAA;
+  border: 1px solid #aaa;
   border-radius: 3px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
@@ -205,20 +205,20 @@
 }
 .task-head {
   padding: 0.5rem 1rem;
-  border: 1px solid #DDD;
+  border: 1px solid #ddd;
   background-color: #f9f9f9;
 }
 .task-head p {
   margin: 0;
 }
 .task-head-selected {
-  background-color: #ADCBDA;
+  background-color: #adcbda;
 }
 .task-head-selected:hover {
   background-color: #98b2bf !important;
 }
 .task-head:hover {
-  background-color: #EAEAEA;
+  background-color: #eaeaea;
 }
 .task-body {
   margin: 0;

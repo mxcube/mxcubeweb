@@ -9,22 +9,25 @@ export default class DeviceState extends React.Component {
       msgBgStyle = 'info';
     }
 
-    const msgLabelStyle = { display: 'block', fontSize: '100%',
-      borderRadius: '0px', color: '#000' };
+    const msgLabelStyle = {
+      display: 'block',
+      fontSize: '100%',
+      borderRadius: '0px',
+      color: '#000',
+    };
 
     return (
       <div>
-        <Label
-          style={{ display: 'block', marginBottom: '3px' }}
-        >
+        <Label style={{ display: 'block', marginBottom: '3px' }}>
           {this.props.labelText}
         </Label>
-        <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data}</Label>
+        <Label bsStyle={msgBgStyle} style={msgLabelStyle}>
+          {this.props.data}
+        </Label>
       </div>
     );
   }
 }
-
 
 DeviceState.defaultProps = {
   labelText: '',

@@ -26,8 +26,15 @@ export class LoggerOverlayContainer extends React.Component {
 
   render() {
     return (
-      <nav id="log-window--slide-bottom" className="log-window log-window--slide-bottom">
-        <button id="toggle-button" className="log-window__close" onClick={this.toggleWindow}>
+      <nav
+        id="log-window--slide-bottom"
+        className="log-window log-window--slide-bottom"
+      >
+        <button
+          id="toggle-button"
+          className="log-window__close"
+          onClick={this.toggleWindow}
+        >
           Open Log
         </button>
         <UserLog messages={this.props.logMessages} />
@@ -38,10 +45,8 @@ export class LoggerOverlayContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    logMessages: state.logger.logRecords
+    logMessages: state.logger.logRecords,
   };
 }
 
-export default connect(
-  mapStateToProps
-)(LoggerOverlayContainer);
+export default connect(mapStateToProps)(LoggerOverlayContainer);

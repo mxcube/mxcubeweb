@@ -1,17 +1,25 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
+import {
+  ProgressBar,
+  Button,
+  Collapse,
+  OverlayTrigger,
+  Popover,
+} from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
-import { TASK_UNCOLLECTED,
+import {
+  TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING } from '../../constants';
+  TASK_RUNNING,
+} from '../../constants';
 
 export default class WorkflowTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired
+    moveCard: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -25,23 +33,31 @@ export default class WorkflowTaskItem extends Component {
     this.pointIDString = this.pointIDString.bind(this);
     this.state = {
       overInput: false,
-      selected: false
+      selected: false,
     };
   }
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return (<span></span>);
+      return <span></span>;
     }
-    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
+    const link = this.props.data.limsResultData
+      ? this.props.data.limsResultData.limsTaskLink
+      : '';
 
     return (
-      <div style={ { borderLeft: '1px solid #DDD',
-        borderRight: '1px solid #DDD',
-        borderBottom: '1px solid #DDD',
-        padding: '0.5em' } }
+      <div
+        style={{
+          borderLeft: '1px solid #DDD',
+          borderRight: '1px solid #DDD',
+          borderBottom: '1px solid #DDD',
+          padding: '0.5em',
+        }}
       >
-        <a href={link} target="_blank"> View Results in ISPyB</a>
+        <a href={link} target="_blank">
+          {' '}
+          View Results in ISPyB
+        </a>
       </div>
     );
   }
@@ -63,12 +79,15 @@ export default class WorkflowTaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
-
   deleteButton() {
-    let content = (<Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>);
+    let content = (
+      <Button bsSize="sm" onClick={this.deleteTask}>
+        Delete
+      </Button>
+    );
 
     if (this.props.state !== TASK_UNCOLLECTED) {
-      content = (<span> </span>);
+      content = <span> </span>;
     }
 
     return content;
@@ -103,19 +122,25 @@ export default class WorkflowTaskItem extends Component {
         trigger="click"
         placement="top"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '2000px', width: 'auto' }}>
-                    <input
-                      type="text"
-                      onFocus={(e) => {e.target.select();}}
-                      value={path}
-                      size={path.length + 10}
-                    />
-                  </Popover>)}
+        overlay={
+          <Popover
+            id="wedge-popover"
+            style={{ maxWidth: '2000px', width: 'auto' }}
+          >
+            <input
+              type="text"
+              onFocus={(e) => {
+                e.target.select();
+              }}
+              value={path}
+              size={path.length + 10}
+            />
+          </Popover>
+        }
       >
-        <a onClick={(e) => (e.stopPropagation())}>
-          { value }
-        </a>
-      </OverlayTrigger>);
+        <a onClick={(e) => e.stopPropagation()}>{value}</a>
+      </OverlayTrigger>
+    );
   }
 
   progressBar() {
@@ -138,20 +163,18 @@ export default class WorkflowTaskItem extends Component {
           style={{ marginBottom: '0px', height: '18px' }}
           min={0}
           max={1}
-          active={ this.props.progress < 1 }
-          label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+          active={this.props.progress < 1}
+          label={`${(this.props.progress * 100).toPrecision(3)} %`}
           now={this.props.progress}
         />
-      </span>);
+      </span>
+    );
   }
 
   render() {
-    const { state,
-      data,
-      show } = this.props;
+    const { state, data, show } = this.props;
 
     const parameters = data.parameters;
-
 
     const delTaskCSS = {
       display: 'flex',
@@ -160,10 +183,12 @@ export default class WorkflowTaskItem extends Component {
       paddingLeft: '10px',
       paddingRight: '10px',
       color: '#d9534f',
-      cursor: 'pointer'
+      cursor: 'pointer',
     };
 
-    let taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
+    let taskCSS = this.props.selected
+      ? 'task-head task-head-selected'
+      : 'task-head';
 
     if (state === TASK_RUNNING) {
       taskCSS += ' running';
@@ -180,28 +205,26 @@ export default class WorkflowTaskItem extends Component {
             onClick={this.taskHeaderOnClick}
             onContextMenu={this.taskHeaderOnContextMenu}
           >
-            <div
-              className={taskCSS}
-              style={{ display: 'flex' }}
-            >
+            <div className={taskCSS} style={{ display: 'flex' }}>
               <b>
-                <span className="node-name" style={{ display: 'flex' }} >
+                <span className="node-name" style={{ display: 'flex' }}>
                   {this.pointIDString(parameters)} {data.parameters.label}
                   {state === TASK_RUNNING ? this.progressBar() : null}
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ?
-                <i className="fas fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
-              }
+              {state === TASK_UNCOLLECTED ? (
+                <i
+                  className="fas fa-remove"
+                  onClick={this.deleteTask}
+                  style={delTaskCSS}
+                />
+              ) : null}
             </div>
             <Collapse in={Boolean(show)}>
               <div className="task-body">
                 <div>
                   <div style={{ border: '1px solid #DDD' }}>
-                    <div
-                      style={{ padding: '0.5em' }}
-                      onClick={this.showForm}
-                    >
+                    <div style={{ padding: '0.5em' }} onClick={this.showForm}>
                       <b>Workflow path:</b> {this.path(parameters)}
                     </div>
                   </div>
@@ -211,6 +234,7 @@ export default class WorkflowTaskItem extends Component {
             </Collapse>
           </div>
         </ContextMenuTrigger>
-      </div>);
+      </div>
+    );
   }
 }

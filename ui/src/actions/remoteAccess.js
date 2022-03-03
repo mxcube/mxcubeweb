@@ -14,16 +14,16 @@ export function getRaState() {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
-    }).then(response => response.json())
+      credentials: 'include',
+    })
+      .then((response) => response.json())
       .then((data) => {
         dispatch(setRaState(data.data));
       });
   };
 }
-
 
 export function sendUpdateNickname(name) {
   return function (dispatch) {
@@ -32,9 +32,9 @@ export function sendUpdateNickname(name) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ name })
+      body: JSON.stringify({ name }),
     }).then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
@@ -42,18 +42,26 @@ export function sendUpdateNickname(name) {
   };
 }
 
-export function requestControl(control = true, message = '', name = '', userInfo = { }) {
+export function requestControl(
+  control = true,
+  message = '',
+  name = '',
+  userInfo = {}
+) {
   return function () {
     fetch('mxcube/api/v0.1/ra/request_control', {
       method: 'POST',
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        control, message, name, userInfo
-      })
+        control,
+        message,
+        name,
+        userInfo,
+      }),
     });
   };
 }
@@ -65,8 +73,8 @@ export function sendTakeControl() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
@@ -81,9 +89,9 @@ export function sendGiveControl(username) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ username })
+      body: JSON.stringify({ username }),
     }).then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
@@ -98,9 +106,9 @@ export function sendLogoutUser(username) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ username })
+      body: JSON.stringify({ username }),
     }).then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
@@ -114,14 +122,13 @@ export function requestControlResponse(giveControl = true, message = '') {
     credentials: 'include',
     headers: {
       Accept: 'application/json',
-      'Content-type': 'application/json'
+      'Content-type': 'application/json',
     },
-    body: JSON.stringify({ giveControl, message })
+    body: JSON.stringify({ giveControl, message }),
   });
 
   return { type: 'REQUEST_CONTROL_RESPONSE' };
 }
-
 
 export function setAllowRemoteAccess(allow) {
   return { type: 'SET_ALLOW_REMOTE', allow };
@@ -138,15 +145,14 @@ export function sendAllowRemote(allow) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ allow })
+      body: JSON.stringify({ allow }),
     });
 
     dispatch(setAllowRemoteAccess(allow));
   };
 }
-
 
 export function sendTimeoutGivesControl(timeoutGivesControl) {
   return function (dispatch) {
@@ -155,15 +161,14 @@ export function sendTimeoutGivesControl(timeoutGivesControl) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ timeoutGivesControl })
+      body: JSON.stringify({ timeoutGivesControl }),
     });
 
     dispatch(setTimeoutGivesControl(timeoutGivesControl));
   };
 }
-
 
 export function setObservers(observers) {
   return { type: 'SET_OBSERVERS', observers };
@@ -175,9 +180,9 @@ export function sendChatMessage(message, username) {
     credentials: 'include',
     headers: {
       Accept: 'application/json',
-      'Content-type': 'application/json'
+      'Content-type': 'application/json',
     },
-    body: JSON.stringify({ message, username })
+    body: JSON.stringify({ message, username }),
   });
 }
 
@@ -187,16 +192,14 @@ export function getAllChatMessages() {
     credentials: 'include',
     headers: {
       Accept: 'application/json',
-      'Content-type': 'application/json'
-    }
-  }).then(response => response.json());
+      'Content-type': 'application/json',
+    },
+  }).then((response) => response.json());
 }
-
 
 export function resetChatMessageCount() {
   return { type: 'RESET_CHAT_MESSAGE_COUNT' };
 }
-
 
 export function incChatMessageCount() {
   return { type: 'INC_CHAT_MESSAGE_COUNT' };

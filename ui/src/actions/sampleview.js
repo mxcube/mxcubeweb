@@ -3,122 +3,147 @@ import { showErrorPanel } from './general';
 
 export function setMotorMoving(name, status) {
   return {
-    type: 'SET_MOTOR_MOVING', name, status
+    type: 'SET_MOTOR_MOVING',
+    name,
+    status,
   };
 }
 
 export function setBeamInfo(info) {
   return {
-    type: 'SET_BEAM_INFO', info
+    type: 'SET_BEAM_INFO',
+    info,
   };
 }
 
 export function setCurrentPhase(phase) {
   return {
-    type: 'SET_CURRENT_PHASE', phase
+    type: 'SET_CURRENT_PHASE',
+    phase,
   };
 }
 
 export function setImageRatio(clientWidth) {
   return {
-    type: 'SET_IMAGE_RATIO', clientWidth
+    type: 'SET_IMAGE_RATIO',
+    clientWidth,
   };
 }
 
 export function setOverlay(level) {
   return {
-    type: 'SET_OVERLAY', level
+    type: 'SET_OVERLAY',
+    level,
   };
 }
 
 export function setAperture(size) {
   return {
-    type: 'SET_APERTURE', size
+    type: 'SET_APERTURE',
+    size,
   };
 }
 
 export function setStepSize(name, value) {
   return {
-    type: 'SET_STEP_SIZE', componentName: 'sample_view', name, value
+    type: 'SET_STEP_SIZE',
+    componentName: 'sample_view',
+    name,
+    value,
   };
 }
 
 export function showContextMenu(show, shape = { type: 'NONE' }, x = 0, y = 0) {
   return {
-    type: 'SHOW_CONTEXT_MENU', show, shape, x, y
+    type: 'SHOW_CONTEXT_MENU',
+    show,
+    shape,
+    x,
+    y,
   };
 }
 
 export function setPixelsPerMm(pixelsPerMm) {
   return {
-    type: 'SET_PIXELS_PER_MM', pixelsPerMm
+    type: 'SET_PIXELS_PER_MM',
+    pixelsPerMm,
   };
 }
 
 export function measureDistance(mode) {
   return {
-    type: 'MEASURE_DISTANCE', mode
+    type: 'MEASURE_DISTANCE',
+    mode,
   };
 }
 
 export function addDistancePoint(x, y) {
   return {
-    type: 'ADD_DISTANCE_POINT', x, y
+    type: 'ADD_DISTANCE_POINT',
+    x,
+    y,
   };
 }
 
 export function startClickCentring() {
   return {
-    type: 'START_CLICK_CENTRING'
+    type: 'START_CLICK_CENTRING',
   };
 }
 
 export function stopClickCentring() {
   return {
-    type: 'STOP_CLICK_CENTRING'
+    type: 'STOP_CLICK_CENTRING',
   };
 }
 
 export function clearSelectedShapes() {
   return {
-    type: 'CLEAR_SELECTED_SHAPES'
+    type: 'CLEAR_SELECTED_SHAPES',
   };
 }
 
 export function addCentringPoint(x, y) {
   return {
-    type: 'ADD_CENTRING_POINT', x, y
+    type: 'ADD_CENTRING_POINT',
+    x,
+    y,
   };
 }
 
 export function addShape(shape) {
   return {
-    type: 'ADD_SHAPE', shape
+    type: 'ADD_SHAPE',
+    shape,
   };
 }
 
 export function updateShapes(shapes) {
   return {
-    type: 'UPDATE_SHAPES', shapes
+    type: 'UPDATE_SHAPES',
+    shapes,
   };
 }
 
 export function deleteShape(id) {
   return {
-    type: 'DELETE_SHAPE', id
+    type: 'DELETE_SHAPE',
+    id,
   };
 }
 
 export function saveImageSize(width, height, pixelsPerMm) {
   return {
-    type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm
+    type: 'SAVE_IMAGE_SIZE',
+    width,
+    height,
+    pixelsPerMm,
   };
 }
 
 export function toggleAutoScale(width = 1) {
   return { type: 'TOGGLE_AUTO_SCALE', width };
 }
-
 
 export function videoMessageOverlay(show, msg) {
   return { type: 'SHOW_VIDEO_MESSAGE_OVERLAY', show, msg };
@@ -134,56 +159,64 @@ export function setVideoSize(width, height) {
         credentials: 'include',
         headers: {
           Accept: 'application/json',
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
         },
-        body: JSON.stringify({ width, height })
-      }).then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to add line');
-        }
-        return response.json();
-      }).then((json) => {
-        dispatch({
-          type: 'SAVE_IMAGE_SIZE',
-          width: json.imageWidth,
-          height: json.imageHeight,
-          pixelsPerMm: json.pixelsPerMm,
-          beamPosition: json.position,
-          sourceScale: json.scale
+        body: JSON.stringify({ width, height }),
+      })
+        .then((response) => {
+          if (response.status >= 400) {
+            throw new Error('Server refused to add line');
+          }
+          return response.json();
+        })
+        .then((json) => {
+          dispatch({
+            type: 'SAVE_IMAGE_SIZE',
+            width: json.imageWidth,
+            height: json.imageHeight,
+            pixelsPerMm: json.pixelsPerMm,
+            beamPosition: json.position,
+            sourceScale: json.scale,
+          });
+          window.initJSMpeg();
         });
-        window.initJSMpeg();
-      });
     }
   };
 }
 
 export function saveMotorPositions(data) {
   return {
-    type: 'SAVE_MOTOR_POSITIONS', data
+    type: 'SAVE_MOTOR_POSITIONS',
+    data,
   };
 }
 
 export function saveMotorPosition(name, value) {
   return {
-    type: 'SAVE_MOTOR_POSITION', name, value
+    type: 'SAVE_MOTOR_POSITION',
+    name,
+    value,
   };
 }
 
 export function updateMotorState(name, value) {
   return {
-    type: 'UPDATE_MOTOR_STATE', name, value
+    type: 'UPDATE_MOTOR_STATE',
+    name,
+    value,
   };
 }
 
 export function setShapes(shapes) {
   return {
-    type: 'SET_SHAPES', shapes
+    type: 'SET_SHAPES',
+    shapes,
   };
 }
 
 export function toggleCinema() {
   return {
-    type: 'TOOGLE_CINEMA'
+    type: 'TOOGLE_CINEMA',
   };
 }
 
@@ -205,7 +238,8 @@ export function centringClicksLeft(clicksLeft) {
 
 export function setGridResultType(gridResultType) {
   return {
-    type: 'SET_GRID_RESULT_TYPE', gridResultType
+    type: 'SET_GRID_RESULT_TYPE',
+    gridResultType,
   };
 }
 
@@ -216,9 +250,9 @@ export function sendRotateToShape(sid) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ sid })
+      body: JSON.stringify({ sid }),
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to rotate grid.'));
@@ -234,23 +268,25 @@ export function sendCentringPoint(x, y) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ clickPos: { x, y } })
-    }).then(response => (response.json())).then((json) => {
-      const { clicksLeft } = json;
-      let msg = '3-Click Centring: <br />';
+      body: JSON.stringify({ clickPos: { x, y } }),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        const { clicksLeft } = json;
+        let msg = '3-Click Centring: <br />';
 
-      dispatch(centringClicksLeft(clicksLeft));
+        dispatch(centringClicksLeft(clicksLeft));
 
-      if (clicksLeft === 0) {
-        msg += 'Save centring or clicking on screen to restart';
-      } else {
-        msg += `Clicks left: ${clicksLeft}`;
-      }
+        if (clicksLeft === 0) {
+          msg += 'Save centring or clicking on screen to restart';
+        } else {
+          msg += `Clicks left: ${clicksLeft}`;
+        }
 
-      dispatch(videoMessageOverlay(true, msg));
-    });
+        dispatch(videoMessageOverlay(true, msg));
+      });
   };
 }
 
@@ -261,8 +297,8 @@ export function sendAcceptCentring() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Centring not accepted');
@@ -279,9 +315,9 @@ export function sendGoToBeam(x, y) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ clickPos: { x, y } })
+      body: JSON.stringify({ clickPos: { x, y } }),
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused move to beam');
@@ -297,8 +333,8 @@ export function sendStartAutoCentring() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to start autocentring');
@@ -316,20 +352,22 @@ export function sendAddShape(shapeData = {}, successCb = null) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ shapes: [shapeData] })
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to add shape');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(addShape(json.shapes[0]));
-      if (successCb !== null) {
-        successCb(json.shapes[0]);
-      }
-    });
+      body: JSON.stringify({ shapes: [shapeData] }),
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to add shape');
+        }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(addShape(json.shapes[0]));
+        if (successCb !== null) {
+          successCb(json.shapes[0]);
+        }
+      });
   };
 }
 
@@ -340,17 +378,19 @@ export function sendUpdateShapes(shapes) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ shapes })
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to update shape');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(updateShapes(json.shapes));
-    });
+      body: JSON.stringify({ shapes }),
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to update shape');
+        }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(updateShapes(json.shapes));
+      });
   };
 }
 
@@ -361,15 +401,17 @@ export function sendDeleteShape(id) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to delete shape');
-      }
-    }).then(() => {
-      dispatch(deleteShape(id));
-    });
+        'Content-type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to delete shape');
+        }
+      })
+      .then(() => {
+        dispatch(deleteShape(id));
+      });
   };
 }
 
@@ -377,7 +419,7 @@ export function unselectShapes(shapes) {
   return function (dispatch) {
     const _shapes = [];
     const keys = Object.keys(shapes.shapes);
-    keys.forEach(k => {
+    keys.forEach((k) => {
       const aux = shapes.shapes[k];
       aux.selected = false;
       _shapes.push(aux);
@@ -400,35 +442,39 @@ export function sendStartClickCentring() {
         credentials: 'include',
         headers: {
           Accept: 'application/json',
-          'Content-type': 'application/json'
-        }
-      }).then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to start 3click');
-        } else {
-          dispatch(startClickCentring());
-        }
+          'Content-type': 'application/json',
+        },
+      })
+        .then((response) => {
+          if (response.status >= 400) {
+            throw new Error('Server refused to start 3click');
+          } else {
+            dispatch(startClickCentring());
+          }
 
-        return response.json();
-      }).then((json) => {
-        const clicksLeft = json.clicksLeft;
-        dispatch(centringClicksLeft(clicksLeft));
+          return response.json();
+        })
+        .then((json) => {
+          const clicksLeft = json.clicksLeft;
+          dispatch(centringClicksLeft(clicksLeft));
 
-        let msg = '3-Click Centring: <br />';
+          let msg = '3-Click Centring: <br />';
 
-        if (clicksLeft === 0) {
-          msg += 'Save centring or clicking on screen to restart';
-        } else {
-          msg += `Clicks left: ${clicksLeft}`;
-        }
+          if (clicksLeft === 0) {
+            msg += 'Save centring or clicking on screen to restart';
+          } else {
+            msg += `Clicks left: ${clicksLeft}`;
+          }
 
-        dispatch(videoMessageOverlay(true, msg));
-      });
+          dispatch(videoMessageOverlay(true, msg));
+        });
     } else {
-      dispatch(showErrorPanel(true, 'There is no sample mounted, cannot center.'));
-    }};
+      dispatch(
+        showErrorPanel(true, 'There is no sample mounted, cannot center.')
+      );
+    }
+  };
 }
-
 
 export function sendZoomPos(level) {
   return function (dispatch) {
@@ -438,9 +484,9 @@ export function sendZoomPos(level) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ level })
+      body: JSON.stringify({ level }),
     });
   };
 }
@@ -453,8 +499,8 @@ export function sendLightOn(name) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to turn light on'));
@@ -471,8 +517,8 @@ export function sendLightOff(name) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to turn light off'));
@@ -488,8 +534,8 @@ export function sendStopMotor(motorName) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to stop motor');
@@ -506,8 +552,8 @@ export function sendMotorPosition(motorName, value) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status === 406) {
         dispatch(showErrorPanel(true, response.headers.get('msg')));
@@ -528,8 +574,8 @@ export function sendAbortCentring() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to abort centring'));
@@ -549,8 +595,8 @@ export function sendGoToPoint(id) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to move to point'));
@@ -566,9 +612,9 @@ export function sendChangeAperture(pos) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ diameter: pos })
+      body: JSON.stringify({ diameter: pos }),
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to change Aperture'));
@@ -587,16 +633,20 @@ export function getSampleImageSize() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to return image size');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(saveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]));
-    });
+        'Content-type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to return image size');
+        }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(
+          saveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0])
+        );
+      });
   };
 }
 
@@ -607,16 +657,18 @@ export function getMotorPosition(motor) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to get motor position');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(saveMotorPosition(motor, json[motor].position));
-    });
+        'Content-type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to get motor position');
+        }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(saveMotorPosition(motor, json[motor].position));
+      });
   };
 }
 
@@ -627,16 +679,18 @@ export function getMotorPositions() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to get motor position');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(saveMotorPositions(json));
-    });
+        'Content-type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to get motor position');
+        }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(saveMotorPositions(json));
+      });
   };
 }
 
@@ -646,16 +700,18 @@ export function getPointsPosition() {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to return points position');
-      }
-      return response.json();
-    }).then((json) => {
-      dispatch(updateShapes(json));
-    });
+        'Content-type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error('Server refused to return points position');
+        }
+        return response.json();
+      })
+      .then((json) => {
+        dispatch(updateShapes(json));
+      });
   };
 }
 
@@ -666,9 +722,9 @@ export function sendCurrentPhase(phase) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ phase })
+      body: JSON.stringify({ phase }),
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Server refused to set phase');

@@ -16,7 +16,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_LOADED_SAMPLE': {
       return {
         ...state,
-        loadedSample: action.data
+        loadedSample: action.data,
       };
     }
     case 'SET_SC_STATE': {
@@ -25,7 +25,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_SC_GLOBAL_STATE': {
       return {
         ...state,
-        state: JSON.parse(action.data.state).state
+        state: JSON.parse(action.data.state).state,
       };
     }
     default: {

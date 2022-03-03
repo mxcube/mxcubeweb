@@ -6,11 +6,18 @@ import { Glyphicon, MenuItem } from 'react-bootstrap';
 
 import { SpringGrid } from 'react-stonecutter';
 
-import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
+import {
+  QUEUE_STOPPED,
+  QUEUE_RUNNING,
+  isCollected,
+  hasLimsData,
+} from '../constants';
 
-import { toggleMovableAction,
+import {
+  toggleMovableAction,
   selectSamplesAction,
-  sendSetSampleOrderAction } from '../actions/sampleGrid';
+  sendSetSampleOrderAction,
+} from '../actions/sampleGrid';
 
 import { deleteTask, addSampleAndMount } from '../actions/queue';
 
@@ -20,19 +27,18 @@ import { showTaskForm } from '../actions/taskForm';
 
 import { showDialog } from '../actions/general';
 
-
-import { SampleGridItem,
+import {
+  SampleGridItem,
   SAMPLE_ITEM_WIDTH,
   SAMPLE_ITEM_HEIGHT,
-  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
+  SAMPLE_ITEM_SPACE,
+} from '../components/SampleGrid/SampleGridItem';
 
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 
 import '../components/SampleGrid/SampleGrid.css';
 
-
 class SampleGridContainer extends React.Component {
-
   constructor(props) {
     super(props);
     this.shouldComponentUpdate = this.shouldComponentUpdate.bind(this);
@@ -43,20 +49,25 @@ class SampleGridContainer extends React.Component {
     this.onKeyDown = this.onKeyDown.bind(this);
 
     this.filter = this.filter.bind(this);
-    this.mutualExclusiveFilterOption = this.mutualExclusiveFilterOption.bind(this);
-    this.sampleGridItemsSelectedHandler = this.sampleGridItemsSelectedHandler.bind(this);
+    this.mutualExclusiveFilterOption =
+      this.mutualExclusiveFilterOption.bind(this);
+    this.sampleGridItemsSelectedHandler =
+      this.sampleGridItemsSelectedHandler.bind(this);
     this.inQueueSampleID = this.inQueueSampleID.bind(this);
 
     this.currentSample = this.currentSample.bind(this);
     this.getSampleItems = this.getSampleItems.bind(this);
     this.selectItemUnderCursor = this.selectItemUnderCursor.bind(this);
-    this.sampleItemPickButtonOnClickHandler = this.sampleItemPickButtonOnClickHandler.bind(this);
-    this.sampleItemMoveButtonOnClickHandler = this.sampleItemMoveButtonOnClickHandler.bind(this);
+    this.sampleItemPickButtonOnClickHandler =
+      this.sampleItemPickButtonOnClickHandler.bind(this);
+    this.sampleItemMoveButtonOnClickHandler =
+      this.sampleItemMoveButtonOnClickHandler.bind(this);
     this.sampleItemOnMoveHandler = this.sampleItemOnMoveHandler.bind(this);
     this.sampleItemIsSelected = this.sampleItemIsSelected.bind(this);
     this.sampleItemCanMove = this.sampleItemCanMove.bind(this);
 
-    this.taskItemDeleteButtonOnClickHandler = this.taskItemDeleteButtonOnClickHandler.bind(this);
+    this.taskItemDeleteButtonOnClickHandler =
+      this.taskItemDeleteButtonOnClickHandler.bind(this);
     this.taskItemOnClickHandler = this.taskItemOnClickHandler.bind(this);
 
     this.showRubberBand = false;
@@ -68,27 +79,26 @@ class SampleGridContainer extends React.Component {
     this.currentCtxMenu = 'contextMenu';
   }
 
-
   componentDidMount() {
     document.addEventListener('contextmenu', this.onContextMenu, false);
     document.addEventListener('keydown', this.onKeyDown, false);
     document.addEventListener('click', this.onClick, false);
   }
 
-
   shouldComponentUpdate(nextProps) {
-    return this.props.queue.queue !== nextProps.queue.queue ||
-           Object.keys(this.props.sampleList) !== Object.keys(nextProps.sampleList) ||
-           this.props.order !== nextProps.order;
+    return (
+      this.props.queue.queue !== nextProps.queue.queue ||
+      Object.keys(this.props.sampleList) !==
+        Object.keys(nextProps.sampleList) ||
+      this.props.order !== nextProps.order
+    );
   }
-
 
   componentWillUnmount() {
     document.removeEventListener('contextmenu', this.onContextMenu);
     document.removeEventListener('keydown', this.onKeyDown);
     document.removeEventListener('click', this.onClick);
   }
-
 
   /**
    * Handles multiple item selection on mouseDown, initializes the 'rubberband'
@@ -108,7 +118,6 @@ class SampleGridContainer extends React.Component {
     e.stopPropagation();
   }
 
-
   /**
    * Updates the rubberband if the mutiple selection was initiated (mouseDown
    * followed by mouseMove)
@@ -117,16 +126,21 @@ class SampleGridContainer extends React.Component {
    */
   onMouseMove(e) {
     if (this.showRubberBand) {
-      const selectionRubberBand = document.getElementById('selectionRubberBand');
+      const selectionRubberBand = document.getElementById(
+        'selectionRubberBand'
+      );
       document.getElementById('selectionRubberBand').style.display = 'block';
-      selectionRubberBand.style.width = `${e.pageX - selectionRubberBand.offsetLeft}px`;
-      selectionRubberBand.style.height = `${e.pageY - selectionRubberBand.offsetTop}px`;
+      selectionRubberBand.style.width = `${
+        e.pageX - selectionRubberBand.offsetLeft
+      }px`;
+      selectionRubberBand.style.height = `${
+        e.pageY - selectionRubberBand.offsetTop
+      }px`;
     }
 
     e.preventDefault();
     e.stopPropagation();
   }
-
 
   /**
    * Selectes the items under the slected area and hides the rubberband
@@ -135,10 +149,12 @@ class SampleGridContainer extends React.Component {
   onMouseUp(e) {
     const selectionRubberBand = document.getElementById('selectionRubberBand');
 
-    const selected = this.sampleItems.filter((sampleItem) => {
-      const sampleElement = document.getElementById(sampleItem.key);
-      return this.checkForOverlap(selectionRubberBand, sampleElement);
-    }).map((sampleItem) => sampleItem.key);
+    const selected = this.sampleItems
+      .filter((sampleItem) => {
+        const sampleElement = document.getElementById(sampleItem.key);
+        return this.checkForOverlap(selectionRubberBand, sampleElement);
+      })
+      .map((sampleItem) => sampleItem.key);
 
     selectionRubberBand.style.display = 'none';
     this.showRubberBand = false;
@@ -158,7 +174,6 @@ class SampleGridContainer extends React.Component {
       }
     }
   }
-
 
   /**
    * Moves SampleItems on arrow key press
@@ -180,10 +195,10 @@ class SampleGridContainer extends React.Component {
   }
 
   /**
-  * Selects clicked item and shows context menu
-  *
-  * @param {MouseEvent} e
-  */
+   * Selects clicked item and shows context menu
+   *
+   * @param {MouseEvent} e
+   */
   onContextMenu(e) {
     let res = true;
 
@@ -191,7 +206,10 @@ class SampleGridContainer extends React.Component {
     this.currentCtxMenu = 'contextMenu';
     let contextMenuToHide = 'contextMenuMounted';
 
-    if (Object.keys(this.props.selected)[0] === this.props.sampleChanger.loadedSample.address) {
+    if (
+      Object.keys(this.props.selected)[0] ===
+      this.props.sampleChanger.loadedSample.address
+    ) {
       this.currentCtxMenu = 'contextMenuMounted';
       contextMenuToHide = 'contextMenu';
     }
@@ -200,7 +218,10 @@ class SampleGridContainer extends React.Component {
 
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       menuEl.style.display = 'none';
-    } else if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
+    } else if (
+      e.target.className.indexOf('samples-grid-item') > -1 &&
+      e.button === 2
+    ) {
       menuEl.style.top = `${e.pageY}px`;
       menuEl.style.left = `${e.pageX}px`;
       menuEl.style.display = 'block';
@@ -228,15 +249,17 @@ class SampleGridContainer extends React.Component {
     const sampleItemList = [];
     const orderedList = [];
 
-    props.order.forEach(key => {
+    props.order.forEach((key) => {
       if (props.queue.queue.includes(key) && props.sampleList[key].checked) {
         orderedList.push(key);
       }
     });
 
-    props.order.forEach(key => {
+    props.order.forEach((key) => {
       const sample = props.sampleList[key];
-      const liClass = props.moving[key] ? 'samples-grid-li-mv' : 'samples-grid-li';
+      const liClass = props.moving[key]
+        ? 'samples-grid-li-mv'
+        : 'samples-grid-li';
 
       if (this.filter(key)) {
         sampleItemList.push(
@@ -263,8 +286,8 @@ class SampleGridContainer extends React.Component {
                   deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
                   taskData={taskData}
                   taskIndex={i}
-                />))
-              }
+                />
+              ))}
             </SampleGridItem>
           </li>
         );
@@ -295,21 +318,31 @@ class SampleGridContainer extends React.Component {
     // Handling single item selection, create a syntheticElement to use for the
     // mouse cursor when doing the overlap detection, reusing the same
     // mechanism as for mutiple selection
-    const syntheticElement = { getBoundingClientRect: () => {
-      const bbox = { top: e.clientY, left: e.clientX,
-        bottom: e.clientY + 1, right: e.clientX + 1,
-        width: 1, height: 1 };
-      return bbox;
-    } };
+    const syntheticElement = {
+      getBoundingClientRect: () => {
+        const bbox = {
+          top: e.clientY,
+          left: e.clientX,
+          bottom: e.clientY + 1,
+          right: e.clientX + 1,
+          width: 1,
+          height: 1,
+        };
+        return bbox;
+      },
+    };
 
-    const selected = this.sampleItems.filter((sampleItem) => {
-      const sampleElement = document.getElementById(sampleItem.key);
-      return this.checkForOverlap(syntheticElement, sampleElement);
-    }).map((sampleItem) => sampleItem.key);
+    const selected = this.sampleItems
+      .filter((sampleItem) => {
+        const sampleElement = document.getElementById(sampleItem.key);
+        return this.checkForOverlap(syntheticElement, sampleElement);
+      })
+      .map((sampleItem) => sampleItem.key);
 
-    if (selected.length > 0) { this.sampleGridItemsSelectedHandler(e, selected); }
+    if (selected.length > 0) {
+      this.sampleGridItemsSelectedHandler(e, selected);
+    }
   }
-
 
   /**
    * Calculates the grid dimension
@@ -321,7 +354,7 @@ class SampleGridContainer extends React.Component {
     const numItems = Object.keys(this.props.order).length;
     const numFullCols = Math.floor(this.props.gridWidth[0] / SAMPLE_ITEM_WIDTH);
     const numFullRows = Math.floor(numItems / numFullCols);
-    const itemsOnLastRow = numItems - (numFullRows * numFullCols);
+    const itemsOnLastRow = numItems - numFullRows * numFullCols;
 
     for (let i = 0; i < numFullRows; i++) {
       colArray[i] = numFullCols;
@@ -334,7 +367,6 @@ class SampleGridContainer extends React.Component {
     return colArray;
   }
 
-
   /**
    * Helper function for filter that takes a sample object instead of sampleID
    *
@@ -344,7 +376,6 @@ class SampleGridContainer extends React.Component {
   inQueueSampleID(sample) {
     return this.props.inQueue(sample.sampleID);
   }
-
 
   /**
    * Performs filtering on a sample with two options that are mutually exclusive
@@ -380,7 +411,6 @@ class SampleGridContainer extends React.Component {
     return includeItem;
   }
 
-
   /**
    * Filter function for SampleItems
    *
@@ -396,20 +426,37 @@ class SampleGridContainer extends React.Component {
     let fi = false;
 
     if (sample) {
-      const sampleFilter = `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
+      const sampleFilter =
+        `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
       const locationFilter = `${sample.location}`;
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
-      fi &= locationFilter.startsWith(this.props.filterOptions.puckFilter.toLowerCase());
-      fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
-      fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
-      fi &= this.mutualExclusiveFilterOption(sample, 'limsSamples', '', hasLimsData);
+      fi &= locationFilter.startsWith(
+        this.props.filterOptions.puckFilter.toLowerCase()
+      );
+      fi &= this.mutualExclusiveFilterOption(
+        sample,
+        'inQueue',
+        'notInQueue',
+        this.inQueueSampleID
+      );
+      fi &= this.mutualExclusiveFilterOption(
+        sample,
+        'collected',
+        'notCollected',
+        isCollected
+      );
+      fi &= this.mutualExclusiveFilterOption(
+        sample,
+        'limsSamples',
+        '',
+        hasLimsData
+      );
     }
 
     return fi;
   }
-
 
   /**
    * Handles selection of SampleItems
@@ -422,7 +469,8 @@ class SampleGridContainer extends React.Component {
    * return {boolean} true if item is to be included otherwise false
    */
   sampleGridItemsSelectedHandler(e, sampleIDList) {
-    const alreadySelected = sampleIDList.length === 1 && this.sampleItemIsSelected(sampleIDList[0]);
+    const alreadySelected =
+      sampleIDList.length === 1 && this.sampleItemIsSelected(sampleIDList[0]);
     let samplesToSelect = sampleIDList;
 
     // We dont want to do anything here if sample is already selected and
@@ -432,18 +480,19 @@ class SampleGridContainer extends React.Component {
       // CTRL key is pressed just modify the current selection, remove already
       // selected and add new ones.
       if (e.ctrlKey) {
-        const intersection = sampleIDList.filter((sampleID) => (
+        const intersection = sampleIDList.filter((sampleID) =>
           this.sampleItemIsSelected(sampleID)
-        ));
+        );
 
         const union = Object.keys(this.props.selected).concat(sampleIDList);
-        samplesToSelect = union.filter((sampleID) => !intersection.includes(sampleID));
+        samplesToSelect = union.filter(
+          (sampleID) => !intersection.includes(sampleID)
+        );
       }
 
       this.props.selectSamples(samplesToSelect);
     }
   }
-
 
   /**
    * Handles sample movement in grid (change of order)
@@ -467,7 +516,8 @@ class SampleGridContainer extends React.Component {
     const numCols = this.gridDimension()[0];
     const sourcePos = this.props.order.indexOf(sampleID);
     let targetPos = sourcePos;
-    const [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] = this.sampleItemCanMove(sampleID);
+    const [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] =
+      this.sampleItemCanMove(sampleID);
 
     if (dir === 'RIGHT' && canMoveRight) {
       targetPos = targetPos + 1;
@@ -486,7 +536,6 @@ class SampleGridContainer extends React.Component {
     this.props.sendSetSampleOrderAction(newSampleOrder);
   }
 
-
   /**
    * Handles click on move sample button (when the user initiates move)
    *
@@ -497,7 +546,6 @@ class SampleGridContainer extends React.Component {
     e.stopPropagation();
     this.props.toggleMovableAction(sampleID);
   }
-
 
   /**
    * Handles click on sample item pick 'checkbox', adds sample to queue if its
@@ -521,7 +569,6 @@ class SampleGridContainer extends React.Component {
     }
   }
 
-
   /**
    * Returns true if sample is selected
    *
@@ -531,7 +578,6 @@ class SampleGridContainer extends React.Component {
   sampleItemIsSelected(sampleID) {
     return Object.keys(this.props.selected).includes(sampleID);
   }
-
 
   /**
    * Returns an array with booleans that tell if the SampleItem with
@@ -544,7 +590,10 @@ class SampleGridContainer extends React.Component {
     let [up, down, left, right] = [true, true, true, true];
     const itemPos = this.itemGridPosition(key);
 
-    if (Object.keys(this.props.selected).map(_key => this.props.selected[_key]).length === 1) {
+    if (
+      Object.keys(this.props.selected).map((_key) => this.props.selected[_key])
+        .length === 1
+    ) {
       if (itemPos.col === 0) {
         left = false;
       }
@@ -553,15 +602,15 @@ class SampleGridContainer extends React.Component {
         up = false;
       }
 
-      if (itemPos.row === (itemPos.gridDimension.length - 1)) {
+      if (itemPos.row === itemPos.gridDimension.length - 1) {
         down = false;
       }
 
-      if (itemPos.col > (itemPos.gridDimension[itemPos.row + 1] - 1)) {
+      if (itemPos.col > itemPos.gridDimension[itemPos.row + 1] - 1) {
         down = false;
       }
 
-      if (itemPos.col === (itemPos.gridDimension[itemPos.row] - 1)) {
+      if (itemPos.col === itemPos.gridDimension[itemPos.row] - 1) {
         right = false;
       }
     } else {
@@ -583,11 +632,10 @@ class SampleGridContainer extends React.Component {
     const pos = this.props.order.indexOf(key);
 
     const rowPos = Math.floor(pos / numCols);
-    const colPos = pos - (rowPos * numCols);
+    const colPos = pos - rowPos * numCols;
 
     return { row: rowPos, col: colPos, gridDimension: gridDim };
   }
-
 
   /**
    * Handels clicks on TaskItem
@@ -599,7 +647,6 @@ class SampleGridContainer extends React.Component {
     e.stopPropagation();
     this.props.showTaskParametersForm(task.type, task.sampleID, task);
   }
-
 
   /**
    * Handels clicks on TaskItem delete button
@@ -616,7 +663,6 @@ class SampleGridContainer extends React.Component {
     }
   }
 
-
   /**
    * Checks if the two DOMElements el1 and el2 overlap
    *
@@ -629,13 +675,13 @@ class SampleGridContainer extends React.Component {
     const bounds1 = el1.getBoundingClientRect();
     const bounds2 = el2.getBoundingClientRect();
 
-    const firstIstLeftmost = (bounds1.left <= bounds2.left);
+    const firstIstLeftmost = bounds1.left <= bounds2.left;
     const leftmost = firstIstLeftmost ? bounds1 : bounds2;
     const rightmost = firstIstLeftmost ? bounds2 : bounds1;
 
     // change to >= if border overlap should count
     if (leftmost.right > rightmost.left) {
-      const firstIsTopmost = (bounds1.top <= bounds2.top);
+      const firstIsTopmost = bounds1.top <= bounds2.top;
       const topmost = firstIsTopmost ? bounds1 : bounds2;
       const bottommost = firstIsTopmost ? bounds2 : bounds1;
 
@@ -646,7 +692,6 @@ class SampleGridContainer extends React.Component {
     return result;
   }
 
-
   /**
    * Returns menu options for workflow tasks
    *
@@ -655,29 +700,45 @@ class SampleGridContainer extends React.Component {
    * return {array} Array of <MenuItem>
    */
   workflowMenuOptions() {
-    const workflowTasks = { point: [], line: [], grid: [], samplegrid: [], none: [] };
+    const workflowTasks = {
+      point: [],
+      line: [],
+      grid: [],
+      samplegrid: [],
+      none: [],
+    };
 
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires.includes('point')) {
-        workflowTasks.point.push({ text: wf.wfname,
+        workflowTasks.point.push({
+          text: wf.wfname,
           action: () => this.props.showWorkflowForm(wf),
-          key: `wf-${wf.wfname}` });
+          key: `wf-${wf.wfname}`,
+        });
       } else if (wf.requires.includes('line')) {
-        workflowTasks.line.push({ text: wf.wfname,
+        workflowTasks.line.push({
+          text: wf.wfname,
           action: () => this.props.showWorkflowForm(wf),
-          key: `wf-${wf.wfname}` });
+          key: `wf-${wf.wfname}`,
+        });
       } else if (wf.requires.includes('grid')) {
-        workflowTasks.grid.push({ text: wf.wfname,
+        workflowTasks.grid.push({
+          text: wf.wfname,
           action: () => this.props.showWorkflowForm(wf),
-          key: `wf-${wf.wfname}` });
+          key: `wf-${wf.wfname}`,
+        });
       } else if (wf.requires.includes('samplegrid')) {
-        workflowTasks.samplegrid.push({ text: wf.wfname,
+        workflowTasks.samplegrid.push({
+          text: wf.wfname,
           action: () => this.props.showWorkflowForm(wf),
-          key: `wf-${wf.wfname}` });
+          key: `wf-${wf.wfname}`,
+        });
       } else {
-        workflowTasks.none.push({ text: wf.wfname,
+        workflowTasks.none.push({
+          text: wf.wfname,
           action: () => this.props.showWorkflowForm(wf),
-          key: `wf-${wf.wfname}` });
+          key: `wf-${wf.wfname}`,
+        });
       }
     });
 
@@ -689,7 +750,6 @@ class SampleGridContainer extends React.Component {
 
     return menuItems;
   }
-
 
   mountAndCollect() {
     let sampleData = null;
@@ -708,7 +768,6 @@ class SampleGridContainer extends React.Component {
     }
   }
 
-
   unmount() {
     this.props.unloadSample();
   }
@@ -716,7 +775,12 @@ class SampleGridContainer extends React.Component {
   taskContextMenuItems() {
     return [
       <MenuItem divider />,
-      <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>,
+      <MenuItem header>
+        {' '}
+        <span>
+          <Glyphicon glyph="plus" /> Add{' '}
+        </span>
+      </MenuItem>,
       <MenuItem eventKey="2" onClick={this.props.showDataCollectionForm}>
         Data collection
       </MenuItem>,
@@ -725,7 +789,11 @@ class SampleGridContainer extends React.Component {
       </MenuItem>,
       ...this.workflowMenuOptions(),
       <MenuItem divider />,
-      <MenuItem header><span><Glyphicon glyph="minus" /> Remove </span></MenuItem>,
+      <MenuItem header>
+        <span>
+          <Glyphicon glyph="minus" /> Remove{' '}
+        </span>
+      </MenuItem>,
       <MenuItem eventKey="1" onClick={this.props.removeSelectedSamples}>
         Dequeue Samples
       </MenuItem>,
@@ -738,10 +806,14 @@ class SampleGridContainer extends React.Component {
   sampleContextMenu() {
     return [
       <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><Glyphicon glyph="unchecked" /> Add to Queue</span>
+        <span>
+          <Glyphicon glyph="unchecked" /> Add to Queue
+        </span>
       </MenuItem>,
       <MenuItem eventKey="2" onClick={this.mountAndCollect}>
-        <span><Glyphicon glyph="screenshot" /> Mount </span>
+        <span>
+          <Glyphicon glyph="screenshot" /> Mount{' '}
+        </span>
       </MenuItem>,
     ];
   }
@@ -749,11 +821,15 @@ class SampleGridContainer extends React.Component {
   sampleContextMenuMounted() {
     return [
       <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><Glyphicon glyph="unchecked" /> Add to Queue</span>
+        <span>
+          <Glyphicon glyph="unchecked" /> Add to Queue
+        </span>
       </MenuItem>,
       <MenuItem eventKey="2" onClick={this.unmount}>
-        <span><Glyphicon glyph="share-alt" /> Unmount </span>
-      </MenuItem>
+        <span>
+          <Glyphicon glyph="share-alt" /> Unmount{' '}
+        </span>
+      </MenuItem>,
     ];
   }
 
@@ -767,11 +843,17 @@ class SampleGridContainer extends React.Component {
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
       >
-        <ul id="contextMenu" style={{ display: 'none' }} className="dropdown-menu" role="menu">
+        <ul
+          id="contextMenu"
+          style={{ display: 'none' }}
+          className="dropdown-menu"
+          role="menu"
+        >
           {this.sampleContextMenu()}
           {this.taskContextMenuItems()}
         </ul>
-        <ul id="contextMenuMounted"
+        <ul
+          id="contextMenuMounted"
           style={{ display: 'none' }}
           className="dropdown-menu"
           role="menu"
@@ -813,20 +895,22 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     filterOptions: state.sampleGrid.filterOptions,
     order: state.sampleGrid.order,
-    sampleChanger: state.sampleChanger
+    sampleChanger: state.sampleChanger,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendSetSampleOrderAction: (order) => dispatch(sendSetSampleOrderAction(order)),
+    sendSetSampleOrderAction: (order) =>
+      dispatch(sendSetSampleOrderAction(order)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     unloadSample: bindActionCreators(unloadSample, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
-    selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
+    selectSamples: (keys, selected) =>
+      dispatch(selectSamplesAction(keys, selected)),
     addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
-    showDialog: bindActionCreators(showDialog, dispatch)
+    showDialog: bindActionCreators(showDialog, dispatch),
   };
 }
 

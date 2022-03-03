@@ -36,7 +36,7 @@ const mxcubeReducer = combineReducers({
   queueGUI,
   workflow,
   taskResult,
-  form: formReducer
+  form: formReducer,
 });
 
 const rootReducer = (state, action) => {

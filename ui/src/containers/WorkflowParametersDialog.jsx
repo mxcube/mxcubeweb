@@ -4,17 +4,21 @@ import { connect, Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 import Form from '@rjsf/core';
-import { showWorkflowParametersDialog,
-  workflowSubmitParameters } from '../actions/workflow';
+import {
+  showWorkflowParametersDialog,
+  workflowSubmitParameters,
+} from '../actions/workflow';
 
 class WorkflowParametersDialog extends React.Component {
   constructor(props) {
     super(props);
     this.submitData = this.submitData.bind(this);
     const reducer = combineReducers({ form: formReducer });
-    this.store = (window.devToolsExtension ?
-      window.devToolsExtension()(createStore) :
-      createStore)(reducer);
+    this.store = (
+      window.devToolsExtension
+        ? window.devToolsExtension()(createStore)
+        : createStore
+    )(reducer);
   }
 
   submitData(values) {
@@ -52,28 +56,31 @@ class WorkflowParametersDialog extends React.Component {
           <Modal.Title>{formName}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div id="form-holder">
-            {form}
-          </div>
+          <div id="form-holder">{form}</div>
         </Modal.Body>
-        <Modal.Footer>
-        </Modal.Footer>
-      </Modal>);
+        <Modal.Footer></Modal.Footer>
+      </Modal>
+    );
   }
 }
-
 
 function mapStateToProps(state) {
   return {
     show: state.workflow.showParametersDialog,
-    formData: state.workflow.formData
+    formData: state.workflow.formData,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    hide: bindActionCreators(showWorkflowParametersDialog.bind(this, null, false), dispatch),
-    workflowSubmitParameters: bindActionCreators(workflowSubmitParameters, dispatch),
+    hide: bindActionCreators(
+      showWorkflowParametersDialog.bind(this, null, false),
+      dispatch
+    ),
+    workflowSubmitParameters: bindActionCreators(
+      workflowSubmitParameters,
+      dispatch
+    ),
   };
 }
 

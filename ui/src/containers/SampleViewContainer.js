@@ -18,9 +18,8 @@ import { QUEUE_RUNNING } from '../constants';
 import {
   sendSetAttribute,
   sendAbortCurrentAction,
-  setBeamlineAttribute
+  setBeamlineAttribute,
 } from '../actions/beamline';
-
 
 class SampleViewContainer extends Component {
   render() {
@@ -83,8 +82,10 @@ class SampleViewContainer extends Component {
                 saveStep={setStepSize}
                 uiproperties={uiproperties.sample_view}
                 attributes={this.props.attributes}
-                motorsDisabled={this.props.motorInputDisable
-                                   || this.props.queueState === QUEUE_RUNNING}
+                motorsDisabled={
+                  this.props.motorInputDisable ||
+                  this.props.queueState === QUEUE_RUNNING
+                }
                 steps={motorSteps}
                 stop={this.props.sendAbortCurrentAction}
                 sampleViewActions={this.props.sampleViewActions}
@@ -143,7 +144,6 @@ class SampleViewContainer extends Component {
   }
 }
 
-
 function mapStateToProps(state) {
   return {
     sampleList: state.sampleGrid.sampleList,
@@ -173,8 +173,11 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     generalActions: bindActionCreators(GeneralActions, dispatch),
     sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
-    sendAbortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
-    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch)
+    sendAbortCurrentAction: bindActionCreators(
+      sendAbortCurrentAction,
+      dispatch
+    ),
+    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
   };
 }
 

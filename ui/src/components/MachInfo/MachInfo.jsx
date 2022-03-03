@@ -3,7 +3,6 @@ import { OverlayTrigger, Popover, Label } from 'react-bootstrap';
 
 import './style.css';
 
-
 export default class MachInfo extends React.Component {
   shouldComponentUpdate(nextProps) {
     return nextProps.info !== this.props.info;
@@ -26,19 +25,30 @@ export default class MachInfo extends React.Component {
 
     for (propname in this.props.info) {
       if (this.props.info.hasOwnProperty(propname)) {
-        if (propname === 'attention') { continue; }
+        if (propname === 'attention') {
+          continue;
+        }
         propvalue = this.props.info[propname];
-        msg = <p>{propname} : {propvalue}</p>;
-        popContent = <span>{popContent}{msg}</span>;
+        msg = (
+          <p>
+            {propname} : {propvalue}
+          </p>
+        );
+        popContent = (
+          <span>
+            {popContent}
+            {msg}
+          </span>
+        );
       }
     }
 
     popContent = <span>{popContent}</span>;
 
     const machinfoPop = (
-       <Popover id="popover-machinfo" title={tooltipTitle}>
-          {popContent}
-       </Popover>
+      <Popover id="popover-machinfo" title={tooltipTitle}>
+        {popContent}
+      </Popover>
     );
 
     return (
@@ -56,9 +66,13 @@ export default class MachInfo extends React.Component {
             <div>
               <Label
                 bsStyle={bsStyle}
-                style={{ display: 'block', fontSize: '100%', borderRadius: '0px' }}
+                style={{
+                  display: 'block',
+                  fontSize: '100%',
+                  borderRadius: '0px',
+                }}
               >
-                   {this.props.info.current}
+                {this.props.info.current}
               </Label>
             </div>
           </span>
@@ -69,5 +83,5 @@ export default class MachInfo extends React.Component {
 }
 
 MachInfo.defaultProps = {
-  info: { current: -1, message: '' }
+  info: { current: -1, message: '' },
 };

@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import {
-  Modal, ButtonToolbar, Button, Form
-} from 'react-bootstrap';
+import { Modal, ButtonToolbar, Button, Form } from 'react-bootstrap';
 import { InputField, FieldsRow } from './fields';
 import validate from './validate_add_sample';
 
@@ -33,7 +31,7 @@ class AddSample extends React.Component {
       defaultPrefix: prefix,
       location: 'Manual',
       loadable: true,
-      tasks: []
+      tasks: [],
     };
   }
 
@@ -80,14 +78,18 @@ class AddSample extends React.Component {
                 propName="sampleName"
                 autoFocus
                 label="Sample Name"
-                inputRef={(input) => { this.sampleName = input; }}
+                inputRef={(input) => {
+                  this.sampleName = input;
+                }}
                 col1="4"
                 col2="7"
               />
               <InputField
                 propName="proteinAcronym"
                 label="Protein Acronym"
-                inputRef={(input) => { this.proteinAcronym = input; }}
+                inputRef={(input) => {
+                  this.proteinAcronym = input;
+                }}
                 col1="4"
                 col2="7"
                 onKeyPress={this.handleKeyPress}
@@ -97,10 +99,18 @@ class AddSample extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar className="pull-right">
-            <Button bsStyle="primary" disabled={this.props.invalid} onClick={this.addAndEnqueue}>
+            <Button
+              bsStyle="primary"
+              disabled={this.props.invalid}
+              onClick={this.addAndEnqueue}
+            >
               Add Sample
             </Button>
-            <Button bsStyle="primary" disabled={this.props.invalid} onClick={this.addAndMount}>
+            <Button
+              bsStyle="primary"
+              disabled={this.props.invalid}
+              onClick={this.addAndMount}
+            >
               Add and mount sample
             </Button>
           </ButtonToolbar>
@@ -112,10 +122,11 @@ class AddSample extends React.Component {
 
 AddSample = reduxForm({
   form: 'addsample',
-  validate
+  validate,
 })(AddSample);
 
-AddSample = connect(state =>
-  ({ initialValues: { ...state.taskForm.taskData.parameters } }))(AddSample);
+AddSample = connect((state) => ({
+  initialValues: { ...state.taskForm.taskData.parameters },
+}))(AddSample);
 
 export default AddSample;

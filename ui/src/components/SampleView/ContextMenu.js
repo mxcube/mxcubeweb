@@ -17,23 +17,28 @@ export default class ContextMenu extends React.Component {
 
   menuOptions() {
     const workflowTasks = {
-      point: [], line: [], grid: [], none: []
+      point: [],
+      line: [],
+      grid: [],
+      none: [],
     };
     let twoDPoints = [];
 
     if (process.env.use2dCenteredPoints) {
-      twoDPoints = [{ text: 'divider', key: 4 },
+      twoDPoints = [
+        { text: 'divider', key: 4 },
         {
           text: 'Data Collection (Limited OSC)',
           action: () => this.createPointAndShowModal('DataCollection'),
-          key: 5
+          key: 5,
         },
         {
           text: 'Characterisation (1 Image)',
-          action: () => this.createPointAndShowModal('Characterisation',
-            { num_imags: 1 }),
-          key: 6
-        }];
+          action: () =>
+            this.createPointAndShowModal('Characterisation', { num_imags: 1 }),
+          key: 6,
+        },
+      ];
     }
 
     Object.values(this.props.workflows).forEach((wf) => {
@@ -42,33 +47,32 @@ export default class ContextMenu extends React.Component {
           workflowTasks.point.push({
             text: wf.wfname,
             action: () => this.showModal('GphlWorkflow', wf),
-            key: `wf-${wf.wfname}`
+            key: `wf-${wf.wfname}`,
           });
-
         } else {
           workflowTasks.point.push({
             text: wf.wfname,
             action: () => this.showModal('Workflow', wf),
-            key: `wf-${wf.wfname}`
+            key: `wf-${wf.wfname}`,
           });
         }
       } else if (wf.requires.includes('line')) {
         workflowTasks.line.push({
           text: wf.wfname,
           action: () => this.createLine('Workflow', wf),
-          key: `wf-${wf.wfname}`
+          key: `wf-${wf.wfname}`,
         });
       } else if (wf.requires.includes('grid')) {
         workflowTasks.grid.push({
           text: wf.wfname,
           action: () => this.showModal('Workflow', wf),
-          key: `wf-${wf.wfname}`
+          key: `wf-${wf.wfname}`,
         });
       } else {
         workflowTasks.none.push({
           text: wf.wfname,
           action: () => this.showModal('Workflow', wf),
-          key: `wf-${wf.wfname}`
+          key: `wf-${wf.wfname}`,
         });
       }
     });
@@ -78,31 +82,31 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Add Datacollection',
           action: () => this.showModal('DataCollection'),
-          key: 'datacollection'
+          key: 'datacollection',
         },
         {
           text: 'Add Characterisation',
           action: () => this.showModal('Characterisation'),
-          key: 'characterisation'
+          key: 'characterisation',
         },
         {
           text: 'Add XRF Scan',
           action: () => this.showModal('XRFScan'),
-          key: 'xrf_scan'
+          key: 'xrf_scan',
         },
         {
           text: 'Add Energy Scan',
           action: () => this.showModal('EnergyScan'),
-          key: 'energy_scan'
+          key: 'energy_scan',
         },
         {
           text: 'Go To Point',
           action: () => this.goToPoint(),
-          key: 5
+          key: 5,
         },
         {
           text: 'divider',
-          key: 6
+          key: 6,
         },
         ...workflowTasks.point,
         workflowTasks.point.length > 0 ? { text: 'divider', key: 7 } : {},
@@ -112,39 +116,39 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Add Datacollection',
           action: () => this.showModal('DataCollection'),
-          key: 'datacollection'
+          key: 'datacollection',
         },
         {
           text: 'Add Characterisation',
           action: () => this.showModal('Characterisation'),
-          key: 'characterisation'
+          key: 'characterisation',
         },
         {
           text: 'Add XRF Scan',
           action: () => this.showModal('XRFScan'),
-          key: 'xrf_scan'
+          key: 'xrf_scan',
         },
         {
           text: 'Add Energy Scan',
           action: () => this.showModal('EnergyScan'),
-          key: 'energy_scan'
+          key: 'energy_scan',
         },
         { text: 'divider', key: 5 },
         ...workflowTasks.point,
         workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
         { text: 'Save Point', action: () => this.savePoint(), key: 7 },
-        { text: 'Delete Point', action: () => this.removeShape(), key: 8 }
+        { text: 'Delete Point', action: () => this.removeShape(), key: 8 },
       ],
       GROUP: [
         {
           text: 'Add Datacollections',
           action: () => this.showModal('DataCollection'),
-          key: 'datacollection'
+          key: 'datacollection',
         },
         {
           text: 'Add Characterisations',
           action: () => this.showModal('Characterisation'),
-          key: 'characterisation'
+          key: 'characterisation',
         },
         ...workflowTasks.point,
       ],
@@ -152,17 +156,17 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Add Datacollections',
           action: () => this.showModal('DataCollection'),
-          key: 'datacollection'
+          key: 'datacollection',
         },
         {
           text: 'Add Characterisations',
           action: () => this.showModal('Characterisation'),
-          key: 'characterisation'
+          key: 'characterisation',
         },
         {
           text: 'Add Helical Scan',
           action: () => this.createLine('Helical'),
-          key: 'helical'
+          key: 'helical',
         },
         ...workflowTasks.line,
       ],
@@ -170,49 +174,56 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Add Helical Scan',
           action: () => this.showModal('Helical'),
-          key: 'helical'
+          key: 'helical',
         },
         ...workflowTasks.line,
         workflowTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
-        { text: 'Delete Line', action: () => this.removeShape(), key: 4 }
+        { text: 'Delete Line', action: () => this.removeShape(), key: 4 },
       ],
-      GridGroup: [
-        { text: 'Save Grid', action: () => this.saveGrid(), key: 1 }
-      ],
+      GridGroup: [{ text: 'Save Grid', action: () => this.saveGrid(), key: 1 }],
       GridGroupSaved: [
         {
           text: 'Mesh Scan',
           action: () => this.showModal('Mesh'),
-          key: 'mesh_scan'
+          key: 'mesh_scan',
         },
-        { text: 'Centring Point on cell', action: () => this.createCollectionOnCell(), key: 5 },
+        {
+          text: 'Centring Point on cell',
+          action: () => this.createCollectionOnCell(),
+          key: 5,
+        },
         { text: 'divider', key: 2 },
         ...workflowTasks.grid,
         workflowTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
-        { text: 'Delete', action: () => this.removeShape(), key: 4 }
+        { text: 'Delete', action: () => this.removeShape(), key: 4 },
       ],
       NONE: [
         { text: 'Go To Beam', action: () => this.goToBeam(), key: 1 },
-        { text: 'Measure Distance', action: () => this.measureDistance(), key: 2 },
+        {
+          text: 'Measure Distance',
+          action: () => this.measureDistance(),
+          key: 2,
+        },
         { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
         ...twoDPoints,
         { text: 'divider', key: 7 },
         ...workflowTasks.none,
         workflowTasks.grid.none > 0 ? { text: 'divider', key: 7 } : {},
-      ]
+      ],
     };
 
     Object.keys(this.props.availableMethods).forEach((key) => {
       if (!this.props.availableMethods[key]) {
-        Object.keys(options).forEach(k => (
-          options[k] = options[k].filter((e) => {
-            let res = true;
-            if (Object.keys(this.props.availableMethods).includes(e.key)) {
-              res = this.props.availableMethods[e.key];
-            }
-            return res;
-          })
-        ));
+        Object.keys(options).forEach(
+          (k) =>
+            (options[k] = options[k].filter((e) => {
+              let res = true;
+              if (Object.keys(this.props.availableMethods).includes(e.key)) {
+                res = this.props.availableMethods[e.key];
+              }
+              return res;
+            }))
+        );
       }
     });
 
@@ -220,9 +231,7 @@ export default class ContextMenu extends React.Component {
   }
 
   showModal(modalName, wf = {}, _shape = null, extraParams = {}) {
-    const {
-      sampleID, shape, sampleData, defaultParameters
-    } = this.props;
+    const { sampleID, shape, sampleData, defaultParameters } = this.props;
 
     Object.assign(defaultParameters, extraParams);
 
@@ -233,13 +242,13 @@ export default class ContextMenu extends React.Component {
       // that already have a line [P1, P2, L1]
       // we do not want to add a DC/Char to a line
 
-      const points = sid.filter(x => x.match(/P*/)[0]);
+      const points = sid.filter((x) => x.match(/P*/)[0]);
       const containsPoints = points.length > 0;
-      const lines = sid.filter(x => x.match(/L*/)[0]);
+      const lines = sid.filter((x) => x.match(/L*/)[0]);
       const containsLine = lines.length > 0;
 
       if (containsPoints && containsLine) {
-        lines.map(x => sid.splice(sid.indexOf(x), 1));
+        lines.map((x) => sid.splice(sid.indexOf(x), 1));
       }
     }
 
@@ -252,16 +261,17 @@ export default class ContextMenu extends React.Component {
       modalName,
       [sampleID],
       {
-        parameters:
-        {
+        parameters: {
           ...defaultParameters[modalName.toLowerCase()],
           ...wf,
           prefix: sampleData.defaultPrefix,
           subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
-          cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
+          cell_count: shape.gridData
+            ? shape.gridData.numCols * shape.gridData.numRows
+            : 'none',
           numRows: shape.gridData ? shape.gridData.numRows : 0,
-          numCols: shape.gridData ? shape.gridData.numCols : 0
-        }
+          numCols: shape.gridData ? shape.gridData.numCols : 0,
+        },
       },
       sid
     );
@@ -285,7 +295,10 @@ export default class ContextMenu extends React.Component {
   }
 
   createPoint(x, y, cb = null) {
-    this.props.sampleActions.sendAddShape({ screenCoord: [x, y], t: '2DP', state: 'SAVED' }, cb);
+    this.props.sampleActions.sendAddShape(
+      { screenCoord: [x, y], t: '2DP', state: 'SAVED' },
+      cb
+    );
   }
 
   savePoint() {
@@ -302,7 +315,12 @@ export default class ContextMenu extends React.Component {
         const { parameters } = task;
         if (parameters.shape === -1) {
           parameters.shape = this.props.shape.id;
-          this.props.updateTask(this.props.sampleData.sampleID, task.taskIndex, parameters, false);
+          this.props.updateTask(
+            this.props.sampleData.sampleID,
+            task.taskIndex,
+            parameters,
+            false
+          );
         }
       });
     }
@@ -352,25 +370,27 @@ export default class ContextMenu extends React.Component {
   createPointAndShowModal(name, extraParams = {}) {
     const { x, y, imageRatio } = this.props;
     this.props.sampleActions.showContextMenu(false);
-    this.createPoint(x / imageRatio, y / imageRatio,
-      shape => this.showModal(name, {}, shape, extraParams));
+    this.createPoint(x / imageRatio, y / imageRatio, (shape) =>
+      this.showModal(name, {}, shape, extraParams)
+    );
   }
 
   createLine(modal, wf = {}) {
     const { shape } = this.props;
     const sid = shape.id;
 
-    const lines = sid.filter(x => x.match(/L*/)[0]);
+    const lines = sid.filter((x) => x.match(/L*/)[0]);
     const containsLine = lines.length > 0;
 
     if (containsLine) {
       // e.g. [P1, P2, L1]
-      lines.map(x => sid.splice(sid.indexOf(x), 1));
+      lines.map((x) => sid.splice(sid.indexOf(x), 1));
     }
 
     this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id },
-      (s) => { this.showModal(modal, wf, s); });
+    this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id }, (s) => {
+      this.showModal(modal, wf, s);
+    });
   }
 
   hideContextMenu() {
@@ -381,10 +401,14 @@ export default class ContextMenu extends React.Component {
   }
 
   listOptions(type) {
-    let el = (<li key={type.key}><a onClick={type.action}>{type.text}</a></li>);
+    let el = (
+      <li key={type.key}>
+        <a onClick={type.action}>{type.text}</a>
+      </li>
+    );
 
     if (type.text === 'divider') {
-      el = (<li key={type.key} className="divider" />);
+      el = <li key={type.key} className="divider" />;
     }
 
     return el;

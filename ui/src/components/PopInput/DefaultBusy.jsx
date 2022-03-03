@@ -5,7 +5,6 @@ import { Button, ButtonToolbar } from 'react-bootstrap';
 import './style.css';
 
 export default class DefaultBusy extends React.Component {
-
   constructor(props) {
     super(props);
     this.cancel = this.cancel.bind(this);
@@ -28,7 +27,6 @@ export default class DefaultBusy extends React.Component {
     );
   }
 }
-
 
 DefaultBusy.defaultProps = {
   onCancel: undefined,

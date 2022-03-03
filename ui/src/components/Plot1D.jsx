@@ -54,16 +54,20 @@ class Plot1D extends React.Component {
       if (this.dygraph) {
         this.dygraph.updateOptions({ file: plotData });
       } else if (nextProps.saved) {
-        this.dygraph = new Dygraph(this.dygraph_div, nextProps.data, { title: 'XRF Scan',
+        this.dygraph = new Dygraph(this.dygraph_div, nextProps.data, {
+          title: 'XRF Scan',
           labels: ['energy', 'diode value'],
           xlabel: 'Energy (keV)',
-          ylabel: 'Counts' });
+          ylabel: 'Counts',
+        });
       } else {
-        this.dygraph = new Dygraph(this.dygraph_div, plotData, { title: plotInfo.title,
+        this.dygraph = new Dygraph(this.dygraph_div, plotData, {
+          title: plotInfo.title,
           labels: plotInfo.labels,
           connectSeparatedPoints: true,
           xlabel: 'Energy (keV)',
-          ylabel: 'Counts' });
+          ylabel: 'Counts',
+        });
       }
     }
   }
@@ -92,26 +96,30 @@ class Plot1D extends React.Component {
   }
 
   render() {
-    return (<div ref={ (ref) => { this.dygraph_div = ref; } } />);
+    return (
+      <div
+        ref={(ref) => {
+          this.dygraph_div = ref;
+        }}
+      />
+    );
   }
 }
 
-Plot1D.defaultProps = { autoNext: true,
+Plot1D.defaultProps = {
+  autoNext: true,
   plotId: null,
   displayedPlotCallback: null,
   saved: false,
-  data: null };
+  data: null,
+};
 
 function mapStateToProps(state) {
   return {
     lastPlotId: state.beamline.lastPlotId,
     plotsInfo: state.beamline.plotsInfo,
-    plotsData: state.beamline.plotsData
+    plotsData: state.beamline.plotsData,
   };
 }
 
-export default connect(
-  mapStateToProps,
-  null
-)(Plot1D);
-
+export default connect(mapStateToProps, null)(Plot1D);

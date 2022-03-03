@@ -1,17 +1,26 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
+import {
+  ProgressBar,
+  Button,
+  Collapse,
+  Table,
+  OverlayTrigger,
+  Popover,
+} from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
-import { TASK_UNCOLLECTED,
+import {
+  TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING } from '../../constants';
+  TASK_RUNNING,
+} from '../../constants';
 
 export default class TaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired
+    moveCard: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -26,22 +35,37 @@ export default class TaskItem extends Component {
     this.wedgeParameters = this.wedgeParameters.bind(this);
     this.state = {
       overInput: false,
-      selected: false
+      selected: false,
     };
   }
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return (<div><span></span></div>);
+      return (
+        <div>
+          <span></span>
+        </div>
+      );
     }
     return (
-      <div style={ { borderLeft: '1px solid #DDD',
-        borderRight: '1px solid #DDD',
-        borderBottom: '1px solid #DDD',
-        padding: '0.5em' } }
+      <div
+        style={{
+          borderLeft: '1px solid #DDD',
+          borderRight: '1px solid #DDD',
+          borderBottom: '1px solid #DDD',
+          padding: '0.5em',
+        }}
       >
-        <a href="#" onClick={() =>
-          this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', this.props.data) }
+        <a
+          href="#"
+          onClick={() =>
+            this.props.showDialog(
+              true,
+              'LIMS_RESULT_DIALOG',
+              'Lims Results',
+              this.props.data
+            )
+          }
         >
           View Results
         </a>
@@ -66,12 +90,15 @@ export default class TaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
-
   deleteButton() {
-    let content = (<Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>);
+    let content = (
+      <Button bsSize="sm" onClick={this.deleteTask}>
+        Delete
+      </Button>
+    );
 
     if (this.props.state !== TASK_UNCOLLECTED) {
-      content = (<span> </span>);
+      content = <span> </span>;
     }
 
     return content;
@@ -95,7 +122,10 @@ export default class TaskItem extends Component {
     let res = '';
 
     wedges.forEach((wedge) => {
-      if ((wedge.parameters.shape !== -1) && res.indexOf(`${wedge.parameters.shape}`) < 0) {
+      if (
+        wedge.parameters.shape !== -1 &&
+        res.indexOf(`${wedge.parameters.shape}`) < 0
+      ) {
         try {
           res += `${this.props.shapes.shapes[wedge.parameters.shape].name}`;
         } catch (e) {
@@ -117,35 +147,60 @@ export default class TaskItem extends Component {
         trigger="click"
         placement="top"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '600px', width: 'auto' }}>
-                    <input
-                      type="text"
-                      onFocus={(e) => {e.target.select();}}
-                      value={path}
-                      size={path.length + 10}
-                    />
-                  </Popover>)}
+        overlay={
+          <Popover
+            id="wedge-popover"
+            style={{ maxWidth: '600px', width: 'auto' }}
+          >
+            <input
+              type="text"
+              onFocus={(e) => {
+                e.target.select();
+              }}
+              value={path}
+              size={path.length + 10}
+            />
+          </Popover>
+        }
       >
-        <a>
-          { value }
-        </a>
-      </OverlayTrigger>);
+        <a>{value}</a>
+      </OverlayTrigger>
+    );
   }
 
   wedgeParameters(wedge) {
     const parameters = wedge.parameters;
     return (
       <tr>
-        <td><a>{parameters.osc_start.toFixed(2)}</a></td>
-        <td><a>{parameters.osc_range.toFixed(2)}</a></td>
-        <td><a>{parameters.exp_time.toFixed(3)}</a></td>
-        <td><a>{parameters.num_images}</a></td>
-        <td><a>{parameters.transmission.toFixed(2)}</a></td>
-        <td><a>{parameters.resolution.toFixed(3)}</a></td>
-        <td><a>{parameters.energy.toFixed(4)}</a></td>
-        <td><a>{parameters.kappa_phi.toFixed(2)}</a></td>
-        <td><a>{parameters.kappa.toFixed(2)}</a></td>
-      </tr>);
+        <td>
+          <a>{parameters.osc_start.toFixed(2)}</a>
+        </td>
+        <td>
+          <a>{parameters.osc_range.toFixed(2)}</a>
+        </td>
+        <td>
+          <a>{parameters.exp_time.toFixed(3)}</a>
+        </td>
+        <td>
+          <a>{parameters.num_images}</a>
+        </td>
+        <td>
+          <a>{parameters.transmission.toFixed(2)}</a>
+        </td>
+        <td>
+          <a>{parameters.resolution.toFixed(3)}</a>
+        </td>
+        <td>
+          <a>{parameters.energy.toFixed(4)}</a>
+        </td>
+        <td>
+          <a>{parameters.kappa_phi.toFixed(2)}</a>
+        </td>
+        <td>
+          <a>{parameters.kappa.toFixed(2)}</a>
+        </td>
+      </tr>
+    );
   }
 
   progressBar() {
@@ -168,17 +223,16 @@ export default class TaskItem extends Component {
           style={{ marginBottom: '0px', height: '18px' }}
           min={0}
           max={1}
-          active={ this.props.progress < 1 }
-          label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+          active={this.props.progress < 1}
+          label={`${(this.props.progress * 100).toPrecision(3)} %`}
           now={this.props.progress}
         />
-      </span>);
+      </span>
+    );
   }
 
   render() {
-    const { state,
-      data,
-      show } = this.props;
+    const { state, data, show } = this.props;
     let wedges = [];
 
     if (data.type === 'Interleaved') {
@@ -187,7 +241,6 @@ export default class TaskItem extends Component {
       wedges = [data];
     }
 
-
     const delTaskCSS = {
       display: 'flex',
       marginLeft: 'auto',
@@ -195,10 +248,12 @@ export default class TaskItem extends Component {
       paddingLeft: '10px',
       paddingRight: '10px',
       color: '#d9534f',
-      cursor: 'pointer'
+      cursor: 'pointer',
     };
 
-    let taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
+    let taskCSS = this.props.selected
+      ? 'task-head task-head-selected'
+      : 'task-head';
 
     if (state === TASK_RUNNING) {
       taskCSS += ' running';
@@ -215,19 +270,20 @@ export default class TaskItem extends Component {
             onClick={this.taskHeaderOnClick}
             onContextMenu={this.taskHeaderOnContextMenu}
           >
-            <div
-              className={taskCSS}
-              style={{ display: 'flex' }}
-            >
+            <div className={taskCSS} style={{ display: 'flex' }}>
               <b>
-                <span className="node-name" style={{ display: 'flex' }} >
+                <span className="node-name" style={{ display: 'flex' }}>
                   {this.pointIDString(wedges)} {data.label}
                   {state === TASK_RUNNING ? this.progressBar() : null}
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ?
-                <i className="fas fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
-              }
+              {state === TASK_UNCOLLECTED ? (
+                <i
+                  className="fas fa-remove"
+                  onClick={this.deleteTask}
+                  style={delTaskCSS}
+                />
+              ) : null}
             </div>
             <Collapse in={Boolean(show)}>
               <div className="task-body">
@@ -235,16 +291,18 @@ export default class TaskItem extends Component {
                   const padding = i > 0 ? '1em' : '0em';
                   return (
                     <div key={`wedge-${i}`}>
-                      <div style={{
-                        borderLeft: '1px solid #DDD',
-                        borderRight: '1px solid #DDD',
-                        paddingTop: padding
-                      }}
-                      >
-                        <div style={{
-                          borderTop: '1px solid #DDD',
-                          padding: '0.5em'
+                      <div
+                        style={{
+                          borderLeft: '1px solid #DDD',
+                          borderRight: '1px solid #DDD',
+                          paddingTop: padding,
                         }}
+                      >
+                        <div
+                          style={{
+                            borderTop: '1px solid #DDD',
+                            padding: '0.5em',
+                          }}
                         >
                           <b>Path:</b> {this.wedgePath(wedge)}
                         </div>
@@ -271,18 +329,17 @@ export default class TaskItem extends Component {
                             <th>&kappa; &deg;</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          {this.wedgeParameters(wedge)}
-                        </tbody>
+                        <tbody>{this.wedgeParameters(wedge)}</tbody>
                       </Table>
                       {this.getResult(state)}
-                    </div>);
+                    </div>
+                  );
                 })}
-
               </div>
             </Collapse>
           </div>
         </ContextMenuTrigger>
-      </div>);
+      </div>
+    );
   }
 }

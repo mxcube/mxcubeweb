@@ -14,124 +14,84 @@ import { RUNNING, MOTOR_STATE } from '../constants';
 export const INITIAL_STATE = {
   attributes: {
     fast_shutter: {
-      limits: [
-        0,
-        1,
-        1
-      ],
+      limits: [0, 1, 1],
       name: 'fast_shutter',
       value: 'undefined',
       state: 'undefined',
       msg: 'UNKNOWN',
-      readonly: false
+      readonly: false,
     },
     safety_shutter: {
-      limits: [
-        0,
-        1,
-        1
-      ],
+      limits: [0, 1, 1],
       name: 'safety_shutter',
       value: 'undefined',
       state: 'undefined',
       msg: 'UNKNOWN',
-      readonly: false
+      readonly: false,
     },
     beamstop: {
-      limits: [
-        0,
-        1,
-        1
-      ],
+      limits: [0, 1, 1],
       name: 'beamstop',
       value: 'undefined',
       state: 'undefined',
       msg: 'UNKNOWN',
-      readonly: false
+      readonly: false,
     },
     capillary: {
-      limits: [
-        0,
-        1,
-        1
-      ],
+      limits: [0, 1, 1],
       name: 'capillary',
       value: 'undefined',
       state: 'undefined',
       msg: 'UNKNOWN',
-      readonly: false
+      readonly: false,
     },
     energy: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
+      limits: [0, 1000, 0.1],
       name: 'energy',
       value: '0',
       state: STATE.IDLE,
       msg: '',
-      readonly: false
+      readonly: false,
     },
     wavelength: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
+      limits: [0, 1000, 0.1],
       name: 'energy',
       value: '0',
       state: STATE.IDLE,
       msg: '',
-      readonly: false
+      readonly: false,
     },
     resolution: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
+      limits: [0, 1000, 0.1],
       name: 'resolution',
       value: '0',
       state: STATE.IDLE,
       msg: '',
-      readonly: false
+      readonly: false,
     },
     transmission: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
+      limits: [0, 1000, 0.1],
       name: 'transmission',
       value: '0',
       state: STATE.IDLE,
       msg: '',
-      readonly: false
+      readonly: false,
     },
     flux: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
+      limits: [0, 1000, 0.1],
       name: 'flux',
       value: '0',
       state: 'STATE.IDLE',
       msg: 'UNKNOWN',
-      readonly: false
+      readonly: false,
     },
     cryo: {
-      limits: [
-        0,
-        1000,
-        0.1
-      ],
+      limits: [0, 1000, 0.1],
       name: 'cryo',
       value: '0',
       state: 'STATE.IDLE',
       msg: 'UNKNOWN',
-      readonly: false
+      readonly: false,
     },
     machine_info: {
       limits: [],
@@ -139,7 +99,7 @@ export const INITIAL_STATE = {
       value: { current: -1, message: '', fillmode: '' },
       state: 'STATE.IDLE',
       msg: 'UNKNOWN',
-      readonly: false
+      readonly: false,
     },
   },
   // motors: {
@@ -167,9 +127,8 @@ export const INITIAL_STATE = {
   plotsInfo: {},
   plotsData: {},
   availableMethods: {},
-  energyScanElements: []
+  energyScanElements: [],
 };
-
 
 export default (state = INITIAL_STATE, action) => {
   let data = {};
@@ -178,15 +137,17 @@ export default (state = INITIAL_STATE, action) => {
     case 'BL_ATTR_GET_ALL':
       return Object.assign({}, state, action.data);
 
-    case 'BL_ATTR_SET':
-    {
-      const attrData = Object.assign(state.attributes[action.data.name] || {}, action.data);
+    case 'BL_ATTR_SET': {
+      const attrData = Object.assign(
+        state.attributes[action.data.name] || {},
+        action.data
+      );
       return {
         ...state,
         attributes: {
           ...state.attributes,
-          [action.data.name]: attrData
-        }
+          [action.data.name]: attrData,
+        },
       };
     }
     case 'BL_ACT_SET':
@@ -194,8 +155,8 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         actuators: {
           ...state.actuators,
-          [action.data.name]: action.data
-        }
+          [action.data.name]: action.data,
+        },
       };
     case 'BL_ATTR_SET_STATE':
       data = Object.assign({}, state);
@@ -208,32 +169,30 @@ export default (state = INITIAL_STATE, action) => {
         motorInputDisable: true,
         motors: {
           ...state.motors,
-          [action.name.toLowerCase()]:
-                                   {
-                                     ...state.motors[action.name.toLowerCase()],
-                                     state: action.status
-                                   }
-        }
+          [action.name.toLowerCase()]: {
+            ...state.motors[action.name.toLowerCase()],
+            state: action.status,
+          },
+        },
       };
 
     case 'SAVE_MOTOR_POSITIONS':
       return {
         ...state,
         motors: { ...state.motors, ...action.data },
-        zoom: action.data.zoom.position
+        zoom: action.data.zoom.position,
       };
     case 'SAVE_MOTOR_POSITION':
       return {
         ...state,
         motors: {
           ...state.motors,
-          [action.name]:
-                                   {
-                                     ...state.motors[action.name],
-                                     position: action.value,
-                                     state: state.motors[action.name].state
-                                   }
-        }
+          [action.name]: {
+            ...state.motors[action.name],
+            position: action.value,
+            state: state.motors[action.name].state,
+          },
+        },
       };
     case 'UPDATE_MOTOR_STATE':
       return {
@@ -241,35 +200,38 @@ export default (state = INITIAL_STATE, action) => {
         motorInputDisable: action.value !== MOTOR_STATE.READY,
         motors: {
           ...state.motors,
-          [action.name]:
-                         {
-                           ...state.motors[action.name],
-                           position: state.motors[action.name].position,
-                           state: action.value
-                         }
-        }
+          [action.name]: {
+            ...state.motors[action.name],
+            position: state.motors[action.name].position,
+            state: action.value,
+          },
+        },
       };
     case 'SET_INITIAL_STATE':
       return {
         ...INITIAL_STATE,
         //        motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
-        attributes: { ...INITIAL_STATE.actuators, ...action.data.beamlineSetup.attributes },
+        attributes: {
+          ...INITIAL_STATE.actuators,
+          ...action.data.beamlineSetup.attributes,
+        },
         //        motorsLimits: {
         //          ...INITIAL_STATE.motorsLimits,
         //          ...action.data.motorsLimits
         //        },
         beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0),
         availableMethods: action.data.beamlineSetup.availableMethods,
-        energyScanElements: action.data.beamlineSetup.energyScanElements
+        energyScanElements: action.data.beamlineSetup.energyScanElements,
       };
     case 'BL_MACH_INFO':
       return {
         ...state,
         machinfo: { ...state.machinfo, ...action.info },
       };
-    case 'ACTION_SET_STATE':
-    {
-      const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
+    case 'ACTION_SET_STATE': {
+      const beamlineActionsList = JSON.parse(
+        JSON.stringify(state.beamlineActionsList)
+      );
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction, i) => {
         if (beamlineAction.name === action.cmdName) {
@@ -279,23 +241,31 @@ export default (state = INITIAL_STATE, action) => {
           if (action.state === RUNNING) {
             beamlineActionsList[i].messages = [];
           }
-          Object.assign(currentBeamlineAction, state.currentBeamlineAction,
-            JSON.parse(JSON.stringify(beamlineActionsList[i])));
+          Object.assign(
+            currentBeamlineAction,
+            state.currentBeamlineAction,
+            JSON.parse(JSON.stringify(beamlineActionsList[i]))
+          );
           return true;
         }
         return false;
       });
       return { ...state, beamlineActionsList, currentBeamlineAction };
     }
-    case 'ACTION_SET_ARGUMENT':
-    {
-      const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
+    case 'ACTION_SET_ARGUMENT': {
+      const beamlineActionsList = JSON.parse(
+        JSON.stringify(state.beamlineActionsList)
+      );
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction, i) => {
         if (beamlineAction.name === action.cmdName) {
-          beamlineActionsList[i].arguments[action.argIndex].value = action.value;
-          Object.assign(currentBeamlineAction, state.currentBeamlineAction,
-            JSON.parse(JSON.stringify(beamlineActionsList[i])));
+          beamlineActionsList[i].arguments[action.argIndex].value =
+            action.value;
+          Object.assign(
+            currentBeamlineAction,
+            state.currentBeamlineAction,
+            JSON.parse(JSON.stringify(beamlineActionsList[i]))
+          );
           return true;
         }
         return false;
@@ -303,43 +273,49 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, beamlineActionsList, currentBeamlineAction };
     }
-    case 'ACTION_SHOW_OUTPUT':
-    {
+    case 'ACTION_SHOW_OUTPUT': {
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction) => {
         if (beamlineAction.name === action.cmdName) {
-          Object.assign(currentBeamlineAction, JSON.parse(JSON.stringify(beamlineAction)),
-            { show: true });
+          Object.assign(
+            currentBeamlineAction,
+            JSON.parse(JSON.stringify(beamlineAction)),
+            { show: true }
+          );
           return true;
         }
         return false;
       });
       return { ...state, currentBeamlineAction };
     }
-    case 'ACTION_HIDE_OUTPUT':
-    {
+    case 'ACTION_HIDE_OUTPUT': {
       return {
         ...state,
-        currentBeamlineAction:
-                   Object.assign({},
-                     JSON.parse(JSON.stringify(state.currentBeamlineAction)),
-                     { show: false })
+        currentBeamlineAction: Object.assign(
+          {},
+          JSON.parse(JSON.stringify(state.currentBeamlineAction)),
+          { show: false }
+        ),
       };
     }
-    case 'ADD_USER_MESSAGE':
-    {
+    case 'ADD_USER_MESSAGE': {
       if (state.currentBeamlineAction.state !== RUNNING) {
         return state;
       }
 
       const cmdName = state.currentBeamlineAction.name;
-      const beamlineActionsList = JSON.parse(JSON.stringify(state.beamlineActionsList));
+      const beamlineActionsList = JSON.parse(
+        JSON.stringify(state.beamlineActionsList)
+      );
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction, i) => {
         if (beamlineAction.name === cmdName) {
           beamlineActionsList[i].messages.push(action.data);
-          Object.assign(currentBeamlineAction, state.currentBeamlineAction,
-            JSON.parse(JSON.stringify(beamlineActionsList[i])));
+          Object.assign(
+            currentBeamlineAction,
+            state.currentBeamlineAction,
+            JSON.parse(JSON.stringify(beamlineActionsList[i]))
+          );
           return true;
         }
         return false;
@@ -347,26 +323,27 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, beamlineActionsList, currentBeamlineAction };
     }
-    case 'NEW_PLOT':
-    {
+    case 'NEW_PLOT': {
       const plotId = action.plotInfo.id;
       const plotsInfo = {
         ...state.plotsInfo,
         [plotId]: {
           labels: action.plotInfo.labels,
           title: action.plotInfo.title,
-          end: false
-        }
+          end: false,
+        },
       };
       const plotsData = { ...state.plotsData };
       plotsData[plotId] = [];
 
       return {
-        ...state, plotsInfo, plotsData, lastPlotId: plotId
+        ...state,
+        plotsInfo,
+        plotsData,
+        lastPlotId: plotId,
       };
     }
-    case 'PLOT_DATA':
-    {
+    case 'PLOT_DATA': {
       const plotsData = { ...state.plotsData };
       if (action.fullDataSet) {
         plotsData[action.id] = action.data;
@@ -377,8 +354,7 @@ export default (state = INITIAL_STATE, action) => {
       }
       return { ...state, plotsData };
     }
-    case 'PLOT_END':
-    {
+    case 'PLOT_END': {
       const plotsInfo = { ...state.plotsInfo };
       const plotInfo = plotsInfo[action.id];
       plotInfo.end = true;

@@ -3,12 +3,10 @@ import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
-
 import DefaultInput from './DefaultInput';
 import DefaultBusy from './DefaultBusy';
 import './style.css';
 import '../input.css';
-
 
 /**
  * A simple "Popover Input" input control, the value is displayed as text and
@@ -45,7 +43,6 @@ export default class PopInput extends React.Component {
     this.onLinkClick = this.onLinkClick.bind(this);
   }
 
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.data.state !== this.props.data.state) {
       if (this.isIdle(nextProps.data)) {
@@ -58,12 +55,10 @@ export default class PopInput extends React.Component {
     }
   }
 
-
   onLinkClick(e) {
     this.refs.overlay.handleToggle();
     e.preventDefault();
   }
-
 
   getChild(key) {
     let children = this.props.children;
@@ -86,7 +81,6 @@ export default class PopInput extends React.Component {
     return child;
   }
 
-
   setValue(value) {
     if (this.props.onSave !== undefined) {
       // Only update if value actually changed
@@ -97,14 +91,12 @@ export default class PopInput extends React.Component {
     }
   }
 
-
   handleIdle(data) {
     // No message to display to user, hide overlay
     if (data.msg === '') {
       this.refs.overlay.hide();
     }
   }
-
 
   handleError(data) {
     // No message to display to user, hide overlay
@@ -113,11 +105,9 @@ export default class PopInput extends React.Component {
     }
   }
 
-
   save() {
     this.setValue(this.refs.input.getValue());
   }
-
 
   cancel() {
     if (this.props.onCancel !== undefined && this.isBusy()) {
@@ -129,21 +119,21 @@ export default class PopInput extends React.Component {
     }
   }
 
-
   submit(event) {
     event.preventDefault();
     this.save();
   }
 
-
   inputComponent() {
-    const props = { value: this.props.data.value,
+    const props = {
+      value: this.props.data.value,
       ref: 'input',
       onSubmit: this.submit,
       onCancel: this.cancel,
       onSave: this.save,
       precision: this.precision,
-      step: this.props.step };
+      step: this.props.step,
+    };
 
     let input = (
       <DefaultInput
@@ -153,7 +143,8 @@ export default class PopInput extends React.Component {
         dataType={this.props.dataType}
         inputSize={this.props.inputSize}
         inplace={this.props.inplace}
-      />);
+      />
+    );
 
     input = this.getChild('input') || input;
     input = React.cloneElement(input, props);
@@ -161,10 +152,9 @@ export default class PopInput extends React.Component {
     return input;
   }
 
-
   busyComponent() {
     const props = { onCancel: this.cancel };
-    let input = (<DefaultBusy />);
+    let input = <DefaultBusy />;
 
     input = this.getChild('busy') || input;
     input = React.cloneElement(input, props);
@@ -172,30 +162,29 @@ export default class PopInput extends React.Component {
     return input;
   }
 
-
   isBusy(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
+    const state =
+      typeof data !== 'undefined' ? data.state : this.props.data.state;
     return state === STATE.BUSY;
   }
 
-
   isIdle(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
+    const state =
+      typeof data !== 'undefined' ? data.state : this.props.data.state;
     return state === STATE.IDLE;
   }
 
-
   isAborted(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
+    const state =
+      typeof data !== 'undefined' ? data.state : this.props.data.state;
     return state === STATE.ABORT;
   }
-
 
   render() {
     const linkClass = 'editable-click';
     const busyVisibility = this.isBusy() ? '' : 'hidden';
     const inputVisibility = !this.isBusy() ? '' : 'hidden';
-    const title = (this.props.title === '') ? this.props.name : this.props.title;
+    const title = this.props.title === '' ? this.props.name : this.props.title;
 
     let stateClass = 'value-label-enter-success';
 
@@ -210,16 +199,23 @@ export default class PopInput extends React.Component {
         <div className={`${inputVisibility} popinput-form-container`}>
           {this.inputComponent()}
         </div>
-        <div ref="statusMessage" className={inputVisibility} >{this.props.data.msg}</div>
-        <div ref="loadingDiv" className={`${busyVisibility} popinput-input-loading`} >
+        <div ref="statusMessage" className={inputVisibility}>
+          {this.props.data.msg}
+        </div>
+        <div
+          ref="loadingDiv"
+          className={`${busyVisibility} popinput-input-loading`}
+        >
           {this.busyComponent()}
         </div>
-      </span>);
+      </span>
+    );
 
     const popover = (
       <Popover ref="popover" id={title} title={title}>
-        { popoverContent }
-      </Popover>);
+        {popoverContent}
+      </Popover>
+    );
 
     let value = this.props.data.value ? parseFloat(this.props.data.value) : '-';
 
@@ -228,44 +224,41 @@ export default class PopInput extends React.Component {
     }
 
     return (
-      <div style={this.props.style} className={`${this.props.className} popinput-input-container`}>
-        { this.props.name ?
-          <span
-            className={`popinput-input-label ${this.props.ref}`}
-          >
+      <div
+        style={this.props.style}
+        className={`${this.props.className} popinput-input-container`}
+      >
+        {this.props.name ? (
+          <span className={`popinput-input-label ${this.props.ref}`}>
             {this.props.name}:
-          </span> : null
-        }
-          <span
-            className={`popinput-input-value ${this.props.pkey}`}
-          >
-            { this.props.inplace ?
-              <span>
-                { popoverContent }
-              </span>
-              :
-              <OverlayTrigger
-                ref="overlay" trigger="click"
-                rootClose
-                placement={this.props.placement}
-                overlay={popover}
+          </span>
+        ) : null}
+        <span className={`popinput-input-value ${this.props.pkey}`}>
+          {this.props.inplace ? (
+            <span>{popoverContent}</span>
+          ) : (
+            <OverlayTrigger
+              ref="overlay"
+              trigger="click"
+              rootClose
+              placement={this.props.placement}
+              overlay={popover}
+            >
+              <a
+                ref="valueLabel"
+                onContextMenu={this.onLinkClick}
+                key="valueLabel"
+                className={`popinput-input-link ${linkClass} ${stateClass}`}
               >
-                <a
-                  ref="valueLabel"
-                  onContextMenu={this.onLinkClick}
-                  key="valueLabel"
-                  className={`popinput-input-link ${linkClass} ${stateClass}`}
-                >
-                  {value} {this.props.suffix}
-                </a>
-              </OverlayTrigger>
-            }
+                {value} {this.props.suffix}
+              </a>
+            </OverlayTrigger>
+          )}
         </span>
       </div>
     );
   }
 }
-
 
 PopInput.defaultProps = {
   className: '',
@@ -282,5 +275,5 @@ PopInput.defaultProps = {
   pkey: undefined,
   onSave: undefined,
   onCancel: undefined,
-  data: { value: 0, state: 'ABORTED', msg: '', step: 0.1 }
+  data: { value: 0, state: 'ABORTED', msg: '', step: 0.1 },
 };
