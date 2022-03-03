@@ -20,7 +20,7 @@ export class LimsResultDialog extends React.Component {
 
   getResultLink() {
     if (this.props.taskData.state !== TASK_COLLECTED) {
-      return <span></span>;
+      return <span />;
     }
 
     const link = this.props.taskData.limsResultData
@@ -29,7 +29,7 @@ export class LimsResultDialog extends React.Component {
 
     return (
       <div style={{ margin: '1em' }}>
-        <a href={link} target="_blank">
+        <a href={link} target="_blank" rel="noreferrer">
           View results in ISPyB
         </a>
       </div>

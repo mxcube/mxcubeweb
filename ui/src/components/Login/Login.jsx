@@ -71,7 +71,7 @@ export default class LoginComponent extends React.Component {
                   <FormGroup>
                     <InputGroup>
                       <InputGroup.Addon>
-                        <i className="glyphicon glyphicon-user"></i>
+                        <i className="glyphicon glyphicon-user" />
                       </InputGroup.Addon>
                       <FormControl
                         type="text"
@@ -91,7 +91,7 @@ export default class LoginComponent extends React.Component {
                   <FormGroup>
                     <InputGroup>
                       <InputGroup.Addon>
-                        <i className="glyphicon glyphicon-lock"></i>
+                        <i className="glyphicon glyphicon-lock" />
                       </InputGroup.Addon>
                       <FormControl
                         type="password"

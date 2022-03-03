@@ -3,22 +3,36 @@ import { Panel } from 'react-bootstrap';
 
 import './SampleChanger.css';
 import '../context-menu-style.css';
-/* eslint-disable react/no-multi-comp */
+ 
 
 export default class SampleChangerState extends React.Component {
   render() {
     let titleBackground;
 
-    if (this.props.state === 'READY') {
+    switch (this.props.state) {
+    case 'READY': {
       titleBackground = 'success';
-    } else if (this.props.state === 'MOVING') {
+    
+    break;
+    }
+    case 'MOVING': {
       titleBackground = 'warning';
-    } else if (this.props.state === 'LOADING') {
+    
+    break;
+    }
+    case 'LOADING': {
       titleBackground = 'warning';
-    } else if (this.props.state === 'DISABLED') {
+    
+    break;
+    }
+    case 'DISABLED': {
       titleBackground = 'danger';
-    } else {
+    
+    break;
+    }
+    default: {
       titleBackground = 'danger';
+    }
     }
 
     const title = `Sample changer (${this.props.state})`;

@@ -34,7 +34,7 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const newZoom = parseInt(option.target.value, 10);
+    const newZoom = Number.parseInt(option.target.value, 10);
     this.props.setBeamlineAttribute('zoom', option.target.value);
 
     if (this.props.attributes.zoom.value !== newZoom) {
@@ -59,7 +59,7 @@ export default class SampleControls extends React.Component {
   }
 
   doTakeSnapshot() {
-    const img = document.getElementById('sample-img');
+    const img = document.querySelector('#sample-img');
     const fimg = new fabric.Image(img);
     fimg.scale(this.props.imageRatio);
     let imgDataURI = '';
@@ -73,10 +73,10 @@ export default class SampleControls extends React.Component {
 
   takeSnapShot() {
     const img = this.doTakeSnapshot();
-    document.getElementById('downloadLink').href = img.mime + img.data;
+    document.querySelector('#downloadLink').href = img.mime + img.data;
     const { sampleName } = this.props.sampleList[this.props.current.sampleID];
     const filename = `${this.props.proposal}-${sampleName}.jpeg`;
-    document.getElementById('downloadLink').download = filename;
+    document.querySelector('#downloadLink').download = filename;
   }
 
   toggleCentring() {
@@ -98,9 +98,9 @@ export default class SampleControls extends React.Component {
 
   toggleLight(name) {
     const lighstate = this.props.attributes[`${name}_switch`].value;
-    const newState = this.props.attributes[`${name}_switch`].commands.filter(
+    const newState = this.props.attributes[`${name}_switch`].commands.find(
       (state) => state !== lighstate
-    )[0];
+    );
     this.props.sendSetAttribute(`${name}_switch`, newState);
   }
 
@@ -133,15 +133,13 @@ export default class SampleControls extends React.Component {
         eventKey="3"
         key="auto scale"
         onClick={() => {
-          const { clientWidth } = document.getElementById('outsideWrapper');
+          const { clientWidth } = document.querySelector('#outsideWrapper');
           this.props.sampleActions.toggleAutoScale(clientWidth);
         }}
       >
         <span className={`fa ${autoScaleGClass}`} /> Auto Scale
       </MenuItem>
-    );
-
-    items.push(
+    , 
       <MenuItem
         eventKey="3"
         key="reset"
@@ -283,7 +281,7 @@ export default class SampleControls extends React.Component {
                 />
                 <datalist id="volsettings">
                   {[
-                    ...Array(
+                    ...new Array(
                       attributes.zoom.limits[1] - attributes.zoom.limits[0]
                     ).keys(),
                   ].map((i) => (

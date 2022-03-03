@@ -3,7 +3,7 @@
 // are not used within the same file. So disable eslint for this
 // section
 
-/* eslint-disable no-unused-vars */
+ 
 
 export const QUEUE_STARTED = 'QueueStarted';
 export const QUEUE_RUNNING = 'QueueRunning';

@@ -99,7 +99,7 @@ function requireAuth(nextState, replace, callback) {
           storage: new ServerStorage(),
         },
         () => {
-          /* eslint-disable react/no-set-state */
+           
           // this.setState({ initialized: true });
           /* eslint-enable react/no-set-state */
         }
@@ -124,7 +124,7 @@ export default class App extends React.Component {
 
   componentWillMount() {
     serverIO.connectNetworkSocket(() => {
-      /* eslint-disable react/no-set-state */
+       
       this.setState({ initialized: true });
       /* eslint-enable react/no-set-state */
     });
@@ -166,4 +166,4 @@ export default class App extends React.Component {
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.querySelector('#root'));

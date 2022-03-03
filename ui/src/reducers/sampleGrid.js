@@ -54,11 +54,9 @@ export default (state = INITIAL_STATE, action) => {
         sampleList[sampleID] = sampleData;
       }
 
-      return Object.assign({}, state, {
-        sampleList,
+      return { ...state, sampleList,
         order,
-        selected: {},
-      });
+        selected: {},};
     }
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
       // When removing samples from queue, remove uncollected tasks from that sample in
@@ -73,14 +71,14 @@ export default (state = INITIAL_STATE, action) => {
 
       for (const sampleData of action.samplesData) {
         const { sampleID } = sampleData;
-        sampleList[sampleID] = Object.assign({}, sampleData);
+        sampleList[sampleID] = { ...sampleData};
         order.push(sampleID);
       }
 
-      return Object.assign({}, state, { sampleList, order });
+      return { ...state, sampleList, order};
     }
     case 'SET_SAMPLE_ORDER': {
-      return Object.assign({}, state, { order: action.order });
+      return { ...state, order: action.order};
     }
     case 'SET_SAMPLES_INFO': {
       const sampleList = {};
@@ -91,7 +89,7 @@ export default (state = INITIAL_STATE, action) => {
           if (sampleInfo.code) {
             // find sample with data matrix code
             if (sample.code === sampleInfo.code) {
-              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
+              sampleList[key] = { ...sample, ...sampleInfo};
               break;
             }
           } else {
@@ -101,16 +99,16 @@ export default (state = INITIAL_STATE, action) => {
             const limsLocation = `${containerLocation}:${sampleLocation}`;
 
             if (sample.location === limsLocation) {
-              sampleList[key] = Object.assign({}, sample, { ...sampleInfo });
+              sampleList[key] = { ...sample, ...sampleInfo};
               break;
             }
           }
         }
         if (sampleList[key] === undefined) {
-          sampleList[key] = Object.assign({}, sample, {});
+          sampleList[key] = { ...sample, };
         }
       });
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
@@ -121,7 +119,7 @@ export default (state = INITIAL_STATE, action) => {
           : (sampleList[sampleID].tasks = action.samplesData[i].tasks);
       });
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'ADD_TASK_RESULT': {
       const sampleList = {
@@ -146,7 +144,7 @@ export default (state = INITIAL_STATE, action) => {
         },
       };
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'UPDATE_TASK_LIMS_DATA': {
       const sampleList = {
@@ -169,7 +167,7 @@ export default (state = INITIAL_STATE, action) => {
         },
       };
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'ADD_TASKS': {
       const sampleList = { ...state.sampleList };
@@ -187,7 +185,7 @@ export default (state = INITIAL_STATE, action) => {
         };
       });
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'REMOVE_TASK': {
       const sampleList = {
@@ -206,7 +204,7 @@ export default (state = INITIAL_STATE, action) => {
         },
       };
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'UPDATE_TASK': {
       const sampleList = {
@@ -226,7 +224,7 @@ export default (state = INITIAL_STATE, action) => {
         },
       };
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'ADD_DIFF_PLAN': {
       // Similar as ADD_TASKS but we link the char task with the diff plan dc
@@ -236,7 +234,7 @@ export default (state = INITIAL_STATE, action) => {
         const task = { ...t, state: 0 };
         const { originID } = task;
         // first we find which char task is the origin
-        /* eslint-disable no-param-reassign */
+         
         sampleList[task.sampleID].tasks.forEach((tt) => {
           if (tt.queueID === originID && tt.type === 'Characterisation') {
             tt.diffractionPlanID = task.queueID;
@@ -254,11 +252,11 @@ export default (state = INITIAL_STATE, action) => {
         };
       });
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'PLOT_END': {
       const sampleList = { ...state.sampleList };
-      /* eslint-disable no-param-reassign */
+       
       Object.keys(sampleList).forEach((sampleId) => {
         sampleList[sampleId].tasks.forEach((tt) => {
           if (tt.queueID === action.id && tt.type === action.dataType) {
@@ -269,10 +267,10 @@ export default (state = INITIAL_STATE, action) => {
       });
       /* eslint-enable no-param-reassign */
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'CHANGE_TASK_ORDER': {
-      const sampleList = Object.assign({}, state.sampleList);
+      const sampleList = { ...state.sampleList};
 
       const task = sampleList[action.sampleId].tasks[action.oldIndex];
       const tempTask = sampleList[action.sampleId].tasks[action.newIndex];
@@ -283,7 +281,7 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, sampleList };
     }
     case 'SET_CURRENT_SAMPLE': {
-      const sampleList = Object.assign({}, state.sampleList);
+      const sampleList = { ...state.sampleList};
 
       // We might want to set current sample to be nothing in that case do
       // do nothing.
@@ -291,10 +289,10 @@ export default (state = INITIAL_STATE, action) => {
         sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
       }
 
-      return Object.assign({}, state, { sampleList });
+      return { ...state, sampleList};
     }
     case 'SET_SAMPLE_ATTRIBUTE': {
-      const sampleList = Object.assign({}, state.sampleList);
+      const sampleList = { ...state.sampleList};
       sampleList[action.sampleID][action.attr] = action.value;
       return { ...state, sampleList };
     }
@@ -302,7 +300,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'TOGGLE_MOVABLE_SAMPLE': {
       const moving = {};
       moving[action.key] = !state.moving[action.key];
-      return Object.assign({}, state, { moving });
+      return { ...state, moving};
     }
     // Select a range of samples
     case 'SELECT_SAMPLES': {
@@ -314,23 +312,21 @@ export default (state = INITIAL_STATE, action) => {
         movingItems[key] = state.moving[key] && state.selected[key];
       }
 
-      return Object.assign({}, state, {
-        selected: selectedItems,
-        moving: movingItems,
-      });
+      return { ...state, selected: selectedItems,
+        moving: movingItems,};
     }
     case 'TOGGLE_SELECTED_SAMPLE': {
-      const selected = Object.assign({}, state.selected);
+      const selected = { ...state.selected};
       selected[action.sampleID] = !state.selected[action.sampleID];
-      return Object.assign({}, state, { selected });
+      return { ...state, selected};
     }
     case 'FILTER_SAMPLE_LIST': {
-      const filterOptions = Object.assign(
-        {},
-        state.filterOptions,
-        action.filterOptions
-      );
-      return Object.assign({}, state, { filterOptions });
+      const filterOptions = {
+        
+        ...state.filterOptions,
+        ...action.filterOptions
+      };
+      return { ...state, filterOptions};
     }
     case 'SET_INITIAL_STATE': {
       const sampleList = { ...action.data.queue.sampleList.sampleList };
@@ -338,10 +334,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, sampleList, order };
     }
     case 'CLEAR_SAMPLE_GRID': {
-      return Object.assign({}, state, { ...INITIAL_STATE });
+      return { ...state, ...INITIAL_STATE};
     }
     case 'CLEAR_ALL': {
-      return Object.assign({}, state, { ...INITIAL_STATE });
+      return { ...state, ...INITIAL_STATE};
     }
     default: {
       return state;

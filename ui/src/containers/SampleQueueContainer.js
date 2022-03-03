@@ -159,14 +159,14 @@ class SampleQueueContainer extends React.Component {
             activeKey={visibleList}
             onSelect={this.handleSelect}
           >
-            <NavItem eventKey={'current'}>
+            <NavItem eventKey="current">
               <b>
                 {current.sampleID
                   ? `Sample: ${proteinAcronym} ${sampleName}`
                   : 'Current'}
               </b>
             </NavItem>
-            <NavItem eventKey={'todo'}>
+            <NavItem eventKey="todo">
               <b>Queued Samples ({todo.length})</b>
             </NavItem>
           </Nav>

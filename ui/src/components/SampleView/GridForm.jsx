@@ -116,12 +116,12 @@ export default class GridForm extends React.Component {
               </td>,
             ]
           : null}
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td />
+        <td />
+        <td />
+        <td />
+        <td />
+        <td />
         <td>
           <Button className="btn-sm" onClick={() => this.props.saveGrid()}>
             +
@@ -135,7 +135,7 @@ export default class GridForm extends React.Component {
 
   render() {
     const gridForm = (
-      <Draggable defaultPosition={{ x: 20, y: 50 }} cancel={'form'}>
+      <Draggable defaultPosition={{ x: 20, y: 50 }} cancel="form">
         <div className="gridform">
           <div className="col-xs-8">
             <Table striped hover responsive condensed>

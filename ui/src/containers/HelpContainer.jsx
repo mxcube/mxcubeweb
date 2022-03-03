@@ -43,7 +43,7 @@ export class HelpContainer extends React.Component {
           header={
             <div>
               <span>Local Contact</span>
-              <span className="glyphicon glyphicon-user pull-right"></span>
+              <span className="glyphicon glyphicon-user pull-right" />
             </div>
           }
         >
@@ -65,7 +65,7 @@ export class HelpContainer extends React.Component {
     if (process.env.helpLinks) {
       links = process.env.helpLinks.map((link) => (
         <div>
-          <a target="_blank" href={link.url}>
+          <a target="_blank" href={link.url} rel="noreferrer">
             {link.name}
           </a>
         </div>
@@ -80,7 +80,7 @@ export class HelpContainer extends React.Component {
             header={
               <div>
                 <span>Feedback</span>
-                <span className="glyphicon glyphicon-envelope pull-right"></span>
+                <span className="glyphicon glyphicon-envelope pull-right" />
               </div>
             }
           >
@@ -157,7 +157,7 @@ export class HelpContainer extends React.Component {
               header={
                 <div>
                   <span>Help Links</span>
-                  <span className="glyphicon glyphicon-info-sign pull-right"></span>
+                  <span className="glyphicon glyphicon-info-sign pull-right" />
                 </div>
               }
             >

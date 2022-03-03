@@ -56,14 +56,14 @@ export default class DefaultInput extends React.Component {
               className="rw-btn"
               onClick={this.stepIncrement}
             >
-              <i aria-hidden="true" className="rw-i rw-i-caret-up"></i>
+              <i aria-hidden="true" className="rw-i rw-i-caret-up" />
             </button>
             <button
               type="button"
               className="rw-btn"
               onClick={this.stepDecrement}
             >
-              <i aria-hidden="true" className="rw-i rw-i-caret-down"></i>
+              <i aria-hidden="true" className="rw-i rw-i-caret-down" />
             </button>
           </span>
           <FormControl

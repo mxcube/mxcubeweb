@@ -249,7 +249,8 @@ class ServerIO {
     });
 
     this.hwrSocket.on('sc', (record) => {
-      if (record.signal === 'operatingSampleChanger') {
+      switch (record.signal) {
+      case 'operatingSampleChanger': {
         this.dispatch(
           setLoading(
             true,
@@ -259,10 +260,11 @@ class ServerIO {
             () => this.dispatch(sendStopQueue())
           )
         );
-      } else if (
-        record.signal === 'loadingSample' ||
-        record.signal === 'loadedSample'
-      ) {
+      
+      break;
+      }
+      case 'loadingSample': 
+      case 'loadedSample': {
         this.dispatch(
           setLoading(
             true,
@@ -272,10 +274,11 @@ class ServerIO {
             () => this.dispatch(sendStopQueue())
           )
         );
-      } else if (
-        record.signal === 'unLoadingSample' ||
-        record.signal === 'unLoadedSample'
-      ) {
+      
+      break;
+      }
+      case 'unLoadingSample': 
+      case 'unLoadedSample': {
         this.dispatch(
           setLoading(
             true,
@@ -285,18 +288,28 @@ class ServerIO {
             () => this.dispatch(sendStopQueue())
           )
         );
-      } else if (record.signal === 'loadReady') {
+      
+      break;
+      }
+      case 'loadReady': {
         this.dispatch(
           setLoading(false, 'SC Ready', record.message, true, () =>
             this.dispatch(sendStopQueue())
           )
         );
-      } else if (record.signal === 'inSafeArea') {
+      
+      break;
+      }
+      case 'inSafeArea': {
         this.dispatch(
           setLoading(false, 'SC Safe', record.message, true, () =>
             this.dispatch(sendStopQueue())
           )
         );
+      
+      break;
+      }
+      // No default
       }
     });
 

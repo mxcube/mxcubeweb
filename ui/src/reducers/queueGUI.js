@@ -14,7 +14,7 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'redux-form/CHANGE': {
       if (action.form === 'search-sample') {
-        return Object.assign({}, state, { searchString: action.value });
+        return { ...state, searchString: action.value};
       }
 
       return state;
@@ -28,7 +28,7 @@ export default (state = initialState, action) => {
       action.sampleOrder.forEach((sampleID) => {
         if (action.sampleList.hasOwnProperty(sampleID)) {
           action.sampleList[sampleID].tasks.forEach((task) => {
-            if (existingNodes.indexOf(task.queueID.toString()) === -1) {
+            if (!existingNodes.includes(task.queueID.toString())) {
               newNodes.push(task.queueID.toString());
               displayData[task.queueID] = {
                 collapsed: false,
@@ -54,7 +54,7 @@ export default (state = initialState, action) => {
         };
       });
 
-      return Object.assign({}, state, { displayData });
+      return { ...state, displayData};
     }
     case 'ADD_TASK_RESULT': {
       const displayData = {
@@ -65,7 +65,7 @@ export default (state = initialState, action) => {
         },
       };
 
-      return Object.assign({}, state, { displayData });
+      return { ...state, displayData};
     }
 
     case 'ADD_SAMPLES_TO_QUEUE': {
@@ -78,12 +78,10 @@ export default (state = initialState, action) => {
         };
       });
 
-      return Object.assign({}, state, { displayData });
+      return { ...state, displayData};
     }
     case 'REMOVE_TASK': {
-      return Object.assign({}, state, {
-        displayData: omit(state.displayData, action.queueID),
-      });
+      return { ...state, displayData: omit(state.displayData, action.queueID),};
     }
     case 'QUEUE_LOADING': {
       return { ...state, loading: action.loading };
@@ -101,13 +99,13 @@ export default (state = initialState, action) => {
       return { ...state, showConfirmCollectDialog: action.show };
     }
     case 'COLLAPSE_ITEM': {
-      const displayData = Object.assign({}, state.displayData);
+      const displayData = { ...state.displayData};
       displayData[action.queueID].collapsed ^= true;
 
       return { ...state, displayData };
     }
     case 'SELECT_ITEM': {
-      const displayData = Object.assign({}, state.displayData);
+      const displayData = { ...state.displayData};
       displayData[action.queueID].selected ^= true;
 
       return { ...state, displayData };
@@ -124,7 +122,7 @@ export default (state = initialState, action) => {
       sampleOrder.forEach((sampleID) => {
         if (sampleList.hasOwnProperty(sampleID)) {
           sampleList[sampleID].tasks.forEach((task) => {
-            if (existingNodes.indexOf(task.queueID.toString()) === -1) {
+            if (!existingNodes.includes(task.queueID.toString())) {
               newNodes.push(task.queueID.toString());
               displayData[task.queueID] = {
                 collapsed: false,

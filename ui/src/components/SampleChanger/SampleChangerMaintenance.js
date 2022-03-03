@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Panel } from 'react-bootstrap';
 
 import './SampleChanger.css';
 import '../context-menu-style.css';
-/* eslint-disable react/no-multi-comp */
+ 
 
 export class SampleChangerActionButton extends React.Component {
   render() {
@@ -69,7 +69,7 @@ export default class SampleChangerMaintenance extends React.Component {
     let msg = '';
 
     if (
-      Object.keys(this.props.commands).length !== 0 &&
+      Object.keys(this.props.commands).length > 0 &&
       this.props.commands.cmds !== 'SC maintenance controller not defined'
     ) {
       for (const cmdgrp of this.props.commands.cmds) {

@@ -98,8 +98,8 @@ export class ConfirmCollectDialog extends React.Component {
    * are aligned properly
    */
   resizeTable() {
-    const tableHead = document.getElementById('table-head');
-    const tableBody = document.getElementById('table-body');
+    const tableHead = document.querySelector('#table-head');
+    const tableBody = document.querySelector('#table-body');
 
     if (tableHead && tableBody) {
       const headerColWidthArray = Array.map(
@@ -140,7 +140,7 @@ export class ConfirmCollectDialog extends React.Component {
    */
   tasksToCollect() {
     // Flat array of all tasks
-    let queue = this.props.queue.queue;
+    let {queue} = this.props.queue;
 
     // Making the dialog a bit more intuitive, only display the tasks for the
     // sample to be colleted when autoMountNtext is false
@@ -154,12 +154,9 @@ export class ConfirmCollectDialog extends React.Component {
       }
     }
 
-    const tasks = [].concat.apply(
-      [],
-      Object.values(queue)
+    const tasks = Object.values(queue)
         .map((sampleID) => this.props.sampleGrid.sampleList[sampleID] || {})
-        .map((sample) => sample.tasks || {})
-    );
+        .flatMap((sample) => sample.tasks || {});
 
     return tasks.filter((task) => task.state === TASK_UNCOLLECTED);
   }
@@ -201,7 +198,7 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   taskPopover(task) {
-    let pover = <span></span>;
+    let pover = <span />;
 
     if (task.type === 'EnergyScan') {
       pover = (
@@ -314,7 +311,7 @@ export class ConfirmCollectDialog extends React.Component {
             </thead>
             <tbody id="table-body">
               {tasks.map((task) => {
-                let parameters = task.parameters;
+                let {parameters} = task;
                 const sample = this.props.sampleGrid.sampleList[task.sampleID];
                 const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
 

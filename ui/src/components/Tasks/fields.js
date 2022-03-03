@@ -42,8 +42,8 @@ function errorIndicator(error, warning) {
   return icon;
 }
 
-export const FieldsHeader = ({ title }) => (
-  <Row>
+export function FieldsHeader({ title }) {
+  return <Row>
     <Col xs={12}>
       <center>
         <b style={{ padding: '0.5em', backgroundColor: 'white' }}>{title}</b>
@@ -51,20 +51,20 @@ export const FieldsHeader = ({ title }) => (
       <hr style={{ marginTop: '-10px' }} />
     </Col>
   </Row>
-);
+}
 
-export const StaticField = ({ label, data }) => (
-  <FormGroup style={{ textAlign: 'left', marginBottom: '0px' }}>
+export function StaticField({ label, data }) {
+  return <FormGroup style={{ textAlign: 'left', marginBottom: '0px' }}>
     <Col xs={12}>
       <FormControl.Static style={{ padding: '5px 0px', minHeight: '0px' }}>
         <b>{label}:</b> {data}
       </FormControl.Static>
     </Col>
   </FormGroup>
-);
+}
 
-const ReduxInputField = (prop) => (
-  <FormGroup
+function ReduxInputField(prop) {
+  return <FormGroup
     controlId={prop.input.name}
     validationState={validation(prop.meta.error, prop.meta.warning)}
   >
@@ -89,14 +89,14 @@ const ReduxInputField = (prop) => (
       </span>
     ) : null}
   </FormGroup>
-);
+}
 
-export const InputField = (prop) => (
-  <Field name={prop.propName} component={ReduxInputField} {...prop} />
-);
+export function InputField(prop) {
+  return <Field name={prop.propName} component={ReduxInputField} {...prop} />
+}
 
-export const DisplayField = ({ label, value }) => (
-  <FormGroup>
+export function DisplayField({ label, value }) {
+  return <FormGroup>
     <Col className="col-xs-8 control-label" style={{ textAlign: 'left' }}>
       <b> {label} </b>
     </Col>
@@ -104,10 +104,10 @@ export const DisplayField = ({ label, value }) => (
       <FormControl value={value} readOnly />
     </Col>
   </FormGroup>
-);
+}
 
-export const CheckboxField = ({ propName, label, disabled }) => (
-  <Field
+export function CheckboxField({ propName, label, disabled }) {
+  return <Field
     name={propName}
     component={(prop) => (
       <FormGroup
@@ -133,10 +133,10 @@ export const CheckboxField = ({ propName, label, disabled }) => (
       </FormGroup>
     )}
   />
-);
+}
 
-export const SelectField = ({ propName, label, list, col1, col2 }) => (
-  <Field
+export function SelectField({ propName, label, list, col1, col2 }) {
+  return <Field
     name={propName}
     component={(prop) => (
       <FormGroup
@@ -171,10 +171,10 @@ export const SelectField = ({ propName, label, list, col1, col2 }) => (
       </FormGroup>
     )}
   />
-);
+}
 
-export const FieldsRow = ({ children }) => (
-  <Row>
+export function FieldsRow({ children }) {
+  return <Row>
     {children.length > 0 ? (
       children.map((child, i) => (
         <Col key={i} xs={12 / children.length}>
@@ -187,9 +187,9 @@ export const FieldsRow = ({ children }) => (
       </Col>
     )}
   </Row>
-);
+}
 
-/* eslint-disable react/no-set-state */
+ 
 export class CollapsableRows extends React.Component {
   constructor(props) {
     super(props);

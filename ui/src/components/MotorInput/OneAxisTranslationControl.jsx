@@ -54,7 +54,7 @@ export default class OneAxisTranslationControl extends React.Component {
   /* eslint-enable react/no-set-state */
 
   stepChange(name, step, operator) {
-    const value = this.props.value;
+    const {value} = this.props;
     const newValue = value + step * operator;
     this.props.save(name, newValue);
   }
@@ -140,7 +140,7 @@ export default class OneAxisTranslationControl extends React.Component {
         </Button>
         <input
           style={{
-            width: `${parseFloat(decimalPoints) + 2}em`,
+            width: `${Number.parseFloat(decimalPoints) + 2}em`,
             height: '2.1em',
             display: 'inline-block',
             marginLeft: '5px',

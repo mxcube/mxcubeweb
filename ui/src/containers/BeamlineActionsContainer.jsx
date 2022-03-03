@@ -44,7 +44,7 @@ class BeamlineActionsContainer extends React.Component {
       if (cmd.name === cmdName) {
         cmd.arguments.forEach((arg) => {
           if (arg.type === 'float') {
-            parameters.push(parseFloat(arg.value));
+            parameters.push(Number.parseFloat(arg.value));
           } else {
             parameters.push(arg.value);
           }
@@ -80,7 +80,7 @@ class BeamlineActionsContainer extends React.Component {
 
     let defaultDialogPosition = { x: 0, y: 0 };
 
-    if (document.getElementsByClassName('m-tree').length > 0) {
+    if (document.querySelectorAll('.m-tree').length > 0) {
       const width =
         window.innerWidth ||
         document.documentElement.clientWidth ||
@@ -89,7 +89,7 @@ class BeamlineActionsContainer extends React.Component {
       defaultDialogPosition = {
         x:
           width -
-          document.getElementsByClassName('m-tree')[0].getClientRects()[0].x -
+          document.querySelectorAll('.m-tree')[0].getClientRects()[0].x -
           50,
         y: 0,
       };
@@ -99,7 +99,7 @@ class BeamlineActionsContainer extends React.Component {
       <Row>
         <Col xs={12}>
           <DropdownButton
-            title={'Beamline Actions'}
+            title="Beamline Actions"
             id="beamline-actions-dropdown"
           >
             {this.props.actionsList.map((cmd, i) => {
@@ -184,7 +184,7 @@ class BeamlineActionsContainer extends React.Component {
                 Run
               </Button>
             )}
-            <hr></hr>
+            <hr />
             <Plot1D
               displayedPlotCallback={this.newPlotDisplayed}
               plotId={this.plotIdByAction[currentActionName]}

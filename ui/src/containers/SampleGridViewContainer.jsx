@@ -188,7 +188,7 @@ class SampleGridViewContainer extends React.Component {
       window.innerWidth || 0
     );
     const width = Math.min(viewportWidth, this.calcGridWidth()[0] || 0);
-    document.getElementById('sampleGridContainer').style.width = `${
+    document.querySelector('#sampleGridContainer').style.width = `${
       width - 38
     }px`;
   }
@@ -424,12 +424,11 @@ class SampleGridViewContainer extends React.Component {
    */
   addSamplesToQueue(sampleIDList) {
     const samplesToAdd = sampleIDList.map((sampleID) => {
-      const sample = {
+      return {
         ...this.props.sampleList[sampleID],
         checked: true,
         tasks: [],
       };
-      return sample;
     });
 
     if (samplesToAdd.length > 0) {
@@ -622,7 +621,7 @@ class SampleGridViewContainer extends React.Component {
               <SplitButton
                 id="split-button-sample-changer-selection"
                 disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                title={'Get samples from SC'}
+                title="Get samples from SC"
                 onClick={this.props.getSamples}
               >
                 <MenuItem eventKey="2" onClick={this.showAddSampleForm}>
@@ -706,7 +705,7 @@ class SampleGridViewContainer extends React.Component {
             <QueueSettings />
           </Col>
         </Row>
-        <p></p>
+        <p />
         <SampleGridContainer
           addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
           showCharacterisationForm={this.showCharacterisationForm}

@@ -49,7 +49,7 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   beamstopAlignmentOverlay() {
-    const attributes = this.props.beamline.attributes;
+    const {attributes} = this.props.beamline;
     const motorInputList = [];
     let popover = null;
 
@@ -86,7 +86,7 @@ class BeamlineSetupContainer extends React.Component {
   createActuatorComponent() {
     const acts = [];
 
-    const uiproperties = this.props.uiproperties;
+    const {uiproperties} = this.props;
     if (uiproperties.hasOwnProperty('beamline_setup')) {
       const blsetup_properties = uiproperties.beamline_setup.components;
 
@@ -94,8 +94,7 @@ class BeamlineSetupContainer extends React.Component {
         if (this.props.beamline.attributes[key] !== undefined) {
           const uiprop = find(blsetup_properties, { attribute: key });
 
-          if (uiprop !== undefined) {
-            if (uiprop.value_type === 'NSTATE') {
+          if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
               if (uiprop.label === 'Beamstop') {
                 acts.push(
                   <Col key={key} className="pull-right">
@@ -125,7 +124,6 @@ class BeamlineSetupContainer extends React.Component {
                 );
               }
             }
-          }
         }
       }
     }
@@ -145,8 +143,7 @@ class BeamlineSetupContainer extends React.Component {
 
       components.push(
         <td style={{ border: '0px', paddingLeft: '0.5em' }}>{uiprop.label}:</td>
-      );
-      components.push(
+      , 
         <td
           style={{
             fontWeight: 'bold',
@@ -184,7 +181,7 @@ class BeamlineSetupContainer extends React.Component {
   render() {
     // const blsetup_properties = uiproperties.beamline_setup.components;
 
-    const uiproperties = this.props.uiproperties;
+    const {uiproperties} = this.props;
 
     if (!uiproperties.hasOwnProperty('beamline_setup')) {
       return null;
@@ -231,8 +228,8 @@ class BeamlineSetupContainer extends React.Component {
                         borderLeft: '1px solid #ddd',
                         paddingLeft: '1em',
                       }}
-                    ></td>
-                    <td style={{ border: '0px' }}></td>
+                     />
+                    <td style={{ border: '0px' }} />
                   </tr>
                 </tbody>
               </Table>
@@ -248,7 +245,7 @@ class BeamlineSetupContainer extends React.Component {
               {this.createActuatorComponent()}
               <Col className="pull-right">
                 <SampleChangerSwitch
-                  labelText={'Sample Changer'}
+                  labelText="Sample Changer"
                   data={this.props.sampleChanger.state}
                   onSave={this.props.sendCommand}
                 />
@@ -256,7 +253,7 @@ class BeamlineSetupContainer extends React.Component {
               {this.props.beamline.attributes.detector ? (
                 <Col className="pull-right">
                   <DeviceState
-                    labelText={'Detector'}
+                    labelText="Detector"
                     data={
                       this.props.beamline.attributes.detector.state.acq_satus
                     }

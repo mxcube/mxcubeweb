@@ -107,7 +107,7 @@ class SampleGridContainer extends React.Component {
    * @param {MouseEvent} e
    */
   onMouseDown(e) {
-    const selectionRubberBand = document.getElementById('selectionRubberBand');
+    const selectionRubberBand = document.querySelector('#selectionRubberBand');
     selectionRubberBand.style.top = `${e.pageY}px`;
     selectionRubberBand.style.left = `${e.pageX}px`;
     selectionRubberBand.style.width = '0px';
@@ -126,10 +126,10 @@ class SampleGridContainer extends React.Component {
    */
   onMouseMove(e) {
     if (this.showRubberBand) {
-      const selectionRubberBand = document.getElementById(
-        'selectionRubberBand'
+      const selectionRubberBand = document.querySelector(
+        '#selectionRubberBand'
       );
-      document.getElementById('selectionRubberBand').style.display = 'block';
+      document.querySelector('#selectionRubberBand').style.display = 'block';
       selectionRubberBand.style.width = `${
         e.pageX - selectionRubberBand.offsetLeft
       }px`;
@@ -147,7 +147,7 @@ class SampleGridContainer extends React.Component {
    * @param {MouseEvent} e
    */
   onMouseUp(e) {
-    const selectionRubberBand = document.getElementById('selectionRubberBand');
+    const selectionRubberBand = document.querySelector('#selectionRubberBand');
 
     const selected = this.sampleItems
       .filter((sampleItem) => {
@@ -183,14 +183,28 @@ class SampleGridContainer extends React.Component {
   onKeyDown(e) {
     const sampleID = Object.keys(this.props.moving)[0];
 
-    if (e.key === 'ArrowRight') {
+    switch (e.key) {
+    case 'ArrowRight': {
       this.sampleItemOnMoveHandler(e, sampleID, 'RIGHT');
-    } else if (e.key === 'ArrowLeft') {
+    
+    break;
+    }
+    case 'ArrowLeft': {
       this.sampleItemOnMoveHandler(e, sampleID, 'LEFT');
-    } else if (e.key === 'ArrowDown') {
+    
+    break;
+    }
+    case 'ArrowDown': {
       this.sampleItemOnMoveHandler(e, sampleID, 'DOWN');
-    } else if (e.key === 'ArrowUp') {
+    
+    break;
+    }
+    case 'ArrowUp': {
       this.sampleItemOnMoveHandler(e, sampleID, 'UP');
+    
+    break;
+    }
+    // No default
     }
   }
 
@@ -219,7 +233,7 @@ class SampleGridContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       menuEl.style.display = 'none';
     } else if (
-      e.target.className.indexOf('samples-grid-item') > -1 &&
+      e.target.className.includes('samples-grid-item') &&
       e.button === 2
     ) {
       menuEl.style.top = `${e.pageY}px`;
@@ -320,7 +334,7 @@ class SampleGridContainer extends React.Component {
     // mechanism as for mutiple selection
     const syntheticElement = {
       getBoundingClientRect: () => {
-        const bbox = {
+        return {
           top: e.clientY,
           left: e.clientX,
           bottom: e.clientY + 1,
@@ -328,7 +342,6 @@ class SampleGridContainer extends React.Component {
           width: 1,
           height: 1,
         };
-        return bbox;
       },
     };
 
@@ -480,13 +493,13 @@ class SampleGridContainer extends React.Component {
       // CTRL key is pressed just modify the current selection, remove already
       // selected and add new ones.
       if (e.ctrlKey) {
-        const intersection = sampleIDList.filter((sampleID) =>
+        const intersection = new Set(sampleIDList.filter((sampleID) =>
           this.sampleItemIsSelected(sampleID)
-        );
+        ));
 
         const union = Object.keys(this.props.selected).concat(sampleIDList);
         samplesToSelect = union.filter(
-          (sampleID) => !intersection.includes(sampleID)
+          (sampleID) => !intersection.has(sampleID)
         );
       }
 
@@ -520,13 +533,13 @@ class SampleGridContainer extends React.Component {
       this.sampleItemCanMove(sampleID);
 
     if (dir === 'RIGHT' && canMoveRight) {
-      targetPos = targetPos + 1;
+      targetPos += 1;
     } else if (dir === 'LEFT' && canMoveLeft) {
-      targetPos = targetPos - 1;
+      targetPos -= 1;
     } else if (dir === 'DOWN' && canMoveDown) {
-      targetPos = targetPos + numCols;
+      targetPos += numCols;
     } else if (dir === 'UP' && canMoveUp) {
-      targetPos = targetPos - numCols;
+      targetPos -= numCols;
     } else {
       return;
     }
@@ -742,13 +755,11 @@ class SampleGridContainer extends React.Component {
       }
     });
 
-    const menuItems = workflowTasks.samplegrid.map((wf) => (
+    return workflowTasks.samplegrid.map((wf) => (
       <MenuItem eventKey={wf.key} onClick={wf.action} key={wf.key}>
         {wf.text}
       </MenuItem>
     ));
-
-    return menuItems;
   }
 
   mountAndCollect() {

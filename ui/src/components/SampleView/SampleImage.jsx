@@ -16,7 +16,7 @@ import 'fabric';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
-const fabric = window.fabric;
+const {fabric} = window;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
 
@@ -81,7 +81,7 @@ export default class SampleImage extends React.Component {
     this.canvas.on('selection:updated', this.selectShapeEvent);
 
     // Bind rigth click to function manually with javascript
-    const imageOverlay = document.getElementById('insideWrapper');
+    const imageOverlay = document.querySelector('#insideWrapper');
     imageOverlay.addEventListener('contextmenu', this.rightClick, false);
     // Bind mouse scroll up/down to function manually with javascript
     imageOverlay.addEventListener('wheel', this.wheel, false);
@@ -137,7 +137,7 @@ export default class SampleImage extends React.Component {
       try {
         this.player.destroy();
         this.player = null;
-      } catch (error) {
+      } catch {
         this.player = null;
       }
     }
@@ -153,7 +153,7 @@ export default class SampleImage extends React.Component {
     document.removeEventListener('keyup', this.keyUp);
     window.removeEventListener('resize', this.setImageRatio);
 
-    const imageOverlay = document.getElementById('insideWrapper');
+    const imageOverlay = document.querySelector('#insideWrapper');
     imageOverlay.removeEventListener('contextmenu', this.rightClick);
     imageOverlay.removeEventListener('wheel', this.wheel);
     imageOverlay.removeEventListener('dblclick', this.goToBeam);
@@ -162,8 +162,7 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
-    if (this.props.clickCentring) {
-      if (this.props.clickCentringClicksLeft > 0) {
+    if (this.props.clickCentring && this.props.clickCentringClicksLeft > 0) {
         if (this.centringVerticalLine !== undefined) {
           this.canvas.remove(this.centringVerticalLine);
         }
@@ -188,9 +187,8 @@ export default class SampleImage extends React.Component {
           );
         }
 
-        this.canvas.add(...[this.centringVerticalLine]);
+        this.canvas.add(this.centringVerticalLine);
       }
-    }
 
     if (options.e.buttons > 0) {
       this.drawGridPlugin.update(
@@ -213,13 +211,13 @@ export default class SampleImage extends React.Component {
 
   setImageRatio() {
     if (this.props.autoScale) {
-      const clientWidth = document.getElementById('outsideWrapper').clientWidth;
+      const {clientWidth} = document.querySelector('#outsideWrapper');
       this.props.sampleActions.setImageRatio(clientWidth);
     }
   }
 
   setVCellSpacing(e) {
-    let value = parseFloat(e.target.value);
+    let value = Number.parseFloat(e.target.value);
     if (isNaN(value)) {
       value = '';
     }
@@ -245,7 +243,7 @@ export default class SampleImage extends React.Component {
   }
 
   setHCellSpacing(e) {
-    let value = parseFloat(e.target.value);
+    let value = Number.parseFloat(e.target.value);
     if (isNaN(value)) {
       value = '';
     }
@@ -271,7 +269,7 @@ export default class SampleImage extends React.Component {
   }
 
   setGridOverlayOpacity(e) {
-    let value = parseFloat(e.target.value);
+    let value = Number.parseFloat(e.target.value);
 
     if (isNaN(value)) {
       value = '1';
@@ -284,7 +282,7 @@ export default class SampleImage extends React.Component {
   }
 
   getGridOverlayOpacity() {
-    let overlay = 1.0;
+    let overlay = 1;
     if (this.selectedGrid() !== null) {
       const gridData = this.selectedGrid();
       if (gridData) {
@@ -314,7 +312,7 @@ export default class SampleImage extends React.Component {
   selectedGrid() {
     let grid = null;
 
-    if (this.props.selectedGrids.length) {
+    if (this.props.selectedGrids.length > 0) {
       grid = this.props.selectedGrids[0];
     }
 
@@ -374,7 +372,7 @@ export default class SampleImage extends React.Component {
     const w = (width * imageRatio) / sourceScale;
     const h = (height * imageRatio) / sourceScale;
     // Set the size of the original html Canvas
-    const canvasWindow = document.getElementById('canvas');
+    const canvasWindow = document.querySelector('#canvas');
     canvasWindow.width = w;
     canvasWindow.height = h;
     // Set the size of the created FabricJS Canvas
@@ -383,9 +381,9 @@ export default class SampleImage extends React.Component {
     this.canvas.clear();
 
     // Set size of the Image from
-    document.getElementById('sample-img').style.height = `${h}px`;
-    document.getElementById('sample-img').style.width = `${w}px`;
-    document.getElementById('insideWrapper').style.height = `${h}px`;
+    document.querySelector('#sample-img').style.height = `${h}px`;
+    document.querySelector('#sample-img').style.width = `${w}px`;
+    document.querySelector('#insideWrapper').style.height = `${h}px`;
   }
 
   rightClick(e) {
@@ -463,7 +461,7 @@ export default class SampleImage extends React.Component {
             id: gridData.id,
             cellCenter,
           };
-        } else if (lineList.length !== 0) {
+        } else if (lineList.length > 0) {
           ctxMenuObj = { type: 'LINE', id: lineList };
         }
       }
@@ -597,23 +595,23 @@ export default class SampleImage extends React.Component {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
-        sendMotorPosition('Phi', phi.value + parseInt(motorSteps.phiStep, 10));
+        sendMotorPosition('Phi', phi.value + Number.parseInt(motorSteps.phiStep, 10));
       } else if (e.deltaX < 0 || e.deltaY < 0) {
         // zoom out
-        sendMotorPosition('Phi', phi.value - parseInt(motorSteps.phiStep, 10));
+        sendMotorPosition('Phi', phi.value - Number.parseInt(motorSteps.phiStep, 10));
       }
     } else if (keyPressed === 'f' && focus.state === MOTOR_STATE.READY) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition(
           'Focus',
-          focus.value + parseFloat(motorSteps.focusStep, 10)
+          focus.value + Number.parseFloat(motorSteps.focusStep, 10)
         );
       } else if (e.deltaY < 0) {
         // Focus out
         sendMotorPosition(
           'Focus',
-          focus.value - parseFloat(motorSteps.focusStep, 10)
+          focus.value - Number.parseFloat(motorSteps.focusStep, 10)
         );
       }
     } else if (keyPressed === 'z' && zoom.state === MOTOR_STATE.READY) {
@@ -734,7 +732,7 @@ export default class SampleImage extends React.Component {
   }
 
   hideGridForm() {
-    const gridForm = document.getElementById('gridForm');
+    const gridForm = document.querySelector('#gridForm');
 
     if (gridForm) {
       gridForm.style.display = 'none';
@@ -772,7 +770,7 @@ export default class SampleImage extends React.Component {
           }}
           key={this.props.clickCentringClicksLeft}
           id="video-message-overlay"
-        ></div>
+         />
       );
     }
 
@@ -799,8 +797,8 @@ export default class SampleImage extends React.Component {
 
   initJSMpeg() {
     if (this.player === null) {
-      const canvas = document.getElementById('sample-img');
-      /* eslint-disable no-undef */
+      const canvas = document.querySelector('#sample-img');
+       
       let source = !process.env.VIDEO_STREAM_URL
         ? `ws://${document.location.hostname}:4042/`
         : process.env.VIDEO_STREAM_URL;
@@ -812,7 +810,7 @@ export default class SampleImage extends React.Component {
         source = `ws://${document.location.hostname}:4042/`;
       }
 
-      source = source + this.props.videoHash;
+      source += this.props.videoHash;
 
       if (this.props.videoFormat === 'MPEG1' && canvas) {
         this.player = new jsmpeg.JSMpeg.Player(source, {

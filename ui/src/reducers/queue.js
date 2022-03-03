@@ -15,19 +15,15 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_QUEUE': {
-      return Object.assign({}, { ...state, queue: action.sampleOrder });
+      return { ...state, queue: action.sampleOrder};
     }
     case 'CLEAR_QUEUE': {
-      return Object.assign({}, state, {
-        queue: initialState.queue,
-        current: initialState.current,
-      });
+      return { ...state, queue: initialState.queue,
+        current: initialState.current,};
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
-      return Object.assign({}, state, {
-        queue: state.queue.concat(sampleIDList),
-      });
+      return { ...state, queue: state.queue.concat(sampleIDList),};
     }
     case 'SET_QUEUE_STATUS':
       return {
@@ -39,29 +35,23 @@ export default (state = initialState, action) => {
         (value) => !action.sampleIDList.includes(value)
       );
 
-      return Object.assign({}, state, { queue });
+      return { ...state, queue};
     }
     case 'SET_CURRENT_SAMPLE':
-      return Object.assign({}, state, {
-        current: {
+      return { ...state, current: {
           ...state.current,
           sampleID: action.sampleID,
           running: false,
-        },
-      });
+        },};
     case 'CLEAR_CURRENT_SAMPLE': {
       const queue = state.queue.filter(
         (value) => value !== state.current.sampleID
       );
-      return Object.assign({}, state, {
-        queue,
-        current: { sampleID: null, collapsed: false, running: false },
-      });
+      return { ...state, queue,
+        current: { sampleID: null, collapsed: false, running: false },};
     }
     case 'RUN_SAMPLE':
-      return Object.assign({}, state, {
-        current: { ...state.current, running: true },
-      });
+      return { ...state, current: { ...state.current, running: true },};
     case 'CHANGE_SAMPLE_ORDER':
       return {
         ...state,
@@ -95,10 +85,8 @@ export default (state = initialState, action) => {
       return { ...state, groupFolder: action.path };
     }
     case 'CLEAR_ALL': {
-      return Object.assign({}, state, {
-        ...initialState,
-        autoMountNext: state.autoMountNext,
-      });
+      return { ...state, ...initialState,
+        autoMountNext: state.autoMountNext,};
     }
     case 'QUEUE_STATE': {
       return Object.assign({}, state, ...action.queueState);

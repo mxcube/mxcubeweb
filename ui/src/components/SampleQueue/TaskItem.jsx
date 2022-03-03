@@ -43,7 +43,7 @@ export default class TaskItem extends Component {
     if (state !== TASK_COLLECTED) {
       return (
         <div>
-          <span></span>
+          <span />
         </div>
       );
     }
@@ -124,11 +124,11 @@ export default class TaskItem extends Component {
     wedges.forEach((wedge) => {
       if (
         wedge.parameters.shape !== -1 &&
-        res.indexOf(`${wedge.parameters.shape}`) < 0
+        !res.includes(`${wedge.parameters.shape}`)
       ) {
         try {
           res += `${this.props.shapes.shapes[wedge.parameters.shape].name}`;
-        } catch (e) {
+        } catch {
           res += '-';
         }
       }
@@ -138,7 +138,7 @@ export default class TaskItem extends Component {
   }
 
   wedgePath(wedge) {
-    const parameters = wedge.parameters;
+    const {parameters} = wedge;
     const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
 
@@ -169,7 +169,7 @@ export default class TaskItem extends Component {
   }
 
   wedgeParameters(wedge) {
-    const parameters = wedge.parameters;
+    const {parameters} = wedge;
     return (
       <tr>
         <td>
@@ -204,15 +204,26 @@ export default class TaskItem extends Component {
   }
 
   progressBar() {
-    const state = this.props.state;
+    const {state} = this.props;
     let pbarBsStyle = 'info';
 
-    if (state === TASK_RUNNING) {
+    switch (state) {
+    case TASK_RUNNING: {
       pbarBsStyle = 'info';
-    } else if (state === TASK_COLLECTED) {
+    
+    break;
+    }
+    case TASK_COLLECTED: {
       pbarBsStyle = 'success';
-    } else if (state === TASK_COLLECT_FAILED) {
+    
+    break;
+    }
+    case TASK_COLLECT_FAILED: {
       pbarBsStyle = 'danger';
+    
+    break;
+    }
+    // No default
     }
 
     return (
@@ -255,12 +266,23 @@ export default class TaskItem extends Component {
       ? 'task-head task-head-selected'
       : 'task-head';
 
-    if (state === TASK_RUNNING) {
+    switch (state) {
+    case TASK_RUNNING: {
       taskCSS += ' running';
-    } else if (state === TASK_COLLECTED) {
+    
+    break;
+    }
+    case TASK_COLLECTED: {
       taskCSS += ' success';
-    } else if (state === TASK_COLLECT_FAILED) {
+    
+    break;
+    }
+    case TASK_COLLECT_FAILED: {
       taskCSS += ' error';
+    
+    break;
+    }
+    // No default
     }
 
     return (

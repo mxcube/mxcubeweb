@@ -16,8 +16,8 @@ class DraggableModalDialog extends React.Component {
   }
 }
 
-export const DraggableModal = (props) => (
-  <Modal
+export function DraggableModal(props) {
+  return <Modal
     dialogComponentClass={DraggableModalDialog}
     enforceFocus={false}
     backdrop="static"
@@ -25,4 +25,4 @@ export const DraggableModal = (props) => (
   >
     {props.children}
   </Modal>
-);
+}

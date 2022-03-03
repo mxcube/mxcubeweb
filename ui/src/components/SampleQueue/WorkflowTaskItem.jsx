@@ -39,7 +39,7 @@ export default class WorkflowTaskItem extends Component {
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return <span></span>;
+      return <span />;
     }
     const link = this.props.data.limsResultData
       ? this.props.data.limsResultData.limsTaskLink
@@ -54,7 +54,7 @@ export default class WorkflowTaskItem extends Component {
           padding: '0.5em',
         }}
       >
-        <a href={link} target="_blank">
+        <a href={link} target="_blank" rel="noreferrer">
           {' '}
           View Results in ISPyB
         </a>
@@ -105,7 +105,7 @@ export default class WorkflowTaskItem extends Component {
     if (parameters.shape !== -1) {
       try {
         res = `${this.props.shapes.shapes[parameters.shape].name}: `;
-      } catch (e) {
+      } catch {
         res = '';
       }
     }
@@ -144,15 +144,26 @@ export default class WorkflowTaskItem extends Component {
   }
 
   progressBar() {
-    const state = this.props.state;
+    const {state} = this.props;
     let pbarBsStyle = 'info';
 
-    if (state === TASK_RUNNING) {
+    switch (state) {
+    case TASK_RUNNING: {
       pbarBsStyle = 'info';
-    } else if (state === TASK_COLLECTED) {
+    
+    break;
+    }
+    case TASK_COLLECTED: {
       pbarBsStyle = 'success';
-    } else if (state === TASK_COLLECT_FAILED) {
+    
+    break;
+    }
+    case TASK_COLLECT_FAILED: {
       pbarBsStyle = 'danger';
+    
+    break;
+    }
+    // No default
     }
 
     return (
@@ -174,7 +185,7 @@ export default class WorkflowTaskItem extends Component {
   render() {
     const { state, data, show } = this.props;
 
-    const parameters = data.parameters;
+    const {parameters} = data;
 
     const delTaskCSS = {
       display: 'flex',
@@ -190,12 +201,23 @@ export default class WorkflowTaskItem extends Component {
       ? 'task-head task-head-selected'
       : 'task-head';
 
-    if (state === TASK_RUNNING) {
+    switch (state) {
+    case TASK_RUNNING: {
       taskCSS += ' running';
-    } else if (state === TASK_COLLECTED) {
+    
+    break;
+    }
+    case TASK_COLLECTED: {
       taskCSS += ' success';
-    } else if (state === TASK_COLLECT_FAILED) {
+    
+    break;
+    }
+    case TASK_COLLECT_FAILED: {
       taskCSS += ' error';
+    
+    break;
+    }
+    // No default
     }
 
     return (

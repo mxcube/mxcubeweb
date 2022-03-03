@@ -238,7 +238,7 @@ export default class DrawGridPlugin {
     const numCols = Math.ceil(width / cellTW);
     const numRows = Math.ceil(height / cellTH);
 
-    const cellLimit = 10000;
+    const cellLimit = 10_000;
 
     const draw = this.drawing && validPosition && numCols * numRows < cellLimit;
 
@@ -279,8 +279,8 @@ export default class DrawGridPlugin {
   }
 
   heatMapColorForValue(gd, value) {
-    let dataFill = `rgba(${parseInt(value[0], 10)}, ${parseInt(value[1], 10)},`;
-    dataFill += `${parseInt(value[2], 10)}, ${this.overlayLevel})`;
+    let dataFill = `rgba(${Number.parseInt(value[0], 10)}, ${Number.parseInt(value[1], 10)},`;
+    dataFill += `${Number.parseInt(value[2], 10)}, ${this.overlayLevel})`;
     return dataFill;
   }
 
@@ -293,10 +293,9 @@ export default class DrawGridPlugin {
   initializeCellFilling(gd, col, row) {
     const level = this.overlayLevel ? this.overlayLevel : 0.2;
     const fill = `rgba(0, 0, 200, ${level}`;
-    const cellfillingMatrix = Array(col)
+    return new Array(col)
       .fill()
-      .map(() => Array(row).fill(fill));
-    return cellfillingMatrix;
+      .map(() => new Array(row).fill(fill));
   }
 
   cellFillingFromData(gd, col, row) {
@@ -307,9 +306,9 @@ export default class DrawGridPlugin {
      */
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    const data = Array(col)
+    const data = new Array(col)
       .fill()
-      .map(() => Array(row).fill());
+      .map(() => new Array(row).fill());
 
     for (let nw = 0; nw < col; nw++) {
       for (let nh = 0; nh < row; nh++) {
@@ -603,11 +602,9 @@ export default class DrawGridPlugin {
     let cell = null;
 
     shapeGroup.forEachObject((obj) => {
-      if (obj.get('type') === 'ellipse') {
-        if (obj.containsPoint(clickPoint, null, true)) {
+      if (obj.get('type') === 'ellipse' && obj.containsPoint(clickPoint, null, true)) {
           cell = obj;
         }
-      }
     });
 
     return cell;
@@ -686,26 +683,40 @@ export default class DrawGridPlugin {
   countCells(mode, currentRow, currentCol, numRows, numCols) {
     let count = '';
 
-    if (mode === 'zig-zag') {
+    switch (mode) {
+    case 'zig-zag': {
       count = this.zigZagCellCount(currentRow, currentCol, numRows, numCols);
-    } else if (mode === 'top-down-zig-zag') {
+    
+    break;
+    }
+    case 'top-down-zig-zag': {
       count = this.topDownZigZagCellCount(
         currentRow,
         currentCol,
         numRows,
         numCols
       );
-    } else if (mode === 'top-down') {
+    
+    break;
+    }
+    case 'top-down': {
       count = this.topDownCellCount(currentRow, currentCol, numRows, numCols);
-    } else if (mode === 'inverse-zig-zag') {
+    
+    break;
+    }
+    case 'inverse-zig-zag': {
       count = this.inverseZigZagCellCount(
         currentRow,
         currentCol,
         numRows,
         numCols
       );
-    } else {
+    
+    break;
+    }
+    default: {
       count = this.leftRightCellCount(currentRow, currentCol, numRows, numCols);
+    }
     }
 
     return count.toString();
@@ -754,9 +765,7 @@ export default class DrawGridPlugin {
    * 3 4 9
    */
   topDownCellCount(currentRow, currentCol, numRows) {
-    const cellCount = currentCol + 1 + currentRow * numRows;
-
-    return cellCount;
+    return currentCol + 1 + currentRow * numRows;
   }
 
   /**
@@ -766,9 +775,7 @@ export default class DrawGridPlugin {
    * 7 4 1
    */
   inverseBottomUp(currentRow, currentCol, numRows, numCols) {
-    const cellCount = numRows * numCols - currentRow * numRows - currentCol;
-
-    return cellCount;
+    return numRows * numCols - currentRow * numRows - currentCol;
   }
 
   /**

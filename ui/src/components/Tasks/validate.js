@@ -6,9 +6,9 @@ const validate = (values, props) => {
     // for some reason redux-form is loaded before the initial status
     return errors;
   }
-  const currEnergy = parseFloat(values.energy);
-  const currRes = parseFloat(values.resolution);
-  const currTransmission = parseFloat(values.transmission);
+  const currEnergy = Number.parseFloat(values.energy);
+  const currRes = Number.parseFloat(values.resolution);
+  const currTransmission = Number.parseFloat(values.transmission);
   const energies = props.attributes.resolution.limits.map((value) => value[0]);
   const limitsMin = props.attributes.resolution.limits.map((value) => value[1]);
   const limitsMax = props.attributes.resolution.limits.map((value) => value[2]);
@@ -16,8 +16,8 @@ const validate = (values, props) => {
   // the limits come from a table sent by the client
 
   /* eslint-disable no-useless-escape */
-  const validPath = props.path.match(/^[-\w\-\/\_\{\}]+$/);
-  const validFname = props.filename.match(/^[-\w\-\#\_\{\}\[\]]+$/);
+  const validPath = props.path.match(/^[\w/{}\-\-]+$/);
+  const validFname = props.filename.match(/^[\w#[\]{}\-\-]+$/);
   /* eslint-enable no-useless-escape */
 
   if (!validFname) {
@@ -43,16 +43,16 @@ const validate = (values, props) => {
 
   if (
     values.num_images === '' ||
-    parseInt(values.num_images, 10) >
+    Number.parseInt(values.num_images, 10) >
       props.acqParametersLimits.number_of_images ||
-    parseInt(values.num_images, 10) < 1
+    Number.parseInt(values.num_images, 10) < 1
   ) {
     errors.num_images = 'Number of images out of allowed range';
   }
   if (
     values.osc_range === '' ||
-    parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range ||
-    parseFloat(values.osc_range, 10) < 0
+    Number.parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range ||
+    Number.parseFloat(values.osc_range, 10) < 0
   ) {
     errors.osc_range = 'wrong value';
   }
@@ -64,8 +64,8 @@ const validate = (values, props) => {
   const exptimemax = props.acqParametersLimits.exposure_time[1];
   if (
     values.exp_time === '' ||
-    parseFloat(values.exp_time, 10) > exptimemax ||
-    parseFloat(values.exp_time, 10) < exptimemin
+    Number.parseFloat(values.exp_time, 10) > exptimemax ||
+    Number.parseFloat(values.exp_time, 10) < exptimemin
   ) {
     errors.exp_time = 'Exposure time out of allowed limit';
   }
@@ -74,8 +74,7 @@ const validate = (values, props) => {
     errors.resolution = 'Resolution outside working range';
   }
 
-  if (energies.length > 2) {
-    if (
+  if (energies.length > 2 && 
       !(
         currEnergy > props.attributes.energy.limits[0] &&
         currEnergy < props.attributes.energy.limits[1]
@@ -83,7 +82,6 @@ const validate = (values, props) => {
     ) {
       errors.energy = 'Energy outside working range';
     }
-  }
 
   if (!(currTransmission >= 0 && currTransmission <= 100)) {
     errors.transmission = 'Transmission outside working range';
@@ -93,7 +91,7 @@ const validate = (values, props) => {
     props.pointID !== -1 &&
     props.pointID.includes('2D') &&
     props.form === 'characterisation' &&
-    parseFloat(values.num_images) !== 1
+    Number.parseFloat(values.num_images) !== 1
   ) {
     errors.num_images =
       'Only 1 image allowed when characterizing from a 2D-point';

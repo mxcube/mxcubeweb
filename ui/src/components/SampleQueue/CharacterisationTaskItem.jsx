@@ -41,7 +41,7 @@ export default class TaskItem extends Component {
 
   getResult(state, data) {
     if (this.props.data.state !== TASK_COLLECTED) {
-      return <span></span>;
+      return <span />;
     }
 
     const link = this.props.data.limsResultData
@@ -49,7 +49,7 @@ export default class TaskItem extends Component {
       : '#';
 
     if (link === '#') {
-      return <span></span>;
+      return <span />;
     }
 
     return (
@@ -81,8 +81,7 @@ export default class TaskItem extends Component {
 
   getDiffPlan(data) {
     let diffPlan = [];
-    if (data.hasOwnProperty('diffractionPlan')) {
-      if (Object.keys(data.diffractionPlan).length !== 0) {
+    if (data.hasOwnProperty('diffractionPlan') && Object.keys(data.diffractionPlan).length > 0) {
         // it can be empty
         diffPlan = (
           <span className="pull-right">
@@ -97,7 +96,6 @@ export default class TaskItem extends Component {
           </span>
         );
       }
-    }
     return diffPlan;
   }
 
@@ -175,12 +173,12 @@ export default class TaskItem extends Component {
     wedges.forEach((wedge) => {
       if (
         wedge.parameters.shape !== -1 &&
-        res.indexOf(`${wedge.parameters.shape}`) < 0
+        !res.includes(`${wedge.parameters.shape}`)
       ) {
         try {
           res += `${this.props.shapes.shapes[wedge.parameters.shape].name} :`;
-        } catch (e) {
-          res += '';
+        } catch {
+          res = String(res);
         }
       }
     });
@@ -189,7 +187,7 @@ export default class TaskItem extends Component {
   }
 
   wedgePath(wedge) {
-    const parameters = wedge.parameters;
+    const {parameters} = wedge;
     const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
 
@@ -220,7 +218,7 @@ export default class TaskItem extends Component {
   }
 
   wedgeParameters(wedge) {
-    const parameters = wedge.parameters;
+    const {parameters} = wedge;
 
     return (
       <tr>
@@ -256,15 +254,26 @@ export default class TaskItem extends Component {
   }
 
   progressBar() {
-    const state = this.props.state;
+    const {state} = this.props;
     let pbarBsStyle = 'info';
 
-    if (state === TASK_RUNNING) {
+    switch (state) {
+    case TASK_RUNNING: {
       pbarBsStyle = 'info';
-    } else if (state === TASK_COLLECTED) {
+    
+    break;
+    }
+    case TASK_COLLECTED: {
       pbarBsStyle = 'success';
-    } else if (state === TASK_COLLECT_FAILED) {
+    
+    break;
+    }
+    case TASK_COLLECT_FAILED: {
       pbarBsStyle = 'danger';
+    
+    break;
+    }
+    // No default
     }
 
     return (

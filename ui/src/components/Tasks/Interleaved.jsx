@@ -39,7 +39,7 @@ function getSubWedges(swNumImg, wedgeList) {
     for (
       let _swSizeDeg = 0;
       _swSizeDeg < wedgeSize;
-      _swSizeDeg = _swSizeDeg + swSizeDeg
+      _swSizeDeg += swSizeDeg
     ) {
       const subWedge = { ...wedge, parameters: { ...wedge.parameters } };
 
@@ -299,7 +299,7 @@ Interleaved = connect((state) => {
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   const shapeId = state.taskForm.pointID;
   const subWedgeSize = selector(state, 'subWedgeSize');
-  const wedges = state.taskForm.taskData.parameters.wedges;
+  const {wedges} = state.taskForm.taskData.parameters;
 
   return {
     acqParametersLimits: state.taskForm.acqParametersLimits,

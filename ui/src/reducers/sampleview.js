@@ -169,30 +169,24 @@ export default (state = initialState, action) => {
       return { ...state, selectedShapes };
     }
     case 'CLEAR_ALL': {
-      return Object.assign({}, state, {
-        distancePoints: [],
+      return { ...state, distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
-        selectedShapes: [],
-      });
+        selectedShapes: [],};
     }
     case 'SET_CURRENT_SAMPLE': {
-      return Object.assign({}, state, {
-        distancePoints: [],
+      return { ...state, distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
-        selectedShapes: [],
-      });
+        selectedShapes: [],};
     }
     case 'CLEAR_QUEUE': {
-      return Object.assign({}, state, {
-        distancePoints: [],
+      return { ...state, distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
-        gridCount: 0,
-      });
+        gridCount: 0,};
     }
     case 'SET_INITIAL_STATE': {
       return {

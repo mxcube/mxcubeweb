@@ -179,7 +179,7 @@ export class SampleGridItem extends React.Component {
       displayRight = 'none';
     }
 
-    let content = <div></div>;
+    let content = <div />;
 
     if (this.props.moving) {
       content = (
@@ -232,7 +232,7 @@ export class SampleGridItem extends React.Component {
   }
 
   sampleInformation() {
-    const sampleData = this.props.sampleData;
+    const {sampleData} = this.props;
     const limsData = (
       <div>
         <div className="row">
@@ -282,7 +282,7 @@ export class SampleGridItem extends React.Component {
     let result = 'bottom';
 
     if (this.refs.sampleItem) {
-      if (parseInt(this.refs.sampleItem.style.top, 10) <= viewportHeight / 2) {
+      if (Number.parseInt(this.refs.sampleItem.style.top, 10) <= viewportHeight / 2) {
         result = 'bottom';
       } else {
         result = 'top';
@@ -358,7 +358,7 @@ export class SampleGridItem extends React.Component {
               data-type="text"
               data-pk="1"
               data-url="/post"
-              data-title="Enter protein acronym"
+              data-title="Enter protein acronym" rel="noreferrer"
             >
               {this.sampleDisplayName()}
             </a>
