@@ -10,6 +10,10 @@ import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 import { persistStore } from 'redux-persist';
 // import crosstabSync from 'redux-persist-crosstab';
+import {
+  createStateSyncMiddleware,
+  initMessageListener,
+} from "redux-state-sync";
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
 import SampleChangerContainer from './containers/SampleChangerContainer';
@@ -34,7 +38,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 library.add(fas, far, fab);
 
 // Logger MUST BE the last middleware
-const middleware = [thunk, createLogger()];
+const middleware = [thunk, createLogger(), createStateSyncMiddleware()];
 
 // passing several store enhancers to createStore need to be compose together
 const composedEnhancers = compose(
@@ -43,6 +47,8 @@ const composedEnhancers = compose(
 );
 
 const store = createStore(rootReducer, composedEnhancers);
+
+initMessageListener(store);
 
 if (module.hot) {
   // Enable Webpack hot module replacement for reducers
