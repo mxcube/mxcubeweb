@@ -45,7 +45,22 @@ module.exports = createConfig({
     'sonarjs/no-extra-arguments': 'warn',
     'array-callback-return': 'warn',
     'unicorn/no-abusive-eslint-disable': 'off',
-    'no-unmodified-loop-condition': 'warn'
+    'no-unmodified-loop-condition': 'warn',
+
+    // Fixed by eslint --fix:
+    'unicorn/prefer-switch': 'warn',
+    'unicorn/explicit-length-check': 'warn',
+    'unicorn/prefer-switch': 'warn',
+    'unicorn/prefer-set-has': 'warn',
+    'unicorn/no-zero-fractions': 'warn',
+    'unicorn/no-useless-spread': 'warn',
+    'sonarjs/no-collapsible-if': 'warn',
+    'unicorn/prefer-optional-catch-binding': 'warn',
+    'unicorn/new-for-builtins': 'warn',
+    'unicorn/prefer-array-find': 'warn',
+    'unicorn/prefer-optional-catch-binding': 'warn',
+    'unicorn/catch-error-name': 'warn',
+    'prefer-spread': 'warn',
     
     // zustand has `whitelist` option
     // 'inclusive-language/use-inclusive-words': [
