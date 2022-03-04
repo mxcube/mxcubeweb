@@ -124,7 +124,6 @@ class SampleQueueContainer extends React.Component {
         ? `${sampleData.proteinAcronym} -`
         : '';
     }
-    debugger;
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
