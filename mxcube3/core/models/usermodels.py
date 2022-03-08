@@ -96,7 +96,7 @@ class User(Base, UserMixin):
             "username": self.username,
             "email": self.email,
             "isstaff": "staff" in self.roles,
-            "islocal": "local" in self.roles,
+            "isLocal": "local" in self.roles,
             "nickname": self.nickname,
             "inControl": self.in_control,
             "ip": self.current_login_ip,

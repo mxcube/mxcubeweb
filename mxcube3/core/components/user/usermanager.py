@@ -233,7 +233,7 @@ class BaseUserManager(ComponentBase):
                 "isstaff": "",
                 "nickname": "",
                 "inControl": "",
-                "islocal": "",
+                "isLocal": "",
                 "ip": "",
             },
         }

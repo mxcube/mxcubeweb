@@ -118,7 +118,6 @@ export function signIn(proposal, password) {
               dispatch(showProposalsForm());
             }
             else {
-              dispatch(selectProposal(resp.selectedProposal));
               browserHistory.push('/');
             }
           } else {
