@@ -1,5 +1,5 @@
 import React from 'react';
-import { Label } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 
 import './style.css';
 
@@ -26,21 +26,21 @@ export default class LabeledValue extends React.Component {
     return (
       <div>
         <span>
-          <div>
-            <Label
-              bsStyle="default"
+          <div className='d-flex'>
+            <Form.Label
               style={ labelStyle }
             >
               {this.props.name}
-            </Label>
-          </div>
-          <div>
-            <Label
-              bsStyle={this.props.level}
+              <span style={{ marginRight: '0.5em'}}/>
+            </Form.Label>
+            
+            <Form.Label
+              as={Button}
+              variant={this.props.level}
               style={ valueStyle }
             >
               {value} {this.props.suffix}
-            </Label>
+            </Form.Label>
           </div>
         </span>
       </div>

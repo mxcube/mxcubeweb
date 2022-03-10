@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Button, Panel } from 'react-bootstrap';
+import { Row, Col, Button, Card } from 'react-bootstrap';
 import { sendGiveControl, sendLogoutUser } from '../../actions/remoteAccess';
 
 class UserList extends React.Component {
@@ -45,17 +45,17 @@ class UserList extends React.Component {
 
   render() {
     return (
-      <Panel>
-        <Panel.Heading>Users</Panel.Heading>
-        <Panel.Body>
-          <div className="col-xs-12">
-            <div className="col-xs-4"><b>Name</b></div>
-            <div className="col-xs-4"><b>Host</b></div>
-            <div className="col-xs-4"><span>&nbsp;</span></div>
+      <Card className="mb-3">
+        <Card.Header>Users</Card.Header>
+        <Card.Body>
+          <Row className="col-xs-12">
+            <Col className="col-xs-4"><b>Name</b></Col>
+            <Col className="col-xs-4"><b>Host</b></Col>
+            <Col className="col-xs-4"><span>&nbsp;</span></Col>
             {this.getObservers()}
-          </div>
-        </Panel.Body>
-      </Panel>
+          </Row>
+        </Card.Body>
+      </Card>
     );
   }
 }

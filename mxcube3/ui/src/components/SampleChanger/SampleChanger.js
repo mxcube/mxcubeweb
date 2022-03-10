@@ -1,7 +1,8 @@
 import React from 'react';
 import {
-  Panel, Button, DropdownButton, Glyphicon,
+  Card, Nav, Button, DropdownButton,
 } from 'react-bootstrap';
+
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 
 import './SampleChanger.css';
@@ -23,9 +24,12 @@ export class SampleChangerTree extends React.Component {
     }
 
     return (
-      <Panel style={{ marginTop: '0.5em' }} header={this.props.title} bsStyle={titleBackground}>
+      <Card className='mb-3' style={{ marginTop: '0.5em' }} bg={titleBackground}>
+        <Card.Header>
+          {this.props.title}
+        </Card.Header>
         {this.props.children}
-      </Panel>
+      </Card>
     );
   }
 }
@@ -96,7 +100,8 @@ export class SampleChangerTreeNode extends React.Component {
         <ContextMenu id={`${this.props.label}`}>
           <li role="heading" aria-level="2" className="dropdown-header">
             <b>
-Container
+              Container
+              {' '}
               {this.props.label}
             </b>
           </li>
@@ -161,13 +166,13 @@ export class SampleChangerTreeItem extends React.Component {
             <DropdownButton
               style={{ fontStyle: 'italic', padding: '0.2em 0.2em' }}
               title={`${this.props.dm}`}
-              bsStyle="link"
+              variant="link"
               onToggle={this.toggleDropdown}
               open={this.state.dropdownIsOpen}
             >
               <li role="heading" aria-level="2" className="dropdown-header">
                 <b>
-Position
+                  Position
                   {this.props.label}
                 </b>
               </li>
@@ -180,8 +185,8 @@ Position
               </MenuItem>
             </DropdownButton>
             <span style={{ verticalAlign: 'middle' }}>
-                &nbsp;
-              <Glyphicon style={ls} glyph="arrow-left" />
+              &nbsp;
+              <i className="fas fa-arrow-left" />
               {' '}
               <b style={ls}>(Mounted)</b>
             </span>
@@ -264,10 +269,10 @@ export default class SampleChanger extends React.Component {
           {' '}
 )
           <span style={{ marginRight: '1em' }} />
-          <Button bsStyle="default" onClick={this.unload}>
-            <Glyphicon glyph="save" />
+          <Button variant="secondary" onClick={this.unload}>
+            <i className="fas fa-download" />
             {' '}
-Unload
+            Unload
           </Button>
         </div>
       );
@@ -277,10 +282,10 @@ Unload
 
     if (this.props.state === 'MOVING') {
       abortButton = (
-        <Button bsStyle="default" className="abortButton" onClick={this.abort}>
-          <Glyphicon glyph="stop" />
+        <Button variant="danger" className="abortButton" onClick={this.abort}>
+          <i className="fas fa-stop" />
           {' '}
-Abort
+        Abort
         </Button>
       );
     } else {
@@ -288,25 +293,29 @@ Abort
     }
 
     return (
-      <Panel header="Contents">
-        <Button bsStyle="default" onClick={this.props.refresh}>
-          <Glyphicon glyph="refresh" />
-          {' '}
-Refresh
-        </Button>
-        <span style={{ marginLeft: '1em' }} />
-        <Button bsStyle="default" onClick={this.scan}>
-          <Glyphicon glyph="qrcode" />
-          {' '}
-Scan all containers
-        </Button>
-        <span style={{ marginLeft: '1em' }}>{abortButton}</span>
-        {current}
-        <div style={{ marginBottom: '1em' }} />
-        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-          {nodes}
-        </div>
-      </Panel>
+      <Card className='mb-3'>
+        <Card.Header>
+          Content
+        </Card.Header>
+        <Card.Body>
+            <Button  variant="outline-secondary" onClick={this.props.refresh}>
+              <i className="fas fa-sync" /> 
+              {' '}
+              Refresh
+            </Button>
+            <Button style={{ marginLeft: '1em' }} variant="outline-secondary" onClick={this.scan}>
+              <i className="fas fa-qrcode" />
+              {' '}
+              Scan all containers
+            </Button>
+            <span style={{ marginLeft: '1em' }}>{abortButton}</span>
+            {current}
+            <div style={{ marginBottom: '1em' }} />
+            <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+              {nodes}
+            </div>
+        </Card.Body>
+      </Card>
     );
   }
 }

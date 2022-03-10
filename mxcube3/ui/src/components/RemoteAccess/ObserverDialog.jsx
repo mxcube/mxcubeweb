@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, FormControl } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { showObserverDialog, sendUpdateNickname } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
@@ -67,8 +67,8 @@ export class ObserverDialog extends React.Component {
           continue.
         </Modal.Body>
         <Modal.Footer>
-          <FormControl
-            inputRef={(ref) => { this.name = ref; }}
+          <Form.Control
+            ref={(ref) => { this.name = ref; }}
             type="text"
             default={this.props.login.selectedProposal}
           />

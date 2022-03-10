@@ -184,15 +184,15 @@ class Mesh extends React.Component {
             <Modal.Footer>
               <ButtonToolbar className="pull-left">
                 <Button
-                  bsSize="xsmall"
-                  bsStyle="default"
+                  size="sm"
+                  variant="outline-dark"
                   onClick={this.defaultParameters}
                 >
                Default Parameters
                 </Button>
                 <Button
-                  bsSize="xsmall"
-                  bsStyle="default"
+                  size="sm"
+                  variant="outline-dark"
                   onClick={this.resetParameters}
                 >
                Reset Form
@@ -200,14 +200,14 @@ class Mesh extends React.Component {
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
                 <Button
-                  bsStyle="success"
+                  variant="success"
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
                  Run Now
                 </Button>
                 <Button
-                  bsStyle="primary"
+                  variant="primary"
                   disabled={this.props.invalid}
                   onClick={this.submitAddToQueue}
                 >

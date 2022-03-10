@@ -1,8 +1,11 @@
 import React from 'react';
-import { withRouter } from 'react-router';
+// import { withRouter } from 'react-router';
+// import { withRouter } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Glyphicon, MenuItem } from 'react-bootstrap';
+import { Row, Dropdown } from 'react-bootstrap';
+
+import { MdAdd, MdRemove, MdAddToQueue, MdFlare, Md360 } from "react-icons/md";
 
 import { SpringGrid } from 'react-stonecutter';
 
@@ -652,7 +655,7 @@ class SampleGridContainer extends React.Component {
    *
    * @property {Object} workflows
    *
-   * return {array} Array of <MenuItem>
+   * return {array} Array of <Dropdown.Item>
    */
   workflowMenuOptions() {
     const workflowTasks = { point: [], line: [], grid: [], samplegrid: [], none: [] };
@@ -682,9 +685,9 @@ class SampleGridContainer extends React.Component {
     });
 
     const menuItems = workflowTasks.samplegrid.map((wf) => (
-      <MenuItem eventKey={wf.key} onClick={wf.action} key={wf.key}>
+      <Dropdown.Item eventKey={wf.key} onClick={wf.action} key={wf.key}>
         {wf.text}
-      </MenuItem>
+      </Dropdown.Item>
     ));
 
     return menuItems;
@@ -715,45 +718,45 @@ class SampleGridContainer extends React.Component {
 
   taskContextMenuItems() {
     return [
-      <MenuItem divider />,
-      <MenuItem header> <span><Glyphicon glyph="plus" /> Add </span></MenuItem>,
-      <MenuItem eventKey="2" onClick={this.props.showDataCollectionForm}>
+      <Dropdown.Divider />,
+      <Dropdown.Item header> <span><MdAdd glyph="plus" /> Add </span></Dropdown.Item>,
+      <Dropdown.Item eventKey="2" onClick={this.props.showDataCollectionForm}>
         Data collection
-      </MenuItem>,
-      <MenuItem eventKey="3" onClick={this.props.showCharacterisationForm}>
+      </Dropdown.Item>,
+      <Dropdown.Item eventKey="3" onClick={this.props.showCharacterisationForm}>
         Characterisation
-      </MenuItem>,
+      </Dropdown.Item>,
       ...this.workflowMenuOptions(),
-      <MenuItem divider />,
-      <MenuItem header><span><Glyphicon glyph="minus" /> Remove </span></MenuItem>,
-      <MenuItem eventKey="1" onClick={this.props.removeSelectedSamples}>
+      <Dropdown.Divider />,
+      <Dropdown.Item header><span><MdRemove glyph="minus" /> Remove </span></Dropdown.Item>,
+      <Dropdown.Item eventKey="1" onClick={this.props.removeSelectedSamples}>
         Dequeue Samples
-      </MenuItem>,
-      <MenuItem eventKey="1" onClick={this.props.removeSelectedTasks}>
+      </Dropdown.Item>,
+      <Dropdown.Item eventKey="1" onClick={this.props.removeSelectedTasks}>
         Remove Tasks
-      </MenuItem>,
+      </Dropdown.Item>,
     ];
   }
 
   sampleContextMenu() {
     return [
-      <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><Glyphicon glyph="unchecked" /> Add to Queue</span>
-      </MenuItem>,
-      <MenuItem eventKey="2" onClick={this.mountAndCollect}>
-        <span><Glyphicon glyph="screenshot" /> Mount </span>
-      </MenuItem>,
+      <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
+        <span><MdAddToQueue glyph="unchecked" /> Add to Queue</span>
+      </Dropdown.Item>,
+      <Dropdown.Item eventKey="2" onClick={this.mountAndCollect}>
+        <span><MdFlare glyph="screenshot" /> Mount </span>
+      </Dropdown.Item>,
     ];
   }
 
   sampleContextMenuMounted() {
     return [
-      <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><Glyphicon glyph="unchecked" /> Add to Queue</span>
-      </MenuItem>,
-      <MenuItem eventKey="2" onClick={this.unmount}>
-        <span><Glyphicon glyph="share-alt" /> Unmount </span>
-      </MenuItem>
+      <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
+        <span><MdAddToQueue glyph="unchecked" /> Add to Queue</span>
+      </Dropdown.Item>,
+      <Dropdown.Item eventKey="2" onClick={this.unmount}>
+        <span><Md360 glyph="share-alt" /> Unmount </span>
+      </Dropdown.Item>
     ];
   }
 
@@ -830,7 +833,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-SampleGridContainer = withRouter(SampleGridContainer);
+// SampleGridContainer = withRouter(SampleGridContainer);
 
 export default connect(
   mapStateToProps,

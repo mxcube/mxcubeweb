@@ -60,13 +60,13 @@ Proposal Number
         <Modal.Footer>
           <ButtonToolbar>
             <Button
-              bsStyle="default"
+              variant="outline-secondary"
               onClick={this.handleCancel}
             >
               Sign Out
             </Button>
             <Button
-              bsStyle="primary"
+              variant="primary"
               className="pull-right"
               disabled={typeof this.props.selectedProposal === 'undefined'}
               onClick={this.sendProposal}

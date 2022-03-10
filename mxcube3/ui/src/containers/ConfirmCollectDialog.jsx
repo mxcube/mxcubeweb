@@ -6,8 +6,8 @@ import { Modal,
   Button,
   Table,
   OverlayTrigger,
-  Popover,
-  Checkbox } from 'react-bootstrap';
+  Popover, Alert,
+  Form } from 'react-bootstrap';
 
 import { sendRunQueue,
   sendRunSample,
@@ -262,7 +262,7 @@ export class ConfirmCollectDialog extends React.Component {
     let table = (
       <div style={{ marginBottom: '1em', borderRadius: '5px',
         backgroundColor: 'rgba(247, 211, 35, 0.27)',
-        padding: '1em', width: '50em'
+        padding: '1em', width: 'auto'
       }}
       >
         No tasks added to any of the samples, you have the
@@ -341,19 +341,19 @@ export class ConfirmCollectDialog extends React.Component {
           </p>
           <div>
             <span>
-              <Checkbox
+              <Form.Check
+                type="checkbox"
                 defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
                 onClick={this.autoLoopCentringOnClick}
-              >
-                Auto loop centring
-              </Checkbox>
+                label="Auto loop centring"
+              />
               { autoMountNext ?
-                  <Checkbox
+                  <Form.Check
+                    type="checkbox"
                     defaultChecked={this.props.queue.autoMountNext}
                     onClick={this.autoMountNextOnClick}
-                  >
-                    Auto mount next sample
-                  </Checkbox>
+                    label="Auto mount next sample"
+                  />
                 : <span />
               }
               <NumSnapshotsDropDown />

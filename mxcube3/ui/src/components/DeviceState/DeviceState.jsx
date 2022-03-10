@@ -1,5 +1,5 @@
 import React from 'react';
-import { Label } from 'react-bootstrap';
+import { Badge } from 'react-bootstrap';
 
 export default class DeviceState extends React.Component {
   render() {
@@ -14,12 +14,13 @@ export default class DeviceState extends React.Component {
 
     return (
       <div>
-        <Label
+        <Badge
+          bg="secondary"
           style={{ display: 'block', marginBottom: '3px' }}
         >
           {this.props.labelText}
-        </Label>
-        <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data}</Label>
+        </Badge>
+        <Badge bg={msgBgStyle} style={msgLabelStyle}>{this.props.data}</Badge>
       </div>
     );
   }

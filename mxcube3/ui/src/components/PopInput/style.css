@@ -14,39 +14,56 @@
   float: right;
 }
 
-.popinput-input-busy{
+ .popinput-input-busy{
   display: inline-block;
   background-image: url(../../img/busy-indicator.gif);
   height: 32px;
   width: 32px;
-}
+  }
 
-.visibility-hidden{ 
-  visibility: hidden;
-  display: inline;
-}
+  .popinput-input{
+    height: 31px;
+    margin-right: 1m;
+    }
+    
+  .visibility-hidden{ 
+    visibility: hidden;
+    display: none;
+    }
 
-.value-label-enter-success{
+
+ .value-label-enter-success{
   transition: background-color 1000ms ease-out;
-}
-
-.popinput-input-container {
-  display: inline;
-}
-
-
-.popinput-input-editicon {
-  visibility: hidden;
-  color: #999;
-  margin-right: 5px;
-}
+  }
+  
+  .popinput-input-container {
+   display: inline;
+  }
 
 
-.popinput-input-link:hover > .popinput-input-editicon {
-  visibility: visible;
-}
-
-.editable-click {
-  cursor: pointer;
-}
+  .popinput-input-editicon {
+    visibility: hidden;
+    color: #999;
+    margin-right: 5px;
+    }
+    
+    .popinput-input-link{
+    cursor:pointer;
+    /* color:blue; */
+    margin-left: 0.5em;
+    text-decoration:underline;
+    }
+    
+    .popinput-input-link:hover {
+    visibility: visible;
+    text-decoration:none;
+    }
+    
+    .popinput-input-link:hover > .popinput-input-editicon {
+    visibility: visible;
+    }
+    
+    .editable-click {
+    cursor: pointer;
+    }
 

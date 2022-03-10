@@ -114,9 +114,7 @@ export default class CurrentTree extends React.Component {
       sampleData = this.props.sampleList[sampleId];
       sampleTasks = sampleData ? this.props.sampleList[sampleId].tasks : [];
     }
-
     if (!this.props.show) { return <div />; }
-
     return (
       <div>
         <div style={{ top: 'initial' }} className="list-body">

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { OverlayTrigger, Popover, Label } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Form } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
 
@@ -217,15 +217,15 @@ export default class LabelPopInput extends React.Component {
 
     return (
       <span className={`${this.props.className} popinput-input-container`}>
-        <Label
+        <Form.Label
           className={`${this.props.ref}`}
           style={{ backgroundColor: 'transparent', display: 'block',
             marginBottom: '3px', color: '#000' }}
         >
           {this.props.name}
-        </Label>
-        <Label
-          bsStyle={stateClass}
+        </Form.Label>
+        <Badge
+          bg={stateClass}
           style={{ backgroundColor: 'transparent', display: 'block',
             fontSize: '100%', borderRadius: '0px' }}
         >
@@ -241,7 +241,7 @@ export default class LabelPopInput extends React.Component {
               {this.props.data.value} {this.props.suffix}
             </a>
           </OverlayTrigger>
-        </Label>
+        </Badge>
       </span>
     );
   }

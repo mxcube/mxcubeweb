@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, FormControl } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { requestControlResponse } from '../../actions/remoteAccess';
 
 export class PassControlDialog extends React.Component {
@@ -69,8 +69,8 @@ export class PassControlDialog extends React.Component {
           User "{observer.nickname}" is asking for control:
         </Modal.Body>
         <Modal.Footer>
-          <FormControl
-            inputRef={(ref) => { this.message = ref; }}
+          <Form.Control
+            ref={(ref) => { this.message = ref; }}
             defaultValue="Here you go !"
             type="textarea"
             placeholder="Message"

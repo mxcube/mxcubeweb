@@ -86,26 +86,29 @@ class DataCollection extends React.Component {
   showDCFooter() {
     return (
       <Modal.Footer>
-        <div className="input-group-btn">
-          <ButtonToolbar className="pull-left">
+        <div className="input-group-btn d-flex">
+          <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
             <Button
-              bsSize="xsmall"
-              bsStyle="default"
+              size="sm"
+              variant="outline-dark"
               onClick={this.defaultParameters}
             >
              Default Parameters
             </Button>
           </ButtonToolbar>
-          <ButtonToolbar className="pull-right">
+          <ButtonToolbar>
             <Button
-              bsStyle="success"
+              className='me-3 ms-3'
+              size="sm"
+              variant="success"
               disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
               onClick={this.submitRunNow}
             >
              Run Now
             </Button>
             <Button
-              bsStyle="primary"
+              size="sm"
+              variant="primary"
               disabled={this.props.invalid}
               onClick={this.submitAddToQueue}
             >
@@ -122,14 +125,15 @@ class DataCollection extends React.Component {
       <Modal.Footer>
         <ButtonToolbar className="pull-right">
           <Button
-            bsStyle="success"
+            className='me-3'
+            variant="success"
             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
             onClick={this.submitRunNow}
           >
              Run Now
           </Button>
           <Button
-            bsStyle="primary"
+            variant="primary"
             disabled={this.props.invalid}
             onClick={this.submitAddToQueue}
           >
@@ -167,11 +171,11 @@ class DataCollection extends React.Component {
         <Modal.Header closeButton>
           <Modal.Title>Standard Data Collection</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body >
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row>
+            <Row className='mb-2'>
               <Col xs={12} style={{ marginTop: '10px' }}>
                 <InputField propName="subdir" label="Subdirectory" col1="2" col2="8" />
               </Col>

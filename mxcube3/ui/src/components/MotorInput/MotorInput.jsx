@@ -22,8 +22,8 @@ export default class MotorInput extends React.Component {
   /* eslint-enable react/no-set-state */
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
-      this.refs.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
-      this.refs.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
+      this.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
+      this.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
       this.setState({ edited: false });
     }
   }
@@ -37,10 +37,10 @@ export default class MotorInput extends React.Component {
     if ([13, 38, 40].includes(e.keyCode) && this.props.state === MOTOR_STATE.READY) {
       this.setState({ edited: false });
       this.props.save(e.target.name, e.target.valueAsNumber);
-      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+      this.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     } else if (this.props.state === MOTOR_STATE.BUSY || this.props.state === MOTOR_STATE.MOVING) {
       this.setState({ edited: false });
-      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+      this.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
     }
   }
   /* eslint-enable react/no-set-state */
@@ -49,8 +49,8 @@ export default class MotorInput extends React.Component {
     const { value, step } = this.props;
     const newValue = value + step * operator;
 
-    this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
-    this.refs.motorValue.defaultValue = newValue;
+    this.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+    this.motorValue.defaultValue = newValue;
     this.props.save(name, newValue);
   }
 
@@ -80,6 +80,7 @@ export default class MotorInput extends React.Component {
 
     return (
         <div className="motor-input-container">
+          d
           <p className="motor-name">{this.props.label}</p>
           <form style={{ display: 'inline' }} onSubmit={this.handleKey} noValidate>
             <div style={{ display: 'inline-block', width: '124px' }}>
@@ -106,7 +107,7 @@ export default class MotorInput extends React.Component {
                 </button>
               </span>
               <input
-                ref="motorValue"
+                ref={(ref) => { this.motorValue = ref; }}
                 className={inputCSS}
                 onKeyUp={this.handleKey}
                 type="number"
@@ -120,7 +121,7 @@ export default class MotorInput extends React.Component {
               className="rw-widget-right-border"
               style={{
                 width: '34px',
-                height: '34px',
+                height: '38px',
                 position: 'absolute',
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -145,7 +146,7 @@ export default class MotorInput extends React.Component {
                 <Button
                   style={{ width: '100%', height: '100%', display: 'block' }}
                   className="btn-xs motor-abort rw-widget-no-left-border"
-                  bsStyle="danger"
+                  variant="danger"
                   onClick={this.stopMotor}
                 >
                   <i className="glyphicon glyphicon-remove" />

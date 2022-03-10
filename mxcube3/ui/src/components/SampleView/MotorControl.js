@@ -5,6 +5,8 @@ import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
 import PhaseInput from './PhaseInput';
 import { find } from 'lodash';
 
+import { Row, Col } from 'react-bootstrap';
+
 import '../MotorInput/motor.css';
 
 export default class MotorControl extends React.Component {
@@ -24,7 +26,7 @@ export default class MotorControl extends React.Component {
       slice(from, to_arg).map((motor_uiprop) => {
         const motor = this.props.attributes[motor_uiprop.attribute];
         return (
-          <div className="col-sm-12">
+          <Col sm={12}>
             <MotorInput
               save={save}
               saveStep={saveStep}
@@ -38,7 +40,7 @@ export default class MotorControl extends React.Component {
               stop={_stop}
               disabled={this.props.motorsDisabled}
             />
-          </div>
+          </Col>
         );
       });
 
@@ -105,7 +107,7 @@ export default class MotorControl extends React.Component {
 
     return (
       <div>
-        <div style={{ marginLeft: '15px' }}>
+        <div>
           <TwoAxisTranslationControl
             save={save}
             saveStep={saveStep}
@@ -119,26 +121,31 @@ export default class MotorControl extends React.Component {
           ? (
             <div>
               <Button
-                style={{ marginTop: '1em', marginLeft: '8px', width: '145px' }}
+                variant="outline-dark"
+                style={{ marginTop: '1em', }}
+                size="sm"
                 onClick={() => { this.setState({ showAll: false }); }}
               >
                 <i className="fas fa-cogs" />
                 {' '}
                 Hide motors
-                <i className="fas fa-caret-up" />
+
+                <i style={{ marginLeft: '0.5em', }} className="fas fa-caret-up" />
               </Button>
               { this.renderAllMotors() }
             </div>
           )
           : (
             <Button
-              style={{ marginTop: '1em', marginLeft: '8px', width: '145px' }}
+              variant="outline-dark"
+              size='sm'
+              style={{ marginTop: '1em' }}
               onClick={() => { this.setState({ showAll: true }); }}
             >
               <i className="fas fa-cogs" />
               {' '}
               Show motors
-              <i className="fas fa-caret-down" />
+              <i style={{ marginLeft: '0.5em', }}  className="fas fa-caret-down" />
             </Button>
           )
         }
@@ -148,12 +155,12 @@ export default class MotorControl extends React.Component {
 
   render() {
     return (
-      <div className="row">
+      <Row className="row">
         {this.getMotorComponents(0, 3)}
         { this.horVerTranslationAvailable()
           ? this.renderTranslationCross() : this.renderAllMotors()
             }
-      </div>
+      </Row>
     );
   }
 }

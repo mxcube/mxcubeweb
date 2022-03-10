@@ -1,0 +1,14 @@
+.form-label-StaticField:hover
+{
+    overflow-x: auto;
+}
+
+.form-label-StaticField
+{
+    white-space: nowrap;
+    overflow-x: hidden;
+}
+
+.col-form-label{
+    margin-right: 10px!important;
+}

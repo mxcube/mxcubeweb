@@ -85,13 +85,13 @@ class Workflow extends React.Component {
        { this.props.taskData.state ? '' :
            <Modal.Footer>
              <ButtonToolbar className="pull-right">
-               <Button bsStyle="success"
+               <Button variant="success"
                  disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                  onClick={this.submitRunNow}
                >
                  Run Now
                </Button>
-               <Button bsStyle="primary" disabled={this.props.invalid}
+               <Button variant="primary" disabled={this.props.invalid}
                  onClick={this.submitAddToQueue}
                >
                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}

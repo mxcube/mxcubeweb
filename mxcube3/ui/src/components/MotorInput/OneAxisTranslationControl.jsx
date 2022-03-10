@@ -16,10 +16,12 @@ export default class OneAxisTranslationControl extends React.Component {
 
   /* eslint-enable react/no-set-state */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
-      this.refs.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
-      this.refs.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
-      this.setState({ edited: false });
+    if(nextProps.value) {
+      if (nextProps.value !== this.props.value) {
+        this.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
+        this.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
+        this.setState({ edited: false });
+      }
     }
   }
 
@@ -28,14 +30,15 @@ export default class OneAxisTranslationControl extends React.Component {
     e.stopPropagation();
 
     this.setState({ edited: true });
-
-    if ([13, 38, 40].includes(e.keyCode) && this.props.state === MOTOR_STATE.READY) {
-      this.setState({ edited: false });
-      this.props.save(e.target.name, e.target.valueAsNumber);
-      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
-    } else if (this.props.state === MOTOR_STATE.BUSY || this.props.state === MOTOR_STATE.MOVING) {
-      this.setState({ edited: false });
-      this.refs.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+    if (this.props.value) {
+      if ([13, 38, 40].includes(e.keyCode) && this.props.state === MOTOR_STATE.READY) {
+        this.setState({ edited: false });
+        this.props.save(e.target.name, e.target.valueAsNumber);
+        this.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+      } else if (this.props.state === MOTOR_STATE.BUSY || this.props.state === MOTOR_STATE.MOVING) {
+        this.setState({ edited: false });
+        this.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+      }
     }
   }
   /* eslint-enable react/no-set-state */
@@ -47,43 +50,44 @@ export default class OneAxisTranslationControl extends React.Component {
   }
 
   renderMotorSettings() {
-    return (<Popover title={(<b>Sample alignment motors</b>)}>
-              <div>
-                <MotorInput
-                  save={this.props.save}
-                  value={this.props.motors.sample_vertical.position}
-                  saveStep={this.props.saveStep}
-                  step={this.props.steps.sample_verticalStep}
-                  motorName="sample_vertical"
-                  label="Vertical"
-                  suffix="mm"
-                  decimalPoints="3"
-                  state={this.props.motors.sample_vertical.state}
-                  stop={this.props.stop}
-                  disabled={this.props.motorsDisabled}
-                  inplace
-                />
-                <MotorInput
-                  save={this.props.save}
-                  value={this.props.motors.sample_horizontal.position}
-                  saveStep={this.props.saveStep}
-                  step={this.props.steps.sample_horizontalStep}
-                  motorName="sample_horizontal"
-                  label="Horizontal"
-                  suffix="mm"
-                  decimalPoints="3"
-                  state={this.props.motors.sample_horizontal.state}
-                  stop={this.props.stop}
-                  disabled={this.props.motorsDisabled}
-                  inplace
-                />
-              </div>
-            </Popover>);
+    return (
+      <Popover title={(<b>Sample alignment motors</b>)}>
+        <div>
+          <MotorInput
+            save={this.props.save}
+            value={this.props.motors.sample_vertical.position}
+            saveStep={this.props.saveStep}
+            step={this.props.steps.sample_verticalStep}
+            motorName="sample_vertical"
+            label="Vertical"
+            suffix="mm"
+            decimalPoints="3"
+            state={this.props.motors.sample_vertical.state}
+            stop={this.props.stop}
+            disabled={this.props.motorsDisabled}
+            inplace
+          />
+          <MotorInput
+            save={this.props.save}
+            value={this.props.motors.sample_horizontal.position}
+            saveStep={this.props.saveStep}
+            step={this.props.steps.sample_horizontalStep}
+            motorName="sample_horizontal"
+            label="Horizontal"
+            suffix="mm"
+            decimalPoints="3"
+            state={this.props.motors.sample_horizontal.state}
+            stop={this.props.stop}
+            disabled={this.props.motorsDisabled}
+            inplace
+          />
+        </div>
+      </Popover>);
   }
 
   render() {
     const { value, motorName, step, decimalPoints } = this.props;
-    const valueCropped = value.toFixed(decimalPoints);
+    const valueCropped = value ? value.toFixed(decimalPoints) : '';
 
     const inputCSS = cx('form-control rw-input', {
       'input-bg-edited': this.state.edited,
@@ -121,8 +125,9 @@ export default class OneAxisTranslationControl extends React.Component {
             height: '2.1em',
             display: 'inline-block',
             marginLeft: '5px',
-            marginRight: '5px' }}
-          ref="motorValue"
+            marginRight: '5px'
+          }}
+          ref={(ref) => { this.motorValue = ref; }}
           className={inputCSS}
           onKeyUp={this.handleKey}
           type="number"

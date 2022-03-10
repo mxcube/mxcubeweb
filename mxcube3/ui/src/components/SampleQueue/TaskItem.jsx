@@ -68,7 +68,7 @@ export default class TaskItem extends Component {
 
 
   deleteButton() {
-    let content = (<Button bsSize="sm" onClick={this.deleteTask}>Delete</Button>);
+    let content = (<Button size="sm" onClick={this.deleteTask}>Delete</Button>);
 
     if (this.props.state !== TASK_UNCOLLECTED) {
       content = (<span> </span>);
@@ -163,7 +163,7 @@ export default class TaskItem extends Component {
     return (
       <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
         <ProgressBar
-          bsStyle={pbarBsStyle}
+          variant={pbarBsStyle}
           striped
           style={{ marginBottom: '0px', height: '18px' }}
           min={0}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import {Container, Row, Col, Table,Pagination} from 'react-bootstrap';
 import { setLogPage } from '../actions/logger';
 
 export class LoggerContainer extends React.Component {
@@ -36,54 +37,54 @@ export class LoggerContainer extends React.Component {
     ));
 
     return (
-      <div className="col-xs-12">
-        <row>
-          <div className="col-xs-12 text-center" style={{ float: 'none', margin: '0 auto' }}>
-            <nav>
-              <ul className="pagination">
-                <li>
-                  <a onClick={this.firstPage}>
-                    <span aria-hidden="true">first</span>
-                  </a>
-                </li>
-                <li>
-                  <a onClick={this.backwardPage}>
-                    <span aria-hidden="true">&laquo;</span>
-                  </a>
-                </li>
-                <li><a>{page}</a></li>
-                <li>
-                  <a onClick={this.forwardPage}>
-                    <span aria-hidden="true">&raquo;</span>
-                  </a>
-                </li>
-                <li>
-                  <a onClick={this.lastPage}>
-                    <span aria-hidden="true">last</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </row>
-        <row>
-          <div className="col-xs-12">
-            <table className="table table-condensed table-striped">
-              <thead>
-                <tr>
-                  <th className="col-sm-2">Time</th>
-                  <th className="col-sm-1">Logger</th>
-                  <th className="col-sm-1">Severity</th>
-                  <th>Message</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRecords}
-              </tbody>
-            </table>
-          </div>
-        </row>
-      </div>
+      <Container fluid>
+          <Row>
+            <Col className="col-xs-12 text-center" style={{ float: 'none', margin: '0 auto' }}>
+              <nav>
+                <Pagination size="sm" className="pagination">
+                  <Pagination.Item>
+                    <a onClick={this.firstPage}>
+                      <span aria-hidden="true">first</span>
+                    </a>
+                  </Pagination.Item>
+                  <Pagination.Item>
+                    <a onClick={this.backwardPage}>
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </Pagination.Item>
+                  <Pagination.Item><a>{page}</a></Pagination.Item>
+                  <Pagination.Item>
+                    <a onClick={this.forwardPage}>
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </Pagination.Item>
+                  <Pagination.Item>
+                    <a onClick={this.lastPage}>
+                      <span aria-hidden="true">last</span>
+                    </a>
+                  </Pagination.Item>
+                </Pagination>
+              </nav>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="col-xs-12">
+              <Table striped bordered hover className="table-condensed">
+                <thead>
+                  <tr>
+                    <th className="col-sm-2">Time</th>
+                    <th className="col-sm-1">Logger</th>
+                    <th className="col-sm-1">Severity</th>
+                    <th>Message</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredRecords}
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+      </Container>
     );
   }
 }

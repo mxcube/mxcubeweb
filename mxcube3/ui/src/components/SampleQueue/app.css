@@ -110,7 +110,7 @@
   background-color: #ADABAB !important;
 }
 .active {
-  background-color: #337ab7 !important;
+  /* background-color: #337ab7 !important; */
 }
 .success {
   background-color: #5cb85c !important;
@@ -144,17 +144,18 @@
   margin-bottom: 10px;
 }
 .list-head {
-  padding: 0.5rem 1rem;
+  padding: 1.5rem 1rem;
+  border: 0px;
 }
 .list-body {
   padding: 0.5rem 1rem;
   display: flex;
   flex-direction: column;
   position: absolute;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   top: 15%;
-  height: 70%;
+  height: 60%;
   width: 100%;
 }
 .queue-messages {
@@ -261,4 +262,3 @@
 .task-parameters-table > thead {
   color: #636363;
 }
-/*# sourceMappingURL=app.css.map */

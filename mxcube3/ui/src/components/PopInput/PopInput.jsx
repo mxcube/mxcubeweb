@@ -43,6 +43,7 @@ export default class PopInput extends React.Component {
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
     this.onLinkClick = this.onLinkClick.bind(this);
+    this.overlayRef = React.createRef();
   }
 
 
@@ -60,7 +61,7 @@ export default class PopInput extends React.Component {
 
 
   onLinkClick(e) {
-    this.refs.overlay.handleToggle();
+    this.overlayRef.handleToggle();
     e.preventDefault();
   }
 
@@ -92,8 +93,8 @@ export default class PopInput extends React.Component {
       // Only update if value actually changed
       this.props.onSave(this.props.pkey, value);
     }
-    if (this.props.data.state === 'IMMEDIATE' && this.refs.overlay) {
-      this.refs.overlay.hide();
+    if (this.props.data.state === 'IMMEDIATE' && this.overlayRef) {
+      this.overlayRef.show = false;
     }
   }
 
@@ -101,7 +102,7 @@ export default class PopInput extends React.Component {
   handleIdle(data) {
     // No message to display to user, hide overlay
     if (data.msg === '') {
-      this.refs.overlay.hide();
+      this.overlayRef.show = false;
     }
   }
 
@@ -109,23 +110,24 @@ export default class PopInput extends React.Component {
   handleError(data) {
     // No message to display to user, hide overlay
     if (data.msg === '') {
-      this.refs.overlay.hide();
+      this.overlayRef.show = false;
     }
   }
 
 
   save() {
-    this.setValue(this.refs.input.getValue());
+    this.setValue(this.defaultInputRef.getValue());
   }
 
 
   cancel() {
+    debugger;
     if (this.props.onCancel !== undefined && this.isBusy()) {
       this.props.onCancel(this.props.pkey);
     }
 
-    if (!this.isBusy() && this.refs.overlay) {
-      this.refs.overlay.hide();
+    if (!this.isBusy() && this.overlayRef) {
+      this.overlayRef.show = false;
     }
   }
 
@@ -138,7 +140,7 @@ export default class PopInput extends React.Component {
 
   inputComponent() {
     const props = { value: this.props.data.value,
-      ref: 'input',
+      // ref: 'input',
       onSubmit: this.submit,
       onCancel: this.cancel,
       onSave: this.save,
@@ -147,7 +149,7 @@ export default class PopInput extends React.Component {
 
     let input = (
       <DefaultInput
-        ref="input"
+        ref={(ref) => { this.defaultInputRef = ref; }}
         precision={this.props.precision}
         step={this.props.data.step}
         dataType={this.props.dataType}
@@ -193,8 +195,8 @@ export default class PopInput extends React.Component {
 
   render() {
     const linkClass = 'editable-click';
-    const busyVisibility = this.isBusy() ? '' : 'hidden';
-    const inputVisibility = !this.isBusy() ? '' : 'hidden';
+    const busyVisibility = this.isBusy() ? '' : 'visibility-hidden';
+    const inputVisibility = !this.isBusy() ? '' : 'visibility-hidden';
     const title = (this.props.title === '') ? this.props.name : this.props.title;
 
     let stateClass = 'value-label-enter-success';
@@ -206,7 +208,7 @@ export default class PopInput extends React.Component {
     }
 
     const popoverContent = (
-      <span>
+      <div className='d-flex'>
         <div className={`${inputVisibility} popinput-form-container`}>
           {this.inputComponent()}
         </div>
@@ -214,10 +216,10 @@ export default class PopInput extends React.Component {
         <div ref="loadingDiv" className={`${busyVisibility} popinput-input-loading`} >
           {this.busyComponent()}
         </div>
-      </span>);
+      </div>);
 
     const popover = (
-      <Popover ref="popover" id={title} title={title}>
+      <Popover ref={(ref) => { this.overlayRef = ref; }} style={{ padding: '0.5em' }} ref="popover" id={title} title={title}>
         { popoverContent }
       </Popover>);
 
@@ -233,33 +235,34 @@ export default class PopInput extends React.Component {
           <span
             className={`popinput-input-label ${this.props.ref}`}
           >
-            {this.props.name}:
+            {this.props.name} :
           </span> : null
         }
-          <span
-            className={`popinput-input-value ${this.props.pkey}`}
-          >
-            { this.props.inplace ?
-              <span>
-                { popoverContent }
-              </span>
-              :
-              <OverlayTrigger
-                ref="overlay" trigger="click"
-                rootClose
-                placement={this.props.placement}
-                overlay={popover}
+        <span
+          className={`popinput-input-value ${this.props.pkey}`}
+        >
+          { this.props.inplace ?
+            <span>
+              { popoverContent }
+            </span>
+            :
+            <OverlayTrigger
+              // ref={(ref) => { this.overlayRef = ref; }}
+              trigger="click"
+              rootClose
+              placement={this.props.placement}
+              overlay={popover}
+            >
+              <a
+                ref={(ref) => { this.valueLabel = ref; }}
+                onContextMenu={this.onLinkClick}
+                key="valueLabel"
+                className={`popinput-input-link ${linkClass} ${stateClass}`}
               >
-                <a
-                  ref="valueLabel"
-                  onContextMenu={this.onLinkClick}
-                  key="valueLabel"
-                  className={`popinput-input-link ${linkClass} ${stateClass}`}
-                >
-                  {value} {this.props.suffix}
-                </a>
-              </OverlayTrigger>
-            }
+                {value} {this.props.suffix}
+              </a>
+            </OverlayTrigger>
+          }
         </span>
       </div>
     );

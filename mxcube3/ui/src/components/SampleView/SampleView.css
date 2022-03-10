@@ -81,7 +81,7 @@
     width: auto;
 }
 
-.camera-controll{
+.camera-control{
     height: 42px;
     width: 33.33333333%;
 }
@@ -135,12 +135,12 @@
     border-bottom: 1px solid #e5e5e5;
 }
 
-.sample-controll.active{
+.sample-control.active{
     color: orange !important;
     background-color: transparent !important;
 }
 
-.sample-controll{
+.sample-control{
     font-size: 2.5em !important;
     border: 0px !important;
     color: #33BEFF !important;
@@ -148,11 +148,11 @@
     padding-bottom: 0px !important;
 }
 
-.sample-controll-small{
+.sample-control-small{
     font-size: 1.5em !important;
 }
 
-.sample-controll-label {
+.sample-control-label {
     font-size: 1.1em !important;
     font-weight: bold;
     color: #33BEFF !important;

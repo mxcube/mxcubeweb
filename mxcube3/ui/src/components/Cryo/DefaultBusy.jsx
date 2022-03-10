@@ -21,7 +21,7 @@ export default class DefaultInput extends React.Component {
         <div className="popinput-input-busy">
         </div>
         <ButtonToolbar className="editable-buttons">
-          <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+          <Button variant="outline-secondary" className="btn-sm" onClick={this.cancel}>
             <i className="glyphicon glyphicon-remove" />
           </Button>
         </ButtonToolbar>

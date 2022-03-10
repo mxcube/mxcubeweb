@@ -41,10 +41,10 @@ export default class DefaultInput extends React.Component {
           placeholder="" defaultValue={this.props.value}
         />
         <ButtonToolbar style={{ 'margin-left': '0px' }} className="form-group editable-buttons">
-          <Button bsStyle="primary" className="btn-sm" onClick={this.save}>
+          <Button variant="primary" className="btn-sm" onClick={this.save}>
             <i className="glyphicon glyphicon-ok" />
           </Button>
-          <Button bsStyle="default" className="btn-sm" onClick={this.cancel}>
+          <Button variant="outline-secondary" className="btn-sm" onClick={this.cancel}>
             <i className="glyphicon glyphicon-remove" />
           </Button>
         </ButtonToolbar>

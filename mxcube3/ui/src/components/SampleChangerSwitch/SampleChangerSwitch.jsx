@@ -1,5 +1,5 @@
 import React from 'react';
-import { Label, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 
 export default class SampleChangerSwitch extends React.Component {
@@ -12,7 +12,7 @@ export default class SampleChangerSwitch extends React.Component {
 
 
   onRightLinkClick(e) {
-    this.refs.overlay.handleToggle();
+    this.overlay.handleToggle();
     e.preventDefault();
   }
 
@@ -20,13 +20,13 @@ export default class SampleChangerSwitch extends React.Component {
   powerOn() {
     this.props.onSave('powerOn');
 
-    this.refs.overlay.hide();
+    this.overlay.hide();
   }
 
 
   powerOff() {
     this.props.onSave('powerOff');
-    this.refs.overlay.hide();
+    this.overlay.hide();
   }
 
 
@@ -39,11 +39,11 @@ export default class SampleChangerSwitch extends React.Component {
       msgBgStyle = 'warning';
     }
 
-    let btn = <Button block bsSize="small" disabled>---</Button>;
+    let btn = <Button block size="sm" disabled>---</Button>;
     if (this.props.data === 'DISABLED') {
-      btn = <Button block bsSize="small" onClick={this.powerOn}>{this.props.offText}</Button>;
+      btn = <Button block size="small" onClick={this.powerOn}>{this.props.offText}</Button>;
     } else if (this.props.data === 'READY') {
-      btn = <Button block bsSize="small" onClick={this.powerOff}>{this.props.onText}</Button>;
+      btn = <Button block size="small" onClick={this.powerOff}>{this.props.onText}</Button>;
     }
 
     const msgLabelStyle = { display: 'block', fontSize: '100%',
@@ -52,19 +52,20 @@ export default class SampleChangerSwitch extends React.Component {
     return (
       <div>
         <OverlayTrigger
-          ref="overlay"
+          ref={(ref) => { this.overlay = ref; }}
           rootClose
           trigger="click"
           placement="bottom"
-          overlay={(<Popover id={`${this.props.labelText} popover`}>{btn}</Popover>)}
+          overlay={(<Popover style={{ padding: '0.5em' }} id={`${this.props.labelText} popover`}>{btn}</Popover>)}
         >
           <div onContextMenu={this.onRightLinkClick}>
-            <Label
+            <Badge
+              bg="secondary"
               style={{ display: 'block', marginBottom: '3px' }}
             >
               {this.props.labelText}
-            </Label>
-            <Label bsStyle={msgBgStyle} style={msgLabelStyle}>{this.props.data}</Label>
+            </Badge>
+            <Badge bg={msgBgStyle} style={msgLabelStyle}>{this.props.data}</Badge>
           </div>
         </OverlayTrigger>
       </div>

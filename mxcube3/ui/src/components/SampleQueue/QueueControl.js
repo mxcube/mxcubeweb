@@ -1,6 +1,6 @@
 import React from 'react';
 import './app.css';
-import { Button } from 'react-bootstrap';
+import { Button, Navbar, Nav } from 'react-bootstrap';
 import {
   QUEUE_RUNNING, QUEUE_PAUSED, QUEUE_STOPPED, QUEUE_STARTED
 } from '../../constants';
@@ -95,7 +95,8 @@ export default class QueueControl extends React.Component {
     return (
       <Button
         className={option.class}
-        bsSize="sm"
+        variant=''
+        size="sm"
         onClick={option.action}
         key={option.key}
       >
@@ -108,7 +109,8 @@ export default class QueueControl extends React.Component {
     return (
       <Button
         className={option.class}
-        bsSize="sm"
+        variant=''
+        size="sm"
         onClick={option.action}
         key={option.key}
       >
@@ -130,7 +132,7 @@ export default class QueueControl extends React.Component {
 
         nextSample = [{
           text: `Next Sample (${proteinAcronym}${sampleName})`,
-          class: 'btn-default',
+          class: 'btn-outline-dark',
           action: this.nextSample,
           key: 2
         }];
@@ -153,24 +155,30 @@ export default class QueueControl extends React.Component {
     const showBusyIndicator = running ? 'inline' : 'none';
 
     return (
-      <div className="m-tree">
-        <div className="list-head">
-          <div className="pull-left">
+      <Navbar className="m-tree"  style={{ padding: '0.5em' }}>
+        <Nav
+          className="me-auto my-2 my-lg-0"
+          style={{ maxHeight: '100px' }}
+          navbarScroll
+        >
+          <Nav.Item>
             <span style={{ marginRight: '0.6em' }}>
               {queueOptions.map(option => this.renderOptions(option))}
             </span>
             <span>
               {sampleQueueOptions.map(option => this.renderSampleOptions(option))}
             </span>
-          </div>
-          <img
-            src={loader}
-            style={{ display: showBusyIndicator, marginLeft: '25%' }}
-            role="presentation"
-          />
+          </Nav.Item>
+          <Nav.Item>
+            <img
+              src={loader}
+              style={{ display: showBusyIndicator, marginLeft: '25%' }}
+              role="presentation"
+            />
+          </Nav.Item>
+          </Nav>
           <QueueSettings />
-        </div>
-      </div>
+      </Navbar>
     );
   }
 }

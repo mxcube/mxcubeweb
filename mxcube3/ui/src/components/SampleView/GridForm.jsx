@@ -1,7 +1,7 @@
 import './SampleView.css';
 import React from 'react';
-import { Form, FormGroup, FormControl, ControlLabel,
-  Button, Table, Radio } from 'react-bootstrap';
+import { Form, FormGroup, FormControl,
+  Button, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 
@@ -182,7 +182,7 @@ export default class GridForm extends React.Component {
           <div className="col-xs-4" style={{ marginTop: '20px' }}>
             <Form inline>
               <FormGroup>
-                <ControlLabel>Opacity: </ControlLabel>
+                <Form.Label>Opacity: </Form.Label>
                 <FormControl
                   style={{ width: '100px', padding: '0', marginLeft: '10px', marginRight: '1em' }}
                   className="bar"
@@ -198,17 +198,19 @@ export default class GridForm extends React.Component {
               </FormGroup>
               <br />
               <FormGroup>
-                <ControlLabel>Heat map: </ControlLabel>
-                <Radio
+                <Form.Label>Heat map: </Form.Label>
+                <Form.Check
                   name="resultType"
+                  type="radio"
                   onClick={() => this.props.setGridResultType('heatmap')}
                   style={{ marginLeft: '10px' }}
                   checked={this.props.gridResultType === 'heatmap'}
                 />
               <br />
-                <ControlLabel>Crystal map: </ControlLabel>
-                <Radio
+                <Form.Label>Crystal map: </Form.Label>
+                <Form.Check
                   name="resultType"
+                  type="radio"
                   onClick={() => this.props.setGridResultType('crystalmap')}
                   style={{ marginLeft: '10px' }}
                   checked={this.props.gridResultType === 'crystalmap'}

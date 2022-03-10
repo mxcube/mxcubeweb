@@ -1,7 +1,7 @@
 import './SampleView.css';
 import React from 'react';
 import {
-  OverlayTrigger, Button, DropdownButton, MenuItem
+  OverlayTrigger, Button, Dropdown,
 } from 'react-bootstrap';
 import 'fabric';
 
@@ -102,7 +102,7 @@ export default class SampleControls extends React.Component {
       const sizeGClass = this.props.width === String(size[0]) ? 'fa-dot-circle-o' : 'fa-circle-o';
 
       return (
-        <MenuItem
+        <Dropdown.Item
           key={`${size[0]} x ${size[1]}`}
           eventKey="1"
           onClick={() => this.props.sampleActions.setVideoSize(size[0], size[1])}
@@ -110,14 +110,14 @@ export default class SampleControls extends React.Component {
           <span className={`fa ${sizeGClass}`} />
           {' '}
           {`${size[0]} x ${size[1]}`}
-        </MenuItem>
+        </Dropdown.Item>
       );
     });
 
     const autoScaleGClass = this.props.autoScale ? ' fa-check-square-o' : 'fa-square-o';
 
     items.push((
-      <MenuItem
+      <Dropdown.Item
         eventKey="3"
         key="auto scale"
         onClick={() => {
@@ -127,11 +127,11 @@ export default class SampleControls extends React.Component {
       >
         <span className={`fa ${autoScaleGClass}`} />
         {' '}
-Auto Scale
-      </MenuItem>));
+        Auto Scale
+      </Dropdown.Item>));
 
     items.push((
-      <MenuItem
+      <Dropdown.Item
         eventKey="3"
         key="reset"
         onClick={() => {
@@ -141,8 +141,8 @@ Auto Scale
       >
         <span className="fas fa-redo" />
         {' '}
-Reset
-      </MenuItem>));
+        Reset
+      </Dropdown.Item>));
 
     return items;
   }
@@ -161,39 +161,37 @@ Reset
         <div className="sample-controlls text-center">
           <ul className="bs-glyphicons-list">
             <li>
-              <a
-                style={{ marginTop: '0.3em' }}
-                href="#"
+              <Button
                 id="downloadLink"
                 data-toggle="tooltip"
                 title="Take snapshot"
-                className="fas fa-camera sample-controll"
+                className="fas fa-camera sample-control"
                 onClick={this.takeSnapShot}
                 download
               />
-              <span className="sample-controll-label">Snapshot</span>
+              <span className="sample-control-label">Snapshot</span>
             </li>
             <li>
               <Button
                 type="button"
                 data-toggle="tooltip"
                 title="Draw grid"
-                className="fas fa-th sample-controll"
+                className="fas fa-th sample-control"
                 onClick={this.toggleDrawGrid}
                 active={this.props.drawGrid}
               />
-              <span className="sample-controll-label">Draw grid</span>
+              <span className="sample-control-label">Draw grid</span>
             </li>
             <li>
               <Button
                 type="button"
                 data-toggle="tooltip"
                 title="Start 3-click Centring"
-                className="fas fa-circle-notch sample-controll"
+                className="fas fa-circle-notch sample-control"
                 onClick={this.toggleCentring}
                 active={this.props.clickCentring}
               />
-              <span className="sample-controll-label">3-click Centring</span>
+              <span className="sample-control-label">3-click Centring</span>
             </li>
             {process.env.focusControlOnCanvas
               ? (
@@ -224,10 +222,10 @@ Reset
                       type="button"
                       data-toggle="tooltip"
                       title="Focus"
-                      className="fas fa-adjust sample-controll"
+                      className="fas fa-adjust sample-control"
                     />
                   </OverlayTrigger>
-                  <span className="sample-controll-label">Focus</span>
+                  <span className="sample-control-label">Focus</span>
                 </li>
               ) : null}
             <OverlayTrigger
@@ -254,14 +252,14 @@ Reset
                   />
                   {attributes.zoom.limits[1]}
                 </span>
-)}
+          )}
             >
               <li>
                 <Button
                   type="button"
                   data-toggle="tooltip"
                   title="Zoom in/out"
-                  className="fas fa-search sample-controll"
+                  className="fas fa-search sample-control"
                   name="zoomOut"
                 />
                 <datalist id="volsettings">
@@ -269,7 +267,7 @@ Reset
                     (<option>{attributes.zoom.limits[0] + i }</option>)
                   )}
                 </datalist>
-                <span className="sample-controll-label">Zoom</span>
+                <span className="sample-control-label">Zoom</span>
               </li>
             </OverlayTrigger>
             <li>
@@ -278,7 +276,7 @@ Reset
                 type="button"
                 data-toggle="tooltip"
                 title="Backlight On/Off"
-                className="fas fa-lightbulb sample-controll"
+                className="fas fa-lightbulb sample-control"
                 onClick={this.toggleBackLight}
                 active= {
                   attributes.backlight_switch.value === attributes.backlight_switch.commands[0]
@@ -304,15 +302,15 @@ Reset
                       name="backlightSlider"
                     />
                   </span>
-)}
+            )}
               >
                 <Button
                   type="button"
                   style={{ paddingLeft: '0px' }}
-                  className="fas fa-sort-desc sample-controll sample-controll-small"
+                  className="fas fa-sort-desc sample-control sample-control-small"
                 />
               </OverlayTrigger>
-              <span className="sample-controll-label">Backlight</span>
+              <span className="sample-control-label">Backlight</span>
             </li>
             <li>
               <Button
@@ -320,7 +318,7 @@ Reset
                 type="button"
                 data-toggle="tooltip"
                 title="Front On/Off"
-                className="fas fa-lightbulb sample-controll"
+                className="fas fa-lightbulb sample-control"
                 onClick={this.toggleFrontLight}
                 active={
                   attributes.frontlight_switch.value === attributes.backlight_switch.commands[0]
@@ -350,22 +348,26 @@ Reset
                 <Button
                   type="button"
                   style={{ paddingLeft: '0px', fontSize: '1.5em' }}
-                  className="fas fa-sort-desc sample-controll sample-controll-small"
+                  className="fas fa-sort-desc sample-control sample-control-small"
                 />
               </OverlayTrigger>
-              <span className="sample-controll-label">Frontlight</span>
+              <span className="sample-control-label">Frontlight</span>
             </li>
             <li>
-              <DropdownButton
-                style={{ lineHeight: '1.3', padding: '0px' }}
-                className="sample-controll"
-                bsStyle="default"
-                title={(<i className="fas fa-1x fa-video" />)}
-                id="video-size-dropdown"
-              >
-                {this.availableVideoSizes()}
-              </DropdownButton>
-              <span className="sample-controll-label">Video size</span>
+              <Dropdown>
+                <Dropdown.Toggle
+                  className="sample-control"
+                  variant="content"
+                  id="video-size-dropdown"
+                  style={{ lineHeight: '0' }}
+                  >
+                  <i className="fas fa-1x fa-video" />
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {this.availableVideoSizes()}
+                </Dropdown.Menu>
+              </Dropdown>
+              <span className="sample-control-label">Video size</span>
             </li>
           </ul>
         </div>

@@ -9,7 +9,7 @@ import * as QueueGUIActions from '../actions/queueGUI';
 import * as SampleViewActions from '../actions/sampleview';
 import * as SampleChangerActions from '../actions/sampleChanger';
 import { showTaskForm } from '../actions/taskForm';
-import { Nav, NavItem } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
 import { showDialog } from '../actions/general';
 
 import UserMessage from '../components/Notify/UserMessage';
@@ -61,6 +61,7 @@ class SampleQueueContainer extends React.Component {
   }
 
   handleSelect(selectedKey) {
+    debugger;
     this.props.queueGUIActions.showList(selectedKey);
   }
 
@@ -134,7 +135,6 @@ class SampleQueueContainer extends React.Component {
       sampleName = sampleData.sampleName ? sampleData.sampleName : '';
       proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} -` : '';
     }
-    debugger;
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
@@ -164,17 +164,25 @@ class SampleQueueContainer extends React.Component {
         />
         <div className="m-tree queue-body">
           <Nav
-            bsStyle="tabs"
-            justified
+            variant="tabs"
+            fill
+            justify
+            defaultActiveKey="current"
             activeKey={visibleList}
             onSelect={this.handleSelect}
           >
-            <NavItem eventKey={'current'}>
-              <b>
-                { current.sampleID ? `Sample: ${proteinAcronym} ${sampleName}` : 'Current'}
-              </b>
-            </NavItem>
-            <NavItem eventKey={'todo'}><b>Queued Samples ({todo.length})</b></NavItem>
+            <Nav.Item>
+              <Nav.Link eventKey='current'>
+                <b>
+                  { current.sampleID ? `Sample: ${proteinAcronym} ${sampleName}` : 'Current'}
+                </b>
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey='todo'>
+                <b>Queued Samples ({todo.length})</b>
+              </Nav.Link>
+            </Nav.Item>
           </Nav>
           {loading ?
             <div className="center-in-box" style={{ zIndex: '1000' }}>

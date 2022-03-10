@@ -1,8 +1,9 @@
 import React from 'react';
-import { OverlayTrigger, Tooltip, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
 import classNames from 'classnames';
 import { isCollected } from '../../constants';
 
+import { BsSquare, BsCheck2Square, BsArrowsMove  } from "react-icons/bs";
 import './SampleGrid.css';
 
 
@@ -32,11 +33,11 @@ export class SampleGridItem extends React.Component {
 
 
   componentDidMount() {
-    this.refs.sampleItem.addEventListener('contextmenu', this.contextMenu, false);
+    this.sampleItem.addEventListener('contextmenu', this.contextMenu, false);
   }
 
   componentWillUnmount() {
-    this.refs.sampleItem.removeEventListener('contextmenu', this.contextMenu);
+    this.sampleItem.removeEventListener('contextmenu', this.contextMenu);
   }
 
   contextMenu(e) {
@@ -70,10 +71,10 @@ export class SampleGridItem extends React.Component {
   }
 
   itemControls() {
-    let iconClassName = 'glyphicon glyphicon-unchecked';
+    let icon = <BsSquare />;
 
     if (this.props.picked) {
-      iconClassName = 'glyphicon glyphicon-check';
+      icon = <BsCheck2Square />;
     }
 
     const pickButton = (
@@ -81,15 +82,16 @@ export class SampleGridItem extends React.Component {
         placement="top"
         overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
       >
-        <button
+        <Button
+          variant="content"
           disabled={this.props.current && this.props.picked}
           className="samples-grid-item-button"
           onClick={this.pickButtonOnClick}
           onMouseUp={this.pickButtonMouseUp}
           onMouseDown={this.pickButtonMouseDown}
         >
-          <i className={iconClassName} />
-        </button>
+          {icon}
+        </Button>
       </OverlayTrigger>
     );
 
@@ -101,18 +103,19 @@ export class SampleGridItem extends React.Component {
             Move sample (change order in which sample is collected)
           </Tooltip>)}
       >
-        <button
+        <Button
+          variant="content"
           className="samples-grid-item-button"
           onClick={this.moveButtonOnClick}
         >
-          <i className="glyphicon glyphicon-move" />
-        </button>
+          <BsArrowsMove />
+        </Button>
       </OverlayTrigger>
     );
 
     let content = (
       <div className="samples-item-controls-container">
-      {pickButton}
+        {pickButton}
       </div>
     );
 
@@ -189,28 +192,28 @@ export class SampleGridItem extends React.Component {
             className="move-arrow move-arrow-up"
             onClick={this.moveItemUp}
           >
-            <i className="glyphicon glyphicon-arrow-up" />
+            <i className="fas fa-arrow-up" />
           </button>
           <button
             style={{ display: displayLeft }}
             className="move-arrow move-arrow-left"
             onClick={this.moveItemLeft}
           >
-            <i className="glyphicon glyphicon-arrow-left" />
+            <i className="fas fa-arrow-left" />
           </button>
           <button
             style={{ display: displayRight }}
             className="move-arrow move-arrow-right"
             onClick={this.moveItemRight}
           >
-            <i className="glyphicon glyphicon-arrow-right" />
+            <i className="fas fa-arrow-right" />
           </button>
           <button
             style={{ display: displayDown }}
             className="move-arrow move-arrow-down"
             onClick={this.moveItemDown}
           >
-            <i className="glyphicon glyphicon-arrow-down" />
+            <i className="fas fa-arrow-down" />
           </button>
         </div>
       );
@@ -280,8 +283,8 @@ export class SampleGridItem extends React.Component {
     const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     let result = 'bottom';
 
-    if (this.refs.sampleItem) {
-      if (parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
+    if (this.sampleItem) {
+      if (parseInt(this.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
         result = 'bottom';
       } else {
         result = 'top';
@@ -318,7 +321,7 @@ export class SampleGridItem extends React.Component {
     return (
       <div
         id={this.props.sampleData.sampleID}
-        ref="sampleItem"
+        ref={(ref) => { this.sampleItem = ref; }}
         className={classes}
         onClick={this.sampleItemOnClick}
         style={{ width: `${SAMPLE_ITEM_WIDTH}px`, height: `${SAMPLE_ITEM_HEIGHT}px` }}
@@ -330,18 +333,23 @@ export class SampleGridItem extends React.Component {
         </div>
         <div style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
         <OverlayTrigger
-          ref="sampleInfoPopoverTrigger"
+          ref={(ref) => { this.sampleInfoPopoverTrigger = ref; }}
           placement={this.popoverPosition()}
           overlay={(
             <Popover id={this.sampleDisplayName()} title={(<b>{this.sampleDisplayName()}</b>)}>
               {this.sampleInformation()}
             </Popover>)}
         >
-          <a href={limsLink} target="_blank" ref="pacronym" className="protein-acronym"
+          <Badge href={limsLink}
+            target="_blank"
+            bg="light"
+            text="primary"
+            ref={(ref) => { this.pacronym = ref; }}
+            className="protein-acronym"
             data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym"
           >
             {this.sampleDisplayName()}
-          </a>
+          </Badge>
         </OverlayTrigger>
         </div>
         {this.seqId()}

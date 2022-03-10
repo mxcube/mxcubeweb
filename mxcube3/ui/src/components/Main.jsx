@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Grid } from 'react-bootstrap';
+import { Stack } from 'react-bootstrap';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
@@ -94,10 +94,11 @@ class Main extends React.Component {
           taskData={this.props.general.dialogData}
           onHide={() => this.props.showDialog(false)}
         />
-        <MXNavbarContainer location={this.props.location} />
-        <Grid fluid>
-            {this.props.children}
-        </Grid>
+        <MXNavbarContainer location={window.location} />
+        <Stack style={{ paddingTop: '5.5em', zIndex: 9999 }}>
+            {/* {this.props.children} */}
+          <Outlet />
+        </Stack>
         <span onClick={this.onChatContainerClick}>
           { this.props.remoteAccess.observers.length > 0 ?
             (<Widget

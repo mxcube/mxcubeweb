@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Form, ControlLabel, FormControl, Button, FormGroup, Panel } from 'react-bootstrap';
+import { Form, FormControl, Button, FormGroup, Card } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
 import { requestControl, sendTakeControl } from '../../actions/remoteAccess';
 
@@ -65,39 +65,40 @@ class RequestControlForm extends React.Component {
 
   render() {
     return (
-      <Panel>
-        <Panel.Heading>
+      <Card>
+        <Card.Header>
           Request control
-        </Panel.Heading>
-        <Panel.Body>
+        </Card.Header>
+        <Card.Body>
           <Form>
-            <FormGroup>
-              <ControlLabel>Name</ControlLabel>
-              <FormControl
-                inputRef={(ref) => {this.name = ref; }}
+            <Form.Group>
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                className='mb-3'
+                ref={(ref) => { this.name = ref; }}
                 type="text"
                 defaultValue={this.getName()}
               />
-            </FormGroup>
-            <FormGroup>
-              <ControlLabel>Message</ControlLabel>
-              <FormControl
-                inputRef={(ref) => {this.message = ref;}}
-                componentClass="textarea"
+            </Form.Group>
+            <Form.Group className='mb-3'>
+              <Form.Label>Message</Form.Label>
+              <Form.Control
+                ref={(ref) => { this.message = ref; }}
+                as="textarea" 
                 defaultValue="Please give me control"
-                rows="3"
+                rows={3}
               />
-            </FormGroup>
+            </Form.Group>
             <Button
-              bsStyle="primary"
+              variant="primary"
               onClick={this.askForControl}
             >
               Ask for control
             </Button>
             {this.getTakeControlOption()}
           </Form>
-        </Panel.Body>
-      </Panel>);
+        </Card.Body>
+      </Card>);
   }
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonGroup, Panel } from 'react-bootstrap';
+import { Button, ButtonGroup, Card } from 'react-bootstrap';
 
 import './SampleChanger.css';
 import '../context-menu-style.css';
@@ -17,7 +17,7 @@ export class SampleChangerActionButton extends React.Component {
 
     return (
       <Button
-        bsStyle="default"
+        variant='outline-secondary'
         disabled={disabled}
         onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
       >
@@ -30,12 +30,12 @@ export class SampleChangerActionButton extends React.Component {
 export class SampleChangerActionGroup extends React.Component {
   render() {
     return (
-      <Panel>
-        <Panel.Heading>{this.props.name}</Panel.Heading>
-        <Panel.Body>
+      <Card className='mb-3'>
+        <Card.Header>{this.props.name}</Card.Header>
+        <Card.Body>
           <ButtonGroup>{this.props.buttons}</ButtonGroup>
-        </Panel.Body>
-      </Panel>
+        </Card.Body>
+      </Card>
     );
   }
 }
@@ -90,12 +90,12 @@ export default class SampleChangerMaintenance extends React.Component {
       <div>
         { groups }
         { msg ? (
-          <Panel>
-            <Panel.Heading>Status message</Panel.Heading>
-            <Panel.Body>
+          <Card className='mb-3'>
+            <Card.Header>Status message</Card.Header>
+            <Card.Body>
               <span className="scMessage">{ msg }</span>
-            </Panel.Body>
-          </Panel>
+            </Card.Body>
+          </Card>
         ) : null
          }
       </div>

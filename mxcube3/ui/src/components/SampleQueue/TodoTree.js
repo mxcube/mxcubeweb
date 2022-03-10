@@ -1,6 +1,6 @@
 import React from 'react';
 import './app.css';
-import { Button } from 'react-bootstrap';
+import { ListGroup, Form, Button } from 'react-bootstrap';
 import { QUEUE_RUNNING } from '../../constants';
 
 export default class TodoTree extends React.Component {
@@ -39,28 +39,29 @@ export default class TodoTree extends React.Component {
     const list = this.filter(this.props.list, this.state.searchWord);
 
     return (
-      <div>
-        <div className="list-head">
-          <div className="col-xs-7" style={{ paddingLeft: '0px' }}>
-            <input
+      <ListGroup variant="flush">
+        <ListGroup.Item className="d-flex list-head">
+          <div className="me-auto" style={{ paddingLeft: '0px' }}>
+            <Form.Control
               type="text"
+              size="sm"
               className="form-control"
               placeholder="Search Upcoming"
               onChange={this.setSearchWord}
             />
           </div>
-          <div className="col-xs-5" style={{ paddingRight: '0px' }}>
+          <div>
             <Button
               disabled={this.props.queueStatus === QUEUE_RUNNING}
-              className="btn-primary pull-right"
-              bsSize="sm"
+              className="btn-primary"
+              size="sm"
               onClick={this.showAddSampleForm}
             >
-                    Create new sample
+              Create new sample
             </Button>
           </div>
-        </div>
-        <div className="list-body">
+        </ListGroup.Item>
+        <ListGroup.Item className="d-flex list-body">
           {list.map((key, id) => {
             const sampleData = this.props.sampleList[key];
             const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
@@ -70,25 +71,28 @@ export default class TodoTree extends React.Component {
             return (
               <div key={id} className="node node-sample">
                 <div className="task-head">
-                  <p className="node-name">
+                  <p className="d-flex node-name">
+                    <div className='me-auto'>
                     <b>
                       {`${sampleData.sampleID} `}
                     </b>
                     {`${proteinAcronym} ${sampleName}`}
+                    </div>
+
                     <Button
-                      className="pull-right"
-                      bsSize="xs"
+                      variant='secondary'
+                      size="sm"
                       onClick={() => this.mountAndSwitchTab(sampleData)}
                     >
-                          Mount
+                      Mount
                     </Button>
                   </p>
                 </div>
               </div>
             );
           })}
-        </div>
-      </div>
+        </ListGroup.Item>
+      </ListGroup>
     );
   }
 }

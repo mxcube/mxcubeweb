@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Panel, Checkbox } from 'react-bootstrap';
+import { Card, Form, Row, Col } from 'react-bootstrap';
 
 import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
 import UserList from '../components/RemoteAccess/UserList';
@@ -11,29 +11,31 @@ import { sendAllowRemote, sendTimeoutGivesControl } from '../actions/remoteAcces
 
 export class RemoteAccessContainer extends React.Component {
   getRAOptions() {
-    let content = (<div className="col-xs-4">
-                     <Panel>
-                       <Panel.Heading>
-                         RA Options
-                       </Panel.Heading>
-                       <Panel.Body>
-                         <Checkbox
-                           onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
-                           defaultChecked={this.props.remoteAccess.allowRemote}
-                           checked={this.props.remoteAccess.allowRemote}
-                         >
-                           Enable remote access
-                         </Checkbox>
-                         <Checkbox
-                           onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
-                           defaultChecked={this.props.remoteAccess.timeoutGivesControl}
-                           checked={this.props.remoteAccess.timeoutGivesControl}
-                         >
-                           Timeout gives control
-                         </Checkbox>
-                       </Panel.Body>
-                     </Panel>
-                   </div>);
+    let content = (
+      <Col sm={4} >
+        <Card className="mb-3">
+          <Card.Header>
+            RA Options
+          </Card.Header>
+          <Card.Body>
+            <Form.Check
+              type="checkbox"
+              onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
+              defaultChecked={this.props.remoteAccess.allowRemote}
+              checked={this.props.remoteAccess.allowRemote}
+              label="Enable remote access"
+            />
+            <Form.Check
+              type="checkbox"
+              onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
+              defaultChecked={this.props.remoteAccess.timeoutGivesControl}
+              checked={this.props.remoteAccess.timeoutGivesControl}
+              label="Timeout gives control"
+            />
+
+          </Card.Body>
+        </Card>
+      </Col>);
 
     if (!this.props.login.user.isstaff) {
       content = null;
@@ -44,17 +46,17 @@ export class RemoteAccessContainer extends React.Component {
 
   render() {
     return (
-      <div className="col-xs-12">
+      <Row sm={12} className="d-flex">
         { !this.props.login.user.inControl ?
-          (<div className="col-xs-4">
+          (<Col sm={4} className="col-xs-4">
             <RequestControlForm />
-           </div>) : null
+           </Col>) : null
         }
-        <div className="col-xs-4">
+        <Col sm={4} className="mb-3">
           <UserList />
-        </div>
+        </Col>
         {this.getRAOptions()}
-      </div>
+      </Row>
     );
   }
 }

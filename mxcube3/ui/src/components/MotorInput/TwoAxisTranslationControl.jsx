@@ -18,38 +18,39 @@ export default class TwoAxisTranslationControl extends React.Component {
   }
 
   renderMotorSettings() {
-    return (<Popover title={(<b>Sample alignment motors</b>)}>
-              <div>
-                <MotorInput
-                  save={this.props.save}
-                  value={this.props.motors.sample_vertical.value}
-                  saveStep={this.props.saveStep}
-                  step={this.props.motors.sample_vertical.step}
-                  motorName={this.props.motors.sample_vertical.attribute}
-                  label={this.props.motors.sample_vertical.label}
-                  suffix={this.props.motors.sample_vertical.suffix}
-                  decimalPoints={this.props.motors.sample_vertical.precision}
-                  state={this.props.motors.sample_vertical.state}
-                  stop={this.props.stop}
-                  disabled={this.props.motorsDisabled}
-                  inplace
-                />
-                <MotorInput
-                  save={this.props.save}
-                  value={this.props.motors.sample_horizontal.value}
-                  saveStep={this.props.saveStep}
-                  step={this.props.motors.sample_horizontal.step}
-                  motorName={this.props.motors.sample_horizontal.attribute}
-                  label={this.props.motors.sample_horizontal.label}
-                  suffix={this.props.motors.sample_horizontal.suffix}
-                  decimalPoints={this.props.motors.sample_horizontal.precision}
-                  state={this.props.motors.sample_horizontal.state}
-                  stop={this.props.stop}
-                  disabled={this.props.motorsDisabled}
-                  inplace
-                />
-              </div>
-            </Popover>);
+    return (
+        <Popover title='Sample alignment motors'>
+          <div className='d-flex'>
+            <MotorInput
+              save={this.props.save}
+              value={this.props.motors.sample_vertical.value}
+              saveStep={this.props.saveStep}
+              step={this.props.motors.sample_vertical.step}
+              motorName={this.props.motors.sample_vertical.attribute}
+              label={this.props.motors.sample_vertical.label}
+              suffix={this.props.motors.sample_vertical.suffix}
+              decimalPoints={this.props.motors.sample_vertical.precision}
+              state={this.props.motors.sample_vertical.state}
+              stop={this.props.stop}
+              disabled={this.props.motorsDisabled}
+              inplace
+            />
+            <MotorInput
+              save={this.props.save}
+              value={this.props.motors.sample_horizontal.value}
+              saveStep={this.props.saveStep}
+              step={this.props.motors.sample_horizontal.step}
+              motorName={this.props.motors.sample_horizontal.attribute}
+              label={this.props.motors.sample_horizontal.label}
+              suffix={this.props.motors.sample_horizontal.suffix}
+              decimalPoints={this.props.motors.sample_horizontal.precision}
+              state={this.props.motors.sample_horizontal.state}
+              stop={this.props.stop}
+              disabled={this.props.motorsDisabled}
+              inplace
+            />
+          </div>
+        </Popover>);
   }
 
   render() {
@@ -63,6 +64,8 @@ export default class TwoAxisTranslationControl extends React.Component {
         <p className="motor-name">Sample alignment:</p>
         <div style={{ marginBottom: '1em' }}></div>
         <Button
+          size="sm"
+          variant="outline-dark"
           onClick={() => this.stepChange('sample_vertical', sample_verticalStep, 1)}
           disabled={this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
           this.props.motorsDisabled}
@@ -71,6 +74,8 @@ export default class TwoAxisTranslationControl extends React.Component {
           <i className="fas fa-angle-up" />
         </Button>
         <Button
+          size="sm"
+          variant="outline-dark"
           className="arrow arrow-left"
           disabled={this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
            this.props.motorsDisabled}
@@ -82,12 +87,16 @@ export default class TwoAxisTranslationControl extends React.Component {
           overlay={this.renderMotorSettings()}
         >
           <Button
+            size="sm"
+            variant="outline-dark"
             className="arrow arrow-settings"
           >
             <i className="fas fa-cog" />
           </Button>
         </OverlayTrigger>
         <Button
+          size="sm"
+          variant="outline-dark"
           className="arrow arrow-right"
           disabled={this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
            this.props.motorsDisabled}
@@ -96,9 +105,11 @@ export default class TwoAxisTranslationControl extends React.Component {
           <i className="fas fa-angle-right" />
         </Button>
         <Button
+          size="sm"
+          variant="outline-dark"
           className="arrow arrow-down"
           disabled={this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
-           this.props.motorsDisabled}
+          this.props.motorsDisabled}
           onClick={() => this.stepChange('sample_vertical', sample_verticalStep, -1)}
         >
           <i className="fas fa-angle-down" />

@@ -24,3 +24,54 @@
     margin-right: 1em;
     width: 12%;
 }
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {  
+  border-color: rgba(126, 161, 185, 0.8);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(104, 207, 239, 0.6);
+  outline: 0 none;
+}
+
+
+.modal-content {
+    width: fit-content;
+}
+
+.form-label {
+    /* white-space: nowrap; */
+}
+
+.btn-primary{
+    background:#337ab7;
+}
+
+/* .btn-outline-primary {
+    color: #337ab7;
+} */
+
+
+.btn:focus, .btn:active {
+  outline: none!important;
+  box-shadow: none!important;
+}
+
+.dropdown-item:focus, .dropdown-item:active {
+    outline: none!important;
+    box-shadow: none!important;
+    background: transparent;
+    color: #000000;
+  }

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import {
-  Modal, Button, Form, Row, Col, ButtonToolbar, ControlLabel
+  Modal, Button, Form, Row, Col, ButtonToolbar
 } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
@@ -90,14 +90,14 @@ class Characterisation extends React.Component {
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row>
+            <Row className='mb-2'>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
+                <InputField propName="subdir" label="Subdirectory" col1="3" col2="7" />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
+                <InputField propName="prefix" label="Prefix" col1="3" col2="7" />
               </Col>
               {this.props.taskData.sampleID
                 ? (
@@ -181,7 +181,7 @@ class Characterisation extends React.Component {
                 label="Space group"
                 list={SPACE_GROUPS}
               />
-              <ControlLabel>Vertical Crystal dimension:</ControlLabel>
+              <Form.Label>Vertical Crystal dimension:</Form.Label>
               <FieldsRow>
                 <InputField propName="min_crystal_vdim" label="Min" />
                 <InputField propName="min_crystal_vphi" label="&omega; at min" />
@@ -361,10 +361,10 @@ class Characterisation extends React.Component {
         { this.props.taskData.state ? ''
           : (
             <Modal.Footer>
-              <ButtonToolbar className="pull-left">
+              <ButtonToolbar style={{ bottom: '0.8%', left: '1%'}} className="position-absolute">
                 <Button
-                  bsSize="xsmall"
-                  bsStyle="default"
+                  size="sm"
+                  variant="outline-dark"
                   onClick={this.defaultParameters}
                 >
               Default Parameters
@@ -372,14 +372,17 @@ class Characterisation extends React.Component {
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
                 <Button
-                  bsStyle="success"
+                  size="sm"
+                  variant="success"
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
                  Run Now
                 </Button>
                 <Button
-                  bsStyle="primary"
+                  size="sm"
+                  className='ms-3'
+                  variant="primary"
                   disabled={this.props.invalid}
                   onClick={this.submitAddToQueue}
                 >
