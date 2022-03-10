@@ -220,10 +220,10 @@ input::-webkit-inner-spin-button {
     border: 1px solid #fff;
 }
 
-.sample-controll{
+.sample-control{
     margin-left:0px !important;
 }
-.sample-controll-label{
+.sample-control-label{
     display: block;
 }
 
