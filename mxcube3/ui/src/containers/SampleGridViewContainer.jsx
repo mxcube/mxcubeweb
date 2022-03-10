@@ -446,7 +446,7 @@ class SampleGridViewContainer extends React.Component {
         style={{ whiteSpace: 'nowrap'}}
       >
         {collectText}
-        <i className="fas fa-chevron-right" />
+        <i className="fas fa-chevron-right ms-1" />
       </Button>);
 
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
