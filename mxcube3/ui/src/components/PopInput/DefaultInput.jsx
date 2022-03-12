@@ -42,11 +42,11 @@ export default class DefaultInput extends React.Component {
             step={this.props.step}
           />
           <ButtonToolbar style={{ marginLeft: '0px' }} className="ms-1 form-group editable-buttons">
-            <Button variant="success" className="btn-sm ms-1" onClick={this.save}>
+            <Button variant="success" className="btn-sm " onClick={this.save}>
               <i className="fas fa-check" />
             </Button>
             { !this.props.inplace ? (
-              <Button variant="danger" className="btn-sm" onClick={this.cancel}>
+              <Button variant="danger" className="btn-sm ms-1" onClick={this.cancel}>
                 <i className="fas fa-times" />
               </Button>
               ) : (null)

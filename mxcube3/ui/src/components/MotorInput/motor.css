@@ -76,7 +76,7 @@ input::-webkit-inner-spin-button {
 }
 
 .rw-combobox, .rw-datetimepicker, .rw-numberpicker, .rw-dropdownlist {
-    padding-right: 1.3em;
+    /* padding-right: 1.3em; */
 }
 
 .rw-widget {

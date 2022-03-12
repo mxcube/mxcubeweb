@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Form, FormControl, Button, FormGroup, Card } from 'react-bootstrap';
+import { Form, Button, Card } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
 import { requestControl, sendTakeControl } from '../../actions/remoteAccess';
 

@@ -242,9 +242,9 @@ export default class PopInput extends React.Component {
           className={`popinput-input-value ${this.props.pkey}`}
         >
           { this.props.inplace ?
-            <span>
+            <div>
               { popoverContent }
-            </span>
+            </div>
             :
             <OverlayTrigger
               // ref={(ref) => { this.overlayRef = ref; }}

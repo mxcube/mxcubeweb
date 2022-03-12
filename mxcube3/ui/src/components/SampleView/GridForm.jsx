@@ -1,7 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { Form, FormGroup, FormControl,
-  Button, Table } from 'react-bootstrap';
+import { Form, Button, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 
@@ -92,7 +91,7 @@ export default class GridForm extends React.Component {
           { this.use_advanced_settings ? [(
             <td>
               <Form>
-                <FormControl
+                <Form.Control
                   style={{ width: '50px' }}
                   type="text"
                   defaultValue={0}
@@ -102,7 +101,7 @@ export default class GridForm extends React.Component {
             </td>),
           (<td>
               <Form>
-                <FormControl
+                <Form.Control
                   style={{ width: '50px' }}
                   type="text"
                   defaultValue={0}
@@ -181,9 +180,9 @@ export default class GridForm extends React.Component {
           </div>
           <div className="col-xs-4" style={{ marginTop: '20px' }}>
             <Form inline>
-              <FormGroup>
+              <Form.Group>
                 <Form.Label>Opacity: </Form.Label>
-                <FormControl
+                <Form.Control
                   style={{ width: '100px', padding: '0', marginLeft: '10px', marginRight: '1em' }}
                   className="bar"
                   type="range"
@@ -195,9 +194,9 @@ export default class GridForm extends React.Component {
                   ref="overlaySlider"
                   name="overlaySlider"
                 />
-              </FormGroup>
+              </Form.Group>
               <br />
-              <FormGroup>
+              <Form.Group>
                 <Form.Label>Heat map: </Form.Label>
                 <Form.Check
                   name="resultType"
@@ -215,7 +214,7 @@ export default class GridForm extends React.Component {
                   style={{ marginLeft: '10px' }}
                   checked={this.props.gridResultType === 'crystalmap'}
                 />
-              </FormGroup>
+              </Form.Group>
             </Form>
           </div>
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Card, Form, Row, Col } from 'react-bootstrap';
+import { Container, Card, Form, Row, Col } from 'react-bootstrap';
 
 import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
 import UserList from '../components/RemoteAccess/UserList';
@@ -46,17 +46,19 @@ export class RemoteAccessContainer extends React.Component {
 
   render() {
     return (
-      <Row sm={12} className="d-flex">
-        { !this.props.login.user.inControl ?
-          (<Col sm={4} className="col-xs-4">
-            <RequestControlForm />
-           </Col>) : null
-        }
-        <Col sm={4} className="mb-3">
-          <UserList />
-        </Col>
-        {this.getRAOptions()}
-      </Row>
+      <Container fluid>
+        <Row sm={12} className="d-flex">
+          { !this.props.login.user.inControl ?
+            (<Col sm={4} className="col-xs-4">
+              <RequestControlForm />
+            </Col>) : null
+          }
+          <Col sm={4} className="mb-3">
+            <UserList />
+          </Col>
+          {this.getRAOptions()}
+        </Row>
+      </Container>
     );
   }
 }
