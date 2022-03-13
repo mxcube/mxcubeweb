@@ -1,7 +1,10 @@
 import fetch from 'isomorphic-fetch';
-import { browserHistory } from 'react-router';
+// import { browserHistory } from 'react-router';
+import { createBrowserHistory } from 'history';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { serverIO } from '../serverIO';
+
+const browserHistory = createBrowserHistory();
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -99,7 +102,7 @@ export function signOut() {
 }
 
 
-export function signIn(proposal, password) {
+export function signIn(proposal, password, navigate) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/login', {
       method: 'POST',
@@ -117,7 +120,8 @@ export function signIn(proposal, password) {
             dispatch(showProposalsForm());
           } else {
             dispatch(selectProposal(proposal));
-            browserHistory.push('/');
+            // browserHistory.push('/');
+            navigate("/");
           }
         });
       } else {
@@ -132,13 +136,14 @@ export function signIn(proposal, password) {
   };
 }
 
-export function doSignOut() {
+export function doSignOut(navigate) {
   return function (dispatch) {
     return fetch('mxcube/api/v0.1/login/signout', {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
-      browserHistory.push('/login');
+      navigate('/login');
+      // browserHistory.push('/login');
       serverIO.disconnect();
     });
   };
