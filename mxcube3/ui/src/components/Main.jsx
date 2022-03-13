@@ -19,6 +19,10 @@ import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
 
+import {
+  Outlet
+} from 'react-router-dom';
+
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
 
@@ -59,8 +63,10 @@ class Main extends React.Component {
 
   render() {
     const showReadOnlyDiv = !this.props.login.user.inControl &&
-            this.props.location.pathname !== '/remoteaccess' &&
-            this.props.location.pathname !== '/help';
+            // this.props.location.pathname !== '/remoteaccess' &&
+            // this.props.location.pathname !== '/help';
+            window.location.pathname !== '/remoteaccess' &&
+            window.location.pathname !== '/help';
 
     return (
       <div>

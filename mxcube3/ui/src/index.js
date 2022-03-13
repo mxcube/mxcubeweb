@@ -2,15 +2,28 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'react-bootstrap-table/css/react-bootstrap-table.css';
 import './main.css';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import {
-  Router, Route, browserHistory, IndexRoute
-} from 'react-router';
+import { render } from 'react-dom';
+
+import { BrowserRouter ,
+  Routes,
+  Route, Navigate,
+  Outlet
+} from 'react-router-dom';
+
+import { createBrowserHistory } from 'history'
 import { createStore, applyMiddleware, compose} from 'redux';
 import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
-import { persistStore } from 'redux-persist';
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+
+
+import { PersistGate } from 'redux-persist/integration/react';
+import { ConnectedRouter } from 'connected-react-router';
+
+import * as serviceWorker from './serviceWorker';
+
 // import crosstabSync from 'redux-persist-crosstab';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
@@ -35,6 +48,9 @@ import { fab } from '@fortawesome/free-brands-svg-icons'
 // Add all icons to the library so you can use it in your page
 library.add(fas, far, fab)
 
+
+export const history = createBrowserHistory();
+
 // Logger MUST BE the last middleware
 const middleware = [
   thunk,
@@ -47,7 +63,20 @@ const composedEnhancers = compose(
   // autoRehydrate()
 );
 
-const store = createStore(rootReducer, composedEnhancers);
+
+const persistConfig = {
+  key: 'root',
+  blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+  'form', 'login', 'general', 'logger', 'shapes',
+  'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
+  // storage: new ServerStorage()
+  storage,
+}
+ 
+const persistedReducer = persistReducer(persistConfig, rootReducer)
+
+
+const store = createStore(persistedReducer, composedEnhancers);
 
 if (module.hot) {
   // Enable Webpack hot module replacement for reducers
@@ -77,6 +106,20 @@ class ServerStorage {
   }
 }
 
+const persistor = persistStore(store);
+// ,
+//   {
+//     blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+//       'form', 'login', 'general', 'logger', 'shapes',
+//       'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
+//     storage: new ServerStorage()
+//   },
+//   () => {
+//     /* eslint-disable react/no-set-state */
+//     // this.setState({ initialized: true });
+//     /* eslint-enable react/no-set-state */
+//   });
+
 function requireAuth(nextState, replace, callback) {
   let state = store.getState();
   store.dispatch(getLoginInfo()).then(() => {
@@ -84,18 +127,6 @@ function requireAuth(nextState, replace, callback) {
     if (!state.login.loggedIn) {
       replace('/login');
     } else {
-      const persistor = persistStore(store,
-        {
-          blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-            'form', 'login', 'general', 'logger', 'shapes',
-            'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
-          storage: new ServerStorage()
-        },
-        () => {
-          /* eslint-disable react/no-set-state */
-          // this.setState({ initialized: true });
-          /* eslint-enable react/no-set-state */
-        });
 
       serverIO.connectStateSocket(persistor);
       // crosstabSync(persistor);
@@ -105,6 +136,30 @@ function requireAuth(nextState, replace, callback) {
     }
     return callback();
   });
+}
+
+function useAuth() {
+  let state = store.getState();
+  store.dispatch(getLoginInfo()).then(() => {
+    state = store.getState();
+    if (state.login.loggedIn) {
+
+      serverIO.connectStateSocket(persistor);
+      serverIO.listen(store);
+      store.dispatch(startSession());
+    }
+
+    return state.login.loggedIn;
+  });
+
+  return state.login.loggedIn;
+}
+
+
+function PrivateOutlet() {
+  const auth = useAuth();
+  console.log(auth);
+  return auth ? <Outlet /> : <Navigate to="/login" />;
 }
 
 export default class App extends React.Component {
@@ -128,30 +183,46 @@ export default class App extends React.Component {
       <div id="loading">
         <img className="logo" src={logo} role="presentation" />
         <div><h3>Loading, please wait</h3> <img className="loader-init" src={loadingAnimation} role="presentation" /></div>
-      </div>);
+      </div>
+      );
     }
 
     return (
       <Provider store={store}>
-        <Router history={browserHistory}>
-          <Route path="/login" component={LoginContainer} />
-          <Route path="/" component={Main} onEnter={requireAuth}>
-            <IndexRoute component={SampleViewContainer} />
-            <Route path="samplegrid" component={SampleGridViewContainer} />
-            <Route path="datacollection" component={SampleViewContainer} />
-            <Route path="samplechanger" component={SampleChangerContainer} />
-            <Route path="logging" component={LoggerContainer} />
-            <Route path="remoteaccess" component={RemoteAccessContainer} />
-            <Route path="help" component={HelpContainer} />
-          </Route>
-        </Router>
+        <PersistGate persistor={persistor}>
+          {/* <ConnectedRouter history={history}> */}
+            <BrowserRouter history={history}>
+              <Routes>
+                <Route path="/login" element={<LoginContainer />} /> 
+                <Route element={<PrivateOutlet />}>
+                  <Route path="/" element={<Main />}>
+                    <Route index element={<SampleViewContainer />} />
+                    <Route path="samplegrid" element={<SampleGridViewContainer />} />
+                    <Route path="datacollection" element={<SampleViewContainer />} />
+                    <Route path="samplechanger" element={<SampleChangerContainer />} />
+                    <Route path="logging" element={<LoggerContainer />} />
+                    <Route path="remoteaccess" element={<RemoteAccessContainer />} />
+                    <Route path="help" element={<HelpContainer />} />
+                  </Route>
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          {/* </ConnectedRouter> */}
+        </PersistGate>
       </Provider>
     );
   }
 }
 
+const rootElement = document.getElementById("root");
 
-ReactDOM.render(
+render(
   <App />,
-  document.getElementById('root')
+  rootElement
 );
+
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: http://bit.ly/CRA-PWA
+serviceWorker.unregister();
