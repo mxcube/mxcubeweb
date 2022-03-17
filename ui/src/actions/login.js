@@ -53,14 +53,14 @@ export function postProposal(number) {
   });
 }
 
-export function sendSelectProposal(number) {
+export function sendSelectProposal(number, navigate) {
   return function (dispatch) {
     postProposal(number).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to select proposal'));
-        browserHistory.push('/login');
+        navigate('/login');
       } else {
-        browserHistory.push('/');
+        navigate('/');
       }
     });
   };
@@ -101,7 +101,7 @@ export function signOut() {
   return { type: 'SIGNOUT' };
 }
 
-export function signIn(proposal, password) {
+export function signIn(proposal, password, navigate) {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/login', {
       method: 'POST',
@@ -124,7 +124,7 @@ export function signIn(proposal, password) {
                   dispatch(showProposalsForm());
                 } else {
                   dispatch(selectProposal(proposal));
-                  browserHistory.push('/');
+                  navigate('/');
                 }
               });
           } else {
@@ -147,7 +147,6 @@ export function doSignOut() {
       credentials: 'include',
     }).then(() => {
       dispatch(signOut());
-      browserHistory.push('/login');
       serverIO.disconnect();
     });
   };
