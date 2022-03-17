@@ -1,9 +1,11 @@
 import React from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+
+import withRouter from '../WithRouter';
 import './MXNavbar.css';
 
-export default class MXNavbar extends React.Component {
+class MXNavbar extends React.Component {
   constructor(props) {
     super(props);
     this.findProposal = this.findProposal.bind(this);
@@ -14,6 +16,11 @@ export default class MXNavbar extends React.Component {
       `${prop.Proposal.code}${prop.Proposal.number}` ===
       this.props.selectedProposal
     );
+  }
+
+  signOut(){
+    this.props.signOut();
+    this.props.router.navigate('/login' , { replace: true });
   }
 
   render() {
@@ -70,3 +77,6 @@ export default class MXNavbar extends React.Component {
     );
   }
 }
+
+MXNavbar = withRouter(MXNavbar);
+export default MXNavbar;

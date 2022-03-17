@@ -17,7 +17,7 @@ class SelectProposal extends React.Component {
   }
 
   sendProposal() {
-    this.props.sendSelectProposal(this.props.selectedProposal);
+    this.props.sendSelectProposal(this.props.selectedProposal, this,this.props.navigate);
     this.props.hide();
   }
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { withRouter } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
+import withRouter from '../components/WithRouter'
 import loader from '../img/loader.gif';
 
 import {
