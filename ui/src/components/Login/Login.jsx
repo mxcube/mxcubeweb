@@ -1,14 +1,10 @@
 import React from 'react';
 import {
-  Grid,
-  Row,
-  Col,
-  FormGroup,
-  InputGroup,
-  FormControl,
-  Alert,
-  Button,
+  Grid, Row, Col,
+  FormGroup, InputGroup, FormControl,
+  Alert, Button,
 } from 'react-bootstrap';
+
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
