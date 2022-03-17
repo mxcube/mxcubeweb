@@ -9,6 +9,7 @@ class MXNavbar extends React.Component {
   constructor(props) {
     super(props);
     this.findProposal = this.findProposal.bind(this);
+    this.signOut = this.signOut.bind(this);
   }
 
   findProposal(prop) {
@@ -69,7 +70,7 @@ class MXNavbar extends React.Component {
               Remote
             </NavItem>
           </LinkContainer>
-          <NavItem eventKey={7} onClick={this.props.signOut}>
+          <NavItem eventKey={7} onClick={this.signOut}>
             <span className="fas fa-lg fa-sign-out" /> Sign out
           </NavItem>
         </Nav>
