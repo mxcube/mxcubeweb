@@ -19,7 +19,6 @@
     "dygraphs": "^2.0.0",
     "everpolate": "0.0.3",
     "fabric": "^4.6.0",
-    "history": "4.10.x",
     "http-proxy-middleware": "^2.0.2",
     "immutability-helper": "^3.0.2",
     "isomorphic-fetch": "^2.2.0",
