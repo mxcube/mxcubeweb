@@ -120,7 +120,7 @@ class BaseUserManager(ComponentBase):
                     )
 
     def handle_disconnect(self, username):
-        time.sleep(30)
+        time.sleep(120)
 
         user = self.get_user(username)
 
@@ -128,7 +128,7 @@ class BaseUserManager(ComponentBase):
             dt = datetime.datetime.now() - user.disconnect_timestamp
 
             # Disconnected for more than a minute
-            if dt.seconds >= 30:
+            if dt.seconds >= 120:
                 logging.getLogger("HWR").info("Client disconnected")
 
                 user.active = False
