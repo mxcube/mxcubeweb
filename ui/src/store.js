@@ -1,26 +1,13 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { persistStore } from 'redux-persist';
+import { persistStore, persistReducer } from 'redux-persist';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
-import {
-  createStateSyncMiddleware,
-  initMessageListener,
-} from 'redux-state-sync';
+import { createStateSyncMiddleware, initMessageListener } from 'redux-state-sync';
+
+import storage from 'redux-persist/lib/storage' // default localStorage for web
 
 import { serverIO } from './serverIO';
 import rootReducer from './reducers';
-
-function initStore() {
-  // Logger MUST BE the last middleware
-  const middleware = [thunk, createLogger(), createStateSyncMiddleware()];
-  // passing several store enhancers to createStore need to be compose together
-  const composedEnhancers = compose(applyMiddleware(...middleware));
-  const store = createStore(rootReducer, composedEnhancers);
-
-  initMessageListener(store);
-
-  return store;
-}
 
 class ServerStorage {
   constructor(serverIO) {
@@ -48,6 +35,40 @@ class ServerStorage {
       cb(false, value);
     });
   }
+}
+
+function initStore() {
+  // Logger MUST BE the last middleware
+  const middleware = [thunk, createStateSyncMiddleware(), createLogger()];
+
+  const persistConfig = {
+    key: 'root',
+    blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
+      'form', 'general', 'logger', 'shapes',
+      'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
+    whitelist: ['login'],
+    // storage: new ServerStorage(serverIO) 
+    storage, // TODO: Find a way to pass the server storage there instead of local storage, 
+  }
+
+  const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+  const enhancers = [];
+  if (process.env.NODE_ENV === 'development') {
+    const devToolsExtension = window.__REDUX_DEVTOOLS_EXTENSION__;
+    if (typeof devToolsExtension === 'function') {
+      enhancers.push(devToolsExtension());
+    }
+  }
+  
+  const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
+
+  const store = createStore(persistedReducer, composedEnhancers);
+  // const store = createStore(rootReducer, composedEnhancers);
+
+  initMessageListener(store);
+
+  return store;
 }
 
 function createServerStatePersistor(store, serverIO, cb) {
@@ -79,4 +100,5 @@ function createServerStatePersistor(store, serverIO, cb) {
 }
 
 export const store = initStore();
+export const localStatePersistor = persistStore(store);
 export const statePersistor = createServerStatePersistor(store, serverIO);

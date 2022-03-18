@@ -2,6 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Grid } from 'react-bootstrap';
+import { Outlet } from 'react-router-dom';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
@@ -100,7 +101,7 @@ class Main extends React.Component {
           onHide={() => this.props.showDialog(false)}
         />
         <MXNavbarContainer location={this.props.location} />
-        <Grid fluid>{this.props.children}</Grid>
+        <Grid fluid> <Outlet /> </Grid>
         <span onClick={this.onChatContainerClick}>
           {this.props.remoteAccess.observers.length > 0 ? (
             <Widget

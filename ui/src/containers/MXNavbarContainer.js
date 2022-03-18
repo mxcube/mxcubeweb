@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import MXNavbar from '../components/MXNavbar/MXNavbar';
 import { doSignOut } from '../actions/login';
 
@@ -31,7 +32,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    signOut: () => dispatch(doSignOut()),
+    signOut: bindActionCreators(doSignOut, dispatch),
   };
 }
 

@@ -1,12 +1,15 @@
 import React from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
+
+import withRouter from '../WithRouter';
 import './MXNavbar.css';
 
-export default class MXNavbar extends React.Component {
+class MXNavbar extends React.Component {
   constructor(props) {
     super(props);
     this.findProposal = this.findProposal.bind(this);
+    this.signOut = this.signOut.bind(this);
   }
 
   findProposal(prop) {
@@ -14,6 +17,11 @@ export default class MXNavbar extends React.Component {
       `${prop.Proposal.code}${prop.Proposal.number}` ===
       this.props.selectedProposal
     );
+  }
+
+  signOut(){
+    this.props.signOut();
+    this.props.router.navigate('/login' , { replace: true });
   }
 
   render() {
@@ -62,7 +70,7 @@ export default class MXNavbar extends React.Component {
               Remote
             </NavItem>
           </LinkContainer>
-          <NavItem eventKey={7} onClick={this.props.signOut}>
+          <NavItem eventKey={7} onClick={this.signOut}>
             <span className="fas fa-lg fa-sign-out" /> Sign out
           </NavItem>
         </Nav>
@@ -70,3 +78,6 @@ export default class MXNavbar extends React.Component {
     );
   }
 }
+
+MXNavbar = withRouter(MXNavbar);
+export default MXNavbar;

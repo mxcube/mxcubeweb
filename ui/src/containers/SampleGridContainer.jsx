@@ -1,10 +1,12 @@
 import React from 'react';
-import { withRouter } from 'react-router';
+// import { withRouter } from 'react-router';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Glyphicon, MenuItem } from 'react-bootstrap';
 
 import { SpringGrid } from 'react-stonecutter';
+
+import withRouter from '../components/WithRouter'
 
 import {
   QUEUE_STOPPED,
