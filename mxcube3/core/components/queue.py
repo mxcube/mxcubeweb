@@ -1736,7 +1736,7 @@ class Queue(ComponentBase):
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
-            elif isinstance(child, qmo.XrayCentering):
+            elif isinstance(child, qmo.XrayCentring2):
                 # Added rhfogh 20211001
                 entry = qe.XrayCenteringQueueEntry(Mock(), child)
                 self.enable_entry(entry, True)
