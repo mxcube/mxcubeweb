@@ -57,7 +57,15 @@ class Server:
         t0 = time.time()
 
         template_dir = os.path.join(os.path.dirname(__file__), "templates")
-        Server.flask = Flask(__name__, static_url_path="", template_folder=template_dir)
+        
+        import pdb
+        pdb.set_trace()
+        Server.flask = Flask(
+            __name__,
+            static_folder=cmdline_options.static_folder,
+            static_url_path="",
+            template_folder=template_dir
+        )
         Server.flask.wsgi_app = ProxyFix(Server.flask.wsgi_app)
         Server.flask.config.from_object(cfg.flask)
         Server.flask.register_error_handler(Exception, Server.exception_handler)

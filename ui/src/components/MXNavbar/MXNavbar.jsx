@@ -35,8 +35,8 @@ class MXNavbar extends React.Component {
         <Navbar.Header>
           <LinkContainer to="/remoteaccess">
             <Navbar.Brand>
-              MXCuBE3{' '}
-              <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
+              MXCuBE-WEB{' '}
+              <span className="brand-subtitle">(v{this.props.version}-{this.props.mode})</span>
             </Navbar.Brand>
           </LinkContainer>
         </Navbar.Header>
@@ -48,7 +48,7 @@ class MXNavbar extends React.Component {
             <NavItem eventKey={2}>Data collection</NavItem>
           </LinkContainer>
           <LinkContainer to="/samplechanger">
-            <NavItem eventKey={3}>SC tools</NavItem>
+            <NavItem eventKey={3}>Equipment</NavItem>
           </LinkContainer>
           <LinkContainer to="/logging">
             <NavItem eventKey={4}>System log</NavItem>
@@ -70,8 +70,8 @@ class MXNavbar extends React.Component {
               Remote
             </NavItem>
           </LinkContainer>
-          <NavItem eventKey={7} onClick={this.signOut}>
-            <span className="fas fa-lg fa-sign-out" /> Sign out
+          <NavItem eventKey={7} onClick={this.props.signOut}>
+            <span className="fas fa-lg fa-sign-out" /> Sign out ({this.props.selectedProposal})
           </NavItem>
         </Nav>
       </Navbar>

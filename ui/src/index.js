@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css';
+
 import 'react-bootstrap-table/css/react-bootstrap-table.css';
 import './main.css';
 import React from 'react';
@@ -9,7 +10,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import SampleViewContainer from './containers/SampleViewContainer';
 import SampleGridViewContainer from './containers/SampleGridViewContainer';
-import SampleChangerContainer from './containers/SampleChangerContainer';
+import EquipmentContainer from './containers/EquipmentContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
 import RemoteAccessContainer from './containers/RemoteAccessContainer';
@@ -17,8 +18,8 @@ import HelpContainer from './containers/HelpContainer';
 import Main from './components/Main';
 import { serverIO } from './serverIO';
 import { getLoginInfo, startSession } from './actions/login';
-import logo from './img/mxcube_logo20.png';
-import loadingAnimation from './img/loading-animation.gif';
+import LoadingScreen from './components/LoadingScreen/LoadingScreen';
+
 
 import {store, statePersistor, localStatePersistor} from './store';
 
@@ -73,20 +74,8 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (!this.state.initialized) {
-      return (
-        <div id="loading">
-          <img className="logo" src={logo} role="presentation" />
-          <div>
-            <h3>Loading, please wait</h3>{' '}
-            <img
-              className="loader-init"
-              src={loadingAnimation}
-              role="presentation"
-            />
-          </div>
-        </div>
-      );
+    if (!this.state.initialized)  {
+      return (<LoadingScreen /> );
     }
 
     return (
@@ -100,7 +89,7 @@ export default class App extends React.Component {
                   <Route index element={<SampleViewContainer />} />
                   <Route path="samplegrid" element={<SampleGridViewContainer />} />
                   <Route path="datacollection" element={<SampleViewContainer />} />
-                  <Route path="samplechanger" element={<SampleChangerContainer />} />
+                  <Route path="samplechanger" element={<EquipmentContainer />} />
                   <Route path="logging" element={<LoggerContainer />} />
                   <Route path="remoteaccess" element={<RemoteAccessContainer />} />
                   <Route path="help" element={<HelpContainer />} />

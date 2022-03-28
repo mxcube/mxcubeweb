@@ -14,6 +14,7 @@ import { sendMail } from '../actions/login';
 import characterisation from '../help_videos/mx3-characterisation.ogv';
 import interleaved from '../help_videos/mx3-interleaved.ogv';
 import mesh from '../help_videos/mx3-mesh.ogv';
+import general from '../reducers/general';
 
 export class HelpContainer extends React.Component {
   constructor(props) {
@@ -39,20 +40,21 @@ export class HelpContainer extends React.Component {
       const tel = '';
 
       panel = (
-        <Panel
-          header={
+        <Panel>
+          <Panel.Heading>
             <div>
               <span>Local Contact</span>
               <span className="glyphicon glyphicon-user pull-right"></span>
             </div>
-          }
-        >
-          <span>
-            Name: `${givenName} ${familyName}`<br />
-            Email: {email}
-            <br />
-            Tel: {tel} <br />
-          </span>
+          </Panel.Heading>
+          <Panel.Body>
+            <span>
+              Name: {`${givenName} ${familyName}`}<br />
+              Email: {email}
+              <br />
+              Tel: {tel} <br />
+            </span>
+          </Panel.Body>
         </Panel>
       );
     }
@@ -76,14 +78,14 @@ export class HelpContainer extends React.Component {
       <div className="col-xs-12" style={{ marginTop: '2em', zIndex: 9999 }}>
         <div className="col-xs-4">
           {this.localContactPanel()}
-          <Panel
-            header={
+          <Panel>
+            <Panel.Heading>
               <div>
                 <span>Feedback</span>
                 <span className="glyphicon glyphicon-envelope pull-right"></span>
               </div>
-            }
-          >
+            </Panel.Heading>
+            <Panel.Body>
             <span>
               <Form>
                 <FormGroup>
@@ -116,17 +118,25 @@ export class HelpContainer extends React.Component {
                 </FormGroup>
               </Form>
             </span>
+            </Panel.Body>
           </Panel>
-          <Panel header="About MXCuBE3">
-            <span>
-              Version: {/* eslint-disable no-undef */ VERSION.BRANCH}
-              <br />
-              Commit hash: {VERSION.COMMITHASH /* eslint-enable no-undef */}
-            </span>
+          <Panel>
+            <Panel.Heading>
+              About MXCuBE-WEB
+            </Panel.Heading>
+            <Panel.Body>
+              <span>
+                Version: {this.props.general.serverVersion}
+              </span>
+            </Panel.Body>
           </Panel>
         </div>
         <div className="col-xs-6">
-          <Panel header="Video Tutorials">
+          <Panel>
+            <Panel.Heading>
+              Video Tutorials
+            </Panel.Heading> 
+            <Panel.Body>
             <div className="col-xs-4">
               <span>
                 <b>Characterisation </b> <br />
@@ -151,6 +161,7 @@ export class HelpContainer extends React.Component {
                 </video>
               </span>
             </div>
+            </Panel.Body>
           </Panel>
           {process.env.helpLinks ? (
             <Panel
@@ -173,6 +184,7 @@ export class HelpContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     login: state.login,
+    general: state.general
   };
 }
 

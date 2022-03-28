@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { assign } from 'lodash';
 import { unselectShapes } from './sampleview';
 
 export function addUserMessage(records, target) {
@@ -20,6 +21,11 @@ export function clearAllUserMessages() {
 export function setInitialState(data) {
   return { type: 'SET_INITIAL_STATE', data };
 }
+
+export function applicationFetched(data) {
+  return { type: 'APPLICATION_FETCHED', data };
+}
+
 
 export function setLoading(
   loading,
@@ -90,14 +96,6 @@ export function getInitialState() {
         'Content-type': 'application/json',
       },
     });
-    // const motors = fetch('mxcube/api/v0.1/diffractometer/movables/state', {
-    //   method: 'GET',
-    //   credentials: 'include',
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-type': 'application/json'
-    //   }
-    // });
     const beamInfo = fetch('mxcube/api/v0.1/beamline/beam/info', {
       method: 'GET',
       credentials: 'include',
@@ -213,6 +211,23 @@ export function getInitialState() {
         'Content-type': 'application/json',
       },
     });
+    const serverMode = fetch('mxcube/api/v0.1/mode', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+    });
+    const serverVersion = fetch('mxcube/api/v0.1/version', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+    });
+
 
     const pchains = [
       uiproperties
@@ -227,7 +242,6 @@ export function getInitialState() {
           state.queue = json;
         })
         .catch(notify),
-      // motors.then(parse).then((json) => { state.Motors = json; }).catch(notify),
       beamInfo
         .then(parse)
         .then((json) => {
@@ -338,6 +352,18 @@ export function getInitialState() {
           state.logger = json;
         })
         .catch(notify),
+      serverMode
+        .then(parse)
+        .then((json) => {
+          state.general = json;
+        })
+        .catch(notify),
+      serverVersion
+        .then(parse)
+        .then((json) => {
+          state.general = Object.assign(state.general, json);
+        })
+        .catch(notify)
     ];
 
     Promise.all(pchains)
@@ -346,6 +372,8 @@ export function getInitialState() {
       })
       .then(() => {
         dispatch(unselectShapes({ shapes: state.shapes }));
+      }).then(() => {
+        dispatch(applicationFetched(true));
       });
   };
 }

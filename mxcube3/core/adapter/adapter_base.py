@@ -42,6 +42,9 @@ class AdapterBase:
     def _get_value(self):
         pass
 
+    def execute_command(self, cmd_name, args):
+        self._ho.execute_exported_command(cmd_name, args)
+
     @property
     def adapter_type(self):
         """
@@ -89,11 +92,17 @@ class AdapterBase:
 
     def available(self):
         """
-        Check if the hardware object is considered to be available/online/enbled
+        Check if the hardware object is considered to be available/online/enabled
         Returns:
             (bool): True if available.
         """
         return self._available
+
+    def attributes(self):
+        if getattr(self._ho, "pydantic_model", None):
+            return self._ho.exported_attributes
+        else:
+            return {}
 
     def commands(self):
         return ()
@@ -120,6 +129,7 @@ class AdapterBase:
                 "available": self.available(),
                 "readonly": self.read_only(),
                 "commands": self.commands(),
+                "attributes": self.attributes(),
             }
 
         except Exception as ex:
@@ -134,6 +144,7 @@ class AdapterBase:
                 "type": "FLOAT",
                 "available": self.available(),
                 "readonly": False,
+                "attributes": {}
             }
 
             logging.getLogger("MX3.HWR").exception(

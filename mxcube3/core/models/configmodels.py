@@ -1,3 +1,4 @@
+from enum import Enum
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 
@@ -20,6 +21,7 @@ class UIComponentModel(BaseModel):
     step: Optional[float]
     precision: Optional[int]
     suffix: Optional[str]
+    format: Optional[str]
 
     # Set internaly not to be set through configuration
     value_type: Optional[str]
@@ -50,13 +52,19 @@ class UserManagerConfigModel(BaseModel):
     )
     users: List[UserManagerUserConfigModel]
 
+class ModeEnum(str, Enum):
+    SSX = 'SSX'
+    OSC = 'OSC'
 
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
+    mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
     usermanager: UserManagerConfigModel
     ui_properties: Dict[str, UIPropertiesModel] = {}
     adapter_properties: List = []
 
+class ModeEnumModel(BaseModel):
+    mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
 
 class AppConfigModel(BaseModel):
     server: FlaskConfigModel

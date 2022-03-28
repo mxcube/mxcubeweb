@@ -26,7 +26,9 @@ export class SampleChangerTree extends React.Component {
         header={this.props.title}
         bsStyle={titleBackground}
       >
-        {this.props.children}
+        <Panel.Body>
+          {this.props.children}
+        </Panel.Body>
       </Panel>
     );
   }

@@ -1,0 +1,16 @@
+.generic-equipment-container .rjsf #root__title{
+  display: none;
+}
+
+.generic-equipment-container-panel-body {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.command-panel {
+  border: 0px;
+}
+
+.generic-equipment-container .panel-title {
+  text-transform:capitalize;
+}

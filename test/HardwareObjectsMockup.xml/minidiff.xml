@@ -42,4 +42,5 @@
 
   <phaseList>["Transfer","Centring","BeamLocation", "DataCollection"]</phaseList>
   <headType>MiniKappa</headType>
+  <exports>["abort", "status", "my_fancy_function", "my_other_funny_function"]</exports>
 </equipment>

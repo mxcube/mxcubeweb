@@ -82,6 +82,20 @@ export function sendSetAttribute(name, value) {
   };
 }
 
+export function executeCommand(obj, name, args) {
+  return () => {
+    fetch(`mxcube/api/v0.1/beamline/${obj}/command/${name}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({...args}),
+    });
+  }
+}
+
 export function sendAbortCurrentAction(name) {
   return () => {
     fetch(`mxcube/api/v0.1/beamline/${name}/abort`, {
