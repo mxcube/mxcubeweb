@@ -7,6 +7,8 @@ settings:
 #    use_multitrigger: true
     # Pass path_template.prefix to workflow as prefix. Any value is True Do not change
     use_path_template_prefix: true
+    # centring prcdeure to use. default is 'manual', alternative is 'xray'
+    centring: manual
     # Use advanced_mode for adidtional UI options. Default is false, any value is true
     advanced_mode: true
     # Maximum allowed value of Chi, for strategy calculation
